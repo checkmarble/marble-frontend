@@ -69,19 +69,19 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
-          <div className="flex-none items-stretch relative w-[800px] bg-grey-100">
+          <div className="flex-none items-stretch relative w-[800px] bg-surface-card">
             {/* Unified bordered wrapper for title + content */}
             <div
               className={`rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                 snapshot.isDragging
-                  ? 'border-purple-60 shadow-xl'
+                  ? 'border-purple-hover shadow-xl'
                   : isRuleModified
-                    ? 'border-purple-60 shadow-xl ring-2 ring-blue-200'
-                    : 'border-grey-90'
+                    ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
+                    : 'border-grey-border'
               }`}
             >
               {/* Rule title bar */}
-              <div className="text-grey-00 font-semibold px-4 py-2 w-auto bg-purple-98 flex items-center justify-between">
+              <div className="text-grey-primary font-semibold px-4 py-2 w-auto bg-purple-background-light flex items-center justify-between">
                 {editingRuleId === displayRule.id ? (
                   <input
                     type="text"
@@ -95,12 +95,12 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                       }
                     }}
                     autoFocus
-                    className="bg-white font-semibold text-base w-2/3 min-w-0 px-2 py-1 rounded-sm border-2 border-purple-60 outline-hidden focus:ring-2 focus:ring-purple-30 transition-all"
+                    className="bg-surface-card font-semibold text-base w-2/3 min-w-0 px-2 py-1 rounded-sm border-2 border-purple-hover outline-hidden focus:ring-2 focus:ring-purple-30 transition-all"
                   />
                 ) : (
                   <div className="group inline-flex items-center gap-1">
                     <span
-                      className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded-sm transition-colors"
+                      className="cursor-text hover:bg-surface-card hover:bg-opacity-20 px-1 py-0.5 rounded-sm transition-colors"
                       onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
                     >
                       {displayRule.name}
@@ -128,11 +128,11 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   </Button>
                 </div>
               </div>
-              <div className="bg-white p-4 transition-all duration-200 relative">
+              <div className="bg-surface-card p-4 transition-all duration-200 relative">
                 {/* Drag Handle */}
                 <div
                   className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-12 rounded-full cursor-grab active:cursor-grabbing transition-all duration-200 flex items-center justify-center ${
-                    snapshot.isDragging ? 'bg-purple-60 shadow-lg' : 'bg-grey-30 hover:bg-grey-40'
+                    snapshot.isDragging ? 'bg-purple-hover shadow-lg' : 'bg-grey-30 hover:bg-grey-40'
                   }`}
                   {...provided.dragHandleProps}
                 >
@@ -193,9 +193,9 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
 
           {/* "Then" arrow */}
           <div className="flex items-center justify-center">
-            <div className="w-28 h-0.5 bg-grey-80 relative">
-              <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-80"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-90 px-3 py-1 rounded-sm z-10">
+            <div className="w-28 h-0.5 bg-grey-disabled relative">
+              <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-disabled"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-border px-3 py-1 rounded-sm z-10">
                 <span className="text-sm font-bold text-white uppercase tracking-wide">{t('common:then')}</span>
               </div>
             </div>
@@ -203,11 +203,11 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
 
           {/* Actions Box */}
           <div
-            className={`flex-none rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 w-auto max-w-full bg-grey-100 ${
+            className={`flex-none rounded-lg border-2 border-grey-border bg-surface-card p-4 transition-all duration-200 w-auto max-w-full bg-surface-card ${
               snapshot.isDragging
-                ? 'border-purple-60 shadow-xl'
+                ? 'border-purple-hover shadow-xl'
                 : isRuleModified
-                  ? 'border-purple-60 shadow-xl ring-2 ring-blue-200'
+                  ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
                   : 'border-grey-20'
             }`}
           >

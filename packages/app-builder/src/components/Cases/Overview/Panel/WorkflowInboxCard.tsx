@@ -31,11 +31,11 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
         <Collapsible.Trigger asChild>
           <button
             type="button"
-            className="flex items-center gap-v2-sm p-v2-md w-full text-left hover:bg-grey-98 rounded-v2-lg transition-colors"
+            className="flex items-center gap-v2-sm p-v2-md w-full text-left hover:bg-grey-background-light rounded-v2-lg transition-colors"
           >
             <Icon
               icon="caret-down"
-              className={cn('size-5 text-grey-50 transition-transform', { '-rotate-90': !isOpen })}
+              className={cn('size-5 text-grey-placeholder transition-transform', { '-rotate-90': !isOpen })}
             />
             <span className="flex-1 text-m font-semibold">{inbox.name}</span>
             <Tag color={isConfigured ? 'green' : 'grey'} size="small" border="rounded-sm">

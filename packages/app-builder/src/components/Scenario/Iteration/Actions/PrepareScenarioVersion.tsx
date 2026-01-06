@@ -133,7 +133,7 @@ function PrepareScenarioVersionContent({
                     <p className="max-w-60">{t('scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip')}</p>
                   }
                 >
-                  <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
+                  <Icon icon="tip" className="hover:text-purple-primary text-purple-disabled size-6" />
                 </Tooltip.Default>
               </div>
             )}

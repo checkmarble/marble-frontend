@@ -64,7 +64,7 @@ export default function Webhooks() {
         cell: ({ getValue }) => {
           const eventTypes = getValue();
           if (eventTypes.length === 0) {
-            return <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>;
+            return <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>;
           }
           return <EventTypes eventTypes={eventTypes} />;
         },
@@ -150,7 +150,7 @@ export function ErrorBoundary() {
         cell: ({ getValue }) => {
           const eventTypes = getValue();
           if (eventTypes.length === 0) {
-            return <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>;
+            return <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>;
           }
           return <EventTypes eventTypes={eventTypes} />;
         },
@@ -169,9 +169,9 @@ export function ErrorBoundary() {
   return (
     <Page.Container>
       <Page.Content className="relative max-w-(--breakpoint-xl)">
-        <div className="bg-grey-00/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
-          <div className="bg-grey-100 border-grey-90 flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
-            <h1 className="bg-grey-95 text-grey-00 w-full p-8 text-center font-semibold">
+        <div className="bg-grey-primary/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
+          <div className="bg-surface-card border-grey-border flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
+            <h1 className="bg-grey-background text-grey-primary w-full p-8 text-center font-semibold">
               {t('settings:webhooks.configuration_error')}
             </h1>
             <div className="w-full p-12">

@@ -52,7 +52,7 @@ export default function ScenariosPage() {
                         scenarioId: fromUUIDtoSUUID(scenario.id),
                       })}
                     >
-                      <div className="bg-grey-100 border-grey-90 flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
+                      <div className="bg-surface-card border-grey-border flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
                         <div className="text-m flex flex-row gap-2 font-bold">
                           {scenario.name}
                           {scenario.liveVersionId ? (
@@ -69,7 +69,7 @@ export default function ScenariosPage() {
                   );
                 })
               ) : (
-                <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+                <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
                   <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
                 </div>
               )}

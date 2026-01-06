@@ -122,7 +122,7 @@ export function CreateInboxUserContent({
       }}
     >
       <Modal.Title>{t('settings:inboxes.inbox_details.add_member')}</Modal.Title>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <form.Field
           name="userId"
           validators={{
@@ -176,7 +176,7 @@ export function CreateInboxUserContent({
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name} className="flex gap-2">
-                <span className={clsx({ 'text-grey-80': access === 'restricted' })}>
+                <span className={clsx({ 'text-grey-disabled': access === 'restricted' })}>
                   {t('settings:inboxes.inbox_details.role')}
                 </span>
                 {access === 'allowed' ? null : (

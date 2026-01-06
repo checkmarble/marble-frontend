@@ -71,7 +71,7 @@ export function RuleVsDecisionOutcomes({
       onMouseEnter={() => {
         setIsHovered(true);
       }}
-      className="bg-white border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
+      className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
     >
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-v2-sm">
@@ -91,7 +91,7 @@ export function RuleVsDecisionOutcomes({
 
       <div className="flex flex-col relative">
         {isLoading ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-background-light/80 hover:bg-grey-background/80">
             <Spinner className="size-6" />
           </div>
         ) : null}
@@ -148,13 +148,13 @@ const RulesVsDecisionsOutcomesGraph = ({
                 text: {
                   fontSize: '12px',
                   fontFamily: 'Inter',
-                  fill: 'var(--color-grey-50)',
+                  fill: 'var(--color-grey-placeholder)',
                 },
               },
             },
             grid: {
               line: {
-                stroke: 'var(--color-grey-90)',
+                stroke: 'var(--color-grey-border)',
                 strokeWidth: 1,
                 strokeDasharray: '4 4',
               },
@@ -172,9 +172,9 @@ const RulesVsDecisionsOutcomesGraph = ({
             tickValues: [0, 25, 50, 75, 100],
           }}
           tooltip={({ id, value, data }) => (
-            <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+            <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
               <div className="flex items-center gap-v2-sm">
-                <strong className="text-grey-00 font-semibold">
+                <strong className="text-grey-primary font-semibold">
                   {String(id)}: {Number(value).toFixed(1)}%
                 </strong>
               </div>
@@ -194,7 +194,7 @@ const RulesVsDecisionsOutcomesGraph = ({
     </div>
   ) : (
     <div className="flex items-center justify-center h-full">
-      <span className="text-v2-md text-grey-80">{t('analytics:no_data')}</span>
+      <span className="text-v2-md text-grey-disabled">{t('analytics:no_data')}</span>
     </div>
   );
 };

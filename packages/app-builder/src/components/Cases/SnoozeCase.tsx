@@ -98,7 +98,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
           <ButtonV2
             variant="secondary"
             className={cn({
-              'bg-purple-96': field.state.value,
+              'bg-purple-background': field.state.value,
             })}
             onClick={() => {
               field.handleChange(null);
@@ -135,7 +135,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
                           .with('nextMonday', () => t('common:snooze.nextMonday'))
                           .exhaustive()}
                       </span>
-                      <span className="text-2xs text-grey-50">{formatDate(date)}</span>
+                      <span className="text-2xs text-grey-placeholder">{formatDate(date)}</span>
                     </span>
                   </MenuCommand.Item>
                 ))}

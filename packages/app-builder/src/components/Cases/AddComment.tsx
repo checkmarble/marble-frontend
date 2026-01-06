@@ -42,7 +42,10 @@ export function AddComment({ caseId }: { caseId: string }) {
   });
 
   return (
-    <form onSubmit={handleSubmit(form)} className="border-grey-90 flex grow items-end gap-4 border-t p-4">
+    <form
+      onSubmit={handleSubmit(form)}
+      className="bg-surface-elevated border-grey-border flex grow items-end gap-4 border-t p-4"
+    >
       <div className="flex grow flex-col items-start gap-2.5">
         <form.Field name="comment">
           {(field) => (
@@ -62,17 +65,17 @@ export function AddComment({ caseId }: { caseId: string }) {
               <input {...getInputProps()} />
               <div className="flex items-center gap-2">
                 <ButtonV2 type="button" variant="secondary" mode="icon" {...getRootProps()}>
-                  <Icon icon="attachment" className="text-grey-50 size-3.5" />
+                  <Icon icon="attachment" className="text-grey-placeholder size-3.5" />
                 </ButtonV2>
                 {field.state.value.map((file) => (
                   <div
                     key={file.name}
-                    className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5"
+                    className="border-grey-border flex items-center gap-1 rounded-sm border px-1.5 py-0.5"
                   >
                     <span className="text-xs font-medium">{file.name}</span>
                     <Icon
                       icon="cross"
-                      className="text-grey-50 hover:text-grey-00 size-4 cursor-pointer"
+                      className="text-grey-placeholder hover:text-grey-primary size-4 cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault();
                         field.handleChange((prev) => toggle(prev, file));

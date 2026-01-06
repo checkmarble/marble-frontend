@@ -48,14 +48,14 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
                 {entity.properties.sanctions.map((sanction) => (
                   <div
                     key={sanction.id}
-                    className="group/sanction bg-grey-100 grid grid-cols-[1fr_20px] gap-2 rounded-sm p-2"
+                    className="group/sanction bg-surface-card grid grid-cols-[1fr_20px] gap-2 rounded-sm p-2"
                   >
                     <span className="truncate">{sanction.properties['authority']}</span>
                     <Modal.Trigger asChild>
                       <button type="button" onClick={() => setSelectedSanction(sanction)}>
                         <Icon
                           icon="visibility-on"
-                          className="text-grey-90 hover:text-purple-65 size-5 cursor-pointer"
+                          className="text-grey-border hover:text-purple-primary size-5 cursor-pointer"
                         />
                       </button>
                     </Modal.Trigger>

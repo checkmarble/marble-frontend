@@ -40,18 +40,18 @@ export default function AuthLayout() {
       <div className="flex flex-col grow gap-20 justify-center items-center p-[120px]">
         <Logo
           logo="logo-standard"
-          className="text-grey-100 size-full h-16"
+          className="text-grey-white size-full h-16"
           preserveAspectRatio="xMinYMid meet"
           aria-labelledby="marble"
         />
         <div className="text-[40px] text-[#ADA7FD] font-medium text-center">
-          Iterate. Improve. <span className="text-grey-100">Automate.</span>
+          Iterate. Improve. <span className="text-grey-white">Automate.</span>
         </div>
         <div className="aspect-342/198 w-full max-w-[600px]">
           <img src="/img/main-illu.svg" alt="main-illu" className="size-full" />
         </div>
       </div>
-      <div className="relative bg-grey-100 basis-[600px] px-[120px] py-[124px] grid place-items-center">
+      <div className="relative bg-surface-card basis-[600px] px-[120px] py-[124px] grid place-items-center">
         <div className="absolute bottom-6 right-6">
           <LanguagePicker />
         </div>

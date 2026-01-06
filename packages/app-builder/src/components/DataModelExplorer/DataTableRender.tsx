@@ -50,7 +50,9 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
 
   if (!currentTable) {
     return (
-      <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">{t('common:global_error')}</div>
+      <div className="border-red-primary bg-red-background text-red-primary mt-3 rounded-sm border p-2">
+        {t('common:global_error')}
+      </div>
     );
   }
 
@@ -81,11 +83,11 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
           </div>
         ) : null}
       </div>
-      <div className="bg-grey-90 h-px" />
+      <div className="bg-grey-border h-px" />
       {match(dataListQuery)
         .with({ isError: true }, () => {
           return (
-            <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
+            <div className="border-red-primary bg-red-background text-red-primary mt-3 rounded-sm border p-2">
               {t('common:global_error')}
             </div>
           );
@@ -278,11 +280,11 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
               {reactTable.getHeaderGroups().map((headerGroup) => (
                 <tr
                   key={headerGroup.id}
-                  className="text-grey-50 border-grey-90 bg-grey-100 sticky top-0 z-20 h-10 text-left"
+                  className="text-grey-placeholder border-grey-border bg-surface-card sticky top-0 z-20 h-10 text-left"
                 >
                   <th
                     className={clsx(
-                      'border-grey-90 bg-grey-100 sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
+                      'border-grey-border bg-surface-card sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
                       {
                         'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
                       },
@@ -294,7 +296,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                     return (
                       <th
                         key={header.id}
-                        className="border-grey-90 border-y px-2 font-normal not-last:border-r box-border"
+                        className="border-grey-border border-y px-2 font-normal not-last:border-r box-border"
                         style={getHeaderStyle(fieldStatistic)}
                       >
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -313,10 +315,10 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                 }
 
                 return (
-                  <tr key={row.id} className="border-grey-90 group z-0 h-10">
+                  <tr key={row.id} className="border-grey-border group z-0 h-10">
                     <td
                       className={clsx(
-                        'border-grey-90 bg-grey-100 group-hover:bg-grey-98 sticky left-0 z-10 h-full border-b border-r p-2',
+                        'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky left-0 z-10 h-full border-b border-r p-2',
                         {
                           'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
                         },
@@ -335,7 +337,10 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                       </div>
                     </td>
                     {row.getVisibleCells().map((cell) => (
-                      <td className="border-grey-90 group-hover:bg-grey-98 border-b not-last:border-r" key={cell.id}>
+                      <td
+                        className="border-grey-border group-hover:bg-grey-background-light border-b not-last:border-r"
+                        key={cell.id}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -345,7 +350,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
             </tbody>
           </table>
         ) : (
-          <div className="border-grey-90 rounded-sm border p-2 text-center">
+          <div className="border-grey-border rounded-sm border p-2 text-center">
             {t('cases:data_explorer.no_table_data', { tableName: table.name })}
           </div>
         )}
@@ -388,7 +393,7 @@ function DataTableActionsButton({
               <Button
                 variant="secondary"
                 size="small"
-                className="hover:border-purple-65 data-[state=open]:border-purple-65 items-center rounded-r-none hover:z-10 data-[state=open]:z-10"
+                className="hover:border-purple-primary data-[state=open]:border-purple-primary items-center rounded-r-none hover:z-10 data-[state=open]:z-10"
               >
                 <Icon icon="comment" className="size-4" />
                 <span className="text-xs font-normal">{annotationsCount}</span>
@@ -417,7 +422,7 @@ function DataTableActionsButton({
                 variant="secondary"
                 mode={showCommentAction ? 'normal' : 'icon'}
                 className={clsx(
-                  'hover:border-purple-65 data-[state=open]:border-purple-65 hover:z-10 data-[state=open]:z-10',
+                  'hover:border-purple-primary data-[state=open]:border-purple-primary hover:z-10 data-[state=open]:z-10',
                   {
                     '-ml-px rounded-l-none': showCommentAction,
                   },
@@ -434,9 +439,11 @@ function DataTableActionsButton({
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2">
                           {t('cases:annotations.popover.annotate.title')}{' '}
-                          <span className="text-grey-80 text-xs">{annotationsCount}</span>
+                          <span className="text-grey-disabled text-xs">{annotationsCount}</span>
                         </div>
-                        <span className="text-grey-50">{t('cases:annotations.popover.annotate.subtitle')}</span>
+                        <span className="text-grey-placeholder">
+                          {t('cases:annotations.popover.annotate.subtitle')}
+                        </span>
                       </div>
                       <Icon icon="comment" className="size-5" />
                     </MenuCommand.Item>
@@ -444,7 +451,7 @@ function DataTableActionsButton({
                 ) : null}
                 {navigationOptions ? (
                   <>
-                    <MenuCommand.Separator className="bg-grey-90" />
+                    <MenuCommand.Separator className="bg-grey-border" />
                     <MenuCommand.Group
                       heading={
                         <div className="p-1 py-2 text-xs font-semibold">

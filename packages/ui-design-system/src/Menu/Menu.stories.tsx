@@ -34,14 +34,14 @@ function renderItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem name={group} className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden">
+        <MenuItem name={group} className="data-active-item:bg-purple-background-light rounded-sm p-2 outline-hidden">
           {item}
         </MenuItem>
       ) : (
         <Fragment>
           <MenuSeparator />
           <MenuGroup>
-            <MenuGroupLabel className="text-grey-50 text-xs">{item.label}</MenuGroupLabel>
+            <MenuGroupLabel className="text-grey-placeholder text-xs">{item.label}</MenuGroupLabel>
             {renderItems(item.items, item.label)}
           </MenuGroup>
         </Fragment>
@@ -108,14 +108,14 @@ function renderNestedItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem name={group} className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden">
+        <MenuItem name={group} className="data-active-item:bg-purple-background-light rounded-sm p-2 outline-hidden">
           {item}
         </MenuItem>
       ) : (
         <Fragment>
           <MenuSeparator className="my-2" />
           <SubMenuRoot>
-            <SubMenuButton className="data-active-item:bg-purple-98 flex flex-row justify-between gap-2 rounded-sm p-2 outline-hidden">
+            <SubMenuButton className="data-active-item:bg-purple-background-light flex flex-row justify-between gap-2 rounded-sm p-2 outline-hidden">
               <span>{item.label}</span>
               <span>{'>'}</span>
             </SubMenuButton>

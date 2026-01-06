@@ -28,7 +28,7 @@ export function ErrorBoundary() {
   if (isRouteErrorResponse(error) && error.status === FORBIDDEN) {
     errorComponent = (
       <div className="m-auto flex flex-col items-center gap-4">
-        <h1 className="text-l text-purple-60 font-semibold">{t('common:error_boundary.marble_admin.title')}</h1>
+        <h1 className="text-l text-purple-hover font-semibold">{t('common:error_boundary.marble_admin.title')}</h1>
         <p className="text-s mb-6">{t('common:error_boundary.marble_admin.subtitle')}</p>
         <div className="mb-1">
           <Form action={getRoute('/ressources/auth/logout')} method="post">
@@ -52,8 +52,8 @@ export function ErrorBoundary() {
   }
 
   return (
-    <div className="bg-purple-98 flex size-full items-center justify-center">
-      <div className="bg-grey-100 flex max-w-md rounded-2xl p-10 shadow-md">{errorComponent}</div>
+    <div className="bg-purple-background-light flex size-full items-center justify-center">
+      <div className="bg-surface-card flex max-w-md rounded-2xl p-10 shadow-md">{errorComponent}</div>
     </div>
   );
 }

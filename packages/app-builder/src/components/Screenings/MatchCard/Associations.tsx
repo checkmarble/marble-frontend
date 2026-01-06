@@ -29,7 +29,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                 <div className="font-semibold">
                   {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.associations.title')}</div>}
                 </div>
-                <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-grey-100">
+                <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-surface-card">
                   <div className="flex flex-col gap-2">
                     <div className="col-span-full flex w-full flex-wrap gap-1">
                       <span>
@@ -53,7 +53,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-purple-65 hover:text-purple-75 underline"
+                                className="text-purple-primary hover:text-purple-75 underline"
                               >
                                 {url}
                               </a>

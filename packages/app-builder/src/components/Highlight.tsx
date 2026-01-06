@@ -15,7 +15,7 @@ export const Highlight = forwardRef<
     <span ref={ref} {...spanProps}>
       {parts.map((part, index) =>
         part.highlight ? (
-          <mark key={index} className="text-purple-65 bg-transparent">
+          <mark key={index} className="text-purple-primary bg-transparent">
             {part.text}
           </mark>
         ) : (

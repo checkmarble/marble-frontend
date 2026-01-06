@@ -21,7 +21,7 @@ export const caseEventsFilterSchema = z.object({
 export type CaseEventFiltersForm = z.infer<typeof caseEventsFilterSchema>;
 
 const Badge = ({ children }: ComponentProps<'span'>) => (
-  <span className="bg-purple-65 text-grey-100 text-small rounded-sm px-1 py-0.5">{children}</span>
+  <span className="bg-purple-primary text-grey-white text-small rounded-sm px-1 py-0.5">{children}</span>
 );
 
 export type CaseEventFiltersProps = {
@@ -59,7 +59,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
           <ButtonV2 variant="secondary">
             <Icon icon="add-circle" className="size-3.5" />
             <span>Type</span>
-            {filters.types.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
+            {filters.types.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
             {filters.types.length >= 3 ? (
               <Badge>{t('cases:case_detail.history.nb_selected', { count: filters.types.length })}</Badge>
             ) : (
@@ -100,7 +100,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
           <ButtonV2 variant="secondary">
             <Icon icon="add-circle" className="size-3.5" />
             <span>Date</span>
-            {filters.startDate || filters.endDate ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
+            {filters.startDate || filters.endDate ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
             {filters.startDate ? (
               <Badge>
                 {t('common:from', {

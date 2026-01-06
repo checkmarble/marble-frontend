@@ -12,9 +12,9 @@ export function ClientTagsList({ tagsIds }: { tagsIds: string[] }) {
         return (
           <div
             key={tagId}
-            className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-[3px]"
+            className="bg-purple-background flex size-fit flex-row items-center gap-2 rounded-full px-2 py-[3px]"
           >
-            <span className="text-purple-65 text-xs font-normal">{tag.name}</span>
+            <span className="text-purple-primary text-xs font-normal">{tag.name}</span>
           </div>
         );
       })}

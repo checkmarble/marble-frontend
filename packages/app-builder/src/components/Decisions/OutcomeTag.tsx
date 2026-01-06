@@ -28,29 +28,32 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
 
   return (
     <div
-      className={clsx('flex flex-1 flex-col items-center justify-center gap-2 rounded-lg p-2', {
-        'bg-green-94': color === 'green',
-        'bg-yellow-90': color === 'yellow',
-        'bg-orange-95': color === 'orange',
-        'bg-red-95': color === 'red',
-      })}
+      className={clsx(
+        'flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-transparent p-2',
+        {
+          'bg-green-background-light dark:bg-transparent dark:border-green-primary': color === 'green',
+          'bg-yellow-background dark:bg-transparent dark:border-yellow-primary': color === 'yellow',
+          'bg-orange-background-light dark:bg-transparent dark:border-orange-primary': color === 'orange',
+          'bg-red-95 dark:bg-transparent dark:border-red-primary': color === 'red',
+        },
+      )}
     >
       <div
         className={clsx('text-s', {
-          'text-green-68': color === 'green',
-          'text-yellow-75': color === 'yellow',
-          'text-orange-50': color === 'orange',
-          'text-red-74': color === 'red',
+          'text-green-primary': color === 'green',
+          'text-yellow-secondary': color === 'yellow',
+          'text-orange-primary': color === 'orange',
+          'text-red-disabled': color === 'red',
         })}
       >
         {t('decisions:outcome')}
       </div>
       <div
         className={clsx('text-l text-center font-semibold first-letter:capitalize', {
-          'text-green-38': color === 'green',
-          'text-yellow-50': color === 'yellow',
-          'text-orange-50': color === 'orange',
-          'text-red-47': color === 'red',
+          'text-green-primary': color === 'green',
+          'text-yellow-primary': color === 'yellow',
+          'text-orange-primary': color === 'orange',
+          'text-red-primary': color === 'red',
         })}
       >
         {t(tKey)}
@@ -59,7 +62,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
   );
 }
 
-export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0', {
+export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
   variants: {
     size: {
       sm: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
@@ -100,30 +103,30 @@ export const OutcomeBadge = ({
           className,
           showBackground &&
             match(outcome)
-              .with('approve', () => 'bg-green-94')
-              .with('decline', () => 'bg-red-95')
-              .with('review', () => 'bg-yellow-90')
-              .with('unknown', () => 'bg-grey-95')
+              .with('approve', () => 'bg-green-background-light dark:bg-transparent dark:border-green-primary')
+              .with('decline', () => 'bg-red-background dark:bg-transparent dark:border-red-primary')
+              .with('review', () => 'bg-yellow-background dark:bg-transparent dark:border-yellow-primary')
+              .with('unknown', () => 'bg-grey-background dark:bg-transparent dark:border-grey-placeholder')
               .with('block_and_review', () =>
                 match(reviewStatus)
-                  .with('approve', () => 'bg-green-94')
-                  .with('decline', () => 'bg-red-95')
-                  .otherwise(() => 'bg-orange-95'),
+                  .with('approve', () => 'bg-green-background-light dark:bg-transparent dark:border-green-primary')
+                  .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-primary')
+                  .otherwise(() => 'bg-orange-background-light dark:bg-transparent dark:border-orange-border'),
               )
               .exhaustive(),
         ),
       })}
     >
       {match(outcome)
-        .with('approve', () => <Icon icon="accepted" className="text-green-38 size-4" />)
-        .with('decline', () => <Icon icon="denied" className="text-red-47 size-4" />)
-        .with('review', () => <div className={cn('size-3.5 rounded-full border-2 border-orange-50')} />)
-        .with('unknown', () => <div className="border-grey-50 size-4 rounded-full border-2" />)
+        .with('approve', () => <Icon icon="accepted" className="text-green-primary size-4" />)
+        .with('decline', () => <Icon icon="denied" className="text-red-primary size-4" />)
+        .with('review', () => <div className={cn('size-3.5 rounded-full border-2 border-yellow-primary')} />)
+        .with('unknown', () => <div className="border-grey-placeholder size-4 rounded-full border-2" />)
         .with('block_and_review', () =>
           match(reviewStatus)
-            .with('approve', () => <Icon icon="manually_accepted" className="text-green-38 size-4" />)
-            .with('decline', () => <Icon icon="manually_denied" className="text-red-47 size-4" />)
-            .otherwise(() => <Icon icon="block_and_review" className="size-4 text-orange-50" />),
+            .with('approve', () => <Icon icon="manually_accepted" className="text-green-primary size-4" />)
+            .with('decline', () => <Icon icon="manually_denied" className="text-red-primary size-4" />)
+            .otherwise(() => <Icon icon="block_and_review" className="size-4 text-orange-primary" />),
         )
         .exhaustive()}
       {showText ? (
@@ -132,15 +135,15 @@ export const OutcomeBadge = ({
             'text-xs font-medium',
             showBackground &&
               match(outcome)
-                .with('approve', () => 'text-green-38')
-                .with('decline', () => 'text-red-47')
-                .with('review', () => 'text-orange-50')
-                .with('unknown', () => 'text-grey-50')
+                .with('approve', () => 'text-green-primary')
+                .with('decline', () => 'text-red-primary')
+                .with('review', () => 'text-yellow-primary')
+                .with('unknown', () => 'text-grey-placeholder')
                 .with('block_and_review', () =>
                   match(reviewStatus)
-                    .with('approve', () => 'text-green-38')
-                    .with('decline', () => 'text-red-47')
-                    .otherwise(() => 'text-orange-50'),
+                    .with('approve', () => 'text-green-primary')
+                    .with('decline', () => 'text-red-primary')
+                    .otherwise(() => 'text-orange-primary'),
                 )
                 .exhaustive(),
           )}

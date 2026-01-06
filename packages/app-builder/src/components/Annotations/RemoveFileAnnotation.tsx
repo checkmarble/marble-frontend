@@ -36,7 +36,7 @@ export function RemoveFileAnnotation({ annotation, onClose, onDelete }: RemoveFi
             t={t}
             i18nKey="cases:annotations.delete_files.title"
             components={{
-              Filenames: <span className="text-purple-65" />,
+              Filenames: <span className="text-purple-primary" />,
             }}
             values={{
               filenames,

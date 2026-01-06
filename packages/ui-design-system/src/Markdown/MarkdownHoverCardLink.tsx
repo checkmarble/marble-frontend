@@ -20,7 +20,7 @@ export function MarkdownHoverCardLink({
       <HoverCardTrigger>
         <a
           href={href}
-          className="text-purple-65 hover:bg-purple-96 hover:text-grey-50 text-underline underline-offset-4 decoration-purple-65"
+          className="text-purple-primary hover:bg-purple-background hover:text-grey-placeholder text-underline underline-offset-4 decoration-purple-primary"
         >
           {children}
         </a>
@@ -31,12 +31,12 @@ export function MarkdownHoverCardLink({
           align="start"
           alignOffset={-16}
           sideOffset={12}
-          className="bg-grey-100 p-4 flex flex-col gap-2 items-center border border-grey-90 rounded-sm shadow-md"
+          className="bg-surface-card p-4 flex flex-col gap-2 items-center border border-grey-border rounded-sm shadow-md"
         >
-          <HoverCardArrow className="fill-grey-100" />
+          <HoverCardArrow className="fill-grey-white" />
 
           <p className="text-m font-medium">{title}</p>
-          <a href={href} className="text-s text-purple-65">
+          <a href={href} className="text-s text-purple-primary">
             {href}
           </a>
         </HoverCardContent>

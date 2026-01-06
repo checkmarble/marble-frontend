@@ -14,7 +14,7 @@ export const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive
         ref={ref}
         htmlFor={name}
         className={cn(className, {
-          'text-red-47': valid !== undefined && !valid,
+          'text-red-primary': valid !== undefined && !valid,
         })}
         {...props}
       />

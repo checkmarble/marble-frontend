@@ -60,7 +60,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
         <PanelContent>
           <form id="ai-config-panel-form" className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
             {/* Section: Informations générales */}
-            <div className="bg-grey-background-light border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
+            <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
               <span className="text-s font-medium">{t('cases:ai_settings.general.title')}</span>
               <form.Field name="caseReviewSetting.orgDescription">
                 {(field) => (
@@ -76,7 +76,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                           </span>
                         }
                       >
-                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                       </Tooltip.Default>
                     </FormLabel>
                     <FormTextArea
@@ -114,7 +114,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                           </span>
                         }
                       >
-                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                       </Tooltip.Default>
                     </FormLabel>
                     <FormTextArea
@@ -144,7 +144,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                           <span className="font-normal">{t('cases:ai_settings.general.language.field.tooltip')}</span>
                         }
                       >
-                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                       </Tooltip.Default>
                     </FormLabel>
                     <LanguageDropdown
@@ -158,7 +158,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             </div>
 
             {/* Section: IA (KYC Enrichment) */}
-            <div className="bg-grey-background-light border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
+            <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
               <span className="text-s font-medium">{t('cases:overview.panel.ai_config.kyc_enrichment')}</span>
               <form.Field name="kycEnrichmentSetting.enabled">
                 {(field) => (
@@ -170,13 +170,13 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                       disabled={readOnly}
                     />
                     <div className="flex flex-col gap-v2-xs">
-                      <div className="text-s text-grey-50">
+                      <div className="text-s text-grey-primary">
                         <Trans
                           t={t}
                           i18nKey="cases:ai_settings.kyc_enrichment.enabled.field.label"
                           ns="cases"
                           components={{
-                            bold: <span className="font-semibold" />,
+                            bold: <span className="font-semibold text-grey-primary" />,
                           }}
                         />
                       </div>
@@ -205,7 +205,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                           </span>
                         }
                       >
-                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
                       </Tooltip.Default>
                     </FormLabel>
                     <FormTextArea
@@ -250,7 +250,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                                   type="button"
                                   onClick={() => domainsField.removeValue(idx)}
                                 >
-                                  <Icon icon="delete" className="size-4 text-purple-65" />
+                                  <Icon icon="delete" className="size-4 text-purple-primary" />
                                 </ButtonV2>
                               )}
                             </div>

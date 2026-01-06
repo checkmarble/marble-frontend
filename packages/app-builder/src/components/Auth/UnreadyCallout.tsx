@@ -14,7 +14,7 @@ export function UnreadyCallout({ didMigrationsRun }: { didMigrationsRun: boolean
           {t('auth:sign_up.read_more')}
           <a
             href="https://github.com/checkmarble/marble/blob/main/installation/first_connection.md"
-            className="text-purple-65 px-[1ch] underline"
+            className="text-purple-primary px-[1ch] underline"
           >
             {t('auth:sign_up.first_connection_guide')}
           </a>

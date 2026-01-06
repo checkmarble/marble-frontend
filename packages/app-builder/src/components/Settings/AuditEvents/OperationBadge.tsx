@@ -16,16 +16,18 @@ const operationToTranslationKey = {
 export const OperationBadge: FunctionComponent<OperationBadgeProps> = ({ operation }) => {
   const { t } = useTranslation(['settings']);
 
-  if (!operation) return <span className="text-grey-50">-</span>;
+  if (!operation) return <span className="text-grey-placeholder">-</span>;
 
   const colorClass = {
-    INSERT: 'bg-green-94 text-green-38',
-    UPDATE: 'bg-yellow-94 text-yellow-50',
-    DELETE: 'bg-red-95 text-red-47',
+    INSERT:
+      'bg-green-background-light text-green-primary dark:bg-transparent dark:border-green-light dark:text-green-light',
+    UPDATE:
+      'bg-yellow-background-light text-yellow-primary dark:bg-transparent dark:border-yellow-light dark:text-yellow-light',
+    DELETE: 'bg-red-background-light text-red-primary dark:bg-transparent dark:border-red-light dark:text-red-light',
   }[operation];
 
   return (
-    <span className={clsx('rounded-sm px-2 py-0.5 text-xs font-medium', colorClass)}>
+    <span className={clsx('rounded-sm px-2 py-0.5 text-xs font-medium dark:border', colorClass)}>
       {t(operationToTranslationKey[operation])}
     </span>
   );

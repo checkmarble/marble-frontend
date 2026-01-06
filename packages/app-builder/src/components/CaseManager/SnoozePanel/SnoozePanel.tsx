@@ -84,13 +84,13 @@ export const SnoozePanel = ({
                 value={pivotValue}
               >
                 {table && client ? (
-                  <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
+                  <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                     <div className="capitalize font-semibold">{table.name}</div>
                     <PivotObjectDetails tableModel={table} dataModel={dataModelWithTableOptions} pivotObject={client} />
                   </div>
                 ) : null}
-                <div className="border-grey-90 bg-grey-100 relative w-full rounded-lg border">
-                  <div className="text-2xs text-grey-50 relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
+                <div className="border-grey-border bg-surface-card relative w-full rounded-lg border">
+                  <div className="text-2xs text-grey-placeholder relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
                     <span className="inline-flex items-center gap-2 p-2">
                       <span>{t('cases:decisions.rule.snooze')}</span>
                       {entitlements.ruleSnoozes !== 'allowed' ? (
@@ -115,7 +115,7 @@ export const SnoozePanel = ({
                   </div>
                   {rules.map((r) => {
                     const formattedHitAt = (
-                      <span className={cn('text-grey-50 text-xs', { 'opacity-30': r.isSnoozed })}>
+                      <span className={cn('text-grey-placeholder text-xs', { 'opacity-30': r.isSnoozed })}>
                         {formatDateTime(r.hitAt, { dateStyle: 'short' })}
                       </span>
                     );
@@ -123,14 +123,14 @@ export const SnoozePanel = ({
                     return (
                       <div
                         key={r.ruleId}
-                        className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] items-center border-t transition-colors"
+                        className="border-grey-border hover:bg-purple-background-light grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] items-center border-t transition-colors"
                       >
                         <div className="flex min-h-full items-center justify-center p-2">
                           <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>
                             <Button
                               variant="secondary"
                               size="small"
-                              className={cn({ 'bg-purple-96': r.isSnoozed })}
+                              className={cn({ 'bg-purple-background': r.isSnoozed })}
                               disabled={
                                 r.isSnoozed ||
                                 (entitlements.ruleSnoozes !== 'allowed' && entitlements.ruleSnoozes !== 'test')
@@ -141,12 +141,12 @@ export const SnoozePanel = ({
                             </Button>
                           </AddRuleSnooze>
                         </div>
-                        <div className="border-grey-90 flex min-h-full items-center justify-center border-x p-2">
+                        <div className="border-grey-border flex min-h-full items-center justify-center border-x p-2">
                           {formattedHitAt}
                         </div>
-                        <div className="border-grey-90 flex min-h-full items-center justify-between border-r p-2">
+                        <div className="border-grey-border flex min-h-full items-center justify-between border-r p-2">
                           <span
-                            className={cn('text-grey-00 text-xs font-normal', {
+                            className={cn('text-grey-primary text-xs font-normal', {
                               'opacity-30': r.isSnoozed,
                             })}
                           >
@@ -157,10 +157,10 @@ export const SnoozePanel = ({
                             className={cn({ 'opacity-30': r.isSnoozed })}
                           />
                         </div>
-                        <div className="border-grey-90 flex min-h-full items-center border-r p-2">
+                        <div className="border-grey-border flex min-h-full items-center border-r p-2">
                           <span className={cn('text-xs', { 'opacity-30': r.isSnoozed })}>{r.description}</span>
                         </div>
-                        <div className="border-grey-90 flex min-h-full items-center border-r p-2">
+                        <div className="border-grey-border flex min-h-full items-center border-r p-2">
                           {r.ruleGroup ? (
                             <RuleGroup className={cn({ 'opacity-30': r.isSnoozed })} ruleGroup={r.ruleGroup} />
                           ) : null}

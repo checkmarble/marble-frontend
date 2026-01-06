@@ -186,7 +186,7 @@ function ReviewDecisionContent({
                       <div className="flex flex-col gap-2">
                         <ReviewStatusTag border="square" size="big" className="w-fit" reviewStatus={reviewStatus} />
                         {disabled && reviewStatus === 'approve' ? (
-                          <span className="text-red-43 text-xs">
+                          <span className="text-red-hover text-xs">
                             {t('cases:case_detail.review_decision.warning_approve')}
                           </span>
                         ) : null}

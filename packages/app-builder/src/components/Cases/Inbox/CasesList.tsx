@@ -55,7 +55,7 @@ export function CasesList({
   }, [casesQuery.data?.pages[currentPage]?.items]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-surface-card">
       <div className="w-full grid grid-cols-[0px_auto_1fr_auto_auto_auto_auto] border border-grey-border rounded-v2-md">
         <div className="grid grid-cols-subgrid col-span-full items-center group/table-row not-last:border-b border-grey-border">
           <HeaderCell className="ps-v2-xl relative col-span-2">
@@ -84,7 +84,7 @@ export function CasesList({
         </div>
         {cases.map((caseItem, index) => (
           <div
-            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-98 cursor-pointer h-18"
+            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-background-light cursor-pointer h-18"
             key={caseItem.id}
             onClick={handleRowClick}
           >
@@ -97,16 +97,16 @@ export function CasesList({
               </MultiSelect.Item>
               <CaseStatusBadge status={caseItem.status} size="large" showText={false} />
             </div>
-            <div className="p-v2-md group-hover/table-row:text-purple-65 group-hover/table-row:underline">
+            <div className="p-v2-md group-hover/table-row:text-purple-primary group-hover/table-row:underline">
               {caseItem.name}
             </div>
             <div className="p-v2-md">
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (
                 <span
                   className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
-                    'border-red-47 text-red-47': caseItem.outcome === 'confirmed_risk',
-                    'border-green-38 text-green-38': caseItem.outcome === 'valuable_alert',
-                    'border-grey-50 text-grey-50': caseItem.outcome === 'false_positive',
+                    'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
+                    'border-green-primary text-green-primary': caseItem.outcome === 'valuable_alert',
+                    'border-grey-placeholder text-grey-placeholder': caseItem.outcome === 'false_positive',
                   })}
                 >
                   {t(`cases:case.outcome.${caseItem.outcome}`)}

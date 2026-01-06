@@ -101,7 +101,7 @@ function EditionRootOrGroup({ isFirst, path, removeNode }: EditionRootOrGroupPro
         <>
           <LogicalOperatorLabel operator="or" className="uppercase" type="contained" />
           <div className="col-span-2 flex flex-1 items-center">
-            <div className="bg-grey-90 h-px w-full" />
+            <div className="bg-grey-border h-px w-full" />
           </div>
         </>
       ) : null}

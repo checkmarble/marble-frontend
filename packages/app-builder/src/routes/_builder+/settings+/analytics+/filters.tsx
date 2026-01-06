@@ -236,7 +236,7 @@ export default function Filters() {
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {tableRows.map((row) => (
-                    <Table.Row key={row.id} row={row} className="hover:bg-purple-98 group" />
+                    <Table.Row key={row.id} row={row} className="hover:bg-purple-background-light group" />
                   ))}
                 </Table.Body>
               </Table.Container>
@@ -250,7 +250,7 @@ export default function Filters() {
               {t('settings:filters.delete_filter.content')}
             </Modal.Description>
             <Modal.Footer>
-              <div className="bg-grey-98 flex justify-end gap-3 border-t p-4">
+              <div className="bg-grey-background-light flex justify-end gap-3 border-t p-4">
                 <ButtonV2 variant="secondary" onClick={() => setIsConfirmOpen(false)}>
                   {t('common:cancel')}
                 </ButtonV2>

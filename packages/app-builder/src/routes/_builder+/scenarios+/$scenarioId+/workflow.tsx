@@ -84,7 +84,7 @@ function WorkflowContent() {
     })
     .with({ isLoading: true }, () => {
       return (
-        <div className="flex items-center justify-center h-full w-full text-purple-60 gap-2">
+        <div className="flex items-center justify-center h-full w-full text-purple-hover gap-2">
           <Icon icon="spinner" className="size-10 animate-spin" />
           {t('common:loading')}
         </div>

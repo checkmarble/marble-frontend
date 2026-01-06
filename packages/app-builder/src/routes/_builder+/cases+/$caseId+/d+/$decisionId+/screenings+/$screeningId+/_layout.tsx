@@ -51,7 +51,7 @@ export const handle = {
           <BreadCrumbLink to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })} isLast={isLast}>
             <span className="line-clamp-2 text-start">{t('cases:case.page_title')}</span>
           </BreadCrumbLink>
-          <span className="text-s border-grey-90 text-grey-50 inline-flex gap-2 rounded-sm border px-2 font-normal">
+          <span className="text-s border-grey-border text-grey-placeholder inline-flex gap-2 rounded-sm border px-2 font-normal">
             <span className="font-medium">ID</span>
             <span className="text-rtl max-w-20 truncate">{caseDetail.id}</span>
           </span>
@@ -149,7 +149,7 @@ export default function CaseSanctionReviewPage() {
         <Page.Container>
           <Page.Content className="max-w-(--breakpoint-xl)">
             <nav>
-              <ul className="bg-grey-100 border-grey-90 inline-flex flex-row gap-2 rounded-lg border p-1">
+              <ul className="bg-surface-card border-grey-border inline-flex flex-row gap-2 rounded-lg border p-1">
                 <li>
                   <TabLink
                     labelTKey="navigation:case_manager.hits"
@@ -169,7 +169,7 @@ export default function CaseSanctionReviewPage() {
             <Outlet />
           </Page.Content>
         </Page.Container>
-        <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center justify-end gap-4 border-t p-4">
+        <div className="bg-surface-card border-t-grey-border flex shrink-0 flex-row items-center justify-end gap-4 border-t p-4">
           <UploadFile uploadFileEndpoint={uploadScreeningFile}>
             <Button className="h-14 w-fit whitespace-nowrap" variant="secondary">
               <Icon icon="attachment" className="size-5" />

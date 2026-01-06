@@ -54,12 +54,12 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
 
       {match(aiSettingsQuery)
         .with({ isPending: true }, () => (
-          <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex items-center justify-center min-h-[100px]">
+          <div className="border border-grey-border rounded-v2-lg p-v2-md bg-surface-card flex items-center justify-center min-h-[100px]">
             <Spinner className="size-6" />
           </div>
         ))
         .with({ isError: true }, () => (
-          <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex items-center justify-center min-h-[100px] text-red-47">
+          <div className="border border-grey-border rounded-v2-lg p-v2-md bg-surface-card flex items-center justify-center min-h-[100px] text-red-primary">
             {t('cases:overview.config.error_loading')}
           </div>
         ))

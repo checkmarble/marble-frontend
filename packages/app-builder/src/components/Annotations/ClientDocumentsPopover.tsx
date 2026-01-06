@@ -86,7 +86,7 @@ export function ClientDocumentsPopover({
               <button type="button" className="flex items-center justify-between gap-9 text-left" {...getRootProps()}>
                 <div className="flex flex-col">
                   <div className="text-r flex items-center gap-2">{t('cases:annotations.documents.add_file')}</div>
-                  <span className="text-grey-50">
+                  <span className="text-grey-placeholder">
                     {t('cases:annotations.documents.upload_file')}: jpg, png, pdf, zip, doc, docx, xls, xlsx
                   </span>
                 </div>
@@ -98,12 +98,12 @@ export function ClientDocumentsPopover({
                     {field.state.value.map((file) => (
                       <div
                         key={file.name}
-                        className="border-grey-90 flex max-w-24 items-center gap-1 rounded-sm border px-1.5 py-0.5"
+                        className="border-grey-border flex max-w-24 items-center gap-1 rounded-sm border px-1.5 py-0.5"
                       >
                         <span className="truncate text-xs font-medium">{file.name}</span>
                         <Icon
                           icon="cross"
-                          className="text-grey-50 hover:text-grey-00 size-5 shrink-0 cursor-pointer"
+                          className="text-grey-placeholder hover:text-grey-primary size-5 shrink-0 cursor-pointer"
                           onClick={(e) => {
                             e.preventDefault();
                             field.handleChange((prev) => toggle(prev, file));
@@ -131,22 +131,22 @@ export function ClientDocumentsPopover({
       </form>
       {documents.length > 0 ? (
         <>
-          <div className="bg-grey-90 h-px w-full" />
+          <div className="bg-grey-border h-px w-full" />
           <div className="flex flex-col gap-1 overflow-y-scroll px-2 py-1">
             {documents.map((document) => {
               const files = document.payload.files;
 
               return (
                 <div key={document.id} className="flex flex-col">
-                  <div className="has-[button[data-delete]:hover]:bg-red-95 relative z-0 flex flex-col rounded-sm">
+                  <div className="has-[button[data-delete]:hover]:bg-red-background relative z-0 flex flex-col rounded-sm">
                     {files.map((file, idx) => (
                       <div key={file.id} className="z-10 grid grid-cols-[auto_1fr_auto_20px] gap-2 p-2">
-                        <Icon icon="attachment" className="text-grey-50 size-5" />
+                        <Icon icon="attachment" className="text-grey-placeholder size-5" />
                         <span className="truncate">{file.filename}</span>
                         <AnnotationFileDownload annotationId={document.id} fileId={file.id} />
                         {idx === 0 ? (
                           <button data-delete className="size-5" onClick={() => setAnnotationToDelete(document)}>
-                            <Icon icon="delete" className="text-red-47 size-5" />
+                            <Icon icon="delete" className="text-red-primary size-5" />
                           </button>
                         ) : null}
                       </div>

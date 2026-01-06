@@ -52,7 +52,9 @@ export const handle = {
           >
             <p className="text-s flex flex-row gap-1 font-semibold">
               <span className="capitalize">{currentFormattedVersion}</span>
-              {currentFormattedLive ? <span className="text-purple-65 capitalize">{currentFormattedLive}</span> : null}
+              {currentFormattedLive ? (
+                <span className="text-purple-primary capitalize">{currentFormattedLive}</span>
+              ) : null}
             </p>
           </BreadCrumbLink>
         );
@@ -192,12 +194,12 @@ export function VersionSelect({
 
   return (
     <ScenarioIterationMenu labelledScenarioIteration={labelledScenarioIteration}>
-      <MenuButton className="text-s text-grey-00 border-grey-90 focus:border-purple-65 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-hidden">
+      <MenuButton className="text-s text-grey-primary border-grey-border focus:border-purple-primary flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-hidden">
         <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
-          <span className="text-grey-00 capitalize">{currentFormattedVersion}</span>
-          {currentFormattedLive ? <span className="text-purple-65 capitalize">{currentFormattedLive}</span> : null}
+          <span className="text-grey-primary capitalize">{currentFormattedVersion}</span>
+          {currentFormattedLive ? <span className="text-purple-primary capitalize">{currentFormattedLive}</span> : null}
         </p>
-        <Icon aria-hidden icon="arrow-2-down" className="text-grey-00 size-6 shrink-0" />
+        <Icon aria-hidden icon="arrow-2-down" className="text-grey-primary size-6 shrink-0" />
       </MenuButton>
     </ScenarioIterationMenu>
   );

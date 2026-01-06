@@ -52,11 +52,11 @@ export function InboxSelector({
         <MenuCommand.Trigger>
           <MenuCommand.SelectButton>
             {isAnyInboxSelected ? (
-              <span className="text-grey-00">{t('workflows:action.inbox.any_available')}</span>
+              <span className="text-grey-primary">{t('workflows:action.inbox.any_available')}</span>
             ) : selectedInbox ? (
-              <span className="text-grey-00">{selectedInbox.name}</span>
+              <span className="text-grey-primary">{selectedInbox.name}</span>
             ) : (
-              <span className="text-grey-80">{t('workflows:detail_panel.inbox.placeholder')}</span>
+              <span className="text-grey-disabled">{t('workflows:detail_panel.inbox.placeholder')}</span>
             )}
           </MenuCommand.SelectButton>
         </MenuCommand.Trigger>

@@ -89,21 +89,29 @@ function ScenarioIterationContent({ labelledScenarioIteration, searchValue }: Sc
       <MenuContent>
         <div className="flex flex-col gap-2 overflow-y-auto p-2">
           {!matches.length ? (
-            <div className="text-grey-80 w-full text-center">{t('common:help_center.no_results')}</div>
+            <div className="text-grey-disabled w-full text-center">{t('common:help_center.no_results')}</div>
           ) : null}
           {matches.map((iteration) => (
             <MenuItem
               key={iteration.id}
-              className="border-grey-95 bg-grey-100 data-active-item:bg-purple-98 data-active-item:border-purple-65 flex scroll-my-2 flex-row items-center justify-between gap-2 rounded-sm border p-2 outline-hidden"
+              className="border-grey-background bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-2 flex-row items-center justify-between gap-2 rounded-sm border p-2 outline-hidden"
               render={<Link to={iteration.linkTo} />}
             >
               <span className="text-s flex flex-row gap-1 font-semibold">
-                <Highlight className="text-grey-00 capitalize" query={searchValue} text={iteration.formattedVersion} />
+                <Highlight
+                  className="text-grey-primary capitalize"
+                  query={searchValue}
+                  text={iteration.formattedVersion}
+                />
                 {iteration.formattedLive ? (
-                  <span className="text-purple-65 capitalize">{iteration.formattedLive}</span>
+                  <span className="text-purple-primary capitalize">{iteration.formattedLive}</span>
                 ) : null}
               </span>
-              <Highlight className="text-grey-80 text-xs" query={searchValue} text={iteration.formattedUpdatedAt} />
+              <Highlight
+                className="text-grey-disabled text-xs"
+                query={searchValue}
+                text={iteration.formattedUpdatedAt}
+              />
             </MenuItem>
           ))}
         </div>

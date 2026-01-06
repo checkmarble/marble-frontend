@@ -40,7 +40,7 @@ export function SelectLinkPath({
   const [open, onOpenChange] = useState(false);
   return (
     <form onSubmit={handleSubmit(form)}>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <form.Field name="pivot">
           {(field) => (
             <div className="flex flex-col gap-2">
@@ -75,7 +75,7 @@ export function SelectLinkPath({
                               onOpenChange(false);
                             }}
                           >
-                            <span className="text-s text-grey-00 font-medium">
+                            <span className="text-s text-grey-primary font-medium">
                               {option.displayPath ?? option.displayValue}
                             </span>
                           </MenuCommand.Item>

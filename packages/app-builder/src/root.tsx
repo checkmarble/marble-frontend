@@ -16,6 +16,7 @@ import {
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +33,7 @@ import { AgnosticNavigationContext } from './contexts/AgnosticNavigationContext'
 import { AppConfigContext } from './contexts/AppConfigContext';
 import { FormatContext } from './contexts/FormatContext';
 import { LoaderRevalidatorContext } from './contexts/LoaderRevalidatorContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { HeaderEntry } from './core/middleware-types';
 import { createServerFn, data } from './core/requests';
 import { useSegmentPageTracking } from './services/segment';
@@ -79,6 +81,7 @@ export const loader = createServerFn([], async function loader({ request, contex
   ]);
 
   const timezone = getPreferencesCookie(request, 'timezone') ?? 'UTC';
+  const theme = getPreferencesCookie(request, 'theme') ?? 'light';
 
   const toastMessage = getToastMessage(toastSession);
 
@@ -95,7 +98,7 @@ export const loader = createServerFn([], async function loader({ request, contex
 
   const segmentScript = !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined;
 
-  return data({ ENV, locale, timezone, csrf: csrfToken, toastMessage, segmentScript, appConfig }, headers);
+  return data({ ENV, locale, timezone, theme, csrf: csrfToken, toastMessage, segmentScript, appConfig }, headers);
 });
 
 export const handle = {
@@ -126,7 +129,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   useSegmentPageTracking();
 
   return (
-    <html lang={loaderData?.locale ?? 'en'} dir={i18n.dir()}>
+    <html lang={loaderData?.locale ?? 'en'} dir={i18n.dir()} className={clsx(loaderData?.theme === 'dark' && 'dark')}>
       <head>
         <Meta />
         {/* <script crossOrigin="anonymous" src="//unpkg.com/react-scan/dist/auto.global.js" /> */}
@@ -134,14 +137,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {loaderData?.segmentScript ? <SegmentScript nonce={nonce} script={loaderData.segmentScript} /> : null}
         <ExternalScripts />
       </head>
-      <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased">
+      <body className="selection:text-grey-white selection:bg-purple-primary h-screen w-full overflow-hidden antialiased text-grey-primary">
         <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
           <AgnosticNavigationContext.Provider value={navigate}>
             <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
               <FormatContext.Provider
                 value={{ locale: loaderData?.locale ?? 'en-GB', timezone: loaderData?.timezone ?? 'UTC' }}
               >
-                <Tooltip.Provider>{children}</Tooltip.Provider>
+                <ThemeProvider defaultTheme={loaderData?.theme}>
+                  <Tooltip.Provider>{children}</Tooltip.Provider>
+                </ThemeProvider>
               </FormatContext.Provider>
             </AuthenticityTokenProvider>
             <script
@@ -172,7 +177,7 @@ export function ErrorBoundary() {
   captureRemixErrorBoundaryError(error);
 
   return (
-    <div className="from-purple-96 to-grey-98 flex size-full flex-col items-center bg-linear-to-r">
+    <div className="from-purple-background to-grey-background-light flex size-full flex-col items-center bg-linear-to-r">
       <div className="flex size-full flex-col items-center bg-no-repeat">
         <div className="flex h-full max-h-80 flex-col justify-center">
           <Link to={getRoute('/sign-in')}>
@@ -184,7 +189,7 @@ export function ErrorBoundary() {
             />
           </Link>
         </div>
-        <div className="bg-grey-100 mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
+        <div className="bg-surface-card mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
           <ErrorComponent error={error} />
         </div>
       </div>

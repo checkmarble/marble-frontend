@@ -75,7 +75,7 @@ export function PanelContainer({ children, className, size = 'md' }: PanelContai
     <div
       ref={panelRef}
       className={cn(
-        'fixed inset-y-0 right-0 bg-grey-100 border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
+        'fixed inset-y-0 right-0 bg-surface-card border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
         sizeClasses[size],
         className,
       )}
@@ -97,10 +97,10 @@ export function PanelHeader({ children, className }: PanelHeaderProps) {
 
   return (
     <div className={cn('flex items-center justify-between pb-v2-md', className)}>
-      <h2 className="text-l font-bold text-grey-00">{children}</h2>
+      <h2 className="text-l font-bold text-grey-primary">{children}</h2>
       <Icon
         icon="cross"
-        className="size-5 cursor-pointer text-grey-50 hover:text-grey-00"
+        className="size-5 cursor-pointer text-grey-placeholder hover:text-grey-primary"
         onClick={closePanel}
         aria-label="Close panel"
       />

@@ -8,14 +8,14 @@ import { MenuCommand } from 'ui-design-system';
 export const operatorContainerClassnames = cva(
   [
     'flex h-10 min-w-[40px] items-center justify-between outline-hidden gap-2 rounded-sm px-2 border',
-    'bg-grey-100 disabled:border-grey-98 disabled:bg-grey-98',
-    'radix-state-open:border-purple-65  radix-state-open:bg-purple-98',
+    'bg-surface-card disabled:border-grey-background-light disabled:bg-grey-background-light',
+    'radix-state-open:border-purple-primary  radix-state-open:bg-purple-background-light',
   ],
   {
     variants: {
       validationStatus: {
-        valid: 'border-grey-90 focus:border-purple-65',
-        error: 'border-red-47 focus:border-purple-65',
+        valid: 'border-grey-border focus:border-purple-primary',
+        error: 'border-red-primary focus:border-purple-primary',
       },
     },
     defaultVariants: {
@@ -49,7 +49,7 @@ export function OperatorSelect<Op extends string>({
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
         <button type="button" className={operatorContainerClassnames({ validationStatus })}>
-          <span className="text-s text-grey-00 w-full text-center font-medium">
+          <span className="text-s text-grey-primary w-full text-center font-medium">
             {_value ? getOperatorName(t, _value, isFilter) : '...'}
           </span>
           {hideArrow ? null : <MenuCommand.Arrow />}

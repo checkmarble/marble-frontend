@@ -32,7 +32,7 @@ export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
           {matches.map((iteration) => {
             return (
               <SelectWithCombobox.ComboboxItem key={iteration.id} value={iteration.id} className="align-baseline">
-                <span className="text-grey-00 text-s">{`V${iteration.version}`}</span>
+                <span className="text-grey-primary text-s">{`V${iteration.version}`}</span>
               </SelectWithCombobox.ComboboxItem>
             );
           })}

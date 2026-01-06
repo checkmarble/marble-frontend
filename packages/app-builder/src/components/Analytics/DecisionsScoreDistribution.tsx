@@ -81,7 +81,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
   const { t } = useTranslation(['common', 'analytics']);
 
   return (
-    <div className="bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:decisions_score_distribution.title')}</h2>
         <ButtonV2
@@ -97,10 +97,10 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
 
       <div className="min-h-[500px]">
         <div className="w-full">
-          <div className="bg-white border border-grey-90 rounded-lg p-v2-md mt-v2-sm relative">
+          <div className="bg-surface-card border border-grey-border rounded-lg p-v2-md mt-v2-sm relative">
             {query.isFetching ? <GraphSpinnerOverlay /> : null}
             {query.isError ? (
-              <div className="absolute inset-0 z-5 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
+              <div className="absolute inset-0 z-5 flex items-center justify-center rounded-lg bg-grey-background-light/80 hover:bg-grey-background/80">
                 <span className="text-s text-grey-60">{t('common:global_error')}</span>
               </div>
             ) : null}
@@ -200,9 +200,9 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
               return null;
             }
             return (
-              <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+              <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
                 <div className="flex items-center gap-v2-sm">
-                  <strong className="text-grey-00 font-semibold">{`Score: ${point.data.x.toFixed(0)}->${(point.data.x + bucketSize).toFixed(0)}`}</strong>
+                  <strong className="text-grey-primary font-semibold">{`Score: ${point.data.x.toFixed(0)}->${(point.data.x + bucketSize).toFixed(0)}`}</strong>
                 </div>
                 <div className="text-s text-grey-60">{`${point.data.y.toFixed(2)} %`}</div>
               </div>

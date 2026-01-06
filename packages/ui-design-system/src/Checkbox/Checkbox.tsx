@@ -8,8 +8,14 @@ export type { CheckedState } from '@radix-ui/react-checkbox';
 const checkbox = cva(
   [
     'flex shrink-0 items-center justify-center rounded-sm border outline-hidden',
-    'bg-grey-100 hover:bg-purple-98 group-hover/checkbox-parent:bg-purple-98 enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-65',
-    'disabled:bg-grey-90 disabled:border-grey-80 disabled:radix-state-checked:border disabled:radix-state-checked:bg-grey-90 disabled:cursor-not-allowed',
+    // Light mode
+    'bg-grey-white hover:bg-purple-background-light group-hover/checkbox-parent:bg-purple-background-light',
+    'enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-primary enabled:radix-state-checked:hover:bg-purple-hover',
+    'disabled:bg-grey-background disabled:border-grey-border disabled:radix-state-checked:border-none disabled:radix-state-checked:bg-grey-disabled disabled:cursor-not-allowed',
+    // Dark mode
+    'dark:bg-grey-background dark:hover:bg-grey-background-light dark:group-hover/checkbox-parent:bg-grey-background-light',
+    'dark:enabled:radix-state-checked:bg-purple-primary dark:enabled:radix-state-checked:hover:bg-purple-hover',
+    'dark:disabled:bg-grey-background dark:disabled:border-purple-disabled dark:disabled:radix-state-checked:bg-purple-disabled',
   ],
   {
     variants: {
@@ -18,8 +24,8 @@ const checkbox = cva(
         default: 'size-6',
       },
       color: {
-        purple: 'border-purple-82 focus:border-purple-65',
-        red: 'focus:border-red-43 border-red-47',
+        purple: 'border-purple-primary focus:border-purple-primary dark:border-purple-primary',
+        red: 'focus:border-red-hover border-red-primary',
       },
       circle: {
         true: 'rounded-full',
@@ -50,11 +56,20 @@ export const Checkbox = forwardRef<
     >
       <Indicator asChild>
         {checked === undefined ? (
-          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
+          <Icon
+            icon="tick"
+            className="text-grey-white group-disabled:text-grey-placeholder dark:group-disabled:text-purple-primary"
+          />
         ) : checked === true ? (
-          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
+          <Icon
+            icon="tick"
+            className="text-grey-white group-disabled:text-grey-placeholder dark:group-disabled:text-purple-primary"
+          />
         ) : checked === 'indeterminate' ? (
-          <Icon icon="check-indeterminate-small" className="group-disabled:text-grey-50 text-purple-65" />
+          <Icon
+            icon="check-indeterminate-small"
+            className="text-purple-primary group-disabled:text-grey-placeholder dark:group-disabled:text-purple-primary"
+          />
         ) : null}
       </Indicator>
     </Root>

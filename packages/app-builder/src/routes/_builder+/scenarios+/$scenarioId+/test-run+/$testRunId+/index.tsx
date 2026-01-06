@@ -104,8 +104,8 @@ export default function TestRun() {
         {run.status === 'up' ? (
           <CancelTestRun currentScenario={currentScenario} testRunId={run.id}>
             <Button variant="secondary" color="red" className="isolate h-10 w-fit">
-              <Icon icon="stop" className="text-grey-100 size-6" />
-              <span className="text-grey-100">{t('scenarios:testrun.cancel')}</span>
+              <Icon icon="stop" className="text-grey-white size-6" />
+              <span className="text-grey-white">{t('scenarios:testrun.cancel')}</span>
             </Button>
           </CancelTestRun>
         ) : null}

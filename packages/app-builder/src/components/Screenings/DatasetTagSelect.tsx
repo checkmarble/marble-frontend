@@ -21,7 +21,7 @@ export const DatasetTagSelect = ({ tags, selectedTags, setSelectedTags }: Datase
         <Button variant="secondary" size="medium">
           <Icon icon="add-circle" className="size-3.5" />
           <span className="text-xs">Type</span>
-          {selectedTags.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
+          {selectedTags.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
           {selectedTags.map((tag) => (
             <DatasetTag key={tag} category={tag as ScreeningCategory} />
           ))}
@@ -41,7 +41,7 @@ export const DatasetTagSelect = ({ tags, selectedTags, setSelectedTags }: Datase
               <DatasetTag category={tag as ScreeningCategory} />
             </MenuCommand.Item>
           ))}
-          <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
+          <div className="bg-surface-card sticky bottom-0 flex w-full gap-2">
             <Button variant="secondary" size="small" className="basis-full" onClick={() => setSelectedTags([])}>
               <Icon icon="filters-off" className="size-4" />
             </Button>

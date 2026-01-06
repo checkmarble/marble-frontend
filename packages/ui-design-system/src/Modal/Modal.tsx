@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
 
 const modalContentClassnames = cva(
-  'bg-grey-100 top-[10vh] flex w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
+  'bg-surface-card top-[10vh] flex w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
   {
     variants: {
       size: {
@@ -30,7 +30,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 ) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlay-show bg-grey-00/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs" />
+      <Dialog.Overlay className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs" />
       <Dialog.Content
         ref={ref}
         {...props}
@@ -46,7 +46,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 function ModalTitle(props: Dialog.DialogTitleProps) {
   return (
     <Dialog.Title
-      className="border-b-grey-90 bg-grey-98 text-m rounded-t-lg border-b p-6 text-center font-bold"
+      className="border-b-grey-border bg-surface-row text-m rounded-t-lg border-b p-6 text-center font-bold"
       {...props}
     />
   );
@@ -86,7 +86,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(fu
       backdrop={
         <div
           onClick={(e) => e.stopPropagation()}
-          className="bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-xs transition-all data-enter:opacity-100"
+          className="bg-grey-primary/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-xs transition-all data-enter:opacity-100"
         />
       }
       unmountOnHide
@@ -99,7 +99,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(fu
 export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
   return (
     <Ariakit.DialogHeading
-      className="border-b-grey-90 bg-grey-98 text-m rounded-t-lg border-b p-6 text-center font-bold"
+      className="border-b-grey-border bg-surface-row text-m rounded-t-lg border-b p-6 text-center font-bold"
       {...props}
     />
   );

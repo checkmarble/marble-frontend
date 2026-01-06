@@ -120,7 +120,7 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
                             <MenuCommand.Item key={field.id} value={field.id} onSelect={formField.handleChange}>
                               {field.name}
                               {selectedField?.name === field.name ? (
-                                <Icon icon="tick" className="text-purple-65 size-6" />
+                                <Icon icon="tick" className="text-purple-primary size-6" />
                               ) : null}
                             </MenuCommand.Item>
                           ))}

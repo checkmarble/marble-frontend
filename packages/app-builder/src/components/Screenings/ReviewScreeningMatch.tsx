@@ -102,7 +102,7 @@ export const ReviewScreeningMatch = ({
                     <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
                     {t('screenings:review_modal.whitelist_label')}
                   </span>
-                  <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded-sm border p-2">
+                  <div className="border-grey-border bg-grey-background-light flex flex-col gap-2 rounded-sm border p-2">
                     <span className="font-semibold">{t('screenings:match.unique_counterparty_identifier')}</span>
                     <span>{screeningMatch.uniqueCounterpartyIdentifier}</span>
                   </div>

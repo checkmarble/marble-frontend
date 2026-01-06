@@ -104,7 +104,7 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
               </div>
             )}
           </form.Field>
-          <p className="text-grey-80 text-xs font-medium">{t('scenarios:deployment_modal.deactivate.helper')}</p>
+          <p className="text-grey-disabled text-xs font-medium">{t('scenarios:deployment_modal.deactivate.helper')}</p>
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>

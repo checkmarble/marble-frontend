@@ -100,9 +100,9 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
 
             return (
               <Fragment key={filterIndex}>
-                <div className="border-grey-90 flex flex-col gap-4 rounded-md border-[0.5px] p-4">
+                <div className="border-grey-border flex flex-col gap-4 rounded-md border-[0.5px] p-4">
                   <div className="flex items-center justify-between">
-                    <div className="text-grey-50 flex items-center gap-2 pl-2 text-xs">
+                    <div className="text-grey-placeholder flex items-center gap-2 pl-2 text-xs">
                       <span>{t('scenarios:edit_aggregation.filter_field_label')}</span>
                       <FieldSelect
                         tableName={tableName}
@@ -110,10 +110,10 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                         trigger={
                           <div
                             className={clsx(
-                              'text-s aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded-sm border px-2',
+                              'text-s aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-2',
                               {
-                                'border-grey-90': filteredFieldErrors.length === 0,
-                                'border-red-47': filteredFieldErrors.length > 0,
+                                'border-grey-border': filteredFieldErrors.length === 0,
+                                'border-red-primary': filteredFieldErrors.length > 0,
                               },
                             )}
                           >
@@ -243,7 +243,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                   <EditionEvaluationErrors id={filter.id} />
                 </div>
                 {!isLastFilter ? (
-                  <div className="text-grey-50 text-xs">{t('scenarios:logical_operator.and')}</div>
+                  <div className="text-grey-placeholder text-xs">{t('scenarios:logical_operator.and')}</div>
                 ) : null}
               </Fragment>
             );

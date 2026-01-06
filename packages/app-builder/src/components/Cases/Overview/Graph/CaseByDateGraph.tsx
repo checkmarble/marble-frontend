@@ -18,9 +18,9 @@ export const CaseByDateGraph = () => {
   const [hovering, setHovering] = useState<string | null>(null);
 
   return (
-    <div className="h-100 bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="h-100 bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <span className="font-medium text-s">{t('cases:overview.graph.cases_by_status.title')}</span>
-      <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-white h-full flex flex-col gap-v2-xs">
+      <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-surface-card h-full flex flex-col gap-v2-xs">
         {match(caseStatusByDateQuery)
           .with({ isPending: true }, () => (
             <div className="grid place-items-center h-full">
@@ -109,7 +109,7 @@ export const CaseByDateGraph = () => {
                       },
                     ]}
                     tooltip={({ data }) => (
-                      <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+                      <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
                         <div className="text-s text-grey-60">{formatDateTime(data.date, { dateStyle: 'medium' })}</div>
                         <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-v2-xs">
                           {graphCaseStatuses.map((caseStatus) => (
@@ -122,7 +122,10 @@ export const CaseByDateGraph = () => {
                       </div>
                     )}
                     theme={{
-                      grid: { line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' } },
+                      text: { fill: 'var(--color-grey-secondary)' },
+                      axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
+                      legends: { text: { fill: 'var(--color-grey-secondary)' } },
+                      grid: { line: { stroke: 'var(--color-grey-border)', strokeWidth: 1, strokeDasharray: '4 4' } },
                     }}
                   />
                 </div>

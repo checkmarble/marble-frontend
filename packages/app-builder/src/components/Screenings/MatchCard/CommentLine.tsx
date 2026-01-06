@@ -16,7 +16,7 @@ export const CommentLine = ({ comment }: { comment: ScreeningMatch['comments'][n
         <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />
         <span className="flex items-baseline gap-1">
           {fullName}
-          <time className="text-grey-50 text-xs" dateTime={comment.createdAt}>
+          <time className="text-grey-placeholder text-xs" dateTime={comment.createdAt}>
             {formatDateTime(comment.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
           </time>
         </span>

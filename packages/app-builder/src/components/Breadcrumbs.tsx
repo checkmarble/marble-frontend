@@ -28,7 +28,7 @@ export const BreadCrumbLink = ({
     to={to}
     className={clsx(
       'text-s flex items-center font-bold transition-colors',
-      { 'text-grey-50 hover:text-grey-00': !isLast },
+      { 'text-grey-secondary hover:text-grey-primary': !isLast },
       className,
     )}
   >
@@ -66,7 +66,9 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
               return (
                 <div className="flex items-center gap-4" key={`${pathname}-${elementIndex}`}>
                   <Element key={pathname} isLast={isLastElement && isLastLink} data={data} />
-                  {!(isLastElement && isLastLink) ? <span className="text-s text-grey-80 font-bold">/</span> : null}
+                  {!(isLastElement && isLastLink) ? (
+                    <span className="text-s text-grey-disabled font-bold">/</span>
+                  ) : null}
                 </div>
               );
             })

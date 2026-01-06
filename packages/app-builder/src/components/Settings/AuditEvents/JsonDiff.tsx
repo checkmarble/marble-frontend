@@ -14,11 +14,11 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
   }, [oldData, newData]);
 
   if (allKeys.length === 0) {
-    return <span className="text-grey-50 text-sm">No data</span>;
+    return <span className="text-grey-placeholder text-sm">No data</span>;
   }
 
   return (
-    <div className="bg-grey-98 border-grey-90 overflow-auto rounded-sm border p-3 font-mono text-xs">
+    <div className="bg-grey-background-light border-grey-border overflow-auto rounded-sm border p-3 font-mono text-xs">
       {allKeys.map((key) => {
         const oldValue = oldData?.[key];
         const newValue = newData?.[key];
@@ -33,26 +33,26 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
         return (
           <div key={key} className="flex flex-col">
             {isUnchanged && (
-              <div className="text-grey-50">
-                <span className="text-grey-50">{key}:</span> {newStr}
+              <div className="text-grey-placeholder">
+                <span className="text-grey-placeholder">{key}:</span> {newStr}
               </div>
             )}
             {isAdded && (
-              <div className="bg-green-94 text-green-38">
+              <div className="bg-green-background-light text-green-primary">
                 <span className="font-semibold">+ {key}:</span> {newStr}
               </div>
             )}
             {isRemoved && (
-              <div className="bg-red-95 text-red-47 line-through">
+              <div className="bg-red-background-light text-red-primary line-through">
                 <span className="font-semibold">- {key}:</span> {oldStr}
               </div>
             )}
             {isChanged && (
               <>
-                <div className="bg-red-95 text-red-47 line-through">
+                <div className="bg-red-background-light text-red-primary line-through">
                   <span className="font-semibold">- {key}:</span> {oldStr}
                 </div>
-                <div className="bg-green-94 text-green-38">
+                <div className="bg-green-background-light text-green-primary">
                   <span className="font-semibold">+ {key}:</span> {newStr}
                 </div>
               </>

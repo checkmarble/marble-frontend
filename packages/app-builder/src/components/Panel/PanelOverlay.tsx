@@ -11,7 +11,7 @@ export function PanelOverlay({ children }: PanelOverlayProps) {
 
   return (
     <div className="fixed inset-0 z-30">
-      <div className="absolute inset-0 bg-black/20" onClick={closePanel} aria-hidden="true" />
+      <div className="absolute inset-0 bggrey-primary/20" onClick={closePanel} aria-hidden="true" />
       {children}
     </div>
   );

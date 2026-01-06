@@ -10,12 +10,15 @@ const Story: Meta<typeof ScrollArea.Root> = {
 export default Story;
 
 export const V1: StoryFn = () => (
-  <ScrollArea.Root className="border-grey-50 w-fit rounded-sm border shadow-md">
+  <ScrollArea.Root className="border-grey-placeholder w-fit rounded-sm border shadow-md">
     <ScrollArea.Viewport className="max-h-72 max-w-[100px]">
       <ul>
         {Array.from({ length: 15 }).map((_, index) => (
           <li
-            className={clsx('flex w-48 flex-col px-3 py-2 shadow-xs', index % 2 === 0 ? 'bg-grey-90' : 'bg-grey-100')}
+            className={clsx(
+              'flex w-48 flex-col px-3 py-2 shadow-xs',
+              index % 2 === 0 ? 'bg-grey-border' : 'bg-surface-card',
+            )}
             key={index}
           >
             <span>{index}</span>
@@ -34,11 +37,17 @@ export const V1: StoryFn = () => (
 );
 
 export const V2: StoryFn = () => (
-  <ScrollAreaV2 orientation="both" className="border-grey-50 max-h-72 w-fit max-w-[100px] rounded-sm border shadow-md">
+  <ScrollAreaV2
+    orientation="both"
+    className="border-grey-placeholder max-h-72 w-fit max-w-[100px] rounded-sm border shadow-md"
+  >
     <ul>
       {Array.from({ length: 15 }).map((_, index) => (
         <li
-          className={clsx('flex w-48 flex-col px-3 py-2 shadow-xs', index % 2 === 0 ? 'bg-grey-90' : 'bg-grey-100')}
+          className={clsx(
+            'flex w-48 flex-col px-3 py-2 shadow-xs',
+            index % 2 === 0 ? 'bg-grey-border' : 'bg-surface-card',
+          )}
           key={index}
         >
           <span>{index}</span>

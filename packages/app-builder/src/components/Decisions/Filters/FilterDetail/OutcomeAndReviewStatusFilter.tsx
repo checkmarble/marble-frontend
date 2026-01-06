@@ -77,7 +77,7 @@ export function OutcomeAndReviewStatusFilter() {
             return (
               <SelectWithCombobox.ComboboxItem key={value} value={value}>
                 <OutcomeBadge outcome={outcomeValue} reviewStatus={reviewStatusValue} size="md" />
-                <Ariakit.SelectItemCheck className="text-purple-65 shrink-0">
+                <Ariakit.SelectItemCheck className="text-purple-primary shrink-0">
                   <Icon icon="tick" className="size-5" />
                 </Ariakit.SelectItemCheck>
               </SelectWithCombobox.ComboboxItem>

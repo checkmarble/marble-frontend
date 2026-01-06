@@ -63,9 +63,9 @@ const DecisionRuleExecutions = ({ decision }: { decision: DecisionDetails }) => 
   return (
     <div className="flex h-fit flex-2 flex-col gap-4">
       <div className="flex items-center justify-between">
-        <span className="text-m text-grey-00 font-semibold">{t('cases:decisions.rules')}</span>
+        <span className="text-m text-grey-primary font-semibold">{t('cases:decisions.rules')}</span>
         <div className="flex flex-row items-center gap-4">
-          <label htmlFor="showHitOnly" className="text-grey-00 cursor-pointer select-none text-xs">
+          <label htmlFor="showHitOnly" className="text-grey-primary cursor-pointer select-none text-xs">
             {t('cases:case_detail.rules_execution.show_hit_only')}
           </label>
           <Switch id="showHitOnly" checked={showHitOnly} onCheckedChange={setShowHitOnly} />
@@ -128,15 +128,19 @@ const DecisionTriggerObject = ({
   return (
     <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
       <div className="flex h-fit flex-col gap-4">
-        <span className="text-m text-grey-00 font-semibold">{t('cases:case_detail.trigger_object')}</span>
+        <span className="text-m text-grey-primary font-semibold">{t('cases:case_detail.trigger_object')}</span>
         <div className="flex flex-col gap-2">
-          <span className="text-grey-50 text-xs first-letter:capitalize">{t('cases:case_detail.pivot_values')}</span>
+          <span className="text-grey-placeholder text-xs first-letter:capitalize">
+            {t('cases:case_detail.pivot_values')}
+          </span>
           <CasePivotValues pivotValues={pivotValues} />
         </div>
       </div>
 
       <div className="flex h-fit flex-col gap-2">
-        <span className="text-grey-50 text-xs first-letter:capitalize">{t('cases:case_detail.trigger_object')}</span>
+        <span className="text-grey-placeholder text-xs first-letter:capitalize">
+          {t('cases:case_detail.trigger_object')}
+        </span>
         <CaseDetailTriggerObject
           className="h-fit max-h-[50dvh] overflow-auto"
           dataModel={dataModel}
@@ -160,17 +164,17 @@ const DecisionTriggerObject = ({
 const DecisionDetailSkeleton = ({ isExpanded }: { isExpanded: boolean }) => (
   <div className="flex h-fit flex-col gap-6">
     <div className="flex flex-row items-center justify-between gap-2">
-      <div className="bg-grey-90 h-8 w-46 animate-pulse rounded-md" />
+      <div className="bg-grey-border h-8 w-46 animate-pulse rounded-md" />
     </div>
     <div className="flex gap-6 flex-1">
       <div className="flex flex-col gap-4 w-full">
         <div className="flex flex-row justify-between gap-2">
-          <div className="bg-grey-90 h-6 w-32 animate-pulse rounded-md" />
-          <div className="bg-grey-90 h-6 w-32 animate-pulse rounded-md" />
+          <div className="bg-grey-border h-6 w-32 animate-pulse rounded-md" />
+          <div className="bg-grey-border h-6 w-32 animate-pulse rounded-md" />
         </div>
-        <div className="bg-grey-90 h-30 w-full animate-pulse rounded-md" />
+        <div className="bg-grey-border h-30 w-full animate-pulse rounded-md" />
       </div>
-      {isExpanded ? <div className="bg-grey-90 h-60 w-115 shrink-0 animate-pulse rounded-md" /> : null}
+      {isExpanded ? <div className="bg-grey-border h-60 w-115 shrink-0 animate-pulse rounded-md" /> : null}
     </div>
   </div>
 );
@@ -230,7 +234,7 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
     <>
       <div ref={sentinelRef} />
       <div
-        className={clsx('bg-grey-100 sticky top-0 z-10 flex items-center pl-4', {
+        className={clsx('bg-surface-card sticky top-0 z-10 flex items-center pl-4', {
           'shadow-sticky-top': !intersection?.isIntersecting,
         })}
       >
@@ -249,18 +253,18 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
       <div className="flex flex-col pl-4 pr-2">
         <div className="flex flex-col gap-6">
           <div className="flex items-center gap-3">
-            <span className="text-l text-grey-00 font-semibold">{decision.scenario.name}</span>
+            <span className="text-l text-grey-primary font-semibold">{decision.scenario.name}</span>
             <ScoreModifier score={decision.score} />
           </div>
           <div className="flex flex-col items-start gap-2">
             <div className="grid grid-cols-[60px_1fr] items-center">
-              <span className="text-grey-50 text-xs">Id</span>
+              <span className="text-grey-placeholder text-xs">Id</span>
               <CopyToClipboardButton size="sm" toCopy={decision.id}>
                 <span className="line-clamp-1 max-w-40 text-xs font-normal">{decision.id}</span>
               </CopyToClipboardButton>
             </div>
             <div className="grid grid-cols-[60px_1fr] items-center">
-              <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
+              <span className="text-grey-placeholder text-xs">{t('cases:decisions.outcome')}</span>
               <OutcomeBadge outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
             </div>
             <RequiredActions decision={decision} caseId={caseDetail.id} />

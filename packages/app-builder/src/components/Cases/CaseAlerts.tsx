@@ -43,8 +43,8 @@ export const CaseAlerts = ({
 
   return decisions ? (
     <>
-      <div className="text-small border-grey-90 bg-grey-100 rounded-lg border">
-        <div className="text-default text-grey-50 grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
+      <div className="text-small border-grey-border bg-surface-card rounded-lg border">
+        <div className="text-default text-grey-placeholder grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
           <span className="p-v2-sm">{t('cases:decisions.date')}</span>
           <span className="p-v2-sm">{t('cases:decisions.alert')}</span>
           <span className="p-v2-sm">{t('cases:decisions.trigger_object')}</span>
@@ -59,18 +59,18 @@ export const CaseAlerts = ({
             <div
               key={decision.id}
               className={cn(
-                'border-grey-90 hover:bg-grey-98 group grid min-h-28 grid-cols-[82px_2fr_1.3fr_1fr] border-t transition-colors',
+                'border-grey-border hover:bg-grey-background-light group grid min-h-28 grid-cols-[82px_2fr_1.3fr_1fr] border-t transition-colors',
                 {
-                  'bg-purple-98': selectedDecision === decision.id && drawerContentMode === 'decision',
+                  'bg-purple-background-light': selectedDecision === decision.id && drawerContentMode === 'decision',
                 },
               )}
             >
               <div className="flex min-h-full flex-col items-center p-2">
-                <span className="text-grey-50 text-xs font-normal">
+                <span className="text-grey-placeholder text-xs font-normal">
                   {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
                 </span>
               </div>
-              <div className="border-grey-90 flex min-h-full flex-col gap-2 border-x p-2">
+              <div className="border-grey-border flex min-h-full flex-col gap-2 border-x p-2">
                 <div className="relative flex items-center justify-between">
                   <div className="flex size-full items-center gap-2.5">
                     <OutcomeBadge
@@ -78,7 +78,9 @@ export const CaseAlerts = ({
                       reviewStatus={decision.reviewStatus}
                       showBackground={false}
                     />
-                    <span className="text-grey-50 text-ellipsis text-xs font-normal">{decision.scenario.name}</span>
+                    <span className="text-grey-placeholder text-ellipsis text-xs font-normal">
+                      {decision.scenario.name}
+                    </span>
                     <ScoreModifier score={decision.score} />
                   </div>
                   <ButtonV2
@@ -95,7 +97,7 @@ export const CaseAlerts = ({
                 </div>
                 <RequiredActions decision={decision} caseId={caseDetail.id} />
               </div>
-              <div className="border-grey-90 flex h-full flex-col items-start gap-1 overflow-hidden border-r p-2">
+              <div className="border-grey-border flex h-full flex-col items-start gap-1 overflow-hidden border-r p-2">
                 {pipe(
                   triggerObjectOptions?.options.fieldOrder ?? [],
                   filter((id) =>
@@ -110,7 +112,7 @@ export const CaseAlerts = ({
                     return property ? (
                       <span
                         key={id}
-                        className="border-grey-90 flex w-fit gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
+                        className="border-grey-border flex w-fit gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
                       >
                         <span>{property}:</span>
                         <FormatData data={parseUnknownData(decision.triggerObject[property])} />
@@ -140,7 +142,7 @@ export const CaseAlerts = ({
                   map((r) => (
                     <span
                       key={r.name}
-                      className="border-grey-90 flex items-center gap-1 rounded-xs border px-1.5 py-0.5 text-xs font-normal"
+                      className="border-grey-border flex items-center gap-1 rounded-xs border px-1.5 py-0.5 text-xs font-normal"
                     >
                       {r.name === 'executions-remains' ? (
                         <span>{t('common:more_remains', { count: r.scoreModifier })}</span>

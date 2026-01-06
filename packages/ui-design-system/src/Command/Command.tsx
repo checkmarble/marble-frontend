@@ -8,7 +8,10 @@ const Command = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
-    className={clsx('bg-grey-100 border-grey-90 flex flex-col overflow-hidden rounded-sm border p-2', className)}
+    className={clsx(
+      'bg-surface-card border-grey-border flex flex-col overflow-hidden rounded-sm border p-2',
+      className,
+    )}
     {...props}
   />
 ));
@@ -22,7 +25,7 @@ const CommandInput = React.forwardRef<
   <CommandPrimitive.Input
     ref={ref}
     className={clsx(
-      'placeholder:text-grey-50 text-s bg-transparent outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+      'placeholder:text-grey-placeholder text-s bg-transparent outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
     {...props}
@@ -48,7 +51,11 @@ const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
 >((props, ref) => (
-  <CommandPrimitive.Empty ref={ref} className="text-grey-80 inline-flex items-center gap-2 p-2 text-xs" {...props} />
+  <CommandPrimitive.Empty
+    ref={ref}
+    className="text-grey-disabled inline-flex items-center gap-2 p-2 text-xs"
+    {...props}
+  />
 ));
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
@@ -60,7 +67,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={clsx(
-      'text-grey-50 [&_[cmdk-group-heading]]:text-grey-50 overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+      'text-grey-placeholder [&_[cmdk-group-heading]]:text-grey-placeholder overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       className,
     )}
     {...props}
@@ -73,7 +80,7 @@ const CommandSeparator = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
 >(({ className, ...props }, ref) => (
-  <CommandPrimitive.Separator ref={ref} className={clsx('bg-grey-90 h-px', className)} {...props} />
+  <CommandPrimitive.Separator ref={ref} className={clsx('bg-grey-border h-px', className)} {...props} />
 ));
 
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
@@ -95,7 +102,7 @@ const CommandItem = React.forwardRef<
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
 const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className={clsx('text-grey-80 ml-auto text-xs tracking-widest', className)} {...props} />
+  <span className={clsx('text-grey-disabled ml-auto text-xs tracking-widest', className)} {...props} />
 );
 
 CommandShortcut.displayName = 'CommandShortcut';

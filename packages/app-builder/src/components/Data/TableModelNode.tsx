@@ -135,7 +135,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         header: () => (
           <div className="flex items-start justify-between gap-6 p-4">
             <div className="flex min-w-96 max-w-md flex-1 flex-col gap-2 text-start">
-              <span className="text-grey-00 overflow-auto text-ellipsis text-[30px]">{data.name}</span>
+              <span className="text-grey-primary overflow-auto text-ellipsis text-[30px]">{data.name}</span>
               <div className="flex flex-row flex-wrap items-center">
                 <FormatDescription description={data.description || ''} />
               </div>
@@ -170,20 +170,26 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.name, {
             id: 'name',
             enableResizing: false,
-            header: () => <span className="text-grey-00 flex p-2 text-start font-medium">{t('data:field_name')}</span>,
+            header: () => (
+              <span className="text-grey-primary flex p-2 text-start font-medium">{t('data:field_name')}</span>
+            ),
             cell: ({ getValue }) => {
-              return <span className="text-grey-00 font-semibold">{getValue()}</span>;
+              return <span className="text-grey-primary font-semibold">{getValue()}</span>;
             },
           }),
           columnHelper.accessor((row) => row.displayType, {
             id: 'displayType',
             enableResizing: false,
-            header: () => <span className="text-grey-00 flex p-2 text-start font-medium">{t('data:field_type')}</span>,
+            header: () => (
+              <span className="text-grey-primary flex p-2 text-start font-medium">{t('data:field_type')}</span>
+            ),
           }),
           columnHelper.accessor((row) => row.description, {
             id: 'description',
             enableResizing: false,
-            header: () => <span className="text-grey-00 flex p-2 text-start font-medium">{t('data:description')}</span>,
+            header: () => (
+              <span className="text-grey-primary flex p-2 text-start font-medium">{t('data:description')}</span>
+            ),
             cell: ({ getValue }) => {
               return <FormatDescription description={getValue<string>() || ''} />;
             },
@@ -226,7 +232,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   });
 
   return (
-    <div className="border-grey-50 bg-grey-100 overflow-hidden rounded-xl border">
+    <div className="border-grey-placeholder bg-surface-card overflow-hidden rounded-xl border">
       <table
         className={clsx(
           'isolate table-auto border-collapse',
@@ -235,7 +241,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
       >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-grey-98 border-b-grey-80 border-b">
+            <tr key={headerGroup.id} className="bg-surface-row border-b-grey-border border-b">
               {/* This is the handle for the left side of the table */}
               <th></th>
               {headerGroup.headers.map((header) => (
@@ -255,9 +261,13 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               <tr
                 key={row.id}
                 className={clsx(
-                  'border-t-grey-80 relative scale-100 border-t',
-                  !displayPivot && isEditDataModelFieldAvailable && 'hover:bg-purple-96 group',
-                  displayPivot && isFieldPartOfPivot(row.original.id) && 'bg-purple-96',
+                  'border-t-grey-border relative scale-100 border-t',
+                  !displayPivot &&
+                    isEditDataModelFieldAvailable &&
+                    'hover:bg-purple-background hover:dark:bg-purple-primary/10 group',
+                  displayPivot &&
+                    isFieldPartOfPivot(row.original.id) &&
+                    'bg-purple-background dark:bg-purple-primary/10',
                   displayPivot && !isFieldPartOfPivot(row.original.id) && 'opacity-20',
                 )}
               >
@@ -303,7 +313,7 @@ function EditDataModelField({ field, linksToThisTable }: { field: DataModelField
     <EditField field={field} linksToThisTable={linksToThisTable}>
       <button
         disabled={displayPivot}
-        className="group-hover:text-grey-00 focus:text-grey-00 block overflow-hidden text-transparent after:absolute after:inset-0 after:content-['']"
+        className="group-hover:text-grey-primary focus:text-grey-primary block overflow-hidden text-transparent after:absolute after:inset-0 after:content-['']"
       >
         <Icon icon="edit-square" className="size-5" />
       </button>
@@ -318,7 +328,7 @@ function FormatDescription({ description }: { description: string }) {
     <span
       className={clsx(
         'relative line-clamp-2 overflow-hidden text-ellipsis font-normal leading-snug first-letter:capitalize',
-        description ? 'text-grey-00' : 'text-grey-80',
+        description ? 'text-grey-primary' : 'text-grey-disabled',
       )}
     >
       {description || t('data:empty_description')}
@@ -436,12 +446,12 @@ export function DisplayPivot(pivot: Pivot) {
     >
       <Icon icon="center-focus" className="size-6" />
       {pivot.type === 'field' ? (
-        <span className="text-grey-00">{pivot.field === 'object_id' ? pivot.baseTable : pivot.field}</span>
+        <span className="text-grey-primary">{pivot.field === 'object_id' ? pivot.baseTable : pivot.field}</span>
       ) : (
         pivot.pathLinks.map((table) => (
           <React.Fragment key={`pivot-${pivot.baseTable}-${table}`}>
             <Icon icon="arrow-up" className="size-4 rotate-90" />
-            <span className="text-grey-00">{table}</span>
+            <span className="text-grey-primary">{table}</span>
           </React.Fragment>
         ))
       )}

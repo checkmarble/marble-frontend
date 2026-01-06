@@ -214,8 +214,8 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
   const buttonState = cva('font-semibold', {
     variants: {
       state: {
-        enabled: ' text-purple-65',
-        disabled: 'text-grey-50',
+        enabled: ' text-purple-primary',
+        disabled: 'text-grey-placeholder',
       },
     },
     defaultVariants: {

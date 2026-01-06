@@ -216,7 +216,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             </form.Field>
           </div>
           {selectedRequired === 'required' ? (
-            <span className="text-red-47 text-s">{t('data:create_field.option_required_warning')}</span>
+            <span className="text-red-primary text-s">{t('data:create_field.option_required_warning')}</span>
           ) : null}
           {EnumDataTypes.includes(selectedType) ? (
             <form.Field
@@ -265,7 +265,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                     <p>{t('data:edit_field.is_unique.title')}</p>
                     <p className="text-xs">{t('data:edit_field.is_unique.toggle')}</p>
                     {field.state.value ? (
-                      <p className="text-red-47 text-xs">
+                      <p className="text-red-primary text-xs">
                         {t('data:edit_field.is_unique.warning_creation_asynchronous')}
                       </p>
                     ) : null}

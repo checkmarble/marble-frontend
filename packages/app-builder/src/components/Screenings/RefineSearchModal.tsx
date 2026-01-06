@@ -147,7 +147,7 @@ export function RefineSearchModal({
             )}
           </div>
           <ModalV2.Footer>
-            <div className="bg-grey-100 flex gap-2 p-8">
+            <div className="bg-surface-card flex gap-2 p-8">
               <Button className="flex-1" variant="secondary" name="cancel" onClick={handleBackToSearch}>
                 {t('screenings:refine_modal.back_search')}
               </Button>
@@ -189,7 +189,7 @@ export function RefineSearchModal({
             ))}
           </div>
           <ModalV2.Footer>
-            <div className="bg-grey-100 flex gap-2 p-8">
+            <div className="bg-surface-card flex gap-2 p-8">
               <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
                 {t('common:cancel')}
               </ModalV2.Close>
@@ -259,7 +259,7 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
                   <Icon icon="plus" className="size-5" />
                   <div className="flex flex-col">
                     <span>{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
-                    <span className="text-grey-50 text-xs">
+                    <span className="text-grey-placeholder text-xs">
                       {t('screenings:refine_modal.search_by')}{' '}
                       {fieldForSchema.map((f) => t(`screenings:entity.property.${f}`)).join(', ')}
                     </span>
@@ -285,8 +285,8 @@ function SearchInput({ request }: { request: NonNullable<Screening['request']> }
   return (
     <Field label={t('screenings:refine_modal.search_input_label')}>
       {searchInputs.map((input, i) => (
-        <div key={i} className="border-grey-90 flex items-center gap-2 rounded-sm border p-2">
-          <span className="bg-grey-95 size-6 rounded-xs p-1">
+        <div key={i} className="border-grey-border flex items-center gap-2 rounded-sm border p-2">
+          <span className="bg-grey-background size-6 rounded-xs p-1">
             <Icon icon="string" className="size-4" />
           </span>
           {input}

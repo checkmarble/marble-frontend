@@ -62,7 +62,7 @@ export const FieldDatasetFilters = ({
           <Icon
             icon="cross"
             onClick={() => setSearchValue('')}
-            className="text-grey-50 hover:text-grey-00 absolute right-2 top-1.5 size-5 cursor-pointer transition-colors"
+            className="text-grey-placeholder hover:text-grey-primary absolute right-2 top-1.5 size-5 cursor-pointer transition-colors"
           />
         ) : null}
       </div>
@@ -71,7 +71,7 @@ export const FieldDatasetFilters = ({
           <Button variant="secondary" size="medium">
             <Icon icon="add-circle" className="size-3.5" />
             <span className="text-xs">Type</span>
-            {filters.tags.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
+            {filters.tags.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
             {filters.tags.map((tag) => (
               <DatasetTag key={tag} category={tag as ScreeningCategory} />
             ))}
@@ -91,7 +91,7 @@ export const FieldDatasetFilters = ({
                 <DatasetTag category={tag as ScreeningCategory} />
               </MenuCommand.Item>
             ))}
-            <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
+            <div className="bg-surface-card sticky bottom-0 flex w-full gap-2">
               <Button
                 variant="secondary"
                 size="small"

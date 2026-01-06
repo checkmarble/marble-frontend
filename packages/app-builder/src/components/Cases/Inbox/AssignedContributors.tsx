@@ -18,7 +18,7 @@ export const AssignedContributors = ({
 
   return (
     <div className="inline-flex items-center gap-v2-sm">
-      {assignedTo ? <AvatarWithTooltip user={assignedUser} className="border-purple-65" /> : null}
+      {assignedTo ? <AvatarWithTooltip user={assignedUser} /> : null}
       <span className="lg:flex items-center gap-v2-xs group/contributors hidden">
         {contributorsUsers.map((user, idx) =>
           user ? (
@@ -49,14 +49,14 @@ export const AvatarWithTooltip = ({ user, className }: AvatarWithTooltipProps) =
       content={
         <div key={user?.userId ?? 0} className="flex flex-row items-center gap-1">
           {avatar}
-          <div className="text-grey-00 text-xs font-normal capitalize">
+          <div className="text-grey-primary text-xs font-normal capitalize">
             {getFullName(user) || t('cases:case_detail.unknown_user')}
           </div>
         </div>
       }
     >
       <div className="flex w-fit flex-row items-center gap-1">
-        <span className={cn('border-2 border-white rounded-full', className)}>{avatar}</span>
+        <span className={cn('border-purple-border rounded-full', className)}>{avatar}</span>
       </div>
     </Tooltip.Default>
   );

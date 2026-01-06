@@ -91,7 +91,9 @@ export function ClientTagsEditSelect({
                 onSelect={() => field.handleChange((prev) => toggle(prev, tag.id))}
               >
                 <TagPreview name={tag.name} />
-                {field.state.value.includes(tag.id) ? <Icon icon="tick" className="text-purple-65 size-5" /> : null}
+                {field.state.value.includes(tag.id) ? (
+                  <Icon icon="tick" className="text-purple-primary size-5" />
+                ) : null}
               </MenuCommand.Item>
             ))}
             <MenuCommand.Empty>
@@ -103,7 +105,7 @@ export function ClientTagsEditSelect({
       <form.Subscribe selector={(state) => [isDeepEqual(state.values.payload.tags, tags), state.isSubmitting]}>
         {([isDefaultValue, isSubmitting]) =>
           !isDefaultValue ? (
-            <div className="border-grey-90 flex justify-end gap-2 overflow-x-auto border-t p-2">
+            <div className="border-grey-border flex justify-end gap-2 overflow-x-auto border-t p-2">
               <MenuCommand.HeadlessItem>
                 {isSubmitting ? (
                   <Button size="icon" type="submit" disabled>

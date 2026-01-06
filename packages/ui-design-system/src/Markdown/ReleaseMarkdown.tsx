@@ -28,7 +28,7 @@ const releaseMarkdownComponents: Components = {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-purple-65 hover:bg-purple-96 hover:text-grey-50 underline underline-offset-4 decoration-purple-65"
+          className="text-purple-primary hover:bg-purple-background hover:text-grey-placeholder underline underline-offset-4 decoration-purple-primary"
         >
           {children}
         </a>
@@ -36,28 +36,33 @@ const releaseMarkdownComponents: Components = {
       <TooltipPrimitive.Portal>
         <TooltipPrimitive.Content
           side="top"
-          className="z-50 bg-grey-100 border border-grey-90 rounded-sm shadow-md p-2"
+          className="z-50 bg-surface-card border border-grey-border rounded-sm shadow-md p-2"
           sideOffset={5}
         >
           <div className="flex flex-col gap-1 items-center">
             {title ? <p className="text-s font-medium">{title}</p> : null}
-            <a href={href} target="_blank" rel="noopener noreferrer" className="text-s text-purple-65 hover:underline">
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-s text-purple-primary hover:underline"
+            >
               {href}
             </a>
           </div>
-          <TooltipPrimitive.Arrow className="fill-grey-100" />
+          <TooltipPrimitive.Arrow className="fill-grey-white" />
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Portal>
     </TooltipPrimitive.Root>
   ),
-  h1: ({ children }) => <div className="text-l font-semibold text-grey-00 mb-4 first:mt-0">{children}</div>,
-  h2: ({ children }) => <div className="text-s font-medium text-purple-65 mb-2 mt-4 first:mt-0">{children}</div>,
-  h3: ({ children }) => <div className="text-s font-medium text-purple-65 mb-2 mt-4 first:mt-0">{children}</div>,
-  hr: () => <hr className="my-4 border-grey-90" />,
+  h1: ({ children }) => <div className="text-l font-semibold text-grey-primary mb-4 first:mt-0">{children}</div>,
+  h2: ({ children }) => <div className="text-s font-medium text-purple-primary mb-2 mt-4 first:mt-0">{children}</div>,
+  h3: ({ children }) => <div className="text-s font-medium text-purple-primary mb-2 mt-4 first:mt-0">{children}</div>,
+  hr: () => <hr className="my-4 border-grey-border" />,
   blockquote: ({ children }) => (
-    <div className="bg-purple-98 border-s-2 border-s-purple-65 rounded-sm p-2 mb-2 flex items-start gap-2">
-      <Icon icon="quote" className="size-4 shrink-0 text-purple-65 mt-0.5" />
-      <div className="text-s text-grey-00">{children}</div>
+    <div className="bg-purple-background-light border-s-2 border-s-purple-primary rounded-sm p-2 mb-2 flex items-start gap-2">
+      <Icon icon="quote" className="size-4 shrink-0 text-purple-primary mt-0.5" />
+      <div className="text-s text-grey-primary">{children}</div>
     </div>
   ),
   ul: ({ children }) => <ul className="mb-2 list-disc pl-5 space-y-1">{children}</ul>,
@@ -70,7 +75,7 @@ const releaseMarkdownComponents: Components = {
   ),
   pre: ({ children }) => (
     <div className="bg-grey-background-light rounded-sm p-3 mb-2 flex gap-2 items-start">
-      <Icon icon="code" className="size-4 shrink-0 text-purple-65 mt-0.5" />
+      <Icon icon="code" className="size-4 shrink-0 text-purple-primary mt-0.5" />
       <pre className="text-s font-mono overflow-x-auto flex-1 group/code-block">{children}</pre>
     </div>
   ),

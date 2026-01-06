@@ -4,8 +4,8 @@ import clsx from 'clsx';
 const drawerIconColorVariants = cva(['flex items-center justify-center'], {
   variants: {
     active: {
-      false: 'text-grey-90',
-      true: 'text-purple-65',
+      false: 'text-grey-border',
+      true: 'text-purple-primary',
     },
   },
   defaultVariants: {

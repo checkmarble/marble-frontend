@@ -30,7 +30,7 @@ export function RulesDetail({
   const { t } = useTranslation(decisionsI18n);
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:rules.title')}</Collapsible.Title>
       <Collapsible.Content>
         <RulesExecutionsContainer>
@@ -70,7 +70,7 @@ export function RuleExecutionDetail({
 
   if (!currentRule || !currentRule.formula) {
     return (
-      <p className="bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded-sm px-2 py-1 font-medium">
+      <p className="bg-red-background text-s text-red-primary flex h-8 items-center justify-center rounded-sm px-2 py-1 font-medium">
         {t('decisions:rules.error.not_found')}
       </p>
     );
@@ -79,7 +79,7 @@ export function RuleExecutionDetail({
   return (
     <>
       <div className="flex w-full items-center justify-between gap-2">
-        <div className="bg-purple-96 text-s text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded-sm px-2 font-normal">
+        <div className="bg-purple-background text-s text-purple-primary inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded-sm border border-transparent px-2 font-normal dark:bg-transparent dark:border-purple-primary">
           <Trans
             t={t}
             i18nKey="scenarios:rules.consequence.score_modifier"
@@ -141,7 +141,7 @@ function RuleFormula({
     [formula, evaluation],
   );
   return (
-    <Paper.Container className="bg-grey-100 @container">
+    <Paper.Container className="bg-surface-card @container">
       <AstBuilder.Provider scenarioId={scenarioId} mode="view" showValues={showValues}>
         <AstBuilder.Root node={formula} validation={validation} />
       </AstBuilder.Provider>

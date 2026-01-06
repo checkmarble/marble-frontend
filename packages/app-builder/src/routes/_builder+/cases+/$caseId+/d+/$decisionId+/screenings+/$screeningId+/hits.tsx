@@ -28,7 +28,7 @@ export default function CaseSanctionsHitsPage() {
   const navigate = useAgnosticNavigation();
 
   return (
-    <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
+    <div className="bg-surface-card border-grey-border grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
       <div className="col-span-full flex flex-row gap-12 p-4">
         <ScreeningReviewSection
           screening={screening}
@@ -49,7 +49,7 @@ export default function CaseSanctionsHitsPage() {
           {pivotValues.length > 0 && (
             <div className="flex h-fit flex-col gap-2">
               <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
-                <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
+                <span className="text-grey-primary text-xs font-medium first-letter:capitalize">
                   {t('cases:case_detail.pivot_values')}
                 </span>
               </div>
@@ -59,7 +59,7 @@ export default function CaseSanctionsHitsPage() {
 
           <div className="flex h-fit flex-col gap-2">
             <div className="flex flex-row items-center justify-between gap-2">
-              <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
+              <span className="text-grey-primary text-xs font-medium first-letter:capitalize">
                 {t('cases:case_detail.trigger_object')}
               </span>
             </div>
@@ -93,7 +93,7 @@ const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
   );
 
   return (
-    <div className="text-s text-grey-00 bg-grey-98 grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4 mb-2">
+    <div className="text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4 mb-2">
       <span className="font-semibold">type</span>
       <span>
         {match(query.schema)

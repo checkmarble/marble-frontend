@@ -35,23 +35,23 @@ export function UserInfo({
     <Popover.Root>
       <Popover.Trigger asChild>
         <div className="relative">
-          <button className="hover:bg-grey-95 active:bg-grey-90 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
+          <button className="hover:bg-grey-background active:bg-grey-border group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
             <div className="inline-flex items-center gap-5">
               <Logo
                 logo="logo"
                 aria-labelledby="marble logo"
-                className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
+                className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12 text-grey-primary"
               />
               {isAutoAssignmentAvailable && unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
                 <div className="absolute top-1 left-1 flex h-3 w-3">
-                  <span className="animate-[ping_1s_ease-in-out_4s] absolute inline-flex h-full w-full rounded-full bg-red-47 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-47"></span>
+                  <span className="animate-[ping_1s_ease-in-out_4s] absolute inline-flex h-full w-full rounded-full bg-red-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-primary"></span>
                 </div>
               ) : null}
               <Logo
                 logo="marble"
                 aria-labelledby="marble"
-                className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
+                className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100 dark:invert"
               />
             </div>
 
@@ -64,7 +64,7 @@ export function UserInfo({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-grey-100 border-grey-90 animate-slide-up-and-fade z-50 w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto min-w-64"
+          className="bg-surface-card border-grey-border animate-slide-up-and-fade z-50 w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto min-w-64"
           side="bottom"
           align="start"
           sideOffset={4}
@@ -81,7 +81,7 @@ export function UserInfo({
             {fullName ? <p className="text-m mb-1 font-semibold capitalize">{fullName}</p> : null}
             <p className="text-s mb-2 font-normal">{email}</p>
             <Tag border="square">{role}</Tag>
-            <p className="text-grey-50 m-2 text-xs font-normal">{orgName}</p>
+            <p className="text-grey-placeholder m-2 text-xs font-normal">{orgName}</p>
             <LanguagePicker />
           </div>
 

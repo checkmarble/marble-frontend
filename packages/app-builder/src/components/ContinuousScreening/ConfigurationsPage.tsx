@@ -49,13 +49,13 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
         <Page.ContentV2>
           {match(configurationsQuery)
             .with({ isPending: true }, () => (
-              <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-white">
-                <Spinner className="size-10 text-purple-65" />
+              <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
+                <Spinner className="size-10 text-purple-primary" />
                 <span>{t('continuousScreening:configurations.list.loading')}</span>
               </div>
             ))
             .with({ isError: true }, () => (
-              <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-white">
+              <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
                 <div className="">{t('common:generic_fetch_data_error')}</div>
                 <ButtonV2 variant="secondary" onClick={() => configurationsQuery.refetch()}>
                   {t('common:retry')}
@@ -66,8 +66,8 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
               if (!configurations) return null;
               if (configurations.length === 0) {
                 return (
-                  <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-white">
-                    <Icon icon="scan-eye" className="size-10 text-purple-65" />
+                  <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
+                    <Icon icon="scan-eye" className="size-10 text-purple-primary" />
                     <span>{t('continuousScreening:configurations.list.empty')}</span>
                     {canEdit ? (
                       <ButtonV2 variant="primary" onClick={() => setCreationModalOpen(true)}>
@@ -88,7 +88,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                     <GridTable.Cell>{t('continuousScreening:configurations.list.column.target_inbox')}</GridTable.Cell>
                   </GridTable.Row>
                   {configurations.map((item) => (
-                    <GridTable.Row key={item.id} className="hover:bg-grey-98">
+                    <GridTable.Row key={item.id} className="hover:bg-grey-background-light">
                       <GridTable.Cell className="flex gap-v2-md items-center justify-between">
                         <span className="truncate">{item.name}</span>
                         <CopyToClipboardChip value={item.stableId} className="min-w-40" />

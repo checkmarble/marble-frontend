@@ -142,17 +142,17 @@ function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValu
           })}
         </div>
       </Ariakit.TabList>
-      <div className="border-grey-90 bg-grey-98 flex h-full flex-col overflow-hidden border-y">
+      <div className="border-grey-border bg-surface-page flex h-full flex-col overflow-hidden border-y">
         <Ariakit.TabPanel tabId={deferredTabId} className="flex flex-col overflow-hidden">
           <MenuContent>
             <div className="flex flex-col gap-2 overflow-y-auto p-2">
               {!currentResources.length ? (
-                <div className="text-grey-80 w-full text-center">{t('common:help_center.no_results')}</div>
+                <div className="text-grey-disabled w-full text-center">{t('common:help_center.no_results')}</div>
               ) : null}
               {currentResources.map((resource) => (
                 <MenuItem
                   key={`${resource.category}-${resource.label}`}
-                  className="border-grey-95 bg-grey-100 data-active-item:bg-purple-98 data-active-item:border-purple-65 flex scroll-my-2 flex-col gap-2 rounded-sm border p-2 outline-hidden"
+                  className="border-grey-background bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-2 flex-col gap-2 rounded-sm border p-2 outline-hidden"
                   render={<a href={resource.href} target="_blank" rel="noreferrer" />}
                 >
                   {resource.label}
@@ -178,7 +178,7 @@ function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValu
         </div>
       ) : null}
 
-      <div className="border-t-grey-90 bg-grey-98 flex gap-4 border-t p-2 text-xs">
+      <div className="border-t-grey-border bg-grey-background-light flex gap-4 border-t p-2 text-xs">
         <div className="flex items-center gap-1 whitespace-nowrap">
           <Kbd className="aspect-square">
             ▲<span className="sr-only">Arrow key up</span>
@@ -199,7 +199,7 @@ function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValu
         </div>
       </div>
 
-      <div className="border-t-grey-90 bg-grey-95 text-grey-50 flex items-center justify-end gap-4 border-t p-2 text-xs">
+      <div className="border-t-grey-border bg-grey-background text-grey-placeholder flex items-center justify-end gap-4 border-t p-2 text-xs">
         <span className="flex items-center gap-1">
           <Icon icon="monitor" className="size-4" />
           <span>{versions.appVersion}</span>
@@ -226,7 +226,7 @@ const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(functi
   return (
     <Ariakit.Tab
       ref={composedRef}
-      className="aria-selected:bg-purple-96 aria-selected:border-purple-96 text-grey-00 bg-grey-95 border-grey-95 aria-selected:text-purple-65 data-active-item:border-purple-65 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
+      className="aria-selected:bg-purple-background aria-selected:border-purple-background text-grey-primary bg-grey-background border-grey-background aria-selected:text-purple-primary data-active-item:border-purple-primary flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
       accessibleWhenDisabled={false}
       {...props}
     />

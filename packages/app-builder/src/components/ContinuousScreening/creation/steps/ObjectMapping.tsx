@@ -50,7 +50,7 @@ export const ObjectMapping = () => {
 
   return (
     <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-white">
+      <Callout bordered className="bg-surface-card">
         {t('continuousScreening:creation.objectMapping.callout')}
       </Callout>
       {mappingConfigs.value.map((mappingConfig, index) => (
@@ -106,7 +106,7 @@ const ObjectMappingConfigurator = ({
   return (
     <Collapsible.Root
       defaultOpen={true}
-      className="bg-white rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm"
+      className="bg-surface-card rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm"
     >
       <Collapsible.Trigger asChild>
         <div className="flex items-center gap-v2-md">
@@ -118,7 +118,9 @@ const ObjectMappingConfigurator = ({
             {mappingConfig?.objectType ??
               t('continuousScreening:creation.objectMapping.configurator.title_placeholder')}
           </span>
-          {mappingConfig?.ftmEntity ? <span className="text-s text-grey-50">{mappingConfig.ftmEntity}</span> : null}
+          {mappingConfig?.ftmEntity ? (
+            <span className="text-s text-grey-placeholder">{mappingConfig.ftmEntity}</span>
+          ) : null}
         </div>
       </Collapsible.Trigger>
       <Collapsible.Content className="flex flex-col gap-v2-sm mt-v2-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
@@ -180,7 +182,7 @@ const ObjectMappingFtmContent = ({
         }}
       />
       {ftmEntity ? (
-        <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-lg bg-white">
+        <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-lg bg-surface-card">
           <div className="flex items-center justify-between p-v2-md border-b border-grey-border">
             <div className="text-h3 font-semibold">
               {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.title')}
@@ -197,7 +199,7 @@ const ObjectMappingFtmContent = ({
                     {mappingConfig.objectType}.{field.name}
                   </div>
                   <div className={cn('p-v2-sm', { 'opacity-50': hasSavedMapping })}>
-                    <Icon icon="arrow-forward" className="size-6 text-purple-65" />
+                    <Icon icon="arrow-forward" className="size-6 text-purple-primary" />
                   </div>
                   <FtmFieldSelector
                     disabled={hasSavedMapping}

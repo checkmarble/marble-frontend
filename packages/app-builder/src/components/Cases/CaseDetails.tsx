@@ -29,7 +29,7 @@ import { SnoozeCase } from './SnoozeCase';
 const tabCva = cva('px-4 py-2 border-b -mb-px flex items-center gap-2 transition-colors', {
   variants: {
     selected: {
-      true: ' border-purple-65 text-purple-65 cursor-default',
+      true: ' border-purple-primary text-purple-primary cursor-default',
       false: 'border-transparent cursor-pointer',
     },
   },
@@ -75,12 +75,12 @@ export const CaseDetails = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-white pb-v2-lg"
+      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-surface-page pb-v2-lg"
     >
       <div ref={sentinelRef} className="absolute left-0 top-0" />
       <div
         className={cn('bg-inherit sticky top-0 z-10 flex flex-col gap-4 px-v2-lg pt-v2-lg', {
-          'border-b-grey-90 border-b': !intersection?.isIntersecting,
+          'border-b-grey-border border-b': !intersection?.isIntersecting,
         })}
       >
         <div className={cn('flex shrink-0 justify-between gap-v2-xs', { 'pb-v2-lg': !caseReview })}>
@@ -98,7 +98,7 @@ export const CaseDetails = ({
 
         {caseReview ? (
           <div
-            className={cn('flex border-b border-grey-90', {
+            className={cn('flex border-b border-grey-border', {
               'border-transparent': !intersection?.isIntersecting,
             })}
           >
@@ -111,7 +111,7 @@ export const CaseDetails = ({
             <button className={tabCva({ selected: selectedTab === 'review' })} onClick={() => setSelectedTab('review')}>
               <div
                 className={cn('size-5 rounded-md text-grey-0 p-0.5', {
-                  'bg-purple-65 text-grey-100': selectedTab === 'review',
+                  'bg-purple-primary text-grey-white': selectedTab === 'review',
                 })}
               >
                 <Icon icon="ai-review" className="size-4" />
@@ -126,13 +126,13 @@ export const CaseDetails = ({
         {selectedTab === 'caseDetails' ? (
           <>
             {/* Case details */}
-            <div className="border-grey-90 text-small flex flex-col gap-2 border p-v2-md bg-grey-background-light rounded-v2-lg">
+            <div className="border-grey-border text-small flex flex-col gap-2 border p-v2-md bg-surface-card rounded-v2-lg">
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-50 font-normal">{t('cases:case.status')}</span>
+                <span className="text-grey-placeholder font-normal">{t('cases:case.status')}</span>
                 <span className="flex items-center gap-2">
                   <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
                   {detail.snoozedUntil ? (
-                    <span className="font-medium text-grey-00">
+                    <span className="font-medium text-grey-primary">
                       {t('cases:case.snoozed_until', {
                         date: formatDateTime(detail.snoozedUntil, { dateStyle: 'short' }),
                       })}
@@ -141,21 +141,21 @@ export const CaseDetails = ({
                 </span>
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-50 font-normal">{t('cases:creation_date')}</span>
+                <span className="text-grey-placeholder font-normal">{t('cases:creation_date')}</span>
                 <time className="font-medium" dateTime={detail.createdAt}>
                   {formatDateTime(detail.createdAt, { dateStyle: 'short' })}
                 </time>
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-50 font-normal">{t('cases:case.inbox')}</span>
+                <span className="text-grey-placeholder font-normal">{t('cases:case.inbox')}</span>
                 <EditCaseInbox id={detail.id} inboxId={detail.inboxId} inboxes={inboxes} />
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-50 font-normal">{t('cases:case.tags')}</span>
+                <span className="text-grey-placeholder font-normal">{t('cases:case.tags')}</span>
                 <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-50 font-normal">{t('cases:assigned_to')}</span>
+                <span className="text-grey-placeholder font-normal">{t('cases:assigned_to')}</span>
                 <EditCaseAssignee
                   disabled={detail.status === 'closed'}
                   assigneeId={detail.assignedTo}
@@ -164,15 +164,15 @@ export const CaseDetails = ({
                 />
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-50 font-normal">{t('cases:sar.title')}</span>
+                <span className="text-grey-placeholder font-normal">{t('cases:sar.title')}</span>
                 <EditCaseSuspicion id={detail.id} reports={reports} />
               </div>
             </div>
 
             {/* Investigation */}
             <div className="flex flex-col justify-start gap-1.5">
-              <span className="text-h2 text-grey-00 px-1 font-medium">{t('cases:investigation')}</span>
-              <div className="border-grey-90 bg-grey-100 flex flex-col rounded-v2-lg border">
+              <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:investigation')}</span>
+              <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border">
                 <div className="p-4">
                   <CaseEvents events={detail.events} inboxes={inboxes} root={containerRef} />
                 </div>
@@ -181,7 +181,7 @@ export const CaseDetails = ({
             </div>
             {/* Alerts */}
             <div className="flex flex-col justify-start gap-1.5">
-              <div className="text-h2 text-grey-00 flex items-center justify-between px-1 font-medium">
+              <div className="text-h2 text-grey-primary flex items-center justify-between px-1 font-medium">
                 <span>{t('cases:alerts')}</span>
                 <ButtonV2 variant="secondary" onClick={() => setDrawerContentMode('snooze')}>
                   <Icon icon="snooze" className="size-3.5" />
@@ -198,7 +198,7 @@ export const CaseDetails = ({
             {detail.files.length > 0 ? (
               <div className="flex flex-col justify-start gap-1.5">
                 <div className="flex items-center justify-between px-1">
-                  <span className="text-grey-00 text-h2 font-medium">{t('common:documents')}</span>
+                  <span className="text-grey-primary text-h2 font-medium">{t('common:documents')}</span>
                   {/* <UploadFile uploadFileEndpoint={getCaseFileUploadEndpoint(detail)}>
               <Button variant="secondary" size="small">
                 <Icon icon="plus" className="size-3.5" />
@@ -207,7 +207,7 @@ export const CaseDetails = ({
             </UploadFile> */}
                 </div>
 
-                <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
+                <div className="border-grey-border bg-surface-card flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
                   {detail.files.map((file) => (
                     <CaseFile key={file.id} file={file} />
                   ))}
@@ -241,7 +241,7 @@ export const CaseDetails = ({
                 </ButtonV2>
               </div>
             </div>
-            <div className="border border-grey-90 rounded-lg p-4 bg-grey-100">
+            <div className="border border-grey-border rounded-lg p-4 bg-surface-card">
               <Markdown>{caseReview?.review.output ?? ''}</Markdown>
             </div>
           </div>

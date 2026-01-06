@@ -14,11 +14,11 @@ export const DistributionOfDecisionChart = ({
   const { t } = useTranslation(['scenarios', 'decisions']);
 
   return (
-    <Collapsible.Container className="bg-grey-100" defaultOpen={true}>
+    <Collapsible.Container className="bg-surface-card" defaultOpen={true}>
       <Collapsible.Title>{t('scenarios:testrun.distribution')}</Collapsible.Title>
       <Collapsible.Content>
         {decisions.length === 0 ? (
-          <span className="text-grey-50 inline-block w-full text-center font-semibold">
+          <span className="text-grey-placeholder inline-block w-full text-center font-semibold">
             {t('scenarios:testrun.no_decisions')}
           </span>
         ) : (
@@ -33,27 +33,27 @@ export const DistributionOfDecisionChart = ({
               }))}
             mapping={{
               approve: {
-                background: 'bg-green-38',
-                border: 'border-green-38',
-                text: 'text-grey-100',
+                background: 'bg-green-primary',
+                border: 'border-green-primary',
+                text: 'text-grey-white',
                 name: t('decisions:outcome.approve'),
               },
               decline: {
-                background: 'bg-red-47',
-                border: 'border-red-47',
-                text: 'text-grey-100',
+                background: 'bg-red-primary',
+                border: 'border-red-primary',
+                text: 'text-grey-white',
                 name: t('decisions:outcome.decline'),
               },
               block_and_review: {
-                background: 'bg-orange-50',
-                border: 'border-orange-50',
-                text: 'text-grey-100',
+                background: 'bg-orange-primary',
+                border: 'border-orange-primary',
+                text: 'text-grey-white',
                 name: t('decisions:outcome.block_and_review'),
               },
               review: {
-                background: 'bg-yellow-50',
-                border: 'border-yellow-50',
-                text: 'text-grey-00',
+                background: 'bg-yellow-primary',
+                border: 'border-yellow-primary',
+                text: 'text-grey-primary',
                 name: t('decisions:outcome.review'),
               },
             }}

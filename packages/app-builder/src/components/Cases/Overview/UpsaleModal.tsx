@@ -36,7 +36,7 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
             {t('cases:overview.upsale.discover')}
             {showWand && <Icon icon="wand" className="size-3" />}
           </Tag>
-          <Icon icon="arrow-right" className="size-5 text-purple-65" />
+          <Icon icon="arrow-right" className="size-5 text-purple-primary" />
         </div>
       </Modal.Trigger>
       <Modal.Content size="small">
@@ -53,7 +53,7 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
               {showWand && <Icon icon="wand" className="size-3" />}
             </Tag>
           </div>
-          <div className="text-s text-grey-50">
+          <div className="text-s text-grey-placeholder">
             <p className="mb-2">{displayDescription}</p>
             {benefits.length > 0 && (
               <ul className="list-disc list-inside">
@@ -65,7 +65,7 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
           </div>
         </div>
 
-        <div className="border-t border-grey-90 flex items-center justify-end gap-2 p-4">
+        <div className="border-t border-grey-border flex items-center justify-end gap-2 p-4">
           <Modal.Close asChild>
             <ButtonV2 variant="secondary" type="button">
               {t('common:cancel')}

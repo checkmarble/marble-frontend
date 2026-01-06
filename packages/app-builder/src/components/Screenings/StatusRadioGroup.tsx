@@ -36,8 +36,8 @@ type RadioItemProps = {
 const radio = cva('transition-colors flex items-center gap-2 rounded-sm', {
   variants: {
     checked: {
-      true: 'text-purple-65',
-      false: 'text-grey-90 cursor-pointer',
+      true: 'text-purple-primary',
+      false: 'text-grey-border cursor-pointer',
     },
   },
 });

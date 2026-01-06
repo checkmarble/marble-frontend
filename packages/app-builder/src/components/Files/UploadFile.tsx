@@ -111,7 +111,7 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
           {...getRootProps()}
           className={clsx(
             'text-s flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
-            isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
+            isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
           )}
         >
           <input {...getInputProps()} />
@@ -120,7 +120,7 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
             <>
               <p className="text-center">{t('cases:drop_file_cta')}</p>
               <p>{t('cases:drop_file_accepted_types')}</p>
-              <p className="text-grey-80 uppercase">{t('common:or')}</p>
+              <p className="text-grey-disabled uppercase">{t('common:or')}</p>
               <Button>
                 <Icon icon="plus" className="size-6" />
                 {t('cases:pick_file_cta')}
@@ -139,7 +139,7 @@ const Loading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
       )}
     >
       {t('common:loading')}

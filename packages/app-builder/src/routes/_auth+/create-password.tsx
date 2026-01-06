@@ -42,7 +42,7 @@ export default function ForgotPassword() {
           t={t}
           i18nKey="auth:reset-password.wrong_place"
           components={{
-            SignIn: <Link className="text-purple-65 underline" to={getRoute('/sign-in-email')} />,
+            SignIn: <Link className="text-purple-primary underline" to={getRoute('/sign-in-email')} />,
           }}
         />
       </p>

@@ -46,7 +46,7 @@ const FiltersMenuItem = forwardRef<
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
       <Icon icon={icon} className="size-5" />
-      <span className="text-s text-grey-00 font-normal first-letter:capitalize">{label}</span>
+      <span className="text-s text-grey-primary font-normal first-letter:capitalize">{label}</span>
     </FiltersDropdownMenu.Item>
   );
 });

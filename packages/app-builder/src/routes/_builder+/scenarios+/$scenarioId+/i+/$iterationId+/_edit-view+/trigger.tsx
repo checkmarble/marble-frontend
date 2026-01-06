@@ -154,7 +154,7 @@ export default function Trigger() {
   const getCopyToClipboardProps = useGetCopyToClipboard();
   return (
     <>
-      <Collapsible.Container className="bg-grey-100 max-w-3xl">
+      <Collapsible.Container className="bg-surface-card max-w-3xl">
         <Collapsible.Title>{t('scenarios:trigger.run_scenario.title')}</Collapsible.Title>
         <Collapsible.Content>
           <div className="flex flex-col">
@@ -186,7 +186,7 @@ export default function Trigger() {
                           ScenarioIdLabel: <code className="select-none" />,
                           ScenarioIdValue: (
                             <code
-                              className="border-grey-90 cursor-pointer select-none rounded-xs border px-1"
+                              className="border-grey-border cursor-pointer select-none rounded-xs border px-1"
                               {...getCopyToClipboardProps(scenarioIteration.scenarioId)}
                             />
                           ),
@@ -212,7 +212,7 @@ export default function Trigger() {
         </Collapsible.Content>
       </Collapsible.Container>
 
-      <Collapsible.Container className="bg-grey-100 max-w-3xl">
+      <Collapsible.Container className="bg-surface-card max-w-3xl">
         <Collapsible.Title>{t('scenarios:trigger.trigger_object.title')}</Collapsible.Title>
         <Collapsible.Content>
           <Callout variant="outlined" className="mb-4 lg:mb-6">
@@ -228,7 +228,7 @@ export default function Trigger() {
           </Callout>
           <div className="flex flex-col gap-2 lg:gap-4">
             {isTriggerNull ? (
-              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded-sm border p-2">
+              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded-sm border p-2 dark:bg-transparent">
                 <span>
                   <Trans
                     t={t}

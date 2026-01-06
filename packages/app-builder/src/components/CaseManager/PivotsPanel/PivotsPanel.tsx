@@ -40,7 +40,7 @@ export function PivotsPanel(props: PivotsPanelProps) {
     <>
       <div ref={sentinelRef} />
       <div
-        className={clsx('bg-grey-100 sticky top-0 z-10 flex items-center', {
+        className={clsx('bg-surface-card sticky top-0 z-10 flex items-center', {
           'shadow-sticky-top': !intersection?.isIntersecting,
         })}
       >

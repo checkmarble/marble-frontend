@@ -15,7 +15,7 @@ export const MemberShip = ({ membershipMember }: { membershipMember: MembershipM
               ) : (
                 <div className="font-semibold"></div>
               )}
-              <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-grey-100">
+              <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-surface-card">
                 <div className="flex flex-col gap-2">
                   <div className="col-span-full flex w-full flex-wrap gap-1">
                     <span className="font-semibold">

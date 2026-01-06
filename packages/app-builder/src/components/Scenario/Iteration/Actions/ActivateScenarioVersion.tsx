@@ -111,7 +111,7 @@ function ActivateScenarioVersionContent({
                 <Tooltip.Default
                   content={<p className="max-w-60">{t('scenarios:deployment_modal.activate.live_version.tooltip')}</p>}
                 >
-                  <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
+                  <Icon icon="tip" className="hover:text-purple-primary text-purple-disabled size-6" />
                 </Tooltip.Default>
               </div>
             )}
@@ -162,7 +162,7 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
   if (ruleSnoozesQuery.isPending) return <Spinner className="size-5 shrink-0" />;
 
   if (ruleSnoozesQuery.isError) {
-    return <div className="text-s text-red-47">{t('common:errors.unknown')}</div>;
+    return <div className="text-s text-red-primary">{t('common:errors.unknown')}</div>;
   }
 
   const ruleSnoozes = ruleSnoozesQuery.data.ruleSnoozes;
@@ -170,7 +170,7 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
 
   if (!hasSnoozesActive) {
     return (
-      <p className="text-grey-50 text-s first-letter:capitalize">
+      <p className="text-grey-placeholder text-s first-letter:capitalize">
         {t('scenarios:deployment_modal.activate.without_rule_snooze')}
       </p>
     );
@@ -178,7 +178,7 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
 
   return (
     <CollapsibleV2.Provider>
-      <CollapsibleV2.Title className="text-grey-50 group flex flex-row items-center">
+      <CollapsibleV2.Title className="text-grey-placeholder group flex flex-row items-center">
         <Icon
           icon="arrow-2-up"
           aria-hidden
@@ -198,12 +198,12 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
                   <Icon
                     className={clsx(
                       'size-5 shrink-0',
-                      hasSnoozesActive === true && 'text-green-38',
-                      hasSnoozesActive === false && 'text-red-47',
+                      hasSnoozesActive === true && 'text-green-primary',
+                      hasSnoozesActive === false && 'text-red-primary',
                     )}
                     icon={hasSnoozesActive ? 'tick' : 'cross'}
                   />
-                  <span className="text-s text-grey-00 font-normal">{rule.name}</span>
+                  <span className="text-s text-grey-primary font-normal">{rule.name}</span>
                 </li>
               );
             })}

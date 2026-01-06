@@ -28,8 +28,8 @@ export function FilesList({ files, downloadEndpoint, uploadEndpoint }: FilesList
 
   if (files.length === 0) {
     return (
-      <div className="bg-grey-100 border-grey-90 rounded-lg border p-4">
-        <span className="text-grey-50 text-s whitespace-pre">
+      <div className="bg-surface-card border-grey-border rounded-lg border p-4">
+        <span className="text-grey-placeholder text-s whitespace-pre">
           <Trans
             t={t}
             i18nKey="cases:case_detail.no_files"
@@ -94,7 +94,7 @@ export function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps,
   });
 
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-96">
+    <Table.Container {...getContainerProps()} className="bg-surface-card max-h-96">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

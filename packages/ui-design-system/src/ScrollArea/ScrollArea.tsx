@@ -23,7 +23,7 @@ const ScrollAreaScrollbar = forwardRef<HTMLDivElement, ScrollAreaScrollbarProps 
     <Scrollbar
       ref={ref}
       className={clsx(
-        'bg-grey-98 radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-95 radix-orientation-horizontal:flex-col flex touch-none select-none p-0.5 transition',
+        'bg-grey-background-light radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-background radix-orientation-horizontal:flex-col flex touch-none select-none p-0.5 transition',
         className,
       )}
       orientation={orientation}
@@ -35,13 +35,13 @@ ScrollAreaScrollbar.displayName = Scrollbar?.displayName;
 
 const ScrollAreaThumb = forwardRef<HTMLDivElement, ScrollAreaThumbProps & RefAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <Thumb ref={ref} className={clsx('bg-grey-80 relative flex-1 rounded-lg', className)} {...props} />
+    <Thumb ref={ref} className={clsx('bg-grey-disabled relative flex-1 rounded-lg', className)} {...props} />
   ),
 );
 ScrollAreaThumb.displayName = Thumb?.displayName;
 
 const ScrollAreaCorner = forwardRef<HTMLDivElement, ScrollAreaCornerProps & RefAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <Corner ref={ref} className={clsx('bg-grey-95', className)} {...props} />,
+  ({ className, ...props }, ref) => <Corner ref={ref} className={clsx('bg-grey-background', className)} {...props} />,
 );
 ScrollAreaCorner.displayName = Corner?.displayName;
 
@@ -95,18 +95,18 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(fun
       {orientation !== 'vertical' ? (
         <Scrollbar
           orientation="horizontal"
-          className="hover:bg-grey-90 m-px flex h-1 touch-none select-none flex-col rounded-full transition-colors"
+          className="hover:bg-grey-border m-px flex h-1 touch-none select-none flex-col rounded-full transition-colors"
         >
-          <Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
+          <Thumb className="bg-grey-disabled hover:bg-grey-placeholder flex-1 rounded-full" />
         </Scrollbar>
       ) : null}
 
       {orientation !== 'horizontal' ? (
         <Scrollbar
           orientation="vertical"
-          className="hover:bg-grey-90 m-px flex w-1 touch-none select-none flex-row rounded-full transition-colors"
+          className="hover:bg-grey-border m-px flex w-1 touch-none select-none flex-row rounded-full transition-colors"
         >
-          <Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
+          <Thumb className="bg-grey-disabled hover:bg-grey-placeholder flex-1 rounded-full" />
         </Scrollbar>
       ) : null}
 

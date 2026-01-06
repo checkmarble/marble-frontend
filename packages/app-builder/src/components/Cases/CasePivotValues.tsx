@@ -41,8 +41,8 @@ export function CasePivotValues({
                   tabIndex={-1}
                   className={clsx(
                     'cursor-pointer transition-colors',
-                    pivot.type === 'field' && 'text-grey-80 hover:text-grey-50',
-                    pivot.type === 'link' && 'hover:text-purple-65 text-purple-82',
+                    pivot.type === 'field' && 'text-grey-disabled hover:text-grey-placeholder',
+                    pivot.type === 'link' && 'hover:text-purple-primary text-purple-disabled',
                   )}
                 >
                   <Icon icon="tip" className="size-5" />
@@ -50,13 +50,13 @@ export function CasePivotValues({
                 <Ariakit.Hovercard
                   portal
                   gutter={16}
-                  className="bg-grey-100 border-grey-90 flex w-fit rounded-sm border p-2 shadow-md"
+                  className="bg-surface-card border-grey-border flex w-fit rounded-sm border p-2 shadow-md"
                 >
                   <PivotDetails pivot={pivot} />
                 </Ariakit.Hovercard>
               </Ariakit.HovercardProvider>
             </Tag>
-            <CopyToClipboardButton toCopy={value} className="bg-grey-100">
+            <CopyToClipboardButton toCopy={value} className="bg-surface-card">
               <span className="text-s line-clamp-1 max-w-40 font-normal">{value}</span>
             </CopyToClipboardButton>
           </React.Fragment>

@@ -17,16 +17,21 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
     <span
       ref={ref}
       className={clsx(
-        'inline-flex items-center justify-center',
+        'inline-flex items-center justify-center border border-transparent dark:bg-transparent',
         {
-          'bg-purple-96 text-purple-65': color === 'purple',
-          'bg-blue-96 text-blue-58': color === 'blue',
-          'bg-green-94 text-green-38': color === 'green',
-          'bg-yellow-90 text-yellow-50': color === 'yellow',
-          'bg-orange-95 text-orange-50': color === 'orange',
-          'bg-red-95 text-red-47': color === 'red',
-          'bg-grey-95 text-grey-50': color === 'grey',
-          'bg-grey-100 text-grey-00': color === 'grey-light',
+          'bg-purple-background text-purple-primary dark:border-purple-primary dark:text-purple-primary':
+            color === 'purple',
+          'bg-blue-96 text-blue-58 dark:border-blue-58 dark:text-blue-58': color === 'blue',
+          'bg-green-background-light text-green-primary dark:border-green-primary dark:text-green-primary':
+            color === 'green',
+          'bg-yellow-background text-yellow-primary dark:border-yellow-primary dark:text-yellow-primary':
+            color === 'yellow',
+          'bg-orange-background-light text-orange-primary dark:border-orange-primary dark:text-orange-primary':
+            color === 'orange',
+          'bg-red-background text-red-primary dark:border-red-primary dark:text-red-primary': color === 'red',
+          'bg-grey-background text-grey-placeholder dark:border-grey-secondary dark:text-grey-secondary':
+            color === 'grey',
+          'bg-surface-card text-grey-primary dark:border-grey-primary dark:text-grey-primary': color === 'grey-light',
         },
         {
           'rounded-full': border === 'rounded-sm',

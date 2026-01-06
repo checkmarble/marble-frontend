@@ -174,7 +174,7 @@ export default function ScenarioHome() {
         <Page.ContentV2 centered className="flex flex-col gap-v2-lg w-225">
           <VersionSection scenarioIterations={scenarioIterations} />
           <section className="flex flex-col gap-v2-sm">
-            <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.execution')}</h2>
+            <h2 className="text-grey-primary text-m font-semibold">{t('scenarios:home.execution')}</h2>
             <div className="grid max-w-[1000px] grid-cols-2 gap-v2-sm">
               <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
               <BatchSection
@@ -253,7 +253,7 @@ function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIt
 
   return (
     <section className="flex gap-4 justify-between items-center">
-      <h2 className="text-grey-00 text-h1 font-semibold">
+      <h2 className="text-grey-primary text-h1 font-semibold">
         {t('scenarios:home.versions', {
           count: scenarioIterations.length,
         })}
@@ -263,7 +263,7 @@ function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIt
         {quickDraft ? <QuickVersionAccess scenarioIteration={quickDraft} /> : null}
         {labelledOtherVersions.length > 0 ? (
           <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
-            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 bg-white border border-grey-border rounded-v2-md font-medium px-v2-sm py-v2-xs outline-hidden transition-colors">
+            <MenuButton className="text-s text-grey-primary hover:text-purple-primary focus:text-purple-primary bg-surface-card border border-grey-border rounded-v2-md font-medium px-v2-sm py-v2-xs outline-hidden transition-colors">
               {t('scenarios:home.other_versions', {
                 count: otherVersions.length,
               })}
@@ -288,11 +288,11 @@ function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: Scenario
         iterationId: fromUUIDtoSUUID(scenarioIteration.id),
       })}
       className={CtaV2ClassName({ variant: 'secondary' })}
-      // className="bg-grey-100 border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
+      // className="bg-surface-card border-grey-border text-grey-primary text-s hover:bg-grey-background active:bg-grey-border flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
     >
-      <span className="text-grey-00 text-s font-semibold capitalize">{currentFormattedVersion}</span>
+      <span className="text-grey-primary text-s font-semibold capitalize">{currentFormattedVersion}</span>
       {currentFormattedLive ? (
-        <span className="text-s text-purple-65 font-semibold capitalize">{currentFormattedLive}</span>
+        <span className="text-s text-purple-primary font-semibold capitalize">{currentFormattedLive}</span>
       ) : null}
     </Link>
   );
@@ -311,14 +311,14 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
   return (
     <section
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md',
-        isExecutionOngoing && 'border-purple-65',
+        'bg-surface-card border-grey-border relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md',
+        isExecutionOngoing && 'border-purple-primary',
       )}
     >
       <div className="flex items-center gap-v2-md">
-        <h3 className="text-grey-00 font-medium">{t('scenarios:home.testrun')}</h3>
+        <h3 className="text-grey-primary font-medium">{t('scenarios:home.testrun')}</h3>
         {isExecutionOngoing ? (
-          <div className="text-grey-100 text-s bg-purple-65 flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
+          <div className="text-grey-white text-s bg-purple-primary flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
             <Spinner className="size-3" />
             {t('scenarios:home.execution.batch.ongoing')}
           </div>
@@ -380,8 +380,8 @@ function RealTimeSection({
   const isLive = liveScenarioIteration !== undefined;
 
   return (
-    <div className="bg-grey-100 border-grey-90 flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md">
-      <h3 className="text-grey-00 font-medium">{t('scenarios:home.execution.real_time')}</h3>
+    <div className="bg-surface-card border-grey-border flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md">
+      <h3 className="text-grey-primary font-medium">{t('scenarios:home.execution.real_time')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
           <span>
@@ -394,7 +394,7 @@ function RealTimeSection({
             />
           </span>
           <span
-            className={clsx('text-grey-00 text-s inline-flex items-center font-semibold', {
+            className={clsx('text-grey-primary text-s inline-flex items-center font-semibold', {
               'whitespace-pre': isLive,
             })}
           >
@@ -458,14 +458,14 @@ function BatchSection({
   return (
     <div
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md',
-        isExecutionOngoing && 'border-purple-65',
+        'bg-surface-card border-grey-border relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md',
+        isExecutionOngoing && 'border-purple-primary',
       )}
     >
       <div className="flex items-center gap-v2-md">
-        <h3 className="text-grey-00 font-medium">{t('scenarios:home.execution.batch')}</h3>
+        <h3 className="text-grey-primary font-medium">{t('scenarios:home.execution.batch')}</h3>
         {isExecutionOngoing ? (
-          <div className="text-grey-100 text-s bg-purple-65 flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
+          <div className="text-grey-white text-s bg-purple-primary flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
             <Spinner className="size-3" />
             {t('scenarios:home.execution.batch.ongoing')}
           </div>
@@ -476,12 +476,12 @@ function BatchSection({
         <div className="flex flex-col gap-4">
           <span>{t('scenarios:home.execution.batch.callout')}</span>
           {formattedSchedule ? (
-            <span className="text-grey-00 text-s text-balance font-semibold">
+            <span className="text-grey-primary text-s text-balance font-semibold">
               <Trans
                 t={t}
                 i18nKey="scenarios:scheduled"
                 components={{
-                  ScheduleLocale: <span className="text-purple-65" />,
+                  ScheduleLocale: <span className="text-purple-primary" />,
                 }}
                 values={{
                   schedule: formattedSchedule,
@@ -555,8 +555,8 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
   let tooltip: string | undefined;
 
   return (
-    <section className="bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md">
-      <h3 className="text-grey-00 font-medium">{t('scenarios:home.workflow')}</h3>
+    <section className="bg-surface-card border-grey-border relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md">
+      <h3 className="text-grey-primary font-medium">{t('scenarios:home.workflow')}</h3>
 
       {access === 'test' ? (
         <Nudge
@@ -571,20 +571,20 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
 
       <div className="flex flex-row gap-4">
         {tag ? (
-          <div className="bg-purple-98 text-s text-purple-65 flex h-10 flex-row items-center gap-2 rounded-sm px-2 uppercase">
+          <div className="bg-purple-background-light text-s text-purple-primary flex h-10 flex-row items-center gap-2 rounded-sm px-2 uppercase">
             {tag}
             {tooltip ? (
               <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
                 <Ariakit.HovercardAnchor
                   tabIndex={-1}
-                  className="text-purple-82 hover:text-purple-65 cursor-pointer transition-colors"
+                  className="text-purple-disabled hover:text-purple-primary cursor-pointer transition-colors"
                 >
                   <Icon icon="tip" className="size-5" />
                 </Ariakit.HovercardAnchor>
                 <Ariakit.Hovercard
                   portal
                   gutter={8}
-                  className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
+                  className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
                 >
                   {tooltip}
                 </Ariakit.Hovercard>
@@ -594,9 +594,9 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
         ) : null}
 
         {rulesQuery.isLoading ? (
-          <div className="bg-grey-90 h-7 w-30 animate-pulse rounded-v2-md flex items-center gap-v2-xs px-v2-sm">
-            <div className="bg-grey-80 size-3.5 animate-pulse rounded-sm" />
-            <div className="bg-grey-80 h-4 w-16 animate-pulse rounded-sm" />
+          <div className="bg-grey-border h-7 w-30 animate-pulse rounded-v2-md flex items-center gap-v2-xs px-v2-sm">
+            <div className="bg-grey-disabled size-3.5 animate-pulse rounded-sm" />
+            <div className="bg-grey-disabled h-4 w-16 animate-pulse rounded-sm" />
           </div>
         ) : (
           <Link
@@ -646,18 +646,18 @@ function ResourcesSection() {
   const { t } = useTranslation(handle.i18n);
   return (
     <section className="flex flex-col gap-v2-sm">
-      <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.resources')}</h2>
+      <h2 className="text-grey-primary text-m font-semibold">{t('scenarios:home.resources')}</h2>
       <div className="flex flex-row gap-v2-sm">
         {resources.map(({ tKey, href, src }) => (
           <a
             key={tKey}
             href={href}
-            className="border-grey-90 hover:border-purple-65 focus:border-purple-65 group flex flex-col overflow-hidden rounded-v2-lg border outline-hidden transition-colors"
+            className="border-grey-border hover:border-purple-primary focus:border-purple-primary group flex flex-col overflow-hidden rounded-v2-lg border outline-hidden transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
             <img src={src} alt="" className="aspect-[21/9] object-cover" />
-            <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-v2-sm font-medium transition-colors">
+            <span className="border-grey-border bg-surface-card text-s group-hover:border-purple-primary group-focus:border-purple-primary flex flex-row items-center justify-between border-t p-v2-sm font-medium transition-colors">
               {t(tKey)}
               <Icon aria-hidden icon="arrow-right" className="size-3.5" />
             </span>

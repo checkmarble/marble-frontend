@@ -33,7 +33,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
       columnHelper.accessor((row) => row.execs, {
         id: 'execs',
         header: () => (
-          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+          <div className="text-s text-grey-primary flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.execs')}
             <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.execs.tooltip')} />
           </div>
@@ -42,7 +42,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
       columnHelper.accessor((row) => row.hits, {
         id: 'hits',
         header: () => (
-          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+          <div className="text-s text-grey-primary flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.hits')}
             <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.hits.tooltip')} />
           </div>
@@ -51,7 +51,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
         header: () => (
-          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+          <div className="text-s text-grey-primary flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.hit_ratio')}
             <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.hit_ratio.tooltip')} />
           </div>
@@ -61,7 +61,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
       columnHelper.accessor((row) => row.avgHitsPerScreening, {
         id: 'avgHitsPerScreening',
         header: () => (
-          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+          <div className="text-s text-grey-primary flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.avg_hits_per_screening')}
             <AnalyticsTooltip
               className="size-4"
@@ -83,18 +83,18 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
     enableSorting: false,
   });
   return (
-    <div className="bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:screening_hits.title')}</h2>
       </div>
       <div aria-busy={isLoading} className="relative">
         {isLoading ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-background-light/80 hover:bg-grey-background/80">
             <Spinner className="size-6" />
           </div>
         ) : null}
         <div className="flex w-full flex-col items-start gap-v2-md">
-          <Table.Container {...getContainerProps()} className="bg-grey-100 w-full">
+          <Table.Container {...getContainerProps()} className="bg-surface-card w-full">
             <Table.Header headerGroups={table.getHeaderGroups()} />
             <Table.Body {...getBodyProps()}>
               {rows.map((row) => (
@@ -102,11 +102,11 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
               ))}
               {!expanded && data.length > 5 ? (
                 <tr
-                  className="even:bg-grey-98 h-12 hover:bg-purple-98 cursor-pointer"
+                  className="even:bg-surface-row h-12 hover:bg-purple-background-light cursor-pointer"
                   onClick={() => setExpanded(true)}
                 >
                   <td
-                    className="text-s w-full truncate px-4 font-medium text-purple-65"
+                    className="text-s w-full truncate px-4 font-medium text-purple-primary"
                     colSpan={table.getHeaderGroups()[0]?.headers.length ?? 5}
                   >
                     {t('analytics:rule_hits.see_more.label')}
@@ -118,7 +118,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         </div>
         {!isLoading && !data.length ? (
           <div className="flex items-center justify-center h-full min-h-40">
-            <span className="text-v2-md text-grey-80">{t('analytics:no_data')}</span>
+            <span className="text-v2-md text-grey-disabled">{t('analytics:no_data')}</span>
           </div>
         ) : null}
       </div>

@@ -42,7 +42,7 @@ export const TableFilterMenu = ({ onSelect }: TableFilterMenuProps) => {
       <MenuCommand.List className="max-h-40">
         {matches.map((table) => (
           <MenuCommand.Item key={table.id} value={table.name} onSelect={() => onSelect(table.id)}>
-            <Highlight text={table.name} query={deferredValue} className="text-grey-00 text-s" />
+            <Highlight text={table.name} query={deferredValue} className="text-grey-primary text-s" />
           </MenuCommand.Item>
         ))}
       </MenuCommand.List>

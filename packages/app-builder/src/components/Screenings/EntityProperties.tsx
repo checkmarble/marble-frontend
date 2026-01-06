@@ -82,7 +82,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                           e.preventDefault();
                           handleShowMore(property);
                         }}
-                        className="text-purple-65 font-semibold"
+                        className="text-purple-primary font-semibold"
                       >
                         + {restItemsCount} more
                       </button>
@@ -90,7 +90,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                   ) : null}
                 </>
               ) : (
-                <span className="text-grey-50">not available</span>
+                <span className="text-grey-placeholder">not available</span>
               )}
             </span>
           </Fragment>

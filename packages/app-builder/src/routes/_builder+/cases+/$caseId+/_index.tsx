@@ -256,7 +256,7 @@ export default function CaseManagerIndexPage() {
               {() => (
                 <AiAssist.Content>
                   <div className="p-4 h-full flex flex-col gap-2 justify-between">
-                    <div className="border border-grey-90 rounded-md p-2 grow min-h-0">
+                    <div className="border border-grey-border rounded-md p-2 grow min-h-0">
                       {mostRecentReview
                         ? (() => {
                             return (
@@ -269,7 +269,7 @@ export default function CaseManagerIndexPage() {
                                         icon={mostRecentReview.review.ok ? 'tick' : 'cross'}
                                         className={cn(
                                           'size-5',
-                                          mostRecentReview.review.ok ? 'text-green-34' : 'text-red-47',
+                                          mostRecentReview.review.ok ? 'text-green-primary' : 'text-red-primary',
                                         )}
                                       />
                                     </TabsTrigger>

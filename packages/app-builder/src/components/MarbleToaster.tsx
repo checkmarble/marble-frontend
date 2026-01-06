@@ -41,6 +41,11 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: toastSession.To
       position="top-center"
       containerClassName={headerHeight({ type: 'mt' })}
       toastOptions={{
+        className: 'bg-surface-card text-grey-primary',
+        style: {
+          background: 'var(--color-surface-card)',
+          color: 'var(--color-grey-primary)',
+        },
         loading: {
           icon: LoaderIcon,
         },
@@ -53,7 +58,13 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: toastSession.To
       }}
     >
       {(currentToast) => (
-        <ToastBar toast={currentToast}>
+        <ToastBar
+          toast={currentToast}
+          style={{
+            background: 'var(--color-surface-card)',
+            color: 'var(--color-grey-primary)',
+          }}
+        >
           {({ icon, message }) => (
             <>
               {icon}
@@ -78,8 +89,8 @@ function getMessage(message: string) {
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-s text-grey-00">{message}</p>
-      <p className="text-grey-50 text-xs">In dev, toast may be displayed twice due to strict mode</p>
+      <p className="text-s text-grey-primary">{message}</p>
+      <p className="text-grey-secondary text-xs">In dev, toast may be displayed twice due to strict mode</p>
     </div>
   );
 }
@@ -87,20 +98,20 @@ function getMessage(message: string) {
 const LoaderIcon = (
   <div
     aria-hidden
-    className="border-grey-98 border-r-grey-50 box-border size-4 shrink-0 animate-spin rounded-full border-2 border-solid"
+    className="border-grey-border border-r-grey-placeholder box-border size-4 shrink-0 animate-spin rounded-full border-2 border-solid"
   />
 );
 
 const ErrorIcon = (
   <div
     aria-hidden
-    className="animate-circle-animation after:animate-first-line-animation after:bg-grey-100 before:animate-second-line-animation before:bg-grey-100 bg-red-47 relative size-5 shrink-0 rotate-45 rounded-full delay-100 before:absolute before:bottom-[9px] before:left-1 before:h-[2px] before:w-3 before:rounded-lg before:delay-150 after:absolute after:bottom-[9px] after:left-1 after:h-[2px] after:w-3 after:rounded-lg after:delay-150"
+    className="animate-circle-animation after:animate-first-line-animation after:bg-[#FFFFFF] before:animate-second-line-animation before:bg-[#FFFFFF] bg-red-primary relative size-5 shrink-0 rotate-45 rounded-full delay-100 before:absolute before:bottom-[9px] before:left-1 before:h-[2px] before:w-3 before:rounded-lg before:delay-150 after:absolute after:bottom-[9px] after:left-1 after:h-[2px] after:w-3 after:rounded-lg after:delay-150"
   />
 );
 
 const SuccessIcon = (
   <div
     aria-hidden
-    className="animate-circle-animation after:animate-checkmark-animation after:border-grey-100 bg-green-38 relative size-5 shrink-0 rotate-45 rounded-full delay-100 after:absolute after:bottom-[6px] after:left-[6px] after:box-border after:h-[10px] after:w-[6px] after:border-b-2 after:border-r-2 after:border-solid after:delay-200"
+    className="animate-circle-animation after:animate-checkmark-animation after:border-grey-white bg-green-primary relative size-5 shrink-0 rotate-45 rounded-full delay-100 after:absolute after:bottom-[6px] after:left-[6px] after:box-border after:h-[10px] after:w-[6px] after:border-b-2 after:border-r-2 after:border-solid after:delay-200"
   />
 );

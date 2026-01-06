@@ -33,7 +33,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <span className="text-m font-semibold">{t('screenings:potential_matches')}</span>
-          <span className="text-grey-50 text-s">
+          <span className="text-grey-placeholder text-s">
             {t('screenings:callout.needs_review', {
               toReview: matchesToReviewCount,
               totalMatches: screening.matches.length,
@@ -51,7 +51,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
           .when(
             (sc) => sc.status === 'in_review' && sc.partial,
             (sc: ScreeningSuccess) => (
-              <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded-sm p-2">
+              <div className="text-s bg-red-background text-red-primary flex items-center gap-2 rounded-sm p-2">
                 <Icon icon="error" className="size-5 shrink-0" />
                 {t('screenings:callout.needs_refine', {
                   matchCount: sc.request.limit,

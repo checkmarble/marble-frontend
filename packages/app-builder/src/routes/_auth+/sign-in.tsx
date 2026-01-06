@@ -99,7 +99,7 @@ export default function Login() {
               onClick={() => navigate(getRoute('/oidc/auth'))}
               disabled={loading}
             >
-              <span className="text-s text-grey-100 w-full whitespace-nowrap text-center align-middle font-medium">
+              <span className="text-s text-grey-white w-full whitespace-nowrap text-center align-middle font-medium">
                 Sign in with OpenID Connect
               </span>
               <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
@@ -125,9 +125,9 @@ export default function Login() {
       {authProvider == 'firebase' ? (
         <>
           <div className="flex items-center gap-4 self-stretch">
-            <div className="h-px bg-grey-90 grow" />
+            <div className="h-px bg-grey-border grow" />
             <span>{t('common:or')}</span>
-            <div className="h-px bg-grey-90 grow" />
+            <div className="h-px bg-grey-border grow" />
           </div>
           <div className="flex flex-col gap-8">
             <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>

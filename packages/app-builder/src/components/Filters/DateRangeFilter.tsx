@@ -115,7 +115,7 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
   return (
     <div className={clsx('flex flex-col gap-4 p-4', className)}>
       <div className="flex items-center">
-        <p className="text-grey-80 text-s font-normal first-letter:capitalize">{title}</p>
+        <p className="text-grey-primary text-s font-normal first-letter:capitalize">{title}</p>
       </div>
       <div className="flex flex-col gap-1">
         {fromNowDurations.map((duration) => (
@@ -125,9 +125,10 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
               onFromNowSelect(duration);
             }}
             className={clsx(
-              'text-s bg-grey-100 text-grey-00 border-grey-100 flex h-10 items-center rounded-sm border p-2 outline-hidden',
-              'hover:bg-purple-98 active:bg-purple-96 hover:text-purple-65',
-              fromNow === duration && 'bg-purple-96 border-purple-65 text-purple-65', // highlight the currently selected
+              'text-s bg-surface-card text-grey-primary border-grey-white dark:border-grey-border flex h-10 items-center rounded-sm border p-2 outline-hidden',
+              'hover:bg-purple-background-light active:bg-purple-background hover:text-purple-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
+              fromNow === duration &&
+                'bg-purple-background border-purple-primary text-purple-primary dark:bg-grey-background-light dark:text-purple-hover', // highlight the currently selected
             )}
           >
             <time dateTime={duration}>{formatDuration(duration, language)}</time>
@@ -163,7 +164,10 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
   if (fromNow) {
     return (
       <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
-        <time className="text-s text-grey-00 flex h-10 items-center rounded-sm p-2 outline-hidden" dateTime={fromNow}>
+        <time
+          className="text-s text-grey-primary flex h-10 items-center rounded-sm p-2 outline-hidden"
+          dateTime={fromNow}
+        >
           {t('filters:up_to', {
             duration: formatDuration(fromNow, language),
           })}
@@ -191,8 +195,8 @@ function FormatStaticDate({ date, className }: { date?: string | Date; className
     <time
       dateTime={dateTime}
       className={clsx(
-        'border-grey-90 h-10 w-fit rounded-sm border p-2',
-        date ? 'text-grey-00' : 'text-grey-50',
+        'border-grey-border h-10 w-fit rounded-sm border p-2',
+        date ? 'text-grey-primary' : 'text-grey-placeholder',
         className,
       )}
     >

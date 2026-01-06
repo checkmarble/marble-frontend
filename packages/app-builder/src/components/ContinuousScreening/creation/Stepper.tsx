@@ -17,14 +17,14 @@ export const Stepper = () => {
           <Fragment key={step.name}>
             <div
               className={cn('size-5 flex items-center justify-center rounded-full bg-grey-background text-small', {
-                'bg-purple-96 text-purple-65': isCurrentStep,
+                'bg-purple-background text-purple-primary': isCurrentStep,
               })}
             >
               {index + 1}
             </div>
             <span
               aria-selected={isCurrentStep}
-              className="aria-selected:text-purple-65"
+              className="aria-selected:text-purple-primary"
               onClick={() => creationStepper.actions.setCurrentStep(index)}
             >
               {t(`continuousScreening:creation.stepper.${step.name}`)}

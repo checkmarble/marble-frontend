@@ -32,7 +32,7 @@ export function RuleGroupFilter() {
             );
           })}
           {matches.length === 0 ? (
-            <p className="text-grey-50 text-xs">
+            <p className="text-grey-placeholder text-xs">
               {ruleGroups.length > 0
                 ? t('scenarios:edit_rule.rule_group.empty_matches')
                 : t('scenarios:edit_rule.rule_group.no_rule_groups')}

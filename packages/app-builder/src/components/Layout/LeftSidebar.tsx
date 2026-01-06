@@ -1,3 +1,4 @@
+import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import clsx from 'clsx';
 import type * as React from 'react';
@@ -24,7 +25,7 @@ export function LeftSidebar({ children }: { children: React.ReactNode }) {
   return (
     <div
       aria-expanded={isExpanded}
-      className="bg-grey-100 group/nav border-e-grey-90 z-20 flex max-h-screen w-14 shrink-0 flex-col border-e transition-all aria-expanded:w-[235px]"
+      className="bg-surface-sidebar group/nav border-e-grey-border z-20 flex max-h-screen w-14 shrink-0 flex-col border-e transition-all aria-expanded:w-[235px] dark:border-e-grey-border"
     >
       {children}
     </div>
@@ -51,6 +52,18 @@ export function ToggleSidebar() {
           {...props}
         />
       )}
+    />
+  );
+}
+
+export function ToggleTheme() {
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <SidebarButton
+      onClick={toggleTheme}
+      labelTKey={theme === 'dark' ? 'navigation:light_mode' : 'navigation:dark_mode'}
+      Icon={(props) => <Icon icon={theme === 'dark' ? 'light_mode' : 'dark_mode'} {...props} />}
     />
   );
 }

@@ -22,16 +22,19 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
   if (fuzzyMatchConfig.isEditableAlgorithm(algorithm)) {
     return (
       <div className="flex flex-1 flex-col gap-2">
-        <label htmlFor="algorithm" className="text-m text-grey-00 font-normal">
+        <label htmlFor="algorithm" className="text-m text-grey-primary font-normal">
           {t('scenarios:edit_fuzzy_match.algorithm.label')}
         </label>
         <Select.Root value={algorithm} onValueChange={onValueChange}>
           <Select.Trigger id="algorithm" className={operatorContainerClassnames()}>
-            <span className="text-s text-grey-00 w-full text-center font-medium">
+            <span className="text-s text-grey-primary w-full text-center font-medium">
               <Select.Value placeholder="..." />
             </span>
             <Tooltip.Default content={t(`scenarios:edit_fuzzy_match.algorithm.description.${algorithm}`)}>
-              <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-5 shrink-0 transition-colors" />
+              <Icon
+                icon="tip"
+                className="hover:text-purple-primary text-purple-disabled size-5 shrink-0 transition-colors"
+              />
             </Tooltip.Default>
           </Select.Trigger>
           <Select.Content className="max-h-60">
@@ -49,7 +52,7 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
                         fuzzyMatchAlgorithm={fuzzyMatchAlgorithm}
                       />
                     </Select.ItemText>
-                    <p className="text-s text-grey-50">
+                    <p className="text-s text-grey-placeholder">
                       {t(`scenarios:edit_fuzzy_match.algorithm.description.${fuzzyMatchAlgorithm}`)}
                     </p>
                   </Select.Item>
@@ -64,8 +67,8 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
 
   return (
     <div className="flex flex-1 flex-col gap-2">
-      <span className="text-m text-grey-00 font-normal">{t('scenarios:edit_fuzzy_match.threshold.label')}</span>
-      <div className="bg-grey-98 border-grey-90 flex h-10 items-center justify-center rounded-sm border p-2 text-center">
+      <span className="text-m text-grey-primary font-normal">{t('scenarios:edit_fuzzy_match.threshold.label')}</span>
+      <div className="bg-grey-background-light border-grey-border flex h-10 items-center justify-center rounded-sm border p-2 text-center">
         <FuzzyMatchAlgorithmLabel fuzzyMatchConfig={fuzzyMatchConfig} fuzzyMatchAlgorithm={algorithm} />
       </div>
     </div>
@@ -81,7 +84,7 @@ function FuzzyMatchAlgorithmLabel({
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   return (
-    <span className="text-s text-grey-00 font-semibold">
+    <span className="text-s text-grey-primary font-semibold">
       {fuzzyMatchConfig.getAlgorithmName(t, fuzzyMatchAlgorithm)}
     </span>
   );

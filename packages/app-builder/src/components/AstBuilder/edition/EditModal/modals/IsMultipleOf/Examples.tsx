@@ -6,14 +6,14 @@ export function Examples({ divider }: { divider: number }) {
   const language = useFormatLanguage();
 
   return (
-    <table className="border-grey-90 table-auto border-collapse border">
+    <table className="border-grey-border table-auto border-collapse border">
       <caption className="sr-only">{t('scenarios:edit_is_multiple_of.examples.caption')}</caption>
       <thead>
         <tr>
-          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-primary bg-grey-background-light border-grey-border border px-2 text-start text-xs font-normal capitalize">
             {t('scenarios:edit_is_multiple_of.examples.value')}
           </th>
-          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-primary bg-grey-background-light border-grey-border border px-2 text-start text-xs font-normal capitalize">
             {t('scenarios:edit_is_multiple_of.examples.result')}
           </th>
         </tr>
@@ -43,13 +43,13 @@ export function Examples({ divider }: { divider: number }) {
           },
         ].map(({ left }) => (
           <tr key={`${left}`}>
-            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
+            <td className="text-grey-primary border-grey-border border px-2 text-xs font-normal">
               {formatNumber(left, {
                 language,
                 style: undefined,
               })}
             </td>
-            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
+            <td className="text-grey-primary border-grey-border border px-2 text-xs font-normal">
               {t(`common:${left % divider === 0}`)}
             </td>
           </tr>

@@ -11,7 +11,7 @@ export function EditThreshold({ threshold, setThreshold }: EditThresholdProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-2">
-      <label htmlFor="threshold" className="text-m text-grey-00 font-normal">
+      <label htmlFor="threshold" className="text-m text-grey-primary font-normal">
         {t('scenarios:edit_fuzzy_match.threshold.label')}
       </label>
       <Input

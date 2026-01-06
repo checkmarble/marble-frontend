@@ -24,7 +24,7 @@ export const FieldEntityType = ({
       <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <Button variant="secondary" size="medium" className="w-52 justify-between" disabled={editor === 'view'}>
-            <span className="text-grey-00 text-s font-medium">
+            <span className="text-grey-primary text-s font-medium">
               {match(entityType)
                 .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
                 .with('Person', () => t('scenarios:edit_sanction.entity_type.person'))
@@ -32,7 +32,7 @@ export const FieldEntityType = ({
                 .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
                 .otherwise(() => entityType)}
             </span>
-            <Icon icon="caret-down" className="text-grey-50 size-4" />
+            <Icon icon="caret-down" className="text-grey-placeholder size-4" />
           </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth className="mt-2">

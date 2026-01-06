@@ -18,46 +18,46 @@ export function ScoreOutcomeThresholds({
 
   return (
     <div className="relative flex h-[70px] w-full flex-row">
-      <div className="bg-green-94 border-b-green-38 isolate flex h-10 flex-1 items-center justify-center rounded-s-md border-b-4">
-        <span className="text-s text-green-38 font-semibold">{t('decisions:outcome.approve')}</span>
+      <div className="bg-green-background-light border-b-green-primary isolate flex h-10 flex-1 items-center justify-center rounded-s-md border-b-4">
+        <span className="text-s text-green-primary font-semibold">{t('decisions:outcome.approve')}</span>
       </div>
 
       {showReviewOutcome ? (
         <>
-          <div className="bg-grey-100 relative w-1">
-            <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
+          <div className="bg-surface-card relative w-1">
+            <span className="text-grey-primary text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
               {scoreReviewThreshold}
             </span>
           </div>
 
-          <div className="bg-yellow-90 flex h-10 flex-1 items-center justify-center border-b-4 border-b-yellow-50">
-            <span className="text-s font-semibold text-yellow-50">{t('decisions:outcome.review')}</span>
+          <div className="bg-yellow-background flex h-10 flex-1 items-center justify-center border-b-4 border-b-yellow-primary">
+            <span className="text-s font-semibold text-yellow-primary">{t('decisions:outcome.review')}</span>
           </div>
         </>
       ) : null}
 
       {showBlockAndReviewOutcome ? (
         <>
-          <div className="bg-grey-100 relative w-1">
-            <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
+          <div className="bg-surface-card relative w-1">
+            <span className="text-grey-primary text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
               {scoreBlockAndReviewThreshold}
             </span>
           </div>
 
-          <div className="bg-orange-95 flex h-10 flex-1 items-center justify-center border-b-4 border-b-orange-50">
-            <span className="text-s font-semibold text-orange-50">{t('decisions:outcome.block_and_review')}</span>
+          <div className="bg-orange-background-light flex h-10 flex-1 items-center justify-center border-b-4 border-b-orange-primary">
+            <span className="text-s font-semibold text-orange-primary">{t('decisions:outcome.block_and_review')}</span>
           </div>
         </>
       ) : null}
 
-      <div className="bg-grey-100 relative w-1">
-        <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
+      <div className="bg-surface-card relative w-1">
+        <span className="text-grey-primary text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
           {scoreDeclineThreshold}
         </span>
       </div>
 
-      <div className="bg-red-95 border-b-red-47 flex h-10 flex-1 items-center justify-center rounded-e-md border-b-4">
-        <span className="text-s text-red-47 font-semibold">{t('decisions:outcome.decline')}</span>
+      <div className="bg-red-background border-b-red-primary flex h-10 flex-1 items-center justify-center rounded-e-md border-b-4">
+        <span className="text-s text-red-primary font-semibold">{t('decisions:outcome.decline')}</span>
       </div>
     </div>
   );

@@ -57,7 +57,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
       <div
         ref={ref}
         className={cn(
-          'flex items-center justify-between sticky bottom-0 bg-white -mx-v2-lg -mb-v2-lg pt-v2-md px-v2-lg pb-v2-lg border-t border-transparent',
+          'flex items-center justify-between sticky bottom-0 bg-surface-page -mx-v2-lg -mb-v2-lg pt-v2-md px-v2-lg pb-v2-lg border-t border-transparent',
           className,
         )}
       >
@@ -72,7 +72,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
                 appearance="stroked"
                 size="default"
                 key={`pagination-limit-${limit}`}
-                className={cn(isActive && 'border-purple-65 text-purple-65')}
+                className={cn(isActive && 'border-purple-primary text-purple-primary')}
                 onClick={() => {
                   if (!isActive) {
                     setLimit(limit);

@@ -25,7 +25,7 @@ function CommentItem({ comment }: { comment: GroupedAnnotations['comments'][numb
       </div>
       <div className="flex items-start justify-between gap-2 pt-1">
         <div className="text-xs">{comment.payload.text}</div>
-        <span className="text-2xs text-grey-50 text-right">
+        <span className="text-2xs text-grey-placeholder text-right">
           <EventTime time={comment.created_at} />
         </span>
       </div>
@@ -42,7 +42,7 @@ export function ClientObjectComments({ comments, className }: ClientObjectCommen
   return (
     <div className={cn('relative z-0 flex flex-col text-xs', className)}>
       <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
-        <div className="bg-grey-90 -z-10 h-full w-px" />
+        <div className="bg-grey-border -z-10 h-full w-px" />
       </div>
       <div className="grid grid-cols-[24px_1fr] gap-2">
         {comments.length > 2 && !expanded ? (

@@ -126,9 +126,9 @@ export default function LoginWithEmail() {
         {!isSsoEnabled ? (
           <>
             <div className="flex items-center gap-4 self-stretch">
-              <div className="h-px bg-grey-90 grow" />
+              <div className="h-px bg-grey-border grow" />
               <span>{t('common:or')}</span>
-              <div className="h-px bg-grey-90 grow" />
+              <div className="h-px bg-grey-border grow" />
             </div>
             <div className="flex flex-col gap-8">
               <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>

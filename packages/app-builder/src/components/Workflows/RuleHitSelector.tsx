@@ -46,7 +46,7 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
     <MenuCommand.Menu open={open} onOpenChange={setOpen} persistOnSelect>
       <MenuCommand.Trigger>
         <MenuCommand.SelectButton
-          className={`min-w-0 flex-1 ${!pristine && selectedRuleIds.length === 0 ? 'border-red-47' : ''}`}
+          className={`min-w-0 flex-1 ${!pristine && selectedRuleIds.length === 0 ? 'border-red-primary' : ''}`}
         >
           {selectedRuleIds.length > 0 ? (
             <div className="flex flex-nowrap overflow-x-auto">
@@ -65,7 +65,7 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
                             {t('scenarios:logical_operator.or')}
                           </span>
                         )}
-                        <span className="font-medium  text-grey-00">{name}</span>
+                        <span className="font-medium  text-grey-primary">{name}</span>
                       </Fragment>
                     ))}
                     {extraCount ? (
@@ -78,7 +78,7 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
               })()}
             </div>
           ) : (
-            <span className="text-grey-80">{t('workflows:rule_hit_selector.placeholder')}</span>
+            <span className="text-grey-disabled">{t('workflows:rule_hit_selector.placeholder')}</span>
           )}
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
@@ -102,10 +102,10 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
                     <div className="flex items-center gap-2 p-3 hover:bg-grey-05 rounded-md cursor-pointer">
                       <div className="flex items-center justify-center w-5 h-5">
                         {selectedRuleIds.includes(rule.stableId) && (
-                          <Icon icon="tick" className="size-4 text-purple-65" />
+                          <Icon icon="tick" className="size-4 text-purple-primary" />
                         )}
                       </div>
-                      <span className="font-medium text-grey-00">{rule.name}</span>
+                      <span className="font-medium text-grey-primary">{rule.name}</span>
                     </div>
                   </MenuCommand.Item>
                 ))}

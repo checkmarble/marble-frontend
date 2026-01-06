@@ -94,7 +94,7 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
         <Examples config={props.fuzzMatchConfig} algorithm={props.algorithm} threshold={props.threshold.value} />
       </div>
       <div className="flex flex-col gap-2">
-        <p id="level" className="text-m text-grey-00 font-normal">
+        <p id="level" className="text-m text-grey-primary font-normal">
           {t('scenarios:edit_fuzzy_match.operands.label')}
         </p>
         <div className="flex gap-2">
@@ -109,8 +109,8 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
                 }}
                 validationStatus={getValidationStatus(evaluation, props.left.id)}
               />
-              <div className="border-grey-90 bg-grey-98 flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-2 text-center">
-                <span className="text-s text-grey-00 font-medium">{props.operatorDisplay}</span>
+              <div className="border-grey-border bg-grey-background-light flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-2 text-center">
+                <span className="text-s text-grey-primary font-medium">{props.operatorDisplay}</span>
               </div>
             </>
           ) : null}

@@ -35,7 +35,7 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
                 to={getDecisionRoute({
                   scheduledExecutionId: [row.original.id],
                 })}
-                className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-semibold hover:underline focus:underline"
+                className="hover:text-purple-hover focus:text-purple-hover text-purple-primary relative font-semibold hover:underline focus:underline"
               >
                 {formattedNumber}
               </Link>
@@ -112,7 +112,7 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
   });
 
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-[70dvh]">
+    <Table.Container {...getContainerProps()} className="bg-surface-card max-h-[70dvh]">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
@@ -125,12 +125,12 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Icon icon="tick" className="text-green-38 size-6 shrink-0" />;
+    return <Icon icon="tick" className="text-green-primary size-6 shrink-0" />;
   }
   if (status === 'failure' || status === 'partial_failure') {
-    return <Icon icon="cross" className="text-red-47 size-6 shrink-0" />;
+    return <Icon icon="cross" className="text-red-primary size-6 shrink-0" />;
   }
-  return <Icon icon="restart-alt" className="text-grey-50 size-6 shrink-0" />;
+  return <Icon icon="restart-alt" className="text-grey-placeholder size-6 shrink-0" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['scenarios']> => {

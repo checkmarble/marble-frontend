@@ -36,8 +36,8 @@ const CreationContentRecap = () => {
 
   return (
     <div
-      className={cn('bg-white rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm', {
-        'bg-green-94 border-green-68 text-green-38 group/recap-valid': isValid,
+      className={cn('bg-surface-card rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm', {
+        'bg-green-background-light border-green-border text-green-primary group/recap-valid': isValid,
       })}
     >
       {currentStep >= 0 ? <ObjectMappingRecap /> : null}

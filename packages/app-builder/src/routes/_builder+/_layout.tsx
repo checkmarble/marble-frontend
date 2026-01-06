@@ -1,6 +1,11 @@
 import { navigationI18n, SidebarButton, SidebarLink } from '@app-builder/components';
 import { HelpCenter, useMarbleCoreResources } from '@app-builder/components/HelpCenter';
-import { LeftSidebar, LeftSidebarSharpFactory, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
+import {
+  LeftSidebar,
+  LeftSidebarSharpFactory,
+  ToggleSidebar,
+  ToggleTheme,
+} from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { PanelProvider } from '@app-builder/components/Panel';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
@@ -165,7 +170,7 @@ export default function Builder() {
                                   ) : null,
                                 )
                                 .with('restricted', () => (
-                                  <div className="text-grey-80 relative flex gap-2 p-2">
+                                  <div className="text-grey-disabled relative flex gap-2 p-2">
                                     <Icon icon="analytics" className="size-6 shrink-0" />
                                     <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
                                       {t('navigation:analytics')}
@@ -178,7 +183,7 @@ export default function Builder() {
                                   </div>
                                 ))
                                 .with('missing_configuration', () => (
-                                  <div className="text-grey-80 relative flex gap-2 p-2">
+                                  <div className="text-grey-disabled relative flex gap-2 p-2">
                                     <Icon icon="analytics" className="size-6 shrink-0" />
                                     <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
                                       {t('navigation:analytics')}
@@ -249,6 +254,9 @@ export default function Builder() {
                                 }
                                 versions={versions}
                               />
+                            </li>
+                            <li>
+                              <ToggleTheme />
                             </li>
                             <li>
                               <ToggleSidebar />

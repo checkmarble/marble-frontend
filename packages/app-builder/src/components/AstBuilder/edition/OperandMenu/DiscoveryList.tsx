@@ -99,7 +99,7 @@ function SubMenuFieldTrigger(props: SubMenuFieldTriggerProps) {
   return (
     <>
       <span
-        className="text-grey-00 text-s flex select-none flex-row items-baseline gap-1 break-all"
+        className="text-grey-primary text-s flex select-none flex-row items-baseline gap-1 break-all"
         style={{ paddingLeft: `${padding}px` }}
       >
         {props.depth === 0 ? (
@@ -117,12 +117,12 @@ function SubMenuFieldTrigger(props: SubMenuFieldTriggerProps) {
           <span className="flex items-baseline gap-1">
             <Icon
               icon="subdirectory-arrow-right"
-              className="text-grey-80 group-aria-selected/menu-item:text-grey-00 size-4 shrink-0 self-center"
+              className="text-grey-disabled group-aria-selected/menu-item:text-grey-primary size-4 shrink-0 self-center"
             />
             <span className="line-clamp-1 shrink font-semibold">{props.label}</span>
           </span>
         )}
-        <span className="text-grey-80 shrink-0 text-xs font-medium">{props.options.length}</span>
+        <span className="text-grey-disabled shrink-0 text-xs font-medium">{props.options.length}</span>
       </span>
     </>
   );
@@ -140,11 +140,11 @@ function MenuTitle({ operandType, count, className }: MenuTitleProps) {
 
   return (
     <div className={clsx('flex grow select-none flex-row items-center gap-1', className)}>
-      {icon ? <Icon aria-hidden="true" className="text-purple-65 size-5 shrink-0" icon={icon} /> : null}
+      {icon ? <Icon aria-hidden="true" className="text-purple-primary size-5 shrink-0" icon={icon} /> : null}
       {tKey ? (
-        <span className="text-grey-00 text-m flex flex-1 flex-row items-baseline gap-1 break-all">
+        <span className="text-grey-primary text-m flex flex-1 flex-row items-baseline gap-1 break-all">
           <span className="font-semibold">{t(tKey, { count: count })}</span>
-          <span className="text-grey-80 text-xs font-medium">{count}</span>
+          <span className="text-grey-disabled text-xs font-medium">{count}</span>
         </span>
       ) : null}
     </div>

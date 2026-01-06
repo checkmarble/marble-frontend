@@ -41,7 +41,7 @@ export function SelectEvents({
         {selectedEventTypes.length > 0 ? (
           <EventTypes eventTypes={selectedEventTypes} />
         ) : (
-          <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>
+          <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>
         )}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
@@ -60,7 +60,7 @@ export function SelectEvents({
             </SelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
-            <p className="text-grey-50 flex items-center justify-center p-2">
+            <p className="text-grey-placeholder flex items-center justify-center p-2">
               {t('settings:webhooks.event_types.empty_matches')}
             </p>
           ) : null}
@@ -86,7 +86,7 @@ export function EventTypes({ className, eventTypes }: { eventTypes: string[]; cl
           <EventType key={event}>{event}</EventType>
         ))}
         {eventTypes.length > 3 ? (
-          <div className="text-grey-00 bg-grey-95 flex h-6 items-center rounded-full px-2 text-xs font-normal">
+          <div className="text-grey-primary bg-grey-background flex h-6 items-center rounded-full px-2 text-xs font-normal">
             {`+${eventTypes.length - 3}`}
           </div>
         ) : null}
@@ -97,8 +97,8 @@ export function EventTypes({ className, eventTypes }: { eventTypes: string[]; cl
 
 function EventType({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-grey-95 flex h-6 items-center rounded-sm px-2">
-      <span className="text-grey-00 line-clamp-1 text-xs font-normal">{children}</span>
+    <div className="bg-grey-background flex h-6 items-center rounded-sm px-2">
+      <span className="text-grey-primary line-clamp-1 text-xs font-normal">{children}</span>
     </div>
   );
 }

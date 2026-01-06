@@ -206,7 +206,7 @@ const droppableVariants = cva('not-last:mb-2', {
 const draggableVariants = cva('p-2 grid grid-cols-[auto_1fr_auto] max-w-[500px] gap-2 items-center', {
   variants: {
     isDragging: {
-      true: 'bg-purple-98 rounded-sm',
+      true: 'bg-purple-background-light rounded-sm',
       false: null,
     },
   },
@@ -274,10 +274,10 @@ function TableModelFieldDnD({ options, tableModel, onChange }: TableModelFieldDn
                           className={draggableVariants({ isDragging: snapshot.isDragging })}
                         >
                           <div
-                            className="hover:bg-grey-95 flex size-6 items-center justify-center rounded-sm"
+                            className="hover:bg-grey-background flex size-6 items-center justify-center rounded-sm"
                             {...dragProvided.dragHandleProps}
                           >
-                            <Icon icon="drag" className="text-grey-80 size-3" />
+                            <Icon icon="drag" className="text-grey-disabled size-3" />
                           </div>
                           {field.name}{' '}
                           <Switch

@@ -20,8 +20,9 @@ export interface SidebarLinkProps {
 export const sidebarLink = cva('text-s flex flex-row items-center gap-2 rounded-xs p-2 font-medium w-full', {
   variants: {
     isActive: {
-      true: 'bg-purple-96 text-purple-65',
-      false: 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+      true: 'bg-purple-background text-purple-primary dark:bg-grey-background-light dark:text-purple-hover',
+      false:
+        'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:text-grey-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
     },
   },
   defaultVariants: {
@@ -78,7 +79,9 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
       className={({ isActive }) =>
         clsx(
           'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
-          isActive ? 'bg-purple-96 text-purple-65' : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+          isActive
+            ? 'bg-purple-background text-purple-primary dark:bg-grey-background-light dark:text-purple-hover'
+            : 'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:text-grey-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
         )
       }
       to={to}

@@ -69,10 +69,10 @@ export function FieldNodeConcat({
                         <div className="flex flex-row">
                           <div
                             key={node.id}
-                            className="hover:bg-grey-95 flex size-6 items-center justify-center rounded-sm"
+                            className="hover:bg-grey-background flex size-6 items-center justify-center rounded-sm"
                             {...dragProvided.dragHandleProps}
                           >
-                            <Icon icon="drag" className="text-grey-80 size-3" />
+                            <Icon icon="drag" className="text-grey-disabled size-3" />
                           </div>
                           {nodes.length > 1 ? (
                             <Button

@@ -31,8 +31,8 @@ export const RequiredActions = ({
   const areThereScreenings = decision.screenings.length > 0;
 
   return isPendingDecision || areThereScreenings ? (
-    <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded-sm p-4 transition-colors">
-      <span className="text-grey-50 text-xs">{t('screenings:required_actions.title')}</span>
+    <div className="bg-grey-background-light group-hover:bg-grey-background flex flex-col gap-2.5 rounded-sm p-4 transition-colors">
+      <span className="text-grey-placeholder text-xs">{t('screenings:required_actions.title')}</span>
       {areThereScreenings ? (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ export const RequiredActions = ({
                   <Divider isLast={i === decision.screenings.length - 1} />
                   <span
                     className={cn('inline-flex items-center gap-2 text-xs font-medium', {
-                      'text-red-43': s.status === 'error',
+                      'text-red-hover': s.status === 'error',
                     })}
                   >
                     <span>{s.name}</span>
@@ -69,8 +69,8 @@ export const RequiredActions = ({
                     {s.status !== 'error' && s.status !== 'in_review' ? (
                       <span
                         className={cn('text-2xs rounded-full px-2 py-0.5', {
-                          'text-red-43 bg-red-95': s.status === 'confirmed_hit',
-                          'text-grey-50 bg-grey-90': s.status === 'no_hit',
+                          'text-red-hover bg-red-background': s.status === 'confirmed_hit',
+                          'text-grey-placeholder bg-grey-border': s.status === 'no_hit',
                         })}
                       >
                         {t(`screenings:status.${s.status}`)}

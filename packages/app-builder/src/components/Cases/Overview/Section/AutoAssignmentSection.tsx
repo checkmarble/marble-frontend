@@ -51,8 +51,8 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
   return (
     <div
       className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
-        'border-[#ada7fd] bg-[#f7f6ff]': restricted,
-        'border-grey-border bg-grey-background-light': !restricted,
+        'border-purple-secondary bg-purple-background-light': restricted,
+        'border-grey-border bg-surface-card': !restricted,
       })}
     >
       <div className="flex items-center gap-v2-md">
@@ -67,12 +67,12 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
           .with({ canEdit: true }, () => (
             <Icon
               icon="edit"
-              className="size-5 cursor-pointer text-purple-65 hover:text-purple-50"
+              className="size-5 cursor-pointer text-purple-primary hover:text-purple-50"
               onClick={handleOpenPanel}
             />
           ))
           .otherwise(() => (
-            <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={handleOpenPanel} />
+            <Icon icon="eye" className="size-5 cursor-pointer text-purple-primary" onClick={handleOpenPanel} />
           ))}
       </div>
       {!restricted ? (
@@ -84,7 +84,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
               </div>
             ))
             .with({ isError: true }, () => (
-              <div className="text-s text-grey-50">{t('cases:overview.config.error_loading')}</div>
+              <div className="text-s text-grey-placeholder">{t('cases:overview.config.error_loading')}</div>
             ))
             .with({ isSuccess: true }, ({ data }) => {
               const allInboxes = data?.inboxes ?? [];
@@ -104,7 +104,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
                         <div className="flex items-center gap-v2-sm h-6">
                           <Icon
                             icon="arrow-down"
-                            className={cn('size-5 text-purple-65', {
+                            className={cn('size-5 text-purple-primary', {
                               '-rotate-90': !isExpanded,
                               'cursor-pointer': hasUsers,
                               invisible: !hasUsers,
