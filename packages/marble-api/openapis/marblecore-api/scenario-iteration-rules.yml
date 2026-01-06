@@ -30,38 +30,6 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/scenario-iteration-rules/metadata:
-  get:
-    tags:
-      - Scenario Iteration Rules
-    summary: List rules metadata
-    description: List rules metadata without formula AST expressions. Optimized for list views.
-    operationId: listScenarioIterationRulesMetadata
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: scenarioIterationId
-        description: ID of the scenario iteration returned rules should be linked to
-        in: query
-        required: false
-        schema:
-          type: string
-          format: uuid
-    responses:
-      '200':
-        description: Scenario iteration rules metadata (without AST)
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ScenarioIterationRuleMetadataDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
   post:
     tags:
       - Scenario Iteration Rules
@@ -89,6 +57,38 @@
               properties:
                 rule:
                   $ref: '#/components/schemas/ScenarioIterationRuleDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iteration-rules/metadata:
+  get:
+    tags:
+      - Scenario Iteration Rules
+    summary: List rules metadata
+    description: List rules metadata without formula AST expressions. Optimized for list views.
+    operationId: listScenarioIterationRulesMetadata
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration returned rules should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Scenario iteration rules metadata (without AST)
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioIterationRuleMetadataDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
