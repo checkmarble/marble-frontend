@@ -30,7 +30,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 ) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs" />
+      <Dialog.Overlay className="animate-overlay-show bg-grey-primary/10 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs" />
       <Dialog.Content
         ref={ref}
         {...props}

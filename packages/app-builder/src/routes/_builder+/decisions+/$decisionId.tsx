@@ -14,20 +14,19 @@ import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isNotFoundHttpError, Pivot } from '@app-builder/models';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { Screening } from '@app-builder/models/screening';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
-import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs } from '@remix-run/node';
-import { isRouteErrorResponse, useLoaderData, useRouteError } from '@remix-run/react';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -72,7 +71,11 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs): Promise<LoaderData> {
-  const { authService } = initServerServices(request);
+  const {
+    authService,
+    i18nextService: { getFixedT },
+    toastSessionService: { getSession, commitSession },
+  } = initServerServices(request);
   const { decision, scenario, dataModelRepository, screening } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -81,54 +84,61 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
     throw handleParseParamError(request, parsedParam.error);
   }
 
-  try {
-    const independentOperations = Promise.all([
-      dataModelRepository.listPivots({}),
-      screening.listScreenings({ decisionId: parsedParam.data.decisionId }),
-      screening.listDatasets(),
-    ]);
+  const [toastSession, t] = await Promise.all([getSession(request), getFixedT(request, ['decisions'])]);
 
-    const currentDecision = await decision.getDecisionById(parsedParam.data.decisionId);
-    const scenarioRules = await scenario
-      .getScenarioIteration({
-        iterationId: currentDecision.scenario.scenarioIterationId,
-      })
-      .then((iteration) => iteration.rules);
-
-    const [pivots, screeningResult, { sections }] = await independentOperations;
-
-    const datasets: Map<string, string> = new Map(
-      sections?.flatMap(({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? []) ?? [],
-    );
-
-    const sanctionsDatasets = [
-      ...new Set(screeningResult.flatMap(({ matches }) => matches.flatMap(({ payload }) => payload.datasets))),
-    ];
-
-    return {
-      decision: currentDecision,
-      scenarioRules,
-      pivots,
-      screening: screeningResult.map(({ matches, ...rest }) => ({
-        ...rest,
-        matches: matches.map(({ payload, ...rest }) => ({
-          ...rest,
-          payload: {
-            ...payload,
-            datasets: payload.datasets
-              ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
-              .map((dataset) => datasets.get(dataset) ?? dataset),
-          },
-        })),
-      })),
-    };
-  } catch (error) {
+  const currentDecision = await decision.getDecisionById(parsedParam.data.decisionId).catch(async (error) => {
     if (isNotFoundHttpError(error)) {
-      return notFound(null);
-    } else {
-      throw error;
+      setToastMessage(toastSession, {
+        type: 'error',
+        message: t('decisions:errors.decision_not_found'),
+      });
+
+      throw redirect(getRoute('/decisions'), {
+        headers: { 'Set-Cookie': await commitSession(toastSession) },
+      });
     }
-  }
+    throw error;
+  });
+
+  const independentOperations = Promise.all([
+    dataModelRepository.listPivots({}),
+    screening.listScreenings({ decisionId: parsedParam.data.decisionId }),
+    screening.listDatasets(),
+  ]);
+
+  const scenarioRules = await scenario
+    .getScenarioIteration({
+      iterationId: currentDecision.scenario.scenarioIterationId,
+    })
+    .then((iteration) => iteration.rules);
+
+  const [pivots, screeningResult, { sections }] = await independentOperations;
+
+  const datasets: Map<string, string> = new Map(
+    sections?.flatMap(({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? []) ?? [],
+  );
+
+  const sanctionsDatasets = [
+    ...new Set(screeningResult.flatMap(({ matches }) => matches.flatMap(({ payload }) => payload.datasets))),
+  ];
+
+  return {
+    decision: currentDecision,
+    scenarioRules,
+    pivots,
+    screening: screeningResult.map(({ matches, ...rest }) => ({
+      ...rest,
+      matches: matches.map(({ payload, ...rest }) => ({
+        ...rest,
+        payload: {
+          ...payload,
+          datasets: payload.datasets
+            ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
+            .map((dataset) => datasets.get(dataset) ?? dataset),
+        },
+      })),
+    })),
+  };
 }
 
 export default function DecisionPage() {
@@ -201,26 +211,9 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
   );
 }
 
-const DecisionNotFound = () => {
-  const navigate = useAgnosticNavigation();
-  const { t } = useTranslation(['common']);
-  return (
-    <div className="m-auto flex flex-col items-center gap-4">
-      {t('common:errors.not_found')}
-      <div className="mb-1">
-        <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
-      </div>
-    </div>
-  );
-};
-
 export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
-
-  if (isRouteErrorResponse(error) && error.status === 404) {
-    return <DecisionNotFound />;
-  }
 
   return <ErrorComponent error={error} />;
 }

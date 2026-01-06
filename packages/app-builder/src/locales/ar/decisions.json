@@ -14,6 +14,7 @@
   "decision_detail.title": "تفاصيل القرار",
   "detail.error": "حدث خطأ. يُرجى التأكد من أن معرّف القرار الذي أدخلته صحيح.",
   "detail.scenario_name_runs_on": "<ScenarioName>{{scenarioName}}</ScenarioName> (يعمل على <TriggerObjectType>{{triggerObjectType}}</TriggerObjectType>)",
+  "errors.decision_not_found": "لم يتم العثور على القرار",
   "filters.date_range.title": "تاريخ الإنشاء:",
   "filters.has_case": "وجود حالة",
   "filters.inbox": "الصندوق الوارد",
