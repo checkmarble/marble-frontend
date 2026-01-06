@@ -83,7 +83,7 @@ export function PivotsPanelContent({
               setCurrentPivotObjectUniqKey(null);
             }}
             className={cn('h-7 px-4 rounded-lg flex items-center border', {
-              'bg-purple-background text-purple-primary border-purple-background': isDisplayingProofs,
+              'bg-purple-background text-purple-primary border-transparent': isDisplayingProofs,
               'bg-surface-card text-grey-placeholder border-grey-border cursor-pointer': !isDisplayingProofs,
             })}
           >

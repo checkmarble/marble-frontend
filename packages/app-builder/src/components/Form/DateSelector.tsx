@@ -41,7 +41,7 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
             {selectedDate ? formatDateTime(selectedDate, { dateStyle: 'short' }) : props.placeholder}
           </span>
         </PopoverDisclosure>
-        <Popover className="bg-surface-card border-grey-background isolate rounded-md border p-4" gutter={8}>
+        <Popover className="bg-surface-card border-grey-border isolate rounded-md border p-4" gutter={8}>
           <Calendar
             mode="single"
             hidden={{ before: new Date() }}

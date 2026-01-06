@@ -8,7 +8,7 @@ import { MenuCommand } from 'ui-design-system';
 export const operatorContainerClassnames = cva(
   [
     'flex h-10 min-w-[40px] items-center justify-between outline-hidden gap-2 rounded-sm px-2 border',
-    'bg-surface-card disabled:border-grey-background-light disabled:bg-grey-background-light',
+    'bg-surface-card disabled:border-transparent disabled:bg-grey-background-light',
     'radix-state-open:border-purple-primary  radix-state-open:bg-purple-background-light',
   ],
   {

@@ -89,7 +89,7 @@ export function DrawerBreadcrumb({ items }: { items: string[] }) {
         return (
           <Fragment key={`${item}_${i}`}>
             <span>{item}</span>
-            {i < items.length - 1 ? <span className="text-grey-border">/</span> : null}
+            {i < items.length - 1 ? <span className="text-grey-placeholder">/</span> : null}
           </Fragment>
         );
       })}

@@ -49,7 +49,7 @@ export function RuleExecutionContent({ className, ...props }: React.ComponentPro
 export function RuleExecutionDescription({ description }: { description?: string }) {
   if (!description) return null;
   return (
-    <div className="bg-purple-background-light border-purple-background flex flex-row gap-2 rounded-sm border p-2 dark:bg-transparent dark:border-purple-primary">
+    <div className="bg-purple-background-light border-purple-border flex flex-row gap-2 rounded-sm border p-2 dark:bg-transparent dark:border-purple-primary">
       <Icon icon="tip" className="text-purple-primary size-5 shrink-0" />
       <span className="text-s text-purple-primary font-normal">{description}</span>
     </div>

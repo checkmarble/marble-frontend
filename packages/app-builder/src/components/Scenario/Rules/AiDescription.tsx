@@ -38,7 +38,7 @@ export function AiDescription({ isPending, description, className }: AiDescripti
   return (
     <div
       className={cn(
-        'text-default rounded-v2-md border border-purple-background bg-purple-background-light text-purple-primary flex flex-col gap-v2-sm p-v2-md dark:border-grey-border',
+        'text-default rounded-v2-md border border-purple-border bg-purple-background-light text-purple-primary flex flex-col gap-v2-sm p-v2-md dark:border-grey-border',
         className,
       )}
     >
@@ -49,7 +49,7 @@ export function AiDescription({ isPending, description, className }: AiDescripti
       {description ? (
         <div
           ref={descriptionContainerRef}
-          className="bg-surface-card rounded-v2-s border border-l-2 border-l-purple-primary border-grey-background  text-grey-primary text-small overflow-hidden transition-all duration-500"
+          className="bg-surface-card rounded-v2-s border border-l-2 border-l-purple-primary border-grey-border text-grey-primary text-small overflow-hidden transition-all duration-500"
           style={{ height: currentHeight ? `${currentHeight}px` : undefined }}
         >
           <div ref={descriptionElementRef} className="p-v2-sm ">

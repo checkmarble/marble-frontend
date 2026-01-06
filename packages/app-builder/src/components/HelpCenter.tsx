@@ -152,7 +152,7 @@ function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValu
               {currentResources.map((resource) => (
                 <MenuItem
                   key={`${resource.category}-${resource.label}`}
-                  className="border-grey-background bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-2 flex-col gap-2 rounded-sm border p-2 outline-hidden"
+                  className="border-grey-border bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-2 flex-col gap-2 rounded-sm border p-2 outline-hidden"
                   render={<a href={resource.href} target="_blank" rel="noreferrer" />}
                 >
                   {resource.label}
@@ -226,7 +226,7 @@ const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(functi
   return (
     <Ariakit.Tab
       ref={composedRef}
-      className="aria-selected:bg-purple-background aria-selected:border-purple-background text-grey-primary bg-grey-background border-grey-background aria-selected:text-purple-primary data-active-item:border-purple-primary flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
+      className="aria-selected:bg-purple-background dark:aria-selected:bg-transparent aria-selected:border-purple-border text-grey-primary bg-grey-background border-grey-border aria-selected:text-purple-primary data-active-item:border-purple-primary flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
       accessibleWhenDisabled={false}
       {...props}
     />

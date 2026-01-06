@@ -34,16 +34,16 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
           'bg-green-background-light dark:bg-transparent dark:border-green-primary': color === 'green',
           'bg-yellow-background dark:bg-transparent dark:border-yellow-primary': color === 'yellow',
           'bg-orange-background-light dark:bg-transparent dark:border-orange-primary': color === 'orange',
-          'bg-red-95 dark:bg-transparent dark:border-red-primary': color === 'red',
+          'bg-red-background dark:bg-transparent dark:border-red-primary': color === 'red',
         },
       )}
     >
       <div
         className={clsx('text-s', {
-          'text-green-primary': color === 'green',
+          'text-green-secondary': color === 'green',
           'text-yellow-secondary': color === 'yellow',
-          'text-orange-primary': color === 'orange',
-          'text-red-disabled': color === 'red',
+          'text-orange-secondary': color === 'orange',
+          'text-red-secondary': color === 'red',
         })}
       >
         {t('decisions:outcome')}

@@ -151,7 +151,7 @@
   --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
   /* --font-medium: 500; */
 
-  /* Box shadows */
+  /* Custom shadows */
   --shadow-sticky-bottom: 0 -8px 24px rgba(8, 5, 37, 0.06);
   --shadow-sticky-top: 0 8px 24px rgba(8, 5, 37, 0.06);
   --shadow-sticky-left: 8px 0 12px rgba(8, 5, 37, 0.06);
@@ -499,4 +499,16 @@
 
 .text-ltr {
   direction: ltr;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }

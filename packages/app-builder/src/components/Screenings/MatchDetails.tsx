@@ -55,7 +55,7 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
                       <button type="button" onClick={() => setSelectedSanction(sanction)}>
                         <Icon
                           icon="visibility-on"
-                          className="text-grey-border hover:text-purple-primary size-5 cursor-pointer"
+                          className="text-grey-placeholder hover:text-purple-primary size-5 cursor-pointer"
                         />
                       </button>
                     </Modal.Trigger>

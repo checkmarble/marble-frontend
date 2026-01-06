@@ -33,12 +33,15 @@ export const FavoriteInboxButton: FunctionComponent<FavoriteInboxButtonProps> = 
       size="default"
       onClick={handleClick}
       title={isFavorite ? t('cases:inbox.remove_favorite') : t('cases:inbox.set_as_favorite')}
+      className="group"
     >
       {t('cases:inbox.favorite')}
       <Icon
         icon="star"
         className={
-          isFavorite ? 'size-5 fill-purple-primary text-purple-primary' : 'size-5 fill-none text-grey-placeholder'
+          isFavorite
+            ? 'size-5 fill-purple-primary text-purple-primary group-hover:fill-white group-hover:text-white dark:fill-purple-hover dark:text-purple-hover dark:group-hover:fill-grey-white dark:group-hover:text-grey-white'
+            : 'size-5 fill-none text-grey-placeholder group-hover:text-grey-primary'
         }
       />
     </ButtonV2>
