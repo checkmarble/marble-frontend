@@ -137,7 +137,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {loaderData?.segmentScript ? <SegmentScript nonce={nonce} script={loaderData.segmentScript} /> : null}
         <ExternalScripts />
       </head>
-      <body className="selection:text-grey-white selection:bg-purple-primary h-screen w-full overflow-hidden antialiased text-grey-primary">
+      <body className="bg-surface-page selection:text-grey-white selection:bg-purple-primary h-screen w-full overflow-hidden antialiased text-grey-primary">
         <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
           <AgnosticNavigationContext.Provider value={navigate}>
             <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
