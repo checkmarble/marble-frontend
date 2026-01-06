@@ -4,6 +4,9 @@
 @plugin "tailwindcss-radix";
 
 @theme {
+  /* Fix Tailwind CSS v4 subpixel border width issue */
+  --default-border-width: 1.5px;
+
   /* Reset all default colors from tailwind */
   --color-*: initial;
 
