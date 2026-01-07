@@ -2,13 +2,18 @@ import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/P
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type AggregationAstNode } from '@app-builder/models/astNode/aggregation';
-import { aggregatorOperators } from '@app-builder/models/modale-operators';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
+import {
+  aggregatorHasParams,
+  aggregatorOperators,
+  isPerformanceHeavyAggregator,
+  isRestrictedAggregator,
+} from '@app-builder/models/modale-operators';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { computed } from '@preact/signals-react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Input, Modal } from 'ui-design-system';
 import { Logo } from 'ui-icons';
-
 import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperatorSelect } from '../../../OperatorSelect';
@@ -20,8 +25,14 @@ import { EditFilters } from './EditFilters';
 export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
+  const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as AggregationAstNode);
+
+  const currentAggregator = node.namedChildren.aggregator.constant;
+  const isCurrentRestricted = isRestrictedAggregator(currentAggregator);
+  const isCurrentPerformanceHeavy = isPerformanceHeavyAggregator(currentAggregator);
+
   const aggregatedField = computed(() => {
     const tableName = node.namedChildren.tableName.constant;
     const fieldName = node.namedChildren.fieldName.constant;
@@ -39,6 +50,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   return (
     <OperandEditModalContainer
       {...props}
+      saveDisabled={isCurrentRestricted && !hasValidLicense}
       title={
         <div className="flex flex-row items-center justify-center gap-3">
           {t('scenarios:edit_aggregation.title')}
@@ -81,8 +93,13 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             )}
           /> */}
         </div>
-        <div className="grid grid-cols-[240px_1fr] gap-2">
+        <div
+          className={`grid ${aggregatorHasParams(currentAggregator) ? 'grid-cols-[240px_120px_1fr]' : 'grid-cols-[240px_1fr]'} gap-2`}
+        >
           <div>{t('scenarios:edit_aggregation.function_title')}</div>
+          {aggregatorHasParams(currentAggregator) ? (
+            <div>{t('scenarios:edit_aggregation.percentile_value')}</div>
+          ) : null}
           <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
           <div className="flex flex-col gap-2">
             <OperatorSelect
@@ -92,6 +109,8 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
                 node.namedChildren.aggregator.constant = aggregator;
                 nodeSharp.actions.validate();
               }}
+              featureAccess={hasValidLicense ? undefined : 'restricted'}
+              isOperatorRestricted={isRestrictedAggregator}
               // validationStatus={aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'}
             />
             {/* <EvaluationErrors
@@ -100,6 +119,22 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
               )}
             /> */}
           </div>
+          {aggregatorHasParams(currentAggregator) ? (
+            <Input
+              type="text"
+              id="aggregation.percentile_value"
+              defaultValue={String(node.namedChildren.percentile?.constant ?? 50)}
+              onBlur={(e) => {
+                const normalizedValue = e.target.value.replace(',', '.');
+                const value = parseFloat(normalizedValue);
+                if (!isNaN(value)) {
+                  const clamped = Math.max(0, Math.min(100, value));
+                  node.namedChildren.percentile = NewConstantAstNode({ constant: clamped });
+                  e.target.value = String(clamped);
+                }
+              }}
+            />
+          ) : null}
           <div className="flex flex-col gap-2">
             <EditDataModelField
               placeholder={t('scenarios:edit_aggregation.select_a_field')}
@@ -116,6 +151,16 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             <EditionEvaluationErrors direct id={node.namedChildren.fieldName.id} />
           </div>
         </div>
+        {isCurrentRestricted && !hasValidLicense ? (
+          <Callout icon="lock" variant="outlined" color="red">
+            {t('scenarios:edit_aggregation.premium_callout')}
+          </Callout>
+        ) : null}
+        {isCurrentPerformanceHeavy && hasValidLicense ? (
+          <Callout icon="warning" variant="outlined" color="yellow">
+            {t('scenarios:edit_aggregation.performance_warning')}
+          </Callout>
+        ) : null}
       </div>
       <EditFilters aggregatedField={aggregatedField.value} dataModel={dataModel} />
     </OperandEditModalContainer>

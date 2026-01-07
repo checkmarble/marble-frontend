@@ -72,6 +72,12 @@ export function getOperatorName(
         return t('scenarios:aggregator.min');
       case 'SUM':
         return t('scenarios:aggregator.sum');
+      case 'STDDEV':
+        return t('scenarios:aggregator.stddev');
+      case 'PCTILE':
+        return t('scenarios:aggregator.pctile');
+      case 'MEDIAN':
+        return t('scenarios:aggregator.median');
       case 'year':
         return t('scenarios:timestamp_part.year');
       case 'month':
