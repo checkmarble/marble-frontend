@@ -93,12 +93,22 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
         message: t('decisions:errors.decision_not_found'),
       });
 
-      // Redirect back to referer (with filters) or fallback to /decisions
-      const referer = request.headers.get('Referer');
-      const redirectUrl =
-        referer && new URL(referer).pathname.startsWith('/decisions') ? referer : getRoute('/decisions');
+      // Redirect back to decisions list, preserving filters from referer if valid
+      // Only use pathname + search (no origin) to prevent open redirect attacks
+      let redirectPath = getRoute('/decisions');
+      try {
+        const referer = request.headers.get('Referer');
+        if (referer) {
+          const { pathname, search } = new URL(referer);
+          if (pathname.startsWith('/decisions')) {
+            redirectPath = pathname + search;
+          }
+        }
+      } catch {
+        // Malformed referer URL, use default redirect
+      }
 
-      throw redirect(redirectUrl, {
+      throw redirect(redirectPath, {
         headers: { 'Set-Cookie': await commitSession(toastSession) },
       });
     }
