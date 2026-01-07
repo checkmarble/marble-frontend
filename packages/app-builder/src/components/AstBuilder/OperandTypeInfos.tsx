@@ -9,7 +9,7 @@ const operandTypeInfosClassnames = cva('flex items-center justify-center rounded
     interactionMode: {
       viewer: 'bg-grey-border',
       editor:
-        'bg-grey-background-light group-aria-expanded:bg-purple-background group-aria-expanded:text-purple-primary',
+        'bg-grey-background-light group-aria-expanded:bg-purple-background group-aria-expanded:text-purple-primary dark:group-aria-expanded:bg-purple-primary/10',
     },
   },
   defaultVariants: {
