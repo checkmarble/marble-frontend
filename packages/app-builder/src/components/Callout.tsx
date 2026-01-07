@@ -15,15 +15,10 @@ const callout = cva('text-s text-grey-primary flex flex-row items-center gap-2 r
       soft: 'bg-grey-background-light',
     },
     color: {
-<<<<<<< HEAD
       purple: 'border-s-2 border-s-purple-primary',
       red: 'border-s-2 border-s-red-primary',
-=======
-      purple: 'border-s-2 border-s-purple-65',
-      red: 'border-s-2 border-s-red-47',
-      orange: 'border-s-2 border-s-orange-50',
-      yellow: 'border-s-2 border-s-yellow-50',
->>>>>>> 9967b074 (feat: any entitlements can give access)
+      orange: 'border-s-2 border-s-orange-primary',
+      yellow: 'border-s-2 border-s-yellow-primary',
     },
     bordered: {
       true: 'border border-grey-border',
