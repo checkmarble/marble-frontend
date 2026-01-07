@@ -1,6 +1,8 @@
+import { Nudge } from '@app-builder/components/Nudge';
 import { undefinedAstNodeName } from '@app-builder/models';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
@@ -33,18 +35,26 @@ export function OperatorSelect<Op extends string>({
   validationStatus,
   isFilter = false,
   hideArrow = false,
+  featureAccess,
+  isOperatorRestricted,
 }: {
   options: readonly Op[] | OperatorSelectOptions<Op>;
   operator: Op | null;
   onOperatorChange: (v: Op) => void;
   isFilter?: boolean;
   hideArrow?: boolean;
+  featureAccess?: FeatureAccessLevelDto;
+  isOperatorRestricted?: (op: Op) => boolean;
 } & VariantProps<typeof operatorContainerClassnames>) {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation(['common', 'scenarios']);
   const mappedOptions = mapOptions(options);
 
   const _value = operator !== undefinedAstNodeName && operator !== null ? operator : null;
+  const isRestricted = featureAccess && featureAccess !== 'allowed';
+  const isCurrentRestricted = _value ? (isOperatorRestricted?.(_value) ?? false) : false;
+  const showTriggerNudge = isCurrentRestricted && isRestricted && featureAccess;
+
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
@@ -52,22 +62,31 @@ export function OperatorSelect<Op extends string>({
           <span className="text-s text-grey-primary w-full text-center font-medium">
             {_value ? getOperatorName(t, _value, isFilter) : '...'}
           </span>
-          {hideArrow ? null : <MenuCommand.Arrow />}
+          {showTriggerNudge ? <Nudge kind={featureAccess} content={t('common:premium')} className="size-5" /> : null}
+          {!showTriggerNudge && !hideArrow ? <MenuCommand.Arrow /> : null}
         </button>
       </MenuCommand.Trigger>
       <MenuCommand.Content sameWidth sideOffset={4} align="start" className="min-w-24">
         <MenuCommand.Combobox />
         <MenuCommand.List>
-          {mappedOptions.map((op) => (
-            <MenuCommand.Item
-              keywords={op.keywords ?? [op.value]}
-              selected={operator === op.value}
-              key={op.value}
-              onSelect={() => onOperatorChange(op.value)}
-            >
-              <span className="font-semibold">{getOperatorName(t, op.value, isFilter)}</span>
-            </MenuCommand.Item>
-          ))}
+          {mappedOptions.map((op) => {
+            const isOpRestricted = isOperatorRestricted?.(op.value) ?? false;
+            const showNudge = isOpRestricted && isRestricted && featureAccess;
+
+            return (
+              <MenuCommand.Item
+                keywords={op.keywords ?? [op.value]}
+                selected={operator === op.value}
+                key={op.value}
+                onSelect={() => onOperatorChange(op.value)}
+              >
+                <div className="flex w-full items-center justify-between gap-2">
+                  <span className="font-semibold">{getOperatorName(t, op.value, isFilter)}</span>
+                  {showNudge ? <Nudge kind={featureAccess} content={t('common:premium')} className="size-5" /> : null}
+                </div>
+              </MenuCommand.Item>
+            );
+          })}
         </MenuCommand.List>
       </MenuCommand.Content>
     </MenuCommand.Menu>

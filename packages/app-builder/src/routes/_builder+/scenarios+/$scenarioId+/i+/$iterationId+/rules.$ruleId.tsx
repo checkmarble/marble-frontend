@@ -247,6 +247,7 @@ export default function RuleDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
+    rule,
   };
 
   //TODO Add errors from the servers if they are present
