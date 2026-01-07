@@ -35,7 +35,7 @@ export function UserInfo({
     <Popover.Root>
       <Popover.Trigger asChild>
         <div className="relative">
-          <button className="hover:bg-grey-background active:bg-grey-border group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
+          <button className="hover:bg-grey-border active:bg-grey-border group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
             <div className="inline-flex items-center gap-5">
               <Logo
                 logo="logo"

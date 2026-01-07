@@ -23,7 +23,7 @@ const logicalOperatorClassnames = cva(
       {
         type: 'contained',
         validationStatus: 'valid',
-        className: 'border-grey-background-light',
+        className: 'border-transparent',
       },
     ],
   },

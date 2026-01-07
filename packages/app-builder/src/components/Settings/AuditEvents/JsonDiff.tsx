@@ -38,21 +38,21 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
               </div>
             )}
             {isAdded && (
-              <div className="bg-green-background-light text-green-primary">
+              <div className="bg-green-background-light text-green-primary dark:border-l-2 dark:border-green-primary dark:bg-transparent dark:pl-2">
                 <span className="font-semibold">+ {key}:</span> {newStr}
               </div>
             )}
             {isRemoved && (
-              <div className="bg-red-background-light text-red-primary line-through">
+              <div className="bg-red-background text-red-primary line-through dark:border-l-2 dark:border-red-primary dark:bg-transparent dark:pl-2">
                 <span className="font-semibold">- {key}:</span> {oldStr}
               </div>
             )}
             {isChanged && (
               <>
-                <div className="bg-red-background-light text-red-primary line-through">
+                <div className="bg-red-background text-red-primary line-through dark:border-l-2 dark:border-red-primary dark:bg-transparent dark:pl-2">
                   <span className="font-semibold">- {key}:</span> {oldStr}
                 </div>
-                <div className="bg-green-background-light text-green-primary">
+                <div className="bg-green-background-light text-green-primary dark:border-l-2 dark:border-green-primary dark:bg-transparent dark:pl-2">
                   <span className="font-semibold">+ {key}:</span> {newStr}
                 </div>
               </>

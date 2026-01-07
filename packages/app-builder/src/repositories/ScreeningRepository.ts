@@ -1,4 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { isNotFoundHttpError } from '@app-builder/models/http-errors';
 import {
   adaptScreening,
   adaptScreeningFile,
@@ -44,12 +45,27 @@ export interface ScreeningRepository {
 
 export function makeGetScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScreeningRepository => ({
-    listDatasets: marbleCoreApiClient.listOpenSanctionDatasets,
+    listDatasets: async () => {
+      try {
+        return await marbleCoreApiClient.listOpenSanctionDatasets();
+      } catch {
+        // Return empty catalog if datasets service fails (404, 500, etc.)
+        return { sections: [] };
+      }
+    },
     getDatasetFreshness: async () => {
       return adaptOpenSanctionsDatasetFreshness(await marbleCoreApiClient.getDatasetsFreshness());
     },
     listScreenings: async ({ decisionId }) => {
-      return R.map(await marbleCoreApiClient.listScreenings(decisionId), adaptScreening);
+      try {
+        return R.map(await marbleCoreApiClient.listScreenings(decisionId), adaptScreening);
+      } catch (error) {
+        // Return empty array if decision not found (404)
+        if (isNotFoundHttpError(error)) {
+          return [];
+        }
+        throw error;
+      }
     },
     updateMatchStatus: async ({ matchId, status, comment, whitelist }) => {
       return adaptScreeningMatch(

@@ -261,7 +261,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   return (
     <div
-      className="bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
+      className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
       onMouseEnter={() => {
         setIsHovered(true);
       }}

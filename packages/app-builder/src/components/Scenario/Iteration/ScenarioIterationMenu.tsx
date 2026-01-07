@@ -94,7 +94,7 @@ function ScenarioIterationContent({ labelledScenarioIteration, searchValue }: Sc
           {matches.map((iteration) => (
             <MenuItem
               key={iteration.id}
-              className="border-grey-background bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-2 flex-row items-center justify-between gap-2 rounded-sm border p-2 outline-hidden"
+              className="border-grey-border bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-2 flex-row items-center justify-between gap-2 rounded-sm border p-2 outline-hidden"
               render={<Link to={iteration.linkTo} />}
             >
               <span className="text-s flex flex-row gap-1 font-semibold">

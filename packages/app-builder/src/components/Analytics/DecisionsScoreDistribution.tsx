@@ -81,7 +81,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
   const { t } = useTranslation(['common', 'analytics']);
 
   return (
-    <div className="bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:decisions_score_distribution.title')}</h2>
         <ButtonV2
@@ -100,7 +100,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
           <div className="bg-surface-card border border-grey-border rounded-lg p-v2-md mt-v2-sm relative">
             {query.isFetching ? <GraphSpinnerOverlay /> : null}
             {query.isError ? (
-              <div className="absolute inset-0 z-5 flex items-center justify-center rounded-lg bg-grey-background-light/80 hover:bg-grey-background/80">
+              <div className="absolute inset-0 z-5 flex items-center justify-center rounded-lg bg-grey-background/80">
                 <span className="text-s text-grey-60">{t('common:global_error')}</span>
               </div>
             ) : null}

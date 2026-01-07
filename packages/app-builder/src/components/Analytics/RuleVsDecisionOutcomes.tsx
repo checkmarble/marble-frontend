@@ -91,7 +91,7 @@ export function RuleVsDecisionOutcomes({
 
       <div className="flex flex-col relative">
         {isLoading ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-background-light/80 hover:bg-grey-background/80">
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-background">
             <Spinner className="size-6" />
           </div>
         ) : null}

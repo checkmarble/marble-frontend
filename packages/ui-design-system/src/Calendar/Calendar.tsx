@@ -59,7 +59,7 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         [SelectionState.range_end]: 'text-grey-white bg-purple-primary rounded-e-v2-md',
         [SelectionState.range_middle]: 'text-purple-primary bg-purple-background-light',
         [DayFlag.outside]: 'text-grey-disabled',
-        [DayFlag.disabled]: 'text-grey-border',
+        [DayFlag.disabled]: 'text-grey-disabled',
         [DayFlag.today]:
           'after:absolute after:bottom-0 after:left-0 after:right-0 after:content-["."] after:text-l after:text-center relative after:pointer-events-none',
         [DayFlag.hidden]: 'invisible',

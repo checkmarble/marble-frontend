@@ -14,7 +14,7 @@ const viewingOperandLabelClassnames = cva(
   {
     variants: {
       validationStatus: {
-        valid: 'border border-grey-background-light',
+        valid: 'border border-transparent',
         error: 'border border-red-primary',
         'light-error': 'border border-red-secondary',
       },

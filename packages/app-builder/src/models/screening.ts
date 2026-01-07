@@ -8,6 +8,7 @@ import {
   type ScreeningRequestDto,
 } from 'marble-api';
 import * as R from 'remeda';
+import { TagProps } from 'ui-design-system';
 
 const matchEntitySchemas = [
   'Thing',
@@ -317,11 +318,11 @@ export function isScreeningReviewCompleted(screening: Screening): screening is S
 
 export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
-export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, string> = {
-  sanctions: 'bg-red-background text-red-hover',
-  peps: 'bg-blue-96 text-blue-58',
-  'third-parties': 'bg-grey-background text-grey-placeholder',
-  'adverse-media': 'bg-yellow-background text-yellow-primary',
+export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, TagProps['color']> = {
+  sanctions: 'red',
+  peps: 'blue',
+  'third-parties': 'grey',
+  'adverse-media': 'yellow',
 };
 
 export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([

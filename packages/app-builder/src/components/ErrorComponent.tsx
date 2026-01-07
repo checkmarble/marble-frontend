@@ -28,9 +28,9 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
   }
 
   return (
-    <div className="m-auto flex flex-col items-center gap-4">
+    <div className="flex flex-1 flex-col items-center justify-center gap-4">
       <h1 className="text-l text-purple-hover font-semibold">{title}</h1>
-      {subtitle ? <p className="text-s mb-6">{subtitle}</p> : null}
+      {subtitle ? <p className="text-grey-primary text-s mb-6">{subtitle}</p> : null}
 
       <div className="mb-1">
         <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
@@ -43,7 +43,7 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
 const ErrorDetail = ({ error }: { error: unknown }) => {
   if (isRouteErrorResponse(error)) {
     return (
-      <div className="text-xs">
+      <div className="text-grey-primary text-xs">
         <p>
           Error status: {error.status} {error.statusText}
         </p>
@@ -52,11 +52,11 @@ const ErrorDetail = ({ error }: { error: unknown }) => {
     );
   } else if (error instanceof Error) {
     return (
-      <div className="text-xs">
+      <div className="text-grey-primary text-xs">
         <pre>{error.stack}</pre>
       </div>
     );
   } else {
-    return <h1>Unknown Error</h1>;
+    return <h1 className="text-grey-primary">Unknown Error</h1>;
   }
 };

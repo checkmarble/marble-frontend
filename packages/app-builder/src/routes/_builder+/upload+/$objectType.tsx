@@ -221,8 +221,8 @@ const ResultModal = ({
             className={clsx(
               'size-[108px] rounded-full border-8',
               modalContent.success
-                ? 'bg-purple-background border-purple-background text-purple-primary'
-                : 'bg-red-background border-red-background text-red-primary',
+                ? 'bg-purple-background border-transparent text-purple-primary'
+                : 'bg-red-background border-transparent text-red-primary',
             )}
           />
           <div className="flex flex-col items-center gap-2">

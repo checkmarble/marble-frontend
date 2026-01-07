@@ -52,7 +52,7 @@ export default function ScenariosPage() {
                         scenarioId: fromUUIDtoSUUID(scenario.id),
                       })}
                     >
-                      <div className="bg-surface-card border-grey-border flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">
+                      <div className="bg-surface-card border-grey-border flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md dark:hover:border-purple-hover">
                         <div className="text-m flex flex-row gap-2 font-bold">
                           {scenario.name}
                           {scenario.liveVersionId ? (
