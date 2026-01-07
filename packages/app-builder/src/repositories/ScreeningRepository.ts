@@ -48,12 +48,9 @@ export function makeGetScreeningRepository() {
     listDatasets: async () => {
       try {
         return await marbleCoreApiClient.listOpenSanctionDatasets();
-      } catch (error) {
-        // Return empty catalog if datasets not found (404)
-        if (isNotFoundHttpError(error)) {
-          return { sections: [] };
-        }
-        throw error;
+      } catch {
+        // Return empty catalog if datasets service fails (404, 500, etc.)
+        return { sections: [] };
       }
     },
     getDatasetFreshness: async () => {
