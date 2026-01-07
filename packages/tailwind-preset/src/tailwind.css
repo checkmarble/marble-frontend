@@ -515,3 +515,22 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+/* Fix autofill text color - prevent browser from applying white text */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--color-grey-primary) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface-card) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Dark mode autofill */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--color-grey-primary) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--color-grey-background) inset !important;
+}
