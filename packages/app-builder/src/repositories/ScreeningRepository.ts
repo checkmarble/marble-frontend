@@ -45,7 +45,17 @@ export interface ScreeningRepository {
 
 export function makeGetScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScreeningRepository => ({
-    listDatasets: marbleCoreApiClient.listOpenSanctionDatasets,
+    listDatasets: async () => {
+      try {
+        return await marbleCoreApiClient.listOpenSanctionDatasets();
+      } catch (error) {
+        // Return empty catalog if datasets not found (404)
+        if (isNotFoundHttpError(error)) {
+          return { sections: [] };
+        }
+        throw error;
+      }
+    },
     getDatasetFreshness: async () => {
       return adaptOpenSanctionsDatasetFreshness(await marbleCoreApiClient.getDatasetsFreshness());
     },

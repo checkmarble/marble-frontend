@@ -93,7 +93,12 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
         message: t('decisions:errors.decision_not_found'),
       });
 
-      throw redirect(getRoute('/decisions'), {
+      // Redirect back to referer (with filters) or fallback to /decisions
+      const referer = request.headers.get('Referer');
+      const redirectUrl =
+        referer && new URL(referer).pathname.startsWith('/decisions') ? referer : getRoute('/decisions');
+
+      throw redirect(redirectUrl, {
         headers: { 'Set-Cookie': await commitSession(toastSession) },
       });
     }
