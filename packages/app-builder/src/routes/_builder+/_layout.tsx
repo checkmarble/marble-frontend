@@ -159,6 +159,13 @@ export default function Builder() {
                               </li>
                             ) : null}
                             <li>
+                              <SidebarLink
+                                labelTKey="navigation:screening_search"
+                                to={getRoute('/screening-search')}
+                                Icon={(props) => <Icon icon="search" {...props} />}
+                              />
+                            </li>
+                            <li>
                               {match(featuresAccess.analytics)
                                 .with('allowed', () =>
                                   featuresAccess.isAnalyticsAvailable ? (
