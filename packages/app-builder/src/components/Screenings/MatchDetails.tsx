@@ -43,7 +43,7 @@ export function MatchDetails({ entity, before }: MatchDetailsProps) {
         entity={entity}
         before={before}
         after={
-          entity.properties.sanctions ? (
+          entity.properties?.sanctions ? (
             <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
               <span className="font-bold">{t('screenings:entity.property.sanctions')}</span>
               <div className="flex flex-col gap-2">
@@ -84,16 +84,16 @@ export function MatchDetails({ entity, before }: MatchDetailsProps) {
         }
       />
       {entity.schema === 'Person' &&
-      entity.properties['membershipMember']?.length &&
-      entity.properties['membershipMember']?.[0]?.caption ? (
+      entity.properties?.['membershipMember']?.length &&
+      entity.properties?.['membershipMember']?.[0]?.caption ? (
         <MemberShip membershipMember={entity.properties['membershipMember']} />
       ) : null}
 
-      {entity.schema === 'Person' && entity.properties['associations']?.length ? (
+      {entity.schema === 'Person' && entity.properties?.['associations']?.length ? (
         <Associations associations={entity.properties['associations']} />
       ) : null}
 
-      {entity.schema === 'Person' && entity.properties['familyPerson']?.length ? (
+      {entity.schema === 'Person' && entity.properties?.['familyPerson']?.length ? (
         <FamilyDetail familyMembers={entity.properties['familyPerson']} />
       ) : null}
     </div>
