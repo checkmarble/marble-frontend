@@ -42,6 +42,9 @@ const PublicEnvVarsSchema = z.object({
     .transform((val) => val?.split(',') ?? [])
     .optional()
     .default([]),
+
+  // White-labeling: custom logo URL for sidebar
+  CUSTOM_LOGO_URL: z.string().optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -93,7 +96,12 @@ interface ServerEnvVars {
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
+<<<<<<< HEAD
   CONTINUOUS_SCREENING_ACCESS: string[];
+=======
+  CONTINUOUS_SCREENING_ENABLED?: boolean;
+  CUSTOM_LOGO_URL?: string;
+>>>>>>> 2441a282 (feat: custon logo url in .env)
 }
 
 /**
@@ -113,6 +121,7 @@ interface ClientEnvVars {
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
+  CUSTOM_LOGO_URL?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -120,6 +129,7 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     METABASE_URL: getServerEnv('METABASE_URL'),
+    CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
   };
 }
 
