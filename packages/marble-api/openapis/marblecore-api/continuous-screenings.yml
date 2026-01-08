@@ -187,7 +187,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContinuousScreeningMatchDto'
+              $ref: '#/components/schemas/ContinuousScreeningMatchScreeningEntityDto'
 
 /continuous-screenings:
   get:
@@ -482,22 +482,18 @@ components:
               additionalProperties:
                 $ref: 'screenings.yml#/components/schemas/ScreeningQueryDto'
 
-    ContinuousScreeningDto:
+    ContinuousScreeningBaseDto:
       type: object
       required:
         - id
         - org_id
         - continuous_screening_config_id
         - continuous_screening_config_stable_id
-        - object_type
-        - object_id
-        - object_internal_id
         - status
         - trigger_type
         - request
         - partial
         - number_of_matches
-        - matches
         - created_at
         - updated_at
       properties:
@@ -516,13 +512,6 @@ components:
         case_id:
           type: string
           format: uuid
-        object_type:
-          type: string
-        object_id:
-          type: string
-        object_internal_id:
-          type: string
-          format: uuid
         status:
           type: string
           enum: 
@@ -532,20 +521,12 @@ components:
             - no_hit
         trigger_type:
           type: string
-          enum: 
-            - object_added
-            - object_updated
-            - dataset_updated
         request:
           $ref: '#/components/schemas/ContinuousScreeningRequestDto'
         partial:
           type: boolean
         number_of_matches:
           type: integer
-        matches:
-          type: array
-          items:
-            $ref: '#/components/schemas/ContinuousScreeningMatchDto'
         created_at:
           type: string
           format: date-time
@@ -553,12 +534,98 @@ components:
           type: string
           format: date-time
 
-    ContinuousScreeningMatchDto:
+    ContinuousScreeningMarbleToScreeningEntityDto:
+      allOf:
+        - $ref: '#/components/schemas/ContinuousScreeningBaseDto'
+        - type: object
+          required:
+            - object_type
+            - object_id
+            - object_internal_id
+            - matches
+          properties:
+            trigger_type:
+              type: string
+              enum:
+                - object_added
+                - object_updated
+            object_type:
+              type: string
+            object_id:
+              type: string
+            object_internal_id:
+              type: string
+              format: uuid
+            matches:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContinuousScreeningMatchScreeningEntityDto'
+
+    ContinuousScreeningScreeningEntityToMarbleDto:
+      allOf:
+        - $ref: '#/components/schemas/ContinuousScreeningBaseDto'
+        - type: object
+          required:
+            - opensanction_entity_id
+            - entity_schema
+            - matches
+          properties:
+            trigger_type:
+              type: string
+              enum:
+                - dataset_updated
+            opensanction_entity_id:
+              type: string
+            entity_schema:
+              $ref: 'screenings.yml#/components/schemas/ScreeningEntityDto'
+            entity_payload:
+              $ref: '#/components/schemas/OpenSanctionsEntityDto'
+            matches:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContinuousScreeningMatchMarbleDto'
+
+    OpenSanctionsEntityDto:
+      type: object
+      required:
+        - id
+        - caption
+        - properties
+        - datasets
+      properties:
+        id:
+          type: string
+        caption:
+          type: string
+        schema:
+          $ref: 'screenings.yml#/components/schemas/ScreeningEntityDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        datasets:
+          type: array
+          items:
+            type: string
+
+    ContinuousScreeningDto:
+      oneOf:
+        - $ref: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
+        - $ref: '#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto'
+      discriminator:
+        propertyName: trigger_type
+        mapping:
+          object_added: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
+          object_updated: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
+          dataset_updated: '#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto'
+
+    ContinuousScreeningMatchBaseDto:
       type: object
       required:
         - id
         - continuous_screening_id
-        - opensanction_entity_id
         - status
         - payload
         - created_at
@@ -570,8 +637,6 @@ components:
         continuous_screening_id:
           type: string
           format: uuid
-        opensanction_entity_id:
-          type: string
         status:
           type: string
           enum: 
@@ -590,3 +655,26 @@ components:
         updated_at:
           type: string
           format: date-time
+
+    ContinuousScreeningMatchScreeningEntityDto:
+      allOf:
+        - $ref: '#/components/schemas/ContinuousScreeningMatchBaseDto'
+        - type: object
+          required:
+            - opensanction_entity_id
+          properties:
+            opensanction_entity_id:
+              type: string
+
+    ContinuousScreeningMatchMarbleDto:
+      allOf:
+        - $ref: '#/components/schemas/ContinuousScreeningMatchBaseDto'
+        - type: object
+          required:
+            - object_type
+            - object_id
+          properties:
+            object_type:
+              type: string
+            object_id:
+              type: string

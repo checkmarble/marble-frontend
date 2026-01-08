@@ -518,13 +518,21 @@ CreateContinuousScreeningObjectDto:
   $ref: continuous-screenings.yml#/components/schemas/CreateContinuousScreeningObjectDto
 DeleteContinuousScreeningObjectDto:
   $ref: continuous-screenings.yml#/components/schemas/DeleteContinuousScreeningObjectDto
+ContinuousScreeningMatchMarbleDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchMarbleDto
+ContinuousScreeningMatchScreeningEntityDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchScreeningEntityDto
 ContinuousScreeningDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningDto
-ContinuousScreeningMatchDto:
-  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchDto
 ContinuousScreeningRequestDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningRequestDto
 ContinuousScreeningMappingConfigDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMappingConfigDto
 ContinuousScreeningMappingFieldDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMappingFieldDto
+OpenSanctionsEntityDto:
+  $ref: continuous-screenings.yml#/components/schemas/OpenSanctionsEntityDto
+ContinuousScreeningMarbleToScreeningEntityDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto
+ContinuousScreeningScreeningEntityToMarbleDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto

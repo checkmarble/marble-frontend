@@ -170,34 +170,87 @@ export type ContinuousScreeningRequestDto = {
         };
     };
 };
-export type ContinuousScreeningMatchDto = {
+export type ComponentsSchemasContinuousScreeningMatchMarbleDtoAllOf0 = {
     id: string;
     continuous_screening_id: string;
-    opensanction_entity_id: string;
     status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
     payload: object;
     reviewed_by?: string;
     created_at: string;
     updated_at: string;
 };
-export type ContinuousScreeningDto = {
+export type ContinuousScreeningMatchScreeningEntityDto = ComponentsSchemasContinuousScreeningMatchMarbleDtoAllOf0 & {
+    opensanction_entity_id: string;
+};
+export type ContinuousScreeningMarbleToScreeningEntityDto = {
     id: string;
     org_id: string;
     continuous_screening_config_id: string;
     continuous_screening_config_stable_id: string;
     case_id?: string;
-    object_type: string;
-    object_id: string;
-    object_internal_id: string;
     status: "in_review" | "error" | "confirmed_hit" | "no_hit";
-    trigger_type: "object_added" | "object_updated" | "dataset_updated";
+    trigger_type: string;
     request: ContinuousScreeningRequestDto;
     partial: boolean;
     number_of_matches: number;
-    matches: ContinuousScreeningMatchDto[];
+    created_at: string;
+    updated_at: string;
+} & {
+    trigger_type?: "object_added" | "object_updated";
+    object_type: string;
+    object_id: string;
+    object_internal_id: string;
+    matches: ContinuousScreeningMatchScreeningEntityDto[];
+};
+export type ComponentsSchemasContinuousScreeningMarbleToScreeningEntityDtoAllOf0 = {
+    id: string;
+    org_id: string;
+    continuous_screening_config_id: string;
+    continuous_screening_config_stable_id: string;
+    case_id?: string;
+    status: "in_review" | "error" | "confirmed_hit" | "no_hit";
+    trigger_type: string;
+    request: ContinuousScreeningRequestDto;
+    partial: boolean;
+    number_of_matches: number;
     created_at: string;
     updated_at: string;
 };
+export type OpenSanctionsEntityDto = {
+    id: string;
+    caption: string;
+    schema?: ScreeningEntityDto;
+    properties: {
+        [key: string]: string[];
+    };
+    datasets: string[];
+};
+export type ContinuousScreeningMatchMarbleDto = {
+    id: string;
+    continuous_screening_id: string;
+    status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
+    payload: object;
+    reviewed_by?: string;
+    created_at: string;
+    updated_at: string;
+} & {
+    object_type: string;
+    object_id: string;
+};
+export type ContinuousScreeningScreeningEntityToMarbleDto = ComponentsSchemasContinuousScreeningMarbleToScreeningEntityDtoAllOf0 & {
+    trigger_type?: "dataset_updated";
+    opensanction_entity_id: string;
+    entity_schema: ScreeningEntityDto;
+    entity_payload?: OpenSanctionsEntityDto;
+    matches: ContinuousScreeningMatchMarbleDto[];
+};
+export type ContinuousScreeningDto = ({
+    trigger_type: "object_added";
+} & ContinuousScreeningMarbleToScreeningEntityDto) | ({
+    trigger_type: "object_updated";
+} & ContinuousScreeningMarbleToScreeningEntityDto) | ({
+    trigger_type: "dataset_updated";
+} & ContinuousScreeningScreeningEntityToMarbleDto);
 export type CaseEventDtoBase = {
     id: string;
     case_id: string;
@@ -3707,7 +3760,7 @@ export function deleteContinuousScreeningObject(deleteContinuousScreeningObjectD
 export function updateContinuousScreeningMatch(id: string, updateScreeningMatchDto: UpdateScreeningMatchDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ContinuousScreeningMatchDto;
+        data: ContinuousScreeningMatchScreeningEntityDto;
     }>(`/continuous-screenings/matches/${encodeURIComponent(id)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
