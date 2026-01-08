@@ -568,14 +568,12 @@ components:
         - type: object
           required:
             - opensanction_entity_id
-            - entity_schema
+            - opensanction_entity_payload
             - matches
           properties:
             opensanction_entity_id:
               type: string
-            entity_schema:
-              $ref: 'screenings.yml#/components/schemas/ScreeningEntityDto'
-            entity_payload:
+            opensanction_entity_payload:
               $ref: '#/components/schemas/OpenSanctionsEntityDto'
             matches:
               type: array
@@ -589,6 +587,7 @@ components:
         - caption
         - properties
         - datasets
+        - schema
       properties:
         id:
           type: string
