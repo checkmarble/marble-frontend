@@ -518,6 +518,8 @@ CreateContinuousScreeningObjectDto:
   $ref: continuous-screenings.yml#/components/schemas/CreateContinuousScreeningObjectDto
 DeleteContinuousScreeningObjectDto:
   $ref: continuous-screenings.yml#/components/schemas/DeleteContinuousScreeningObjectDto
+ContinuousScreeningMatchBaseDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchBaseDto
 ContinuousScreeningMatchMarbleDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchMarbleDto
 ContinuousScreeningMatchScreeningEntityDto:

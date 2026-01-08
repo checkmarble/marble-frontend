@@ -334,7 +334,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContinuousScreeningMappingFieldDto'
-        
+
 
     CreateContinuousScreeningConfigDto:
       type: object
@@ -405,7 +405,7 @@ components:
           type: boolean
         mapping_configs:
           type: array
-          items: 
+          items:
             $ref: '#/components/schemas/ContinuousScreeningMappingConfigDto'
 
     ContinuousScreeningObjectDto:
@@ -466,7 +466,7 @@ components:
         config_stable_id:
           type: string
           format: uuid
-    
+
     ContinuousScreeningRequestDto:
       type: object
       required:
@@ -482,8 +482,14 @@ components:
               additionalProperties:
                 $ref: 'screenings.yml#/components/schemas/ScreeningQueryDto'
 
-    ContinuousScreeningBaseDto:
+    ContinuousScreeningDto:
       type: object
+      discriminator:
+        propertyName: trigger_type
+        mapping:
+          object_added: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
+          object_updated: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
+          dataset_updated: '#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto'
       required:
         - id
         - org_id
@@ -514,7 +520,7 @@ components:
           format: uuid
         status:
           type: string
-          enum: 
+          enum:
             - in_review
             - error
             - confirmed_hit
@@ -536,7 +542,7 @@ components:
 
     ContinuousScreeningMarbleToScreeningEntityDto:
       allOf:
-        - $ref: '#/components/schemas/ContinuousScreeningBaseDto'
+        - $ref: '#/components/schemas/ContinuousScreeningDto'
         - type: object
           required:
             - object_type
@@ -544,11 +550,6 @@ components:
             - object_internal_id
             - matches
           properties:
-            trigger_type:
-              type: string
-              enum:
-                - object_added
-                - object_updated
             object_type:
               type: string
             object_id:
@@ -563,17 +564,13 @@ components:
 
     ContinuousScreeningScreeningEntityToMarbleDto:
       allOf:
-        - $ref: '#/components/schemas/ContinuousScreeningBaseDto'
+        - $ref: '#/components/schemas/ContinuousScreeningDto'
         - type: object
           required:
             - opensanction_entity_id
             - entity_schema
             - matches
           properties:
-            trigger_type:
-              type: string
-              enum:
-                - dataset_updated
             opensanction_entity_id:
               type: string
             entity_schema:
@@ -610,17 +607,6 @@ components:
           items:
             type: string
 
-    ContinuousScreeningDto:
-      oneOf:
-        - $ref: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
-        - $ref: '#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto'
-      discriminator:
-        propertyName: trigger_type
-        mapping:
-          object_added: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
-          object_updated: '#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto'
-          dataset_updated: '#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto'
-
     ContinuousScreeningMatchBaseDto:
       type: object
       required:
@@ -639,7 +625,7 @@ components:
           format: uuid
         status:
           type: string
-          enum: 
+          enum:
             - pending
             - confirmed_hit
             - no_hit
