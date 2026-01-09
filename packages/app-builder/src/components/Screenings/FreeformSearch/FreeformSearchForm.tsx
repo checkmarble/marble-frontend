@@ -91,74 +91,38 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <Field label={t('screenings:freeform_search.entity_type_label')}>
-        <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
-          {(field) => <EntitySelect name={field.name} value={field.state.value} onChange={field.handleChange} />}
-        </form.Field>
-      </Field>
-
-      {additionalFields.map((fieldName) => (
-        <form.Field key={fieldName} name={`fields.${fieldName}`}>
-          {(formField) => (
-            <Field label={t(`screenings:entity.property.${fieldName}`)} required={fieldName === 'name'}>
-              <Input
-                name={formField.name}
-                value={(formField.state.value as string) ?? ''}
-                onChange={(e) => formField.handleChange(e.target.value)}
-                className="grow"
-                placeholder={fieldName === 'name' ? t('screenings:freeform_search.name_placeholder') : undefined}
-              />
-            </Field>
-          )}
-        </form.Field>
-      ))}
-
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="text-s font-medium text-grey-primary">{t('screenings:freeform_search.datasets_label')}</span>
-          {selectedDatasets.length > 0 && (
-            <span className="text-s text-grey-placeholder">
-              {t('screenings:freeform_search.datasets_selected', {
-                count: selectedDatasets.length,
-              })}
-            </span>
-          )}
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {/* Main search row */}
+      <div className="flex flex-wrap items-end gap-4">
+        {/* Entity type */}
+        <div className="w-48 shrink-0">
+          <Field label={t('screenings:freeform_search.entity_type_label')}>
+            <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
+              {(field) => <EntitySelect name={field.name} value={field.state.value} onChange={field.handleChange} />}
+            </form.Field>
+          </Field>
         </div>
-        <div className="border-grey-border max-h-[300px] overflow-y-auto rounded-md border">
-          {datasetsQuery.isPending ? (
-            <div className="flex items-center justify-center p-4">
-              <Icon icon="spinner" className="text-grey-placeholder size-5 animate-spin" />
-            </div>
-          ) : datasetsQuery.isError ? (
-            <div className="flex flex-col items-center gap-2 p-4">
-              <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
-              <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
-                {t('common:retry')}
-              </Button>
-            </div>
-          ) : (
-            <div className="flex flex-col">
-              {datasetsQuery.data?.datasets.sections.map((section) => (
-                <DatasetSectionCollapsible
-                  key={section.name}
-                  section={section}
-                  selectedDatasets={selectedDatasets}
-                  onToggleDataset={toggleDataset}
-                  onToggleSection={toggleSection}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-        <p className="text-xs text-grey-placeholder">{t('screenings:freeform_search.datasets_description')}</p>
-      </div>
 
-      <form.Field name="threshold">
-        {(field) => <ThresholdSlider value={field.state.value} onChange={(value) => field.handleChange(value)} />}
-      </form.Field>
+        {/* Dynamic fields */}
+        {additionalFields.map((fieldName) => (
+          <form.Field key={fieldName} name={`fields.${fieldName}`}>
+            {(formField) => (
+              <div className={clsx('shrink-0', fieldName === 'name' ? 'w-64' : 'w-48')}>
+                <Field label={t(`screenings:entity.property.${fieldName}`)} required={fieldName === 'name'}>
+                  <Input
+                    name={formField.name}
+                    value={(formField.state.value as string) ?? ''}
+                    onChange={(e) => formField.handleChange(e.target.value)}
+                    className="w-full"
+                    placeholder={fieldName === 'name' ? t('screenings:freeform_search.name_placeholder') : undefined}
+                  />
+                </Field>
+              </div>
+            )}
+          </form.Field>
+        ))}
 
-      <div className="flex justify-end">
+        {/* Submit button */}
         <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
           {([canSubmit, isSubmitting]) => (
             <Button type="submit" disabled={!canSubmit || isSubmitting || searchMutation.isPending} variant="primary">
@@ -172,6 +136,77 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
           )}
         </form.Subscribe>
       </div>
+
+      {/* Advanced options row */}
+      <Collapsible.Root>
+        <Collapsible.Trigger asChild>
+          <button
+            type="button"
+            className="text-s text-grey-placeholder hover:text-grey-primary flex items-center gap-1"
+          >
+            <Icon
+              icon="caret-down"
+              className="size-4 transition-transform duration-200 [[data-state=open]>&]:rotate-180"
+            />
+            {t('screenings:freeform_search.advanced_options')}
+          </button>
+        </Collapsible.Trigger>
+        <Collapsible.Content>
+          <div className="mt-4 grid grid-cols-2 gap-6">
+            {/* Datasets */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-s font-medium text-grey-primary">
+                  {t('screenings:freeform_search.datasets_label')}
+                </span>
+                {selectedDatasets.length > 0 && (
+                  <span className="text-s text-grey-placeholder">
+                    {t('screenings:freeform_search.datasets_selected', {
+                      count: selectedDatasets.length,
+                    })}
+                  </span>
+                )}
+              </div>
+              <div className="border-grey-border max-h-[200px] overflow-y-auto rounded-md border">
+                {datasetsQuery.isPending ? (
+                  <div className="flex items-center justify-center p-4">
+                    <Icon icon="spinner" className="text-grey-placeholder size-5 animate-spin" />
+                  </div>
+                ) : datasetsQuery.isError ? (
+                  <div className="flex flex-col items-center gap-2 p-4">
+                    <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
+                    <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
+                      {t('common:retry')}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    {datasetsQuery.data?.datasets.sections.map((section) => (
+                      <DatasetSectionCollapsible
+                        key={section.name}
+                        section={section}
+                        selectedDatasets={selectedDatasets}
+                        onToggleDataset={toggleDataset}
+                        onToggleSection={toggleSection}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-grey-placeholder">{t('screenings:freeform_search.datasets_description')}</p>
+            </div>
+
+            {/* Threshold */}
+            <div>
+              <form.Field name="threshold">
+                {(field) => (
+                  <ThresholdSlider value={field.state.value} onChange={(value) => field.handleChange(value)} />
+                )}
+              </form.Field>
+            </div>
+          </div>
+        </Collapsible.Content>
+      </Collapsible.Root>
     </form>
   );
 };

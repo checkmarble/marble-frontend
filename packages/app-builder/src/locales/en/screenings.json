@@ -94,6 +94,7 @@
   "error_label_others": "Screening is in error for the following reasons",
   "error.all_fields_null_or_empty": "All the search fields are null or empty",
   "error.match_already_enriched": "Match already enriched",
+  "freeform_search.advanced_options": "Advanced options",
   "freeform_search.clear": "Clear",
   "freeform_search.datasets_description": "Select datasets to search in. Leave empty to search all datasets.",
   "freeform_search.datasets_label": "Datasets",

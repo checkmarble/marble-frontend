@@ -94,6 +94,7 @@
   "error_label_others": "Le filtrage a échoué pour les raisons suivantes",
   "error.all_fields_null_or_empty": "Tous les champs de recherche sont vides",
   "error.match_already_enriched": "Correspondance déjà enrichie",
+  "freeform_search.advanced_options": "Options avancées",
   "freeform_search.clear": "Effacer",
   "freeform_search.datasets_description": "Sélectionnez les jeux de données à rechercher. Laissez vide pour rechercher dans tous.",
   "freeform_search.datasets_label": "Jeux de données",
