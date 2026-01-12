@@ -11,7 +11,7 @@ import { type FunctionComponent, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Checkbox, Input, Select } from 'ui-design-system';
+import { Button, Checkbox, Input, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DatasetTag } from '../DatasetTag';
@@ -39,7 +39,8 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
   const form = useForm({
     defaultValues: {
-      fields: {},
+      entityType: 'Thing',
+      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {}),
     } as FreeformSearchInput,
     onSubmit: async ({ value }) => {
       const submitValue: FreeformSearchInput = {
@@ -239,30 +240,32 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   const { t } = useTranslation(screeningsI18n);
   const schemas = R.keys(SEARCH_ENTITIES);
   const lowerCasedSchema = value?.toLowerCase() as Lowercase<NonNullable<typeof value>> | undefined;
-
-  const handleChange = (v: SearchableSchema) => {
-    if (v) {
-      onChange(v);
-    }
-  };
+  const [open, setOpen] = useState(false);
 
   return (
-    <Select.Root name={name} value={value ?? ''} onValueChange={handleChange}>
-      <Select.Trigger className="grow">
-        <Select.Value align="start" placeholder={t('screenings:freeform_search.entity_type_placeholder')}>
-          {lowerCasedSchema ? t(`screenings:refine_modal.schema.${lowerCasedSchema}`) : ''}
-        </Select.Value>
-        <Select.Arrow />
-      </Select.Trigger>
-      <Select.Content className="min-w-(--radix-select-trigger-width)" align="start">
-        <Select.Viewport>
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton className="w-full" name={name}>
+          {lowerCasedSchema
+            ? t(`screenings:refine_modal.schema.${lowerCasedSchema}`)
+            : t('screenings:freeform_search.entity_type_placeholder')}
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content sameWidth align="start">
+        <MenuCommand.List>
           {schemas.map((schema) => {
             const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
             const fieldForSchema = SEARCH_ENTITIES[schema].fields;
 
             return (
-              <Select.Item key={schema} value={schema}>
-                <div className="flex items-center gap-2 p-2">
+              <MenuCommand.Item
+                key={schema}
+                onSelect={() => {
+                  onChange(schema);
+                  setOpen(false);
+                }}
+              >
+                <div className="flex items-center gap-2">
                   <Icon icon="plus" className="size-5" />
                   <div className="flex flex-col">
                     <span>{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
@@ -272,12 +275,12 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
                     </span>
                   </div>
                 </div>
-              </Select.Item>
+              </MenuCommand.Item>
             );
           })}
-        </Select.Viewport>
-      </Select.Content>
-    </Select.Root>
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 }
 
