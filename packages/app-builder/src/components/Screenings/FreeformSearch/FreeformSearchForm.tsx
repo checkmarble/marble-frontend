@@ -40,7 +40,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
   const form = useForm({
     defaultValues: {
       entityType: 'Thing',
-      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {}),
+      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {} as FreeformSearchInput['fields']),
     } as FreeformSearchInput,
     onSubmit: async ({ value }) => {
       const submitValue: FreeformSearchInput = {
@@ -91,144 +91,201 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     form.handleSubmit();
   };
 
+  const handleClearFilters = () => {
+    form.reset();
+    setSelectedDatasets([]);
+  };
+
+  const hasActiveFilters = selectedDatasets.length > 0 || (entityType && entityType !== 'Thing');
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      {/* Main search row */}
-      <div className="flex flex-wrap items-end gap-4">
-        {/* Entity type */}
-        <div className="w-48 shrink-0">
-          <Field label={t('screenings:freeform_search.entity_type_label')}>
-            <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
-              {(field) => <EntitySelect name={field.name} value={field.state.value} onChange={field.handleChange} />}
-            </form.Field>
-          </Field>
-        </div>
-
-        {/* Dynamic fields */}
-        {additionalFields.map((fieldName) => (
-          <form.Field key={fieldName} name={`fields.${fieldName}`}>
-            {(formField) => (
-              <div className={clsx('shrink-0', fieldName === 'name' ? 'w-64' : 'w-48')}>
-                <Field label={t(`screenings:entity.property.${fieldName}`)} required={fieldName === 'name'}>
-                  <Input
-                    name={formField.name}
-                    value={(formField.state.value as string) ?? ''}
-                    onChange={(e) => formField.handleChange(e.target.value)}
-                    className="w-full"
-                    placeholder={fieldName === 'name' ? t('screenings:freeform_search.name_placeholder') : undefined}
-                  />
-                </Field>
-              </div>
-            )}
-          </form.Field>
-        ))}
-
-        {/* Submit button */}
+      {/* Search input with button */}
+      <div className="flex gap-2">
+        <form.Field name="fields.name">
+          {(formField) => (
+            <Input
+              name={formField.name}
+              value={(formField.state.value as string) ?? ''}
+              onChange={(e) => formField.handleChange(e.target.value)}
+              className="flex-1"
+              placeholder={t('screenings:freeform_search.name_placeholder')}
+            />
+          )}
+        </form.Field>
         <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
           {([canSubmit, isSubmitting]) => (
-            <Button type="submit" disabled={!canSubmit || isSubmitting || searchMutation.isPending} variant="primary">
+            <Button
+              type="submit"
+              disabled={!canSubmit || isSubmitting || searchMutation.isPending}
+              variant="primary"
+              className="shrink-0 px-2"
+            >
               {isSubmitting || searchMutation.isPending ? (
                 <Icon icon="spinner" className="size-4 animate-spin" />
               ) : (
                 <Icon icon="search" className="size-4" />
               )}
-              {t('screenings:freeform_search.submit')}
             </Button>
           )}
         </form.Subscribe>
       </div>
 
-      {/* Advanced options row */}
-      <Collapsible.Root>
-        <Collapsible.Trigger asChild>
-          <button
-            type="button"
-            className="text-s text-grey-placeholder hover:text-grey-primary flex items-center gap-1"
-          >
-            <Icon
-              icon="caret-down"
-              className="size-4 transition-transform duration-200 [[data-state=open]>&]:rotate-180"
-            />
-            {t('screenings:freeform_search.advanced_options')}
-          </button>
-        </Collapsible.Trigger>
-        <Collapsible.Content>
-          <div className="mt-4 grid grid-cols-2 gap-6">
-            {/* Datasets */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <span className="text-s font-medium text-grey-primary">
-                  {t('screenings:freeform_search.datasets_label')}
-                </span>
+      {/* Filters */}
+      <div className="flex flex-col gap-2">
+        {/* Entity type filter */}
+        <Collapsible.Root>
+          <Collapsible.Trigger asChild>
+            <button
+              type="button"
+              className={clsx(
+                'text-s flex w-full items-center justify-between rounded px-2 py-2',
+                entityType && entityType !== 'Thing'
+                  ? 'bg-purple-primary text-white'
+                  : 'bg-purple-background-light text-purple-primary',
+              )}
+            >
+              <span className="font-medium">{t('screenings:freeform_search.entity_type_label')}</span>
+              <Icon icon="caret-down" className="size-4 [[data-state=open]>&]:rotate-180" />
+            </button>
+          </Collapsible.Trigger>
+          <Collapsible.Content>
+            <div className="mt-2">
+              <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
+                {(field) => <EntitySelect name={field.name} value={field.state.value} onChange={field.handleChange} />}
+              </form.Field>
+            </div>
+          </Collapsible.Content>
+        </Collapsible.Root>
+
+        {/* Dynamic fields filter (only show if there are additional fields beyond name) */}
+        {additionalFields.filter((f) => f !== 'name').length > 0 && (
+          <Collapsible.Root>
+            <Collapsible.Trigger asChild>
+              <button
+                type="button"
+                className="text-s bg-purple-background-light text-purple-primary flex w-full items-center justify-between rounded px-2 py-2"
+              >
+                <span className="font-medium">{t('screenings:freeform_search.additional_fields')}</span>
+                <Icon icon="caret-down" className="size-4 [[data-state=open]>&]:rotate-180" />
+              </button>
+            </Collapsible.Trigger>
+            <Collapsible.Content>
+              <div className="mt-2 flex flex-col gap-2">
+                {additionalFields
+                  .filter((fieldName) => fieldName !== 'name')
+                  .map((fieldName) => (
+                    <form.Field key={fieldName} name={`fields.${fieldName}`}>
+                      {(formField) => (
+                        <div>
+                          <span className="text-xs text-grey-placeholder">
+                            {t(`screenings:entity.property.${fieldName}`)}
+                          </span>
+                          <Input
+                            name={formField.name}
+                            value={(formField.state.value as string) ?? ''}
+                            onChange={(e) => formField.handleChange(e.target.value)}
+                            className="w-full"
+                          />
+                        </div>
+                      )}
+                    </form.Field>
+                  ))}
+              </div>
+            </Collapsible.Content>
+          </Collapsible.Root>
+        )}
+
+        {/* Datasets filter */}
+        <Collapsible.Root>
+          <Collapsible.Trigger asChild>
+            <button
+              type="button"
+              className={clsx(
+                'text-s flex w-full items-center justify-between rounded px-2 py-2',
+                selectedDatasets.length > 0
+                  ? 'bg-purple-primary text-white'
+                  : 'bg-purple-background-light text-purple-primary',
+              )}
+            >
+              <span className="font-medium">{t('screenings:freeform_search.datasets_label')}</span>
+              <div className="flex items-center gap-1">
                 {selectedDatasets.length > 0 && (
-                  <span className="text-s text-grey-placeholder">
-                    {t('screenings:freeform_search.datasets_selected', {
-                      count: selectedDatasets.length,
-                    })}
+                  <span className="bg-surface-card text-grey-primary rounded-full px-1.5 text-xs font-semibold">
+                    {selectedDatasets.length}
                   </span>
                 )}
+                <Icon icon="caret-down" className="size-4 [[data-state=open]>&]:rotate-180" />
               </div>
-              <div className="border-grey-border max-h-[200px] overflow-y-auto rounded-md border">
-                {datasetsQuery.isPending ? (
-                  <div className="flex items-center justify-center p-4">
-                    <Icon icon="spinner" className="text-grey-placeholder size-5 animate-spin" />
-                  </div>
-                ) : datasetsQuery.isError ? (
-                  <div className="flex flex-col items-center gap-2 p-4">
-                    <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
-                    <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
-                      {t('common:retry')}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col">
-                    {datasetsQuery.data?.datasets.sections.map((section) => (
-                      <DatasetSectionCollapsible
-                        key={section.name}
-                        section={section}
-                        selectedDatasets={selectedDatasets}
-                        onToggleDataset={toggleDataset}
-                        onToggleSection={toggleSection}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-grey-placeholder">{t('screenings:freeform_search.datasets_description')}</p>
+            </button>
+          </Collapsible.Trigger>
+          <Collapsible.Content>
+            <div className="border-grey-border mt-2 max-h-[200px] overflow-y-auto rounded-md border">
+              {datasetsQuery.isPending ? (
+                <div className="flex items-center justify-center p-4">
+                  <Icon icon="spinner" className="text-grey-placeholder size-5 animate-spin" />
+                </div>
+              ) : datasetsQuery.isError ? (
+                <div className="flex flex-col items-center gap-2 p-4">
+                  <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
+                  <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
+                    {t('common:retry')}
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {datasetsQuery.data?.datasets.sections.map((section) => (
+                    <DatasetSectionCollapsible
+                      key={section.name}
+                      section={section}
+                      selectedDatasets={selectedDatasets}
+                      onToggleDataset={toggleDataset}
+                      onToggleSection={toggleSection}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
+          </Collapsible.Content>
+        </Collapsible.Root>
 
-            {/* Threshold */}
-            <div>
+        {/* Threshold filter */}
+        <Collapsible.Root>
+          <Collapsible.Trigger asChild>
+            <button
+              type="button"
+              className="text-s bg-purple-background-light text-purple-primary flex w-full items-center justify-between rounded px-2 py-2"
+            >
+              <span className="font-medium">{t('screenings:freeform_search.threshold_label')}</span>
+              <Icon icon="caret-down" className="size-4 [[data-state=open]>&]:rotate-180" />
+            </button>
+          </Collapsible.Trigger>
+          <Collapsible.Content>
+            <div className="mt-2">
               <form.Field name="threshold">
                 {(field) => (
                   <ThresholdSlider value={field.state.value} onChange={(value) => field.handleChange(value)} />
                 )}
               </form.Field>
             </div>
-          </div>
-        </Collapsible.Content>
-      </Collapsible.Root>
+          </Collapsible.Content>
+        </Collapsible.Root>
+
+        {/* Clear filters button */}
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="text-s border-grey-border text-grey-placeholder hover:text-grey-primary flex w-full items-center justify-center gap-1 rounded border px-2 py-2"
+          >
+            <Icon icon="cross" className="size-4" />
+            {t('screenings:freeform_search.clear')}
+          </button>
+        )}
+      </div>
     </form>
   );
 };
-
-interface FieldProps {
-  label: string;
-  children: React.ReactNode;
-  required?: boolean;
-}
-
-function Field({ label, children, required }: FieldProps) {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-s font-medium text-grey-primary">
-        {label}
-        {required && <span className="text-red-primary ml-1">*</span>}
-      </span>
-      <div className="flex gap-2">{children}</div>
-    </div>
-  );
-}
 
 interface EntitySelectProps {
   name: string;
