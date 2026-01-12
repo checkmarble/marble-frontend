@@ -28,7 +28,7 @@ function setAdditionalFields(fields: string[], prev: FreeformSearchInput['fields
 }
 
 interface FreeformSearchFormProps {
-  onSearchComplete: (results: ScreeningMatchPayload[]) => void;
+  onSearchComplete: (results: ScreeningMatchPayload[], searchInputs: FreeformSearchInput) => void;
 }
 
 export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete }) => {
@@ -50,7 +50,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
       const result = await searchMutation.mutateAsync(submitValue);
 
       if (result.success) {
-        onSearchComplete(result.data);
+        onSearchComplete(result.data, submitValue);
       } else {
         toast.error(t('common:errors.unknown'));
       }
