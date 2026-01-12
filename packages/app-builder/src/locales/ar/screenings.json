@@ -94,6 +94,7 @@
   "error_label_others": "الفحص به خطأ للأسباب التالية",
   "error.all_fields_null_or_empty": "جميع حقول البحث فارغة أو خالية",
   "error.match_already_enriched": "تم إثراء المطابقة مسبقًا",
+  "freeform_search.additional_fields": "حقول إضافية",
   "freeform_search.advanced_options": "خيارات متقدمة",
   "freeform_search.clear": "مسح",
   "freeform_search.datasets_description": "حدد مجموعات البيانات للبحث فيها. اتركها فارغة للبحث في الكل.",

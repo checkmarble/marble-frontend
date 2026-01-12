@@ -52,22 +52,20 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
 
   // Results found
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h2 className="text-l font-semibold text-grey-primary">{t('screenings:freeform_search.results_title')}</h2>
-          <span className="text-s text-grey-placeholder">
+    <div className="flex flex-col gap-2">
+      <div className="bg-surface-card border border-grey-border flex items-center justify-between rounded-md px-4 py-3">
+        <div className="text-s flex items-center gap-2">
+          <span className="font-semibold text-grey-primary">{t('screenings:freeform_search.results_title')}</span>
+          <span className="text-grey-placeholder">
             {t('screenings:freeform_search.results_count', { count: results.length })}
           </span>
         </div>
         {action}
       </div>
 
-      <div className="flex flex-col gap-4">
-        {results.map((entity) => (
-          <FreeformMatchCard key={entity.id} entity={entity} defaultOpen={results.length === 1} />
-        ))}
-      </div>
+      {results.map((entity) => (
+        <FreeformMatchCard key={entity.id} entity={entity} defaultOpen={results.length === 1} />
+      ))}
     </div>
   );
 };

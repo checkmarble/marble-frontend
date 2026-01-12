@@ -50,14 +50,16 @@ export const FreeformSearchPage: FunctionComponent = () => {
     ) : undefined;
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      {/* Form - full width at top */}
-      <div className="bg-surface-card border-grey-border shrink-0 rounded-lg border p-4">
-        <FreeformSearchForm onSearchComplete={handleSearchComplete} />
+    <div className="flex h-full flex-col gap-6 lg:flex-row">
+      {/* Left sidebar - filters */}
+      <div className="shrink-0 overflow-y-auto w-full lg:w-1/4">
+        <div className="bg-surface-card border-grey-border rounded-lg border p-4">
+          <FreeformSearchForm onSearchComplete={handleSearchComplete} />
+        </div>
       </div>
 
-      {/* Results - fills remaining space */}
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      {/* Right content - results */}
+      <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
         <FreeformSearchResults results={results} action={printAction} />
       </div>
     </div>
