@@ -197,7 +197,7 @@ export type ContinuousScreeningMatchScreeningEntityDto = ContinuousScreeningMatc
     opensanction_entity_id: string;
 };
 export type ContinuousScreeningMarbleToScreeningEntityDto = {
-    trigger_type: "object_added";
+    trigger_type: "object_added" | "object_updated";
 } & ContinuousScreeningDtoBase & {
     object_type: string;
     object_id: string;
@@ -224,7 +224,7 @@ export type ContinuousScreeningScreeningEntityToMarbleDto = {
     opensanction_entity_payload: OpenSanctionsEntityDto;
     matches: ContinuousScreeningMatchMarbleDto[];
 };
-export type ContinuousScreeningDto = ContinuousScreeningMarbleToScreeningEntityDto | ContinuousScreeningMarbleToScreeningEntityDto | ContinuousScreeningScreeningEntityToMarbleDto;
+export type ContinuousScreeningDto = ContinuousScreeningMarbleToScreeningEntityDto | ContinuousScreeningScreeningEntityToMarbleDto;
 export type CaseEventDtoBase = {
     id: string;
     case_id: string;
