@@ -1,7 +1,8 @@
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
+import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CollapsibleV2, Tag } from 'ui-design-system';
+import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchDetails } from '../MatchDetails';
@@ -20,14 +21,14 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
 
   return (
     <div className="grid grid-cols-[1fr_max-content] gap-x-6 gap-y-2">
-      <CollapsibleV2.Provider defaultOpen={defaultOpen}>
+      <CollapsiblePrimitive.Root defaultOpen={defaultOpen}>
         <div className="bg-surface-elevated border border-grey-border col-span-full grid grid-cols-subgrid rounded-md">
           <div className="col-span-full flex items-center justify-between gap-2 px-4 py-3">
-            <CollapsibleV2.Title className="focus-visible:text-purple-primary group flex grow items-center gap-2 rounded-sm outline-hidden transition-colors">
+            <CollapsiblePrimitive.Trigger className="focus-visible:text-purple-primary group flex grow items-center gap-2 rounded-sm outline-hidden transition-colors">
               <Icon
                 icon="smallarrow-up"
                 aria-hidden
-                className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-initial:rotate-180 rtl:-rotate-90 group-aria-expanded:rtl:-rotate-180 group-data-initial:rtl:-rotate-180"
+                className="size-5 rotate-90 transition-transform duration-200 group-data-[state=open]:rotate-180 rtl:-rotate-90 group-data-[state=open]:rtl:-rotate-180"
               />
               <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">{entity.caption}</span>
@@ -48,7 +49,7 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
                   ))}
                 </div>
               </div>
-            </CollapsibleV2.Title>
+            </CollapsiblePrimitive.Trigger>
             <div className="flex items-center gap-2">
               <a
                 href={`https://www.opensanctions.org/entities/${entity.id}`}
@@ -62,7 +63,7 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
             </div>
           </div>
 
-          <CollapsibleV2.Content className="col-span-full">
+          <CollapsiblePrimitive.Content className="col-span-full data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up overflow-hidden">
             <div className="text-s flex flex-col gap-6 p-4">
               {entitySchema === 'person' && entity.datasets?.length ? (
                 <div className="grid grid-cols-[168px_1fr] gap-2">
@@ -80,9 +81,9 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
               ) : null}
               <MatchDetails entity={entity} />
             </div>
-          </CollapsibleV2.Content>
+          </CollapsiblePrimitive.Content>
         </div>
-      </CollapsibleV2.Provider>
+      </CollapsiblePrimitive.Root>
     </div>
   );
 };
