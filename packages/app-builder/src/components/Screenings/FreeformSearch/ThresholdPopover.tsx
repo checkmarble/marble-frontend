@@ -11,7 +11,7 @@ export interface ThresholdPopoverProps {
   onApply: (value: number | undefined) => void;
 }
 
-export function ThresholdPopover({ value, onApply }: ThresholdPopoverProps) {
+export const ThresholdPopover = ({ value, onApply }: ThresholdPopoverProps) => {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
   const [tempValue, setTempValue] = useState<number | undefined>(value);
@@ -34,25 +34,13 @@ export function ThresholdPopover({ value, onApply }: ThresholdPopoverProps) {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    if (newValue === '') {
-      setTempValue(undefined);
-      return;
-    }
-    const numValue = parseInt(newValue, 10);
-    if (isNaN(numValue)) {
-      setTempValue(undefined);
-      return;
-    }
-    if (numValue < 0) {
-      setTempValue(0);
-      return;
-    }
-    if (numValue > 100) {
-      setTempValue(100);
-      return;
-    }
-    setTempValue(numValue);
+    const { value } = e.target;
+    if (value === '') return setTempValue(undefined);
+
+    const num = parseInt(value, 10);
+    if (isNaN(num)) return setTempValue(undefined);
+
+    setTempValue(Math.min(100, Math.max(0, num)));
   };
 
   const hasValue = value !== undefined;
@@ -122,4 +110,4 @@ export function ThresholdPopover({ value, onApply }: ThresholdPopoverProps) {
       </Popover.Portal>
     </Popover.Root>
   );
-}
+};

@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, ButtonV2, Checkbox, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -17,7 +18,7 @@ export interface DatasetsPopoverProps {
   onApply: (datasets: string[]) => void;
 }
 
-export function DatasetsPopover({ selectedDatasets, onApply }: DatasetsPopoverProps) {
+export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverProps) => {
   const { t } = useTranslation(screeningsI18n);
   const datasetsQuery = useScreeningDatasetsQuery();
   const [open, setOpen] = useState(false);
@@ -113,36 +114,41 @@ export function DatasetsPopover({ selectedDatasets, onApply }: DatasetsPopoverPr
 
           {/* Datasets list */}
           <div className="max-h-[300px] overflow-y-auto">
-            {datasetsQuery.isPending ? (
-              <div className="flex items-center justify-center p-4">
-                <Icon icon="spinner" className="text-grey-placeholder size-5 animate-spin" />
-              </div>
-            ) : datasetsQuery.isError ? (
-              <div className="flex flex-col items-center gap-2 p-4">
-                <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
-                <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
-                  {t('common:retry')}
-                </Button>
-              </div>
-            ) : filteredSections.length === 0 ? (
-              <div className="flex items-center justify-center p-4">
-                <span className="text-s text-grey-placeholder">
-                  {t('screenings:freeform_search.datasets_no_results')}
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                {filteredSections.map((section) => (
-                  <DatasetSectionCollapsible
-                    key={section.name}
-                    section={section}
-                    selectedDatasets={tempSelected}
-                    onToggleDataset={toggleDataset}
-                    onToggleSection={toggleSection}
-                  />
-                ))}
-              </div>
-            )}
+            {match(datasetsQuery)
+              .with({ isPending: true }, () => (
+                <div className="flex items-center justify-center p-4">
+                  <Icon icon="spinner" className="text-grey-placeholder size-5 animate-spin" />
+                </div>
+              ))
+              .with({ isError: true }, () => (
+                <div className="flex flex-col items-center gap-2 p-4">
+                  <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
+                  <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
+                    {t('common:retry')}
+                  </Button>
+                </div>
+              ))
+              .otherwise(() =>
+                filteredSections.length === 0 ? (
+                  <div className="flex items-center justify-center p-4">
+                    <span className="text-s text-grey-placeholder">
+                      {t('screenings:freeform_search.datasets_no_results')}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    {filteredSections.map((section) => (
+                      <DatasetSectionCollapsible
+                        key={section.name}
+                        section={section}
+                        selectedDatasets={tempSelected}
+                        onToggleDataset={toggleDataset}
+                        onToggleSection={toggleSection}
+                      />
+                    ))}
+                  </div>
+                ),
+              )}
           </div>
 
           {/* Actions */}
@@ -170,7 +176,7 @@ export function DatasetsPopover({ selectedDatasets, onApply }: DatasetsPopoverPr
       </Popover.Portal>
     </Popover.Root>
   );
-}
+};
 
 interface DatasetSectionCollapsibleProps {
   section: OpenSanctionsCatalogSection;
@@ -179,12 +185,12 @@ interface DatasetSectionCollapsibleProps {
   onToggleSection: (section: OpenSanctionsCatalogSection, select: boolean) => void;
 }
 
-function DatasetSectionCollapsible({
+const DatasetSectionCollapsible = ({
   section,
   selectedDatasets,
   onToggleDataset,
   onToggleSection,
-}: DatasetSectionCollapsibleProps) {
+}: DatasetSectionCollapsibleProps) => {
   const { t } = useTranslation(screeningsI18n);
   const selectedCount = section.datasets.filter((d) => selectedDatasets.includes(d.name)).length;
   const isAllSelected = selectedCount === section.datasets.length;
@@ -242,4 +248,4 @@ function DatasetSectionCollapsible({
       </Collapsible.Content>
     </Collapsible.Root>
   );
-}
+};
