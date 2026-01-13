@@ -42,7 +42,7 @@ export function UserInfo({
                 logo="logo"
                 alt="Logo"
                 className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12 text-grey-primary"
-                customLogoClassName="h-6 w-full shrink-0 object-contain transition-all group-aria-expanded/nav:h-12"
+                customLogoClassName="size-6 shrink-0 object-contain transition-all group-aria-expanded/nav:h-12 group-aria-expanded/nav:w-auto"
               />
               {isAutoAssignmentAvailable && unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
                 <div className="absolute top-1 left-1 flex h-3 w-3">
