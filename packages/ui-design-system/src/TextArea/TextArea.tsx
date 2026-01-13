@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
 export const textarea = cva(
-  'text-s text-grey-primary placeholder:text-grey-disabled disabled:bg-grey-background rounded-sm p-2 font-medium outline-hidden border focus:border-purple-primary row-start-1 row-end-2 col-start-1 col-end-2',
+  'text-s text-grey-primary placeholder:text-grey-disabled disabled:bg-grey-background read-only:bg-grey-background-light read-only:border-transparent rounded-sm p-2 font-medium outline-hidden border focus:not-read-only:border-purple-primary row-start-1 row-end-2 col-start-1 col-end-2',
   {
     variants: {
       borderColor: {

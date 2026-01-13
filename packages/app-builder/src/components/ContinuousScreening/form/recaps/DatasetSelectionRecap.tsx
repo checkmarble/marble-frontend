@@ -2,7 +2,7 @@ import { useScreeningDatasetsQuery } from '@app-builder/queries/screening/datase
 import { OpenSanctionsCatalogSection } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ContinuousScreeningCreationStepper } from '../../context/CreationStepper';
+import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 import { RecapCapsule, RecapRow } from '../../shared/RecapRow';
 
 const calculateSelectedCountByTags = (sections: OpenSanctionsCatalogSection[], selectedDatasets: string[]) => {
@@ -23,7 +23,7 @@ const calculateSelectedCountByTags = (sections: OpenSanctionsCatalogSection[], s
 export const DatasetSelectionRecap = () => {
   const { t } = useTranslation(['continuousScreening', 'scenarios']);
   const datasetsQuery = useScreeningDatasetsQuery();
-  const selectedDatasets = ContinuousScreeningCreationStepper.select((state) =>
+  const selectedDatasets = ContinuousScreeningConfigurationStepper.select((state) =>
     Object.keys(state.data.datasets).filter((k) => !!state.data.datasets[k]),
   );
 

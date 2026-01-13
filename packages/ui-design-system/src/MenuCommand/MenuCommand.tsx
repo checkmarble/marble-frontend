@@ -214,9 +214,10 @@ function Trigger({ children }: React.PropsWithChildren) {
 type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   hasError?: boolean;
   noArrow?: boolean;
+  readOnly?: boolean;
 };
 const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function SelectButton(
-  { children, className, hasError = false, noArrow, ...props },
+  { children, className, hasError = false, noArrow, readOnly, ...props },
   ref,
 ) {
   return (
@@ -226,16 +227,18 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
       className={cn(
         clsx([
           'flex h-10 min-w-[40px] items-center justify-between gap-2 rounded-sm border px-2 outline-hidden',
-          'bg-surface-card disabled:border-transparent disabled:bg-grey-background-light',
-          'border-grey-border focus:border-purple-primary',
+          'disabled:bg-grey-background disabled:text-grey-disabled data-[read-only]:pointer-events-none data-[read-only]:bg-grey-background-light data-[read-only]:border-transparent',
+          'border-grey-border focus:not-data-[read-only]:border-purple-primary',
+          'dark:disabled:bg-transparent',
         ]),
         { 'border-red-primary': hasError },
         className,
       )}
+      {...(readOnly ? { 'data-read-only': readOnly } : {})}
       {...props}
     >
       <span>{children}</span>
-      {!noArrow ? <MenuArrow /> : null}
+      {!noArrow && !readOnly ? <MenuArrow /> : null}
     </button>
   );
 });

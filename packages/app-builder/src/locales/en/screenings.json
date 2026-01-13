@@ -121,6 +121,7 @@
   "freeform_search.threshold_label": "Similarity Threshold",
   "freeform_search.title": "Screening Search",
   "initial_query": "Initial query",
+  "match_limit": "Maximum hits",
   "match_threshold": "Match threshold",
   "match.associations.title": "Associations",
   "match.datasets.title": "Appears on",

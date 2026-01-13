@@ -1,3 +1,4 @@
+import { FTM_ENTITIES } from '@app-builder/constants/ftm-entities';
 import { CreateContinuousScreeningConfig, CreateMappingConfig } from '@app-builder/models/continuous-screening';
 import { buildStepper } from '@app-builder/utils/build-stepper';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
@@ -13,13 +14,18 @@ export type PartialCreateContinuousScreeningConfig = Omit<
   mappingConfigs: (Omit<CreateMappingConfig, 'ftmEntity'> & { ftmEntity: FtmEntity | null })[];
 };
 
+const generalInfoStepSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+});
+
 const objectMappingStepSchema = z
   .object({
     mappingConfigs: protectArray(
       z.array(
         z.object({
           objectType: z.string(),
-          ftmEntity: z.enum(['Person', 'Company', 'Vessel']),
+          ftmEntity: z.enum(FTM_ENTITIES),
           fieldMapping: z.record(z.string(), z.string().nullable()),
         }),
       ),
@@ -55,19 +61,17 @@ const datasetSelectionStepSchema = z
   });
 
 export const createContinuousScreeningConfigSchema = z.intersection(
-  z.object({
-    name: z.string(),
-    description: z.string(),
-  }),
+  generalInfoStepSchema,
   z.intersection(objectMappingStepSchema, z.intersection(scoringConfigurationStepSchema, datasetSelectionStepSchema)),
 );
 
-export const ContinuousScreeningCreationStepper = buildStepper({
+export const ContinuousScreeningConfigurationStepper = buildStepper({
   __types: {
     initialData: {} as PartialCreateContinuousScreeningConfig,
   },
-  name: 'ContinuousScreeningCreationStepper',
+  name: 'ContinuousScreeningConfigurationStepper',
   steps: [
+    { name: 'generalInfo', schema: generalInfoStepSchema },
     { name: 'objectMapping', schema: objectMappingStepSchema },
     { name: 'scoringConfiguration', schema: scoringConfigurationStepSchema },
     { name: 'datasetSelection', schema: datasetSelectionStepSchema },

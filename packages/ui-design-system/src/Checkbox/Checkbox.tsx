@@ -11,7 +11,7 @@ const checkbox = cva(
     // Light mode
     'bg-grey-white hover:bg-purple-background-light group-hover/checkbox-parent:bg-purple-background-light',
     'enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-primary enabled:radix-state-checked:hover:bg-purple-hover',
-    'disabled:bg-grey-background disabled:border-grey-border disabled:radix-state-checked:border-none disabled:radix-state-checked:bg-grey-disabled disabled:cursor-not-allowed',
+    'disabled:border-transparent disabled:bg-grey-disabled disabled:radix-state-unchecked:bg-grey-background disabled:radix-state-unchecked:border-grey-border disabled:cursor-not-allowed',
     // Dark mode
     'dark:bg-grey-background dark:hover:bg-grey-background-light dark:group-hover/checkbox-parent:bg-grey-background-light',
     'dark:enabled:radix-state-checked:bg-purple-primary dark:enabled:radix-state-checked:hover:bg-purple-hover',
@@ -56,19 +56,13 @@ export const Checkbox = forwardRef<
     >
       <Indicator asChild>
         {checked === undefined ? (
-          <Icon
-            icon="tick"
-            className="text-grey-white group-disabled:text-grey-secondary dark:group-disabled:text-purple-primary"
-          />
+          <Icon icon="tick" className="text-grey-white dark:group-disabled:text-purple-primary" />
         ) : checked === true ? (
-          <Icon
-            icon="tick"
-            className="text-grey-white group-disabled:text-grey-secondary dark:group-disabled:text-purple-primary"
-          />
+          <Icon icon="tick" className="text-grey-white dark:group-disabled:text-purple-primary" />
         ) : checked === 'indeterminate' ? (
           <Icon
             icon="check-indeterminate-small"
-            className="text-purple-primary group-disabled:text-grey-secondary dark:group-disabled:text-purple-primary"
+            className="text-purple-primary group-disabled:text-grey-white dark:group-disabled:text-purple-primary"
           />
         ) : null}
       </Indicator>

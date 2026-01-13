@@ -2,13 +2,15 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { PrevalidationCreateContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { useCreateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/create-configuration';
 import { useCallbackRef } from '@marble/shared';
+import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '../Breadcrumbs';
 import { Page } from '../Page';
-import { ContinuousScreeningCreationStepper } from './context/CreationStepper';
-import { CreationContent } from './creation/Content';
-import { Stepper } from './creation/Stepper';
+import { ContinuousScreeningConfigurationStepper } from './context/CreationStepper';
+import { CreationContent } from './form/Content';
+import { Stepper } from './form/Stepper';
 
 export const CreationPage = ({ name, description }: { name: string; description: string }) => {
+  const { t } = useTranslation(['continuousScreening']);
   const revalidate = useLoaderRevalidator();
   const createConfigurationMutation = useCreateContinuousScreeningConfigurationMutation();
   const handleSubmit = useCallbackRef((value: PrevalidationCreateContinuousScreeningConfig) => {
@@ -16,7 +18,8 @@ export const CreationPage = ({ name, description }: { name: string; description:
       revalidate();
     });
   });
-  const creationStepper = ContinuousScreeningCreationStepper.createSharp(
+  const creationStepper = ContinuousScreeningConfigurationStepper.createSharp(
+    'create',
     {
       mappingConfigs: [],
       matchThreshold: 70,
@@ -28,14 +31,15 @@ export const CreationPage = ({ name, description }: { name: string; description:
       description,
     },
     handleSubmit,
+    { initialStep: 1 },
   );
 
   return (
-    <ContinuousScreeningCreationStepper.Provider value={creationStepper}>
+    <ContinuousScreeningConfigurationStepper.Provider value={creationStepper}>
       <Page.Main>
         <Page.Header className="justify-between">
           <BreadCrumbs />
-          <Stepper />
+          <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:creation.stepper.${stepName}`)} />
         </Page.Header>
         <Page.Container>
           <Page.ContentV2 paddingLess>
@@ -43,6 +47,6 @@ export const CreationPage = ({ name, description }: { name: string; description:
           </Page.ContentV2>
         </Page.Container>
       </Page.Main>
-    </ContinuousScreeningCreationStepper.Provider>
+    </ContinuousScreeningConfigurationStepper.Provider>
   );
 };

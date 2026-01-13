@@ -9,13 +9,14 @@ const Table = ({ className, children }: TableProps) => {
   return <div className={cn('grid border border-grey-border rounded-lg bg-surface-card', className)}>{children}</div>;
 };
 
-type TableRowProps = {
-  className?: string;
-  children: React.ReactNode;
-};
+type TableRowProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
 
-const TableRow = ({ className, children }: TableRowProps) => {
-  return <div className={cn('group/row grid grid-cols-subgrid col-span-full items-center', className)}>{children}</div>;
+const TableRow = ({ className, children, ...props }: TableRowProps) => {
+  return (
+    <div className={cn('group/row grid grid-cols-subgrid col-span-full items-center', className)} {...props}>
+      {children}
+    </div>
+  );
 };
 
 type TableCellProps = {

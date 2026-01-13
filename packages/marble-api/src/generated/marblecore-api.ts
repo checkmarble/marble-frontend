@@ -1164,7 +1164,7 @@ export type NavigationOptionDto = {
     /** status of the index that is created in the database to allow data exploration on the child table. */
     status: "pending" | "valid" | "invalid";
 };
-export type FtmEntity = "Company" | "Person" | "Vessel";
+export type FtmEntity = "Person" | "Company" | "Organization" | "Vessel" | "Airplane";
 export type TableDto = {
     id: string;
     name: string;

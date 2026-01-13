@@ -1,24 +1,19 @@
 import { Callout } from '@app-builder/components/Callout';
+import { FTM_ENTITIES, FTM_ENTITIES_PROPERTIES } from '@app-builder/constants/ftm-entities';
 import { TableModel } from '@app-builder/models/data-model';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { computed } from '@preact/signals-react';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { FtmEntity } from 'marble-api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
-  ContinuousScreeningCreationStepper,
+  ContinuousScreeningConfigurationStepper,
   PartialCreateContinuousScreeningConfig,
 } from '../../context/CreationStepper';
 import { Field } from '../../shared/Field';
-
-const propertyPerEntity: Record<FtmEntity, string[]> = {
-  Company: ['name', 'address', 'phone', 'email'],
-  Person: ['name', 'address', 'phone', 'email'],
-  Vessel: ['name', 'address', 'phone', 'email'],
-};
 
 type PartialCreateMappingConfig = PartialCreateContinuousScreeningConfig['mappingConfigs'][number];
 
@@ -37,7 +32,8 @@ const newMappingConfigFromTable = (table: TableModel): PartialCreateMappingConfi
 export const ObjectMapping = () => {
   const { t } = useTranslation(['continuousScreening']);
   const dataModelQuery = useDataModelQuery();
-  const mappingConfigs = ContinuousScreeningCreationStepper.select((state) => state.data.$mappingConfigs);
+  const mappingConfigs = ContinuousScreeningConfigurationStepper.select((state) => state.data.$mappingConfigs);
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const [isEditingNewObject, setIsEditingNewObject] = useState(mappingConfigs.value.length === 0);
 
   const availableTables = computed(() => {
@@ -47,6 +43,19 @@ export const ObjectMapping = () => {
       (table) => !mappingConfigs.value.some((mappingConfig) => mappingConfig.objectType === table.name),
     );
   });
+
+  // Automerge partial mapping configs with the data model
+  useEffect(() => {
+    if (!dataModelQuery.isSuccess) return;
+
+    for (let i = 0; i < mappingConfigs.value.length; i++) {
+      const mappingConfig = mappingConfigs.value[i]!;
+      const table = dataModelQuery.data.dataModel.find((table) => table.name === mappingConfig.objectType);
+      if (table && table.ftmEntity && table.ftmEntity !== mappingConfig.ftmEntity) {
+        mappingConfigs.value[i] = newMappingConfigFromTable(table);
+      }
+    }
+  }, [dataModelQuery]);
 
   return (
     <div className="flex flex-col gap-v2-md">
@@ -73,17 +82,19 @@ export const ObjectMapping = () => {
           }}
         />
       ) : null}
-      <div>
-        <ButtonV2
-          variant="primary"
-          appearance="stroked"
-          disabled={isEditingNewObject || mappingConfigs.value.length === 0}
-          onClick={() => setIsEditingNewObject(true)}
-        >
-          <Icon icon="plus" className="size-4" />
-          {t('continuousScreening:creation.objectMapping.addTable')}
-        </ButtonV2>
-      </div>
+      {mode === 'view' ? null : (
+        <div>
+          <ButtonV2
+            variant="primary"
+            appearance="stroked"
+            disabled={isEditingNewObject || mappingConfigs.value.length === 0}
+            onClick={() => setIsEditingNewObject(true)}
+          >
+            <Icon icon="plus" className="size-4" />
+            {t('continuousScreening:creation.objectMapping.addTable')}
+          </ButtonV2>
+        </div>
+      )}
     </div>
   );
 };
@@ -100,6 +111,7 @@ const ObjectMappingConfigurator = ({
   const { t } = useTranslation(['continuousScreening']);
   const dataModelQuery = useDataModelQuery();
   const [isTableOpen, setIsTableOpen] = useState(false);
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   if (!dataModelQuery.isSuccess) return null;
 
@@ -126,7 +138,7 @@ const ObjectMappingConfigurator = ({
       <Collapsible.Content className="flex flex-col gap-v2-sm mt-v2-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         <MenuCommand.Menu open={isTableOpen} onOpenChange={setIsTableOpen}>
           <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="w-full shrink-0">
+            <MenuCommand.SelectButton className="w-full shrink-0" readOnly={mode === 'view'}>
               {mappingConfig?.objectType ??
                 t('continuousScreening:creation.objectMapping.configurator.tableName.placeholder')}
             </MenuCommand.SelectButton>
@@ -161,19 +173,20 @@ const ObjectMappingFtmContent = ({
   onUpdate: (mappingConfig: PartialCreateMappingConfig) => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const dataModelQuery = useDataModelQuery();
   const table = dataModelQuery.data?.dataModel.find((table) => table.name === mappingConfig.objectType);
   if (!table) return null;
 
   const ftmEntity = table.ftmEntity ?? mappingConfig.ftmEntity;
-  const availableProperties = ftmEntity ? propertyPerEntity[ftmEntity] : [];
+  const availableProperties = ftmEntity ? FTM_ENTITIES_PROPERTIES[ftmEntity] : [];
 
   return (
     <>
       <FTMEntitySelector
         ftmEntity={ftmEntity}
-        availableEntities={['Person', 'Company', 'Vessel']}
-        disabled={table.ftmEntity !== undefined}
+        availableEntities={FTM_ENTITIES}
+        readOnly={table.ftmEntity !== undefined || mode === 'view'}
         onChange={(ftmEntity) => {
           onUpdate({
             ...mappingConfig,
@@ -188,15 +201,12 @@ const ObjectMappingFtmContent = ({
               {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.title')}
             </div>
           </div>
-          {/* <Callout bordered className="bg-surface-card mx-v2-md"> */}
-          <div className="px-v2-md pt-v2-md text-grey-placeholder">
-            {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.explanation')}
-          </div>
-          {/* </Callout> */}
           <div className="grid grid-cols-[auto_40px_1fr] gap-v2-sm p-v2-md">
             {table.fields.map((field) => {
               const ftmProperty = field.ftmProperty ?? mappingConfig.fieldMapping[field.id] ?? null;
               const hasSavedMapping = field.ftmProperty !== undefined;
+
+              if (mode === 'view' && !hasSavedMapping) return null;
 
               return (
                 <div key={field.id} className="grid grid-cols-subgrid col-span-full items-center">
@@ -207,7 +217,7 @@ const ObjectMappingFtmContent = ({
                     <Icon icon="arrow-forward" className="size-6 text-purple-primary" />
                   </div>
                   <FtmFieldSelector
-                    disabled={hasSavedMapping}
+                    readOnly={hasSavedMapping}
                     ftmEntity={ftmEntity}
                     ftmProperty={ftmProperty}
                     availableProperties={availableProperties}
@@ -231,12 +241,12 @@ const ObjectMappingFtmContent = ({
 const FTMEntitySelector = ({
   ftmEntity,
   availableEntities,
-  disabled,
+  readOnly,
   onChange,
 }: {
   ftmEntity: FtmEntity | null;
   availableEntities: FtmEntity[];
-  disabled: boolean;
+  readOnly: boolean;
   onChange: (ftmObject: FtmEntity) => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
@@ -250,7 +260,7 @@ const FTMEntitySelector = ({
     >
       <MenuCommand.Menu open={isOpen} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <MenuCommand.SelectButton disabled={disabled} className="w-full">
+          <MenuCommand.SelectButton readOnly={readOnly} className="w-full">
             {ftmEntity ?? t('continuousScreening:creation.objectMapping.configurator.ftmEntity.placeholder')}
           </MenuCommand.SelectButton>
         </MenuCommand.Trigger>
@@ -272,13 +282,13 @@ const FtmFieldSelector = ({
   ftmEntity,
   ftmProperty,
   availableProperties,
-  disabled,
+  readOnly,
   onChange,
 }: {
   ftmEntity: string;
   ftmProperty: string | null;
   availableProperties: string[];
-  disabled: boolean;
+  readOnly: boolean;
   onChange: (ftmProperty: string | null) => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
@@ -287,14 +297,10 @@ const FtmFieldSelector = ({
   return (
     <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton disabled={disabled}>
-          {ftmProperty ? (
-            `${ftmEntity}.${ftmProperty}`
-          ) : (
-            <span className="text-grey-placeholder">
-              {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.placeholder')}
-            </span>
-          )}
+        <MenuCommand.SelectButton readOnly={readOnly}>
+          {ftmProperty
+            ? `${ftmEntity}.${ftmProperty}`
+            : t('continuousScreening:creation.objectMapping.configurator.fieldMapping.placeholder')}
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content side="bottom" align="start" sideOffset={4} sameWidth>
