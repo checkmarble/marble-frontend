@@ -6,6 +6,7 @@ import { useEditListMutation } from '@app-builder/queries/lists/edit-list';
 import { EditListPayload, editListPayloadSchema } from '@app-builder/schemas/lists';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -14,6 +15,7 @@ export function EditListModal({ listId, name, description }: { listId: string; n
   const { t } = useTranslation(['lists', 'navigation', 'common']);
   const editListMutation = useEditListMutation();
   const revalidate = useLoaderRevalidator();
+  const [open, setOpen] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -25,6 +27,7 @@ export function EditListModal({ listId, name, description }: { listId: string; n
       if (formApi.state.isValid) {
         editListMutation.mutateAsync(value).then(() => {
           revalidate();
+          setOpen(false);
         });
       }
     },
@@ -34,7 +37,7 @@ export function EditListModal({ listId, name, description }: { listId: string; n
   });
 
   return (
-    <Modal.Root>
+    <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button variant="secondary">
           <Icon icon="edit-square" className="size-6" />

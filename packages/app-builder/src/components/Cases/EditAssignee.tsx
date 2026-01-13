@@ -80,8 +80,8 @@ export const EditCaseAssignee = ({
                   form.handleSubmit();
                 }}
               >
-                <Icon icon="plus" className="text-grey-placeholder size-4" />
-                <span className="text-grey-placeholder text-xs">
+                <Icon icon="plus" className="text-grey-secondary size-4" />
+                <span className="text-grey-secondary text-xs">
                   {t('cases:case_detail.assign_to_myself_button.label')}
                 </span>
               </ButtonV2>
@@ -90,8 +90,8 @@ export const EditCaseAssignee = ({
               <MenuCommand.Menu open={open} onOpenChange={setOpen}>
                 <MenuCommand.Trigger>
                   <ButtonV2 variant="secondary" mode={assignee ? 'icon' : 'normal'}>
-                    <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-placeholder size-4" />
-                    {!assignee ? <span className="text-grey-placeholder text-xs">Add</span> : null}
+                    <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-secondary size-4" />
+                    {!assignee ? <span className="text-grey-secondary text-xs">Add</span> : null}
                   </ButtonV2>
                 </MenuCommand.Trigger>
                 <MenuCommand.Content sameWidth className="mt-2">

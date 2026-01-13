@@ -107,7 +107,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
                         <span>[{index + 1}]</span>
                         <span>
                           <a
-                            className="text-purple-primary hover:bg-purple-background hover:text-grey-placeholder"
+                            className="text-purple-primary hover:bg-purple-background hover:text-grey-secondary"
                             href={citation.url}
                           >
                             {citation.title}

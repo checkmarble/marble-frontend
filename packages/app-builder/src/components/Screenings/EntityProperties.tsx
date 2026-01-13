@@ -90,7 +90,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                   ) : null}
                 </>
               ) : (
-                <span className="text-grey-placeholder">not available</span>
+                <span className="text-grey-secondary">not available</span>
               )}
             </span>
           </Fragment>

@@ -199,7 +199,7 @@ function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValu
         </div>
       </div>
 
-      <div className="border-t-grey-border bg-grey-background text-grey-placeholder flex items-center justify-end gap-4 border-t p-2 text-xs">
+      <div className="border-t-grey-border bg-grey-background text-grey-secondary flex items-center justify-end gap-4 border-t p-2 text-xs">
         <span className="flex items-center gap-1">
           <Icon icon="monitor" className="size-4" />
           <span>{versions.appVersion}</span>

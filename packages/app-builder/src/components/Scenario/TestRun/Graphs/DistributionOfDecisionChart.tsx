@@ -18,7 +18,7 @@ export const DistributionOfDecisionChart = ({
       <Collapsible.Title>{t('scenarios:testrun.distribution')}</Collapsible.Title>
       <Collapsible.Content>
         {decisions.length === 0 ? (
-          <span className="text-grey-placeholder inline-block w-full text-center font-semibold">
+          <span className="text-grey-secondary inline-block w-full text-center font-semibold">
             {t('scenarios:testrun.no_decisions')}
           </span>
         ) : (

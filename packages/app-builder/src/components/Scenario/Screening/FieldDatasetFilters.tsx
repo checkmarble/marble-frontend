@@ -62,7 +62,7 @@ export const FieldDatasetFilters = ({
           <Icon
             icon="cross"
             onClick={() => setSearchValue('')}
-            className="text-grey-placeholder hover:text-grey-primary absolute right-2 top-1.5 size-5 cursor-pointer transition-colors"
+            className="text-grey-secondary hover:text-grey-primary absolute right-2 top-1.5 size-5 cursor-pointer transition-colors"
           />
         ) : null}
       </div>

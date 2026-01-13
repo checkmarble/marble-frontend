@@ -225,7 +225,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
           if (unicityConstraint === 'pending_unique_constraint') {
             return (
               <div className="flex size-full items-center justify-center">
-                <Icon icon="restart-alt" className="text-grey-placeholder size-6 shrink-0" />
+                <Icon icon="restart-alt" className="text-grey-secondary size-6 shrink-0" />
               </div>
             );
           }

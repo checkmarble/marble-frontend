@@ -51,7 +51,7 @@ export const handle = {
           <BreadCrumbLink to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })} isLast={isLast}>
             <span className="line-clamp-2 text-start">{t('cases:case.page_title')}</span>
           </BreadCrumbLink>
-          <span className="text-s border-grey-border text-grey-placeholder inline-flex gap-2 rounded-sm border px-2 font-normal">
+          <span className="text-s border-grey-border text-grey-secondary inline-flex gap-2 rounded-sm border px-2 font-normal">
             <span className="font-medium">ID</span>
             <span className="text-rtl max-w-20 truncate">{caseDetail.id}</span>
           </span>

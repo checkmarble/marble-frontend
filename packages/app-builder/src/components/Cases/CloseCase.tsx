@@ -86,7 +86,7 @@ export const CloseCase = ({
                             className={cn('rounded-[20px] border border-transparent px-2 py-[3px] text-xs', {
                               'bg-red-background text-red-primary dark:bg-transparent dark:border-red-primary':
                                 s === 'confirmed_risk',
-                              'bg-grey-background text-grey-placeholder dark:bg-transparent dark:border-grey-placeholder':
+                              'bg-grey-background text-grey-secondary dark:bg-transparent dark:border-grey-placeholder':
                                 s === 'false_positive',
                               'bg-yellow-background text-yellow-primary dark:bg-transparent dark:border-yellow-primary':
                                 s === 'valuable_alert',

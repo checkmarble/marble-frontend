@@ -25,7 +25,7 @@ const CommandInput = React.forwardRef<
   <CommandPrimitive.Input
     ref={ref}
     className={clsx(
-      'placeholder:text-grey-placeholder text-s bg-transparent outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
+      'placeholder:text-grey-secondary text-s bg-transparent outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
     {...props}
@@ -67,7 +67,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={clsx(
-      'text-grey-placeholder [&_[cmdk-group-heading]]:text-grey-placeholder overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+      'text-grey-secondary [&_[cmdk-group-heading]]:text-grey-secondary overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       className,
     )}
     {...props}

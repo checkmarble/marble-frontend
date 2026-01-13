@@ -60,7 +60,7 @@ export function SelectEvents({
             </SelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
-            <p className="text-grey-placeholder flex items-center justify-center p-2">
+            <p className="text-grey-secondary flex items-center justify-center p-2">
               {t('settings:webhooks.event_types.empty_matches')}
             </p>
           ) : null}

@@ -364,7 +364,7 @@ export default function ScreeningDetail() {
                         disabled={editor === 'view'}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
-                        className="form-textarea text-grey-placeholder text-r w-full resize-none border-none bg-transparent font-medium outline-hidden"
+                        className="form-textarea text-grey-secondary text-r w-full resize-none border-none bg-transparent font-medium outline-hidden"
                         placeholder={t('scenarios:sanction_description_placeholder')}
                       />
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

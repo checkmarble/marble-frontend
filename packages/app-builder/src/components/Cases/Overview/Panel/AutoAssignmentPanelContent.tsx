@@ -124,7 +124,7 @@ export const AutoAssignmentPanelContent = ({
               </div>
             ))
             .with({ isError: true }, () => (
-              <div className="text-s text-grey-placeholder py-4">{t('cases:overview.config.error_loading')}</div>
+              <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
             ))
             .with({ isSuccess: true }, () => (
               <div className="flex flex-col gap-v2-md">

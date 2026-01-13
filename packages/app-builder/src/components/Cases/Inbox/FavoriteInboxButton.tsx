@@ -41,7 +41,7 @@ export const FavoriteInboxButton: FunctionComponent<FavoriteInboxButtonProps> = 
         className={
           isFavorite
             ? 'size-5 fill-purple-primary text-purple-primary group-hover:fill-white group-hover:text-white dark:fill-purple-hover dark:text-purple-hover dark:group-hover:fill-grey-white dark:group-hover:text-grey-white'
-            : 'size-5 fill-none text-grey-placeholder group-hover:text-grey-primary'
+            : 'size-5 fill-none text-grey-secondary group-hover:text-grey-primary'
         }
       />
     </ButtonV2>

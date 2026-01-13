@@ -440,12 +440,10 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 );
               }}
               theme={{
-                grid: { line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' } },
-                tooltip: {
-                  container: {
-                    transform: 'translateX(16px)',
-                  },
-                },
+                text: { fill: 'var(--color-grey-secondary)' },
+                axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
+                legends: { text: { fill: 'var(--color-grey-secondary)' } },
+                grid: { line: { stroke: 'var(--color-grey-border)', strokeWidth: 1, strokeDasharray: '4 4' } },
               }}
               layout="vertical"
               motionConfig={{

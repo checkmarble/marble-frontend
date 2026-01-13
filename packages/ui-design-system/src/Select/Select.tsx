@@ -51,7 +51,7 @@ function SelectViewport({ children, className, ...props }: React.PropsWithChildr
 }
 
 export const selectTrigger = cva(
-  'text-s text-grey-primary flex min-h-10 min-w-10 items-center justify-between border font-medium outline-hidden radix-state-open:border-purple-primary radix-state-open:text-purple-primary radix-disabled:border-grey-border radix-disabled:bg-grey-background radix-disabled:text-grey-placeholder radix-placeholder:text-grey-disabled radix-placeholder:radix-state-open:text-grey-disabled',
+  'text-s text-grey-primary flex min-h-10 min-w-10 items-center justify-between border font-medium outline-hidden radix-state-open:border-purple-primary radix-state-open:text-purple-primary radix-disabled:border-grey-border radix-disabled:bg-grey-background radix-disabled:text-grey-secondary radix-placeholder:text-grey-disabled radix-placeholder:radix-state-open:text-grey-disabled',
   {
     variants: {
       backgroundColor: {

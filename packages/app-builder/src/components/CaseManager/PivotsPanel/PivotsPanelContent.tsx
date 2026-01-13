@@ -84,7 +84,7 @@ export function PivotsPanelContent({
             }}
             className={cn('h-7 px-4 rounded-lg flex items-center border', {
               'bg-purple-background text-purple-primary border-transparent': isDisplayingProofs,
-              'bg-surface-card text-grey-placeholder border-grey-border cursor-pointer': !isDisplayingProofs,
+              'bg-surface-card text-grey-secondary border-grey-border cursor-pointer': !isDisplayingProofs,
             })}
           >
             {t('cases:ai_review.proof.title')}
@@ -96,7 +96,7 @@ export function PivotsPanelContent({
             return (
               <button
                 key={uniqKey}
-                className="text-grey-placeholder aria-current:bg-purple-background aria-current:text-purple-primary aria-current:dark:bg-grey-background-light aria-current:dark:text-purple-hover rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
+                className="text-grey-secondary aria-current:bg-purple-background aria-current:text-purple-primary aria-current:dark:bg-grey-background-light aria-current:dark:text-purple-hover rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
                 onClick={() => {
                   setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));

@@ -138,7 +138,7 @@ export const OutcomeBadge = ({
                 .with('approve', () => 'text-green-primary')
                 .with('decline', () => 'text-red-primary')
                 .with('review', () => 'text-yellow-primary')
-                .with('unknown', () => 'text-grey-placeholder')
+                .with('unknown', () => 'text-grey-secondary')
                 .with('block_and_review', () =>
                   match(reviewStatus)
                     .with('approve', () => 'text-green-primary')

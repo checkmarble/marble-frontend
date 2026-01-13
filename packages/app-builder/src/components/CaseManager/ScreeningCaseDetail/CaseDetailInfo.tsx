@@ -55,19 +55,19 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
       </div>
       <div className="text-small grid grid-cols-[repeat(2,_minmax(auto,_calc(var(--spacing)_*_35))_1fr)] gap-v2-sm p-v2-md rounded-lg border border-grey-border bg-surface-card">
         <div className="grid grid-cols-subgrid col-span-full h-8 items-center">
-          <div className="text-grey-placeholder">{t('cases:case.date')}</div>
+          <div className="text-grey-secondary">{t('cases:case.date')}</div>
           <div>{formatDateTime(caseDetail.createdAt, { dateStyle: 'short' })}</div>
-          <div className="text-grey-placeholder">{t('cases:case.tags')}</div>
+          <div className="text-grey-secondary">{t('cases:case.tags')}</div>
           <div className="flex gap-v2-xs">
             <EditCaseTags id={caseDetail.id} tagIds={caseDetail.tags.map(({ tagId }) => tagId)} />
           </div>
         </div>
         <div className="grid grid-cols-subgrid col-span-full h-8 items-center">
-          <div className="text-grey-placeholder">{t('cases:case.inbox')}</div>
+          <div className="text-grey-secondary">{t('cases:case.inbox')}</div>
           <div>
             <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
           </div>
-          <div className="text-grey-placeholder">{t('cases:assigned_to')}</div>
+          <div className="text-grey-secondary">{t('cases:assigned_to')}</div>
           <div className="flex gap-v2-xs">
             <EditCaseAssignee
               currentUser={currentUser}
@@ -96,7 +96,7 @@ function ReviewStatusBadge({ status }: { status: ContinuousScreeningBase['status
 function ScreeningCaseSubtitle({ screening }: { screening: ContinuousScreening }) {
   const { t } = useTranslation(['continuousScreening', 'screeningTopics']);
   return (
-    <h2 className="text-h2 text-grey-placeholder">
+    <h2 className="text-h2 text-grey-secondary">
       {match(screening)
         .when(isIndirectContinuousScreening, (indirectScreening) => {
           const queries = R.entries(indirectScreening.request.searchInput.queries).map(([key, value]) => value);

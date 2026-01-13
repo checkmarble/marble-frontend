@@ -38,7 +38,7 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
   return (
     <form>
       <fieldset className="border-grey-disabled flex w-fit flex-col gap-4 rounded-sm border p-4">
-        <legend className="text-grey-placeholder p-2">Fruits</legend>
+        <legend className="text-grey-secondary p-2">Fruits</legend>
         <div className="flex flex-row gap-2">
           <Checkbox
             id="c1"

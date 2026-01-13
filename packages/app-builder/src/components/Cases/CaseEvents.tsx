@@ -113,7 +113,7 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
       ) : null}
       <div className="bg-surface-card sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
         <span
-          className={cn('text-grey-placeholder text-small', {
+          className={cn('text-grey-secondary text-small', {
             'text-grey-white': showAll || newerEvents === 0,
           })}
         >
@@ -161,7 +161,7 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
       </div>
       {showAll ? null : (
         <span
-          className={cn('bg-surface-card text-grey-placeholder sticky left-0 top-0 z-[-15] pl-6 text-xs', {
+          className={cn('bg-surface-card text-grey-secondary sticky left-0 top-0 z-[-15] pl-6 text-xs', {
             'text-grey-white': showAll,
           })}
         >

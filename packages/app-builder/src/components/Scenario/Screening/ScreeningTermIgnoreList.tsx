@@ -56,7 +56,7 @@ export const ScreeningTermIgnoreList = ({
                   {customLists.find((list) => list.id === selectedListId)?.name ||
                     t('scenarios:edit_sanction.select_list')}
                 </span>
-                <Icon icon="caret-down" className="text-grey-placeholder size-4" />
+                <Icon icon="caret-down" className="text-grey-secondary size-4" />
               </Button>
             </MenuCommand.Trigger>
             <MenuCommand.Content sameWidth className="mt-2">

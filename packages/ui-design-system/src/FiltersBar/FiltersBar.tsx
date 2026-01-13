@@ -215,7 +215,7 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
     variants: {
       state: {
         enabled: ' text-purple-primary',
-        disabled: 'text-grey-placeholder',
+        disabled: 'text-grey-secondary',
       },
     },
     defaultVariants: {

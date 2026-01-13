@@ -44,7 +44,7 @@ export const CaseAlerts = ({
   return decisions ? (
     <>
       <div className="text-small border-grey-border bg-surface-card rounded-lg border">
-        <div className="text-default text-grey-placeholder grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
+        <div className="text-default text-grey-secondary grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
           <span className="p-v2-sm">{t('cases:decisions.date')}</span>
           <span className="p-v2-sm">{t('cases:decisions.alert')}</span>
           <span className="p-v2-sm">{t('cases:decisions.trigger_object')}</span>
@@ -66,7 +66,7 @@ export const CaseAlerts = ({
               )}
             >
               <div className="flex min-h-full flex-col items-center p-2">
-                <span className="text-grey-placeholder text-xs font-normal">
+                <span className="text-grey-secondary text-xs font-normal">
                   {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
                 </span>
               </div>
@@ -78,7 +78,7 @@ export const CaseAlerts = ({
                       reviewStatus={decision.reviewStatus}
                       showBackground={false}
                     />
-                    <span className="text-grey-placeholder text-ellipsis text-xs font-normal">
+                    <span className="text-grey-secondary text-ellipsis text-xs font-normal">
                       {decision.scenario.name}
                     </span>
                     <ScoreModifier score={decision.score} />

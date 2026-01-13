@@ -227,10 +227,10 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
                 className="flex flex-col items-start gap-1 p-3 hover:bg-grey-05 rounded-md cursor-pointer"
               >
                 <div className="flex items-center gap-2">
-                  <Icon icon={option.icon as any} className="size-4 text-grey-placeholder" />
+                  <Icon icon={option.icon as any} className="size-4 text-grey-secondary" />
                   <span className="font-medium text-grey-primary">{option.label}</span>
                 </div>
-                <span className="text-sm text-grey-placeholder">{option.description}</span>
+                <span className="text-sm text-grey-secondary">{option.description}</span>
               </MenuCommand.Item>
             ))}
           </MenuCommand.List>

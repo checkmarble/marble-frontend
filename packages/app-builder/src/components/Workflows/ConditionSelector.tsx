@@ -184,7 +184,7 @@ export function ConditionSelector({
                   <div className="flex items-center">
                     <span className="font-medium text-grey-primary">{option.label}</span>
                   </div>
-                  <span className="text-sm text-grey-placeholder">{option.description}</span>
+                  <span className="text-sm text-grey-secondary">{option.description}</span>
                 </MenuCommand.Item>
               ))}
             </MenuCommand.List>

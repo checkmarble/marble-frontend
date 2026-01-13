@@ -101,7 +101,7 @@ export function PanelHeader({ children, className }: PanelHeaderProps) {
       <h2 className="text-l font-bold text-grey-primary">{children}</h2>
       <Icon
         icon="cross"
-        className="size-5 cursor-pointer text-grey-placeholder hover:text-grey-primary"
+        className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary"
         onClick={closePanel}
         aria-label="Close panel"
       />

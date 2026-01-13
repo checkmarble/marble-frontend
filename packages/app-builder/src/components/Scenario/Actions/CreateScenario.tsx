@@ -128,7 +128,7 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
                   >
                     <Ariakit.HovercardAnchor
                       tabIndex={-1}
-                      className="text-grey-disabled hover:text-grey-placeholder cursor-pointer transition-colors"
+                      className="text-grey-disabled hover:text-grey-secondary cursor-pointer transition-colors"
                     >
                       <Icon icon="tip" className="size-5" />
                     </Ariakit.HovercardAnchor>

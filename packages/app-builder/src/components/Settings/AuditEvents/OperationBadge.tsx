@@ -16,7 +16,7 @@ const operationToTranslationKey = {
 export const OperationBadge: FunctionComponent<OperationBadgeProps> = ({ operation }) => {
   const { t } = useTranslation(['settings']);
 
-  if (!operation) return <span className="text-grey-placeholder">-</span>;
+  if (!operation) return <span className="text-grey-secondary">-</span>;
 
   const colorClass = {
     INSERT:

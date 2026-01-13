@@ -125,7 +125,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                       form.handleSubmit();
                     }}
                   >
-                    <Icon icon="cross" className="text-grey-placeholder size-4" />
+                    <Icon icon="cross" className="text-grey-secondary size-4" />
                   </Button>
                 </div>
               ))
@@ -166,12 +166,12 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                   <input {...getInputProps()} />
                   <p className="text-r flex flex-col gap-1 text-center">
                     <span className="text-grey-primary">{t('cases:sar.modale.heading')}</span>
-                    <span className="text-grey-placeholder inline-flex flex-col">
+                    <span className="text-grey-secondary inline-flex flex-col">
                       <span>{t('cases:sar.modale.supported_extensions')}</span>
                       <span>{t('cases:drop_file_accepted_types')}</span>
                     </span>
                   </p>
-                  <span className="text-grey-placeholder text-r">or</span>
+                  <span className="text-grey-secondary text-r">or</span>
                   <Button>
                     <Icon icon="plus" className="size-6" />
                     {t('cases:sar.modale.cta_choose_file')}

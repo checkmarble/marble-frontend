@@ -119,7 +119,7 @@ const ObjectMappingConfigurator = ({
               t('continuousScreening:creation.objectMapping.configurator.title_placeholder')}
           </span>
           {mappingConfig?.ftmEntity ? (
-            <span className="text-s text-grey-placeholder">{mappingConfig.ftmEntity}</span>
+            <span className="text-s text-grey-secondary">{mappingConfig.ftmEntity}</span>
           ) : null}
         </div>
       </Collapsible.Trigger>

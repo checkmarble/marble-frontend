@@ -166,7 +166,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         {!loading ? (
           <>
             <p>{t('upload:drop_file_cta')}</p>
-            <p className="text-grey-disabled uppercase">{t('common:or')}</p>
+            <p className="text-grey-secondary uppercase">{t('common:or')}</p>
             <Button>
               <Icon icon="plus" className="size-6" />
               {t('upload:pick_file_cta')}
@@ -342,7 +342,7 @@ const getStatusIcon = (status: string) => {
   if (status === 'failure') {
     return <Icon icon="cross" className="text-red-primary size-6" />;
   }
-  return <Icon icon="restart-alt" className="text-grey-placeholder size-6" />;
+  return <Icon icon="restart-alt" className="text-grey-secondary size-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['upload']> => {
@@ -393,7 +393,7 @@ export default function Upload() {
                   download={`${objectType}_template.csv`}
                   className={clsx(
                     'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden',
-                    'hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-placeholder disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary',
+                    'hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-secondary disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary',
                   )}
                 >
                   <Icon icon="download" className="me-2 size-6" />

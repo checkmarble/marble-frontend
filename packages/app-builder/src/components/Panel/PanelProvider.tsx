@@ -1,4 +1,5 @@
-import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
+import { useLocation } from '@remix-run/react';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface PanelContextType {
@@ -22,6 +23,17 @@ interface PanelProviderProps {
 
 export function PanelProvider({ children }: PanelProviderProps) {
   const [panelContent, setPanelContent] = useState<ReactNode>(null);
+  const location = useLocation();
+  const isFirstRender = useRef(true);
+
+  // Close panel on navigation (e.g., browser back button)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setPanelContent(null);
+  }, [location.key]);
 
   const openPanel = useCallback((content: ReactNode) => {
     setPanelContent(content);

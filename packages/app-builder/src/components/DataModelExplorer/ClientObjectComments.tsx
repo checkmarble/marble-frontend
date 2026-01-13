@@ -25,7 +25,7 @@ function CommentItem({ comment }: { comment: GroupedAnnotations['comments'][numb
       </div>
       <div className="flex items-start justify-between gap-2 pt-1">
         <div className="text-xs">{comment.payload.text}</div>
-        <span className="text-2xs text-grey-placeholder text-right">
+        <span className="text-2xs text-grey-secondary text-right">
           <EventTime time={comment.created_at} />
         </span>
       </div>

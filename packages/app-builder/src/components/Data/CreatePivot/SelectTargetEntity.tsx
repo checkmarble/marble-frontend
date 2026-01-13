@@ -110,7 +110,7 @@ export function SelectTargetEntity({
                       </MenuCommand.Item>
                     ))}
                     {options.length === 0 ? (
-                      <p className="text-grey-placeholder flex items-center justify-center p-2">
+                      <p className="text-grey-secondary flex items-center justify-center p-2">
                         {t('data:create_pivot.select.empty_matches')}
                       </p>
                     ) : null}
@@ -134,9 +134,9 @@ export function SelectTargetEntity({
         {hasFieldOptions ? (
           <div className="flex flex-col gap-4">
             <div className="w-full border-b text-center leading-[0.1em]">
-              <span className="text-grey-placeholder bg-surface-card px-[10px]">{t('common:or')}</span>
+              <span className="text-grey-secondary bg-surface-card px-[10px]">{t('common:or')}</span>
             </div>
-            <p className="text-grey-placeholder">
+            <p className="text-grey-secondary">
               <Trans
                 t={t}
                 i18nKey="data:create_pivot.select_entity.same_table"

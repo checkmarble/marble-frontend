@@ -38,7 +38,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
                 <span className="col-start-2">{inbox.name}</span>
               </div>
               {inbox.casesCount !== undefined ? (
-                <span className="text-small text-grey-placeholder">
+                <span className="text-small text-grey-secondary">
                   {t('cases:inbox.cases_count', { count: inbox.casesCount })}
                 </span>
               ) : null}

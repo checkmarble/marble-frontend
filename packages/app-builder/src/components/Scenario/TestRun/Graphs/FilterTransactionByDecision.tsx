@@ -25,7 +25,7 @@ const TestRunRuleName = ({
       <div className="flex flex-col">
         <span className="text-s font-normal">{testRuleName}</span>
         {refRuleName !== testRuleName ? (
-          <span className="text-grey-placeholder inline-flex flex-row items-center gap-2">
+          <span className="text-grey-secondary inline-flex flex-row items-center gap-2">
             <Icon icon="arrow-top-left" className="size-2" />
             <span className="text-xs">{refRuleName}</span>
           </span>
@@ -104,7 +104,7 @@ const TestRunRuleHitPercentage = ({
   return (
     <div className="flex flex-row items-center gap-2">
       {direction !== 'equal' ? (
-        <span className="text-s text-grey-placeholder font-normal">
+        <span className="text-s text-grey-secondary font-normal">
           {formatNumber(refRuleHitPercentage! / 100, {
             language,
             style: 'percent',
@@ -225,7 +225,7 @@ export const FilterTransactionByDecision = ({
       <Collapsible.Title>{t('scenarios:testrun.transaction_by_decision')}</Collapsible.Title>
       <Collapsible.Content>
         {rules.length === 0 ? (
-          <span className="text-grey-placeholder inline-block w-full text-center font-semibold">
+          <span className="text-grey-secondary inline-block w-full text-center font-semibold">
             {t('scenarios:testrun.no_rules')}
           </span>
         ) : (

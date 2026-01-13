@@ -61,7 +61,7 @@ export const IngestedObjectDetail = ({
     >
       <div className="text-m col-span-full flex items-center gap-2">
         <span className="bg-surface-card border-blue-58 text-blue-58 rounded-sm border px-2 py-1">ID: {objectId}</span>
-        <span className="bg-surface-card border-grey-placeholder text-grey-placeholder rounded-sm border px-2 py-1">
+        <span className="bg-surface-card border-grey-placeholder text-grey-secondary rounded-sm border px-2 py-1">
           {t('data:last_ingestion_at', {
             date: formatDateTime(object.metadata.validFrom, {
               dateStyle: 'short',

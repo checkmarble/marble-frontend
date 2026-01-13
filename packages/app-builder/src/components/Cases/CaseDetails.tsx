@@ -128,7 +128,7 @@ export const CaseDetails = ({
             {/* Case details */}
             <div className="border-grey-border text-small flex flex-col gap-2 border p-v2-md bg-surface-card rounded-v2-lg">
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-placeholder font-normal">{t('cases:case.status')}</span>
+                <span className="text-grey-secondary font-normal">{t('cases:case.status')}</span>
                 <span className="flex items-center gap-2">
                   <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
                   {detail.snoozedUntil ? (
@@ -141,21 +141,21 @@ export const CaseDetails = ({
                 </span>
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-placeholder font-normal">{t('cases:creation_date')}</span>
+                <span className="text-grey-secondary font-normal">{t('cases:creation_date')}</span>
                 <time className="font-medium" dateTime={detail.createdAt}>
                   {formatDateTime(detail.createdAt, { dateStyle: 'short' })}
                 </time>
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-placeholder font-normal">{t('cases:case.inbox')}</span>
+                <span className="text-grey-secondary font-normal">{t('cases:case.inbox')}</span>
                 <EditCaseInbox id={detail.id} inboxId={detail.inboxId} />
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-placeholder font-normal">{t('cases:case.tags')}</span>
+                <span className="text-grey-secondary font-normal">{t('cases:case.tags')}</span>
                 <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-placeholder font-normal">{t('cases:assigned_to')}</span>
+                <span className="text-grey-secondary font-normal">{t('cases:assigned_to')}</span>
                 <EditCaseAssignee
                   disabled={detail.status === 'closed'}
                   assigneeId={detail.assignedTo}
@@ -164,7 +164,7 @@ export const CaseDetails = ({
                 />
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-placeholder font-normal">{t('cases:sar.title')}</span>
+                <span className="text-grey-secondary font-normal">{t('cases:sar.title')}</span>
                 <EditCaseSuspicion id={detail.id} reports={reports} />
               </div>
             </div>

@@ -67,7 +67,7 @@ export const CaseStatusBadge = ({
             className={cn('text-grey-primary', {
               'text-purple-primary': status === 'snoozed' || status === 'closed',
               'text-red-primary': status === 'waiting_for_action',
-              'text-grey-placeholder': status === 'pending',
+              'text-grey-secondary': status === 'pending',
               'text-blue-58': status === 'investigating',
             })}
           >
@@ -80,7 +80,7 @@ export const CaseStatusBadge = ({
           className={cn('rounded-full border px-2 py-0.5 text-xs', {
             'border-red-primary text-red-primary': outcome === 'confirmed_risk',
             'border-green-primary text-green-primary': outcome === 'valuable_alert',
-            'border-grey-placeholder text-grey-placeholder': outcome === 'false_positive',
+            'border-grey-placeholder text-grey-secondary': outcome === 'false_positive',
           })}
         >
           {t(`cases:case.outcome.${outcome}`)}

@@ -41,7 +41,7 @@ export function CasePivotValues({
                   tabIndex={-1}
                   className={clsx(
                     'cursor-pointer transition-colors',
-                    pivot.type === 'field' && 'text-grey-disabled hover:text-grey-placeholder',
+                    pivot.type === 'field' && 'text-grey-disabled hover:text-grey-secondary',
                     pivot.type === 'link' && 'hover:text-purple-primary text-purple-disabled',
                   )}
                 >

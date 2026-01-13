@@ -204,7 +204,7 @@ function FormatStaticDate({ date, className }: { date?: string | Date; className
       dateTime={dateTime}
       className={clsx(
         'border-grey-border h-10 w-fit rounded-sm border p-2',
-        date ? 'text-grey-primary' : 'text-grey-placeholder',
+        date ? 'text-grey-primary' : 'text-grey-secondary',
         className,
       )}
     >

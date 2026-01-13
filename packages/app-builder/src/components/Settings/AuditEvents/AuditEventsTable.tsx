@@ -41,7 +41,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
               })}
             </span>
           ) : (
-            <span className="text-grey-placeholder">-</span>
+            <span className="text-grey-secondary">-</span>
           );
         },
       }),
@@ -71,7 +71,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
           return (
             <div className="flex flex-col">
               <span className="text-grey-primary text-sm">{displayName}</span>
-              <span className="text-grey-placeholder text-xs">{secondaryText}</span>
+              <span className="text-grey-secondary text-xs">{secondaryText}</span>
             </div>
           );
         },
@@ -91,7 +91,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
           return value ? (
             <span className="text-grey-primary text-sm">{value}</span>
           ) : (
-            <span className="text-grey-placeholder">-</span>
+            <span className="text-grey-secondary">-</span>
           );
         },
       }),
@@ -101,7 +101,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
         size: 250,
         cell: ({ getValue }) => {
           const value = getValue();
-          if (!value) return <span className="text-grey-placeholder">-</span>;
+          if (!value) return <span className="text-grey-secondary">-</span>;
           return (
             <div onClick={(e) => e.stopPropagation()}>
               <CopyToClipboardButton toCopy={value} size="sm">

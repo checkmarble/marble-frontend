@@ -33,7 +33,7 @@ export const ScreeningCaseMatches = ({
         {isUserAdmin ? <DismissAlertButton screening={screening} /> : null}
       </div>
       <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_52)] border border-grey-border rounded-v2-md bg-surface-card">
-        <div className="grid grid-cols-subgrid col-span-full border-b border-grey-border text-tiny text-grey-placeholder">
+        <div className="grid grid-cols-subgrid col-span-full border-b border-grey-border text-tiny text-grey-secondary">
           <div className="p-v2-sm">{t('continuousScreening:review.matches.match_label')}</div>
           <div className="p-v2-sm">{t('continuousScreening:review.matches.status_label')}</div>
         </div>
@@ -56,7 +56,7 @@ export const ScreeningCaseMatches = ({
                       />
                     </Collapsible.Trigger>
                     <span className="font-medium">{screeningMatch.payload.caption}</span>
-                    <span className="text-small text-grey-placeholder">{getMatchEntityType(screeningMatch)}</span>
+                    <span className="text-small text-grey-secondary">{getMatchEntityType(screeningMatch)}</span>
                     <Tag color="grey" className="shrink-0">
                       Correspondance {screeningMatch.payload.score * 100}%
                     </Tag>

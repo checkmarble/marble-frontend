@@ -130,7 +130,7 @@ const DecisionTriggerObject = ({
       <div className="flex h-fit flex-col gap-4">
         <span className="text-m text-grey-primary font-semibold">{t('cases:case_detail.trigger_object')}</span>
         <div className="flex flex-col gap-2">
-          <span className="text-grey-placeholder text-xs first-letter:capitalize">
+          <span className="text-grey-secondary text-xs first-letter:capitalize">
             {t('cases:case_detail.pivot_values')}
           </span>
           <CasePivotValues pivotValues={pivotValues} />
@@ -138,7 +138,7 @@ const DecisionTriggerObject = ({
       </div>
 
       <div className="flex h-fit flex-col gap-2">
-        <span className="text-grey-placeholder text-xs first-letter:capitalize">
+        <span className="text-grey-secondary text-xs first-letter:capitalize">
           {t('cases:case_detail.trigger_object')}
         </span>
         <CaseDetailTriggerObject
@@ -258,13 +258,13 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
           </div>
           <div className="flex flex-col items-start gap-2">
             <div className="grid grid-cols-[60px_1fr] items-center">
-              <span className="text-grey-placeholder text-xs">Id</span>
+              <span className="text-grey-secondary text-xs">Id</span>
               <CopyToClipboardButton size="sm" toCopy={decision.id}>
                 <span className="line-clamp-1 max-w-40 text-xs font-normal">{decision.id}</span>
               </CopyToClipboardButton>
             </div>
             <div className="grid grid-cols-[60px_1fr] items-center">
-              <span className="text-grey-placeholder text-xs">{t('cases:decisions.outcome')}</span>
+              <span className="text-grey-secondary text-xs">{t('cases:decisions.outcome')}</span>
               <OutcomeBadge outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
             </div>
             <RequiredActions decision={decision} caseId={caseDetail.id} />

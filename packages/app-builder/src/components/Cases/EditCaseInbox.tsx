@@ -46,7 +46,7 @@ export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) 
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
                 <Button disabled={!inboxesQuery.isSuccess} className="w-fit p-0.5" variant="secondary" size="icon">
-                  <Icon icon="edit-square" className="text-grey-placeholder size-4" />
+                  <Icon icon="edit-square" className="text-grey-secondary size-4" />
                 </Button>
               </MenuCommand.Trigger>
               <MenuCommand.Content className="mt-2 min-w-[250px]">

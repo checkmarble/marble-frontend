@@ -83,7 +83,7 @@ const FieldCategory = memo(function FieldCategory({
             <span className="text-s font-semibold">{section.title}</span>
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
-            <span className="text-grey-placeholder text-xs">
+            <span className="text-grey-secondary text-xs">
               {isAllSelected
                 ? t('common:all_selected')
                 : selectedDatasetIds.length > 0

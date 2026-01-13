@@ -41,7 +41,7 @@ function renderItems(items: typeof groceries, group?: string) {
         <Fragment>
           <MenuSeparator />
           <MenuGroup>
-            <MenuGroupLabel className="text-grey-placeholder text-xs">{item.label}</MenuGroupLabel>
+            <MenuGroupLabel className="text-grey-secondary text-xs">{item.label}</MenuGroupLabel>
             {renderItems(item.items, item.label)}
           </MenuGroup>
         </Fragment>

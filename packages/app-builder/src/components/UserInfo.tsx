@@ -81,7 +81,7 @@ export function UserInfo({
             {fullName ? <p className="text-m mb-1 font-semibold capitalize">{fullName}</p> : null}
             <p className="text-s mb-2 font-normal">{email}</p>
             <Tag border="square">{role}</Tag>
-            <p className="text-grey-placeholder m-2 text-xs font-normal">{orgName}</p>
+            <p className="text-grey-secondary m-2 text-xs font-normal">{orgName}</p>
             <LanguagePicker />
           </div>
 

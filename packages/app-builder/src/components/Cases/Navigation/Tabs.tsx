@@ -7,7 +7,7 @@ const tabClassName = ({ isActive }: { isActive: boolean }) =>
     'flex items-center h-8 px-v2-sm text-s font-medium rounded-v2-md',
     isActive
       ? 'bg-purple-primary text-white dark:bg-purple-primary dark:text-grey-white'
-      : 'bg-purple-background text-purple-primary dark:bg-transparent dark:text-grey-placeholder',
+      : 'bg-purple-background text-purple-primary dark:bg-transparent dark:text-grey-secondary',
   );
 
 export function CasesNavigationTabs() {

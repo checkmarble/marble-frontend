@@ -78,7 +78,7 @@ export function ScheduledExecutionFilter() {
                 <div className="flex flex-col">
                   <Highlight text={successfullScheduledExecution.scenarioName} query={searchValue} />
                   <time
-                    className="text-grey-placeholder text-xs"
+                    className="text-grey-secondary text-xs"
                     dateTime={successfullScheduledExecution.startedAt.dateTime}
                   >
                     <Highlight text={successfullScheduledExecution.startedAt.formattedDateTime} query={searchValue} />
@@ -90,7 +90,7 @@ export function ScheduledExecutionFilter() {
           {showSpinner ? (
             <div className="text-grey-primary h-10 p-2 first-letter:capitalize">{t('common:loading')}</div>
           ) : matches.length === 0 ? (
-            <p className="text-grey-placeholder flex items-center justify-center p-2">
+            <p className="text-grey-secondary flex items-center justify-center p-2">
               {successfullScheduledExecutions?.length
                 ? t('decisions:filters.scheduled_execution.no_results')
                 : t('decisions:filters.scheduled_execution.no_schedule')}

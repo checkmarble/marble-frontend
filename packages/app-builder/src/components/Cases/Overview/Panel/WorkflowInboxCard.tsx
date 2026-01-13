@@ -35,7 +35,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
           >
             <Icon
               icon="caret-down"
-              className={cn('size-5 text-grey-placeholder transition-transform', { '-rotate-90': !isOpen })}
+              className={cn('size-5 text-grey-secondary transition-transform', { '-rotate-90': !isOpen })}
             />
             <span className="flex-1 text-m font-semibold">{inbox.name}</span>
             <Tag color={isConfigured ? 'green' : 'grey'} size="small" border="rounded-sm">

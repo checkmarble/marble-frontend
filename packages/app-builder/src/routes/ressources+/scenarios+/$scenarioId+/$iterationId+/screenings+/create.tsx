@@ -83,7 +83,7 @@ export function CreateScreening({
         <div className="flex w-full flex-col items-start">
           <span className="font-normal">{t('scenarios:create_sanction.title')}</span>
           <span
-            className={clsx('text-s text-grey-placeholder font-normal', {
+            className={clsx('text-s text-grey-secondary font-normal', {
               'text-grey-disabled': disabled,
             })}
           >
