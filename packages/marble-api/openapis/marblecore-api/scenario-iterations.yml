@@ -431,6 +431,7 @@ components:
         - version
         - created_at
         - updated_at
+        - archived
       properties:
         id:
           type: string
@@ -447,6 +448,8 @@ components:
         updated_at:
           type: string
           format: date-time
+        archived:
+          type: boolean
     ScenarioIterationWithBodyDto:
       allOf:
         - $ref: '#/components/schemas/ScenarioIterationDto'
