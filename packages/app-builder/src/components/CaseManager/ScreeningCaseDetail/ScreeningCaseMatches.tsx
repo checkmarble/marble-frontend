@@ -4,12 +4,13 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import {
   ContinuousScreening,
   ContinuousScreeningMatch,
+  isDirectContinuousScreening,
   isDirectContinuousScreeningMatch,
   isIndirectContinuousScreeningMatch,
 } from '@app-builder/models/continuous-screening';
 import { useDismissContinuousScreeningMutation } from '@app-builder/queries/continuous-screening/dismiss';
 import * as Collapsible from '@radix-ui/react-collapsible';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, Modal, Tag } from 'ui-design-system';
@@ -48,27 +49,48 @@ export const ScreeningCaseMatches = ({
                   defaultOpen={screening.matches.length === 1}
                   className="border-r border-grey-border p-v2-md flex flex-col gap-v2-md overflow-hidden group/collapsible"
                 >
-                  <div className="flex items-center gap-v2-sm">
-                    <Collapsible.Trigger asChild>
+                  <Collapsible.Trigger asChild>
+                    <div className="flex items-center gap-v2-sm">
                       <Icon
                         icon="caret-down"
                         className="size-4 group-radix-state-open/collapsible:rotate-180 transition-transform duration-200"
                       />
-                    </Collapsible.Trigger>
-                    <span className="font-medium">{screeningMatch.payload.caption}</span>
-                    <span className="text-small text-grey-secondary">{getMatchEntityType(screeningMatch)}</span>
-                    <Tag color="grey" className="shrink-0">
-                      Correspondance {screeningMatch.payload.score * 100}%
-                    </Tag>
-                    {screeningMatch.payload.properties['topics']?.map((topic) => {
-                      return <TopicTag key={topic} topic={topic} className="text-small" />;
-                    })}
-                  </div>
+                      <span className="font-medium">{screeningMatch.payload.caption}</span>
+                      <span className="text-small text-grey-secondary">{getMatchEntityType(screeningMatch)}</span>
+                      <Tag color="grey" className="shrink-0">
+                        Correspondance {screeningMatch.payload.score * 100}%
+                      </Tag>
+                      {screeningMatch.payload.properties['topics']?.map((topic) => {
+                        return <TopicTag key={topic} topic={topic} className="text-small" />;
+                      })}
+                    </div>
+                  </Collapsible.Trigger>
                   <Collapsible.Content className="radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
                     {match(screeningMatch)
                       .when(isDirectContinuousScreeningMatch, (directMatch) => (
                         <div className="p-v2-sm bg-grey-background-light rounded-v2-md">
-                          <MatchDetails entity={directMatch.payload} />
+                          <MatchDetails
+                            entity={directMatch.payload}
+                            before={
+                              <>
+                                <span className="font-bold capitalize">
+                                  {t('screenings:dataset', { count: directMatch.payload.datasets.length })}
+                                </span>
+                                <div className="flex flex-row flex-wrap">
+                                  {directMatch.payload.datasets.map((dataset, index) => {
+                                    return (
+                                      <Fragment key={dataset}>
+                                        <span>{dataset}</span>
+                                        {index < directMatch.payload.datasets.length - 1 ? (
+                                          <span className="mx-1">·</span>
+                                        ) : null}
+                                      </Fragment>
+                                    );
+                                  })}
+                                </div>
+                              </>
+                            }
+                          />
                         </div>
                       ))
                       .when(isIndirectContinuousScreeningMatch, (indirectMatch) => (
@@ -86,7 +108,10 @@ export const ScreeningCaseMatches = ({
                     .with('confirmed_hit', () => <Tag color="red">{t('screenings:match.status.confirmed_hit')}</Tag>)
                     .with('no_hit', () => <Tag color="green">{t('screenings:match.status.no_hit')}</Tag>)
                     .with('pending', () => (
-                      <ReviewScreeningMatch screeningMatch={screeningMatch}>
+                      <ReviewScreeningMatch
+                        screeningMatch={screeningMatch}
+                        automaticallyConfirmScreening={isDirectContinuousScreening(screening)}
+                      >
                         <button className="px-v2-sm py-v2-xs cursor-pointer bg-orange-primary text-white dark:bg-transparent dark:border dark:border-orange-primary dark:text-orange-primary rounded-v2-md inline-flex items-center">
                           <span>{t('screenings:match.status.pending')}</span>
                           <Icon icon="caret-down" className="size-4" />

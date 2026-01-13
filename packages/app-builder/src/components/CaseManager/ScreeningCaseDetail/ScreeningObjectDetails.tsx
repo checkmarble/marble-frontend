@@ -13,12 +13,13 @@ type ScreeningObjectDetailsProps = {
 };
 
 export const ScreeningObjectDetails = ({ objectType, objectId, className }: ScreeningObjectDetailsProps) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'continuousScreening']);
   const dataModelQuery = useDataModelWithOptionsQuery();
   const objectDetailsQuery = useObjectDetailsQuery(objectType, objectId);
 
   return (
-    <div className={cn('p-v2-md rounded-v2-lg', className)}>
+    <div className={cn('p-v2-md rounded-v2-lg flex flex-col gap-v2-sm', className)}>
+      <div className="font-medium">{t('continuousScreening:review.object_details_subtitle')}</div>
       {match([dataModelQuery, objectDetailsQuery])
         .with([{ isPending: true }, P.any], () => {
           return <Spinner className="size-6" />;

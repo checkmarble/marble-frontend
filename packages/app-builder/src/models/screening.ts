@@ -10,7 +10,7 @@ import {
 import * as R from 'remeda';
 import { TagProps } from 'ui-design-system';
 
-const matchEntitySchemas = [
+export const matchEntitySchemas = [
   'Thing',
   'LegalEntity',
   'Person',
@@ -148,7 +148,7 @@ export type ScreeningMatchPayload = {
   } & Record<string, string[]>;
 };
 
-function isKnownEntitySchema<K extends OpenSanctionEntitySchema>(
+export function isKnownEntitySchema<K extends OpenSanctionEntitySchema>(
   schema: string,
   schemaList: readonly K[],
 ): schema is K {

@@ -44,6 +44,7 @@ export const ScoringConfiguration = () => {
       </Field>
       <div className="grid grid-cols-1 gap-v2-md">
         <Field
+          required
           title={t('continuousScreening:creation.scoringConfiguration.alertAutomation.title')}
           description={t('continuousScreening:creation.scoringConfiguration.alertAutomation.subtitle')}
         >

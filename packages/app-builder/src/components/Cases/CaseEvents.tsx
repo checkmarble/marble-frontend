@@ -112,11 +112,7 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
         </div>
       ) : null}
       <div className="bg-surface-card sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
-        <span
-          className={cn('text-grey-secondary text-small', {
-            'text-grey-white': showAll || newerEvents === 0,
-          })}
-        >
+        <span className={cn('text-grey-secondary text-small')}>
           {t('cases:investigation.more_recent', { number: newerEvents })}
         </span>
         <div className="flex items-center gap-2">

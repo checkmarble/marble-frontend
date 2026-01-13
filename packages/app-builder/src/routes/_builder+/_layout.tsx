@@ -15,14 +15,17 @@ import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpda
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { isAnalyticsAvailable, isAutoAssignmentAvailable } from '@app-builder/services/feature-access';
+import {
+  isAnalyticsAvailable,
+  isAutoAssignmentAvailable,
+  isContinuousScreeningAvailable,
+} from '@app-builder/services/feature-access';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
-import { getServerEnv } from '@app-builder/utils/environment';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet, useLoaderData } from '@remix-run/react';
@@ -63,7 +66,7 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
     versions: context.appConfig.versions,
     authProvider: context.appConfig.auth.provider,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
-    isContinuousScreeningEnabled: getServerEnv('CONTINUOUS_SCREENING_ENABLED') ?? false,
+    isContinuousScreeningEnabled: isContinuousScreeningAvailable(user),
   };
 });
 

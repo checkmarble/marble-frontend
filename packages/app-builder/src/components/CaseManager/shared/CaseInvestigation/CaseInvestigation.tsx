@@ -16,7 +16,7 @@ export const CaseInvestigation = ({ caseId, events, root }: CaseInvestigationPro
   return (
     <div className="flex flex-col justify-start gap-1.5">
       <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:investigation')}</span>
-      <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border">
+      <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border overflow-hidden">
         <div className="p-4">
           <CaseEvents events={events} root={root} />
         </div>
