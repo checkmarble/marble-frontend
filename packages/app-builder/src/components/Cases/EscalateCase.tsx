@@ -1,28 +1,27 @@
 import { Callout, casesI18n } from '@app-builder/components';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { isAdmin } from '@app-builder/models';
 import { escalateCasePayloadSchema, useEscalateCaseMutation } from '@app-builder/queries/cases/escalate-case';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ButtonV2, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) => {
+export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId: string; isAdminUser: boolean }) => {
   const { t } = useTranslation(casesI18n);
   const escalateCaseMutation = useEscalateCaseMutation();
   const revalidate = useLoaderRevalidator();
-  const { inboxes, currentUser } = useLoaderData<typeof loader>();
+  const inboxesQuery = useGetInboxesQuery();
+
+  const inboxes = inboxesQuery.data?.inboxes ?? [];
 
   const inboxDetail = inboxes.find((inbox) => inbox.id === inboxId)!;
-  const targetInbox = inboxes.find((inbox) => inbox.id === inboxDetail.escalationInboxId);
-  const canEscalate = inboxDetail.escalationInboxId !== undefined;
-
-  const isAdminUser = isAdmin(currentUser);
+  const targetInbox = inboxes.find((inbox) => inbox.id === inboxDetail?.escalationInboxId);
+  const canEscalate = inboxDetail?.escalationInboxId !== undefined;
 
   const form = useForm({
     onSubmit: async ({ value }) => {

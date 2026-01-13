@@ -5,5 +5,9 @@ export const RecapRow = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const RecapCapsule = ({ children }: { children: React.ReactNode }) => {
-  return <Capsule className="bg-grey-background [.group\/recap-valid_&]:bg-surface-card">{children}</Capsule>;
+  return (
+    <Capsule className="bg-grey-background [.group\/recap-valid_&]:bg-surface-card [.group\/recap-valid_&]:dark:border [.group\/recap-valid_&]:dark:border-green-primary">
+      {children}
+    </Capsule>
+  );
 };

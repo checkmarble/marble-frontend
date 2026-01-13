@@ -2,11 +2,11 @@ import { AddComment } from '@app-builder/components/Cases/AddComment';
 import { CloseCase } from '@app-builder/components/Cases/CloseCase';
 import { OpenCase } from '@app-builder/components/Cases/OpenCase';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser } from '@app-builder/models';
+import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { CaseReview, DetailedCaseDecision } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
@@ -14,9 +14,9 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, cn, Markdown } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { CaseFileButton } from '../CaseManager/shared/CaseDocuments/CaseFileButton';
 import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
-import { CaseFile } from './CaseFile';
 import { CaseStatusBadge } from './CaseStatus';
 import { EditCaseAssignee } from './EditAssignee';
 import { EditCaseInbox } from './EditCaseInbox';
@@ -51,7 +51,7 @@ export const CaseDetails = ({
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   caseReview: CaseReview | null;
 }) => {
-  const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
+  const { case: detail, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(['common', 'cases']);
   const formatDateTime = useFormatDateTime();
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -88,7 +88,7 @@ export const CaseDetails = ({
           <div className="flex shrink-0 items-center gap-2">
             {detail.status !== 'closed' ? (
               <>
-                <EscalateCase id={detail.id} inboxId={detail.inboxId} />
+                <EscalateCase id={detail.id} inboxId={detail.inboxId} isAdminUser={isAdmin(currentUser)} />
                 <SnoozeCase caseId={detail.id} snoozeUntil={detail.snoozedUntil} />
               </>
             ) : null}
@@ -148,7 +148,7 @@ export const CaseDetails = ({
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-placeholder font-normal">{t('cases:case.inbox')}</span>
-                <EditCaseInbox id={detail.id} inboxId={detail.inboxId} inboxes={inboxes} />
+                <EditCaseInbox id={detail.id} inboxId={detail.inboxId} />
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-placeholder font-normal">{t('cases:case.tags')}</span>
@@ -174,7 +174,7 @@ export const CaseDetails = ({
               <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:investigation')}</span>
               <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border">
                 <div className="p-4">
-                  <CaseEvents events={detail.events} inboxes={inboxes} root={containerRef} />
+                  <CaseEvents events={detail.events} root={containerRef} />
                 </div>
                 <AddComment caseId={detail.id} />
               </div>
@@ -209,7 +209,7 @@ export const CaseDetails = ({
 
                 <div className="border-grey-border bg-surface-card flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
                   {detail.files.map((file) => (
-                    <CaseFile key={file.id} file={file} />
+                    <CaseFileButton key={file.id} file={file} />
                   ))}
                 </div>
               </div>

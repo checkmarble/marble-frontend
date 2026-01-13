@@ -292,6 +292,8 @@ ScreeningEntityDto:
   $ref: screenings.yml#/components/schemas/ScreeningEntityDto
 ScreeningRequestDto:
   $ref: screenings.yml#/components/schemas/ScreeningRequestDto
+ScreeningQueryDto:
+  $ref: screenings.yml#/components/schemas/ScreeningQueryDto
 ScreeningRefineDto:
   $ref: screenings.yml#/components/schemas/ScreeningRefineDto
 updateScreeningMatchDto:
@@ -538,3 +540,5 @@ ContinuousScreeningMarbleToScreeningEntityDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMarbleToScreeningEntityDto
 ContinuousScreeningScreeningEntityToMarbleDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto
+ContinuousScreeningMatchPayloadDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchPayloadDto

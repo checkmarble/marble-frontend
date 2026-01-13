@@ -6,7 +6,7 @@ import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModif
 import { type PivotObject } from '@app-builder/models/cases';
 import { isRuleExecutionHit } from '@app-builder/models/decision';
 import { useRulesByPivotQuery } from '@app-builder/queries/cases/rules-by-pivot';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useLoaderData } from '@remix-run/react';

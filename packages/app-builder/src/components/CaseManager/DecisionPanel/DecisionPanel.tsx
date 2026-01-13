@@ -20,7 +20,7 @@ import { DetailedCaseDecision } from '@app-builder/models/cases';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { useDetailDecisionQuery } from '@app-builder/queries/decisions/detail-decision';
 import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenario-iteration-rules';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { useEffect, useMemo, useRef, useState } from 'react';

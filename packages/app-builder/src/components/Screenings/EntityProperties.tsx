@@ -82,7 +82,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                           e.preventDefault();
                           handleShowMore(property);
                         }}
-                        className="text-purple-primary font-semibold"
+                        className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover"
                       >
                         + {restItemsCount} more
                       </button>

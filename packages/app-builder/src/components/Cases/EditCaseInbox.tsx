@@ -1,16 +1,19 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type Inbox } from '@app-builder/models/inbox';
 import { EditInboxPayload, editInboxPayloadSchema, useEditInboxMutation } from '@app-builder/queries/cases/edit-inbox';
+import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { match } from 'ts-pattern';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { Spinner } from '../Spinner';
 
-export const EditCaseInbox = ({ inboxId, id, inboxes }: { inboxId: string; id: string; inboxes: Inbox[] }) => {
+export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) => {
   const editInboxMutation = useEditInboxMutation();
   const revalidate = useLoaderRevalidator();
+  const inboxesQuery = useGetInboxesQuery();
   const [open, setOpen] = useState(false);
 
   const form = useForm({
@@ -26,11 +29,7 @@ export const EditCaseInbox = ({ inboxId, id, inboxes }: { inboxId: string; id: s
   });
 
   const selectedInboxId = useStore(form.store, (state) => state.values.inboxId);
-
-  const selectedInbox = useMemo(
-    () => inboxes.find(({ id: inboxId }) => inboxId === selectedInboxId) as Inbox,
-    [inboxes, selectedInboxId],
-  );
+  const selectedInbox = inboxesQuery.data?.inboxes.find(({ id: inboxId }) => inboxId === selectedInboxId) ?? null;
 
   return (
     <form.Field
@@ -43,31 +42,41 @@ export const EditCaseInbox = ({ inboxId, id, inboxes }: { inboxId: string; id: s
       {(field) => (
         <div className="flex w-full gap-1">
           <div className="flex items-center gap-2">
-            {selectedInbox ? <span className="text-xs font-medium">{selectedInbox.name}</span> : null}
+            {selectedInbox ? <span>{selectedInbox.name}</span> : null}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
-                <Button className="w-fit p-0.5" variant="secondary" size="icon">
+                <Button disabled={!inboxesQuery.isSuccess} className="w-fit p-0.5" variant="secondary" size="icon">
                   <Icon icon="edit-square" className="text-grey-placeholder size-4" />
                 </Button>
               </MenuCommand.Trigger>
               <MenuCommand.Content className="mt-2 min-w-[250px]">
-                <MenuCommand.List>
-                  {inboxes.map(({ id, name }) => (
-                    <MenuCommand.Item
-                      key={id}
-                      className="cursor-pointer"
-                      onSelect={() => {
-                        field.handleChange(id);
-                        form.handleSubmit();
-                      }}
-                    >
-                      <span className="inline-flex w-full justify-between">
-                        <span className="text-s">{name}</span>
-                        {id === selectedInboxId ? <Icon icon="tick" className="text-purple-primary size-6" /> : null}
-                      </span>
-                    </MenuCommand.Item>
-                  ))}
-                </MenuCommand.List>
+                {match(inboxesQuery)
+                  .with({ isPending: true }, () => <Spinner className="size-4" />)
+                  .with({ isError: true }, () => <div>Error...</div>)
+                  .with({ isSuccess: true }, ({ data }) => {
+                    return (
+                      <MenuCommand.List>
+                        {data.inboxes.map(({ id, name }) => (
+                          <MenuCommand.Item
+                            key={id}
+                            className="cursor-pointer"
+                            onSelect={() => {
+                              field.handleChange(id);
+                              form.handleSubmit();
+                            }}
+                          >
+                            <span className="inline-flex w-full justify-between">
+                              <span className="text-s">{name}</span>
+                              {id === selectedInboxId ? (
+                                <Icon icon="tick" className="text-purple-primary size-6" />
+                              ) : null}
+                            </span>
+                          </MenuCommand.Item>
+                        ))}
+                      </MenuCommand.List>
+                    );
+                  })
+                  .exhaustive()}
               </MenuCommand.Content>
             </MenuCommand.Menu>
           </div>

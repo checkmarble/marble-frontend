@@ -522,7 +522,6 @@ components:
           type: string
           enum:
             - in_review
-            - error
             - confirmed_hit
             - no_hit
         trigger_type:
@@ -630,7 +629,7 @@ components:
             - no_hit
             - skipped
         payload:
-          type: object
+          $ref: '#/components/schemas/ContinuousScreeningMatchPayloadDto'
         reviewed_by:
           type: string
           format: uuid
@@ -663,3 +662,19 @@ components:
               type: string
             object_id:
               type: string
+
+    ContinuousScreeningMatchPayloadDto:
+      type: object
+      allOf:
+        - $ref: 'screenings.yml#/components/schemas/ScreeningMatchPayloadDto'
+        - type: object
+          required:
+            - datasets
+            - target
+          properties:
+            datasets:
+              type: array
+              items:
+                type: string
+            target:
+              type: boolean
