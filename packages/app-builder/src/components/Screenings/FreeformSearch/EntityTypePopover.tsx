@@ -13,7 +13,7 @@ export interface EntityTypePopoverProps {
   onApply: (value: SearchableSchema) => void;
 }
 
-export function EntityTypePopover({ value, onApply }: EntityTypePopoverProps) {
+export const EntityTypePopover = ({ value, onApply }: EntityTypePopoverProps) => {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
 
@@ -82,4 +82,4 @@ export function EntityTypePopover({ value, onApply }: EntityTypePopoverProps) {
       </Popover.Portal>
     </Popover.Root>
   );
-}
+};

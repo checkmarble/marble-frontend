@@ -120,8 +120,6 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
       {/* Filters - 2 column grid on medium screens, single column on large */}
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
-        <DatasetsPopover selectedDatasets={selectedDatasets} onApply={setSelectedDatasets} />
-
         <EntityTypePopover
           value={entityType}
           onApply={(value) => {
@@ -129,6 +127,8 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
             onSearchEntityChange({ value });
           }}
         />
+
+        <DatasetsPopover selectedDatasets={selectedDatasets} onApply={setSelectedDatasets} />
 
         <div className="col-span-2 lg:col-span-1">
           <ThresholdPopover value={threshold} onApply={(value) => form.setFieldValue('threshold', value)} />
