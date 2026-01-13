@@ -1,5 +1,5 @@
 import { type ScreeningQuery } from '@app-builder/models/screening';
-import { Fragment } from 'react/jsx-runtime';
+import { Fragment } from 'react';
 import * as R from 'remeda';
 import { Separator } from 'ui-design-system';
 

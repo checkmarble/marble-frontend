@@ -15,11 +15,7 @@ import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpda
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import {
-  isAnalyticsAvailable,
-  isAutoAssignmentAvailable,
-  isContinuousScreeningAvailable,
-} from '@app-builder/services/feature-access';
+import { isAnalyticsAvailable, isAutoAssignmentAvailable } from '@app-builder/services/feature-access';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
@@ -33,7 +29,7 @@ import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 export const loader = createServerFn([authMiddleware], async function appBuilderLayout({ request, context }) {
@@ -63,11 +59,11 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
         ...(firstSetting !== undefined && { to: firstSetting.to }),
       },
       isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
+      continuousScreening: entitlements.continuousScreening,
     },
     versions: context.appConfig.versions,
     authProvider: context.appConfig.auth.provider,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
-    isContinuousScreeningEnabled: isContinuousScreeningAvailable(user),
     sentryReplayEnabled: organizationDetail.sentryReplayEnabled,
   };
 });
@@ -91,7 +87,6 @@ export default function Builder() {
     featuresAccess,
     versions,
     isMenuExpanded,
-    isContinuousScreeningEnabled,
     authProvider,
     sentryReplayEnabled,
   } = useLoaderData<typeof loader>();
@@ -137,6 +132,34 @@ export default function Builder() {
                               />
                             </li>
                             <li>
+                              {match(featuresAccess.continuousScreening)
+                                .with(P.union('allowed', 'test'), () => {
+                                  return (
+                                    <SidebarLink
+                                      labelTKey="navigation:continuous_screening"
+                                      to={getRoute('/continuous-screening')}
+                                      Icon={(props) => <Icon icon="scan-eye" {...props} />}
+                                    />
+                                  );
+                                })
+                                .otherwise((value) => {
+                                  return (
+                                    <div className="text-grey-disabled relative flex gap-2 p-2">
+                                      <Icon icon="scan-eye" className="size-6 shrink-0" />
+                                      <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                                        {t('navigation:continuous_screening')}
+                                      </span>
+                                      <Nudge
+                                        collapsed={!leftSidebarSharp.value.expanded}
+                                        kind={value}
+                                        className="size-6"
+                                        content={t('navigation:continuous_screening.nudge')}
+                                      />
+                                    </div>
+                                  );
+                                })}
+                            </li>
+                            <li>
                               <SidebarLink
                                 labelTKey="navigation:lists"
                                 to={getRoute('/lists')}
@@ -157,15 +180,6 @@ export default function Builder() {
                                 Icon={(props) => <Icon icon="case-manager" {...props} />}
                               />
                             </li>
-                            {isContinuousScreeningEnabled ? (
-                              <li>
-                                <SidebarLink
-                                  labelTKey="navigation:continuous_screening"
-                                  to={getRoute('/continuous-screening')}
-                                  Icon={(props) => <Icon icon="scan-eye" {...props} />}
-                                />
-                              </li>
-                            ) : null}
                             <li>
                               <SidebarLink
                                 labelTKey="navigation:screening_search"

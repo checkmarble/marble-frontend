@@ -5,7 +5,7 @@ import { PanelContainer, PanelContent, usePanel } from '@app-builder/components/
 import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { SquareTag } from '@app-builder/components/SquareTag';
-import { type CaseDetail } from '@app-builder/models/cases';
+import { Case, type CaseDetail } from '@app-builder/models/cases';
 import {
   ContinuousScreening,
   ContinuousScreeningMarbleToScreeningEntity,
@@ -23,6 +23,7 @@ import { Icon } from 'ui-icons';
 import { CaseDocuments } from '../shared/CaseDocuments/CaseDocuments';
 import { CaseInvestigation } from '../shared/CaseInvestigation/CaseInvestigation';
 import { CaseDetailInfo } from './CaseDetailInfo';
+import { ObjectRelatedCases } from './ObjectRelatedCases';
 import { ScreeningCaseMatches } from './ScreeningCaseMatches';
 import { ScreeningObjectDetails } from './ScreeningObjectDetails';
 import { ScreeningRequestDetail } from './ScreeningRequestDetail';
@@ -53,7 +54,7 @@ export const ScreeningCaseDetailPage = ({
           <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_130)] h-full relative">
             <div className="flex flex-col gap-v2-lg p-v2-lg">
               <CaseDetailInfo caseDetail={caseDetail} caseInbox={caseInbox} isUserAdmin={isUserAdmin} />
-              <ScreeningCaseMatches screening={screening} isUserAdmin={isUserAdmin} />
+              <ScreeningCaseMatches screening={screening} isUserAdmin={isUserAdmin} caseDetail={caseDetail} />
               <CaseInvestigation caseId={caseDetail.id} events={caseDetail.events} root={containerRef} />
               {caseDetail.files.length > 0 ? <CaseDocuments files={caseDetail.files} /> : null}
             </div>
@@ -77,7 +78,7 @@ export const ScreeningCaseDetailPage = ({
                 </Callout>
                 {match(screening)
                   .when(isDirectContinuousScreening, (directScreening) => {
-                    return <DirectScreeningRequestDetail screening={directScreening} />;
+                    return <DirectScreeningRequestDetail screening={directScreening} caseDetail={caseDetail} />;
                   })
                   .when(isIndirectContinuousScreening, (indirectScreening) => {
                     return <IndirectScreeningRequestDetail screening={indirectScreening} />;
@@ -99,7 +100,13 @@ const getEntityType = (screening: ContinuousScreening): string => {
   return screening.opensanctionEntityPayload.schema;
 };
 
-const DirectScreeningRequestDetail = ({ screening }: { screening: ContinuousScreeningMarbleToScreeningEntity }) => {
+const DirectScreeningRequestDetail = ({
+  screening,
+  caseDetail,
+}: {
+  screening: ContinuousScreeningMarbleToScreeningEntity;
+  caseDetail: Case;
+}) => {
   return (
     <>
       <ScreeningRequestDetail
@@ -109,6 +116,12 @@ const DirectScreeningRequestDetail = ({ screening }: { screening: ContinuousScre
       <ScreeningObjectDetails
         objectType={screening.objectType}
         objectId={screening.objectId}
+        className="bg-surface-card border border-grey-border"
+      />
+      <ObjectRelatedCases
+        objectType={screening.objectType}
+        objectId={screening.objectId}
+        currentCase={caseDetail}
         className="bg-surface-card border border-grey-border"
       />
     </>

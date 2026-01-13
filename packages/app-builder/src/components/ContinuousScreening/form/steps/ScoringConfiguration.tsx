@@ -51,7 +51,7 @@ export const ScoringConfiguration = () => {
       </Field>
       <div className="grid grid-cols-1 gap-v2-md">
         <Field
-          required
+          required={mode !== 'view'}
           title={t('continuousScreening:creation.scoringConfiguration.alertAutomation.title')}
           description={t('continuousScreening:creation.scoringConfiguration.alertAutomation.subtitle')}
         >
@@ -102,7 +102,11 @@ const InboxSelector = () => {
         <>
           <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
             <MenuCommand.Trigger>
-              <MenuCommand.SelectButton disabled={!inboxesQuery.isSuccess} readOnly={mode === 'view'}>
+              <MenuCommand.SelectButton
+                disabled={!inboxesQuery.isSuccess}
+                readOnly={mode === 'view'}
+                className="min-w-50"
+              >
                 {currentInboxName ?? t('continuousScreening:creation.scoringConfiguration.alertAutomation.placeholder')}
               </MenuCommand.SelectButton>
             </MenuCommand.Trigger>
@@ -117,21 +121,23 @@ const InboxSelector = () => {
               </MenuCommand.List>
             </MenuCommand.Content>
           </MenuCommand.Menu>
-
-          <span>{t('continuousScreening:creation.scoringConfiguration.alertAutomation.create_new_inbox')}</span>
-          <Input
-            type="text"
-            value={inboxName.value ?? ''}
-            readOnly={mode === 'view'}
-            onChange={(e) => {
-              creationStepper.update((state) => {
-                if (state.data.inboxId !== null) {
-                  state.data.inboxId = null;
-                }
-                state.data.inboxName = e.target.value.length > 0 ? e.target.value : null;
-              });
-            }}
-          />
+          {mode !== 'view' ? (
+            <>
+              <span>{t('continuousScreening:creation.scoringConfiguration.alertAutomation.create_new_inbox')}</span>
+              <Input
+                type="text"
+                value={inboxName.value ?? ''}
+                onChange={(e) => {
+                  creationStepper.update((state) => {
+                    if (state.data.inboxId !== null) {
+                      state.data.inboxId = null;
+                    }
+                    state.data.inboxName = e.target.value.length > 0 ? e.target.value : null;
+                  });
+                }}
+              />
+            </>
+          ) : null}
         </>
       );
     })

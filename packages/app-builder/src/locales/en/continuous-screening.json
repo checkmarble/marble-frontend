@@ -92,6 +92,7 @@
   "review.indirect_subtitle": "New entity under {{category}}",
   "review.information_title": "Information",
   "review.matches.match_label": "Match",
+  "review.matches.partial_search_button": "Load more to finalize",
   "review.matches.status_label": "Status",
   "review.matches.title": "Matches to review",
   "review.object_details_subtitle": "Full information on object",

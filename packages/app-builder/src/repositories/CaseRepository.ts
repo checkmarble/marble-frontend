@@ -70,6 +70,7 @@ export interface CaseRepository {
   unsnoozeCase(args: { caseId: string }): Promise<unknown>;
   listPivotObjects(args: { caseId: string }): Promise<PivotObject[] | null>;
   getPivotRelatedCases(args: { pivotValue: string | number }): Promise<Case[]>;
+  getObjectRelatedCases(args: { objectType: string; objectId: string }): Promise<Case[]>;
   addComment(args: {
     caseId: string;
     body: {
@@ -149,6 +150,10 @@ export function makeGetCaseRepository() {
     },
     getPivotRelatedCases: async ({ pivotValue }) => {
       const res = await marbleCoreApiClient.getPivotRelatedCases(pivotValue.toString());
+      return res.map((dto) => adaptCase(dto));
+    },
+    getObjectRelatedCases: async ({ objectType, objectId }) => {
+      const res = await marbleCoreApiClient.getObjectRelatedCases(objectType, objectId);
       return res.map((dto) => adaptCase(dto));
     },
     unsnoozeCase: ({ caseId }) => marbleCoreApiClient.unsnoozeCase(caseId),

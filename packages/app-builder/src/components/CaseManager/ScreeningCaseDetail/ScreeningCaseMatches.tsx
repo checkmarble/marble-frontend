@@ -2,6 +2,7 @@ import { Callout } from '@app-builder/components/Callout';
 import { MatchDetails } from '@app-builder/components/Screenings/MatchDetails';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { Case } from '@app-builder/models/cases';
 import {
   ContinuousScreening,
   ContinuousScreeningMatch,
@@ -10,23 +11,35 @@ import {
   isIndirectContinuousScreeningMatch,
 } from '@app-builder/models/continuous-screening';
 import { useDismissContinuousScreeningMutation } from '@app-builder/queries/continuous-screening/dismiss';
+import { useLoadMoreContinuousScreeningMatchesMutation } from '@app-builder/queries/continuous-screening/load-more-matches';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { ObjectRelatedCases } from './ObjectRelatedCases';
 import { ReviewScreeningMatch } from './ReviewScreeningMatch';
 import { ScreeningObjectDetails } from './ScreeningObjectDetails';
 
 export const ScreeningCaseMatches = ({
   screening,
+  caseDetail,
   isUserAdmin,
 }: {
   screening: ContinuousScreening;
+  caseDetail: Case;
   isUserAdmin: boolean;
 }) => {
   const { t } = useTranslation(['continuousScreening', 'screenings']);
+  const loadMoreMatchesMutation = useLoadMoreContinuousScreeningMatchesMutation(screening.id);
+  const revalidate = useLoaderRevalidator();
+
+  const handleLoadMore = () => {
+    loadMoreMatchesMutation.mutateAsync().then(() => {
+      revalidate();
+    });
+  };
 
   return (
     <div className="flex flex-col gap-v2-sm">
@@ -95,11 +108,19 @@ export const ScreeningCaseMatches = ({
                         </div>
                       ))
                       .when(isIndirectContinuousScreeningMatch, (indirectMatch) => (
-                        <ScreeningObjectDetails
-                          objectType={indirectMatch.objectType}
-                          objectId={indirectMatch.objectId}
-                          className="bg-grey-background-light rounded-v2-md"
-                        />
+                        <div className="flex flex-col gap-v2-md">
+                          <ScreeningObjectDetails
+                            objectType={indirectMatch.objectType}
+                            objectId={indirectMatch.objectId}
+                            className="bg-grey-background-light rounded-v2-md"
+                          />
+                          <ObjectRelatedCases
+                            objectType={indirectMatch.objectType}
+                            objectId={indirectMatch.objectId}
+                            currentCase={caseDetail}
+                            className="bg-grey-background-light"
+                          />
+                        </div>
                       ))
                       .exhaustive()}
                   </Collapsible.Content>
@@ -126,6 +147,14 @@ export const ScreeningCaseMatches = ({
             </div>
           );
         })}
+        {screening.partial ? (
+          <div className="grid grid-cols-subgrid col-span-full p-v2-md">
+            <ButtonV2 variant="primary" onClick={() => handleLoadMore()} disabled={loadMoreMatchesMutation.isPending}>
+              {loadMoreMatchesMutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
+              {t('continuousScreening:review.matches.partial_search_button')}
+            </ButtonV2>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -139,7 +168,7 @@ const getMatchEntityType = (screeningMatch: ContinuousScreeningMatch): string =>
 };
 
 const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { t } = useTranslation(['common', 'continuousScreening']);
   const dismissMutation = useDismissContinuousScreeningMutation();
   const revalidate = useLoaderRevalidator();
   const [open, setOpen] = useState(false);
@@ -174,7 +203,9 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
         <Modal.Footer>
           <div className="flex flex-row gap-v2-sm p-v2-md justify-end">
             <Modal.Close asChild>
-              <ButtonV2 variant="secondary">Cancel</ButtonV2>
+              <ButtonV2 variant="secondary" type="button">
+                {t('common:cancel')}
+              </ButtonV2>
             </Modal.Close>
             <ButtonV2 variant="primary" onClick={dismissAlert}>
               {t('continuousScreening:review.dismiss_alert_modal.confirm_button')}

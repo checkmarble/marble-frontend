@@ -6,7 +6,7 @@ import { ContinuousScreeningRequest } from '@app-builder/models/continuous-scree
 import { useContinuousScreeningConfigurationQuery } from '@app-builder/queries/continuous-screening/configuration';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
-import { Fragment } from 'react/jsx-runtime';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';

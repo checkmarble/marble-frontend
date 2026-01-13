@@ -6,9 +6,9 @@ import { Outlet } from '@remix-run/react';
 import { redirect } from '@remix-run/server-runtime';
 
 export const loader = createServerFn([authMiddleware], async ({ context }) => {
-  const { user } = context.authInfo;
+  const { entitlements } = context.authInfo;
 
-  if (!isContinuousScreeningAvailable(user)) {
+  if (!isContinuousScreeningAvailable(entitlements)) {
     throw redirect(getRoute('/'));
   }
 
