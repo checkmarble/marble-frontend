@@ -1,6 +1,7 @@
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match, P } from 'ts-pattern';
 
 import { screeningsI18n } from '../../screenings-i18n';
 import { PrintResultCard } from './PrintResultCard';
@@ -16,25 +17,24 @@ interface PrintResultsProps {
 export const PrintResults: FunctionComponent<PrintResultsProps> = ({ results }) => {
   const { t } = useTranslation(screeningsI18n);
 
-  if (results.length === 0) {
-    return (
-      <div className="text-center p-8 border border-grey-border rounded-md">
+  return match(results)
+    .with([], () => (
+      <div className="border-grey-border rounded-md border p-8 text-center">
         <p className="text-s text-grey-placeholder">{t('screenings:freeform_search.no_results_title')}</p>
       </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col">
-      <h2 className="text-m font-semibold text-grey-primary mb-2">
-        {t('screenings:freeform_search.results_title')} (
-        {t('screenings:freeform_search.results_count', { count: results.length })})
-      </h2>
-      {results.map((entity) => (
-        <PrintResultCard key={entity.id} entity={entity} />
-      ))}
-    </div>
-  );
+    ))
+    .with(P.array(), (data) => (
+      <div className="flex flex-col">
+        <h2 className="text-m text-grey-primary mb-2 font-semibold">
+          {t('screenings:freeform_search.results_title')} (
+          {t('screenings:freeform_search.results_count', { count: data.length })})
+        </h2>
+        {data.map((entity) => (
+          <PrintResultCard key={entity.id} entity={entity} />
+        ))}
+      </div>
+    ))
+    .exhaustive();
 };
 
 export default PrintResults;
