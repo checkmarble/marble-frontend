@@ -1,4 +1,3 @@
-import { TabLink } from '@app-builder/components';
 import { DataModelFlow, dataModelFlowStyles } from '@app-builder/components/Data/DataModelFlow';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { useDataModel } from '@app-builder/services/data/data-model';
@@ -7,7 +6,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: dataI18n satisfies Namespace,
@@ -25,41 +23,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({ pivots });
 }
 
-export default function Data() {
+export default function DataSchema() {
   const dataModel = useDataModel();
   const { pivots } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex size-full flex-col">
-      <DataModelFlow dataModel={dataModel} pivots={pivots}>
-        <div className="absolute left-2 top-2 z-10 lg:left-6 lg:top-6">
-          <nav className="bg-surface-card border-grey-border w-fit rounded-sm border p-2 drop-shadow-md">
-            <ul className="flex flex-row gap-2">
-              <li>
-                <TabLink
-                  labelTKey="navigation:data.list"
-                  to={getRoute('/data/list')}
-                  Icon={(props) => <Icon {...props} icon="lists" />}
-                />
-              </li>
-              <li>
-                <TabLink
-                  labelTKey="navigation:data.schema"
-                  to={getRoute('/data/schema')}
-                  Icon={(props) => <Icon {...props} icon="tree-schema" />}
-                />
-              </li>
-              <li>
-                <TabLink
-                  labelTKey="navigation:data.viewer"
-                  to={getRoute('/data/view')}
-                  Icon={(props) => <Icon {...props} icon="visibility" />}
-                />
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </DataModelFlow>
+    <div className="flex size-full flex-col -mx-6 -mb-6">
+      <DataModelFlow dataModel={dataModel} pivots={pivots} />
     </div>
   );
 }

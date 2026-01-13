@@ -27,7 +27,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, isNonNullish, map, pipe } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
+import { Button, Switch, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type DecisionPanelProps = {
@@ -190,19 +190,39 @@ const ExpandedDetail = ({ decision, pivots, dataModel }: DetailProps & { dataMod
 
 const CollapsedDetail = ({ decision, pivots, dataModel }: DetailProps & { dataModel: TableModel[] }) => {
   const { t } = useTranslation(casesI18n);
+  const [activeTab, setActiveTab] = useState<'hits' | 'trigger'>('hits');
+
   return (
-    <Tabs defaultValue="hits" className="flex flex-col items-start gap-6">
-      <TabsList>
-        <TabsTrigger value="hits">{t('cases:decisions.rules')}</TabsTrigger>
-        <TabsTrigger value="trigger">{t('cases:case_detail.trigger_object')}</TabsTrigger>
-      </TabsList>
-      <TabsContent value="hits" className="w-full">
-        <DecisionRuleExecutions decision={decision} />
-      </TabsContent>
-      <TabsContent value="trigger" className="w-full">
-        <DecisionTriggerObject decision={decision} pivots={pivots} dataModel={dataModel} />
-      </TabsContent>
-    </Tabs>
+    <div className="flex flex-col items-start gap-6">
+      <Tabs>
+        <button
+          type="button"
+          className={tabClassName}
+          data-status={activeTab === 'hits' ? 'active' : undefined}
+          onClick={() => setActiveTab('hits')}
+        >
+          {t('cases:decisions.rules')}
+        </button>
+        <button
+          type="button"
+          className={tabClassName}
+          data-status={activeTab === 'trigger' ? 'active' : undefined}
+          onClick={() => setActiveTab('trigger')}
+        >
+          {t('cases:case_detail.trigger_object')}
+        </button>
+      </Tabs>
+      {activeTab === 'hits' && (
+        <div className="w-full">
+          <DecisionRuleExecutions decision={decision} />
+        </div>
+      )}
+      {activeTab === 'trigger' && (
+        <div className="w-full">
+          <DecisionTriggerObject decision={decision} pivots={pivots} dataModel={dataModel} />
+        </div>
+      )}
+    </div>
   );
 };
 

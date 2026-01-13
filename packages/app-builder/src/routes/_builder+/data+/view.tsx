@@ -1,4 +1,3 @@
-import { Page, TabLink } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
@@ -10,7 +9,6 @@ import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: dataI18n satisfies Namespace,
@@ -27,7 +25,7 @@ export const handle = {
   ],
 };
 
-export default function DataSearchPage() {
+export default function DataViewer() {
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
   const match = useMatch('/data/view/:tableName/:objectId' as RoutePath);
@@ -44,82 +42,53 @@ export default function DataSearchPage() {
   };
 
   return (
-    <Page.Container>
-      <Page.Content>
-        <nav className="border border-transparent">
-          <ul className="flex flex-row gap-2">
-            <li>
-              <TabLink
-                labelTKey="navigation:data.list"
-                to={getRoute('/data/list')}
-                Icon={(props) => <Icon {...props} icon="lists" />}
-              />
-            </li>
-            <li>
-              <TabLink
-                labelTKey="navigation:data.schema"
-                to={getRoute('/data/schema')}
-                Icon={(props) => <Icon {...props} icon="tree-schema" />}
-              />
-            </li>
-            <li>
-              <TabLink
-                labelTKey="navigation:data.viewer"
-                to={getRoute('/data/view')}
-                Icon={(props) => <Icon {...props} icon="visibility" />}
-              />
-            </li>
-          </ul>
-        </nav>
-        <div className="flex flex-col gap-4">
-          <div className="flex gap-2">
-            <div className="text-s flex flex-col gap-1">
-              <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
-              <Select.Default
-                value={tableName}
-                onValueChange={handleTableNameChange}
-                placeholder="select a table"
-                className="h-10 min-w-40"
-              >
-                {dataModel.map((table) => (
-                  <Select.DefaultItem value={table.name} key={table.name}>
-                    {table.name}
-                  </Select.DefaultItem>
-                ))}
-              </Select.Default>
-            </div>
-            <div className="flex gap-2">
-              <div className="text-s flex flex-col gap-1">
-                <label htmlFor="objectIdField">{t('data:viewer.object_id')}</label>
-                <Input
-                  type="text"
-                  id="objectIdField"
-                  value={objectId}
-                  onChange={(e) => setObjectId(e.target.value)}
-                  className="min-w-96"
-                />
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="primary"
-              disabled={!tableName || !objectId}
-              onClick={() => {
-                navigate(
-                  getRoute('/data/view/:tableName/:objectId', {
-                    tableName,
-                    objectId,
-                  }),
-                );
-              }}
-              className="self-end"
-            >
-              {t('common:search')}
-            </Button>
-          </div>
-          <Outlet />
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2">
+        <div className="text-s flex flex-col gap-1">
+          <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
+          <Select.Default
+            value={tableName}
+            onValueChange={handleTableNameChange}
+            placeholder="select a table"
+            className="h-10 min-w-40"
+          >
+            {dataModel.map((table) => (
+              <Select.DefaultItem value={table.name} key={table.name}>
+                {table.name}
+              </Select.DefaultItem>
+            ))}
+          </Select.Default>
         </div>
-      </Page.Content>
-    </Page.Container>
+        <div className="flex gap-2">
+          <div className="text-s flex flex-col gap-1">
+            <label htmlFor="objectIdField">{t('data:viewer.object_id')}</label>
+            <Input
+              type="text"
+              id="objectIdField"
+              value={objectId}
+              onChange={(e) => setObjectId(e.target.value)}
+              className="min-w-96"
+            />
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="primary"
+          disabled={!tableName || !objectId}
+          onClick={() => {
+            navigate(
+              getRoute('/data/view/:tableName/:objectId', {
+                tableName,
+                objectId,
+              }),
+            );
+          }}
+          className="self-end"
+        >
+          {t('common:search')}
+        </Button>
+      </div>
+      <Outlet />
+    </div>
   );
 }

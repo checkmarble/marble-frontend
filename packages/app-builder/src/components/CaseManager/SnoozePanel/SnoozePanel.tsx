@@ -12,9 +12,9 @@ import { useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format'
 import { useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
+import { Button, cn, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DrawerContext } from '../Drawer/Drawer';
 import { PivotObjectDetails } from '../PivotsPanel/PivotsPanelContent';
@@ -35,9 +35,20 @@ export const SnoozePanel = ({
   const { setExpanded } = DrawerContext.useValue();
   const rulesByPivotQuery = useRulesByPivotQuery(caseDetail.id);
 
+  const [activeTab, setActiveTab] = useState('');
+
   useEffect(() => {
     setExpanded(true);
   }, [setExpanded]);
+
+  useEffect(() => {
+    if (rulesByPivotQuery.isSuccess && !activeTab) {
+      const pivotKeys = Object.keys(rulesByPivotQuery.data.rulesByPivot);
+      if (pivotKeys[0]) {
+        setActiveTab(pivotKeys[0]);
+      }
+    }
+  }, [rulesByPivotQuery.isSuccess, rulesByPivotQuery.data, activeTab]);
 
   if (rulesByPivotQuery.isPending) {
     return <div>Loading...</div>;
@@ -47,6 +58,7 @@ export const SnoozePanel = ({
   }
 
   const rulesByPivot = rulesByPivotQuery.data.rulesByPivot;
+  const pivotKeys = Object.keys(rulesByPivot);
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -63,26 +75,29 @@ export const SnoozePanel = ({
 
       <div className="flex w-full flex-col gap-6 px-2">
         <span className="text-l font-semibold">Rules</span>
-        <Tabs className="flex w-full flex-col" defaultValue={Object.keys(rulesByPivot)[0]}>
-          <TabsList className="mb-6 w-fit">
-            {Object.keys(rulesByPivot).map((pivotValue) => {
+        <div className="flex w-full flex-col">
+          <Tabs>
+            {pivotKeys.map((pivotValue) => {
               return (
-                <TabsTrigger key={`trigger-${pivotValue}`} value={pivotValue} className="gap-2">
+                <button
+                  key={`trigger-${pivotValue}`}
+                  type="button"
+                  className={cn(tabClassName, 'gap-2')}
+                  data-status={activeTab === pivotValue ? 'active' : undefined}
+                  onClick={() => setActiveTab(pivotValue)}
+                >
                   <span className="font-medium">{pivotValue}</span>
-                </TabsTrigger>
+                </button>
               );
             })}
-          </TabsList>
+          </Tabs>
           {Dict.entries(rulesByPivot).map(([pivotValue, rules]) => {
+            if (activeTab !== pivotValue) return null;
             const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
             const table = dataModelWithTableOptions.find((t) => t.name === client?.pivotObjectName);
 
             return (
-              <TabsContent
-                className="flex w-full flex-col items-start gap-6"
-                key={`content-${pivotValue}`}
-                value={pivotValue}
-              >
+              <div className="mt-6 flex w-full flex-col items-start gap-6" key={`content-${pivotValue}`}>
                 {table && client ? (
                   <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                     <div className="capitalize font-semibold">{table.name}</div>
@@ -178,10 +193,10 @@ export const SnoozePanel = ({
                     );
                   })}
                 </div>
-              </TabsContent>
+              </div>
             );
           })}
-        </Tabs>
+        </div>
       </div>
     </div>
   );
