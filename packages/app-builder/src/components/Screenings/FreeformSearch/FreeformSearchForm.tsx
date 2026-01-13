@@ -120,8 +120,8 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
         </form.Subscribe>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col gap-2">
+      {/* Filters - 2 column grid on medium screens, single column on large */}
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
         {/* Datasets filter */}
         <DatasetsPopover selectedDatasets={selectedDatasets} onApply={setSelectedDatasets} />
 
@@ -134,8 +134,10 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
           }}
         />
 
-        {/* Threshold filter */}
-        <ThresholdPopover value={threshold} onApply={(value) => form.setFieldValue('threshold', value)} />
+        {/* Threshold filter - full width on medium */}
+        <div className="col-span-2 lg:col-span-1">
+          <ThresholdPopover value={threshold} onApply={(value) => form.setFieldValue('threshold', value)} />
+        </div>
       </div>
 
       {/* Entity-specific fields section (only show when entity type is selected) */}
@@ -153,20 +155,23 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
             </button>
           </Collapsible.Trigger>
           <Collapsible.Content>
-            <div className="mt-2 flex flex-col gap-2">
-              {entityTypeFields.map((fieldName) => (
-                <form.Field key={fieldName} name={`fields.${fieldName}`}>
-                  {(formField) => (
-                    <Input
-                      name={formField.name}
-                      value={(formField.state.value as string) ?? ''}
-                      onChange={(e) => formField.handleChange(e.target.value)}
-                      className="w-full"
-                      placeholder={t(`screenings:entity.property.${fieldName}`)}
-                    />
-                  )}
-                </form.Field>
-              ))}
+            <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1">
+              {entityTypeFields.map((fieldName, index) => {
+                const isLastOdd = index === entityTypeFields.length - 1 && entityTypeFields.length % 2 === 1;
+                return (
+                  <form.Field key={fieldName} name={`fields.${fieldName}`}>
+                    {(formField) => (
+                      <Input
+                        name={formField.name}
+                        value={(formField.state.value as string) ?? ''}
+                        onChange={(e) => formField.handleChange(e.target.value)}
+                        className={clsx('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                        placeholder={t(`screenings:entity.property.${fieldName}`)}
+                      />
+                    )}
+                  </form.Field>
+                );
+              })}
             </div>
           </Collapsible.Content>
         </Collapsible.Root>
@@ -196,7 +201,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
           )}
         </form.Subscribe>
 
-        {/* Clear filters button */}
+        {/* Clear filters button - only show when filters are active */}
         {hasActiveFilters && (
           <ButtonV2
             type="button"
