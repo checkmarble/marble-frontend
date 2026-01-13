@@ -1,5 +1,5 @@
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
-import { type FunctionComponent, type ReactNode } from 'react';
+import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
@@ -8,13 +8,9 @@ import { FreeformMatchCard } from './FreeformMatchCard';
 
 interface FreeformSearchResultsProps {
   results: ScreeningMatchPayload[] | null;
-  /**
-   * Optional action element to render in the header (e.g., print button)
-   */
-  action?: ReactNode;
 }
 
-export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps> = ({ results, action }) => {
+export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps> = ({ results }) => {
   const { t } = useTranslation(screeningsI18n);
 
   // Initial state - no search performed yet
@@ -53,14 +49,13 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
   // Results found
   return (
     <div className="flex flex-col gap-2">
-      <div className="bg-surface-card border border-grey-border flex items-center justify-between rounded-md px-4 py-3">
+      <div className="bg-surface-card border border-grey-border flex items-center rounded-md px-4 py-3">
         <div className="text-s flex items-center gap-2">
           <span className="font-semibold text-grey-primary">{t('screenings:freeform_search.results_title')}</span>
           <span className="text-grey-placeholder">
             {t('screenings:freeform_search.results_count', { count: results.length })}
           </span>
         </div>
-        {action}
       </div>
 
       {results.map((entity) => (
