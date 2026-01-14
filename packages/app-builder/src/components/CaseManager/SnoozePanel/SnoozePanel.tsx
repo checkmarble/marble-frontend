@@ -35,20 +35,15 @@ export const SnoozePanel = ({
   const { setExpanded } = DrawerContext.useValue();
   const rulesByPivotQuery = useRulesByPivotQuery(caseDetail.id);
 
-  const [activeTab, setActiveTab] = useState('');
+  const pivotKeys = rulesByPivotQuery.data ? Object.keys(rulesByPivotQuery.data.rulesByPivot) : [];
+  const [activeTab, setActiveTab] = useState<string | null>(null);
+
+  // Derive the effective active tab - use state if set, otherwise default to first pivot
+  const effectiveActiveTab = activeTab ?? pivotKeys[0] ?? null;
 
   useEffect(() => {
     setExpanded(true);
   }, [setExpanded]);
-
-  useEffect(() => {
-    if (rulesByPivotQuery.isSuccess && !activeTab) {
-      const pivotKeys = Object.keys(rulesByPivotQuery.data.rulesByPivot);
-      if (pivotKeys[0]) {
-        setActiveTab(pivotKeys[0]);
-      }
-    }
-  }, [rulesByPivotQuery.isSuccess, rulesByPivotQuery.data, activeTab]);
 
   if (rulesByPivotQuery.isPending) {
     return <div>Loading...</div>;
@@ -58,7 +53,6 @@ export const SnoozePanel = ({
   }
 
   const rulesByPivot = rulesByPivotQuery.data.rulesByPivot;
-  const pivotKeys = Object.keys(rulesByPivot);
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -83,7 +77,7 @@ export const SnoozePanel = ({
                   key={`trigger-${pivotValue}`}
                   type="button"
                   className={cn(tabClassName, 'gap-2')}
-                  data-status={activeTab === pivotValue ? 'active' : undefined}
+                  data-status={effectiveActiveTab === pivotValue ? 'active' : undefined}
                   onClick={() => setActiveTab(pivotValue)}
                 >
                   <span className="font-medium">{pivotValue}</span>
@@ -92,7 +86,7 @@ export const SnoozePanel = ({
             })}
           </Tabs>
           {Dict.entries(rulesByPivot).map(([pivotValue, rules]) => {
-            if (activeTab !== pivotValue) return null;
+            if (effectiveActiveTab !== pivotValue) return null;
             const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
             const table = dataModelWithTableOptions.find((t) => t.name === client?.pivotObjectName);
 

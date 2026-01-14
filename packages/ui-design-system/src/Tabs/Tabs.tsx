@@ -15,9 +15,16 @@ export const tabClassName = cn(
   'data-[status=active]:dark:bg-purple-primary data-[status=active]:dark:text-grey-white',
 );
 
+/**
+ * Container component for tabs providing consistent spacing and background styling.
+ * Children should be buttons or NavLinks with the `tabClassName` applied.
+ */
 export function Tabs({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex p-v2-xs gap-v2-xs rounded-v2-md bg-purple-background self-start justify-self-start dark:bg-grey-background">
+    <div
+      role="tablist"
+      className="flex p-v2-xs gap-v2-xs rounded-v2-md bg-purple-background self-start justify-self-start dark:bg-grey-background"
+    >
       {children}
     </div>
   );

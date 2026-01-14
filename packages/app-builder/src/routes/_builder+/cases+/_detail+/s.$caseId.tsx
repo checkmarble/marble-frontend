@@ -240,7 +240,6 @@ export default function CaseManagerIndexPage() {
         </div>
       </Page.Header>
       <Page.Container className="text-default relative h-full flex-row p-0 lg:p-0">
-        {/* TabSystem when mostRecentReview is not empty */}
         <CaseDetails
           key={details.id}
           currentUser={currentUser}
