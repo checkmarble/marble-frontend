@@ -58,17 +58,17 @@ export const Checkbox = forwardRef<
         {checked === undefined ? (
           <Icon
             icon="tick"
-            className="text-grey-white group-disabled:text-grey-placeholder dark:group-disabled:text-purple-primary"
+            className="text-grey-white group-disabled:text-grey-secondary dark:group-disabled:text-purple-primary"
           />
         ) : checked === true ? (
           <Icon
             icon="tick"
-            className="text-grey-white group-disabled:text-grey-placeholder dark:group-disabled:text-purple-primary"
+            className="text-grey-white group-disabled:text-grey-secondary dark:group-disabled:text-purple-primary"
           />
         ) : checked === 'indeterminate' ? (
           <Icon
             icon="check-indeterminate-small"
-            className="text-purple-primary group-disabled:text-grey-placeholder dark:group-disabled:text-purple-primary"
+            className="text-purple-primary group-disabled:text-grey-secondary dark:group-disabled:text-purple-primary"
           />
         ) : null}
       </Indicator>

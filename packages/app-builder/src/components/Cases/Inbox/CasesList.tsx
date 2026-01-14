@@ -107,7 +107,7 @@ export function CasesList({
                   icon={caseItem.type === 'continuous_screening' ? 'scan-eye' : 'case-manager'}
                   className={cn('size-5', {
                     'text-blue-58': caseItem.type === 'decision',
-                    'text-grey-placeholder': caseItem.type === 'continuous_screening',
+                    'text-grey-secondary': caseItem.type === 'continuous_screening',
                   })}
                 />
               </Tooltip.Default>
@@ -118,7 +118,7 @@ export function CasesList({
                   className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
                     'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
                     'border-green-primary text-green-primary': caseItem.outcome === 'valuable_alert',
-                    'border-grey-placeholder text-grey-placeholder': caseItem.outcome === 'false_positive',
+                    'border-grey-placeholder text-grey-secondary': caseItem.outcome === 'false_positive',
                   })}
                 >
                   {t(`cases:case.outcome.${caseItem.outcome}`)}

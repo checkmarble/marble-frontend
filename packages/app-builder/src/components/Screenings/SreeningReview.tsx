@@ -33,7 +33,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <span className="text-m font-semibold">{t('screenings:potential_matches')}</span>
-          <span className="text-grey-placeholder text-s">
+          <span className="text-grey-secondary text-s">
             {t('screenings:callout.needs_review', {
               toReview: matchesToReviewCount,
               totalMatches: screening.matches.length,

@@ -22,7 +22,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
             {t('cases:case.inbox')}: {selectedInbox.name}
           </span>
           {selectedInbox.casesCount !== undefined ? (
-            <div className="px-v2-xs py-v2-xxs rounded-full bg-surface-card border border-grey-border text-purple-primary text-small">
+            <div className="px-v2-xs py-v2-xxs rounded-full bg-surface-card border border-grey-border text-purple-primary dark:text-grey-primary text-small">
               {selectedInbox.casesCount} cases
             </div>
           ) : null}
@@ -38,7 +38,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
                 <span className="col-start-2">{inbox.name}</span>
               </div>
               {inbox.casesCount !== undefined ? (
-                <span className="text-small text-grey-placeholder">
+                <span className="text-small text-grey-secondary">
                   {t('cases:inbox.cases_count', { count: inbox.casesCount })}
                 </span>
               ) : null}

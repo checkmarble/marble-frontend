@@ -21,7 +21,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Calendar, cn, MenuCommand } from 'ui-design-system';
+import { ButtonV2, Calendar, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type Durations = 'tomorrow' | 'oneWeek' | 'oneMonth' | 'nextMonday';
@@ -97,9 +97,6 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
         field.state.value ? (
           <ButtonV2
             variant="secondary"
-            className={cn({
-              'bg-purple-background': field.state.value,
-            })}
             onClick={() => {
               field.handleChange(null);
               form.handleSubmit();
@@ -135,7 +132,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
                           .with('nextMonday', () => t('common:snooze.nextMonday'))
                           .exhaustive()}
                       </span>
-                      <span className="text-2xs text-grey-placeholder">{formatDate(date)}</span>
+                      <span className="text-2xs text-grey-secondary">{formatDate(date)}</span>
                     </span>
                   </MenuCommand.Item>
                 ))}

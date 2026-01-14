@@ -29,7 +29,7 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
           'bg-orange-background-light text-orange-primary dark:border-orange-primary dark:text-orange-primary':
             color === 'orange',
           'bg-red-background text-red-primary dark:border-red-primary dark:text-red-primary': color === 'red',
-          'bg-grey-background text-grey-placeholder dark:border-grey-secondary dark:text-grey-secondary':
+          'bg-grey-background text-grey-secondary dark:border-grey-secondary dark:text-grey-secondary':
             color === 'grey',
           'bg-surface-card text-grey-primary dark:border-grey-primary dark:text-grey-primary': color === 'grey-light',
         },

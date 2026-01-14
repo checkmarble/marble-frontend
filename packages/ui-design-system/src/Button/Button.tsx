@@ -10,11 +10,11 @@ export const CtaClassName = cva(
       variant: {
         primary: 'text-grey-white focus:border-grey-primary',
         secondary:
-          'text-grey-primary bg-surface-card border-grey-border disabled:text-grey-placeholder aria-disabled:text-grey-placeholder disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background',
+          'text-grey-primary bg-surface-card border-grey-border disabled:text-grey-secondary aria-disabled:text-grey-secondary disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background',
         tertiary: 'text-grey-disabled border-transparent',
         ghost: 'text-grey-primary border-transparent',
         outline:
-          'hover:bg-purple-background active:bg-purple-background bg-purple-background-light border-purple-primary text-purple-primary disabled:text-grey-placeholder aria-disabled:text-grey-placeholder disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background focus:border-purple-hover',
+          'hover:bg-purple-background active:bg-purple-background bg-purple-background-light border-purple-primary text-purple-primary disabled:text-grey-secondary aria-disabled:text-grey-secondary disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background focus:border-purple-hover',
         dropdown: 'text-grey-primary border-transparent disabled:text-grey-disabled disabled:bg-transparent',
       },
       color: {

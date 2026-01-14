@@ -120,7 +120,7 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
             <>
               <p className="text-center">{t('cases:drop_file_cta')}</p>
               <p>{t('cases:drop_file_accepted_types')}</p>
-              <p className="text-grey-disabled uppercase">{t('common:or')}</p>
+              <p className="text-grey-secondary uppercase">{t('common:or')}</p>
               <Button>
                 <Icon icon="plus" className="size-6" />
                 {t('cases:pick_file_cta')}

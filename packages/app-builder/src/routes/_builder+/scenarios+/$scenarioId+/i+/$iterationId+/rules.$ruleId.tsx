@@ -422,7 +422,7 @@ export default function RuleDetail() {
                 </div>
                 <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
                   <div className="flex items-center gap-2">
-                    <span className="bg-grey-background text-grey-placeholder dark:text-grey-secondary text-s inline-flex rounded-sm p-2 font-medium">
+                    <span className="bg-grey-background text-grey-secondary dark:text-grey-secondary text-s inline-flex rounded-sm p-2 font-medium">
                       {t('scenarios:edit_rule.score_heading')}
                     </span>
                     <form.Field

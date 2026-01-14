@@ -342,7 +342,7 @@ function Combobox({ className, onValueChange, iconClasses, ...props }: ComboboxP
         onValueChange={setSearch}
         {...props}
       />
-      <div className="text-grey-placeholder peer-focus:text-grey-primary pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
+      <div className="text-grey-secondary peer-focus:text-grey-primary pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
         <Icon icon="search" className={cn('size-5', iconClasses)} />
       </div>
     </div>

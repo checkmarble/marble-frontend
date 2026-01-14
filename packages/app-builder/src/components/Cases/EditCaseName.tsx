@@ -49,7 +49,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                   variant="secondary"
                   mode="icon"
                 >
-                  <Icon icon="edit-square" className="text-grey-placeholder size-3.5" />
+                  <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
                 </ButtonV2>
               ) : (
                 <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                     variant="secondary"
                     mode="icon"
                   >
-                    <Icon icon="cross" className="text-grey-placeholder size-3.5" />
+                    <Icon icon="cross" className="text-grey-secondary size-3.5" />
                   </ButtonV2>
                 </div>
               )}

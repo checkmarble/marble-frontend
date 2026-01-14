@@ -102,7 +102,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
               <Fragment key={filterIndex}>
                 <div className="border-grey-border flex flex-col gap-4 rounded-md border-[0.5px] p-4">
                   <div className="flex items-center justify-between">
-                    <div className="text-grey-placeholder flex items-center gap-2 pl-2 text-xs">
+                    <div className="text-grey-secondary flex items-center gap-2 pl-2 text-xs">
                       <span>{t('scenarios:edit_aggregation.filter_field_label')}</span>
                       <FieldSelect
                         tableName={tableName}
@@ -243,7 +243,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                   <EditionEvaluationErrors id={filter.id} />
                 </div>
                 {!isLastFilter ? (
-                  <div className="text-grey-placeholder text-xs">{t('scenarios:logical_operator.and')}</div>
+                  <div className="text-grey-secondary text-xs">{t('scenarios:logical_operator.and')}</div>
                 ) : null}
               </Fragment>
             );

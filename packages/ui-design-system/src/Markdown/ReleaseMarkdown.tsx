@@ -28,7 +28,7 @@ const releaseMarkdownComponents: Components = {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-purple-primary hover:bg-purple-background hover:text-grey-placeholder underline underline-offset-4 decoration-purple-primary"
+          className="text-purple-primary hover:bg-purple-background hover:text-grey-secondary underline underline-offset-4 decoration-purple-primary"
         >
           {children}
         </a>

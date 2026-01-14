@@ -55,7 +55,7 @@ export default function Analytics() {
         <Link
           to={getRoute('/analytics-legacy')}
           target="_blank"
-          className="text-s text-grey-placeholder flex flex-row items-center font-semibold gap-v2-xs"
+          className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
         >
           <Icon icon="openinnew" className="size-4" />
           <span>{t('analytics:legacy-analytics-link')}</span>

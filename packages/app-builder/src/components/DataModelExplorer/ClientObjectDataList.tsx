@@ -34,7 +34,7 @@ export function ClientObjectDataList({
     <DataListGrid className={className}>
       {displayObjectType ? (
         <Fragment>
-          <div className="text-grey-placeholder truncate">Object type</div>
+          <div className="text-grey-secondary truncate">Object type</div>
           <div>
             <SquareTag className="capitalize">{tableModel.name}</SquareTag>
           </div>
@@ -49,7 +49,7 @@ export function ClientObjectDataList({
 
         return data && ((field.displayed && !hasNoValue) || isExpanded) ? (
           <Fragment key={field.id}>
-            <div className="text-grey-placeholder truncate">{field.name}</div>
+            <div className="text-grey-secondary truncate">{field.name}</div>
             <FormatData data={data} className="truncate" />
           </Fragment>
         ) : null;

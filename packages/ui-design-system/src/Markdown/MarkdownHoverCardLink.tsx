@@ -20,7 +20,7 @@ export function MarkdownHoverCardLink({
       <HoverCardTrigger>
         <a
           href={href}
-          className="text-purple-primary hover:bg-purple-background hover:text-grey-placeholder text-underline underline-offset-4 decoration-purple-primary"
+          className="text-purple-primary hover:bg-purple-background hover:text-grey-secondary text-underline underline-offset-4 decoration-purple-primary"
         >
           {children}
         </a>

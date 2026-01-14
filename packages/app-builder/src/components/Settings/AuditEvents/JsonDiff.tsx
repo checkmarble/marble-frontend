@@ -14,7 +14,7 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
   }, [oldData, newData]);
 
   if (allKeys.length === 0) {
-    return <span className="text-grey-placeholder text-sm">No data</span>;
+    return <span className="text-grey-secondary text-sm">No data</span>;
   }
 
   return (
@@ -33,8 +33,8 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
         return (
           <div key={key} className="flex flex-col">
             {isUnchanged && (
-              <div className="text-grey-placeholder">
-                <span className="text-grey-placeholder">{key}:</span> {newStr}
+              <div className="text-grey-secondary">
+                <span className="text-grey-secondary">{key}:</span> {newStr}
               </div>
             )}
             {isAdded && (

@@ -21,7 +21,7 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
 
   const inboxDetail = inboxes.find((inbox) => inbox.id === inboxId)!;
   const targetInbox = inboxes.find((inbox) => inbox.id === inboxDetail?.escalationInboxId);
-  const canEscalate = inboxDetail?.escalationInboxId !== undefined;
+  const canEscalate = !!inboxDetail?.escalationInboxId;
 
   const form = useForm({
     onSubmit: async ({ value }) => {

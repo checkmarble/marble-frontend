@@ -9,7 +9,7 @@ export function AnalyticsTooltip({ className, content }: { className: string; co
           <Icon
             icon="tip"
             className={cn(
-              'text-grey-60 text-purple-primary hover:text-grey-placeholder cursor-pointer ml-v2-sm',
+              'text-grey-60 text-purple-primary hover:text-grey-secondary cursor-pointer ml-v2-sm',
               className,
             )}
           />

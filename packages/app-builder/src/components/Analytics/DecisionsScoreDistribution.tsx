@@ -177,14 +177,10 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
           enablePoints={false}
           useMesh={true}
           theme={{
-            grid: { line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' } },
-            axis: {
-              legend: {
-                text: {
-                  fontSize: '14px',
-                },
-              },
-            },
+            text: { fill: 'var(--color-grey-secondary)' },
+            axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
+            legends: { text: { fill: 'var(--color-grey-secondary)' } },
+            grid: { line: { stroke: 'var(--color-grey-border)', strokeWidth: 1, strokeDasharray: '4 4' } },
           }}
           axisLeft={{
             format: (value: number) => `${value} %`,

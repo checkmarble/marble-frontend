@@ -34,7 +34,7 @@ export const UserFilterMenu = ({ onSelect }: UserFilterMenuProps) => {
               <span className="text-grey-primary text-s">
                 {user.firstName} {user.lastName}
               </span>
-              <Highlight text={user.email} query={deferredValue} className="text-grey-placeholder text-xs" />
+              <Highlight text={user.email} query={deferredValue} className="text-grey-secondary text-xs" />
             </div>
           </MenuCommand.Item>
         ))}

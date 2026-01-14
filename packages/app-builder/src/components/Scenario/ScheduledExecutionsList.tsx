@@ -130,7 +130,7 @@ const getStatusIcon = (status: string) => {
   if (status === 'failure' || status === 'partial_failure') {
     return <Icon icon="cross" className="text-red-primary size-6 shrink-0" />;
   }
-  return <Icon icon="restart-alt" className="text-grey-placeholder size-6 shrink-0" />;
+  return <Icon icon="restart-alt" className="text-grey-secondary size-6 shrink-0" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['scenarios']> => {

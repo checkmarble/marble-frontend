@@ -81,7 +81,7 @@ export const Complex: StoryFn<StoryProps> = ({ placeholder, border, borderColor,
                 <p className="text-s text-grey-primary group-radix-highlighted:text-blue-58 group-radix-state-open:text-blue-58 text-start font-semibold">
                   {book.title}
                 </p>
-                <p className="text-grey-placeholder group-radix-highlighted:text-blue-58 group-radix-state-open:text-blue-58 text-start text-xs font-normal">
+                <p className="text-grey-secondary group-radix-highlighted:text-blue-58 group-radix-state-open:text-blue-58 text-start text-xs font-normal">
                   {book.author}
                 </p>
               </Select.ItemText>

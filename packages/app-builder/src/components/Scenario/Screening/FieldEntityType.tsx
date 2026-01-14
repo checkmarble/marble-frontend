@@ -32,7 +32,7 @@ export const FieldEntityType = ({
                 .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
                 .otherwise(() => entityType)}
             </span>
-            <Icon icon="caret-down" className="text-grey-placeholder size-4" />
+            <Icon icon="caret-down" className="text-grey-secondary size-4" />
           </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth className="mt-2">

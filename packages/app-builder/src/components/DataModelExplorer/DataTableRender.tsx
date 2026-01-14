@@ -280,7 +280,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
               {reactTable.getHeaderGroups().map((headerGroup) => (
                 <tr
                   key={headerGroup.id}
-                  className="text-grey-placeholder border-grey-border bg-surface-card sticky top-0 z-20 h-10 text-left"
+                  className="text-grey-secondary border-grey-border bg-surface-card sticky top-0 z-20 h-10 text-left"
                 >
                   <th
                     className={clsx(
@@ -441,9 +441,7 @@ function DataTableActionsButton({
                           {t('cases:annotations.popover.annotate.title')}{' '}
                           <span className="text-grey-disabled text-xs">{annotationsCount}</span>
                         </div>
-                        <span className="text-grey-placeholder">
-                          {t('cases:annotations.popover.annotate.subtitle')}
-                        </span>
+                        <span className="text-grey-secondary">{t('cases:annotations.popover.annotate.subtitle')}</span>
                       </div>
                       <Icon icon="comment" className="size-5" />
                     </MenuCommand.Item>

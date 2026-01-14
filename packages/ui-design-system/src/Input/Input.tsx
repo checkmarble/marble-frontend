@@ -9,7 +9,7 @@ export const input = cva(
   [
     'bg-surface-card text-s text-grey-primary placeholder:text-grey-disabled disabled:bg-grey-background peer block size-full rounded-sm px-2 font-medium outline-hidden border focus:border-purple-primary',
     // Dark mode
-    'dark:bg-transparent dark:text-grey-primary dark:placeholder:text-grey-placeholder dark:disabled:bg-transparent dark:disabled:text-grey-disabled dark:focus:border-purple-primary',
+    'dark:bg-transparent dark:text-grey-primary dark:placeholder:text-grey-secondary dark:disabled:bg-transparent dark:disabled:text-grey-disabled dark:focus:border-purple-primary',
   ],
   {
     variants: {
@@ -57,7 +57,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <div
           className={clsx(
             'absolute flex items-center',
-            'text-grey-placeholder peer-focus:text-grey-primary dark:text-grey-placeholder dark:peer-focus:text-grey-primary',
+            'text-grey-secondary peer-focus:text-grey-primary dark:text-grey-secondary dark:peer-focus:text-grey-primary',
             'inset-y-0 start-0 ps-2',
             { 'cursor-pointer': onAdornmentClick, 'pointer-events-none': !onAdornmentClick },
           )}
@@ -70,7 +70,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         <div
           className={clsx(
             'absolute flex items-center',
-            'text-grey-placeholder peer-focus:text-grey-primary dark:text-grey-placeholder dark:peer-focus:text-grey-primary',
+            'text-grey-secondary peer-focus:text-grey-primary dark:text-grey-secondary dark:peer-focus:text-grey-primary',
             'inset-y-0 end-0 pe-2',
             { 'cursor-pointer': onAdornmentClick, 'pointer-events-none': !onAdornmentClick },
           )}

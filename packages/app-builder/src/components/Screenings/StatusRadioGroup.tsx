@@ -37,7 +37,7 @@ const radio = cva('transition-colors flex items-center gap-2 rounded-sm', {
   variants: {
     checked: {
       true: 'text-purple-primary',
-      false: 'text-grey-placeholder cursor-pointer',
+      false: 'text-grey-secondary cursor-pointer',
     },
   },
 });

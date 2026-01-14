@@ -34,7 +34,7 @@ export const ScreeningRequestDetail = ({ configStableId, request }: ScreeningReq
         <DataListGrid>
           {queryEntries.map(([key, value]) => (
             <Fragment key={key}>
-              <div className="text-grey-placeholder truncate">{key}</div>
+              <div className="text-grey-secondary truncate">{key}</div>
               <FormatData data={value} className="truncate" />
             </Fragment>
           ))}
@@ -57,7 +57,7 @@ export const ScreeningRequestDetail = ({ configStableId, request }: ScreeningReq
 
             return (
               <DataListGrid>
-                <div className="text-grey-placeholder truncate leading-6">
+                <div className="text-grey-secondary truncate leading-6">
                   {t('screenings:datasets', { count: query.data.datasets.length })}
                 </div>
                 <div className="truncate flex flex-row flex-wrap gap-v2-sm">
@@ -66,7 +66,7 @@ export const ScreeningRequestDetail = ({ configStableId, request }: ScreeningReq
                   ))}
                   {restCount > 0 ? <SquareTag>+{restCount}</SquareTag> : null}
                 </div>
-                <div className="text-grey-placeholder truncate leading-6">{t('screenings:match_threshold')}</div>
+                <div className="text-grey-secondary truncate leading-6">{t('screenings:match_threshold')}</div>
                 <div className="truncate">
                   <SquareTag>{query.data.matchThreshold}</SquareTag>
                 </div>

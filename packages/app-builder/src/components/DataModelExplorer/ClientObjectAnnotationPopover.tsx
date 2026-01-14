@@ -44,7 +44,7 @@ export function ClientObjectAnnotationPopover({
               </div>
               <MenuCommand.Trigger>
                 <ButtonV2 mode="icon" variant="secondary">
-                  <Icon icon="edit-square" className="text-grey-placeholder size-3.5" />
+                  <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
                 </ButtonV2>
               </MenuCommand.Trigger>
               <MenuCommand.Content side="right" align="start" sideOffset={4} className="w-[340px]">
@@ -73,7 +73,7 @@ export function ClientObjectAnnotationPopover({
               </div>
               <Popover.Trigger asChild>
                 <ButtonV2 mode="icon" variant="secondary">
-                  <Icon icon="edit-square" className="text-grey-placeholder size-3.5" />
+                  <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
                 </ButtonV2>
               </Popover.Trigger>
               <Popover.Content side="right" align="start" sideOffset={4} collisionPadding={10} className="w-[340px]">

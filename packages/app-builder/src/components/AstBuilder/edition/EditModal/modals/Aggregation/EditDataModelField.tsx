@@ -104,7 +104,7 @@ export const EditDataModelFieldTableMenu = ({ tableName, fields, onChange }: Edi
     <MenuCommand.List>
       <MenuCommand.Group
         heading={
-          <div className="text-grey-placeholder mb-2 items-center px-2 pb-2 text-xs">
+          <div className="text-grey-secondary mb-2 items-center px-2 pb-2 text-xs">
             <Trans t={t} i18nKey="scenarios:edit_aggregation.available_fields" values={{ tableName }} />
           </div>
         }

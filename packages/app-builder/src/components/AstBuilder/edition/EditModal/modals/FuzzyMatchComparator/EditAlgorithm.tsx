@@ -52,7 +52,7 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
                         fuzzyMatchAlgorithm={fuzzyMatchAlgorithm}
                       />
                     </Select.ItemText>
-                    <p className="text-s text-grey-placeholder">
+                    <p className="text-s text-grey-secondary">
                       {t(`scenarios:edit_fuzzy_match.algorithm.description.${fuzzyMatchAlgorithm}`)}
                     </p>
                   </Select.Item>

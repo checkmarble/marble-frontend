@@ -32,7 +32,7 @@ export const RequiredActions = ({
 
   return isPendingDecision || areThereScreenings ? (
     <div className="bg-grey-background-light group-hover:bg-grey-background flex flex-col gap-2.5 rounded-sm p-4 transition-colors">
-      <span className="text-grey-placeholder text-xs">{t('screenings:required_actions.title')}</span>
+      <span className="text-grey-secondary text-xs">{t('screenings:required_actions.title')}</span>
       {areThereScreenings ? (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export const RequiredActions = ({
                       <span
                         className={cn('text-2xs rounded-full px-2 py-0.5', {
                           'text-red-hover bg-red-background': s.status === 'confirmed_hit',
-                          'text-grey-placeholder bg-grey-border': s.status === 'no_hit',
+                          'text-grey-secondary bg-grey-border': s.status === 'no_hit',
                         })}
                       >
                         {t(`screenings:status.${s.status}`)}

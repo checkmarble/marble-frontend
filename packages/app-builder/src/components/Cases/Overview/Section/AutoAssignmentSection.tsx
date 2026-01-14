@@ -84,7 +84,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
               </div>
             ))
             .with({ isError: true }, () => (
-              <div className="text-s text-grey-placeholder">{t('cases:overview.config.error_loading')}</div>
+              <div className="text-s text-grey-secondary">{t('cases:overview.config.error_loading')}</div>
             ))
             .with({ isSuccess: true }, ({ data }) => {
               const allInboxes = data?.inboxes ?? [];

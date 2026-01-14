@@ -53,7 +53,7 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
               {showWand && <Icon icon="wand" className="size-3" />}
             </Tag>
           </div>
-          <div className="text-s text-grey-placeholder">
+          <div className="text-s text-grey-secondary">
             <p className="mb-2">{displayDescription}</p>
             {benefits.length > 0 && (
               <ul className="list-disc list-inside">

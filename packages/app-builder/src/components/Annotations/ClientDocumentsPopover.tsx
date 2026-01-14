@@ -86,7 +86,7 @@ export function ClientDocumentsPopover({
               <button type="button" className="flex items-center justify-between gap-9 text-left" {...getRootProps()}>
                 <div className="flex flex-col">
                   <div className="text-r flex items-center gap-2">{t('cases:annotations.documents.add_file')}</div>
-                  <span className="text-grey-placeholder">
+                  <span className="text-grey-secondary">
                     {t('cases:annotations.documents.upload_file')}: jpg, png, pdf, zip, doc, docx, xls, xlsx
                   </span>
                 </div>
@@ -103,7 +103,7 @@ export function ClientDocumentsPopover({
                         <span className="truncate text-xs font-medium">{file.name}</span>
                         <Icon
                           icon="cross"
-                          className="text-grey-placeholder hover:text-grey-primary size-5 shrink-0 cursor-pointer"
+                          className="text-grey-secondary hover:text-grey-primary size-5 shrink-0 cursor-pointer"
                           onClick={(e) => {
                             e.preventDefault();
                             field.handleChange((prev) => toggle(prev, file));
@@ -141,7 +141,7 @@ export function ClientDocumentsPopover({
                   <div className="has-[button[data-delete]:hover]:bg-red-background relative z-0 flex flex-col rounded-sm">
                     {files.map((file, idx) => (
                       <div key={file.id} className="z-10 grid grid-cols-[auto_1fr_auto_20px] gap-2 p-2">
-                        <Icon icon="attachment" className="text-grey-placeholder size-5" />
+                        <Icon icon="attachment" className="text-grey-secondary size-5" />
                         <span className="truncate">{file.filename}</span>
                         <AnnotationFileDownload annotationId={document.id} fileId={file.id} />
                         {idx === 0 ? (

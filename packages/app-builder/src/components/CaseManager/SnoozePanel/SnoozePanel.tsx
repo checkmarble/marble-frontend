@@ -90,7 +90,7 @@ export const SnoozePanel = ({
                   </div>
                 ) : null}
                 <div className="border-grey-border bg-surface-card relative w-full rounded-lg border">
-                  <div className="text-2xs text-grey-placeholder relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
+                  <div className="text-2xs text-grey-secondary relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
                     <span className="inline-flex items-center gap-2 p-2">
                       <span>{t('cases:decisions.rule.snooze')}</span>
                       {entitlements.ruleSnoozes !== 'allowed' ? (
@@ -115,7 +115,7 @@ export const SnoozePanel = ({
                   </div>
                   {rules.map((r) => {
                     const formattedHitAt = (
-                      <span className={cn('text-grey-placeholder text-xs', { 'opacity-30': r.isSnoozed })}>
+                      <span className={cn('text-grey-secondary text-xs', { 'opacity-30': r.isSnoozed })}>
                         {formatDateTime(r.hitAt, { dateStyle: 'short' })}
                       </span>
                     );

@@ -43,7 +43,7 @@ export const EscalationConditionRow = ({
 
   return (
     <div className="flex items-center gap-v2-sm">
-      <span className="text-s text-grey-placeholder px-2">{t('cases:overview.panel.escalation.from')}</span>
+      <span className="text-s text-grey-secondary px-2">{t('cases:overview.panel.escalation.from')}</span>
 
       <div className="flex-1">
         <MenuCommand.Menu open={disabled ? false : sourceOpen} onOpenChange={disabled ? undefined : setSourceOpen}>
@@ -71,7 +71,7 @@ export const EscalationConditionRow = ({
         </MenuCommand.Menu>
       </div>
 
-      <span className="text-s text-grey-placeholder px-2">{t('cases:overview.panel.escalation.escalate_to')}</span>
+      <span className="text-s text-grey-secondary px-2">{t('cases:overview.panel.escalation.escalate_to')}</span>
 
       <div className="flex-1">
         <MenuCommand.Menu open={disabled ? false : targetOpen} onOpenChange={disabled ? undefined : setTargetOpen}>

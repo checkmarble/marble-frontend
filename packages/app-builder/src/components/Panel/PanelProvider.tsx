@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 interface PanelContextType {
@@ -22,6 +22,16 @@ interface PanelProviderProps {
 
 export function PanelProvider({ children }: PanelProviderProps) {
   const [panelContent, setPanelContent] = useState<ReactNode>(null);
+
+  // Close panel on browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      setPanelContent(null);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   const openPanel = useCallback((content: ReactNode) => {
     setPanelContent(content);

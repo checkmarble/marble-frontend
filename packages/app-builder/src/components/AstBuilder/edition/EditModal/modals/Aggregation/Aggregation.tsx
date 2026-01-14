@@ -56,7 +56,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
           {t('scenarios:edit_aggregation.title')}
           <div className="flex flex-row items-center justify-center gap-1">
             <Logo logo="logo" className="size-4" />
-            <span className="text-grey-placeholder text-xs font-light">{t('scenarios:edit_aggregation.subtitle')}</span>
+            <span className="text-grey-secondary text-xs font-light">{t('scenarios:edit_aggregation.subtitle')}</span>
           </div>
         </div>
       }

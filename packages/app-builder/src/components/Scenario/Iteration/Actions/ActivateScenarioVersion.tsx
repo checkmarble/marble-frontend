@@ -170,7 +170,7 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
 
   if (!hasSnoozesActive) {
     return (
-      <p className="text-grey-placeholder text-s first-letter:capitalize">
+      <p className="text-grey-secondary text-s first-letter:capitalize">
         {t('scenarios:deployment_modal.activate.without_rule_snooze')}
       </p>
     );
@@ -178,7 +178,7 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
 
   return (
     <CollapsibleV2.Provider>
-      <CollapsibleV2.Title className="text-grey-placeholder group flex flex-row items-center">
+      <CollapsibleV2.Title className="text-grey-secondary group flex flex-row items-center">
         <Icon
           icon="arrow-2-up"
           aria-hidden

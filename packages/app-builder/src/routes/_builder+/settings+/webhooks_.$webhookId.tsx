@@ -118,7 +118,7 @@ const WebhookLabel = ({ children }: { children: React.ReactNode }) => (
 
 const WebhookValue = ({ children }: { children: React.ReactNode }) => {
   if (children === null || children === undefined) {
-    return <span className="text-s text-grey-placeholder">-</span>;
+    return <span className="text-s text-grey-secondary">-</span>;
   }
   return <span className="text-s text-grey-primary">{children}</span>;
 };

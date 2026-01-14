@@ -29,13 +29,13 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
             icon="calendar-month"
             className={clsx('size-6', {
               'text-grey-primary': selectedDate,
-              'text-grey-placeholder': !selectedDate,
+              'text-grey-secondary': !selectedDate,
             })}
           />
           <span
             className={clsx('font-normal', {
               'text-grey-primary': selectedDate,
-              'text-grey-placeholder': !selectedDate,
+              'text-grey-secondary': !selectedDate,
             })}
           >
             {selectedDate ? formatDateTime(selectedDate, { dateStyle: 'short' }) : props.placeholder}

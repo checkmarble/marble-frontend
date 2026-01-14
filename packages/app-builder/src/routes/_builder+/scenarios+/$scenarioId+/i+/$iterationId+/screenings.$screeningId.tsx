@@ -304,7 +304,7 @@ export default function ScreeningDetail() {
         <Page.Content className="pt-0 lg:pt-0">
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
             <div
-              className={cn('bg-purple-99 sticky top-0 z-40 flex h-[88px] items-center justify-between gap-4', {
+              className={cn('bg-surface-page sticky top-0 z-40 flex h-[88px] items-center justify-between gap-4', {
                 'border-b-grey-border border-b': !intersection?.isIntersecting,
               })}
             >
@@ -364,7 +364,7 @@ export default function ScreeningDetail() {
                         disabled={editor === 'view'}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
-                        className="form-textarea text-grey-placeholder text-r w-full resize-none border-none bg-transparent font-medium outline-hidden"
+                        className="form-textarea text-grey-secondary text-r w-full resize-none border-none bg-transparent font-medium outline-hidden"
                         placeholder={t('scenarios:sanction_description_placeholder')}
                       />
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

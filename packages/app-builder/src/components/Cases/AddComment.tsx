@@ -65,7 +65,7 @@ export function AddComment({ caseId }: { caseId: string }) {
               <input {...getInputProps()} />
               <div className="flex items-center gap-2">
                 <ButtonV2 type="button" variant="secondary" mode="icon" {...getRootProps()}>
-                  <Icon icon="attachment" className="text-grey-placeholder size-3.5" />
+                  <Icon icon="attachment" className="text-grey-secondary size-3.5" />
                 </ButtonV2>
                 {field.state.value.map((file) => (
                   <div
@@ -75,7 +75,7 @@ export function AddComment({ caseId }: { caseId: string }) {
                     <span className="text-xs font-medium">{file.name}</span>
                     <Icon
                       icon="cross"
-                      className="text-grey-placeholder hover:text-grey-primary size-4 cursor-pointer"
+                      className="text-grey-secondary hover:text-grey-primary size-4 cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault();
                         field.handleChange((prev) => toggle(prev, file));

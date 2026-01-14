@@ -13,7 +13,7 @@ const variances = cva(
         lg: 'min-h-8 gap-3 px-2',
       },
       dimmed: {
-        true: 'text-grey-placeholder',
+        true: 'text-grey-secondary',
         false: null,
       },
       rounded: {
