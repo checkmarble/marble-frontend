@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components/Callout';
 import { MatchDetails } from '@app-builder/components/Screenings/MatchDetails';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
@@ -30,7 +31,7 @@ export const ScreeningCaseMatches = ({
   return (
     <div className="flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between gap-v2-sm">
-        <div className="text-h2 font-semibold">Matches found</div>
+        <div className="text-h2 font-semibold">{t('continuousScreening:review.matches.title')}</div>
         {isUserAdmin ? <DismissAlertButton screening={screening} /> : null}
       </div>
       <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_52)] border border-grey-border rounded-v2-md bg-surface-card">
@@ -58,7 +59,7 @@ export const ScreeningCaseMatches = ({
                       <span className="font-medium">{screeningMatch.payload.caption}</span>
                       <span className="text-small text-grey-secondary">{getMatchEntityType(screeningMatch)}</span>
                       <Tag color="grey" className="shrink-0">
-                        Correspondance {screeningMatch.payload.score * 100}%
+                        {t('screenings:match.score', { score: screeningMatch.payload.score * 100 })}
                       </Tag>
                       {screeningMatch.payload.properties['topics']?.map((topic) => {
                         return <TopicTag key={topic} topic={topic} className="text-small" />;
@@ -143,35 +144,31 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
   const revalidate = useLoaderRevalidator();
   const [open, setOpen] = useState(false);
 
-  const handleDismissClick = () => {
-    if (!screening.partial) {
-      dismissAlert();
-    }
-  };
-
   const dismissAlert = () => {
     dismissMutation.mutateAsync(screening.id).then(() => {
       revalidate();
-      if (screening.partial) {
-        setOpen(false);
-      }
+
+      setOpen(false);
     });
   };
 
-  const button = (
-    <ButtonV2 variant="secondary" size="small" onClick={handleDismissClick}>
-      <Icon icon="snooze-stroke" className="size-4" />
-      {t('continuousScreening:review.dismiss_alert')}
-    </ButtonV2>
-  );
-
-  return screening.partial ? (
+  return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>{button}</Modal.Trigger>
+      <Modal.Trigger asChild>
+        {
+          <ButtonV2 variant="secondary" size="small" disabled={screening.status !== 'in_review'}>
+            <Icon icon="snooze-stroke" className="size-4" />
+            {t('continuousScreening:review.dismiss_alert')}
+          </ButtonV2>
+        }
+      </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('continuousScreening:review.dismiss_alert')}</Modal.Title>
         <div className="flex flex-col gap-v2-lg p-v2-lg">
           <div>{t('continuousScreening:review.dismiss_alert_modal.warning_text')}</div>
+          {screening.partial ? (
+            <Callout color="red">{t('continuousScreening:review.dismiss_alert_modal.partial_search_warning')}</Callout>
+          ) : null}
           <div>{t('continuousScreening:review.dismiss_alert_modal.confirmation_text')}</div>
         </div>
         <Modal.Footer>
@@ -186,7 +183,5 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
-  ) : (
-    button
   );
 };

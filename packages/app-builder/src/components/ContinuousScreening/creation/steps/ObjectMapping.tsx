@@ -50,7 +50,7 @@ export const ObjectMapping = () => {
 
   return (
     <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-surface-card">
+      <Callout bordered className="bg-surface-card mx-v2-md">
         {t('continuousScreening:creation.objectMapping.callout')}
       </Callout>
       {mappingConfigs.value.map((mappingConfig, index) => (
@@ -188,6 +188,11 @@ const ObjectMappingFtmContent = ({
               {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.title')}
             </div>
           </div>
+          {/* <Callout bordered className="bg-surface-card mx-v2-md"> */}
+          <div className="px-v2-md pt-v2-md text-grey-placeholder">
+            {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.explanation')}
+          </div>
+          {/* </Callout> */}
           <div className="grid grid-cols-[auto_40px_1fr] gap-v2-sm p-v2-md">
             {table.fields.map((field) => {
               const ftmProperty = field.ftmProperty ?? mappingConfig.fieldMapping[field.id] ?? null;
@@ -283,9 +288,13 @@ const FtmFieldSelector = ({
     <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
       <MenuCommand.Trigger>
         <MenuCommand.SelectButton disabled={disabled}>
-          {ftmProperty
-            ? `${ftmEntity}.${ftmProperty}`
-            : t('continuousScreening:creation.objectMapping.configurator.fieldMapping.placeholder')}
+          {ftmProperty ? (
+            `${ftmEntity}.${ftmProperty}`
+          ) : (
+            <span className="text-grey-placeholder">
+              {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.placeholder')}
+            </span>
+          )}
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content side="bottom" align="start" sideOffset={4} sameWidth>

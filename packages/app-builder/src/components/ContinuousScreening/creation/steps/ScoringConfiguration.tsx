@@ -16,7 +16,7 @@ export const ScoringConfiguration = () => {
 
   return (
     <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-surface-card">
+      <Callout bordered className="bg-surface-card mx-v2-md">
         {t('continuousScreening:creation.scoringConfiguration.callout')}
       </Callout>
       <Field
@@ -94,7 +94,13 @@ const InboxSelector = () => {
           <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
             <MenuCommand.Trigger>
               <MenuCommand.SelectButton disabled={!inboxesQuery.isSuccess}>
-                {currentInboxName ?? t('continuousScreening:creation.scoringConfiguration.alertAutomation.placeholder')}
+                {currentInboxName ? (
+                  currentInboxName
+                ) : (
+                  <span className="text-grey-placeholder">
+                    {t('continuousScreening:creation.scoringConfiguration.alertAutomation.placeholder')}
+                  </span>
+                )}
               </MenuCommand.SelectButton>
             </MenuCommand.Trigger>
             <MenuCommand.Content side="bottom" align="start" sideOffset={4}>
