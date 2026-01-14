@@ -1,0 +1,18 @@
+{
+  "name": "marble-ftm",
+  "version": "1.0.0",
+  "description": "",
+  "sideEffect": false,
+  "type": "module",
+  "scripts": {
+    "lint": "biome lint",
+    "type-check": "tsc --noEmit",
+    "generate-schema": "bun scripts/generate.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.6",
+    "typescript": "^5.9.3"
+  },
+  "author": "",
+  "license": "ISC"
+}

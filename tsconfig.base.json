@@ -20,6 +20,7 @@
     "paths": {
       "marble-api": ["packages/marble-api/src/index.ts"],
       "marble-api/*": ["packages/marble-api/src/*"],
+      "marble-ftm": ["packages/marble-ftm/src/index.ts"],
       "tests/*": ["packages/tests/*"],
       "typescript-utils": ["packages/typescript-utils/src/index.ts"],
       "ui-icons": ["packages/ui-icons/src/index.ts"],

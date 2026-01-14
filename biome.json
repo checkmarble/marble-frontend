@@ -110,7 +110,8 @@
       "quoteProperties": "asNeeded",
       "semicolons": "always",
       "trailingCommas": "all"
-    }
+    },
+    "globals": ["Bun"]
   },
   "json": {
     "formatter": {
