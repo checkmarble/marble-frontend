@@ -9,7 +9,7 @@ export const SquareTag = ({ children, className }: SquareTagProps) => {
   return (
     <span
       className={cn(
-        'text-small border border-grey-border rounded-v2-s h-6 px-v2-xs text-grey-secondary inline-flex items-center bg-surface-card',
+        'text-small border border-grey-border rounded-v2-s h-6 px-v2-xs text-grey-primary inline-flex items-center bg-surface-card',
         className,
       )}
     >

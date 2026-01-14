@@ -1,16 +1,25 @@
 import { Callout, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { DataListGrid } from '@app-builder/components/DataModelExplorer/DataListGrid';
+import { PanelContainer, PanelContent, usePanel } from '@app-builder/components/Panel';
+import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
+import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
+import { SquareTag } from '@app-builder/components/SquareTag';
 import { type CaseDetail } from '@app-builder/models/cases';
 import {
   ContinuousScreening,
+  ContinuousScreeningMarbleToScreeningEntity,
+  ContinuousScreeningScreeningEntityToMarble,
   isDirectContinuousScreening,
   isIndirectContinuousScreening,
+  OpenSanctionEntityPayload,
 } from '@app-builder/models/continuous-screening';
 import { Inbox } from '@app-builder/models/inbox';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Tag } from 'ui-design-system';
+import { ButtonV2, Tag } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { CaseDocuments } from '../shared/CaseDocuments/CaseDocuments';
 import { CaseInvestigation } from '../shared/CaseInvestigation/CaseInvestigation';
 import { CaseDetailInfo } from './CaseDetailInfo';
@@ -66,22 +75,12 @@ export const ScreeningCaseDetailPage = ({
                     />
                   </div>
                 </Callout>
-                <ScreeningRequestDetail
-                  configStableId={screening.continuousScreeningConfigStableId}
-                  request={screening.request}
-                />
                 {match(screening)
-                  .when(isDirectContinuousScreening, (screening) => {
-                    return (
-                      <ScreeningObjectDetails
-                        objectType={screening.objectType}
-                        objectId={screening.objectId}
-                        className="bg-surface-card border border-grey-border"
-                      />
-                    );
+                  .when(isDirectContinuousScreening, (directScreening) => {
+                    return <DirectScreeningRequestDetail screening={directScreening} />;
                   })
-                  .when(isIndirectContinuousScreening, (screening) => {
-                    return null;
+                  .when(isIndirectContinuousScreening, (indirectScreening) => {
+                    return <IndirectScreeningRequestDetail screening={indirectScreening} />;
                   })
                   .exhaustive()}
               </div>
@@ -97,5 +96,104 @@ const getEntityType = (screening: ContinuousScreening): string => {
   if (isDirectContinuousScreening(screening)) {
     return screening.objectType;
   }
-  return screening.entityPayload.schema;
+  return screening.opensanctionEntityPayload.schema;
+};
+
+const DirectScreeningRequestDetail = ({ screening }: { screening: ContinuousScreeningMarbleToScreeningEntity }) => {
+  return (
+    <>
+      <ScreeningRequestDetail
+        configStableId={screening.continuousScreeningConfigStableId}
+        request={screening.request}
+      />
+      <ScreeningObjectDetails
+        objectType={screening.objectType}
+        objectId={screening.objectId}
+        className="bg-surface-card border border-grey-border"
+      />
+    </>
+  );
+};
+
+const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousScreeningScreeningEntityToMarble }) => {
+  const { t } = useTranslation(['continuousScreening', 'screenings']);
+  const { openPanel } = usePanel();
+  const handleViewAll = () => {
+    openPanel(<ScreeningEntityDetailsPanel entity={screening.opensanctionEntityPayload} />);
+  };
+
+  return (
+    <>
+      <ScreeningRequestDetail
+        configStableId={screening.continuousScreeningConfigStableId}
+        request={screening.request}
+      />
+      <div className="flex flex-col gap-v2-sm p-v2-md bg-surface-card rounded-v2-lg border border-grey-border">
+        <div className="flex justify-between items-center gap-v2-sm">
+          <span className="font-medium">{screening.opensanctionEntityPayload.caption}</span>
+          <span className="text-small text-grey-placeholder mr-auto">{screening.opensanctionEntityPayload.schema}</span>
+          <ButtonV2 variant="secondary" onClick={handleViewAll}>
+            {t('continuousScreening:review.entity_details.view_all')}
+          </ButtonV2>
+        </div>
+        <div className="flex items-center gap-v2-sm">
+          {screening.opensanctionEntityPayload.properties['topics']?.map((topic) => {
+            return <TopicTag key={topic} topic={topic} className="text-small" />;
+          })}
+        </div>
+        <DataListGrid>
+          <div className="text-grey-placeholder truncate leading-6">
+            {t('screenings:dataset', { count: screening.opensanctionEntityPayload.datasets.length })}
+          </div>
+          <div className="truncate flex flex-row flex-wrap gap-v2-sm">
+            {screening.opensanctionEntityPayload.datasets.map((dataset) => {
+              return <SquareTag key={dataset}>{dataset}</SquareTag>;
+            })}
+          </div>
+        </DataListGrid>
+      </div>
+    </>
+  );
+};
+
+const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPayload }) => {
+  const { closePanel } = usePanel();
+  const { t } = useTranslation(['continuousScreening', 'screenings']);
+
+  return (
+    <PanelContainer size="xxxl">
+      <PanelContent>
+        <div className="flex flex-col gap-v2-md">
+          <ButtonV2 variant="secondary" mode="icon" onClick={closePanel}>
+            <Icon icon="left-panel-close" className="size-4" />
+          </ButtonV2>
+          <div className="text-h1">{t('continuousScreening:review.entity_details.title')}</div>
+          <div className="flex items-center gap-v2-sm">
+            <span className="font-medium">{entity.caption}</span>
+            <span className="text-small text-grey-placeholder">{entity.schema}</span>
+          </div>
+          <div className="flex items-center gap-v2-sm">
+            {entity.properties['topics']?.map((topic) => {
+              return <TopicTag key={topic} topic={topic} className="text-small" />;
+            })}
+          </div>
+          <EntityProperties
+            entity={entity}
+            before={
+              <>
+                <div className="font-bold">{t('screenings:dataset', { count: entity.datasets.length })}</div>
+                <div className="">
+                  <ul className="list-disc list-inside">
+                    {entity.datasets.map((dataset) => (
+                      <li key={dataset}>{dataset}</li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            }
+          />
+        </div>
+      </PanelContent>
+    </PanelContainer>
+  );
 };

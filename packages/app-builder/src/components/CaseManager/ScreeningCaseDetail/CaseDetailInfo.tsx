@@ -1,10 +1,9 @@
-import { CloseCase } from '@app-builder/components/Cases/CloseCase';
 import { EditCaseAssignee } from '@app-builder/components/Cases/EditAssignee';
 import { EditCaseInbox } from '@app-builder/components/Cases/EditCaseInbox';
 import { EditCaseName } from '@app-builder/components/Cases/EditCaseName';
 import { EditCaseTags } from '@app-builder/components/Cases/EditTags';
 import { EscalateCase } from '@app-builder/components/Cases/EscalateCase';
-import { OpenCase } from '@app-builder/components/Cases/OpenCase';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type CaseDetail } from '@app-builder/models/cases';
 import {
   ContinuousScreening,
@@ -14,12 +13,15 @@ import {
 } from '@app-builder/models/continuous-screening';
 import { Inbox } from '@app-builder/models/inbox';
 import { getHigherCategory } from '@app-builder/models/screening';
+import { useCloseCaseMutation } from '@app-builder/queries/cases/close-case';
+import { useOpenCaseMutation } from '@app-builder/queries/cases/open-case';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { Tag, TagProps } from 'ui-design-system';
+import { ButtonV2, Tag, TagProps } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 type CaseDetailInfoProps = {
   caseDetail: CaseDetail;
@@ -31,8 +33,24 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
   const { t } = useTranslation(['cases']);
   const formatDateTime = useFormatDateTime();
   const { currentUser } = useOrganizationDetails();
+  const revalidate = useLoaderRevalidator();
+
+  const closeCaseMutation = useCloseCaseMutation();
+  const reopenCaseMutation = useOpenCaseMutation();
+
   const screening = caseDetail.continuousScreenings[0];
   const hasRemainingMatchesToExamine = screening?.matches.some((match) => match.status === 'pending');
+  const handleCloseCase = () => {
+    closeCaseMutation.mutateAsync({ caseId: caseDetail.id, comment: '' }).then(() => {
+      revalidate();
+    });
+  };
+
+  const handleReopenCase = () => {
+    reopenCaseMutation.mutateAsync({ caseId: caseDetail.id, comment: '' }).then(() => {
+      revalidate();
+    });
+  };
 
   return (
     <div className="flex flex-col gap-v2-md">
@@ -47,9 +65,20 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
         <div className="flex gap-v2-sm">
           <EscalateCase id={caseDetail.id} inboxId={caseInbox.id} isAdminUser={isUserAdmin} />
           {caseDetail.status !== 'closed' ? (
-            <CloseCase withoutOutcome id={caseDetail.id} disabled={hasRemainingMatchesToExamine} />
+            <ButtonV2
+              variant="primary"
+              className="flex-1 first-letter:capitalize"
+              disabled={hasRemainingMatchesToExamine}
+              onClick={handleCloseCase}
+            >
+              <Icon icon="save" className="size-3.5" />
+              {t('cases:case.close')}
+            </ButtonV2>
           ) : (
-            <OpenCase id={caseDetail.id} />
+            <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize" onClick={handleReopenCase}>
+              <Icon icon="save" className="size-3.5" />
+              {t('cases:case.reopen')}
+            </ButtonV2>
           )}
         </div>
       </div>

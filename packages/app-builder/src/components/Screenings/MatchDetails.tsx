@@ -1,6 +1,6 @@
 import { type PropertyForSchema } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatch, type ScreeningSanctionEntity } from '@app-builder/models/screening';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -13,6 +13,7 @@ import { screeningsI18n } from './screenings-i18n';
 
 export type MatchDetailsProps = {
   entity: ScreeningMatch['payload'];
+  before?: ReactNode;
 };
 
 const sanctionProps = [
@@ -30,7 +31,7 @@ const sanctionProps = [
   'sourceUrl',
 ] satisfies PropertyForSchema<'Sanction'>[];
 
-export function MatchDetails({ entity }: MatchDetailsProps) {
+export function MatchDetails({ entity, before }: MatchDetailsProps) {
   const { t } = useTranslation(screeningsI18n);
   const [selectedSanction, setSelectedSanction] = useState<ScreeningSanctionEntity | null>(null);
 
@@ -40,6 +41,7 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
     <div className="flex flex-col gap-4">
       <EntityProperties
         entity={entity}
+        before={before}
         after={
           entity.properties.sanctions ? (
             <Modal.Root open={isOpen} onOpenChange={setIsOpen}>

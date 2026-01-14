@@ -12,7 +12,13 @@ import {
   ScreeningQueryDto,
 } from 'marble-api';
 import * as R from 'remeda';
-import { adaptScreeningMatchPayload, ScreeningMatchPayload } from './screening';
+import {
+  adaptScreeningMatchPayload,
+  isKnownEntitySchema,
+  matchEntitySchemas,
+  OpenSanctionEntitySchema,
+  ScreeningMatchPayload,
+} from './screening';
 
 export type ContinuousScreeningConfig = {
   id: string;
@@ -123,10 +129,18 @@ export type ContinuousScreeningMarbleToScreeningEntity = ContinuousScreeningBase
   matches: ContinuousScreeningMatchScreeningEntity[];
 };
 
+export type OpenSanctionEntityPayload = {
+  id: string;
+  caption: string;
+  schema: OpenSanctionEntitySchema;
+  properties: Record<string, string[]>;
+  datasets: string[];
+};
+
 export type ContinuousScreeningScreeningEntityToMarble = ContinuousScreeningBase & {
   triggerType: 'dataset_updated';
   opensanctionEntityId: string;
-  entityPayload: OpenSanctionsEntityDto;
+  opensanctionEntityPayload: OpenSanctionEntityPayload;
   matches: ContinuousScreeningMatchMarble[];
 };
 
@@ -183,7 +197,7 @@ export function adaptContinuousScreening(dto: ContinuousScreeningDto): Continuou
       ...baseContinuousScreening,
       triggerType: 'dataset_updated',
       opensanctionEntityId: dto.opensanction_entity_id,
-      entityPayload: dto.opensanction_entity_payload,
+      opensanctionEntityPayload: adaptOpenSanctionsEntityPayload(dto.opensanction_entity_payload),
       matches: dto.matches.map(adaptContinuousScreeningMatchMarble),
     };
   }
@@ -236,6 +250,13 @@ export function adaptContinuousScreeningMatchScreeningEntity(
       target: dto.payload.target,
       datasets: dto.payload.datasets,
     },
+  };
+}
+
+export function adaptOpenSanctionsEntityPayload(dto: OpenSanctionsEntityDto): OpenSanctionEntityPayload {
+  return {
+    ...dto,
+    schema: isKnownEntitySchema(dto.schema, matchEntitySchemas) ? dto.schema : 'Thing',
   };
 }
 
