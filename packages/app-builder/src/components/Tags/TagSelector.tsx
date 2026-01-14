@@ -52,6 +52,12 @@ export function TagSelector({
 
   return (
     <div className="flex items-center gap-2">
+      {(maxVisibleTags ? selectedTagIds.slice(0, maxVisibleTags) : selectedTagIds).map((id) => (
+        <TagPreview key={id} name={formattedTags[id]?.name ?? id} />
+      ))}
+      {maxVisibleTags && selectedTagIds.length > maxVisibleTags ? (
+        <span className="text-grey-secondary text-xs">+{selectedTagIds.length - maxVisibleTags}</span>
+      ) : null}
       <MenuCommand.Menu persistOnSelect onOpenChange={onOpenChange}>
         <MenuCommand.Trigger>
           <ButtonV2 variant="secondary" mode={selectedTagIds.length ? 'icon' : 'normal'}>
@@ -59,7 +65,7 @@ export function TagSelector({
             {!selectedTagIds.length ? <span className="text-grey-secondary text-xs">{t('common:add')}</span> : null}
           </ButtonV2>
         </MenuCommand.Trigger>
-        <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom" align="start">
+        <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom" align="end">
           <MenuCommand.Combobox placeholder={t('workflows:action.tags.search_placeholder')} />
           <MenuCommand.List>
             {orgTags.map(({ id: tagId }) => (
@@ -81,12 +87,6 @@ export function TagSelector({
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
-      {(maxVisibleTags ? selectedTagIds.slice(0, maxVisibleTags) : selectedTagIds).map((id) => (
-        <TagPreview key={id} name={formattedTags[id]?.name ?? id} />
-      ))}
-      {maxVisibleTags && selectedTagIds.length > maxVisibleTags ? (
-        <span className="text-grey-secondary text-xs">+{selectedTagIds.length - maxVisibleTags}</span>
-      ) : null}
     </div>
   );
 }

@@ -19,7 +19,7 @@ export const DatasetSelection = () => {
 
   return (
     <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-surface-card">
+      <Callout bordered className="bg-surface-card mx-v2-md">
         {t('continuousScreening:creation.datasetSelection.callout')}
       </Callout>
       <div className="bg-surface-card rounded-v2-lg border border-grey-border">

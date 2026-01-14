@@ -42,44 +42,51 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-center gap-2">
               {!isEditing ? (
-                <ButtonV2
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  className="w-fit p-0.5"
-                  variant="secondary"
-                  mode="icon"
-                >
-                  <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
-                </ButtonV2>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <ButtonV2 type="submit" disabled={form.state.isSubmitting} variant="primary">
-                    <Icon icon="save" className="size-3.5" />
-                    {t('common:save')}
-                  </ButtonV2>
+                <>
+                  <span className="text-grey-primary text-h1 border-none bg-transparent font-normal outline-hidden">
+                    {field.state.value || t('cases:case.name')}
+                  </span>
                   <ButtonV2
                     type="button"
-                    onClick={() => {
-                      setIsEditing(false);
-                      form.reset({ name, caseId: id });
-                    }}
+                    onClick={() => setIsEditing(true)}
+                    className="w-fit p-0.5"
                     variant="secondary"
                     mode="icon"
                   >
-                    <Icon icon="cross" className="text-grey-secondary size-3.5" />
+                    <Icon icon="edit-square" className="text-grey-placeholder size-3.5" />
                   </ButtonV2>
-                </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <ButtonV2 type="submit" disabled={form.state.isSubmitting} variant="primary">
+                      <Icon icon="save" className="size-3.5" />
+                      {t('common:save')}
+                    </ButtonV2>
+                    <ButtonV2
+                      type="button"
+                      onClick={() => {
+                        setIsEditing(false);
+                        form.reset({ name, caseId: id });
+                      }}
+                      variant="secondary"
+                      mode="icon"
+                    >
+                      <Icon icon="cross" className="text-grey-placeholder size-3.5" />
+                    </ButtonV2>
+                  </div>
+                  <input
+                    type="text"
+                    name={field.name}
+                    autoFocus
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onBlur={field.handleBlur}
+                    className="text-grey-primary text-h1 w-full border-none bg-transparent font-normal outline-hidden"
+                    placeholder={t('cases:case.name')}
+                  />
+                </>
               )}
-              <input
-                type="text"
-                name={field.name}
-                disabled={!isEditing}
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.currentTarget.value)}
-                onBlur={field.handleBlur}
-                className="text-grey-primary text-h1 w-full border-none bg-transparent font-normal outline-hidden"
-                placeholder={t('cases:case.name')}
-              />
             </div>
             <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>

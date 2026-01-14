@@ -205,7 +205,7 @@
   "escalate-button.forbidden.hint.admin": "Aucune boîte de réception d'escalade n'est définie.",
   "escalate-button.hint": "Escalader l'investigation vers {{inboxName}}.",
   "escalate-button.label": "Escalader",
-  "escalate-case.modal.callout": "En escaladant cette investigation, vous ne serez plus assigné et vous n'y aurez plus accès si vous n'êtes pas membre de la boîte de réception cible.<br/>Vous serez redirigé vers la liste des investigations de la boîte actuelle.",
+  "escalate-case.modal.callout": "En escaladant cette investigation, vous ne serez plus assigné et vous n'y aurez plus accès si vous n'êtes pas membre de la boîte de réception cible. Vous serez redirigé vers la liste des investigations de la boîte actuelle.",
   "escalate-case.modal.submit-button.label": "Escalader",
   "filter.assignee.label": "Assigné",
   "filter.closed_only.label": "Investigations résolues uniquement",
