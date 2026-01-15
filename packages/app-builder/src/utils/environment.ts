@@ -96,12 +96,8 @@ interface ServerEnvVars {
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
-<<<<<<< HEAD
   CONTINUOUS_SCREENING_ACCESS: string[];
-=======
-  CONTINUOUS_SCREENING_ENABLED?: boolean;
   CUSTOM_LOGO_URL?: string;
->>>>>>> 2441a282 (feat: custon logo url in .env)
 }
 
 /**
