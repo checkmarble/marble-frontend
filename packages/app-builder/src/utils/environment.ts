@@ -42,6 +42,9 @@ const PublicEnvVarsSchema = z.object({
     .transform((val) => val?.split(',') ?? [])
     .optional()
     .default([]),
+
+  // White-labeling: custom logo URL for sidebar
+  CUSTOM_LOGO_URL: z.string().optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -94,6 +97,7 @@ interface ServerEnvVars {
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
   CONTINUOUS_SCREENING_ACCESS: string[];
+  CUSTOM_LOGO_URL?: string;
 }
 
 /**
@@ -113,6 +117,7 @@ interface ClientEnvVars {
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
+  CUSTOM_LOGO_URL?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -120,6 +125,7 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     METABASE_URL: getServerEnv('METABASE_URL'),
+    CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
   };
 }
 
