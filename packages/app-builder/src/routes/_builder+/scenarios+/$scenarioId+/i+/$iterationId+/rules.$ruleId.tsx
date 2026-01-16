@@ -258,6 +258,7 @@ export default function RuleDetail() {
     triggerObjectType: scenario.triggerObjectType,
     rule,
     hasValidLicense,
+    screeningConfigs: [],
   };
 
   //TODO Add errors from the servers if they are present
