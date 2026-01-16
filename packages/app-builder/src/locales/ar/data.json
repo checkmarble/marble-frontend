@@ -77,6 +77,7 @@
   "delete.links": "الروابط: {{links}}",
   "delete.links_affected": "الروابط التي تستخدم هذا العنصر:",
   "delete.pivots": "مجموعات القرارات: {{pivots}}",
+  "delete.pivots_affected": "مجموعات القرارات التي تستخدم هذا العنصر:",
   "delete.scenario_iteration": "إصدار السيناريو",
   "delete.scenario_iterations": "إصدارات السيناريوهات النشطة",
   "delete.scenarios": "السيناريوهات النشطة",
