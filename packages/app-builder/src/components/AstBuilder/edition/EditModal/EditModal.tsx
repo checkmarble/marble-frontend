@@ -1,5 +1,6 @@
 import { isAggregation, isFuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { isMonitoringListCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time';
@@ -14,6 +15,7 @@ import { EditAggregation } from './modals/Aggregation/Aggregation';
 import { EditFuzzyMatchAggregation } from './modals/FuzzyMatchComparator/FuzzyMatchAggregation';
 import { EditFuzzyMatchComparator } from './modals/FuzzyMatchComparator/FuzzyMatchComparator';
 import { EditIsMultipleOf } from './modals/IsMultipleOf/IsMultipleOf';
+import { EditMonitoringListCheck } from './modals/MonitoringListCheck';
 import { EditStringTemplate } from './modals/StringTemplate/StringTemplate';
 import { EditTimeAdd } from './modals/TimeAdd/TimeAdd';
 import { EditTimestampExtract } from './modals/TimestampExtract/TimestampExtract';
@@ -54,6 +56,7 @@ export function OperandEditModal({ node, ...props }: OperandEditModalProps) {
         .when(isAggregation, () => <EditAggregation {...props} />)
         .when(isStringTemplateAstNode, () => <EditStringTemplate {...props} />)
         .when(isFuzzyMatchFilterOptionsAstNode, () => <EditFuzzyMatchAggregation {...props} />)
+        .when(isMonitoringListCheckAstNode, () => <EditMonitoringListCheck {...props} />)
         .exhaustive()}
     </AstBuilderNodeSharpFactory.Provider>
   );

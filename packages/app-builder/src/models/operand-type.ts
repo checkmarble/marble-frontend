@@ -9,6 +9,7 @@ export type OperandType =
   | 'Function'
   | 'Undefined'
   | 'Modeling'
+  | 'ClientRisk'
   | 'unknown';
 
 export function getOperandTypeIcon(operandType: OperandType): IconName | undefined {
@@ -23,6 +24,8 @@ export function getOperandTypeIcon(operandType: OperandType): IconName | undefin
       return 'enum';
     case 'Modeling':
       return 'modeling';
+    case 'ClientRisk':
+      return 'scan-eye';
     default:
       return undefined;
   }
@@ -40,6 +43,8 @@ export function getOperandTypeTKey(operandType: OperandType): ParseKeys<'scenari
       return 'edit_operand.operator_type.enum';
     case 'Modeling':
       return 'edit_operand.operator_type.modeling';
+    case 'ClientRisk':
+      return 'edit_operand.operator_type.client_risk';
     default:
       return undefined;
   }

@@ -13,6 +13,7 @@ import {
 import { type ConstantAstNode, isConstant } from './constant';
 import { type CustomListAccessAstNode, isCustomListAccess } from './custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor';
+import { isMonitoringListCheckAstNode, type MonitoringListCheckAstNode } from './monitoring-list-check';
 import { type IsMultipleOfAstNode, isIsMultipleOf } from './multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
@@ -28,7 +29,8 @@ export type EditableAstNode =
   | FuzzyMatchComparatorAstNode
   | IsMultipleOfAstNode
   | StringTemplateAstNode
-  | FuzzyMatchFilterOptionsAstNode;
+  | FuzzyMatchFilterOptionsAstNode
+  | MonitoringListCheckAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -42,7 +44,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isFuzzyMatchComparator(node) ||
     isTimestampExtract(node) ||
     isIsMultipleOf(node) ||
-    isStringTemplateAstNode(node)
+    isStringTemplateAstNode(node) ||
+    isMonitoringListCheckAstNode(node)
   );
 }
 
