@@ -14,7 +14,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system/src/Tabs/Tabs';
+import { Tabs, tabClassName } from 'ui-design-system';
 import { useCurrentCase } from './_layout';
 
 export default function CaseSanctionsHitsPage() {
@@ -123,27 +123,46 @@ function ScreeningQueryDetail({
   const { t } = useTranslation(screeningsI18n);
   const processedQueries = Object.values(request.queries);
   const hasInitialQuery = Array.isArray(initialQuery) && initialQuery.length > 0;
+  const [activeTab, setActiveTab] = useState<'initial' | 'preprocessed'>('preprocessed');
 
   return (
-    <Tabs defaultValue="preprocessed">
-      <TabsList className="mb-2">
-        {hasInitialQuery && <TabsTrigger value="initial">{t('screenings:initial_query')}</TabsTrigger>}
-        <TabsTrigger value="preprocessed">
+    <div>
+      <Tabs>
+        {hasInitialQuery && (
+          <button
+            type="button"
+            className={tabClassName}
+            data-status={activeTab === 'initial' ? 'active' : undefined}
+            onClick={() => setActiveTab('initial')}
+          >
+            {t('screenings:initial_query')}
+          </button>
+        )}
+        <button
+          type="button"
+          className={tabClassName}
+          data-status={activeTab === 'preprocessed' ? 'active' : undefined}
+          onClick={() => setActiveTab('preprocessed')}
+        >
           {!hasInitialQuery ? t('screenings:query') : t('screenings:processed_query')}
-        </TabsTrigger>
-      </TabsList>
-      {hasInitialQuery && (
-        <TabsContent value="initial">
-          {initialQuery.map((q, i) => (
-            <QueryObjectDetail key={i} query={q as ScreeningQuery} />
-          ))}
-        </TabsContent>
-      )}
-      <TabsContent value="preprocessed">
-        {processedQueries.map((q, i) => (
-          <QueryObjectDetail key={i} query={q as ScreeningQuery} />
-        ))}
-      </TabsContent>
-    </Tabs>
+        </button>
+      </Tabs>
+      <div className="mt-2">
+        {activeTab === 'initial' && hasInitialQuery && (
+          <>
+            {initialQuery.map((q, i) => (
+              <QueryObjectDetail key={i} query={q as ScreeningQuery} />
+            ))}
+          </>
+        )}
+        {activeTab === 'preprocessed' && (
+          <>
+            {processedQueries.map((q, i) => (
+              <QueryObjectDetail key={i} query={q as ScreeningQuery} />
+            ))}
+          </>
+        )}
+      </div>
+    </div>
   );
 }

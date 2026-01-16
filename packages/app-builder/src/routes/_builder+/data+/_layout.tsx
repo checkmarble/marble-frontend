@@ -1,5 +1,7 @@
 import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import {
   isCreateDataModelFieldAvailable,
@@ -10,12 +12,11 @@ import {
   isEditDataModelInfoAvailable,
   isIngestDataAvailable,
 } from '@app-builder/services/feature-access';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -34,14 +35,11 @@ export const handle = {
   ],
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { user, dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function dataLayout({ context }) {
+  const { user, dataModelRepository } = context.authInfo;
 
   const dataModel = await dataModelRepository.getDataModel();
-  return json({
+  return {
     dataModel,
     dataModelFeatureAccess: {
       isCreateDataModelTableAvailable: isCreateDataModelTableAvailable(user),
@@ -52,8 +50,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
       isCreateDataModelPivotAvailable: isCreateDataModelPivotAvailable(user),
       isIngestDataAvailable: isIngestDataAvailable(user),
     },
-  });
-}
+  };
+});
 
 export default function Data() {
   const { t } = useTranslation(handle.i18n);
@@ -66,7 +64,25 @@ export default function Data() {
       </Page.Header>
       <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
         <Page.Description>{t('data:your_data_callout')}</Page.Description>
-        <Outlet />
+        <Page.Container>
+          <Page.Content>
+            <Tabs>
+              <NavLink to={getRoute('/data/list')} className={tabClassName}>
+                <Icon icon="lists" className="mr-1 size-5" />
+                {t('navigation:data.list')}
+              </NavLink>
+              <NavLink to={getRoute('/data/schema')} className={tabClassName}>
+                <Icon icon="tree-schema" className="mr-1 size-5" />
+                {t('navigation:data.schema')}
+              </NavLink>
+              <NavLink to={getRoute('/data/view')} className={tabClassName}>
+                <Icon icon="visibility" className="mr-1 size-5" />
+                {t('navigation:data.viewer')}
+              </NavLink>
+            </Tabs>
+            <Outlet />
+          </Page.Content>
+        </Page.Container>
       </DataModelContextProvider>
     </Page.Main>
   );

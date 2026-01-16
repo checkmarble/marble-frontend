@@ -1,4 +1,4 @@
-import { navigationI18n, Page, TabLink } from '@app-builder/components';
+import { navigationI18n, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CornerPing } from '@app-builder/components/Ping';
 import { ActivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/ActivateScenarioVersion';
@@ -17,12 +17,12 @@ import { hasDecisionErrors, hasRulesErrors, hasTriggerErrors } from '@app-builde
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { Tag } from 'ui-design-system';
+import { cn, Tabs, Tag, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { useCurrentScenarioValidation } from '../_layout';
 
@@ -121,40 +121,32 @@ export default function ScenarioEditLayout() {
       <Page.Container>
         {currentScenario.description ? <Page.Description>{currentScenario.description}</Page.Description> : null}
         <Page.Content>
-          <nav>
-            <ul className="flex flex-row gap-2">
-              <li>
-                <TabLink
-                  aria-invalid={hasTriggerErrors(scenarioValidation)}
-                  labelTKey="navigation:scenario.trigger"
-                  to="./trigger"
-                  Icon={(props) => (
-                    <ScenariosLinkIcon {...props} icon="trigger" withPing={hasTriggerErrors(scenarioValidation)} />
-                  )}
-                />
-              </li>
-              <li>
-                <TabLink
-                  aria-invalid={hasRulesErrors(scenarioValidation)}
-                  labelTKey="navigation:scenario.rules"
-                  to="./rules"
-                  Icon={(props) => (
-                    <ScenariosLinkIcon {...props} icon="rules" withPing={hasRulesErrors(scenarioValidation)} />
-                  )}
-                />
-              </li>
-              <li>
-                <TabLink
-                  aria-invalid={hasDecisionErrors(scenarioValidation)}
-                  labelTKey="navigation:scenario.decision"
-                  to="./decision"
-                  Icon={(props) => (
-                    <ScenariosLinkIcon {...props} icon="decision" withPing={hasDecisionErrors(scenarioValidation)} />
-                  )}
-                />
-              </li>
-            </ul>
-          </nav>
+          <Tabs>
+            <NavLink
+              to="./trigger"
+              className={cn(tabClassName, 'gap-2')}
+              aria-invalid={hasTriggerErrors(scenarioValidation)}
+            >
+              <ScenariosLinkIcon icon="trigger" withPing={hasTriggerErrors(scenarioValidation)} className="size-5" />
+              <span className="first-letter:capitalize">{t('navigation:scenario.trigger')}</span>
+            </NavLink>
+            <NavLink
+              to="./rules"
+              className={cn(tabClassName, 'gap-2')}
+              aria-invalid={hasRulesErrors(scenarioValidation)}
+            >
+              <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
+              <span className="first-letter:capitalize">{t('navigation:scenario.rules')}</span>
+            </NavLink>
+            <NavLink
+              to="./decision"
+              className={cn(tabClassName, 'gap-2')}
+              aria-invalid={hasDecisionErrors(scenarioValidation)}
+            >
+              <ScenariosLinkIcon icon="decision" withPing={hasDecisionErrors(scenarioValidation)} className="size-5" />
+              <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
+            </NavLink>
+          </Tabs>
           <Outlet />
         </Page.Content>
       </Page.Container>
