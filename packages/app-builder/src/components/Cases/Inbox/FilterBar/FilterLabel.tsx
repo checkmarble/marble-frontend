@@ -15,5 +15,6 @@ export const InboxFilterLabel = ({ name }: InboxFilterLabelProps) => {
     .with('assignee', () => t('cases:filter.assignee.label'))
     .with('dateRange', () => t('cases:case.date'))
     .with('tagId', () => t('cases:filter.tags.label'))
+    .with('qualificationLevel', () => t('cases:filter.qualification_level.label'))
     .exhaustive();
 };

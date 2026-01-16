@@ -1,5 +1,5 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { Case, caseStatuses } from '@app-builder/models/cases';
+import { Case, caseStatuses, qualificationLevels } from '@app-builder/models/cases';
 import { PaginatedResponse } from '@app-builder/models/pagination';
 import { getRoute } from '@app-builder/utils/routes';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
@@ -37,6 +37,7 @@ export const filtersSchema = z.object({
   assignee: z.string().optional(),
   dateRange: dateRangeSchema.optional(),
   tagId: z.string().optional(),
+  qualificationLevel: z.enum(qualificationLevels).optional(),
 });
 
 export type Filters = z.infer<typeof filtersSchema>;

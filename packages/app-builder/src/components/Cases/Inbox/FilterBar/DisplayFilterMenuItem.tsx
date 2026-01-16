@@ -4,6 +4,7 @@ import { MenuCommand } from 'ui-design-system';
 import { AssigneeFilterMenuItem } from './AssigneeFilterMenuItem';
 import { DateRangeFilterMenu } from './DateRangeFilterMenu';
 import { InboxFilterLabel } from './FilterLabel';
+import { QualificationLevelFilterMenuItem } from './QualificationLevelFilterMenuItem';
 import { TagsFilterMenuItem } from './TagsFilterMenuItem';
 
 type DisplayFilterMenuItemProps = {
@@ -67,6 +68,19 @@ export const DisplayFilterMenuItem = ({ filterName, onSelect }: DisplayFilterMen
         }
       >
         <TagsFilterMenuItem onSelect={(tagId) => onSelect({ [filterName]: tagId })} />
+      </MenuCommand.SubMenu>
+    ))
+    .with('qualificationLevel', () => (
+      <MenuCommand.SubMenu
+        arrow={false}
+        hover={false}
+        trigger={
+          <span>
+            <InboxFilterLabel name={filterName} />
+          </span>
+        }
+      >
+        <QualificationLevelFilterMenuItem onSelect={(level) => onSelect({ [filterName]: level })} />
       </MenuCommand.SubMenu>
     ))
     .exhaustive();
