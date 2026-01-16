@@ -26,9 +26,11 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
     });
   }, [triggerObjectTable.value, enumValues, options]);
 
-  const { enumOptions, fieldOptions, functionOptions, modelingOptions, customListOptions } = groupedOptions;
+  const { enumOptions, fieldOptions, functionOptions, modelingOptions, customListOptions, clientRiskOptions } =
+    groupedOptions;
   const subMenus = [
     { options: customListOptions, type: 'CustomList' },
+    { options: clientRiskOptions, type: 'ClientRisk' },
     { options: functionOptions, type: 'Function' },
     { options: modelingOptions, type: 'Modeling' },
   ] as const;

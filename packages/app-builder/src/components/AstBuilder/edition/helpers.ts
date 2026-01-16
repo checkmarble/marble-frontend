@@ -18,7 +18,12 @@ import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 
-import { AST_BUILDER_STATIC_OPTIONS, MODELING_OPTIONS, type OperandMenuOption } from './base-options';
+import {
+  AST_BUILDER_STATIC_OPTIONS,
+  CLIENT_RISK_OPTIONS,
+  MODELING_OPTIONS,
+  type OperandMenuOption,
+} from './base-options';
 
 type EnrichingOperandContext = {
   enumValues: EnumValue[] | undefined;
@@ -70,6 +75,7 @@ export function getOperandMenuOptions(params: {
       astNode: NewConstantAstNode({ constant: enumValue }),
     })),
     ...MODELING_OPTIONS({ currentNode: params.node, t: params.t }),
+    ...CLIENT_RISK_OPTIONS({ t: params.t }),
   ].map(mapOption);
 }
 
@@ -81,7 +87,7 @@ export function groupByOperandType(
     operandMenuOptions,
     R.groupBy((option) => option.operandType),
     // biome-ignore lint/suspicious/noShadowRestrictedNames: <TBD>
-    ({ Enum, CustomList, Function, Field, Modeling }) => {
+    ({ Enum, CustomList, Function, Field, Modeling, ClientRisk }) => {
       const fieldOptions = Field
         ? R.pipe(
             Field,
@@ -107,6 +113,7 @@ export function groupByOperandType(
         customListOptions: CustomList ?? [],
         functionOptions: Function ?? [],
         modelingOptions: Modeling ?? [],
+        clientRiskOptions: ClientRisk ?? [],
       };
     },
   );
