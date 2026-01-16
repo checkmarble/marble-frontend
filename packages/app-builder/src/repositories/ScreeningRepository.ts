@@ -41,6 +41,12 @@ export interface ScreeningRepository {
   }): Promise<Screening>;
   listScreeningFiles(args: { screeningId: string }): Promise<ScreeningFile[]>;
   enrichMatch(args: { matchId: string }): Promise<ScreeningMatch>;
+  freeformSearch(args: {
+    entityType: OpenSanctionEntitySchema;
+    fields: Record<string, string>;
+    datasets?: string[];
+    threshold?: number;
+  }): Promise<ScreeningMatchPayload[]>;
 }
 
 export function makeGetScreeningRepository() {
@@ -99,6 +105,23 @@ export function makeGetScreeningRepository() {
     },
     enrichMatch: async ({ matchId }) => {
       return adaptScreeningMatch(await marbleCoreApiClient.enrichScreeningMatch(matchId));
+    },
+    freeformSearch: async ({ entityType, fields, datasets, threshold }) => {
+      const dto = {
+        query: {
+          [entityType]: fields,
+        },
+        datasets,
+        threshold,
+      };
+      // Note: API returns ScreeningMatchDto[] but type says ScreeningMatchPayloadDto[]
+      // We need to extract the payload from each match
+      const results = await marbleCoreApiClient.freeformSearch(dto);
+      return R.map(
+        results,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (result: any) => adaptScreeningMatchPayload(result.payload ?? result),
+      );
     },
   });
 }

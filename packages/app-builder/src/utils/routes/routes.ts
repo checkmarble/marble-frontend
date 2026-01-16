@@ -330,6 +330,18 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/_builder+/screening-search+/_layout",
+            "path": "screening-search",
+            "file": "routes/_builder+/screening-search+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/screening-search+/_index",
+                "index": true,
+                "file": "routes/_builder+/screening-search+/_index.tsx"
+              }
+            ]
+          },
+          {
             "id": "routes/_builder+/settings+/_layout",
             "path": "settings",
             "file": "routes/_builder+/settings+/_layout.tsx",
@@ -905,6 +917,11 @@ export const routes = [
         "id": "routes/ressources+/screenings+/enrich-match.$matchId",
         "path": "ressources/screenings/enrich-match/:matchId",
         "file": "routes/ressources+/screenings+/enrich-match.$matchId.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/freeform-search",
+        "path": "ressources/screenings/freeform-search",
+        "file": "routes/ressources+/screenings+/freeform-search.tsx"
       },
       {
         "id": "routes/ressources+/screenings+/get-datasets",

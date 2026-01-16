@@ -78,6 +78,8 @@
   "paste": "Coller",
   "premium": "Fonctionnalité Premium",
   "previous": "Précédent",
+  "print.generated_at": "Généré : {{date}}",
+  "print.generated_at_by": "Généré le {{date}} par {{user}}",
   "rename": "Renommer",
   "retry": "Réessayer",
   "save": "Enregistrer",

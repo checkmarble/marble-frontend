@@ -31,7 +31,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   const language = useFormatLanguage();
   const entityPropertyList = displayProperties
     .map((property) => {
-      const items = entity.properties[property] ?? [];
+      const items = entity.properties?.[property] ?? [];
       const itemsToDisplay = displayAll[property] ? items : items.slice(0, 5);
       return {
         property,
