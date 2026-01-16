@@ -25,6 +25,7 @@ import { OrganizationObjectTagsContextProvider } from '@app-builder/services/org
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
+import { useSentryIdentification, useSentryReplay } from '@app-builder/services/sentry';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -67,6 +68,7 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
     authProvider: context.appConfig.auth.provider,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
     isContinuousScreeningEnabled: isContinuousScreeningAvailable(user),
+    sentryReplayEnabled: organizationDetail.sentryReplayEnabled,
   };
 });
 
@@ -91,8 +93,11 @@ export default function Builder() {
     isMenuExpanded,
     isContinuousScreeningEnabled,
     authProvider,
+    sentryReplayEnabled,
   } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
+  useSentryIdentification(user);
+  useSentryReplay(sentryReplayEnabled);
   const { t } = useTranslation(handle.i18n);
   const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
 
