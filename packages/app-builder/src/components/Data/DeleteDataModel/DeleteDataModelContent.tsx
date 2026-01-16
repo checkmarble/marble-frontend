@@ -160,8 +160,22 @@ function BlockedDeletionContent({
             })}
           </Callout>
           <ul className="text-s text-grey-primary list-disc pl-4">
-            {activeScenarioIterations.map(([key, iteration]) => {
-              return <li key={key}>{iteration.name}</li>;
+            {activeScenarioIterations.map(([scenarioId, iteration]) => {
+              const shortId = fromUUIDtoSUUID(scenarioId);
+              return (
+                <li key={scenarioId} className="flex items-center gap-2">
+                  <span>{iteration.name}</span>
+                  <a
+                    href={getRoute('/scenarios/:scenarioId', { scenarioId: shortId })}
+                    className="text-purple-primary text-s flex items-center gap-1 hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t('data:delete.view')}
+                    <Icon icon="openinnew" className="size-4" />
+                  </a>
+                </li>
+              );
             })}
           </ul>
         </div>
