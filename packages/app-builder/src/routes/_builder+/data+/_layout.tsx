@@ -6,6 +6,10 @@ import {
   isCreateDataModelLinkAvailable,
   isCreateDataModelPivotAvailable,
   isCreateDataModelTableAvailable,
+  isDeleteDataModelFieldAvailable,
+  isDeleteDataModelLinkAvailable,
+  isDeleteDataModelPivotAvailable,
+  isDeleteDataModelTableAvailable,
   isEditDataModelFieldAvailable,
   isEditDataModelInfoAvailable,
   isIngestDataAvailable,
@@ -51,6 +55,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
       isCreateDataModelLinkAvailable: isCreateDataModelLinkAvailable(user),
       isCreateDataModelPivotAvailable: isCreateDataModelPivotAvailable(user),
       isIngestDataAvailable: isIngestDataAvailable(user),
+      isDeleteDataModelTableAvailable: isDeleteDataModelTableAvailable(user),
+      isDeleteDataModelFieldAvailable: isDeleteDataModelFieldAvailable(user),
+      isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),
+      isDeleteDataModelPivotAvailable: isDeleteDataModelPivotAvailable(user),
     },
   });
 }

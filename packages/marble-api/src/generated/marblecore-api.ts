@@ -4250,7 +4250,7 @@ export function createDataModelPivot(createPivotInputDto: CreatePivotInputDto, o
 /**
  * Delete a data model pivot
  */
-export function deleteDataModelPivot(linkId: string, { perform }: {
+export function deleteDataModelPivot(pivotId: string, { perform }: {
     perform?: boolean;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{

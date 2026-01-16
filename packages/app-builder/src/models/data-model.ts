@@ -655,3 +655,102 @@ export const adaptExportedFieldsDto = (model: ExportedFields): ExportedFieldsDto
     Name: field.name,
   })),
 });
+
+// Destroy Data Model Report types for deletion operations
+export interface DestroyDataModelReportRef {
+  id: string;
+  label: string;
+}
+
+export interface DestroyDataModelReportConflicts {
+  continuousScreening: boolean;
+  links: string[];
+  pivots: string[];
+  analyticsSettings: number;
+  scenarios: DestroyDataModelReportRef[];
+  emptyScenarios: DestroyDataModelReportRef[];
+  scenarioIterations: Record<string, DestroyDataModelReportRef>;
+  workflows: DestroyDataModelReportRef[];
+  testRuns: boolean;
+}
+
+export interface DestroyDataModelReport {
+  performed: boolean;
+  conflicts: DestroyDataModelReportConflicts;
+  archivedIterations: DestroyDataModelReportRef[];
+}
+
+interface DestroyDataModelReportRefDto {
+  id: string;
+  label: string;
+}
+
+interface DestroyDataModelReportConflictsDto {
+  continuous_screening: boolean;
+  links: string[];
+  pivots: string[];
+  analytics_settings: number;
+  scenarios: DestroyDataModelReportRefDto[];
+  empty_scenarios: DestroyDataModelReportRefDto[];
+  scenario_iterations: Record<string, DestroyDataModelReportRefDto>;
+  workflows?: DestroyDataModelReportRefDto[];
+  test_runs: boolean;
+}
+
+export interface DestroyDataModelReportDto {
+  performed: boolean;
+  conflicts: DestroyDataModelReportConflictsDto;
+  archived_iterations: DestroyDataModelReportRefDto[];
+}
+
+function adaptDestroyDataModelReportRef(dto: DestroyDataModelReportRefDto): DestroyDataModelReportRef {
+  return {
+    id: dto.id,
+    label: dto.label,
+  };
+}
+
+function adaptDestroyDataModelReportConflicts(
+  dto: DestroyDataModelReportConflictsDto,
+): DestroyDataModelReportConflicts {
+  return {
+    continuousScreening: dto.continuous_screening,
+    links: dto.links,
+    pivots: dto.pivots,
+    analyticsSettings: dto.analytics_settings,
+    scenarios: dto.scenarios.map(adaptDestroyDataModelReportRef),
+    emptyScenarios: dto.empty_scenarios.map(adaptDestroyDataModelReportRef),
+    scenarioIterations: R.pipe(
+      dto.scenario_iterations,
+      R.entries(),
+      R.map(([key, value]) => [key, adaptDestroyDataModelReportRef(value)] as const),
+      R.fromEntries(),
+    ),
+    workflows: dto.workflows?.map(adaptDestroyDataModelReportRef) ?? [],
+    testRuns: dto.test_runs,
+  };
+}
+
+export function adaptDestroyDataModelReport(dto: DestroyDataModelReportDto): DestroyDataModelReport {
+  return {
+    performed: dto.performed,
+    conflicts: adaptDestroyDataModelReportConflicts(dto.conflicts),
+    archivedIterations: dto.archived_iterations.map(adaptDestroyDataModelReportRef),
+  };
+}
+
+/**
+ * Check if a deletion report has blocking conflicts that prevent deletion.
+ * Blocking conflicts are active scenarios, active scenario iterations, workflows, continuous screening, or test runs.
+ * Non-blocking conflicts are drafts that will be archived.
+ */
+export function hasBlockingConflicts(report: DestroyDataModelReport): boolean {
+  const { conflicts } = report;
+  return (
+    conflicts.continuousScreening ||
+    conflicts.scenarios.length > 0 ||
+    Object.keys(conflicts.scenarioIterations).length > 0 ||
+    conflicts.workflows.length > 0 ||
+    conflicts.testRuns
+  );
+}

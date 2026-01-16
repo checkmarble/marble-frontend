@@ -385,7 +385,7 @@
     summary: Delete a data model pivot
     operationId: deleteDataModelPivot
     parameters:
-      - name: linkId
+      - name: pivotId
         description: ID of the pivot to delete
         in: path
         required: true
