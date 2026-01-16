@@ -662,6 +662,13 @@ export interface DestroyDataModelReportRef {
   label: string;
 }
 
+export interface DestroyDataModelReportIteration {
+  name: string;
+  triggerCondition: boolean;
+  rules: DestroyDataModelReportRef[];
+  screenings: DestroyDataModelReportRef[];
+}
+
 export interface DestroyDataModelReportConflicts {
   continuousScreening: boolean;
   links: string[];
@@ -669,7 +676,7 @@ export interface DestroyDataModelReportConflicts {
   analyticsSettings: number;
   scenarios: DestroyDataModelReportRef[];
   emptyScenarios: DestroyDataModelReportRef[];
-  scenarioIterations: Record<string, DestroyDataModelReportRef>;
+  scenarioIterations: Record<string, DestroyDataModelReportIteration>;
   workflows: DestroyDataModelReportRef[];
   testRuns: boolean;
 }
@@ -685,6 +692,13 @@ interface DestroyDataModelReportRefDto {
   label: string;
 }
 
+interface DestroyDataModelReportIterationDto {
+  name: string;
+  trigger_condition: boolean;
+  rules: DestroyDataModelReportRefDto[];
+  screenings: DestroyDataModelReportRefDto[];
+}
+
 interface DestroyDataModelReportConflictsDto {
   continuous_screening: boolean;
   links: string[];
@@ -692,7 +706,7 @@ interface DestroyDataModelReportConflictsDto {
   analytics_settings: number;
   scenarios: DestroyDataModelReportRefDto[];
   empty_scenarios: DestroyDataModelReportRefDto[];
-  scenario_iterations: Record<string, DestroyDataModelReportRefDto>;
+  scenario_iterations: Record<string, DestroyDataModelReportIterationDto>;
   workflows?: DestroyDataModelReportRefDto[];
   test_runs: boolean;
 }
@@ -710,6 +724,17 @@ function adaptDestroyDataModelReportRef(dto: DestroyDataModelReportRefDto): Dest
   };
 }
 
+function adaptDestroyDataModelReportIteration(
+  dto: DestroyDataModelReportIterationDto,
+): DestroyDataModelReportIteration {
+  return {
+    name: dto.name,
+    triggerCondition: dto.trigger_condition,
+    rules: dto.rules.map(adaptDestroyDataModelReportRef),
+    screenings: dto.screenings.map(adaptDestroyDataModelReportRef),
+  };
+}
+
 function adaptDestroyDataModelReportConflicts(
   dto: DestroyDataModelReportConflictsDto,
 ): DestroyDataModelReportConflicts {
@@ -723,7 +748,7 @@ function adaptDestroyDataModelReportConflicts(
     scenarioIterations: R.pipe(
       dto.scenario_iterations,
       R.entries(),
-      R.map(([key, value]) => [key, adaptDestroyDataModelReportRef(value)] as const),
+      R.map(([key, value]) => [key, adaptDestroyDataModelReportIteration(value)] as const),
       R.fromEntries(),
     ),
     workflows: dto.workflows?.map(adaptDestroyDataModelReportRef) ?? [],

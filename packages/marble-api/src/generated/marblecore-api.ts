@@ -1212,7 +1212,12 @@ export type Schema = {
         empty_scenarios: Items[];
         /** Map of scenario iterations which components refer to the resource */
         scenario_iterations: {
-            [key: string]: Items;
+            [key: string]: {
+                name?: string;
+                trigger_condition?: boolean;
+                rules?: Items[];
+                screenings?: Items[];
+            };
         };
         /** List of scenarios which workflows use the resource */
         workflows: Items[];
@@ -4138,7 +4143,12 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                 empty_scenarios: Items[];
                 /** Map of scenario iterations which components refer to the resource */
                 scenario_iterations: {
-                    [key: string]: Items;
+                    [key: string]: {
+                        name?: string;
+                        trigger_condition?: boolean;
+                        rules?: Items[];
+                        screenings?: Items[];
+                    };
                 };
                 /** List of scenarios which workflows use the resource */
                 workflows: Items[];

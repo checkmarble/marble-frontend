@@ -161,9 +161,7 @@ function BlockedDeletionContent({
           </Callout>
           <ul className="text-s text-grey-primary list-disc pl-4">
             {activeScenarioIterations.map(([key, iteration]) => {
-              // The key is a link ID, value may have label
-              const iterationLabel = iteration.label || key;
-              return <li key={key}>{iterationLabel}</li>;
+              return <li key={key}>{iteration.name}</li>;
             })}
           </ul>
         </div>

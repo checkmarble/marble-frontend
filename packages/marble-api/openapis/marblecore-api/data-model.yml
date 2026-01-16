@@ -1079,7 +1079,7 @@ components:
           description: Map of scenario iterations which components refer to the resource
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/DestroyDataModelReportRef'
+            $ref: '#/components/schemas/DestroyDataModelReportIteration'
         workflows:
           description: List of scenarios which workflows use the resource
           type: array
