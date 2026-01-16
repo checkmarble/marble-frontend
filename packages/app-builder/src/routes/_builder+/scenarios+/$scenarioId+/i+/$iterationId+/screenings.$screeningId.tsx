@@ -264,6 +264,7 @@ export default function ScreeningDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
+    screeningConfigs: [],
   };
 
   if (!form.state.isTouched && lastData?.status === 'error' && lastData?.errors) {
