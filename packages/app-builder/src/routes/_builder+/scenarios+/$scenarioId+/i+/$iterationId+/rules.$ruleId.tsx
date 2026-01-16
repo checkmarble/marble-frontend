@@ -248,6 +248,7 @@ export default function RuleDetail() {
     customLists,
     triggerObjectType: scenario.triggerObjectType,
     rule,
+    screeningConfigs: [],
   };
 
   //TODO Add errors from the servers if they are present
