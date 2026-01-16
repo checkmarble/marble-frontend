@@ -7,6 +7,10 @@ import {
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
+import {
+  isMonitoringListCheckAstNode,
+  type MonitoringListCheckAstNode,
+} from '@app-builder/models/astNode/monitoring-list-check';
 import { type IsMultipleOfAstNode, isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
@@ -89,6 +93,10 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
 
   if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
     return getAstNodeDisplayName(astNode.namedChildren.value, context);
+  }
+
+  if (isMonitoringListCheckAstNode(astNode)) {
+    return getMonitoringListCheckDisplayName(astNode, context);
   }
 
   if (isUndefinedAstNode(astNode)) {
@@ -249,4 +257,30 @@ function getStringTemplateDisplayName(
     return context.t('scenarios:edit_string_template.title');
   }
   return value;
+}
+
+function getMonitoringListCheckDisplayName(
+  astNode: IdLessAstNode<MonitoringListCheckAstNode>,
+  context: AstNodeStringifierContext,
+) {
+  const objectTableName = astNode.namedChildren.objectTableName.constant;
+  const hitTypes = astNode.namedChildren.hitTypes.constant;
+
+  if (!objectTableName) {
+    return context.t('scenarios:monitoring_list_check.title');
+  }
+
+  if (hitTypes.length === 0) {
+    return context.t('scenarios:monitoring_list_check.display_name_any', {
+      replace: { objectTableName },
+    });
+  }
+
+  const hitTypesStr = hitTypes
+    .map((ht) => context.t(`scenarios:monitoring_list_check.hit_type.${ht.replace('-', '_')}` as const))
+    .join(', ');
+
+  return context.t('scenarios:monitoring_list_check.display_name', {
+    replace: { hitTypes: hitTypesStr, objectTableName },
+  });
 }
