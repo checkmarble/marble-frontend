@@ -71,6 +71,17 @@ export const caseOutcomes: CaseOutcome[] = ['false_positive', 'valuable_alert', 
 export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
 export const finalOutcomes: UnionToArray<FinalOutcome> = ['false_positive', 'valuable_alert', 'confirmed_risk'];
 
+// AI review levels from case review
+export const caseReviewLevels = ['probable_false_positive', 'investigate', 'escalate'] as const;
+export type CaseReviewLevel = (typeof caseReviewLevels)[number];
+
+// Qualification levels combine review_level and outcome for filtering
+// - green: probable_false_positive OR false_positive
+// - orange: investigate OR valuable_alert
+// - red: escalate OR confirmed_risk
+export const qualificationLevels = ['green', 'orange', 'red'] as const;
+export type QualificationLevel = (typeof qualificationLevels)[number];
+
 export interface Case {
   id: string;
   type: CaseDto['type'];
