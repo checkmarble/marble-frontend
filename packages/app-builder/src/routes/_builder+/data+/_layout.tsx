@@ -8,6 +8,10 @@ import {
   isCreateDataModelLinkAvailable,
   isCreateDataModelPivotAvailable,
   isCreateDataModelTableAvailable,
+  isDeleteDataModelFieldAvailable,
+  isDeleteDataModelLinkAvailable,
+  isDeleteDataModelPivotAvailable,
+  isDeleteDataModelTableAvailable,
   isEditDataModelFieldAvailable,
   isEditDataModelInfoAvailable,
   isIngestDataAvailable,
@@ -48,6 +52,10 @@ export const loader = createServerFn([authMiddleware], async function dataLayout
       isCreateDataModelLinkAvailable: isCreateDataModelLinkAvailable(user),
       isCreateDataModelPivotAvailable: isCreateDataModelPivotAvailable(user),
       isIngestDataAvailable: isIngestDataAvailable(user),
+      isDeleteDataModelTableAvailable: isDeleteDataModelTableAvailable(user),
+      isDeleteDataModelFieldAvailable: isDeleteDataModelFieldAvailable(user),
+      isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),
+      isDeleteDataModelPivotAvailable: isDeleteDataModelPivotAvailable(user),
     },
   };
 });

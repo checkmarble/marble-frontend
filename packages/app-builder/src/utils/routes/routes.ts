@@ -433,11 +433,6 @@ export const routes = [
         "file": "routes/app-router.tsx"
       },
       {
-        "id": "routes/design-system",
-        "path": "design-system",
-        "file": "routes/design-system.tsx"
-      },
-      {
         "id": "routes/healthcheck",
         "path": "healthcheck",
         "file": "routes/healthcheck.ts"
@@ -732,6 +727,26 @@ export const routes = [
         "id": "routes/ressources+/data+/delete-annotation.$annotationId",
         "path": "ressources/data/delete-annotation/:annotationId",
         "file": "routes/ressources+/data+/delete-annotation.$annotationId.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/deleteField",
+        "path": "ressources/data/deleteField",
+        "file": "routes/ressources+/data+/deleteField.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/deleteLink",
+        "path": "ressources/data/deleteLink",
+        "file": "routes/ressources+/data+/deleteLink.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/deletePivot",
+        "path": "ressources/data/deletePivot",
+        "file": "routes/ressources+/data+/deletePivot.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/deleteTable",
+        "path": "ressources/data/deleteTable",
+        "file": "routes/ressources+/data+/deleteTable.tsx"
       },
       {
         "id": "routes/ressources+/data+/editField",
