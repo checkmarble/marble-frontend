@@ -211,6 +211,18 @@ function BlockedDeletionContent({
         </div>
       ) : null}
 
+      {/* Pivots using this resource */}
+      {conflicts.pivots.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-s text-grey-primary font-medium">{t('data:delete.pivots_affected')}</p>
+          <ul className="text-s text-grey-primary list-disc pl-4">
+            {conflicts.pivots.map((pivot) => (
+              <li key={pivot}>{pivot}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       {/* Other blocking conflicts */}
       {conflicts.continuousScreening ? (
         <Callout color="orange" icon="warning">

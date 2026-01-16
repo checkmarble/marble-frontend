@@ -77,6 +77,7 @@
   "delete.links": "Liens : {{links}}",
   "delete.links_affected": "Liens utilisant cet élément :",
   "delete.pivots": "Regroupements : {{pivots}}",
+  "delete.pivots_affected": "Regroupements utilisant cet élément :",
   "delete.scenario_iteration": "Version de scénario",
   "delete.scenario_iterations": "Versions de scénarios actives",
   "delete.scenarios": "Scénarios actifs",

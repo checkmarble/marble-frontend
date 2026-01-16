@@ -77,6 +77,7 @@
   "delete.links": "Links: {{links}}",
   "delete.links_affected": "Links using this element:",
   "delete.pivots": "Decision groups: {{pivots}}",
+  "delete.pivots_affected": "Decision groups using this element:",
   "delete.scenario_iteration": "Scenario version",
   "delete.scenario_iterations": "Active scenario versions",
   "delete.scenarios": "Active scenarios",

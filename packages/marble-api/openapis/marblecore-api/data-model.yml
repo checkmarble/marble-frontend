@@ -1046,7 +1046,7 @@ components:
         - scenarios
         - empty_scenarios
         - scenario_iterations
-        - worfklows
+        - workflows
         - test_runs
       properties:
         continuous_screening:
@@ -1057,13 +1057,11 @@ components:
           type: array
           items:
             type: string
-            format: uuid
         pivots:
           description: List of pivots using the resource
           type: array
           items:
             type: string
-            format: uuid
         analytics_settings:
           description: Number of analytics settings referring to the resource
           type: integer

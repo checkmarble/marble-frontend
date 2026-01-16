@@ -1216,7 +1216,7 @@ export type Schema = {
             [key: string]: Items;
         };
         /** List of scenarios which workflows use the resource */
-        workflows?: Items[];
+        workflows: Items[];
         /** Whether an active test run uses an iteration that would be disabled */
         test_runs: boolean;
     };
@@ -4184,7 +4184,7 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                     [key: string]: Items;
                 };
                 /** List of scenarios which workflows use the resource */
-                workflows?: Items[];
+                workflows: Items[];
                 /** Whether an active test run uses an iteration that would be disabled */
                 test_runs: boolean;
             };
