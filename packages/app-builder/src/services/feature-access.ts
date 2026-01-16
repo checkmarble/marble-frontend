@@ -50,6 +50,14 @@ export const isCreateDataModelPivotAvailable = ({ permissions }: CurrentUser) =>
 
 export const isIngestDataAvailable = ({ permissions }: CurrentUser) => permissions.canIngestData;
 
+export const isDeleteDataModelTableAvailable = ({ permissions }: CurrentUser) => permissions.canEditDataModel;
+
+export const isDeleteDataModelFieldAvailable = ({ permissions }: CurrentUser) => permissions.canEditDataModel;
+
+export const isDeleteDataModelLinkAvailable = ({ permissions }: CurrentUser) => permissions.canEditDataModel;
+
+export const isDeleteDataModelPivotAvailable = ({ permissions }: CurrentUser) => permissions.canEditDataModel;
+
 export const isCreateListAvailable = ({ permissions }: CurrentUser) => permissions.canManageList;
 
 export const isCreateListValueAvailable = ({ permissions }: CurrentUser) => permissions.canManageListItem;

@@ -4,6 +4,7 @@ import { EditTable } from '@app-builder/components/Data/EditTable';
 import {
   type DataModel,
   type DataType,
+  type LinkToSingle,
   type TableModel,
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
@@ -19,6 +20,7 @@ import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateField } from './CreateField';
 import { CreateLink } from './CreateLink';
+import { DeleteField, DeleteLink, DeleteTable } from './DeleteDataModel';
 import { dataI18n } from './data-i18n';
 
 interface TableDetailsProps {
@@ -33,6 +35,8 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
     isEditDataModelInfoAvailable,
     isIngestDataAvailable,
     isCreateDataModelLinkAvailable,
+    isDeleteDataModelTableAvailable,
+    isDeleteDataModelLinkAvailable,
   } = useDataModelFeatureAccess();
 
   const otherTablesWithUnique = useMemo(
@@ -64,6 +68,8 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
   const links = useMemo(
     () =>
       tableModel.linksToSingle.map((link) => ({
+        id: link.id,
+        name: link.name,
         foreignKey: link.childFieldName,
         parentTable: link.parentTableName,
         parentFieldName: link.parentFieldName,
@@ -106,6 +112,15 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             {t('data:upload_data')}
           </NavLink>
         ) : null}
+        {isDeleteDataModelTableAvailable ? (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <DeleteTable table={tableModel} />
+          </div>
+        ) : null}
       </CollapsiblePaper.Title>
       <CollapsiblePaper.Content>
         <div className="flex flex-col gap-6">
@@ -141,7 +156,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
                   }}
                 />
               </p>
-              <TableDetailLinks links={links} />
+              <TableDetailLinks links={links} isDeleteDataModelLinkAvailable={isDeleteDataModelLinkAvailable} />
             </>
           ) : null}
 
@@ -179,7 +194,7 @@ const fieldsColumnHelper = createColumnHelper<TableDetailColumnsProps['fields'][
 
 function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumnsProps) {
   const { t } = useTranslation(dataI18n);
-  const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
+  const { isEditDataModelFieldAvailable, isDeleteDataModelFieldAvailable } = useDataModelFeatureAccess();
 
   const linksToThisTable = useMemo(
     () =>
@@ -251,12 +266,17 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
                   </EditField>
                 </div>
               ) : null}
+              {isDeleteDataModelFieldAvailable ? (
+                <div className="flex-shrink-0">
+                  <DeleteField field={{ id: cell.row.original.id, name: cell.row.original.name }} />
+                </div>
+              ) : null}
             </div>
           );
         },
       }),
     ],
-    [isEditDataModelFieldAvailable, linksToThisTable, t],
+    [isDeleteDataModelFieldAvailable, isEditDataModelFieldAvailable, linksToThisTable, t],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -282,16 +302,19 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
 
 interface TableDetailLinksProps {
   links: Array<{
+    id: string;
+    name: string;
     foreignKey: string;
     parentTable: string;
     parentFieldName: string;
     exampleUsage: string;
   }>;
+  isDeleteDataModelLinkAvailable: boolean;
 }
 
 const linksColumnHelper = createColumnHelper<TableDetailLinksProps['links'][number]>();
 
-function TableDetailLinks({ links }: TableDetailLinksProps) {
+function TableDetailLinks({ links, isDeleteDataModelLinkAvailable }: TableDetailLinksProps) {
   const { t } = useTranslation(dataI18n);
 
   const columnsLinks = useMemo(
@@ -312,14 +335,27 @@ function TableDetailLinks({ links }: TableDetailLinksProps) {
         size: 150,
         header: t('data:parent_field_name'),
       }),
-
       linksColumnHelper.accessor('exampleUsage', {
         id: 'exampleUsage',
         size: 300,
         header: t('data:example_usage'),
+        cell: ({ cell }) => {
+          return (
+            <div className="flex flex-row items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <span className="truncate block">{cell.getValue()}</span>
+              </div>
+              {isDeleteDataModelLinkAvailable ? (
+                <div className="flex-shrink-0">
+                  <DeleteLink link={{ id: cell.row.original.id, name: cell.row.original.name }} />
+                </div>
+              ) : null}
+            </div>
+          );
+        },
       }),
     ],
-    [t],
+    [isDeleteDataModelLinkAvailable, t],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -336,7 +372,7 @@ function TableDetailLinks({ links }: TableDetailLinksProps) {
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (
-          <Table.Row key={row.id} className="mb-4 break-words" row={row} />
+          <Table.Row key={row.id} className="group mb-4 break-words" row={row} />
         ))}
       </Table.Body>
     </Table.Container>

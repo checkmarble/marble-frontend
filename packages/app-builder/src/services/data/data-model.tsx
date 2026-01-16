@@ -11,6 +11,10 @@ interface DataModelFeatureAccess {
   isCreateDataModelLinkAvailable: boolean;
   isCreateDataModelPivotAvailable: boolean;
   isIngestDataAvailable: boolean;
+  isDeleteDataModelTableAvailable: boolean;
+  isDeleteDataModelFieldAvailable: boolean;
+  isDeleteDataModelLinkAvailable: boolean;
+  isDeleteDataModelPivotAvailable: boolean;
 }
 
 const DataModelFeatureAccessContext = createSimpleContext<DataModelFeatureAccess>('DataModelFeatureAccessContext');
