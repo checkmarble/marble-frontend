@@ -8,6 +8,7 @@ export interface Organization {
   sanctionLimit?: number;
   autoAssignQueueLimit?: number;
   allowedNetworks: string[];
+  sentryReplayEnabled: boolean;
 }
 
 export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organization => ({
@@ -18,6 +19,7 @@ export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organiza
   sanctionThreshold: organizationDto.sanctions_threshold,
   autoAssignQueueLimit: organizationDto.auto_assign_queue_limit,
   allowedNetworks: organizationDto.allowed_networks,
+  sentryReplayEnabled: organizationDto.sentry_replay_enabled ?? false,
 });
 
 export interface OrganizationUpdateInput {

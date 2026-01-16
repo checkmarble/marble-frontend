@@ -591,6 +591,9 @@ components:
           type: array
           items:
             type: string
+        sentry_replay_enabled:
+          type: boolean
+          description: Whether Sentry session replay is enabled for this organization
     CreateOrganizationBodyDto:
       type: object
       required:
