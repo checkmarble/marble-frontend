@@ -97,6 +97,7 @@ export interface Case {
   inboxId: string;
   contributors: CaseContributor[];
   outcome: CaseOutcome;
+  reviewLevel?: CaseReviewLevel;
   tags: CaseTag[];
   snoozedUntil?: string;
   assignedTo?: string;
@@ -110,6 +111,7 @@ export const adaptCase = (dto: CaseDto): Case => ({
   name: dto.name,
   status: dto.status,
   outcome: dto.outcome,
+  reviewLevel: dto.review_level,
   inboxId: dto.inbox_id,
   contributors: dto.contributors.map(adaptCaseContributor),
   tags: dto.tags.map(adaptCaseTag),

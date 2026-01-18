@@ -926,6 +926,9 @@ components:
     CaseOutcomeDto:
       type: string
       enum: ["false_positive", "valuable_alert", "confirmed_risk", "unset"]
+    CaseReviewLevelDto:
+      type: string
+      enum: ["probable_false_positive", "investigate", "escalate"]
     CaseDto:
       type: object
       required:
@@ -954,6 +957,8 @@ components:
           $ref: "#/components/schemas/CaseStatusDto"
         outcome:
           $ref: "#/components/schemas/CaseOutcomeDto"
+        review_level:
+          $ref: "#/components/schemas/CaseReviewLevelDto"
         inbox_id:
           type: string
           format: uuid
