@@ -115,13 +115,13 @@ export function CasesList({
             <div className="p-v2-md">
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (
                 <div className="flex items-center gap-v2-sm">
-                  <div className="flex items-center justify-center size-6 rounded-full bg-grey-90">
-                    <Icon icon="person" className="size-4 text-grey-secondary" />
+                  <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
+                    <Icon icon="person" className="size-4 text-grey-placeholder" />
                   </div>
                   <span
                     className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
                       'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
-                      'border-orange-primary text-orange-primary': caseItem.outcome === 'valuable_alert',
+                      'border-yellow-primary text-yellow-primary': caseItem.outcome === 'valuable_alert',
                       'border-green-primary text-green-primary': caseItem.outcome === 'false_positive',
                     })}
                   >
@@ -130,13 +130,13 @@ export function CasesList({
                 </div>
               ) : caseItem.reviewLevel ? (
                 <div className="flex items-center gap-v2-sm">
-                  <div className="flex items-center justify-center size-6 rounded-full bg-grey-90">
-                    <Icon icon="wand" className="size-4 text-grey-secondary" />
+                  <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
+                    <Icon icon="wand" className="size-4 text-grey-placeholder" />
                   </div>
                   <span
                     className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
                       'border-red-primary text-red-primary': caseItem.reviewLevel === 'escalate',
-                      'border-orange-primary text-orange-primary': caseItem.reviewLevel === 'investigate',
+                      'border-yellow-primary text-yellow-primary': caseItem.reviewLevel === 'investigate',
                       'border-green-primary text-green-primary': caseItem.reviewLevel === 'probable_false_positive',
                     })}
                   >
