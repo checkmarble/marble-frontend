@@ -70,7 +70,7 @@
         schema:
           type: string
           format: uuid
-      - name: qualification_level
+      - name: qualification
         description: Filter cases by qualification level (combines review_level and outcome)
         in: query
         required: false
@@ -78,7 +78,7 @@
           type: string
           enum:
             - green
-            - orange
+            - yellow
             - red
     responses:
       "200":

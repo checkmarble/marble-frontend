@@ -31,7 +31,7 @@ import { CasesNavigationTabs } from './Navigation/Tabs';
 const ALLOWED_FILTERS = [
   'dateRange',
   'statuses',
-  'qualificationLevel',
+  'qualification',
   'includeSnoozed',
   'excludeAssigned',
   'assignee',

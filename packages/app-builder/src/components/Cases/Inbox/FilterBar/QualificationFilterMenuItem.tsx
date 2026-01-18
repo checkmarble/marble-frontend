@@ -1,9 +1,9 @@
-import { type QualificationLevel, qualificationLevels } from '@app-builder/models/cases';
+import { type qualification, qualificationLevels } from '@app-builder/models/cases';
 import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
 
 type QualificationLevelFilterMenuItemProps = {
-  onSelect: (level: QualificationLevel) => void;
+  onSelect: (level: qualification) => void;
 };
 
 export const QualificationLevelFilterMenuItem = ({ onSelect }: QualificationLevelFilterMenuItemProps) => {
@@ -18,12 +18,12 @@ export const QualificationLevelFilterMenuItem = ({ onSelect }: QualificationLeve
   );
 };
 
-export const QualificationLevelLabel = ({ level }: { level: QualificationLevel }) => {
+export const QualificationLevelLabel = ({ level }: { level: qualification }) => {
   const { t } = useTranslation(['cases']);
 
-  const label = t(`cases:filter.qualification_level.${level}`);
+  const label = t(`cases:filter.qualification.${level}`);
   const colorClass =
-    level === 'green' ? 'text-green-primary' : level === 'orange' ? 'text-orange-primary' : 'text-red-primary';
+    level === 'green' ? 'text-green-primary' : level === 'yellow' ? 'text-yellow-primary' : 'text-red-primary';
 
   return <span className={colorClass}>{label}</span>;
 };
