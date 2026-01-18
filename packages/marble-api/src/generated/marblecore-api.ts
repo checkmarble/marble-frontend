@@ -58,6 +58,7 @@ export type CaseDto = {
     name: string;
     status: CaseStatusDto;
     outcome: "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
+    review_level?: "probable_false_positive" | "investigate" | "escalate";
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
