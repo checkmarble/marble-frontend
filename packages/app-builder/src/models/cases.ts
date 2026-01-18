@@ -80,10 +80,9 @@ export type CaseReviewLevel = (typeof caseReviewLevels)[number];
 // - orange: investigate OR valuable_alert
 // - red: escalate OR confirmed_risk
 //
-// TODO: Next steps for this feature:
-// 1. Backend: Implement filtering logic in marble-backend PR #1468 that takes qualification_level
-//    and translates it to a combination of review_level and outcome filters
-// 2. Frontend: Implement proper designs for the qualification level filter UI and related column display
+// TODO: Backend needs to implement filtering logic in marble-backend PR #1468 that takes
+// qualification_level and translates it to a combination of review_level and outcome filters.
+// Backend also needs to return review_level in the CaseDto (already added to OpenAPI spec).
 export const qualificationLevels = ['green', 'orange', 'red'] as const;
 export type QualificationLevel = (typeof qualificationLevels)[number];
 
