@@ -1,6 +1,6 @@
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { QueryEntry } from '@app-builder/hooks/useBase64Query';
-import type { QualificationLevel } from '@app-builder/models/cases';
+import type { qualification } from '@app-builder/models/cases';
 import type { Filters, filtersSchema } from '@app-builder/queries/cases/get-cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -16,14 +16,14 @@ import { Icon } from 'ui-icons';
 import { AssigneeFilterMenuItem } from './AssigneeFilterMenuItem';
 import { DateRangeFilterMenu } from './DateRangeFilterMenu';
 import { InboxFilterLabel } from './FilterLabel';
-import { QualificationLevelFilterMenuItem, QualificationLevelLabel } from './QualificationLevelFilterMenuItem';
+import { QualificationLevelFilterMenuItem, QualificationLevelLabel } from './QualificationFilterMenuItem';
 import { TagsFilterMenuItem } from './TagsFilterMenuItem';
 
 const EDITABLE_FILTERS = [
   'dateRange',
   'assignee',
   'tagId',
-  'qualificationLevel',
+  'qualification',
 ] as const satisfies readonly (keyof Filters)[];
 
 type ActivatedFilterItemProps = {
@@ -135,9 +135,9 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps) => {
         <InboxFilterLabel name={name} />: <TagFilterValue tagId={tagId} />
       </span>
     ))
-    .with(['qualificationLevel', P.string], ([name, level]) => (
+    .with(['qualification', P.string], ([name, level]) => (
       <span className="inline-flex items-center gap-v2-xs">
-        <InboxFilterLabel name={name} />: <QualificationLevelLabel level={level as QualificationLevel} />
+        <InboxFilterLabel name={name} />: <QualificationLevelLabel level={level as qualification} />
       </span>
     ))
     .exhaustive();
@@ -182,7 +182,7 @@ const EditFilterContent = ({ filter, onUpdate }: EditFilterContentProps) => {
     .with(['tagId', P.string], ([name]) => (
       <TagsFilterMenuItem onSelect={(newTagId) => onUpdate({ [name]: newTagId })} />
     ))
-    .with(['qualificationLevel', P.string], ([name]) => (
+    .with(['qualification', P.string], ([name]) => (
       <QualificationLevelFilterMenuItem onSelect={(level) => onUpdate({ [name]: level })} />
     ))
     .with(['name', P.string], ([name, value]) => null)
