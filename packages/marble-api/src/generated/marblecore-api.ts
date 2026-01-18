@@ -58,6 +58,7 @@ export type CaseDto = {
     name: string;
     status: CaseStatusDto;
     outcome: "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
+    review_level?: "probable_false_positive" | "investigate" | "escalate";
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
@@ -1754,7 +1755,7 @@ export function getAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts)
 /**
  * List cases
  */
-export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed, excludeAssigned, assigneeId, tagId }: {
+export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed, excludeAssigned, assigneeId, tagId, qualification }: {
     status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
@@ -1768,6 +1769,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
     excludeAssigned?: boolean;
     assigneeId?: string;
     tagId?: string;
+    qualification?: "green" | "yellow" | "red";
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -1793,7 +1795,8 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
         include_snoozed: includeSnoozed,
         exclude_assigned: excludeAssigned,
         assignee_id: assigneeId,
-        tag_id: tagId
+        tag_id: tagId,
+        qualification
     }))}`, {
         ...opts
     }));

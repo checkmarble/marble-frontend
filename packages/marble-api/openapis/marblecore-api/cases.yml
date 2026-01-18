@@ -70,6 +70,16 @@
         schema:
           type: string
           format: uuid
+      - name: qualification
+        description: Filter cases by qualification level (combines review_level and outcome)
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - green
+            - yellow
+            - red
     responses:
       "200":
         description: List of corresponding cases
@@ -916,6 +926,9 @@ components:
     CaseOutcomeDto:
       type: string
       enum: ["false_positive", "valuable_alert", "confirmed_risk", "unset"]
+    CaseReviewLevelDto:
+      type: string
+      enum: ["probable_false_positive", "investigate", "escalate"]
     CaseDto:
       type: object
       required:
@@ -944,6 +957,8 @@ components:
           $ref: "#/components/schemas/CaseStatusDto"
         outcome:
           $ref: "#/components/schemas/CaseOutcomeDto"
+        review_level:
+          $ref: "#/components/schemas/CaseReviewLevelDto"
         inbox_id:
           type: string
           format: uuid
