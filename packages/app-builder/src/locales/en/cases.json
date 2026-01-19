@@ -215,7 +215,7 @@
   "filter.exclude_assigned.label": "Unassigned only",
   "filter.include_snoozed.label": "Include snoozed",
   "filter.qualification.green": "False positive / Probable false positive",
-  "filter.qualification.label": "Qualification",
+  "filter.qualification.label": "Review level",
   "filter.qualification.red": "Confirmed risk / Escalate",
   "filter.qualification.yellow": "Valuable alert / Investigate",
   "filter.tags.label": "Tags",
