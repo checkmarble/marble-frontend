@@ -26,7 +26,8 @@ export const InboxChangedDetail = ({ event }: { event: InboxChangedEvent }) => {
           .with({ isPending: true }, () => <Spinner className="size-4" />)
           .with({ isError: true }, () => <div>{t('common:generic_fetch_data_error')}</div>)
           .with({ isSuccess: true }, ({ data }) => {
-            const inboxName = data.inboxes.find((i) => i.id === event.newInboxId)?.name ?? 'Unknown';
+            const inboxes = data?.inboxes ?? [];
+            const inboxName = inboxes.find((i) => i.id === event.newInboxId)?.name ?? 'Unknown';
 
             return (
               <Trans
