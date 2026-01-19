@@ -30,7 +30,9 @@ async function initSentry() {
     // TODO: Silent error, but sentry log is done at the end of the function
   }
 
-  const replay = Sentry.replayIntegration();
+  const replay = Sentry.replayIntegration({
+    maxReplayDuration: 10 * 60 * 1000,
+  });
   window.__sentryReplay = replay;
   window.__sentryInitialized = true;
 
