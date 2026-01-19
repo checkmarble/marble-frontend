@@ -116,7 +116,7 @@ export function CasesList({
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (
                 <div className="flex items-center gap-v2-sm">
                   <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
-                    <Icon icon="person" className="size-4 text-grey-placeholder" />
+                    <Icon icon="user" className="size-4 text-grey-placeholder" />
                   </div>
                   <span
                     className={cn('flex items-center h-6 rounded-full border px-v2-sm text-small text-nowrap', {

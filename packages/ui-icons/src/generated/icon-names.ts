@@ -136,6 +136,7 @@ export const iconNames = [
   'unfold_more',
   'unlock-right',
   'upload',
+  'user',
   'users',
   'version',
   'visibility-on',
