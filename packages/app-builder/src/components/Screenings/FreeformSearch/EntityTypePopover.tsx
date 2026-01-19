@@ -30,7 +30,12 @@ export const EntityTypePopover = ({ value, onApply }: EntityTypePopoverProps) =>
       <Popover.Trigger asChild>
         <button
           type="button"
-          className="text-s bg-purple-background-light text-purple-primary flex w-full items-center justify-between rounded px-2 py-2"
+          className={clsx(
+            'text-s flex w-full items-center justify-between rounded px-2 py-2',
+            hasSelection
+              ? 'bg-purple-background-light text-purple-primary'
+              : 'border-grey-border text-grey-secondary bg-surface-card border',
+          )}
         >
           <span className="font-medium">{t('screenings:freeform_search.entity_type_label')}</span>
           <div className="flex items-center gap-1">

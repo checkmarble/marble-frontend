@@ -1,4 +1,5 @@
 import * as Popover from '@radix-ui/react-popover';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, Input } from 'ui-design-system';
@@ -50,7 +51,12 @@ export const ThresholdPopover = ({ value, onApply }: ThresholdPopoverProps) => {
       <Popover.Trigger asChild>
         <button
           type="button"
-          className="text-s bg-purple-background-light text-purple-primary flex w-full items-center justify-between rounded px-2 py-2"
+          className={clsx(
+            'text-s flex w-full items-center justify-between rounded px-2 py-2',
+            hasValue
+              ? 'bg-purple-background-light text-purple-primary'
+              : 'border-grey-border text-grey-secondary bg-surface-card border',
+          )}
         >
           <span className="font-medium">{t('screenings:freeform_search.threshold_label')}</span>
           <div className="flex items-center gap-1">
