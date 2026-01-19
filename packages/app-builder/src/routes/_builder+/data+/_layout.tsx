@@ -13,10 +13,9 @@ import {
   isIngestDataAvailable,
 } from '@app-builder/services/feature-access';
 import { getRoute } from '@app-builder/utils/routes';
-import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -64,25 +63,7 @@ export default function Data() {
       </Page.Header>
       <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
         <Page.Description>{t('data:your_data_callout')}</Page.Description>
-        <Page.Container>
-          <Page.Content>
-            <Tabs>
-              <NavLink to={getRoute('/data/list')} className={tabClassName}>
-                <Icon icon="lists" className="mr-1 size-5" />
-                {t('navigation:data.list')}
-              </NavLink>
-              <NavLink to={getRoute('/data/schema')} className={tabClassName}>
-                <Icon icon="tree-schema" className="mr-1 size-5" />
-                {t('navigation:data.schema')}
-              </NavLink>
-              <NavLink to={getRoute('/data/view')} className={tabClassName}>
-                <Icon icon="visibility" className="mr-1 size-5" />
-                {t('navigation:data.viewer')}
-              </NavLink>
-            </Tabs>
-            <Outlet />
-          </Page.Content>
-        </Page.Container>
+        <Outlet />
       </DataModelContextProvider>
     </Page.Main>
   );

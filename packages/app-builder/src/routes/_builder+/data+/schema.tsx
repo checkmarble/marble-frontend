@@ -1,4 +1,5 @@
 import { DataModelFlow, dataModelFlowStyles } from '@app-builder/components/Data/DataModelFlow';
+import { DataTabs } from '@app-builder/components/Data/DataTabs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -28,8 +29,12 @@ export default function DataSchema() {
   const { pivots } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex size-full flex-col -mx-6 -mb-6">
-      <DataModelFlow dataModel={dataModel} pivots={pivots} />
+    <div className="flex size-full flex-col">
+      <DataModelFlow dataModel={dataModel} pivots={pivots}>
+        <div className="absolute left-4 top-4 z-10 lg:left-8 lg:top-8">
+          <DataTabs />
+        </div>
+      </DataModelFlow>
     </div>
   );
 }

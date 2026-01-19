@@ -1,4 +1,6 @@
+import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { DataTabs } from '@app-builder/components/Data/DataTabs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useDataModel } from '@app-builder/services/data/data-model';
@@ -42,53 +44,58 @@ export default function DataViewer() {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-2">
-        <div className="text-s flex flex-col gap-1">
-          <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
-          <Select.Default
-            value={tableName}
-            onValueChange={handleTableNameChange}
-            placeholder="select a table"
-            className="h-10 min-w-40"
-          >
-            {dataModel.map((table) => (
-              <Select.DefaultItem value={table.name} key={table.name}>
-                {table.name}
-              </Select.DefaultItem>
-            ))}
-          </Select.Default>
-        </div>
-        <div className="flex gap-2">
-          <div className="text-s flex flex-col gap-1">
-            <label htmlFor="objectIdField">{t('data:viewer.object_id')}</label>
-            <Input
-              type="text"
-              id="objectIdField"
-              value={objectId}
-              onChange={(e) => setObjectId(e.target.value)}
-              className="min-w-96"
-            />
+    <Page.Container>
+      <Page.Content>
+        <DataTabs />
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-2">
+            <div className="text-s flex flex-col gap-1">
+              <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
+              <Select.Default
+                value={tableName}
+                onValueChange={handleTableNameChange}
+                placeholder="select a table"
+                className="h-10 min-w-40"
+              >
+                {dataModel.map((table) => (
+                  <Select.DefaultItem value={table.name} key={table.name}>
+                    {table.name}
+                  </Select.DefaultItem>
+                ))}
+              </Select.Default>
+            </div>
+            <div className="flex gap-2">
+              <div className="text-s flex flex-col gap-1">
+                <label htmlFor="objectIdField">{t('data:viewer.object_id')}</label>
+                <Input
+                  type="text"
+                  id="objectIdField"
+                  value={objectId}
+                  onChange={(e) => setObjectId(e.target.value)}
+                  className="min-w-96"
+                />
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="primary"
+              disabled={!tableName || !objectId}
+              onClick={() => {
+                navigate(
+                  getRoute('/data/view/:tableName/:objectId', {
+                    tableName,
+                    objectId,
+                  }),
+                );
+              }}
+              className="self-end"
+            >
+              {t('common:search')}
+            </Button>
           </div>
+          <Outlet />
         </div>
-        <Button
-          type="button"
-          variant="primary"
-          disabled={!tableName || !objectId}
-          onClick={() => {
-            navigate(
-              getRoute('/data/view/:tableName/:objectId', {
-                tableName,
-                objectId,
-              }),
-            );
-          }}
-          className="self-end"
-        >
-          {t('common:search')}
-        </Button>
-      </div>
-      <Outlet />
-    </div>
+      </Page.Content>
+    </Page.Container>
   );
 }

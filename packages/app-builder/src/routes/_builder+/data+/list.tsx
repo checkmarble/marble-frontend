@@ -1,4 +1,6 @@
+import { Page } from '@app-builder/components';
 import { CreateTable } from '@app-builder/components/Data/CreateTable';
+import { DataTabs } from '@app-builder/components/Data/DataTabs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { TableDetails } from '@app-builder/components/Data/TableDetails';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
@@ -17,18 +19,21 @@ export default function DataList() {
   const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
 
   return (
-    <>
-      {isCreateDataModelTableAvailable ? (
-        <CreateTable>
-          <Button className="w-fit">
-            <Icon icon="plus" className="size-6" />
-            {t('data:create_table.title')}
-          </Button>
-        </CreateTable>
-      ) : null}
-      {dataModel.map((table) => (
-        <TableDetails key={table.name} tableModel={table} dataModel={dataModel} />
-      ))}
-    </>
+    <Page.Container>
+      <Page.Content>
+        <DataTabs />
+        {isCreateDataModelTableAvailable ? (
+          <CreateTable>
+            <Button className="w-fit">
+              <Icon icon="plus" className="size-6" />
+              {t('data:create_table.title')}
+            </Button>
+          </CreateTable>
+        ) : null}
+        {dataModel.map((table) => (
+          <TableDetails key={table.name} tableModel={table} dataModel={dataModel} />
+        ))}
+      </Page.Content>
+    </Page.Container>
   );
 }
