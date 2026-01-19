@@ -215,7 +215,7 @@
   "filter.exclude_assigned.label": "غير المُسنَدين فقط",
   "filter.include_snoozed.label": "تضمين المؤجّلة",
   "filter.qualification.green": "إيجابي كاذب / إيجابي كاذب محتمل",
-  "filter.qualification.label": "التصنيف",
+  "filter.qualification.label": "مستوى المراجعة",
   "filter.qualification.red": "خطر مؤكد / للتصعيد",
   "filter.qualification.yellow": "تنبيه مهم / للتحقيق",
   "filter.tags.label": "الوسوم",

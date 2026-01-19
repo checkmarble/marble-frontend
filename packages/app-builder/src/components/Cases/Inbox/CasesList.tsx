@@ -119,7 +119,7 @@ export function CasesList({
                     <Icon icon="person" className="size-4 text-grey-placeholder" />
                   </div>
                   <span
-                    className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
+                    className={cn('flex items-center h-6 rounded-full border px-v2-sm text-small text-nowrap', {
                       'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
                       'border-yellow-primary text-yellow-primary': caseItem.outcome === 'valuable_alert',
                       'border-green-primary text-green-primary': caseItem.outcome === 'false_positive',
@@ -134,7 +134,7 @@ export function CasesList({
                     <Icon icon="wand" className="size-4 text-grey-placeholder" />
                   </div>
                   <span
-                    className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
+                    className={cn('flex items-center h-6 rounded-full border px-v2-sm text-small text-nowrap', {
                       'border-red-primary text-red-primary': caseItem.reviewLevel === 'escalate',
                       'border-yellow-primary text-yellow-primary': caseItem.reviewLevel === 'investigate',
                       'border-green-primary text-green-primary': caseItem.reviewLevel === 'probable_false_positive',

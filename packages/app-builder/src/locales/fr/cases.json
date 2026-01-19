@@ -215,7 +215,7 @@
   "filter.exclude_assigned.label": "Non assignées uniquement",
   "filter.include_snoozed.label": "Inclure les investigations en attente",
   "filter.qualification.green": "Faux positif / Probable faux positif",
-  "filter.qualification.label": "Qualification",
+  "filter.qualification.label": "Niveau de l'alerte",
   "filter.qualification.red": "Risque confirmé / À escalader",
   "filter.qualification.yellow": "Alerte pertinente / À investiguer",
   "filter.tags.label": "Tags",
