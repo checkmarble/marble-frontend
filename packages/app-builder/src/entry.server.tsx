@@ -127,6 +127,17 @@ function handleBrowserRequest(
         if (metabaseUrl) frames.push(metabaseUrl);
         if (fbAuthDomain) frames.push(fbAuthDomain);
 
+        // Allow custom logo URL's origin in CSP if configured
+        const imgSrc: string[] = ["'self'", 'data:'];
+        if (clientEnv.CUSTOM_LOGO_URL) {
+          try {
+            const logoOrigin = new URL(clientEnv.CUSTOM_LOGO_URL).origin;
+            imgSrc.push(logoOrigin);
+          } catch {
+            // Invalid URL, ignore
+          }
+        }
+
         responseHeaders.set(
           'content-security-policy',
           createContentSecurityPolicy({
@@ -137,7 +148,7 @@ function handleBrowserRequest(
             styleSrc: ["'self'", "'unsafe-inline'"],
             scriptSrc: [`'nonce-${nonce}'`, "'unsafe-eval'", "'strict-dynamic'"],
             connectSrc: ["'self'", ...firebaseUrl, ...externalDomains.map((d) => `https://${d}`)],
-            imgSrc: ["'self'", 'data:'],
+            imgSrc,
             frameSrc: frames.length > 0 ? frames : ["'none'"],
           }),
         );

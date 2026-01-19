@@ -6,7 +6,8 @@ import * as Popover from '@radix-ui/react-popover';
 import { Form } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
-import { Icon, Logo } from 'ui-icons';
+import { Icon } from 'ui-icons';
+import { CustomLogo } from './CustomLogo';
 import { LanguagePicker } from './LanguagePicker';
 import { UserAvailabilityStatus } from './Settings/UserAvailabilityStatus';
 
@@ -37,10 +38,11 @@ export function UserInfo({
         <div className="relative">
           <button className="hover:bg-grey-border active:bg-grey-border group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
             <div className="inline-flex items-center gap-5">
-              <Logo
+              <CustomLogo
                 logo="logo"
-                aria-labelledby="marble logo"
+                alt="Logo"
                 className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12 text-grey-primary"
+                customLogoClassName="size-6 shrink-0 object-contain transition-all group-aria-expanded/nav:h-12 group-aria-expanded/nav:w-auto"
               />
               {isAutoAssignmentAvailable && unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
                 <div className="absolute top-1 left-1 flex h-3 w-3">
@@ -48,10 +50,11 @@ export function UserInfo({
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-red-primary"></span>
                 </div>
               ) : null}
-              <Logo
+              <CustomLogo
                 logo="marble"
-                aria-labelledby="marble"
+                alt="Logo"
                 className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100 dark:invert"
+                hideWhenCustom
               />
             </div>
 
