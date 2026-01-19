@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
 import crypto from 'crypto';
-import { waitForThen } from 'tests/common/utils';
+import { waitForHydration, waitForThen } from 'tests/common/utils';
 
 test('Create new list', async ({ page }) => {
   await page.goto('/lists');
+  await waitForHydration(page);
 
   const listName = crypto.randomUUID();
   const values = Array.from({ length: 5 }, () => crypto.randomUUID());
