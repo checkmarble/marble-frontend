@@ -1,4 +1,3 @@
-import { BreadCrumbLink, BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { InboxPage } from '@app-builder/components/Cases/InboxPage';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
@@ -11,38 +10,13 @@ import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/pre
 import { getRoute } from '@app-builder/utils/routes';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useLoaderData } from '@remix-run/react';
-import { SerializeFrom } from '@remix-run/server-runtime/dist/single-fetch';
-import { Namespace } from 'i18next';
+import { type Namespace } from 'i18next';
 import QueryString from 'qs';
-import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['cases', 'filters', 'navigation'] satisfies Namespace,
-  BreadCrumbs: [
-    ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['navigation']);
-      return (
-        <BreadCrumbLink to={getRoute('/cases')} isLast={isLast}>
-          <Icon icon="case-manager" className="me-2 size-6" />
-          {t('navigation:case_manager')}
-        </BreadCrumbLink>
-      );
-    },
-    ({ isLast, data }: BreadCrumbProps<SerializeFrom<typeof loader>>) => {
-      const { t } = useTranslation(['navigation', 'cases']);
-      const currentInboxName = data.currentInbox?.name ?? t('cases:inbox.my-inbox.link');
-      const currentInboxId = data.currentInbox ? fromUUIDtoSUUID(data.currentInbox.id) : MY_INBOX_ID;
-
-      return (
-        <BreadCrumbLink to={getRoute('/cases/inboxes/:inboxId', { inboxId: currentInboxId })} isLast={isLast}>
-          {currentInboxName}
-        </BreadCrumbLink>
-      );
-    },
-  ],
 };
 
 const pageQueryStringSchema = z.object({
