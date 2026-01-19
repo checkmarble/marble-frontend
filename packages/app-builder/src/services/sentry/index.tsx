@@ -41,6 +41,8 @@ export function useSentryReplay(sentryReplayEnabled: boolean) {
       const replay = getSentryReplay();
       // start() is a no-op if replay is already running, but will restart if session ended
       replay?.start();
+      // flushing the replay makes it switch to session mode (buffer mode will never send unless an error is sampled or manual flush).
+      replay?.flush({ continueRecording: true });
     }
   }, [isHydrated, sentryReplayEnabled, location.pathname]);
 }
