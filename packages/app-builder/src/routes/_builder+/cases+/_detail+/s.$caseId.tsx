@@ -30,17 +30,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import {
-  Button,
-  ButtonV2,
-  CtaV2ClassName,
-  cn,
-  Markdown,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from 'ui-design-system';
+import { Button, ButtonV2, CtaV2ClassName, cn, Markdown, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const loader = createServerFn(
@@ -131,6 +121,7 @@ export default function CaseManagerIndexPage() {
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>('pivot');
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();
   const [hasRequestedReview, setHasRequestedReview] = useState(false);
+  const [activeReviewTab, setActiveReviewTab] = useState<'review' | 'sanityCheck'>('review');
 
   useEffect(() => {
     if (isMenuExpanded) {
@@ -163,9 +154,14 @@ export default function CaseManagerIndexPage() {
                         ? (() => {
                             return (
                               <div className="flex flex-col gap-2 h-full text-default">
-                                <Tabs defaultValue="review" className="flex flex-col h-full gap-2">
-                                  <TabsList className="self-start">
-                                    <TabsTrigger value="review" className="flex items-center gap-2">
+                                <div className="flex flex-col h-full gap-2">
+                                  <Tabs>
+                                    <button
+                                      type="button"
+                                      className={cn(tabClassName, 'gap-2')}
+                                      data-status={activeReviewTab === 'review' ? 'active' : undefined}
+                                      onClick={() => setActiveReviewTab('review')}
+                                    >
                                       {t('cases:case.ai_assist.review')}
                                       <Icon
                                         icon={mostRecentReview.review.ok ? 'tick' : 'cross'}
@@ -174,22 +170,29 @@ export default function CaseManagerIndexPage() {
                                           mostRecentReview.review.ok ? 'text-green-primary' : 'text-red-primary',
                                         )}
                                       />
-                                    </TabsTrigger>
+                                    </button>
                                     {!mostRecentReview.review.ok ? (
-                                      <TabsTrigger value="sanityCheck">
+                                      <button
+                                        type="button"
+                                        className={tabClassName}
+                                        data-status={activeReviewTab === 'sanityCheck' ? 'active' : undefined}
+                                        onClick={() => setActiveReviewTab('sanityCheck')}
+                                      >
                                         {t('cases:case.ai_assist.sanity_check')}
-                                      </TabsTrigger>
+                                      </button>
                                     ) : null}
-                                  </TabsList>
-                                  <TabsContent value="review" className="min-h-0 p-2 overflow-scroll">
-                                    <Markdown>{mostRecentReview.review.output}</Markdown>
-                                  </TabsContent>
-                                  {!mostRecentReview.ok ? (
-                                    <TabsContent value="sanityCheck" className="min-h-0 p-2 overflow-scroll">
+                                  </Tabs>
+                                  {activeReviewTab === 'review' && (
+                                    <div className="min-h-0 p-2 overflow-scroll">
+                                      <Markdown>{mostRecentReview.review.output}</Markdown>
+                                    </div>
+                                  )}
+                                  {activeReviewTab === 'sanityCheck' && !mostRecentReview.ok && (
+                                    <div className="min-h-0 p-2 overflow-scroll">
                                       <Markdown>{mostRecentReview.review.sanityCheck}</Markdown>
-                                    </TabsContent>
-                                  ) : null}
-                                </Tabs>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             );
                           })()
@@ -237,7 +240,6 @@ export default function CaseManagerIndexPage() {
         </div>
       </Page.Header>
       <Page.Container className="text-default relative h-full flex-row p-0 lg:p-0">
-        {/* TabSystem when mostRecentReview is not empty */}
         <CaseDetails
           key={details.id}
           currentUser={currentUser}

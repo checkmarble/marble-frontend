@@ -7,7 +7,7 @@ import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 
 export const handle = {
-  i18n: ['cases', 'common'] satisfies Namespace,
+  i18n: ['cases', 'common', 'navigation'] satisfies Namespace,
 };
 
 export const loader = createServerFn([authMiddleware], async function casesOverviewLoader({ context }) {

@@ -1,5 +1,6 @@
-import { Page, TabLink } from '@app-builder/components';
+import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { DataTabs } from '@app-builder/components/Data/DataTabs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useDataModel } from '@app-builder/services/data/data-model';
@@ -10,7 +11,6 @@ import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: dataI18n satisfies Namespace,
@@ -27,7 +27,7 @@ export const handle = {
   ],
 };
 
-export default function DataSearchPage() {
+export default function DataViewer() {
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
   const match = useMatch('/data/view/:tableName/:objectId' as RoutePath);
@@ -46,31 +46,7 @@ export default function DataSearchPage() {
   return (
     <Page.Container>
       <Page.Content>
-        <nav className="border border-transparent">
-          <ul className="flex flex-row gap-2">
-            <li>
-              <TabLink
-                labelTKey="navigation:data.list"
-                to={getRoute('/data/list')}
-                Icon={(props) => <Icon {...props} icon="lists" />}
-              />
-            </li>
-            <li>
-              <TabLink
-                labelTKey="navigation:data.schema"
-                to={getRoute('/data/schema')}
-                Icon={(props) => <Icon {...props} icon="tree-schema" />}
-              />
-            </li>
-            <li>
-              <TabLink
-                labelTKey="navigation:data.viewer"
-                to={getRoute('/data/view')}
-                Icon={(props) => <Icon {...props} icon="visibility" />}
-              />
-            </li>
-          </ul>
-        </nav>
+        <DataTabs />
         <div className="flex flex-col gap-4">
           <div className="flex gap-2">
             <div className="text-s flex flex-col gap-1">
