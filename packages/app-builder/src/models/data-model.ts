@@ -664,6 +664,7 @@ export interface DestroyDataModelReportRef {
 
 export interface DestroyDataModelReportIteration {
   name: string;
+  draft: boolean;
   triggerCondition: boolean;
   rules: DestroyDataModelReportRef[];
   screenings: DestroyDataModelReportRef[];
@@ -694,6 +695,7 @@ interface DestroyDataModelReportRefDto {
 
 interface DestroyDataModelReportIterationDto {
   name: string;
+  draft: boolean;
   trigger_condition: boolean;
   rules: DestroyDataModelReportRefDto[];
   screenings: DestroyDataModelReportRefDto[];
@@ -729,6 +731,7 @@ function adaptDestroyDataModelReportIteration(
 ): DestroyDataModelReportIteration {
   return {
     name: dto.name,
+    draft: dto.draft,
     triggerCondition: dto.trigger_condition,
     rules: dto.rules.map(adaptDestroyDataModelReportRef),
     screenings: dto.screenings.map(adaptDestroyDataModelReportRef),

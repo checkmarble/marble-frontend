@@ -126,27 +126,42 @@ function BlockedDeletionContent({
 }) {
   const { conflicts, archivedIterations } = report;
   const hasArchivedIterations = archivedIterations.length > 0;
-  const activeScenarioIterations = Object.entries(conflicts.scenarioIterations);
+
+  // Split scenario iterations into draft and active
+  const allScenarioIterations = Object.entries(conflicts.scenarioIterations);
+  const draftScenarioIterations = allScenarioIterations.filter(([, iteration]) => iteration.draft);
+  const activeScenarioIterations = allScenarioIterations.filter(([, iteration]) => !iteration.draft);
 
   return (
     <div className="flex flex-col gap-4">
       <p className="text-s text-grey-primary">{t('data:delete.active_scenarios_linked', { name: entityName })}</p>
 
-      {/* Draft iterations that will be archived */}
-      {hasArchivedIterations ? (
+      {/* Draft scenario iterations that need modification */}
+      {draftScenarioIterations.length > 0 ? (
         <div className="flex flex-col gap-2">
           <Callout color="purple" icon="lightbulb">
-            {t('data:delete.drafts_will_be_archived', {
-              count: archivedIterations.length,
+            {t('data:delete.draft_scenarios_need_modification', {
+              count: draftScenarioIterations.length,
             })}
           </Callout>
           <ul className="text-s text-grey-primary list-disc pl-4">
-            {archivedIterations.map((iteration) => (
-              <li key={iteration.id} className="flex items-center gap-2">
-                <span>{iteration.label}</span>
-                <ScenarioLink item={iteration} />
-              </li>
-            ))}
+            {draftScenarioIterations.map(([scenarioId, iteration]) => {
+              const shortId = fromUUIDtoSUUID(scenarioId);
+              return (
+                <li key={scenarioId} className="flex items-center gap-2">
+                  <span>{iteration.name}</span>
+                  <a
+                    href={getRoute('/scenarios/:scenarioId', { scenarioId: shortId })}
+                    className="text-purple-primary text-s flex items-center gap-1 hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t('data:delete.view')}
+                    <Icon icon="openinnew" className="size-4" />
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : null}
@@ -177,6 +192,22 @@ function BlockedDeletionContent({
                 </li>
               );
             })}
+          </ul>
+        </div>
+      ) : null}
+
+      {/* Archived iterations (will be archived on deletion) */}
+      {hasArchivedIterations ? (
+        <div className="flex flex-col gap-2">
+          <Callout color="purple" icon="lightbulb">
+            {t('data:delete.drafts_will_be_archived', {
+              count: archivedIterations.length,
+            })}
+          </Callout>
+          <ul className="text-s text-grey-primary list-disc pl-4">
+            {archivedIterations.map((iteration) => (
+              <li key={iteration.id}>{iteration.label}</li>
+            ))}
           </ul>
         </div>
       ) : null}
@@ -213,26 +244,16 @@ function BlockedDeletionContent({
 
       {/* Links using this resource */}
       {conflicts.links.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          <p className="text-s text-grey-primary font-medium">{t('data:delete.links_affected')}</p>
-          <ul className="text-s text-grey-primary list-disc pl-4">
-            {conflicts.links.map((link) => (
-              <li key={link}>{link}</li>
-            ))}
-          </ul>
-        </div>
+        <Callout color="orange" icon="warning">
+          {t('data:delete.links_count', { count: conflicts.links.length })}
+        </Callout>
       ) : null}
 
       {/* Pivots using this resource */}
       {conflicts.pivots.length > 0 ? (
-        <div className="flex flex-col gap-2">
-          <p className="text-s text-grey-primary font-medium">{t('data:delete.pivots_affected')}</p>
-          <ul className="text-s text-grey-primary list-disc pl-4">
-            {conflicts.pivots.map((pivot) => (
-              <li key={pivot}>{pivot}</li>
-            ))}
-          </ul>
-        </div>
+        <Callout color="orange" icon="warning">
+          {t('data:delete.pivots_count', { count: conflicts.pivots.length })}
+        </Callout>
       ) : null}
 
       {/* Other blocking conflicts */}
