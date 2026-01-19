@@ -19,6 +19,7 @@ test('Create a simple scenario', async ({ page }) => {
   await waitForThen(page, page.getByRole('option', { name: 'transactions' }), async (option) => await option.click());
 
   await page.getByRole('button', { name: 'Save' }).click();
+  await waitForHydration(page);
 
   await waitForThen(
     page,
