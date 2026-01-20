@@ -1,43 +1,36 @@
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { adaptDestroyDataModelReport, type DestroyDataModelReportDto } from '@app-builder/models/data-model';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { deletePivotPayloadSchema } from '@app-builder/queries/data/delete-pivot';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { z } from 'zod/v4';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = initServerServices(request);
-
-  const [raw, { apiClient }] = await Promise.all([
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+export const action = createServerFn([authMiddleware], async function deletePivotAction({ request, context }) {
+  const { apiClient } = context.authInfo;
+  const raw = await request.json();
 
   const { success, error, data } = deletePivotPayloadSchema.safeParse(raw);
 
-  if (!success) return json({ success: false as const, errors: z.treeifyError(error) });
+  if (!success) return { success: false as const, errors: z.treeifyError(error) };
 
   try {
     const result = await apiClient.deleteDataModelPivot(data.pivotId, {
       perform: data.perform,
     });
 
-    return json({
+    return {
       success: true as const,
       data: adaptDestroyDataModelReport(result as DestroyDataModelReportDto),
-    });
+    };
   } catch (error) {
     // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
     if (isStatusConflictHttpError(error)) {
-      return json({
+      return {
         success: true as const,
         data: adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto),
-      });
+      };
     }
     console.error('deleteDataModelPivot error:', error);
-    return json({ success: false as const, errors: [], error: String(error) });
+    return { success: false as const, errors: [], error: String(error) };
   }
-}
+});
