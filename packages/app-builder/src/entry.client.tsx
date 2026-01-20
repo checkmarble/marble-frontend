@@ -1,6 +1,5 @@
 import { RemixBrowser, useLocation, useMatches } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
-import { type replayIntegration } from '@sentry/remix';
 import { StrictMode, startTransition, useEffect } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
@@ -8,14 +7,6 @@ import { I18nextProvider } from 'react-i18next';
 import { i18nextClientService } from './services/init.client';
 import { getClientEnv } from './utils/environment';
 import { getRoute } from './utils/routes';
-
-// Stored on window to survive HMR and for client-only access
-declare global {
-  interface Window {
-    __sentryReplay?: ReturnType<typeof replayIntegration>;
-    __sentryInitialized?: boolean;
-  }
-}
 
 async function initSentry() {
   // Prevent double initialization on HMR
