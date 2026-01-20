@@ -1,36 +1,59 @@
-import { createServerFn } from '@app-builder/core/requests';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { type ServerFnResult } from '@app-builder/core/middleware-types';
+import { createServerFn, data } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { adaptDestroyDataModelReport, type DestroyDataModelReportDto } from '@app-builder/models/data-model';
-import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
+import { type DestroyDataModelReport } from '@app-builder/models/data-model';
 import { deleteLinkPayloadSchema } from '@app-builder/queries/data/delete-link';
 import { z } from 'zod/v4';
 
-export const action = createServerFn([authMiddleware], async function deleteLinkAction({ request, context }) {
-  const { apiClient } = context.authInfo;
-  const raw = await request.json();
+type DeleteLinkActionResult = ServerFnResult<
+  { success: true; data: DestroyDataModelReport } | { success: false; errors: unknown; error?: string }
+>;
 
-  const { success, error, data } = deleteLinkPayloadSchema.safeParse(raw);
+export const action = createServerFn(
+  [authMiddleware],
+  async function deleteLinkAction({ request, context }): DeleteLinkActionResult {
+    const { toastSessionService, i18nextService } = context.services;
+    const { dataModelRepository } = context.authInfo;
 
-  if (!success) return { success: false as const, errors: z.treeifyError(error) };
+    const [t, toastSession, raw] = await Promise.all([
+      i18nextService.getFixedT(request, ['common']),
+      toastSessionService.getSession(request),
+      request.json(),
+    ]);
 
-  try {
-    const result = await apiClient.deleteDataModelLink(data.linkId, {
-      perform: data.perform,
-    });
+    const parsed = deleteLinkPayloadSchema.safeParse(raw);
 
-    return {
-      success: true as const,
-      data: adaptDestroyDataModelReport(result as DestroyDataModelReportDto),
-    };
-  } catch (error) {
-    // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
-    if (isStatusConflictHttpError(error)) {
-      return {
-        success: true as const,
-        data: adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto),
-      };
+    if (!parsed.success) {
+      return data({ success: false as const, errors: z.treeifyError(parsed.error) }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
     }
-    console.error('deleteDataModelLink error:', error);
-    return { success: false as const, errors: [], error: String(error) };
-  }
-});
+
+    try {
+      const result = await dataModelRepository.deleteLink(parsed.data.linkId, {
+        perform: parsed.data.perform,
+      });
+
+      if (result.performed) {
+        setToastMessage(toastSession, {
+          type: 'success',
+          message: t('common:success.deleted'),
+        });
+      }
+
+      return data({ success: true as const, data: result }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    } catch (error) {
+      setToastMessage(toastSession, {
+        type: 'error',
+        message: t('common:errors.unknown'),
+      });
+
+      return data({ success: false as const, errors: [], error: String(error) }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    }
+  },
+);
