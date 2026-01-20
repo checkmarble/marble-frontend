@@ -19,7 +19,9 @@ import { Button, ButtonV2, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateField } from './CreateField';
 import { CreateLink } from './CreateLink';
-import { DeleteField, DeleteLink, DeleteTable } from './DeleteDataModel';
+import { DeleteField } from './DeleteDataModel/DeleteField';
+import { DeleteLink } from './DeleteDataModel/DeleteLink';
+import { DeleteTable } from './DeleteDataModel/DeleteTable';
 import { dataI18n } from './data-i18n';
 
 interface TableDetailsProps {

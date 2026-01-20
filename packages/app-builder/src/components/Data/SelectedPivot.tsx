@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Panel } from 'reactflow';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
-import { DeletePivot } from './DeleteDataModel';
+import { DeletePivot } from './DeleteDataModel/DeletePivot';
 import { dataI18n } from './data-i18n';
 import { PivotDetails } from './PivotDetails';
 
