@@ -1,5 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type DestroyDataModelReport, type LinkToSingle } from '@app-builder/models/data-model';
+import { type DestroyDataModelReport } from '@app-builder/models/data-model';
 import { useDeleteLinkMutation } from '@app-builder/queries/data/delete-link';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useState } from 'react';

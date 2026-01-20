@@ -10,9 +10,7 @@ export const deleteLinkPayloadSchema = z.object({
 
 export type DeleteLinkPayload = z.infer<typeof deleteLinkPayloadSchema>;
 
-export type DeleteLinkResponse =
-  | { success: true; data: DestroyDataModelReport }
-  | { success: false; errors: unknown[] };
+export type DeleteLinkResponse = { success: true; data: DestroyDataModelReport } | { success: false; errors: string[] };
 
 const endpoint = getRoute('/ressources/data/deleteLink');
 

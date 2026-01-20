@@ -12,7 +12,7 @@ export type DeleteFieldPayload = z.infer<typeof deleteFieldPayloadSchema>;
 
 export type DeleteFieldResponse =
   | { success: true; data: DestroyDataModelReport }
-  | { success: false; errors: unknown[] };
+  | { success: false; errors: string[] };
 
 const endpoint = getRoute('/ressources/data/deleteField');
 
