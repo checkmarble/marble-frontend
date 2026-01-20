@@ -1091,10 +1091,13 @@ components:
 
     DestroyDataModelReportIteration:
       type: object
-      required: [name draft trigger_condition rules screenings]
+      required: [name scenario_id draft trigger_condition rules screenings]
       properties:
         name:
           type: string
+        scenario_id:
+          type: string
+          format: uuid
         draft:
           type: boolean
         trigger_condition:

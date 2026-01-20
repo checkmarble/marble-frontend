@@ -1215,6 +1215,7 @@ export type Schema = {
         scenario_iterations: {
             [key: string]: {
                 name?: string;
+                scenario_id?: string;
                 draft?: boolean;
                 trigger_condition?: boolean;
                 rules?: Items[];
@@ -4189,6 +4190,7 @@ export function deleteDataModelLink(linkId: string, { perform }: {
                 scenario_iterations: {
                     [key: string]: {
                         name?: string;
+                        scenario_id?: string;
                         draft?: boolean;
                         trigger_condition?: boolean;
                         rules?: Items[];

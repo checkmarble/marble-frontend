@@ -145,10 +145,10 @@ function BlockedDeletionContent({
             })}
           </Callout>
           <ul className="text-s text-grey-primary list-disc pl-4">
-            {draftScenarioIterations.map(([scenarioId, iteration]) => {
-              const shortId = fromUUIDtoSUUID(scenarioId);
+            {draftScenarioIterations.map(([iterationId, iteration]) => {
+              const shortId = fromUUIDtoSUUID(iteration.scenarioId);
               return (
-                <li key={scenarioId} className="flex items-center gap-2">
+                <li key={iterationId} className="flex items-center gap-2">
                   <span>{iteration.name}</span>
                   <a
                     href={getRoute('/scenarios/:scenarioId', { scenarioId: shortId })}
@@ -175,10 +175,10 @@ function BlockedDeletionContent({
             })}
           </Callout>
           <ul className="text-s text-grey-primary list-disc pl-4">
-            {activeScenarioIterations.map(([scenarioId, iteration]) => {
-              const shortId = fromUUIDtoSUUID(scenarioId);
+            {activeScenarioIterations.map(([iterationId, iteration]) => {
+              const shortId = fromUUIDtoSUUID(iteration.scenarioId);
               return (
-                <li key={scenarioId} className="flex items-center gap-2">
+                <li key={iterationId} className="flex items-center gap-2">
                   <span>{iteration.name}</span>
                   <a
                     href={getRoute('/scenarios/:scenarioId', { scenarioId: shortId })}
