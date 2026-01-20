@@ -78,6 +78,8 @@
   "paste": "لصق",
   "premium": "ميزة متميزة",
   "previous": "السابق",
+  "print.generated_at": "تم الإنشاء: {{date}}",
+  "print.generated_at_by": "تم الإنشاء في {{date}} بواسطة {{user}}",
   "rename": "إعادة تسمية",
   "retry": "إعادة المحاولة",
   "save": "حفظ",

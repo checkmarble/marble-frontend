@@ -218,6 +218,8 @@ paths:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1search
   /screenings/refine:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1refine
+  /screenings/freeform-search:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1freeform-search
   /screenings/freshness:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1freshness
 

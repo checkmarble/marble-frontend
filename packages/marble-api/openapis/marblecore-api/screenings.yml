@@ -231,6 +231,28 @@
             schema:
               $ref: '#/components/schemas/ScreeningDto'
 
+/screenings/freeform-search:
+  post:
+    tags:
+      - Screening
+    summary: Freeform search for sanctions matches
+    operationId: freeformSearch
+    requestBody:
+      description: 'Freeform search query'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ScreeningFreeformDto'
+    responses:
+      '200':
+        description: The list of matches
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScreeningMatchDto'
+
 components:
   schemas:
     OpenSanctionsCatalogDataset:
@@ -697,3 +719,71 @@ components:
           type: string
         whitelist:
           type: boolean
+    ScreeningFreeformDto:
+      type: object
+      required:
+        - query
+      properties:
+        screening_id:
+          type: string
+          format: uuid
+        query:
+          $ref: '#/components/schemas/RefineQueryDto'
+        datasets:
+          type: array
+          items:
+            type: string
+        threshold:
+          type: integer
+          minimum: 0
+          maximum: 100
+    RefineQueryDto:
+      type: object
+      description: One of Thing, Person, Organization, or Vehicle must be provided
+      properties:
+        Thing:
+          $ref: '#/components/schemas/RefineQueryThing'
+        Person:
+          $ref: '#/components/schemas/RefineQueryPerson'
+        Organization:
+          $ref: '#/components/schemas/RefineQueryOrganization'
+        Vehicle:
+          $ref: '#/components/schemas/RefineQueryVehicle'
+    RefineQueryThing:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    RefineQueryPerson:
+      type: object
+      properties:
+        name:
+          type: string
+        birthDate:
+          type: string
+        nationality:
+          type: string
+        passportNumber:
+          type: string
+        address:
+          type: string
+    RefineQueryOrganization:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        registrationNumber:
+          type: string
+        address:
+          type: string
+    RefineQueryVehicle:
+      type: object
+      properties:
+        name:
+          type: string
+        registrationNumber:
+          type: string

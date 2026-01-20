@@ -3464,6 +3464,46 @@ export function refineScreening(screeningRefineDto?: ScreeningRefineDto, opts?: 
     })));
 }
 /**
+ * Freeform search for sanctions matches
+ */
+export function freeformSearch(body?: {
+    screening_id?: string;
+    /** One of Thing, Person, Organization, or Vehicle must be provided */
+    query: {
+        Thing?: {
+            name: string;
+        };
+        Person?: {
+            name?: string;
+            birthDate?: string;
+            nationality?: string;
+            passportNumber?: string;
+            address?: string;
+        };
+        Organization?: {
+            name?: string;
+            country?: string;
+            registrationNumber?: string;
+            address?: string;
+        };
+        Vehicle?: {
+            name?: string;
+            registrationNumber?: string;
+        };
+    };
+    datasets?: string[];
+    threshold?: number;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningMatchDto[];
+    }>("/screenings/freeform-search", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * Retrieve the freshness of sanction datasets
  */
 export function getDatasetsFreshness(opts?: Oazapfts.RequestOpts) {
