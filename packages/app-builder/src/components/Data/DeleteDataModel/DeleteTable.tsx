@@ -27,34 +27,26 @@ export function DeleteTable({ table }: DeleteTableProps) {
   }
 
   const handleOpenModal = async () => {
-    try {
-      const result = await deleteTableMutation.mutateAsync({
-        tableId: table.id,
-        perform: false,
-      });
+    const result = await deleteTableMutation.mutateAsync({
+      tableId: table.id,
+      perform: false,
+    });
 
-      if (result.success) {
-        setReport(result.data);
-        setOpen(true);
-      }
-    } catch {
-      // Handle error
+    if (result.success) {
+      setReport(result.data);
+      setOpen(true);
     }
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      const result = await deleteTableMutation.mutateAsync({
-        tableId: table.id,
-        perform: true,
-      });
+    const result = await deleteTableMutation.mutateAsync({
+      tableId: table.id,
+      perform: true,
+    });
 
-      if (result.success && result.data.performed) {
-        setOpen(false);
-        revalidate();
-      }
-    } catch {
-      // Handle error
+    if (result.success && result.data.performed) {
+      setOpen(false);
+      revalidate();
     }
   };
 

@@ -30,34 +30,26 @@ export function DeleteLink({ link }: DeleteLinkProps) {
   }
 
   const handleOpenModal = async () => {
-    try {
-      const result = await deleteLinkMutation.mutateAsync({
-        linkId: link.id,
-        perform: false,
-      });
+    const result = await deleteLinkMutation.mutateAsync({
+      linkId: link.id,
+      perform: false,
+    });
 
-      if (result.success) {
-        setReport(result.data);
-        setOpen(true);
-      }
-    } catch {
-      // Handle error
+    if (result.success) {
+      setReport(result.data);
+      setOpen(true);
     }
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      const result = await deleteLinkMutation.mutateAsync({
-        linkId: link.id,
-        perform: true,
-      });
+    const result = await deleteLinkMutation.mutateAsync({
+      linkId: link.id,
+      perform: true,
+    });
 
-      if (result.success && result.data.performed) {
-        setOpen(false);
-        revalidate();
-      }
-    } catch {
-      // Handle error
+    if (result.success && result.data.performed) {
+      setOpen(false);
+      revalidate();
     }
   };
 

@@ -30,34 +30,26 @@ export function DeleteField({ field }: DeleteFieldProps) {
   }
 
   const handleOpenModal = async () => {
-    try {
-      const result = await deleteFieldMutation.mutateAsync({
-        fieldId: field.id,
-        perform: false,
-      });
+    const result = await deleteFieldMutation.mutateAsync({
+      fieldId: field.id,
+      perform: false,
+    });
 
-      if (result.success) {
-        setReport(result.data);
-        setOpen(true);
-      }
-    } catch {
-      // Handle error
+    if (result.success) {
+      setReport(result.data);
+      setOpen(true);
     }
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      const result = await deleteFieldMutation.mutateAsync({
-        fieldId: field.id,
-        perform: true,
-      });
+    const result = await deleteFieldMutation.mutateAsync({
+      fieldId: field.id,
+      perform: true,
+    });
 
-      if (result.success && result.data.performed) {
-        setOpen(false);
-        revalidate();
-      }
-    } catch {
-      // Handle error
+    if (result.success && result.data.performed) {
+      setOpen(false);
+      revalidate();
     }
   };
 

@@ -31,35 +31,27 @@ export function DeletePivot({ pivot, onDeleted }: DeletePivotProps) {
   const pivotName = getPivotDisplayValue(pivot);
 
   const handleOpenModal = async () => {
-    try {
-      const result = await deletePivotMutation.mutateAsync({
-        pivotId: pivot.id,
-        perform: false,
-      });
+    const result = await deletePivotMutation.mutateAsync({
+      pivotId: pivot.id,
+      perform: false,
+    });
 
-      if (result.success) {
-        setReport(result.data);
-        setOpen(true);
-      }
-    } catch {
-      // Handle error
+    if (result.success) {
+      setReport(result.data);
+      setOpen(true);
     }
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      const result = await deletePivotMutation.mutateAsync({
-        pivotId: pivot.id,
-        perform: true,
-      });
+    const result = await deletePivotMutation.mutateAsync({
+      pivotId: pivot.id,
+      perform: true,
+    });
 
-      if (result.success && result.data.performed) {
-        setOpen(false);
-        revalidate();
-        onDeleted?.();
-      }
-    } catch {
-      // Handle error
+    if (result.success && result.data.performed) {
+      setOpen(false);
+      revalidate();
+      onDeleted?.();
     }
   };
 
