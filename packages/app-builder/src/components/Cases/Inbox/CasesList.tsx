@@ -114,15 +114,35 @@ export function CasesList({
             </div>
             <div className="p-v2-md">
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (
-                <span
-                  className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
-                    'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
-                    'border-green-primary text-green-primary': caseItem.outcome === 'valuable_alert',
-                    'border-grey-placeholder text-grey-secondary': caseItem.outcome === 'false_positive',
-                  })}
-                >
-                  {t(`cases:case.outcome.${caseItem.outcome}`)}
-                </span>
+                <div className="flex items-center gap-v2-sm">
+                  <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
+                    <Icon icon="user" className="size-4 text-grey-placeholder" />
+                  </div>
+                  <span
+                    className={cn('flex items-center h-6 rounded-full border px-v2-sm text-small text-nowrap', {
+                      'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
+                      'border-yellow-primary text-yellow-primary': caseItem.outcome === 'valuable_alert',
+                      'border-green-primary text-green-primary': caseItem.outcome === 'false_positive',
+                    })}
+                  >
+                    {t(`cases:case.outcome.${caseItem.outcome}`)}
+                  </span>
+                </div>
+              ) : caseItem.reviewLevel ? (
+                <div className="flex items-center gap-v2-sm">
+                  <div className="flex items-center justify-center size-6 rounded-full border border-grey-placeholder">
+                    <Icon icon="wand" className="size-4 text-grey-placeholder" />
+                  </div>
+                  <span
+                    className={cn('flex items-center h-6 rounded-full border px-v2-sm text-small text-nowrap', {
+                      'border-red-primary text-red-primary': caseItem.reviewLevel === 'escalate',
+                      'border-yellow-primary text-yellow-primary': caseItem.reviewLevel === 'investigate',
+                      'border-green-primary text-green-primary': caseItem.reviewLevel === 'probable_false_positive',
+                    })}
+                  >
+                    {t(`cases:case.review_level.${caseItem.reviewLevel}`)}
+                  </span>
+                </div>
               ) : (
                 '-'
               )}

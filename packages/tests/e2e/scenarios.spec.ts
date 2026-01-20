@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
 import crypto from 'crypto';
-import { waitForThen } from 'tests/common/utils';
+import { waitForHydration, waitForThen } from 'tests/common/utils';
 
 test('Create a simple scenario', async ({ page }) => {
   await page.goto('/scenarios');
+  await waitForHydration(page);
 
   const scenarioName = crypto.randomUUID();
 
@@ -15,11 +16,10 @@ test('Create a simple scenario', async ({ page }) => {
 
   await waitForThen(page, page.getByRole('combobox'), async (box) => await box.click());
 
-  await page.waitForTimeout(200);
-
   await waitForThen(page, page.getByRole('option', { name: 'transactions' }), async (option) => await option.click());
 
   await page.getByRole('button', { name: 'Save' }).click();
+  await waitForHydration(page);
 
   await waitForThen(
     page,

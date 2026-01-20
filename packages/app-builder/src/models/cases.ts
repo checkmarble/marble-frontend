@@ -71,6 +71,21 @@ export const caseOutcomes: CaseOutcome[] = ['false_positive', 'valuable_alert', 
 export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
 export const finalOutcomes: UnionToArray<FinalOutcome> = ['false_positive', 'valuable_alert', 'confirmed_risk'];
 
+// AI review levels from case review
+export const caseReviewLevels = ['probable_false_positive', 'investigate', 'escalate'] as const;
+export type CaseReviewLevel = (typeof caseReviewLevels)[number];
+
+// Qualification levels combine review_level and outcome for filtering
+// - green: probable_false_positive OR false_positive
+// - yellow: investigate OR valuable_alert
+// - red: escalate OR confirmed_risk
+//
+// TODO: Backend needs to implement filtering logic in marble-backend PR #1468 that takes
+// qualification and translates it to a combination of review_level and outcome filters.
+// Backend also needs to return review_level in the CaseDto (already added to OpenAPI spec).
+export const qualificationLevels = ['green', 'yellow', 'red'] as const;
+export type qualification = (typeof qualificationLevels)[number];
+
 export interface Case {
   id: string;
   type: CaseDto['type'];
@@ -81,6 +96,7 @@ export interface Case {
   inboxId: string;
   contributors: CaseContributor[];
   outcome: CaseOutcome;
+  reviewLevel?: CaseReviewLevel;
   tags: CaseTag[];
   snoozedUntil?: string;
   assignedTo?: string;
@@ -94,6 +110,7 @@ export const adaptCase = (dto: CaseDto): Case => ({
   name: dto.name,
   status: dto.status,
   outcome: dto.outcome,
+  reviewLevel: dto.review_level,
   inboxId: dto.inbox_id,
   contributors: dto.contributors.map(adaptCaseContributor),
   tags: dto.tags.map(adaptCaseTag),
