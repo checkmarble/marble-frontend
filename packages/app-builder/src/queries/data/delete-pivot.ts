@@ -22,6 +22,7 @@ export const useDeletePivotMutation = () => {
     mutationFn: async (payload: DeletePivotPayload): Promise<DeletePivotResponse> => {
       const response = await fetch(endpoint, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 

@@ -22,6 +22,7 @@ export const useDeleteFieldMutation = () => {
     mutationFn: async (payload: DeleteFieldPayload): Promise<DeleteFieldResponse> => {
       const response = await fetch(endpoint, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 

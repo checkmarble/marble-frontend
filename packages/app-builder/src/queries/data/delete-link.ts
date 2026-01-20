@@ -20,6 +20,7 @@ export const useDeleteLinkMutation = () => {
     mutationFn: async (payload: DeleteLinkPayload): Promise<DeleteLinkResponse> => {
       const response = await fetch(endpoint, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 

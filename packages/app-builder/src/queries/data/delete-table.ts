@@ -22,6 +22,7 @@ export const useDeleteTableMutation = () => {
     mutationFn: async (payload: DeleteTablePayload): Promise<DeleteTableResponse> => {
       const response = await fetch(endpoint, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
