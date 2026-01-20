@@ -16,7 +16,7 @@ import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Table, useTable } from 'ui-design-system';
+import { Button, ButtonV2, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateField } from './CreateField';
 import { CreateLink } from './CreateLink';
@@ -260,9 +260,14 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
               {isEditDataModelFieldAvailable ? (
                 <div className="flex-shrink-0">
                   <EditField key={cell.row.original.id} field={cell.row.original} linksToThisTable={linksToThisTable}>
-                    <div className="group-hover:text-grey-primary group-hover:bg-grey-background-light group-hover:border-grey-placeholder hover:group-hover:bg-grey-background active:group-hover:bg-grey-border relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out">
-                      <Icon icon="edit-square" className="size-6" />
-                    </div>
+                    <ButtonV2
+                      mode="icon"
+                      variant="primary"
+                      appearance="stroked"
+                      className="size-7 border-purple-border-light bg-white p-0 hover:bg-purple-background-light dark:bg-grey-background dark:border-grey-border dark:hover:bg-purple-background"
+                    >
+                      <Icon icon="edit-square" className="size-4 dark:text-grey-secondary" />
+                    </ButtonV2>
                   </EditField>
                 </div>
               ) : null}

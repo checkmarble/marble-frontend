@@ -1,10 +1,10 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type DataModelField, type DestroyDataModelReport } from '@app-builder/models/data-model';
+import { type DestroyDataModelReport } from '@app-builder/models/data-model';
 import { useDeleteFieldMutation } from '@app-builder/queries/data/delete-field';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { dataI18n } from '../data-i18n';
@@ -60,14 +60,17 @@ export function DeleteField({ field }: DeleteFieldProps) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <button
+      <ButtonV2
+        mode="icon"
+        variant="primary"
+        appearance="stroked"
         onClick={handleOpenModal}
-        className="group-hover:text-grey-primary group-hover:bg-grey-background-light group-hover:border-grey-placeholder hover:group-hover:bg-grey-background active:group-hover:bg-grey-border relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out"
+        className="size-7 border-purple-border-light bg-white p-0 hover:bg-purple-background-light dark:bg-grey-background dark:border-grey-border dark:hover:bg-purple-background"
         aria-label={t('data:delete_field.title', { name: field.name })}
         disabled={deleteFieldMutation.isPending}
       >
-        <Icon icon="delete" className="size-6" />
-      </button>
+        <Icon icon="delete" className="size-4 dark:text-grey-secondary" />
+      </ButtonV2>
       <Modal.Content>
         <DeleteDataModelContent
           report={report}
