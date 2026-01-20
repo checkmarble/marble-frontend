@@ -4,7 +4,6 @@ import { EditTable } from '@app-builder/components/Data/EditTable';
 import {
   type DataModel,
   type DataType,
-  type LinkToSingle,
   type TableModel,
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
@@ -80,35 +79,37 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
 
   return (
     <CollapsiblePaper.Container defaultOpen={false}>
-      <CollapsiblePaper.Title>
+      <CollapsiblePaper.Title size="small">
         <span className="flex flex-1">{tableModel.name}</span>
 
         {isCreateDataModelFieldAvailable ? (
           <div
+            className="flex items-center"
             onClick={(e) => {
               //necessary to prevent clicks on modal interactible to trigger the collapsible
               e.stopPropagation();
             }}
           >
             <CreateField tableId={tableModel.id}>
-              <Button>
-                <Icon icon="plus" className="size-6" />
+              <ButtonV2
+                variant="primary"
+                appearance="stroked"
+                className="h-6 gap-1 rounded-lg px-2 py-1 text-xs shadow-sm"
+              >
+                <Icon icon="plus" className="size-4" />
                 {t('data:create_field.title')}
-              </Button>
+              </ButtonV2>
             </CreateField>
           </div>
         ) : null}
         {isIngestDataAvailable ? (
           <NavLink
-            className={clsx(
-              'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-transparent px-4 py-2 font-semibold outline-hidden',
-              'hover:bg-purple-hover active:bg-purple-hover text-grey-white focus:border-grey-primary bg-purple-primary disabled:bg-purple-disabled',
-            )}
+            className="flex h-6 items-center justify-center gap-1 rounded-lg border border-purple-primary bg-transparent px-2 py-1 text-xs font-medium text-purple-primary shadow-sm transition-colors hover:bg-purple-primary hover:border-purple-primary hover:text-white dark:border-purple-hover dark:text-purple-hover dark:hover:bg-purple-primary dark:hover:border-purple-primary dark:hover:text-grey-white"
             to={getRoute('/upload/:objectType', {
               objectType: tableModel.name,
             })}
           >
-            <Icon icon="plus" className="size-6" />
+            <Icon icon="upload" className="size-4" />
             {t('data:upload_data')}
           </NavLink>
         ) : null}
@@ -260,13 +261,8 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
               {isEditDataModelFieldAvailable ? (
                 <div className="flex-shrink-0">
                   <EditField key={cell.row.original.id} field={cell.row.original} linksToThisTable={linksToThisTable}>
-                    <ButtonV2
-                      mode="icon"
-                      variant="primary"
-                      appearance="stroked"
-                      className="size-7 border-purple-border-light bg-white p-0 hover:bg-purple-background-light dark:bg-grey-background dark:border-grey-border dark:hover:bg-purple-background"
-                    >
-                      <Icon icon="edit-square" className="size-4 dark:text-grey-secondary" />
+                    <ButtonV2 variant="secondary" mode="icon" className="flex size-7">
+                      <Icon icon="edit-square" className="size-6 text-purple-primary" />
                     </ButtonV2>
                   </EditField>
                 </div>

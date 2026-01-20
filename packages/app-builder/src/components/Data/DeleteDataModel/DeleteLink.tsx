@@ -61,15 +61,14 @@ export function DeleteLink({ link }: DeleteLinkProps) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <ButtonV2
+        variant="secondary"
         mode="icon"
-        variant="primary"
-        appearance="stroked"
         onClick={handleOpenModal}
-        className="size-7 border-purple-border-light bg-white p-0 hover:bg-purple-background-light dark:bg-grey-background dark:border-grey-border dark:hover:bg-purple-background"
         aria-label={t('data:delete_link.title', { name: link.name })}
         disabled={deleteLinkMutation.isPending}
+        className="flex size-7"
       >
-        <Icon icon="delete" className="size-4 dark:text-grey-secondary" />
+        <Icon icon="delete" className="size-6 text-purple-primary" />
       </ButtonV2>
       <Modal.Content>
         <DeleteDataModelContent
