@@ -148,7 +148,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
     <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
       <span className="text-purple-primary text-center font-bold">{aggregator.constant}</span>
       <span className="font-bold">{aggregatedFieldName}</span>
-      {percentileValue !== undefined ? (
+      {percentileValue !== undefined && aggregator.constant === 'PCTILE' ? (
         <>
           <span className="text-grey-50 text-xs">{t('scenarios:edit_aggregation.percentile_value')}</span>
           <span className="text-grey-00 text-xs font-medium">{percentileValue}%</span>
