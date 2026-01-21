@@ -1,9 +1,11 @@
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { aggregatorMetadata } from '@app-builder/models/aggregator-metadata';
 import { type AggregationAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
+  type AggregatorOperator,
   aggregatorHasParams,
   aggregatorOperators,
   isPerformanceHeavyAggregator,
@@ -12,11 +14,11 @@ import {
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { computed } from '@preact/signals-react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Input, Modal } from 'ui-design-system';
-import { Logo } from 'ui-icons';
+import { Input, Modal, Tooltip } from 'ui-design-system';
+import { Icon, Logo } from 'ui-icons';
 import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
-import { OperatorSelect } from '../../../OperatorSelect';
+import { OperatorSelect, type OperatorSelectOptions } from '../../../OperatorSelect';
 import { OperandEditModalContainer } from '../../Container';
 import { type OperandEditModalProps } from '../../EditModal';
 import { type DataModelFieldOption, EditDataModelField } from './EditDataModelField';
@@ -46,6 +48,15 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
         } satisfies DataModelFieldOption)
       : null;
   });
+
+  // Create operator options with tooltips
+  const aggregatorOptions: OperatorSelectOptions<AggregatorOperator> = aggregatorOperators.reduce(
+    (acc, op) => {
+      acc[op] = { tooltipKey: aggregatorMetadata[op].tooltipKey };
+      return acc;
+    },
+    {} as OperatorSelectOptions<AggregatorOperator>,
+  );
 
   return (
     <OperandEditModalContainer
@@ -98,12 +109,26 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
         >
           <div>{t('scenarios:edit_aggregation.function_title')}</div>
           {aggregatorHasParams(currentAggregator) ? (
-            <div>{t('scenarios:edit_aggregation.percentile_value')}</div>
+            <div className="flex items-center gap-1">
+              <span>{t('scenarios:edit_aggregation.percentile_value')}</span>
+              <Tooltip.Default
+                className="max-h-none overflow-visible"
+                content={
+                  <div className="text-s max-w-xs whitespace-pre-wrap">
+                    {t('scenarios:edit_aggregation.percentile_value_tooltip')}
+                  </div>
+                }
+              >
+                <span className="text-purple-primary">
+                  <Icon icon="tip" className="size-4" />
+                </span>
+              </Tooltip.Default>
+            </div>
           ) : null}
           <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
           <div className="flex flex-col gap-2">
             <OperatorSelect
-              options={aggregatorOperators}
+              options={aggregatorOptions}
               operator={node.namedChildren.aggregator.constant}
               onOperatorChange={(aggregator) => {
                 node.namedChildren.aggregator.constant = aggregator;
