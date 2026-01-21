@@ -13,6 +13,7 @@ import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
+import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -82,7 +83,7 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, appConfigRepository } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, scenarioIterationRuleRepository } =
+  const { customListsRepository, editor, dataModelRepository, scenarioIterationRuleRepository, entitlements } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -104,6 +105,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     customLists,
     isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
     rule,
+    hasValidLicense: hasAnyEntitlement(entitlements),
   };
 }
 
@@ -175,8 +177,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled, rule } =
-    useLoaderData<typeof loader>();
+  const {
+    databaseAccessors,
+    payloadAccessors,
+    dataModel,
+    customLists,
+    isAiRuleDescriptionEnabled,
+    rule,
+    hasValidLicense,
+  } = useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
   const iterationId = useParam('iterationId');
@@ -248,6 +257,7 @@ export default function RuleDetail() {
     customLists,
     triggerObjectType: scenario.triggerObjectType,
     rule,
+    hasValidLicense,
   };
 
   //TODO Add errors from the servers if they are present

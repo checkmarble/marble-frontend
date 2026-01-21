@@ -107,6 +107,18 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
               operator={node.namedChildren.aggregator.constant}
               onOperatorChange={(aggregator) => {
                 node.namedChildren.aggregator.constant = aggregator;
+
+                // Add or remove percentile field based on aggregator type
+                if (aggregatorHasParams(aggregator)) {
+                  // Add percentile field if it doesn't exist
+                  if (!node.namedChildren.percentile) {
+                    node.namedChildren.percentile = NewConstantAstNode({ constant: 50 });
+                  }
+                } else {
+                  // Remove percentile field for non-PCTILE aggregators
+                  delete node.namedChildren.percentile;
+                }
+
                 nodeSharp.actions.validate();
               }}
               featureAccess={hasValidLicense ? undefined : 'restricted'}
