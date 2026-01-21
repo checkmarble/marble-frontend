@@ -47,7 +47,7 @@ export function AddToCase() {
     return <p>Error</p>;
   }
 
-  const inboxes = inboxesQuery.data.inboxes;
+  const inboxes = inboxesQuery.data?.inboxes ?? [];
   if (inboxes.length === 0) {
     return <p>{t('decisions:add_to_case.new_case.no_inbox')}</p>;
   }

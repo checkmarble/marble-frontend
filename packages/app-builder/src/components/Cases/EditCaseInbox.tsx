@@ -54,9 +54,10 @@ export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) 
                   .with({ isPending: true }, () => <Spinner className="size-4" />)
                   .with({ isError: true }, () => <div>Error...</div>)
                   .with({ isSuccess: true }, ({ data }) => {
+                    const inboxes = data?.inboxes ?? [];
                     return (
                       <MenuCommand.List>
-                        {data.inboxes.map(({ id, name }) => (
+                        {inboxes.map(({ id, name }) => (
                           <MenuCommand.Item
                             key={id}
                             className="cursor-pointer"
