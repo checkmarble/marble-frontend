@@ -19,7 +19,7 @@ export const useGetInboxesQuery = () => {
         return;
       }
 
-      return result.inboxes as { inboxes: InboxWithCasesCount[] };
+      return result as { inboxes: InboxWithCasesCount[] };
     },
   });
 };
