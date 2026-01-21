@@ -80,6 +80,45 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+  delete:
+    tags:
+      - Data Model
+    summary: Delete a data model table
+    operationId: deleteDataModelTable
+    parameters:
+      - name: tableId
+        description: ID of the table to delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: perform
+        description: Whether or not to actually delete the resource
+        in: query
+        schema:
+          type: boolean
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Resource would be or has been deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        description: Resource cannot be deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
 /data-model/tables/{tableId}/fields:
   post:
     tags:
@@ -236,6 +275,45 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+  delete:
+    tags:
+      - Data Model
+    summary: Delete a data model field
+    operationId: deleteDataModelField
+    parameters:
+      - name: fieldId
+        description: ID of the table to delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: perform
+        description: Whether or not to actually delete the resource
+        in: query
+        schema:
+          type: boolean
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Resource would be or has been deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        description: Resource cannot be deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
 /data-model/links:
   post:
     tags:
@@ -260,6 +338,86 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/data-model/links/{linkId}:
+  delete:
+    tags:
+      - Data Model
+    summary: Delete a data model link
+    operationId: deleteDataModelLink
+    parameters:
+      - name: linkId
+        description: ID of the link to delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: perform
+        description: Whether or not to actually delete the resource
+        in: query
+        schema:
+          type: boolean
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Resource would be or has been deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        description: Resource cannot be deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
+/data-model/pivots/{pivotId}:
+  delete:
+    tags:
+      - Data Model
+    summary: Delete a data model pivot
+    operationId: deleteDataModelPivot
+    parameters:
+      - name: pivotId
+        description: ID of the pivot to delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: perform
+        description: Whether or not to actually delete the resource
+        in: query
+        schema:
+          type: boolean
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Resource would be or has been deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        description: Resource cannot be deleted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
 /data-model/openapi:
   get:
     tags:
@@ -854,3 +1012,101 @@ components:
       required:
         - trigger_object_fields
         - ingested_data_fields
+
+    DestroyDataModelReport:
+       type: object
+       required: [performed conflicts archived_iterations]
+       properties:
+          performed:
+             type: boolean
+          conflicts:
+            $ref: '#/components/schemas/DestroyDataModelReportConflicts'
+          archived_iterations:
+            type: array
+            items:
+              $ref: '#/components/schemas/DestroyDataModelReportRef'
+
+    DestroyDataModelReportRef:
+      type: object
+      required: [id label]
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+
+    DestroyDataModelReportConflicts:
+      type: object
+      required:
+        - continuous_screening
+        - links
+        - pivots
+        - analytics_settings
+        - scenarios
+        - empty_scenarios
+        - scenario_iterations
+        - workflows
+        - test_runs
+      properties:
+        continuous_screening:
+          description: Whether a continuous screening config uses the resource
+          type: boolean
+        links:
+          description: List of links using the resource
+          type: array
+          items:
+            type: string
+        pivots:
+          description: List of pivots using the resource
+          type: array
+          items:
+            type: string
+        analytics_settings:
+          description: Number of analytics settings referring to the resource
+          type: integer
+        scenarios:
+          description: Scenarios using the resource as a trigger object
+          type: array
+          items:
+            $ref: '#/components/schemas/DestroyDataModelReportRef'
+        empty_scenarios:
+          description: List of scenarios that would have no live or draft version after deleting the resource
+          type: array
+          items:
+            $ref: '#/components/schemas/DestroyDataModelReportRef'
+        scenario_iterations:
+          description: Map of scenario iterations which components refer to the resource
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/DestroyDataModelReportIteration'
+        workflows:
+          description: List of scenarios which workflows use the resource
+          type: array
+          items:
+            $ref: '#/components/schemas/DestroyDataModelReportRef'
+        test_runs:
+          description: Whether an active test run uses an iteration that would be disabled
+          type: boolean
+
+    DestroyDataModelReportIteration:
+      type: object
+      required: [name scenario_id draft trigger_condition rules screenings]
+      properties:
+        name:
+          type: string
+        scenario_id:
+          type: string
+          format: uuid
+        draft:
+          type: boolean
+        trigger_condition:
+          type: boolean
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/DestroyDataModelReportRef'
+        screenings:
+          type: array
+          items:
+            $ref: '#/components/schemas/DestroyDataModelReportRef'

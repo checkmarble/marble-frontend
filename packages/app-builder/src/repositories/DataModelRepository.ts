@@ -9,6 +9,7 @@ import {
   adaptDataModel,
   adaptDataModelObject,
   adaptDataModelTableOptions,
+  adaptDestroyDataModelReport,
   adaptExportedFields,
   adaptExportedFieldsDto,
   adaptPivot,
@@ -23,11 +24,14 @@ import {
   type DataModel,
   type DataModelObject,
   type DataModelTableOptions,
+  type DestroyDataModelReport,
+  type DestroyDataModelReportDto,
   ExportedFields,
   type Pivot,
   type SetDataModelTableOptionsBody,
   type UpdateFieldInput,
 } from '@app-builder/models';
+import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { type OpenApiSpec } from 'marble-api';
 
 export interface DataModelRepository {
@@ -47,6 +51,10 @@ export interface DataModelRepository {
   deleteAnnotation(annotationId: string): Promise<void>;
   updateDataModelTableExportedFields(tableId: string, body: ExportedFields): Promise<ExportedFields>;
   getDataModelTableExportedFields(tableId: string): Promise<ExportedFields>;
+  deleteTable(tableId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
+  deleteField(fieldId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
+  deleteLink(linkId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
+  deletePivot(pivotId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
 }
 
 export function makeGetDataModelRepository() {
@@ -110,6 +118,54 @@ export function makeGetDataModelRepository() {
     },
     getDataModelTableExportedFields: async (tableId) => {
       return adaptExportedFields(await marbleCoreApiClient.getDataModelTableExportedFields(tableId));
+    },
+    deleteTable: async (tableId, options) => {
+      try {
+        const result = await marbleCoreApiClient.deleteDataModelTable(tableId, options);
+        return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
+      } catch (error) {
+        // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
+        if (isStatusConflictHttpError(error)) {
+          return adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto);
+        }
+        throw error;
+      }
+    },
+    deleteField: async (fieldId, options) => {
+      try {
+        const result = await marbleCoreApiClient.deleteDataModelField(fieldId, options);
+        return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
+      } catch (error) {
+        // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
+        if (isStatusConflictHttpError(error)) {
+          return adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto);
+        }
+        throw error;
+      }
+    },
+    deleteLink: async (linkId, options) => {
+      try {
+        const result = await marbleCoreApiClient.deleteDataModelLink(linkId, options);
+        return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
+      } catch (error) {
+        // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
+        if (isStatusConflictHttpError(error)) {
+          return adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto);
+        }
+        throw error;
+      }
+    },
+    deletePivot: async (pivotId, options) => {
+      try {
+        const result = await marbleCoreApiClient.deleteDataModelPivot(pivotId, options);
+        return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
+      } catch (error) {
+        // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
+        if (isStatusConflictHttpError(error)) {
+          return adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto);
+        }
+        throw error;
+      }
     },
   });
 }

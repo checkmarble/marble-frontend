@@ -15,6 +15,7 @@
   "delete": "Delete",
   "description": "Description",
   "documents": "Documents",
+  "draft": "Draft",
   "edit": "Edit",
   "empty_scenario_iteration_list": "You don't have any rules. Click on create rule to make a new one",
   "error_boundary.default.subtitle": "It looks like something went wrong.",

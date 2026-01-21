@@ -15,6 +15,7 @@
   "delete": "حذف",
   "description": "الوصف",
   "documents": "المستندات",
+  "draft": "مسودة",
   "edit": "تعديل",
   "empty_scenario_iteration_list": "لا توجد لديك أي قواعد. انقر على «إنشاء قاعدة» لإنشاء قاعدة جديدة.",
   "error_boundary.default.subtitle": "يبدو أن هناك خطأ ما.",
