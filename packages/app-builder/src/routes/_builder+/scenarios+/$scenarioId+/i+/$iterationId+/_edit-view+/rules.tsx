@@ -1,5 +1,6 @@
 import { OutcomeBadge } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
+import { filtersI18n } from '@app-builder/components/Filters/filters-i18n';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
 import { CreateRule } from '@app-builder/components/Scenario/Rules/Actions/CreateRule';
@@ -37,7 +38,6 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { CtaClassName, Input, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import {
   useCurrentScenarioIteration,
   useCurrentScenarioValidation,
@@ -45,7 +45,7 @@ import {
 } from '../_layout';
 
 export const handle = {
-  i18n: ['common', 'scenarios', 'decisions'] satisfies Namespace,
+  i18n: ['common', 'scenarios', 'decisions', ...filtersI18n] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
