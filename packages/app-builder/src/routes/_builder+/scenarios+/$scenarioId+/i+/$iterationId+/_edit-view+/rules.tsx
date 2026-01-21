@@ -45,7 +45,7 @@ import {
 } from '../_layout';
 
 export const handle = {
-  i18n: ['common', 'scenarios', 'decisions', ...filtersI18n] satisfies Namespace,
+  i18n: ['common', 'scenarios', 'decisions', 'filters'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
