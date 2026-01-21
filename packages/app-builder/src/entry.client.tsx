@@ -9,6 +9,10 @@ import { getClientEnv } from './utils/environment';
 import { getRoute } from './utils/routes';
 
 async function initSentry() {
+  // Prevent double initialization on HMR
+  if (typeof window !== 'undefined' && window.__sentryInitialized) {
+    return;
+  }
   let marbleUrl: string | undefined = undefined;
   try {
     const appConfig = await fetch(getRoute('/ressources/app-config')).then((res) => res.json());
@@ -16,6 +20,12 @@ async function initSentry() {
   } catch {
     // TODO: Silent error, but sentry log is done at the end of the function
   }
+
+  const replay = Sentry.replayIntegration({
+    maxReplayDuration: 10 * 60 * 1000,
+  });
+  window.__sentryReplay = replay;
+  window.__sentryInitialized = true;
 
   Sentry.init({
     dsn: getClientEnv('SENTRY_DSN'),
@@ -27,7 +37,7 @@ async function initSentry() {
         useMatches,
       }),
       // Replay is only available in the client
-      Sentry.replayIntegration(),
+      replay,
       Sentry.httpClientIntegration(),
     ],
     beforeSend: (event, hint) => {
@@ -52,9 +62,9 @@ async function initSentry() {
     // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
     tracePropagationTargets: marbleUrl ? [marbleUrl] : undefined,
 
-    // Capture Replay for 10% of all sessions,
-    // plus for 100% of sessions with an error
-    replaysSessionSampleRate: 0.01,
+    // Session replay is manually controlled via services/sentry based on org settings
+    // Only error replays are automatically captured
+    replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1.0,
   });
 

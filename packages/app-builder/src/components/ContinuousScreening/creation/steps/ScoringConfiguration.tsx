@@ -87,7 +87,8 @@ const InboxSelector = () => {
       </div>
     ))
     .with({ isSuccess: true }, ({ data }) => {
-      const currentInboxName = data.inboxes.find((inbox) => inbox.id === inboxId.value)?.name;
+      const inboxes = data?.inboxes ?? [];
+      const currentInboxName = inboxes.find((inbox) => inbox.id === inboxId.value)?.name;
 
       return (
         <>
@@ -104,16 +105,14 @@ const InboxSelector = () => {
               </MenuCommand.SelectButton>
             </MenuCommand.Trigger>
             <MenuCommand.Content side="bottom" align="start" sideOffset={4}>
-              {inboxesQuery.isSuccess ? (
-                <MenuCommand.List>
-                  {inboxesQuery.data.inboxes.map((inbox) => (
-                    <MenuCommand.Item onSelect={() => handleInboxSelect(inbox.id)} key={inbox.id} value={inbox.id}>
-                      <span>{inbox.name}</span>
-                      {inbox.id === inboxId.value ? <Icon icon="tick" className="size-4" /> : null}
-                    </MenuCommand.Item>
-                  ))}
-                </MenuCommand.List>
-              ) : null}
+              <MenuCommand.List>
+                {inboxes.map((inbox) => (
+                  <MenuCommand.Item onSelect={() => handleInboxSelect(inbox.id)} key={inbox.id} value={inbox.id}>
+                    <span>{inbox.name}</span>
+                    {inbox.id === inboxId.value ? <Icon icon="tick" className="size-4" /> : null}
+                  </MenuCommand.Item>
+                ))}
+              </MenuCommand.List>
             </MenuCommand.Content>
           </MenuCommand.Menu>
 
