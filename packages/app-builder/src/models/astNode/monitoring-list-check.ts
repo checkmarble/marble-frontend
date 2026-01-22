@@ -57,8 +57,8 @@ export interface MonitoringListCheckAstNode {
     objectTableName: ConstantAstNode<string>;
     /** Link path to the object (empty array = trigger object) */
     objectPath: ConstantAstNode<string[]>;
-    /** Optional: specific continuous screening config ID to filter by */
-    screeningConfigId: ConstantAstNode<string | null>;
+    /** Optional: specific continuous screening config IDs to filter by (empty = all) */
+    screeningConfigIds: ConstantAstNode<string[]>;
     /** Hit types to check for (sanctions, PEP, etc.) */
     hitTypes: ConstantAstNode<MonitoringListHitType[]>;
     /** Advanced: additional linked objects to also check */
@@ -81,13 +81,13 @@ export function isMonitoringListCheckAstNode(
 export function NewMonitoringListCheckAstNode({
   objectTableName = '',
   objectPath = [],
-  screeningConfigId = null,
+  screeningConfigIds = [],
   hitTypes = [],
   linkedObjectChecks = [],
 }: {
   objectTableName?: string;
   objectPath?: string[];
-  screeningConfigId?: string | null;
+  screeningConfigIds?: string[];
   hitTypes?: MonitoringListHitType[];
   linkedObjectChecks?: LinkedObjectCheck[];
 } = {}): MonitoringListCheckAstNode {
@@ -99,7 +99,7 @@ export function NewMonitoringListCheckAstNode({
     namedChildren: {
       objectTableName: NewConstantAstNode({ constant: objectTableName }),
       objectPath: NewConstantAstNode({ constant: objectPath }),
-      screeningConfigId: NewConstantAstNode({ constant: screeningConfigId }),
+      screeningConfigIds: NewConstantAstNode({ constant: screeningConfigIds }),
       hitTypes: NewConstantAstNode({ constant: hitTypes }),
       linkedObjectChecks: NewConstantAstNode({ constant: linkedObjectChecks }),
     },
