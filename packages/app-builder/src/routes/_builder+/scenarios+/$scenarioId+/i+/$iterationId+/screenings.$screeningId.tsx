@@ -1,4 +1,4 @@
-import { Callout, CalloutV2, Page, scenarioI18n } from '@app-builder/components';
+import { Callout, Page, scenarioI18n } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
@@ -523,7 +523,7 @@ export default function ScreeningDetail() {
                       </form.Field>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <div className="bg-grey-background-light flex flex-col gap-2 rounded-sm p-2">
+                      <div className="bg-surface-card border-grey-border flex flex-col gap-2 rounded-sm border p-2">
                         <form.Field name="query.name">
                           {(field) => {
                             const value = screeningConfig?.query?.name;
@@ -823,9 +823,9 @@ export default function ScreeningDetail() {
                     </div>
 
                     {!hasRequiredFields && (
-                      <CalloutV2 className="bg-yellow-background text-orange-primary p-2 text-xs items-center font-semibold">
+                      <Callout icon="warning" color="yellow">
                         {t('scenarios:edit_sanction.required_fields_disclaimer')}
-                      </CalloutV2>
+                      </Callout>
                     )}
                   </div>
                 </div>
