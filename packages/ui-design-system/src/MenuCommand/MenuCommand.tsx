@@ -134,6 +134,7 @@ function SubMenu({
   arrow,
   hover = true,
   disabled = false,
+  value,
   ...props
 }: SubMenuProps) {
   const [open, setOpenImperative] = React.useState(false);
@@ -157,6 +158,7 @@ function SubMenu({
       <Root {...props} hover={hover} open={open} onOpenChange={setOpen}>
         <Trigger>
           <Item
+            value={value}
             disabled={disabled}
             className={cn('group/menu-item flex w-full items-center justify-between')}
             onSelect={() => {
