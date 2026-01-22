@@ -140,30 +140,36 @@ export interface AggregationAstNode {
       children: AggregationFilterAstNode[];
       namedChildren: Record<string, never>;
     };
-    percentile: ConstantAstNode<number>; // Value between 0-100
+    percentile?: ConstantAstNode<number>; // Value between 0-100, only for PCTILE operator
   };
 }
 
 export function NewAggregatorAstNode(aggregatorName: AggregatorOperator): AggregationAstNode {
+  const namedChildren: AggregationAstNode['namedChildren'] = {
+    aggregator: NewConstantAstNode({ constant: aggregatorName }),
+    tableName: NewConstantAstNode({ constant: '' }),
+    fieldName: NewConstantAstNode({ constant: '' }),
+    label: NewConstantAstNode({ constant: '' }),
+    filters: {
+      id: uuidv7(),
+      name: 'List',
+      constant: undefined,
+      children: [],
+      namedChildren: {},
+    },
+  };
+
+  // Only add percentile for PCTILE operator
+  if (aggregatorName === 'PCTILE') {
+    namedChildren.percentile = NewConstantAstNode({ constant: 50 });
+  }
+
   return {
     id: uuidv7(),
     name: aggregationAstNodeName,
     constant: undefined,
     children: [],
-    namedChildren: {
-      aggregator: NewConstantAstNode({ constant: aggregatorName }),
-      tableName: NewConstantAstNode({ constant: '' }),
-      fieldName: NewConstantAstNode({ constant: '' }),
-      label: NewConstantAstNode({ constant: '' }),
-      filters: {
-        id: uuidv7(),
-        name: 'List',
-        constant: undefined,
-        children: [],
-        namedChildren: {},
-      },
-      percentile: NewConstantAstNode({ constant: 50 }),
-    },
+    namedChildren,
   };
 }
 
