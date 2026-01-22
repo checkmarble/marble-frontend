@@ -83,20 +83,28 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, appConfigRepository } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, scenarioIterationRuleRepository, entitlements } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    customListsRepository,
+    editor,
+    dataModelRepository,
+    scenarioIterationRuleRepository,
+    entitlements,
+    continuousScreening,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const ruleId = fromParams(params, 'ruleId');
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig, rule] = await Promise.all([
-    editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
-    dataModelRepository.getDataModel(),
-    customListsRepository.listCustomLists(),
-    appConfigRepository.getAppConfig(),
-    scenarioIterationRuleRepository.getRule({ ruleId }),
-  ]);
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig, rule, screeningConfigs] =
+    await Promise.all([
+      editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      appConfigRepository.getAppConfig(),
+      scenarioIterationRuleRepository.getRule({ ruleId }),
+      continuousScreening.listConfigurations(),
+    ]);
 
   return {
     databaseAccessors,
@@ -106,6 +114,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
     rule,
     hasValidLicense: hasAnyEntitlement(entitlements),
+    screeningConfigs,
   };
 }
 
@@ -185,6 +194,7 @@ export default function RuleDetail() {
     isAiRuleDescriptionEnabled,
     rule,
     hasValidLicense,
+    screeningConfigs,
   } = useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
@@ -258,7 +268,7 @@ export default function RuleDetail() {
     triggerObjectType: scenario.triggerObjectType,
     rule,
     hasValidLicense,
-    screeningConfigs: [],
+    screeningConfigs,
   };
 
   //TODO Add errors from the servers if they are present

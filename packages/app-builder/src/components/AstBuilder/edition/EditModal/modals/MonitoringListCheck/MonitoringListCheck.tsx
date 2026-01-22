@@ -82,13 +82,6 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
     nodeSharp.actions.validate();
   };
 
-  const handleScreeningConfigChange = (configId: string | null) => {
-    nodeSharp.update(() => {
-      node.namedChildren.screeningConfigId.constant = configId;
-    });
-    nodeSharp.actions.validate();
-  };
-
   const handleHitTypesChange = (hitTypes: MonitoringListCheckAstNode['namedChildren']['hitTypes']['constant']) => {
     nodeSharp.update(() => {
       node.namedChildren.hitTypes.constant = hitTypes;
@@ -141,7 +134,7 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
 
   return (
     <Modal.Root open onOpenChange={handleOpenChange}>
-      <Modal.Content size="large" onInteractOutside={handleImplicitClose} onEscapeKeyDown={handleImplicitClose}>
+      <Modal.Content size="medium" onInteractOutside={handleImplicitClose} onEscapeKeyDown={handleImplicitClose}>
         <Modal.Title>{t('scenarios:monitoring_list_check.title')}</Modal.Title>
 
         <div className="flex max-h-[70dvh] flex-col gap-6 overflow-auto p-4">
@@ -172,10 +165,7 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
           {/* Step 2: Filter Options */}
           {currentStep === 2 && (
             <FilterSection
-              screeningConfigs={screeningConfigs}
-              currentScreeningConfigId={node.namedChildren.screeningConfigId.constant}
               currentHitTypes={node.namedChildren.hitTypes.constant}
-              onScreeningConfigChange={handleScreeningConfigChange}
               onHitTypesChange={handleHitTypesChange}
             />
           )}

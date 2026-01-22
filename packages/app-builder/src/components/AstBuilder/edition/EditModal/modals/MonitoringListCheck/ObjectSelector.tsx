@@ -91,7 +91,8 @@ export function ObjectSelector({
       }
     }
 
-    return options;
+    // Only return options that have active monitoring
+    return options.filter((option) => option.activeMonitorings.length > 0);
   }, [dataModel, triggerObjectTable, screeningConfigs, t]);
 
   const currentValue = useMemo(() => {
