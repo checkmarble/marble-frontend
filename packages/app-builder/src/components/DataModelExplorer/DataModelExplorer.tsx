@@ -1,7 +1,7 @@
 import { type DataModelWithTableOptions } from '@app-builder/models';
 import { useCallbackRef } from '@marble/shared';
 import { useState } from 'react';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { ButtonV2, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DataTableRender } from './DataTableRender';
@@ -168,22 +168,19 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
 
 function DataModelExplorerTab(props: { current: boolean; label: string; onClick: () => void; onClose: () => void }) {
   return (
-    <button
-      aria-current={props.current}
-      type="button"
-      className="group/tab text-default text-grey-secondary aria-current:bg-purple-background aria-current:text-purple-primary relative inline-flex items-center gap-2 rounded-v2-md px-v2-sm py-v2-xs"
-      onClick={props.onClick}
-    >
+    <Tag color={props.current ? 'purple' : 'grey'} size="big" className="cursor-pointer gap-2" onClick={props.onClick}>
       {props.label}
-      <Icon
-        icon="cross"
-        className="invisible size-3.5 group-aria-current/tab:visible"
-        onClick={(e) => {
-          e.stopPropagation();
-          props.onClose?.();
-        }}
-      />
-    </button>
+      {props.current && (
+        <Icon
+          icon="cross"
+          className="size-3.5"
+          onClick={(e) => {
+            e.stopPropagation();
+            props.onClose?.();
+          }}
+        />
+      )}
+    </Tag>
   );
 }
 
