@@ -10,12 +10,33 @@ import { type ConstantAstNode, NewConstantAstNode } from './constant';
 export type MonitoringListHitType = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
 /**
+ * Navigation index configuration for "down" traversal (to child entities).
+ * Required when extending checks to child tables (e.g., company → users).
+ */
+export type NavigationIndex = {
+  /** Field name to order by (e.g., 'created_at', 'updated_at') */
+  fieldName: string;
+  /** Sort order */
+  order: 'asc' | 'desc';
+};
+
+/**
  * Configuration for checking linked objects in addition to the main object.
+ * Used in Step 3 (Advanced setups) to cascade checks to related entities.
  */
 export type LinkedObjectCheck = {
-  fromTable: string;
-  fromField: string;
-  toTable: string;
+  /** Target table to extend the check to */
+  tableName: string;
+  /** Path from main object to this linked table (via link names) */
+  fieldPath: string[];
+  /** Relationship direction: 'up' = parent table, 'down' = child table */
+  direction: 'up' | 'down';
+  /** Whether this linked check is enabled */
+  enabled: boolean;
+  /** Navigation index config - required for 'down' direction */
+  navigationIndex?: NavigationIndex;
+  /** Whether the configuration has been validated (for 'down' direction) */
+  validated?: boolean;
 };
 
 export const monitoringListCheckAstNodeName = 'MonitoringListCheck';
