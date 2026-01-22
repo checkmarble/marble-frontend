@@ -15,10 +15,13 @@ import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Table, useTable } from 'ui-design-system';
+import { Button, ButtonV2, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateField } from './CreateField';
 import { CreateLink } from './CreateLink';
+import { DeleteField } from './DeleteDataModel/DeleteField';
+import { DeleteLink } from './DeleteDataModel/DeleteLink';
+import { DeleteTable } from './DeleteDataModel/DeleteTable';
 import { dataI18n } from './data-i18n';
 
 interface TableDetailsProps {
@@ -33,6 +36,8 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
     isEditDataModelInfoAvailable,
     isIngestDataAvailable,
     isCreateDataModelLinkAvailable,
+    isDeleteDataModelTableAvailable,
+    isDeleteDataModelLinkAvailable,
   } = useDataModelFeatureAccess();
 
   const otherTablesWithUnique = useMemo(
@@ -64,6 +69,8 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
   const links = useMemo(
     () =>
       tableModel.linksToSingle.map((link) => ({
+        id: link.id,
+        name: link.name,
         foreignKey: link.childFieldName,
         parentTable: link.parentTableName,
         parentFieldName: link.parentFieldName,
@@ -74,37 +81,48 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
 
   return (
     <CollapsiblePaper.Container defaultOpen={false}>
-      <CollapsiblePaper.Title>
+      <CollapsiblePaper.Title size="small">
         <span className="flex flex-1">{tableModel.name}</span>
 
         {isCreateDataModelFieldAvailable ? (
           <div
+            className="flex items-center"
             onClick={(e) => {
               //necessary to prevent clicks on modal interactible to trigger the collapsible
               e.stopPropagation();
             }}
           >
             <CreateField tableId={tableModel.id}>
-              <Button>
-                <Icon icon="plus" className="size-6" />
+              <ButtonV2
+                variant="primary"
+                appearance="stroked"
+                className="h-6 gap-1 rounded-lg px-2 py-1 text-xs shadow-sm"
+              >
+                <Icon icon="plus" className="size-4" />
                 {t('data:create_field.title')}
-              </Button>
+              </ButtonV2>
             </CreateField>
           </div>
         ) : null}
         {isIngestDataAvailable ? (
           <NavLink
-            className={clsx(
-              'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-transparent px-4 py-2 font-semibold outline-hidden',
-              'hover:bg-purple-hover active:bg-purple-hover text-grey-white focus:border-grey-primary bg-purple-primary disabled:bg-purple-disabled',
-            )}
+            className="flex h-6 items-center justify-center gap-1 rounded-lg border border-purple-primary bg-transparent px-2 py-1 text-xs font-medium text-purple-primary shadow-sm transition-colors hover:bg-purple-primary hover:border-purple-primary hover:text-white dark:border-purple-hover dark:text-purple-hover dark:hover:bg-purple-primary dark:hover:border-purple-primary dark:hover:text-grey-white"
             to={getRoute('/upload/:objectType', {
               objectType: tableModel.name,
             })}
           >
-            <Icon icon="plus" className="size-6" />
+            <Icon icon="upload" className="size-4" />
             {t('data:upload_data')}
           </NavLink>
+        ) : null}
+        {isDeleteDataModelTableAvailable ? (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <DeleteTable table={tableModel} />
+          </div>
         ) : null}
       </CollapsiblePaper.Title>
       <CollapsiblePaper.Content>
@@ -141,7 +159,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
                   }}
                 />
               </p>
-              <TableDetailLinks links={links} />
+              <TableDetailLinks links={links} isDeleteDataModelLinkAvailable={isDeleteDataModelLinkAvailable} />
             </>
           ) : null}
 
@@ -179,7 +197,7 @@ const fieldsColumnHelper = createColumnHelper<TableDetailColumnsProps['fields'][
 
 function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumnsProps) {
   const { t } = useTranslation(dataI18n);
-  const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
+  const { isEditDataModelFieldAvailable, isDeleteDataModelFieldAvailable } = useDataModelFeatureAccess();
 
   const linksToThisTable = useMemo(
     () =>
@@ -245,10 +263,15 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
               {isEditDataModelFieldAvailable ? (
                 <div className="flex-shrink-0">
                   <EditField key={cell.row.original.id} field={cell.row.original} linksToThisTable={linksToThisTable}>
-                    <div className="group-hover:text-grey-primary group-hover:bg-grey-background-light group-hover:border-grey-placeholder hover:group-hover:bg-grey-background active:group-hover:bg-grey-border relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out">
-                      <Icon icon="edit-square" className="size-6" />
-                    </div>
+                    <ButtonV2 variant="secondary" mode="icon" className="flex size-7">
+                      <Icon icon="edit-square" className="size-6 text-purple-primary" />
+                    </ButtonV2>
                   </EditField>
+                </div>
+              ) : null}
+              {isDeleteDataModelFieldAvailable && !['object_id', 'updated_at'].includes(cell.row.original.name) ? (
+                <div className="flex-shrink-0">
+                  <DeleteField field={{ id: cell.row.original.id, name: cell.row.original.name }} />
                 </div>
               ) : null}
             </div>
@@ -256,7 +279,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
         },
       }),
     ],
-    [isEditDataModelFieldAvailable, linksToThisTable, t],
+    [isDeleteDataModelFieldAvailable, isEditDataModelFieldAvailable, linksToThisTable, t],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -282,16 +305,19 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
 
 interface TableDetailLinksProps {
   links: Array<{
+    id: string;
+    name: string;
     foreignKey: string;
     parentTable: string;
     parentFieldName: string;
     exampleUsage: string;
   }>;
+  isDeleteDataModelLinkAvailable: boolean;
 }
 
 const linksColumnHelper = createColumnHelper<TableDetailLinksProps['links'][number]>();
 
-function TableDetailLinks({ links }: TableDetailLinksProps) {
+function TableDetailLinks({ links, isDeleteDataModelLinkAvailable }: TableDetailLinksProps) {
   const { t } = useTranslation(dataI18n);
 
   const columnsLinks = useMemo(
@@ -312,14 +338,27 @@ function TableDetailLinks({ links }: TableDetailLinksProps) {
         size: 150,
         header: t('data:parent_field_name'),
       }),
-
       linksColumnHelper.accessor('exampleUsage', {
         id: 'exampleUsage',
         size: 300,
         header: t('data:example_usage'),
+        cell: ({ cell }) => {
+          return (
+            <div className="flex flex-row items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <span className="truncate block">{cell.getValue()}</span>
+              </div>
+              {isDeleteDataModelLinkAvailable ? (
+                <div className="flex-shrink-0">
+                  <DeleteLink link={{ id: cell.row.original.id, name: cell.row.original.name }} />
+                </div>
+              ) : null}
+            </div>
+          );
+        },
       }),
     ],
-    [t],
+    [isDeleteDataModelLinkAvailable, t],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -336,7 +375,7 @@ function TableDetailLinks({ links }: TableDetailLinksProps) {
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (
-          <Table.Row key={row.id} className="mb-4 break-words" row={row} />
+          <Table.Row key={row.id} className="group mb-4 break-words" row={row} />
         ))}
       </Table.Body>
     </Table.Container>

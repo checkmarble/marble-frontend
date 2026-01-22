@@ -114,14 +114,8 @@ export function makeGetScreeningRepository() {
         datasets,
         threshold,
       };
-      // Note: API returns ScreeningMatchDto[] but type says ScreeningMatchPayloadDto[]
-      // We need to extract the payload from each match
       const results = await marbleCoreApiClient.freeformSearch(dto);
-      return R.map(
-        results,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (result: any) => adaptScreeningMatchPayload(result.payload ?? result),
-      );
+      return R.map(results, (result) => adaptScreeningMatchPayload(result.payload));
     },
   });
 }

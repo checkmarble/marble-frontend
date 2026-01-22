@@ -45,7 +45,7 @@ export function CreateCase() {
   if (inboxesQuery.isPending) return <div>Loading...</div>;
   if (inboxesQuery.isError) return <div>Error</div>;
 
-  const inboxes = inboxesQuery.data.inboxes;
+  const inboxes = inboxesQuery.data?.inboxes ?? [];
 
   return (
     <form

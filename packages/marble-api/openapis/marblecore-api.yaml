@@ -274,12 +274,16 @@ paths:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1fields~1{fieldId}
   /data-model/links:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1links
+  /data-model/links/{linkId}:
+    $ref: ./marblecore-api/data-model.yml#/~1data-model~1links~1{linkId}
   /data-model/openapi:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1openapi
   /data-model/openapi/{version}:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1openapi~1{version}
   /data-model/pivots:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1pivots
+  /data-model/pivots/{pivotId}:
+    $ref: ./marblecore-api/data-model.yml#/~1data-model~1pivots~1{pivotId}
   /data-model/tables/{tableId}/navigation_options:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1tables~1{tableId}~1navigation_options
   /data-model/tables/{tableId}/options:

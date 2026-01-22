@@ -816,6 +816,7 @@ export type ScenarioIterationDto = {
     version: number | null;
     created_at: string;
     updated_at: string;
+    archived: boolean;
 };
 export type ScreeningConfigDto = {
     id?: string;
@@ -1190,6 +1191,46 @@ export type CreateTableBody = {
 export type UpdateTableBody = {
     description?: string;
     ftm_entity?: FtmEntity;
+};
+export type Items = {
+    id?: string;
+    label?: string;
+};
+export type Schema = {
+    performed?: boolean;
+    conflicts?: {
+        /** Whether a continuous screening config uses the resource */
+        continuous_screening: boolean;
+        /** List of links using the resource */
+        links: string[];
+        /** List of pivots using the resource */
+        pivots: string[];
+        /** Number of analytics settings referring to the resource */
+        analytics_settings: number;
+        /** Scenarios using the resource as a trigger object */
+        scenarios: Items[];
+        /** List of scenarios that would have no live or draft version after deleting the resource */
+        empty_scenarios: Items[];
+        /** Map of scenario iterations which components refer to the resource */
+        scenario_iterations: {
+            [key: string]: {
+                name?: string;
+                scenario_id?: string;
+                draft?: boolean;
+                trigger_condition?: boolean;
+                rules?: Items[];
+                screenings?: Items[];
+            };
+        };
+        /** List of scenarios which workflows use the resource */
+        workflows: Items[];
+        /** Whether an active test run uses an iteration that would be disabled */
+        test_runs: boolean;
+    };
+    archived_iterations?: {
+        id?: string;
+        label?: string;
+    }[];
 };
 export type CreateTableFieldDto = {
     name: string;
@@ -4006,6 +4047,34 @@ export function patchDataModelTable(tableId: string, updateTableBody: UpdateTabl
     })));
 }
 /**
+ * Delete a data model table
+ */
+export function deleteDataModelTable(tableId: string, { perform }: {
+    perform?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: Schema;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}${QS.query(QS.explode({
+        perform
+    }))}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
  * Create a new field on a table from the data model
  */
 export function postDataModelTableField(tableId: string, createTableFieldDto: CreateTableFieldDto, opts?: Oazapfts.RequestOpts) {
@@ -4048,6 +4117,34 @@ export function patchDataModelField(fieldId: string, updateTableFieldDto: Update
     })));
 }
 /**
+ * Delete a data model field
+ */
+export function deleteDataModelField(fieldId: string, { perform }: {
+    perform?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: Schema;
+    }>(`/data-model/fields/${encodeURIComponent(fieldId)}${QS.query(QS.explode({
+        perform
+    }))}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
  * Create a new link on a table from the data model
  */
 export function postDataModelTableLink(createTableLinkBody: CreateTableLinkBody, opts?: Oazapfts.RequestOpts) {
@@ -4067,6 +4164,69 @@ export function postDataModelTableLink(createTableLinkBody: CreateTableLinkBody,
         method: "POST",
         body: createTableLinkBody
     })));
+}
+/**
+ * Delete a data model link
+ */
+export function deleteDataModelLink(linkId: string, { perform }: {
+    perform?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            performed?: boolean;
+            conflicts?: {
+                /** Whether a continuous screening config uses the resource */
+                continuous_screening: boolean;
+                /** List of links using the resource */
+                links: string[];
+                /** List of pivots using the resource */
+                pivots: string[];
+                /** Number of analytics settings referring to the resource */
+                analytics_settings: number;
+                /** Scenarios using the resource as a trigger object */
+                scenarios: Items[];
+                /** List of scenarios that would have no live or draft version after deleting the resource */
+                empty_scenarios: Items[];
+                /** Map of scenario iterations which components refer to the resource */
+                scenario_iterations: {
+                    [key: string]: {
+                        name?: string;
+                        scenario_id?: string;
+                        draft?: boolean;
+                        trigger_condition?: boolean;
+                        rules?: Items[];
+                        screenings?: Items[];
+                    };
+                };
+                /** List of scenarios which workflows use the resource */
+                workflows: Items[];
+                /** Whether an active test run uses an iteration that would be disabled */
+                test_runs: boolean;
+            };
+            archived_iterations?: {
+                id?: string;
+                label?: string;
+            }[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: Schema;
+    }>(`/data-model/links/${encodeURIComponent(linkId)}${QS.query(QS.explode({
+        perform
+    }))}`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * Get the current version of the OpenAPI specification of the client specific API for data ingestion and decision making
@@ -4145,6 +4305,34 @@ export function createDataModelPivot(createPivotInputDto: CreatePivotInputDto, o
         method: "POST",
         body: createPivotInputDto
     })));
+}
+/**
+ * Delete a data model pivot
+ */
+export function deleteDataModelPivot(pivotId: string, { perform }: {
+    perform?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Schema;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: Schema;
+    }>(`/data-model/pivots/${encodeURIComponent(pivotId)}${QS.query(QS.explode({
+        perform
+    }))}`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * Create a new navigation option (one to many link) from a table from the data model. Under the hood, this creates (concurrently) a new index on the target table, which may take some time if there is already data in the table.

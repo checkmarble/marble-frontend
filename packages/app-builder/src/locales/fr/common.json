@@ -15,6 +15,7 @@
   "delete": "Supprimer",
   "description": "Description",
   "documents": "Documents",
+  "draft": "Brouillon",
   "edit": "Modifier",
   "empty_scenario_iteration_list": "Vous n'avez aucune règle. Cliquez sur \"Créer une règle\" pour en créer une nouvelle",
   "error_boundary.default.subtitle": "Il semble qu'une erreur soit survenue.",
