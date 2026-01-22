@@ -5,7 +5,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MenuCommand } from 'ui-design-system';
+import { MenuCommand, Tooltip } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export const operatorContainerClassnames = cva(
   [
@@ -26,7 +27,21 @@ export const operatorContainerClassnames = cva(
   },
 );
 
-export type OperatorSelectOptions<Op extends string> = Record<Op, { keywords?: string[] }>;
+export type OperatorSelectOptions<Op extends string> = Record<Op, { keywords?: string[]; tooltipKey?: string }>;
+
+function OperatorTooltip({ tooltipKey }: { tooltipKey: string }) {
+  const { t } = useTranslation(['scenarios']);
+  return (
+    <Tooltip.Default
+      className="max-h-none overflow-visible"
+      content={<div className="text-s max-w-xs whitespace-pre-wrap">{t(tooltipKey)}</div>}
+    >
+      <span className="text-purple-primary">
+        <Icon icon="tip" className="size-4" />
+      </span>
+    </Tooltip.Default>
+  );
+}
 
 export function OperatorSelect<Op extends string>({
   options,
@@ -55,6 +70,9 @@ export function OperatorSelect<Op extends string>({
   const isCurrentRestricted = _value ? (isOperatorRestricted?.(_value) ?? false) : false;
   const showTriggerNudge = isCurrentRestricted && isRestricted && featureAccess;
 
+  // Get tooltip key for currently selected operator
+  const currentTooltipKey = _value ? mappedOptions.find((op) => op.value === _value)?.tooltipKey : undefined;
+
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
@@ -62,6 +80,7 @@ export function OperatorSelect<Op extends string>({
           <span className="text-s text-grey-primary w-full text-center font-medium">
             {_value ? getOperatorName(t, _value, isFilter) : '...'}
           </span>
+          {currentTooltipKey ? <OperatorTooltip tooltipKey={currentTooltipKey} /> : null}
           {showTriggerNudge ? <Nudge kind={featureAccess} content={t('common:premium')} className="size-5" /> : null}
           {!showTriggerNudge && !hideArrow ? <MenuCommand.Arrow /> : null}
         </button>
@@ -81,7 +100,10 @@ export function OperatorSelect<Op extends string>({
                 onSelect={() => onOperatorChange(op.value)}
               >
                 <div className="flex w-full items-center justify-between gap-2">
-                  <span className="font-semibold">{getOperatorName(t, op.value, isFilter)}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{getOperatorName(t, op.value, isFilter)}</span>
+                    {op.tooltipKey ? <OperatorTooltip tooltipKey={op.tooltipKey} /> : null}
+                  </div>
                   {showNudge ? <Nudge kind={featureAccess} content={t('common:premium')} className="size-5" /> : null}
                 </div>
               </MenuCommand.Item>
@@ -96,6 +118,7 @@ export function OperatorSelect<Op extends string>({
 type Options<Op extends string> = {
   value: Op;
   keywords?: string[];
+  tooltipKey?: string;
 }[];
 
 function mapOptions<Op extends string>(options: readonly Op[] | OperatorSelectOptions<Op>): Options<Op> {

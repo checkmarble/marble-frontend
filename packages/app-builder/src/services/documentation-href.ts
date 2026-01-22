@@ -6,7 +6,7 @@ export const fuzzyMatchingDocHref = 'https://docs.checkmarble.com/docs/string-si
 
 export const stringTemplatingDocHref = 'https://docs.checkmarble.com/docs/string-templating';
 
-export const aggregationDocHref = 'https://docs.checkmarble.com/docs/average';
+export const aggregationDocHref = 'https://docs.checkmarble.com/docs/aggregations';
 
 export const dateDocHref = 'https://docs.checkmarble.com/docs/now-copy';
 
