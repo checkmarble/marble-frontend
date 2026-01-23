@@ -2199,6 +2199,17 @@ export function getPivotRelatedCases(pivotValue: string, opts?: Oazapfts.Request
     }));
 }
 /**
+ * Get cases related to an object from its type and id
+ */
+export function getObjectRelatedCases(objectType: string, objectId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseDto[];
+    }>(`/cases/related/object_type/${encodeURIComponent(objectType)}/object_id/${encodeURIComponent(objectId)}`, {
+        ...opts
+    }));
+}
+/**
  * Get the next unassigned case
  */
 export function getNextCase(caseId: string, opts?: Oazapfts.RequestOpts) {
