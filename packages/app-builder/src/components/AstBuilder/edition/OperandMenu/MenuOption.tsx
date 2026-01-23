@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OperandInfos } from '../../OperandInfos';
-import { type EnrichedMenuOption } from '../helpers';
+import { type EnrichedMenuOption, getDataAccessorPath } from '../helpers';
 
 type MenuOptionProps = {
   option: EnrichedMenuOption;
@@ -17,12 +17,22 @@ type MenuOptionProps = {
   onSelect: (node: AstNode) => void;
   rightElement?: ReactNode;
   highlightSearch?: boolean;
+  /** Show the table/link path next to the field name (useful in search results to disambiguate) */
+  showFieldPath?: boolean;
 };
-export function MenuOption({ option, value, onSelect, rightElement, highlightSearch = true }: MenuOptionProps) {
+export function MenuOption({
+  option,
+  value,
+  onSelect,
+  rightElement,
+  highlightSearch = true,
+  showFieldPath = false,
+}: MenuOptionProps) {
   const { t } = useTranslation(['common']);
   const searchValue = MenuCommand.State.useSharp().value.search;
   const leftIcon = option.icon ?? getDataTypeIcon(option.dataType);
   const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
+  const fieldPath = showFieldPath ? getDataAccessorPath(option.astNode) : null;
 
   // Check if this is a restricted aggregator option
   const isRestrictedOption =
@@ -34,12 +44,15 @@ export function MenuOption({ option, value, onSelect, rightElement, highlightSea
       <div className="grid w-full grid-cols-[20px_1fr] gap-1">
         {leftIcon ? <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} /> : null}
         <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-          <div className="text-grey-primary text-s w-full break-all text-start font-normal">
-            {searchValue && highlightSearch ? (
-              <Highlight text={option.displayName} query={searchValue} />
-            ) : (
-              option.displayName
-            )}
+          <div className="text-s w-full break-all text-start font-normal">
+            <span className="text-grey-primary">
+              {searchValue && highlightSearch ? (
+                <Highlight text={option.displayName} query={searchValue} />
+              ) : (
+                option.displayName
+              )}
+            </span>
+            {fieldPath ? <span className="text-grey-secondary ml-1">({fieldPath})</span> : null}
           </div>
           <div className="ml-auto flex shrink-0 items-center gap-1">
             {rightElement ?? (
