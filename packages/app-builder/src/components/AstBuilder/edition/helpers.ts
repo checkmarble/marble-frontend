@@ -39,6 +39,19 @@ function getFieldName(astNode: IdLessAstNode) {
     .otherwise(() => 'unknown');
 }
 
+/**
+ * Get the table/link path for a data accessor AST node.
+ * For DatabaseAccess: returns "tableName.link1.link2" (without the field name)
+ * For Payload: returns null (payload fields don't have a path prefix)
+ */
+export function getDataAccessorPath(astNode: IdLessAstNode): string | null {
+  if (isDatabaseAccess(astNode)) {
+    const { tableName, path } = astNode.namedChildren;
+    return [tableName.constant, ...path.constant].join('.');
+  }
+  return null;
+}
+
 export function getOperandMenuOptions(params: {
   node: AstNode;
   enums: EnumValue[] | undefined;
@@ -86,12 +99,9 @@ export function groupByOperandType(
         ? R.pipe(
             Field,
             R.groupBy((option) => {
-              const astNode = option.astNode;
-              if (isDatabaseAccess(astNode)) {
-                const { path, tableName } = astNode.namedChildren;
-                return [tableName.constant, ...path.constant].join('.');
-              }
-              if (isPayload(astNode)) {
+              const path = getDataAccessorPath(option.astNode);
+              if (path) return path;
+              if (isPayload(option.astNode)) {
                 return context.triggerObjectTable.name;
               }
             }),

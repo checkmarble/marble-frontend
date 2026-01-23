@@ -1,4 +1,5 @@
-import { getConstantDataTypeTKey, injectIdToNode } from '@app-builder/models';
+import { getConstantDataTypeTKey, type IdLessAstNode, injectIdToNode } from '@app-builder/models';
+import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import { formatConstant } from '@app-builder/services/ast-node/formatConstant';
 import { getConstantAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { useFormatLanguage } from '@app-builder/utils/format';
@@ -9,8 +10,33 @@ import { MenuCommand } from 'ui-design-system';
 
 import { coerceToConstantAstNode } from '../coerceToConstantAstNode';
 import { EditionOperandSharpFactory } from '../EditionOperand';
+import { getDataAccessorPath } from '../helpers';
 import { MenuOption } from './MenuOption';
 import { type SmartMenuListProps } from './types';
+
+/**
+ * Generate a unique key for an option based on its AST node.
+ * For database fields, includes the full path to distinguish fields with same names from different tables.
+ */
+function getUniqueOptionKey(
+  astNode: IdLessAstNode,
+  displayName: string,
+  dataType: string,
+  operandType: string,
+): string {
+  const path = getDataAccessorPath(astNode);
+  if (path) {
+    // For DatabaseAccess, include full path with field name
+    if (isDatabaseAccess(astNode)) {
+      const fieldName = astNode.namedChildren.fieldName.constant;
+      return `${path}.${fieldName}-${dataType}-${operandType}`;
+    }
+  }
+  if (isPayload(astNode)) {
+    return `payload.${astNode.children[0].constant}-${dataType}-${operandType}`;
+  }
+  return `${displayName}-${dataType}-${operandType}`;
+}
 
 export type SearchResultsProps = SmartMenuListProps & {
   search: string;
@@ -25,8 +51,9 @@ export function SearchResults({ onSelect, search }: SearchResultsProps) {
     return matchSorter(options, search, {
       keys: ['displayName', 'searchShortcut'],
     }).map(({ astNode, ...option }) => {
+      const uniqueKey = getUniqueOptionKey(astNode, option.displayName, option.dataType, option.operandType);
       return {
-        key: `${option.displayName}-${option.dataType}-${option.operandType}`,
+        key: uniqueKey,
         ...option,
         astNode,
         onClick: () => {
@@ -80,11 +107,7 @@ export function SearchResults({ onSelect, search }: SearchResultsProps) {
       ) : null}
       <MenuCommand.Group forceMount heading={<ResultTitle count={matchOptions.length} />}>
         {matchOptions.map((option) => (
-          <MenuOption
-            key={`${option.displayName}-${option.dataType}-${option.operandType}`}
-            option={option}
-            onSelect={onSelect}
-          />
+          <MenuOption key={option.key} value={option.key} option={option} onSelect={onSelect} showFieldPath />
         ))}
       </MenuCommand.Group>
     </MenuCommand.List>

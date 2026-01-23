@@ -110,7 +110,7 @@ function Root({ hover = false, persistOnSelect, ...props }: RootProps) {
 
   return (
     <InternalMenuSharpFactory.Provider value={internalSharp}>
-      <RootEl openDelay={150} closeDelay={150} {...props} />
+      <RootEl openDelay={75} closeDelay={75} {...props} />
     </InternalMenuSharpFactory.Provider>
   );
 }
