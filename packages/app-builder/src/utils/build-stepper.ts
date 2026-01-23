@@ -18,9 +18,11 @@ type BuildStepperOptions<Steps extends readonly Step[], Validator extends ZodTyp
 type StepperData<Steps extends readonly Step[], Validator extends ZodType, InitialData> = {
   __internals: {
     name: string;
+    initialStep: number;
     currentStep: number;
     steps: Steps;
     validator: Validator;
+    mode: 'view' | 'edit' | 'create';
     onSubmit: (data: z.infer<Validator>) => void;
   };
   data: InitialData;
@@ -34,15 +36,19 @@ export const buildStepper = <Steps extends readonly Step[], Validator extends Zo
   return createSharpFactory({
     name: options.name,
     initializer: (
+      mode: 'view' | 'edit' | 'create',
       initialData: InitialData,
       onSubmit: (data: z.infer<Validator>) => void,
+      { initialStep = 0 }: { initialStep?: number } = {},
     ): StepperData<Steps, Validator, InitialData> => {
       return {
         __internals: {
           name: options.name,
-          currentStep: 0,
+          initialStep,
+          currentStep: initialStep,
           steps: options.steps,
           validator: options.validator,
+          mode,
           onSubmit,
         },
         data: initialData,
@@ -50,6 +56,13 @@ export const buildStepper = <Steps extends readonly Step[], Validator extends Zo
     },
   })
     .withActions({
+      setMode(api, mode: 'view' | 'edit' | 'create', step?: number) {
+        const __internals = api.value.__internals;
+        __internals.mode = mode;
+        if (step !== undefined) {
+          __internals.currentStep = step;
+        }
+      },
       setCurrentStep(api, step: number) {
         const __internals = api.value.__internals;
         if (Math.max(0, Math.min(__internals.steps.length - 1, step)) !== step) {
@@ -78,7 +91,7 @@ export const buildStepper = <Steps extends readonly Step[], Validator extends Zo
       },
       hasPrevious(state) {
         const __internals = state.__internals;
-        return __internals.currentStep > 0;
+        return __internals.currentStep > __internals.initialStep;
       },
       canGoNext(state) {
         const __internals = state.__internals;

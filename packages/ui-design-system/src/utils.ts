@@ -17,6 +17,7 @@ const twMerge = extendTailwindMerge({
         'text-small',
         'text-tiny', // New ones
       ],
+      p: ['p-v2-xxxl', 'p-v2-xxl', 'p-v2-xl', 'p-v2-lg', 'p-v2-md', 'p-v2-sm', 'p-v2-xs', 'p-v2-xxs', 'p-0'],
     },
   },
 });

@@ -752,9 +752,11 @@ components:
     FtmEntity:
       type: string
       enum:
-        - Company
         - Person
+        - Company
+        - Organization
         - Vessel
+        - Airplane
 
     DataModelDto:
       type: object

@@ -6,13 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, Input, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { ContinuousScreeningCreationStepper } from '../../context/CreationStepper';
+import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 import { Field } from '../../shared/Field';
 
 export const ScoringConfiguration = () => {
   const { t } = useTranslation(['continuousScreening']);
-  const matchThreshold = ContinuousScreeningCreationStepper.select((state) => state.data.$matchThreshold);
-  const matchLimit = ContinuousScreeningCreationStepper.select((state) => state.data.$matchLimit);
+  const matchThreshold = ContinuousScreeningConfigurationStepper.select((state) => state.data.$matchThreshold);
+  const matchLimit = ContinuousScreeningConfigurationStepper.select((state) => state.data.$matchLimit);
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   return (
     <div className="flex flex-col gap-v2-md">
@@ -30,6 +31,7 @@ export const ScoringConfiguration = () => {
           max={100}
           step={0.1}
           value={matchThreshold.value}
+          readOnly={mode === 'view'}
           onChange={(e) => (matchThreshold.value = e.target.valueAsNumber)}
         />
         <span>%</span>
@@ -39,7 +41,12 @@ export const ScoringConfiguration = () => {
         description={t('continuousScreening:creation.scoringConfiguration.matchLimit.subtitle')}
         callout={t('continuousScreening:creation.scoringConfiguration.matchLimit.callout')}
       >
-        <Input type="number" value={matchLimit.value} onChange={(e) => (matchLimit.value = e.target.valueAsNumber)} />
+        <Input
+          type="number"
+          value={matchLimit.value}
+          readOnly={mode === 'view'}
+          onChange={(e) => (matchLimit.value = e.target.valueAsNumber)}
+        />
         <span>{t('continuousScreening:creation.scoringConfiguration.matchLimit.text')}</span>
       </Field>
       <div className="grid grid-cols-1 gap-v2-md">
@@ -59,9 +66,10 @@ const InboxSelector = () => {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const [isOpen, setIsOpen] = useState(false);
   const inboxesQuery = useGetInboxesQuery();
-  const creationStepper = ContinuousScreeningCreationStepper.useSharp();
-  const inboxId = ContinuousScreeningCreationStepper.select((state) => state.data.$inboxId);
-  const inboxName = ContinuousScreeningCreationStepper.select((state) => state.data.$inboxName);
+  const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const inboxId = ContinuousScreeningConfigurationStepper.select((state) => state.data.$inboxId);
+  const inboxName = ContinuousScreeningConfigurationStepper.select((state) => state.data.$inboxName);
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   const handleInboxSelect = (inboxId: string) => {
     creationStepper.update((state) => {
@@ -94,14 +102,8 @@ const InboxSelector = () => {
         <>
           <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
             <MenuCommand.Trigger>
-              <MenuCommand.SelectButton disabled={!inboxesQuery.isSuccess}>
-                {currentInboxName ? (
-                  currentInboxName
-                ) : (
-                  <span className="text-grey-placeholder">
-                    {t('continuousScreening:creation.scoringConfiguration.alertAutomation.placeholder')}
-                  </span>
-                )}
+              <MenuCommand.SelectButton disabled={!inboxesQuery.isSuccess} readOnly={mode === 'view'}>
+                {currentInboxName ?? t('continuousScreening:creation.scoringConfiguration.alertAutomation.placeholder')}
               </MenuCommand.SelectButton>
             </MenuCommand.Trigger>
             <MenuCommand.Content side="bottom" align="start" sideOffset={4}>
@@ -120,6 +122,7 @@ const InboxSelector = () => {
           <Input
             type="text"
             value={inboxName.value ?? ''}
+            readOnly={mode === 'view'}
             onChange={(e) => {
               creationStepper.update((state) => {
                 if (state.data.inboxId !== null) {

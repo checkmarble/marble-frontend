@@ -1,16 +1,16 @@
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { computed } from '@preact/signals-react';
 import { useTranslation } from 'react-i18next';
-import { ContinuousScreeningCreationStepper } from '../../context/CreationStepper';
+import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 import { RecapCapsule, RecapRow } from '../../shared/RecapRow';
 
 export const ScoringConfigurationRecap = () => {
   const { t } = useTranslation(['continuousScreening']);
   const inboxesQuery = useGetInboxesQuery();
-  const inboxId = ContinuousScreeningCreationStepper.select((state) => state.data.$inboxId);
-  const inboxName = ContinuousScreeningCreationStepper.select((state) => state.data.$inboxName);
-  const matchThreshold = ContinuousScreeningCreationStepper.select((state) => state.data.matchThreshold);
-  const matchLimit = ContinuousScreeningCreationStepper.select((state) => state.data.matchLimit);
+  const inboxId = ContinuousScreeningConfigurationStepper.select((state) => state.data.$inboxId);
+  const inboxName = ContinuousScreeningConfigurationStepper.select((state) => state.data.$inboxName);
+  const matchThreshold = ContinuousScreeningConfigurationStepper.select((state) => state.data.matchThreshold);
+  const matchLimit = ContinuousScreeningConfigurationStepper.select((state) => state.data.matchLimit);
 
   const inboxDisplayName = computed(() => {
     if (inboxName.value) {

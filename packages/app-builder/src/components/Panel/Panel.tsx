@@ -4,7 +4,7 @@ import { Icon } from 'ui-icons';
 
 import { usePanel } from './PanelProvider';
 
-export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl';
+export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | 'max';
 
 const sizeClasses: Record<PanelSize, string> = {
   sm: 'max-w-sm',
@@ -13,6 +13,7 @@ const sizeClasses: Record<PanelSize, string> = {
   xl: 'max-w-xl',
   xxl: 'max-w-2xl',
   xxxl: 'max-w-3xl',
+  max: 'max-w-[1000px]',
 };
 
 interface PanelContainerProps {
@@ -73,18 +74,25 @@ export function PanelContainer({ children, className, size = 'md' }: PanelContai
   }, []);
 
   return (
-    <div
-      ref={panelRef}
-      className={cn(
-        'fixed inset-y-0 right-0 bg-surface-card border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
-        sizeClasses[size],
-        className,
-      )}
-      role="dialog"
-      aria-modal="true"
-    >
-      {children}
-    </div>
+    <>
+      <div
+        className="fixed inset-0 bg-grey-primary/10 z-20 backdrop-blur-xs animate-overlay-show"
+        onClick={closePanel}
+        aria-hidden="true"
+      />
+      <div
+        ref={panelRef}
+        className={cn(
+          'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
+          sizeClasses[size],
+          className,
+        )}
+        role="dialog"
+        aria-modal="true"
+      >
+        {children}
+      </div>
+    </>
   );
 }
 

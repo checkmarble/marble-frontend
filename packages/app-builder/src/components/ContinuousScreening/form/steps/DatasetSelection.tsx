@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, Checkbox } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { ContinuousScreeningCreationStepper } from '../../context/CreationStepper';
+import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 
 export const DatasetSelection = () => {
   const { t } = useTranslation(['common', 'continuousScreening']);
@@ -60,7 +60,7 @@ export const DatasetSelection = () => {
 
 const SelectedListsCount = () => {
   const { t } = useTranslation(['continuousScreening']);
-  const selectedDatasetsCount = ContinuousScreeningCreationStepper.select(
+  const selectedDatasetsCount = ContinuousScreeningConfigurationStepper.select(
     (state) => Object.values(state.data.datasets).filter(Boolean).length,
   );
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: selectedDatasetsCount })}</span>;
@@ -93,12 +93,13 @@ const DatasetSection = ({ section }: { section: OpenSanctionsCatalogSection }) =
 };
 
 const DatasetItem = ({ dataset }: { dataset: OpenSanctionsCatalogDataset }) => {
-  const creationStepper = ContinuousScreeningCreationStepper.useSharp();
-  const isSelected = ContinuousScreeningCreationStepper.select((state) => state.data.datasets[dataset.name]);
+  const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const isSelected = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets[dataset.name]);
   const handleChange = useCallbackRef(() => {
     const stepperData = creationStepper.value.data;
     stepperData.datasets[dataset.name] = !stepperData.datasets[dataset.name];
   });
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   return (
     <div
@@ -106,7 +107,7 @@ const DatasetItem = ({ dataset }: { dataset: OpenSanctionsCatalogDataset }) => {
       onClick={handleChange}
     >
       <div className="flex flex-row items-center gap-v2-sm">
-        <Checkbox size="small" checked={isSelected} />
+        <Checkbox size="small" checked={isSelected} disabled={mode === 'view'} />
         <span className="text-s">{dataset.title}</span>
       </div>
       {dataset.tag ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
@@ -116,8 +117,9 @@ const DatasetItem = ({ dataset }: { dataset: OpenSanctionsCatalogDataset }) => {
 
 const SelectAllCheckbox = ({ section }: { section: OpenSanctionsCatalogSection }) => {
   const { t } = useTranslation(['continuousScreening']);
-  const creationStepper = ContinuousScreeningCreationStepper.useSharp();
-  const selectedState = ContinuousScreeningCreationStepper.select((state) => {
+  const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+  const selectedState = ContinuousScreeningConfigurationStepper.select((state) => {
     const selectedCount = section.datasets.filter((dataset) => state.data.datasets[dataset.name]).length;
     return selectedCount === section.datasets.length ? true : selectedCount === 0 ? false : 'indeterminate';
   });
@@ -133,7 +135,7 @@ const SelectAllCheckbox = ({ section }: { section: OpenSanctionsCatalogSection }
 
   return (
     <div className="flex items-center gap-v2-sm" onClick={handleClick}>
-      <Checkbox size="small" checked={selectedState} />
+      <Checkbox size="small" checked={selectedState} disabled={mode === 'view'} />
       <span>
         {t(
           `continuousScreening:creation.datasetSelection.list.section.${selectedState === true ? 'unselect_all' : 'select_all'}`,

@@ -1,4 +1,8 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import {
+  ContinuousScreeningConfig,
+  PrevalidationCreateContinuousScreeningConfig,
+} from '@app-builder/models/continuous-screening';
 import { useContinuousScreeningConfigurationsQuery } from '@app-builder/queries/continuous-screening/configurations';
 import { getRoute } from '@app-builder/utils/routes';
 import QueryString from 'qs';
@@ -10,9 +14,12 @@ import { Icon } from 'ui-icons';
 import { BreadCrumbs } from '../Breadcrumbs';
 import GridTable from '../GridTable';
 import { Page } from '../Page';
+import { usePanel } from '../Panel';
 import { Spinner } from '../Spinner';
+import { ConfigurationPanel } from './ConfigurationPanel';
 import { CopyToClipboardChip } from './CopyToClipboardChip';
 import { CreationModal } from './CreationModal';
+import { EditionValidationPanel } from './EditionValidationPanel';
 import { Capsule } from './shared/Capsule';
 
 const CellCapsule = ({ children }: { children: React.ReactNode }) => {
@@ -24,6 +31,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
   const configurationsQuery = useContinuousScreeningConfigurationsQuery();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
   const navigate = useAgnosticNavigation();
+  const { openPanel } = usePanel();
 
   const handleCreationSubmit = (value: { name: string; description: string }) => {
     const qs = QueryString.stringify(value, { addQueryPrefix: true });
@@ -31,6 +39,17 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
       pathname: getRoute('/continuous-screening/create'),
       search: qs,
     });
+  };
+
+  const handleUpdate = (
+    baseConfig: ContinuousScreeningConfig,
+    updatedConfig: PrevalidationCreateContinuousScreeningConfig,
+  ) => {
+    openPanel(<EditionValidationPanel baseConfig={baseConfig} updatedConfig={updatedConfig} />);
+  };
+
+  const handleRowClick = (item: ContinuousScreeningConfig) => {
+    openPanel(<ConfigurationPanel config={item} onUpdate={(updatedConfig) => handleUpdate(item, updatedConfig)} />);
   };
 
   return (
@@ -88,7 +107,11 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                     <GridTable.Cell>{t('continuousScreening:configurations.list.column.target_inbox')}</GridTable.Cell>
                   </GridTable.Row>
                   {configurations.map((item) => (
-                    <GridTable.Row key={item.id} className="hover:bg-grey-background-light">
+                    <GridTable.Row
+                      key={item.id}
+                      className="hover:bg-grey-background-light"
+                      onClick={() => handleRowClick(item)}
+                    >
                       <GridTable.Cell className="flex gap-v2-md items-center justify-between">
                         <span className="truncate">{item.name}</span>
                         <CopyToClipboardChip value={item.stableId} className="min-w-40" />
