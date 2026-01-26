@@ -14,8 +14,6 @@ import { Icon } from 'ui-icons';
 
 import { dataI18n } from '../data-i18n';
 
-const CONFIRMATION_TEXT = 'DELETE';
-
 export type DeleteDataModelEntityType = 'table' | 'field' | 'link' | 'pivot';
 
 interface DeleteDataModelContentProps {
@@ -44,7 +42,7 @@ export function DeleteDataModelContent({
 
   const isBlocked = hasBlockingConflicts(report);
   const hasArchivedIterations = report.archivedIterations.length > 0;
-  const isConfirmed = confirmationText === CONFIRMATION_TEXT;
+  const isConfirmed = confirmationText === entityName;
 
   return (
     <>
@@ -61,14 +59,14 @@ export function DeleteDataModelContent({
         {!isBlocked ? (
           <div className="flex flex-col gap-2">
             <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
-              {t('data:delete.type_to_confirm', { text: CONFIRMATION_TEXT })}
+              {t('data:delete.type_to_confirm', { text: entityName })}
             </label>
             <Input
               id="delete-confirmation"
               type="text"
               value={confirmationText}
               onChange={(e) => setConfirmationText(e.target.value)}
-              placeholder={CONFIRMATION_TEXT}
+              placeholder={entityName}
               autoComplete="off"
             />
           </div>
