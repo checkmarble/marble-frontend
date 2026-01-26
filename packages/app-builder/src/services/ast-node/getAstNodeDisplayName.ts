@@ -264,23 +264,21 @@ function getMonitoringListCheckDisplayName(
   context: AstNodeStringifierContext,
 ) {
   const objectTableName = astNode.namedChildren.objectTableName.constant;
-  const hitTypes = astNode.namedChildren.hitTypes.constant;
+  const topics = astNode.namedChildren.topics.constant;
 
   if (!objectTableName) {
     return context.t('scenarios:monitoring_list_check.title');
   }
 
-  if (hitTypes.length === 0) {
+  if (topics.length === 0) {
     return context.t('scenarios:monitoring_list_check.display_name_any', {
       replace: { objectTableName },
     });
   }
 
-  const hitTypesStr = hitTypes
-    .map((ht) => context.t(`scenarios:monitoring_list_check.hit_type.${ht.replace('-', '_')}` as const))
-    .join(', ');
+  const topicsStr = topics.join(', ');
 
   return context.t('scenarios:monitoring_list_check.display_name', {
-    replace: { hitTypes: hitTypesStr, objectTableName },
+    replace: { topics: topicsStr, objectTableName },
   });
 }

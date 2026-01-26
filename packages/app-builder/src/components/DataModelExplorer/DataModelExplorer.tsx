@@ -78,7 +78,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
     });
   });
 
-  const closeTab = useCallbackRef((tab: DataModelExplorerNavigationTab) => {
+  const _closeTab = useCallbackRef((tab: DataModelExplorerNavigationTab) => {
     const nextState: Partial<DataModelExplorerState> = {};
     const tabIndex = tabs.indexOf(tab);
 
@@ -115,7 +115,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
     <div className="h-[calc(100vh-210px)] min-w-[80vw] overflow-y-scroll p-14 py-2">
       <div className="flex flex-col gap-3">
         <div className="before:bg-grey-border relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
-          {tabs.map((tab) => {
+          {/* {tabs.map((tab) => {
             const tabUniqValue = getTabUniqValue(tab);
             return (
               <DataModelExplorerTab
@@ -133,7 +133,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
                 }}
               />
             );
-          })}
+          })} */}
           <TabBarActions
             className="absolute right-2 top-2"
             options={[
@@ -166,7 +166,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
   );
 }
 
-function DataModelExplorerTab(props: { current: boolean; label: string; onClick: () => void; onClose: () => void }) {
+function _DataModelExplorerTab(props: { current: boolean; label: string; onClick: () => void; onClose: () => void }) {
   return (
     <Tag color={props.current ? 'purple' : 'grey'} size="big" className="cursor-pointer gap-2" onClick={props.onClick}>
       {props.label}

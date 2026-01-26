@@ -1,4 +1,5 @@
 import { type DataModel, type TableModel } from '@app-builder/models';
+import { type ObjectPathSegment } from '@app-builder/models/astNode/monitoring-list-check';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { Radio, RadioGroup, RadioProvider } from '@ariakit/react';
 import { cva } from 'class-variance-authority';
@@ -10,7 +11,7 @@ import { Icon } from 'ui-icons';
 
 type ObjectOption = {
   tableName: string;
-  path: string[];
+  path: ObjectPathSegment[];
   displayLabel: string;
   pathDisplay: string;
   activeMonitorings: ContinuousScreeningConfig[];
@@ -21,8 +22,8 @@ type ObjectSelectorProps = {
   triggerObjectTable: TableModel;
   screeningConfigs: ContinuousScreeningConfig[];
   currentTableName: string;
-  currentPath: string[];
-  onChange: (tableName: string, path: string[]) => void;
+  currentPath: ObjectPathSegment[];
+  onChange: (tableName: string, path: ObjectPathSegment[]) => void;
 };
 
 const radioOption = cva(
@@ -69,7 +70,7 @@ export function ObjectSelector({
       if (linkedTable) {
         options.push({
           tableName: linkedTable.name,
-          path: [link.name],
+          path: [{ linkName: link.name, tableName: linkedTable.name }],
           displayLabel: linkedTable.name,
           pathDisplay: `${triggerObjectTable.name} → ${linkedTable.name}`,
           activeMonitorings: getActiveMonitorings(linkedTable.name),
@@ -81,7 +82,10 @@ export function ObjectSelector({
           if (nestedTable) {
             options.push({
               tableName: nestedTable.name,
-              path: [link.name, nestedLink.name],
+              path: [
+                { linkName: link.name, tableName: linkedTable.name },
+                { linkName: nestedLink.name, tableName: nestedTable.name },
+              ],
               displayLabel: nestedTable.name,
               pathDisplay: `${triggerObjectTable.name} → ${linkedTable.name} → ${nestedTable.name}`,
               activeMonitorings: getActiveMonitorings(nestedTable.name),
@@ -104,7 +108,7 @@ export function ObjectSelector({
 
   const handleChange = (value: string | number | null) => {
     if (typeof value !== 'string' || !value) return;
-    const parsed = JSON.parse(value) as { tableName: string; path: string[] };
+    const parsed = JSON.parse(value) as { tableName: string; path: ObjectPathSegment[] };
     onChange(parsed.tableName, parsed.path);
   };
 
