@@ -82,7 +82,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
   return (
     <CollapsiblePaper.Container defaultOpen={false}>
       <CollapsiblePaper.Title size="small">
-        <span className="flex flex-1">{tableModel.name}</span>
+        <span className="min-w-0 flex-1 truncate">{tableModel.name}</span>
 
         {isCreateDataModelFieldAvailable ? (
           <div

@@ -39,7 +39,12 @@ const CollapsiblePaperTitle = forwardRef<HTMLButtonElement, React.ComponentProps
   function CollapsiblePaperContainer({ className, children, ...props }, ref) {
     return (
       <Collapsible.Title ref={ref} className="bg-surface-card" {...props}>
-        <div className={clsx('flex flex-1 flex-row items-center gap-2 text-start font-bold', className)}>
+        <div
+          className={clsx(
+            'flex min-w-0 max-w-full flex-1 flex-row items-center gap-2 overflow-hidden text-start font-bold',
+            className,
+          )}
+        >
           {children}
         </div>
       </Collapsible.Title>
