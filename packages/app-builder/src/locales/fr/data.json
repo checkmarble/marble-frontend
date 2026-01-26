@@ -86,6 +86,7 @@
   "delete.scenarios_using_trigger": "Scénarios utilisant cet élément comme déclencheur :",
   "delete.test_runs": "Tests en cours",
   "delete.test_runs_affected": "Cet élément est utilisé dans des tests.",
+  "delete.type_to_confirm": "Tapez \"{{text}}\" pour confirmer :",
   "delete.understood": "Compris",
   "delete.view": "Voir",
   "delete.will_archive_drafts": "La suppression de cet élément archivera les brouillons de scénarios listés ci-dessus.",
