@@ -7,7 +7,7 @@ import {
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Select } from 'ui-design-system';
+import { Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type LinkedTableOption = {
@@ -192,6 +192,7 @@ function LinkedObjectCheckItem({
 }: LinkedObjectCheckItemProps) {
   const { t } = useTranslation(['scenarios']);
   const [selectedFieldName, setSelectedFieldName] = useState(check?.navigationIndex?.fieldName ?? '');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const needsNavigationConfig = option.direction === 'down' && !option.hasNavigationOptions;
   const hasNavigationConfig = !!check?.navigationIndex?.fieldName;
@@ -199,7 +200,10 @@ function LinkedObjectCheckItem({
   const handleFieldChange = (fieldName: string) => {
     setSelectedFieldName(fieldName);
     onNavigationIndexChange(fieldName);
+    setMenuOpen(false);
   };
+
+  const displayValue = selectedFieldName || t('scenarios:monitoring_list_check.select_field');
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-grey-border p-4">
@@ -218,20 +222,26 @@ function LinkedObjectCheckItem({
             <span>{t('scenarios:monitoring_list_check.order_by_label')}</span>
           </div>
 
-          <Select.Root value={selectedFieldName} onValueChange={handleFieldChange}>
-            <Select.Trigger className="w-48">
-              <Select.Value placeholder={t('scenarios:monitoring_list_check.select_field')} />
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Viewport>
+          <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
+            <MenuCommand.Trigger>
+              <MenuCommand.SelectButton className="w-48">
+                <span className="truncate">{displayValue}</span>
+              </MenuCommand.SelectButton>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content sameWidth>
+              <MenuCommand.List>
                 {option.timestampFields?.map((field) => (
-                  <Select.Item key={field.id} value={field.name}>
+                  <MenuCommand.Item
+                    key={field.id}
+                    selected={selectedFieldName === field.name}
+                    onSelect={() => handleFieldChange(field.name)}
+                  >
                     {field.name}
-                  </Select.Item>
+                  </MenuCommand.Item>
                 ))}
-              </Select.Viewport>
-            </Select.Content>
-          </Select.Root>
+              </MenuCommand.List>
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
 
           {hasNavigationConfig && (
             <div className="flex items-center gap-1 text-xs text-green-primary">
