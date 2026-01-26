@@ -86,6 +86,7 @@
   "delete.scenarios_using_trigger": "Scenarios using this as trigger object:",
   "delete.test_runs": "Test runs",
   "delete.test_runs_affected": "This element is used in test runs.",
+  "delete.type_to_confirm": "Type \"{{text}}\" to confirm:",
   "delete.understood": "Understood",
   "delete.view": "View",
   "delete.will_archive_drafts": "Deleting this element will archive the draft scenarios listed above.",

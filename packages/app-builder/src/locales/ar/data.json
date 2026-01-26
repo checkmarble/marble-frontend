@@ -86,6 +86,7 @@
   "delete.scenarios_using_trigger": "سيناريوهات تستخدم هذا العنصر كمحفّز:",
   "delete.test_runs": "اختبارات التشغيل",
   "delete.test_runs_affected": "يُستخدم هذا العنصر في اختبارات التشغيل.",
+  "delete.type_to_confirm": "اكتب \"{{text}}\" للتأكيد:",
   "delete.understood": "مفهوم",
   "delete.view": "عرض",
   "delete.will_archive_drafts": "سيؤدي حذف هذا العنصر إلى أرشفة مسودات السيناريوهات المذكورة أعلاه.",

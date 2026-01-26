@@ -7,11 +7,14 @@ import {
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type TFunction } from 'i18next';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { dataI18n } from '../data-i18n';
+
+const CONFIRMATION_TEXT = 'DELETE';
 
 export type DeleteDataModelEntityType = 'table' | 'field' | 'link' | 'pivot';
 
@@ -33,6 +36,7 @@ export function DeleteDataModelContent({
   isPending,
 }: DeleteDataModelContentProps) {
   const { t } = useTranslation(dataI18n);
+  const [confirmationText, setConfirmationText] = useState('');
 
   if (!report) {
     return null;
@@ -40,6 +44,7 @@ export function DeleteDataModelContent({
 
   const isBlocked = hasBlockingConflicts(report);
   const hasArchivedIterations = report.archivedIterations.length > 0;
+  const isConfirmed = confirmationText === CONFIRMATION_TEXT;
 
   return (
     <>
@@ -53,6 +58,22 @@ export function DeleteDataModelContent({
           <SimpleDeletionContent entityType={entityType} entityName={entityName} t={t} />
         )}
 
+        {!isBlocked ? (
+          <div className="flex flex-col gap-2">
+            <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
+              {t('data:delete.type_to_confirm', { text: CONFIRMATION_TEXT })}
+            </label>
+            <Input
+              id="delete-confirmation"
+              type="text"
+              value={confirmationText}
+              onChange={(e) => setConfirmationText(e.target.value)}
+              placeholder={CONFIRMATION_TEXT}
+              autoComplete="off"
+            />
+          </div>
+        ) : null}
+
         <div className="flex justify-end gap-2">
           <Modal.Close asChild>
             <Button variant="secondary" onClick={onClose}>
@@ -64,7 +85,7 @@ export function DeleteDataModelContent({
               {t('data:delete.understood')}
             </Button>
           ) : (
-            <Button color="red" variant="primary" onClick={onConfirm} disabled={isPending}>
+            <Button color="red" variant="primary" onClick={onConfirm} disabled={isPending || !isConfirmed}>
               <Icon icon="delete" className="size-5" />
               {t('common:delete')}
             </Button>
