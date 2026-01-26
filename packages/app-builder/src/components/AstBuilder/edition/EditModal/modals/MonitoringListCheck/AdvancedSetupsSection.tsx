@@ -1,7 +1,7 @@
 import { type DataModel, type TableModel } from '@app-builder/models';
 import {
   type LinkedObjectCheck,
-  type NavigationIndex,
+  type NavigationOptionRef,
   type ObjectPathSegment,
 } from '@app-builder/models/astNode/monitoring-list-check';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
@@ -16,12 +16,14 @@ type LinkedTableOption = {
   direction: 'up' | 'down';
   displayLabel: string;
   linkDescription: string;
+  /** For 'up' direction: the link name to use */
+  linkToSingleName?: string;
+  /** For 'down' direction: the navigation option reference */
+  navigationOptionRef?: NavigationOptionRef;
   /** For 'down' direction: available timestamp fields for ordering */
   timestampFields?: { name: string; id: string }[];
   /** If the table has navigationOptions configured */
   hasNavigationOptions: boolean;
-  /** Pre-configured ordering field from navigationOptions */
-  navigationOrderingField?: string;
 };
 
 type AdvancedSetupsSectionProps = {
@@ -62,6 +64,7 @@ export function AdvancedSetupsSection({
             tableName: link.parentTableName,
             selectedTable: selectedTable.name,
           }),
+          linkToSingleName: link.name,
           hasNavigationOptions: false,
         });
       }
@@ -73,14 +76,33 @@ export function AdvancedSetupsSection({
 
       for (const link of table.linksToSingle) {
         if (link.parentTableName === selectedTable.name && monitoredTableNames.has(table.name)) {
-          // Check if table has navigationOptions configured
-          const hasNavOptions = (table.navigationOptions?.length ?? 0) > 0;
-          const navOption = table.navigationOptions?.[0];
+          // Check if table has navigationOptions configured for this relationship
+          const navOption = table.navigationOptions?.find(
+            (nav) => nav.sourceTableName === selectedTable.name && nav.targetTableName === table.name,
+          );
+          const hasNavOptions = !!navOption;
 
-          // Get timestamp fields only for ordering
+          // Get timestamp fields for manual ordering selection
           const timestampFields = table.fields
             .filter((f) => f.dataType === 'Timestamp')
             .map((f) => ({ name: f.name, id: f.id }));
+
+          // Build the navigation option reference
+          // For "down" direction: target is child table, source is parent (selectedTable)
+          const navigationOptionRef: NavigationOptionRef = navOption
+            ? {
+                targetTableName: navOption.targetTableName,
+                targetFieldName: navOption.filterFieldName,
+                sourceTableName: navOption.sourceTableName,
+                sourceFieldName: navOption.sourceFieldName,
+              }
+            : {
+                // Default structure - will need ordering field selected
+                targetTableName: table.name,
+                targetFieldName: link.childFieldName,
+                sourceTableName: selectedTable.name,
+                sourceFieldName: link.parentFieldName,
+              };
 
           options.push({
             tableName: table.name,
@@ -91,9 +113,9 @@ export function AdvancedSetupsSection({
               tableName: table.name,
               selectedTable: selectedTable.name,
             }),
+            navigationOptionRef,
             timestampFields,
             hasNavigationOptions: hasNavOptions,
-            navigationOrderingField: navOption?.orderingFieldName,
           });
         }
       }
@@ -117,17 +139,16 @@ export function AdvancedSetupsSection({
           linkedObjectChecks.map((c) => (c.tableName === option.tableName ? { ...c, enabled: true } : c)),
         );
       } else {
-        // Add new - if hasNavigationOptions, auto-configure and validate
+        // Add new check
         const newCheck: LinkedObjectCheck = {
           tableName: option.tableName,
           fieldPath: option.fieldPath,
           direction: option.direction,
           enabled: true,
+          // "up" direction is always validated, "down" with pre-configured navOptions is also validated
           validated: option.direction === 'up' || option.hasNavigationOptions,
-          navigationIndex:
-            option.hasNavigationOptions && option.navigationOrderingField
-              ? { fieldName: option.navigationOrderingField, order: 'desc' }
-              : undefined,
+          // Store the navigation option ref for "down" direction
+          navigationOptionRef: option.direction === 'down' ? option.navigationOptionRef : undefined,
         };
         onLinkedObjectChecksChange([...linkedObjectChecks, newCheck]);
       }
@@ -139,10 +160,21 @@ export function AdvancedSetupsSection({
     }
   };
 
-  const handleNavigationIndexChange = (tableName: string, fieldName: string) => {
-    const navigationIndex: NavigationIndex = { fieldName, order: 'desc' };
+  const handleNavigationFieldChange = (tableName: string, orderingFieldName: string, option: LinkedTableOption) => {
+    // Update the navigationOptionRef with the selected ordering field
+    // Note: The ordering field selection is for validation purposes in the UI,
+    // but the actual navigation uses the pre-defined filter fields
     onLinkedObjectChecksChange(
-      linkedObjectChecks.map((c) => (c.tableName === tableName ? { ...c, navigationIndex, validated: true } : c)),
+      linkedObjectChecks.map((c) => {
+        if (c.tableName !== tableName) return c;
+
+        return {
+          ...c,
+          validated: true,
+          navigationOptionRef: option.navigationOptionRef,
+          navigationIndex: { fieldName: orderingFieldName, order: 'desc' as const },
+        };
+      }),
     );
   };
 
@@ -167,7 +199,7 @@ export function AdvancedSetupsSection({
             check={check}
             isEnabled={isEnabled}
             onToggle={(enabled) => handleToggleCheck(option, enabled)}
-            onNavigationIndexChange={(fieldName) => handleNavigationIndexChange(option.tableName, fieldName)}
+            onNavigationFieldChange={(fieldName) => handleNavigationFieldChange(option.tableName, fieldName, option)}
           />
         );
       })}
@@ -180,7 +212,7 @@ type LinkedObjectCheckItemProps = {
   check: LinkedObjectCheck | undefined;
   isEnabled: boolean;
   onToggle: (enabled: boolean) => void;
-  onNavigationIndexChange: (fieldName: string) => void;
+  onNavigationFieldChange: (fieldName: string) => void;
 };
 
 function LinkedObjectCheckItem({
@@ -188,18 +220,18 @@ function LinkedObjectCheckItem({
   check,
   isEnabled,
   onToggle,
-  onNavigationIndexChange,
+  onNavigationFieldChange,
 }: LinkedObjectCheckItemProps) {
   const { t } = useTranslation(['scenarios']);
   const [selectedFieldName, setSelectedFieldName] = useState(check?.navigationIndex?.fieldName ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
 
   const needsNavigationConfig = option.direction === 'down' && !option.hasNavigationOptions;
-  const hasNavigationConfig = !!check?.navigationIndex?.fieldName;
+  const hasNavigationConfig = check?.validated ?? false;
 
   const handleFieldChange = (fieldName: string) => {
     setSelectedFieldName(fieldName);
-    onNavigationIndexChange(fieldName);
+    onNavigationFieldChange(fieldName);
     setMenuOpen(false);
   };
 
@@ -215,7 +247,7 @@ function LinkedObjectCheckItem({
         {option.direction === 'down' && <Icon icon="arrow-down" className="size-4 text-grey-secondary" />}
       </label>
 
-      {/* Navigation config for "down" direction without navigationOptions */}
+      {/* Navigation config for "down" direction without pre-configured navigationOptions */}
       {isEnabled && needsNavigationConfig && (
         <div className="ml-6 flex flex-col gap-3 rounded-md bg-grey-background-light p-3">
           <div className="flex items-center gap-2 text-xs text-grey-primary">

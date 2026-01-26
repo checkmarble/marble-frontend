@@ -263,20 +263,21 @@ function getMonitoringListCheckDisplayName(
   astNode: IdLessAstNode<MonitoringListCheckAstNode>,
   context: AstNodeStringifierContext,
 ) {
-  const objectTableName = astNode.namedChildren.objectTableName.constant;
-  const topics = astNode.namedChildren.topics.constant;
+  const config = astNode.namedChildren.config.constant;
+  const objectTableName = config.targetTableName;
+  const topicFilters = config.topicFilters;
 
   if (!objectTableName) {
     return context.t('scenarios:monitoring_list_check.title');
   }
 
-  if (topics.length === 0) {
+  if (topicFilters.length === 0) {
     return context.t('scenarios:monitoring_list_check.display_name_any', {
       replace: { objectTableName },
     });
   }
 
-  const topicsStr = topics.join(', ');
+  const topicsStr = topicFilters.join(', ');
 
   return context.t('scenarios:monitoring_list_check.display_name', {
     replace: { topics: topicsStr, objectTableName },
