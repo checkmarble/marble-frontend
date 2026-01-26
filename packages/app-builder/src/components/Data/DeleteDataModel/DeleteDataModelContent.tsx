@@ -47,32 +47,34 @@ export function DeleteDataModelContent({
   return (
     <>
       <Modal.Title>{t(`data:delete_${entityType}.title`, { name: entityName })}</Modal.Title>
-      <div className="flex flex-col gap-4 p-6">
-        {isBlocked ? (
-          <BlockedDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
-        ) : hasArchivedIterations ? (
-          <DraftDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
-        ) : (
-          <SimpleDeletionContent entityType={entityType} entityName={entityName} t={t} />
-        )}
+      <div className="flex max-h-[70vh] flex-col overflow-hidden">
+        <div className="flex flex-col gap-4 overflow-y-auto p-6">
+          {isBlocked ? (
+            <BlockedDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
+          ) : hasArchivedIterations ? (
+            <DraftDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
+          ) : (
+            <SimpleDeletionContent entityType={entityType} entityName={entityName} t={t} />
+          )}
 
-        {!isBlocked ? (
-          <div className="flex flex-col gap-2">
-            <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
-              {t('data:delete.type_to_confirm', { text: entityName })}
-            </label>
-            <Input
-              id="delete-confirmation"
-              type="text"
-              value={confirmationText}
-              onChange={(e) => setConfirmationText(e.target.value)}
-              placeholder={entityName}
-              autoComplete="off"
-            />
-          </div>
-        ) : null}
+          {!isBlocked ? (
+            <div className="flex flex-col gap-2">
+              <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
+                {t('data:delete.type_to_confirm', { text: entityName })}
+              </label>
+              <Input
+                id="delete-confirmation"
+                type="text"
+                value={confirmationText}
+                onChange={(e) => setConfirmationText(e.target.value)}
+                placeholder={entityName}
+                autoComplete="off"
+              />
+            </div>
+          ) : null}
+        </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="border-t-grey-border flex justify-end gap-2 border-t p-6">
           <Modal.Close asChild>
             <Button variant="secondary" onClick={onClose}>
               {t('common:cancel')}
