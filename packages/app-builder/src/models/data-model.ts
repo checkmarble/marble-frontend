@@ -772,7 +772,12 @@ export function adaptDestroyDataModelReport(dto: DestroyDataModelReportDto): Des
 
 /**
  * Check if a deletion report has blocking conflicts that prevent deletion.
- * Blocking conflicts are active scenarios, active scenario iterations, workflows, continuous screening, or test runs.
+ * Blocking conflicts include:
+ * - Active scenarios or scenario iterations using this resource
+ * - Workflows using this resource
+ * - Continuous screening configuration
+ * - Test runs
+ * - Links or pivots depending on this resource
  * Non-blocking conflicts are drafts that will be archived.
  */
 export function hasBlockingConflicts(report: DestroyDataModelReport): boolean {
@@ -782,6 +787,8 @@ export function hasBlockingConflicts(report: DestroyDataModelReport): boolean {
     conflicts.scenarios.length > 0 ||
     Object.keys(conflicts.scenarioIterations).length > 0 ||
     conflicts.workflows.length > 0 ||
-    conflicts.testRuns
+    conflicts.testRuns ||
+    conflicts.links.length > 0 ||
+    conflicts.pivots.length > 0
   );
 }
