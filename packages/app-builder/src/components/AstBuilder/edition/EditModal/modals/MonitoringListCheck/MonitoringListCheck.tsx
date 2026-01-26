@@ -74,7 +74,10 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
     return baseSteps;
   }, [t, hasLinkedObjectsUnderMonitoring]);
 
-  const handleObjectChange = (tableName: string, path: string[]) => {
+  const handleObjectChange = (
+    tableName: string,
+    path: MonitoringListCheckAstNode['namedChildren']['objectPath']['constant'],
+  ) => {
     nodeSharp.update(() => {
       node.namedChildren.objectTableName.constant = tableName;
       node.namedChildren.objectPath.constant = path;
@@ -82,9 +85,9 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
     nodeSharp.actions.validate();
   };
 
-  const handleHitTypesChange = (hitTypes: MonitoringListCheckAstNode['namedChildren']['hitTypes']['constant']) => {
+  const handleTopicsChange = (topics: MonitoringListCheckAstNode['namedChildren']['topics']['constant']) => {
     nodeSharp.update(() => {
-      node.namedChildren.hitTypes.constant = hitTypes;
+      node.namedChildren.topics.constant = topics;
     });
     nodeSharp.actions.validate();
   };
@@ -164,10 +167,7 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
 
           {/* Step 2: Filter Options */}
           {currentStep === 2 && (
-            <FilterSection
-              currentHitTypes={node.namedChildren.hitTypes.constant}
-              onHitTypesChange={handleHitTypesChange}
-            />
+            <FilterSection currentTopics={node.namedChildren.topics.constant} onTopicsChange={handleTopicsChange} />
           )}
 
           {/* Step 3: Advanced Setups (if applicable) */}

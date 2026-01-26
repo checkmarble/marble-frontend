@@ -10,6 +10,35 @@ import { type ConstantAstNode, NewConstantAstNode } from './constant';
 export type MonitoringListHitType = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
 /**
+ * OpenSanctions topics for monitoring list checks.
+ * See: https://www.opensanctions.org/docs/topics/
+ */
+export const MONITORING_LIST_TOPICS = [
+  'sanction',
+  'sanction.linked',
+  'sanction.counter',
+  'debarment',
+  'role.pep',
+  'role.rca',
+  'poi',
+  'reg.action',
+  'reg.warn',
+] as const;
+
+export type MonitoringListTopic = (typeof MONITORING_LIST_TOPICS)[number];
+
+/**
+ * A segment in the object path, containing both the link name and target table name.
+ * This provides full context for navigating between tables.
+ */
+export type ObjectPathSegment = {
+  /** The name of the link to follow */
+  linkName: string;
+  /** The name of the table reached via this link */
+  tableName: string;
+};
+
+/**
  * Navigation index configuration for "down" traversal (to child entities).
  * Required when extending checks to child tables (e.g., company → users).
  */
@@ -27,8 +56,8 @@ export type NavigationIndex = {
 export type LinkedObjectCheck = {
   /** Target table to extend the check to */
   tableName: string;
-  /** Path from main object to this linked table (via link names) */
-  fieldPath: string[];
+  /** Path from main object to this linked table. Each segment contains link name and target table. */
+  fieldPath: ObjectPathSegment[];
   /** Relationship direction: 'up' = parent table, 'down' = child table */
   direction: 'up' | 'down';
   /** Whether this linked check is enabled */
@@ -55,12 +84,12 @@ export interface MonitoringListCheckAstNode {
   namedChildren: {
     /** The table name of the object to check */
     objectTableName: ConstantAstNode<string>;
-    /** Link path to the object (empty array = trigger object) */
-    objectPath: ConstantAstNode<string[]>;
+    /** Link path to the object (empty array = trigger object). Each segment contains link name and target table. */
+    objectPath: ConstantAstNode<ObjectPathSegment[]>;
     /** Optional: specific continuous screening config IDs to filter by (empty = all) */
     screeningConfigIds: ConstantAstNode<string[]>;
-    /** Hit types to check for (sanctions, PEP, etc.) */
-    hitTypes: ConstantAstNode<MonitoringListHitType[]>;
+    /** OpenSanctions topics to check for (sanction, role.pep, etc.) */
+    topics: ConstantAstNode<MonitoringListTopic[]>;
     /** Advanced: additional linked objects to also check */
     linkedObjectChecks: ConstantAstNode<LinkedObjectCheck[]>;
   };
@@ -82,13 +111,13 @@ export function NewMonitoringListCheckAstNode({
   objectTableName = '',
   objectPath = [],
   screeningConfigIds = [],
-  hitTypes = [],
+  topics = [],
   linkedObjectChecks = [],
 }: {
   objectTableName?: string;
-  objectPath?: string[];
+  objectPath?: ObjectPathSegment[];
   screeningConfigIds?: string[];
-  hitTypes?: MonitoringListHitType[];
+  topics?: MonitoringListTopic[];
   linkedObjectChecks?: LinkedObjectCheck[];
 } = {}): MonitoringListCheckAstNode {
   return {
@@ -100,7 +129,7 @@ export function NewMonitoringListCheckAstNode({
       objectTableName: NewConstantAstNode({ constant: objectTableName }),
       objectPath: NewConstantAstNode({ constant: objectPath }),
       screeningConfigIds: NewConstantAstNode({ constant: screeningConfigIds }),
-      hitTypes: NewConstantAstNode({ constant: hitTypes }),
+      topics: NewConstantAstNode({ constant: topics }),
       linkedObjectChecks: NewConstantAstNode({ constant: linkedObjectChecks }),
     },
   };

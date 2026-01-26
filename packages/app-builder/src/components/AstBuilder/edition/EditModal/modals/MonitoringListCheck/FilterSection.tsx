@@ -1,85 +1,72 @@
-import { type MonitoringListHitType } from '@app-builder/models/astNode/monitoring-list-check';
-import { type ScreeningCategory } from '@app-builder/models/screening';
+import { MONITORING_LIST_TOPICS, type MonitoringListTopic } from '@app-builder/models/astNode/monitoring-list-check';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
-
 type FilterSectionProps = {
-  currentHitTypes: MonitoringListHitType[];
-  onHitTypesChange: (hitTypes: MonitoringListHitType[]) => void;
+  currentTopics: MonitoringListTopic[];
+  onTopicsChange: (topics: MonitoringListTopic[]) => void;
 };
 
-export function FilterSection({ currentHitTypes, onHitTypesChange }: FilterSectionProps) {
+export function FilterSection({ currentTopics, onTopicsChange }: FilterSectionProps) {
   const { t } = useTranslation(['scenarios']);
 
-  const [hitTypesFilterEnabled, setHitTypesFilterEnabled] = useState(currentHitTypes.length > 0);
+  const [topicsFilterEnabled, setTopicsFilterEnabled] = useState(currentTopics.length > 0);
 
-  const hitTypeLabels = useMemo(
-    () => ({
-      sanctions: t('scenarios:monitoring_list_check.hit_type.sanctions'),
-      peps: t('scenarios:monitoring_list_check.hit_type.peps'),
-      'third-parties': t('scenarios:monitoring_list_check.hit_type.third_parties'),
-      'adverse-media': t('scenarios:monitoring_list_check.hit_type.adverse_media'),
-    }),
-    [t],
-  );
-
-  const handleHitTypesFilterToggle = (checked: boolean) => {
-    setHitTypesFilterEnabled(checked);
+  const handleTopicsFilterToggle = (checked: boolean) => {
+    setTopicsFilterEnabled(checked);
     if (!checked) {
-      onHitTypesChange([]);
+      onTopicsChange([]);
     }
   };
 
-  const handleHitTypeToggle = (hitType: MonitoringListHitType, checked: boolean) => {
+  const handleTopicToggle = (topic: MonitoringListTopic, checked: boolean) => {
     if (checked) {
-      onHitTypesChange([...currentHitTypes, hitType]);
+      onTopicsChange([...currentTopics, topic]);
     } else {
-      onHitTypesChange(currentHitTypes.filter((h) => h !== hitType));
+      onTopicsChange(currentTopics.filter((t) => t !== topic));
     }
   };
 
-  const selectedHitTypesDisplay = useMemo(() => {
-    if (currentHitTypes.length === 0) return t('scenarios:monitoring_list_check.select_hit_types');
-    return currentHitTypes.map((ht) => hitTypeLabels[ht]).join(', ');
-  }, [currentHitTypes, hitTypeLabels, t]);
+  const selectedTopicsDisplay = useMemo(() => {
+    if (currentTopics.length === 0) return t('scenarios:monitoring_list_check.select_topics');
+    return currentTopics.join(', ');
+  }, [currentTopics, t]);
 
-  const [hitTypesMenuOpen, setHitTypesMenuOpen] = useState(false);
+  const [topicsMenuOpen, setTopicsMenuOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
       <p className="text-s font-medium text-grey-primary">{t('scenarios:monitoring_list_check.filter_question')}</p>
 
-      {/* Hit Types Filter - Horizontal layout */}
+      {/* Topics Filter - Horizontal layout */}
       <div className="flex items-center gap-2">
         <label className="flex shrink-0 cursor-pointer items-center gap-2">
-          <Checkbox checked={hitTypesFilterEnabled} onCheckedChange={handleHitTypesFilterToggle} />
-          <span className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.hit_types_label')}</span>
+          <Checkbox checked={topicsFilterEnabled} onCheckedChange={handleTopicsFilterToggle} />
+          <span className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.topics_label')}</span>
           <Icon icon="tip" className="size-4 text-purple-primary" />
         </label>
 
-        <MenuCommand.Menu open={hitTypesMenuOpen} onOpenChange={setHitTypesMenuOpen}>
+        <MenuCommand.Menu open={topicsMenuOpen} onOpenChange={setTopicsMenuOpen}>
           <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="min-w-[200px] flex-1" disabled={!hitTypesFilterEnabled}>
-              <span className="truncate">{selectedHitTypesDisplay}</span>
+            <MenuCommand.SelectButton className="min-w-[200px] flex-1" disabled={!topicsFilterEnabled}>
+              <span className="truncate">{selectedTopicsDisplay}</span>
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
           <MenuCommand.Content className="min-w-[250px]">
             <div className="flex flex-col gap-1 p-2">
-              {SCREENING_CATEGORIES.map((hitType) => (
+              {MONITORING_LIST_TOPICS.map((topic) => (
                 <label
-                  key={hitType}
+                  key={topic}
                   className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-grey-background-light"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Checkbox
-                    checked={currentHitTypes.includes(hitType)}
-                    onCheckedChange={(checked) => handleHitTypeToggle(hitType, checked === true)}
+                    checked={currentTopics.includes(topic)}
+                    onCheckedChange={(checked) => handleTopicToggle(topic, checked === true)}
                   />
-                  <span className="text-s text-grey-primary">{hitTypeLabels[hitType]}</span>
+                  <span className="text-s text-grey-primary">{topic}</span>
                 </label>
               ))}
             </div>
