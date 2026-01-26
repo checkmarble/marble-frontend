@@ -1,8 +1,15 @@
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { Callout } from '@app-builder/components/Callout';
+import { type DataModel } from '@app-builder/models';
 import {
+  isUpDirectionCheck,
   type LinkedObjectCheck,
+  type LinkedTableCheck,
   type MonitoringListCheckAstNode,
+  type MonitoringListTopic,
+  NewMonitoringListCheckAstNode,
+  type ObjectPathSegment,
+  toMonitoringListCheckConfig,
 } from '@app-builder/models/astNode/monitoring-list-check';
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
@@ -18,6 +25,60 @@ import { type Step, Stepper } from './Stepper';
 
 type WizardStep = 1 | 2 | 3;
 
+/**
+ * Convert API config pathToTarget (string[]) to UI ObjectPathSegment[]
+ * Requires dataModel to resolve table names from link names
+ */
+function pathToTargetToSegments(
+  pathToTarget: string[],
+  dataModel: DataModel,
+  triggerTableName: string,
+): ObjectPathSegment[] {
+  if (pathToTarget.length === 0) return [];
+
+  const segments: ObjectPathSegment[] = [];
+  let currentTableName = triggerTableName;
+
+  for (const linkName of pathToTarget) {
+    const currentTable = dataModel.find((t) => t.name === currentTableName);
+    if (!currentTable) break;
+
+    const link = currentTable.linksToSingle.find((l) => l.name === linkName);
+    if (!link) break;
+
+    segments.push({ linkName, tableName: link.parentTableName });
+    currentTableName = link.parentTableName;
+  }
+
+  return segments;
+}
+
+/**
+ * Convert API LinkedTableCheck[] to UI LinkedObjectCheck[]
+ */
+function linkedTableChecksToObjectChecks(linkedTableChecks: LinkedTableCheck[]): LinkedObjectCheck[] {
+  return linkedTableChecks.map((check) => {
+    if (isUpDirectionCheck(check)) {
+      return {
+        tableName: check.tableName,
+        fieldPath: [{ linkName: check.linkToSingleName, tableName: check.tableName }],
+        direction: 'up' as const,
+        enabled: true,
+        validated: true,
+      };
+    } else {
+      return {
+        tableName: check.tableName,
+        fieldPath: [],
+        direction: 'down' as const,
+        enabled: true,
+        validated: true,
+        navigationOptionRef: check.navigationOption,
+      };
+    }
+  });
+}
+
 export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['common', 'scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
@@ -28,13 +89,23 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
 
   const [currentStep, setCurrentStep] = useState<WizardStep>(1);
 
-  const currentTableName = node.namedChildren.objectTableName.constant;
-  const currentPath = node.namedChildren.objectPath.constant;
+  // Extract UI state from config
+  const config = node.namedChildren.config.constant;
+
+  // UI state - initialized from config
+  const [targetTableName, setTargetTableName] = useState(config.targetTableName);
+  const [pathToTarget, setPathToTarget] = useState<ObjectPathSegment[]>(() =>
+    pathToTargetToSegments(config.pathToTarget, dataModel, triggerObjectTable.name),
+  );
+  const [topicFilters, setTopicFilters] = useState<MonitoringListTopic[]>(config.topicFilters);
+  const [linkedObjectChecks, setLinkedObjectChecks] = useState<LinkedObjectCheck[]>(() =>
+    linkedTableChecksToObjectChecks(config.linkedTableChecks),
+  );
 
   // Get the selected table model
   const selectedTable = useMemo(() => {
-    return dataModel.find((t) => t.name === currentTableName);
-  }, [dataModel, currentTableName]);
+    return dataModel.find((t) => t.name === targetTableName);
+  }, [dataModel, targetTableName]);
 
   // Determine if we need step 3 (advanced setups)
   // Step 3 is shown when the selected object has related tables also under monitoring
@@ -74,29 +145,19 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
     return baseSteps;
   }, [t, hasLinkedObjectsUnderMonitoring]);
 
-  const handleObjectChange = (
-    tableName: string,
-    path: MonitoringListCheckAstNode['namedChildren']['objectPath']['constant'],
-  ) => {
-    nodeSharp.update(() => {
-      node.namedChildren.objectTableName.constant = tableName;
-      node.namedChildren.objectPath.constant = path;
-    });
-    nodeSharp.actions.validate();
+  const handleObjectChange = (tableName: string, path: ObjectPathSegment[]) => {
+    setTargetTableName(tableName);
+    setPathToTarget(path);
+    // Reset linked object checks when object changes
+    setLinkedObjectChecks([]);
   };
 
-  const handleTopicsChange = (topics: MonitoringListCheckAstNode['namedChildren']['topics']['constant']) => {
-    nodeSharp.update(() => {
-      node.namedChildren.topics.constant = topics;
-    });
-    nodeSharp.actions.validate();
+  const handleTopicsChange = (topics: MonitoringListTopic[]) => {
+    setTopicFilters(topics);
   };
 
   const handleLinkedObjectChecksChange = (checks: LinkedObjectCheck[]) => {
-    nodeSharp.update(() => {
-      node.namedChildren.linkedObjectChecks.constant = checks;
-    });
-    nodeSharp.actions.validate();
+    setLinkedObjectChecks(checks);
   };
 
   const handleOpenChange = useCallbackRef((open: boolean) => {
@@ -122,14 +183,27 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
   };
 
   const handleSave = () => {
-    props.onSave(node);
+    // Convert UI state to API config format
+    const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, topicFilters, linkedObjectChecks);
+
+    // Create new node with updated config
+    const updatedNode = NewMonitoringListCheckAstNode({
+      targetTableName: newConfig.targetTableName,
+      pathToTarget: newConfig.pathToTarget,
+      topicFilters: newConfig.topicFilters,
+      linkedTableChecks: newConfig.linkedTableChecks,
+    });
+
+    // Preserve the original node ID
+    updatedNode.id = node.id;
+
+    props.onSave(updatedNode);
   };
 
-  const canProceedFromStep1 = !!currentTableName;
+  const canProceedFromStep1 = !!targetTableName;
   const isLastStep = currentStep === totalSteps;
 
   // Step 3 validation: all enabled "down" checks must be validated
-  const linkedObjectChecks = node.namedChildren.linkedObjectChecks.constant;
   const hasUnvalidatedDownChecks = linkedObjectChecks.some(
     (check) => check.enabled && check.direction === 'down' && !check.validated,
   );
@@ -159,16 +233,14 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
               dataModel={dataModel}
               triggerObjectTable={triggerObjectTable}
               screeningConfigs={screeningConfigs}
-              currentTableName={currentTableName}
-              currentPath={currentPath}
+              currentTableName={targetTableName}
+              currentPath={pathToTarget}
               onChange={handleObjectChange}
             />
           )}
 
           {/* Step 2: Filter Options */}
-          {currentStep === 2 && (
-            <FilterSection currentTopics={node.namedChildren.topics.constant} onTopicsChange={handleTopicsChange} />
-          )}
+          {currentStep === 2 && <FilterSection currentTopics={topicFilters} onTopicsChange={handleTopicsChange} />}
 
           {/* Step 3: Advanced Setups (if applicable) */}
           {currentStep === 3 && selectedTable && (
@@ -176,7 +248,7 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
               dataModel={dataModel}
               selectedTable={selectedTable}
               screeningConfigs={screeningConfigs}
-              linkedObjectChecks={node.namedChildren.linkedObjectChecks.constant}
+              linkedObjectChecks={linkedObjectChecks}
               onLinkedObjectChecksChange={handleLinkedObjectChecksChange}
             />
           )}

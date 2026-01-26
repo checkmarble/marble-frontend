@@ -27,9 +27,72 @@ export const MONITORING_LIST_TOPICS = [
 
 export type MonitoringListTopic = (typeof MONITORING_LIST_TOPICS)[number];
 
+// ============================================================================
+// API Format Types (for serialization to backend)
+// ============================================================================
+
+/**
+ * Reference to a navigation option for "down" direction linked table checks.
+ * Contains the essential fields needed to identify the navigation relationship.
+ */
+export type NavigationOptionRef = {
+  /** The child table name (e.g., "transaction") */
+  targetTableName: string;
+  /** The field in the child table that references the parent (e.g., "company_id") */
+  targetFieldName: string;
+  /** The parent table name (e.g., "company") */
+  sourceTableName: string;
+  /** The field in the parent table being referenced (e.g., "id") */
+  sourceFieldName: string;
+};
+
+/**
+ * API format for a linked table check.
+ * - "Up" direction (parent): uses `linkToSingleName`
+ * - "Down" direction (child): uses `navigationOption`
+ */
+export type LinkedTableCheck =
+  | { tableName: string; linkToSingleName: string }
+  | { tableName: string; navigationOption: NavigationOptionRef };
+
+/**
+ * Helper type guard to check if a LinkedTableCheck is an "up" direction check.
+ */
+export function isUpDirectionCheck(check: LinkedTableCheck): check is { tableName: string; linkToSingleName: string } {
+  return 'linkToSingleName' in check;
+}
+
+/**
+ * Helper type guard to check if a LinkedTableCheck is a "down" direction check.
+ */
+export function isDownDirectionCheck(
+  check: LinkedTableCheck,
+): check is { tableName: string; navigationOption: NavigationOptionRef } {
+  return 'navigationOption' in check;
+}
+
+/**
+ * The configuration constant for MonitoringListCheck AST node.
+ * This is the API format sent to the backend.
+ */
+export type MonitoringListCheckConfig = {
+  /** The table name of the object to check */
+  targetTableName: string;
+  /** Link names path to the target object (empty array = trigger object) */
+  pathToTarget: string[];
+  /** OpenSanctions topics to filter by (empty = all) */
+  topicFilters: MonitoringListTopic[];
+  /** Additional linked tables to also check */
+  linkedTableChecks: LinkedTableCheck[];
+};
+
+// ============================================================================
+// UI State Types (for wizard/modal internal state)
+// ============================================================================
+
 /**
  * A segment in the object path, containing both the link name and target table name.
- * This provides full context for navigating between tables.
+ * Used internally by the UI for richer navigation context.
  */
 export type ObjectPathSegment = {
   /** The name of the link to follow */
@@ -40,7 +103,7 @@ export type ObjectPathSegment = {
 
 /**
  * Navigation index configuration for "down" traversal (to child entities).
- * Required when extending checks to child tables (e.g., company → users).
+ * Used internally by the UI for step 3 configuration.
  */
 export type NavigationIndex = {
   /** Field name to order by (e.g., 'created_at', 'updated_at') */
@@ -50,13 +113,13 @@ export type NavigationIndex = {
 };
 
 /**
- * Configuration for checking linked objects in addition to the main object.
- * Used in Step 3 (Advanced setups) to cascade checks to related entities.
+ * UI state for a linked object check in the wizard.
+ * Contains additional fields for UI interaction (direction, enabled, validated).
  */
 export type LinkedObjectCheck = {
   /** Target table to extend the check to */
   tableName: string;
-  /** Path from main object to this linked table. Each segment contains link name and target table. */
+  /** Path from main object to this linked table */
   fieldPath: ObjectPathSegment[];
   /** Relationship direction: 'up' = parent table, 'down' = child table */
   direction: 'up' | 'down';
@@ -66,7 +129,13 @@ export type LinkedObjectCheck = {
   navigationIndex?: NavigationIndex;
   /** Whether the configuration has been validated (for 'down' direction) */
   validated?: boolean;
+  /** For "down" direction: the full navigation option reference */
+  navigationOptionRef?: NavigationOptionRef;
 };
+
+// ============================================================================
+// AST Node Definition
+// ============================================================================
 
 export const monitoringListCheckAstNodeName = 'MonitoringListCheck';
 
@@ -82,16 +151,8 @@ export interface MonitoringListCheckAstNode {
   constant?: undefined;
   children: [];
   namedChildren: {
-    /** The table name of the object to check */
-    objectTableName: ConstantAstNode<string>;
-    /** Link path to the object (empty array = trigger object). Each segment contains link name and target table. */
-    objectPath: ConstantAstNode<ObjectPathSegment[]>;
-    /** Optional: specific continuous screening config IDs to filter by (empty = all) */
-    screeningConfigIds: ConstantAstNode<string[]>;
-    /** OpenSanctions topics to check for (sanction, role.pep, etc.) */
-    topics: ConstantAstNode<MonitoringListTopic[]>;
-    /** Advanced: additional linked objects to also check */
-    linkedObjectChecks: ConstantAstNode<LinkedObjectCheck[]>;
+    /** Configuration for the monitoring list check */
+    config: ConstantAstNode<MonitoringListCheckConfig>;
   };
 }
 
@@ -108,17 +169,15 @@ export function isMonitoringListCheckAstNode(
  * Factory function to create a new MonitoringListCheckAstNode with default values.
  */
 export function NewMonitoringListCheckAstNode({
-  objectTableName = '',
-  objectPath = [],
-  screeningConfigIds = [],
-  topics = [],
-  linkedObjectChecks = [],
+  targetTableName = '',
+  pathToTarget = [],
+  topicFilters = [],
+  linkedTableChecks = [],
 }: {
-  objectTableName?: string;
-  objectPath?: ObjectPathSegment[];
-  screeningConfigIds?: string[];
-  topics?: MonitoringListTopic[];
-  linkedObjectChecks?: LinkedObjectCheck[];
+  targetTableName?: string;
+  pathToTarget?: string[];
+  topicFilters?: MonitoringListTopic[];
+  linkedTableChecks?: LinkedTableCheck[];
 } = {}): MonitoringListCheckAstNode {
   return {
     id: uuidv7(),
@@ -126,11 +185,66 @@ export function NewMonitoringListCheckAstNode({
     constant: undefined,
     children: [],
     namedChildren: {
-      objectTableName: NewConstantAstNode({ constant: objectTableName }),
-      objectPath: NewConstantAstNode({ constant: objectPath }),
-      screeningConfigIds: NewConstantAstNode({ constant: screeningConfigIds }),
-      topics: NewConstantAstNode({ constant: topics }),
-      linkedObjectChecks: NewConstantAstNode({ constant: linkedObjectChecks }),
+      config: NewConstantAstNode({
+        constant: {
+          targetTableName,
+          pathToTarget,
+          topicFilters,
+          linkedTableChecks,
+        },
+      }),
     },
+  };
+}
+
+// ============================================================================
+// Conversion Functions (UI State <-> API Config)
+// ============================================================================
+
+/**
+ * Convert UI state to API config format.
+ * Called when saving the wizard/modal.
+ */
+export function toMonitoringListCheckConfig(
+  targetTableName: string,
+  pathToTarget: ObjectPathSegment[],
+  topicFilters: MonitoringListTopic[],
+  linkedObjectChecks: LinkedObjectCheck[],
+): MonitoringListCheckConfig {
+  const enabledChecks = linkedObjectChecks.filter((check) => check.enabled && check.validated !== false);
+
+  const linkedTableChecks: LinkedTableCheck[] = enabledChecks.map((check) => {
+    if (check.direction === 'up') {
+      // For "up" direction, use the first link name in the path
+      const linkName = check.fieldPath[0]?.linkName ?? '';
+      return { tableName: check.tableName, linkToSingleName: linkName };
+    } else {
+      // For "down" direction, use the navigation option reference
+      if (!check.navigationOptionRef) {
+        throw new Error(`Down direction check for ${check.tableName} missing navigationOptionRef`);
+      }
+      return { tableName: check.tableName, navigationOption: check.navigationOptionRef };
+    }
+  });
+
+  return {
+    targetTableName,
+    pathToTarget: pathToTarget.map((segment) => segment.linkName),
+    topicFilters,
+    linkedTableChecks,
+  };
+}
+
+/**
+ * Extract display information from a MonitoringListCheckConfig.
+ * Used by getAstNodeDisplayName.
+ */
+export function getMonitoringListCheckDisplayInfo(config: MonitoringListCheckConfig): {
+  targetTableName: string;
+  topicFilters: MonitoringListTopic[];
+} {
+  return {
+    targetTableName: config.targetTableName,
+    topicFilters: config.topicFilters,
   };
 }
