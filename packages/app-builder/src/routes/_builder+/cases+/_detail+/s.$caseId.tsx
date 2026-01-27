@@ -22,7 +22,6 @@ import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-revi
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { isRouteErrorResponse, Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useEffect, useState } from 'react';
@@ -40,8 +39,7 @@ export const loader = createServerFn(
     const { detail: caseDetail, inbox: caseInbox } = context.case;
     const caseId = caseDetail.id;
 
-    const [nextCaseId, reports, pivotObjects, dataModel, pivots, mostRecentReviews, settings] = await Promise.all([
-      caseRepository.getNextUnassignedCaseId({ caseId }),
+    const [reports, pivotObjects, dataModel, pivots, mostRecentReviews, settings] = await Promise.all([
       caseRepository.listSuspiciousActivityReports({ caseId }),
       caseRepository.listPivotObjects({ caseId }),
       dataModelRepository.getDataModel(),
@@ -92,7 +90,6 @@ export const loader = createServerFn(
       currentInbox: caseInbox,
       reports,
       currentUser: user,
-      nextCaseId,
       inboxes: context.inboxes,
       pivots,
       entitlements,
@@ -109,7 +106,6 @@ export default function CaseManagerIndexPage() {
     dataModelWithTableOptions,
     pivotObjects,
     currentUser,
-    nextCaseId,
     entitlements: { AiAssist: aiAssistEnabled },
     isMenuExpanded,
     mostRecentReview,
@@ -228,15 +224,13 @@ export default function CaseManagerIndexPage() {
               )}
             </ClientOnly>
           </AiAssist.Root>
-          {nextCaseId ? (
-            <Link
-              className={CtaV2ClassName({ variant: 'secondary', mode: 'normal' })}
-              to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) })}
-            >
-              {t('cases:next_unassigned_case')}
-              <Icon icon="arrow-up" className="size-3.5 rotate-90" />
-            </Link>
-          ) : null}
+          <Link
+            className={CtaV2ClassName({ variant: 'secondary', mode: 'normal' })}
+            to={getRoute('/ressources/cases/:caseId/next-unassigned', { caseId: details.id })}
+          >
+            {t('cases:next_unassigned_case')}
+            <Icon icon="arrow-up" className="size-3.5 rotate-90" />
+          </Link>
         </div>
       </Page.Header>
       <Page.Container className="text-default relative h-full flex-row p-0 lg:p-0">
