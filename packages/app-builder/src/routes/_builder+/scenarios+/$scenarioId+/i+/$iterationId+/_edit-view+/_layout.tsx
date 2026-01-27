@@ -123,7 +123,14 @@ export default function ScenarioEditLayout() {
         ) : null}
       </Page.Header>
       <Page.Container>
-        {currentScenario.description ? <Page.Description>{currentScenario.description}</Page.Description> : null}
+        {archived ? (
+          <aside className="bg-grey-background text-s text-grey-primary flex flex-row items-center gap-2 p-4 font-normal lg:px-8 lg:py-4">
+            <Icon icon="tip" className="size-5 shrink-0" />
+            {t('scenarios:iteration.archived_message')}
+          </aside>
+        ) : currentScenario.description ? (
+          <Page.Description>{currentScenario.description}</Page.Description>
+        ) : null}
         <Page.Content>
           {archived ? (
             <ArchivedIterationView />

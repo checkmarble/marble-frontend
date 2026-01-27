@@ -1,4 +1,4 @@
-import { Callout, OutcomeBadge, scenarioI18n } from '@app-builder/components';
+import { OutcomeBadge, scenarioI18n } from '@app-builder/components';
 import { decisionsI18n } from '@app-builder/components/Decisions/decisions-i18n';
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
 import { type ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
@@ -87,8 +87,6 @@ export function ArchivedIterationView() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Callout color="grey">{t('scenarios:iteration.archived_message')}</Callout>
-
       <Table.Container {...getContainerProps()} className="bg-surface-card">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
