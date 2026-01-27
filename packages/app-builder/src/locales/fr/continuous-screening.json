@@ -92,6 +92,7 @@
   "review.indirect_subtitle": "Nouvelle entité dans {{category}}",
   "review.information_title": "Information",
   "review.matches.match_label": "Correspondance",
+  "review.matches.partial_search_button": "Charger plus pour finaliser",
   "review.matches.status_label": "Statut",
   "review.matches.title": "Correspondances à vérifier",
   "review.object_details_subtitle": "Détails complets sur l'objet",

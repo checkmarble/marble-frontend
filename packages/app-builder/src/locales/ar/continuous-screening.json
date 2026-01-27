@@ -92,6 +92,7 @@
   "review.indirect_subtitle": "كيان جديد ضمن {{category}}",
   "review.information_title": "معلومات",
   "review.matches.match_label": "مطابقة",
+  "review.matches.partial_search_button": "تحميل المزيد للتأكيد",
   "review.matches.status_label": "الحالة",
   "review.matches.title": "مطابقات للمراجعة",
   "review.object_details_subtitle": "تفاصيل كاملة عن الكائن",

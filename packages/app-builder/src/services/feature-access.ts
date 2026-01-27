@@ -1,7 +1,6 @@
 import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type Inbox } from '@app-builder/models/inbox';
-import { getServerEnv } from '@app-builder/utils/environment';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 
 export const isAccessible = (featureAccess: FeatureAccessLevelDto): boolean =>
@@ -128,5 +127,5 @@ export const isAutoAssignmentAvailable = (entitlements: FeatureAccesses): boolea
 export const hasAnyEntitlement = (entitlements: FeatureAccesses): boolean =>
   Object.values(entitlements).some(isAccessible);
 
-export const isContinuousScreeningAvailable = (user: CurrentUser) =>
-  getServerEnv('CONTINUOUS_SCREENING_ACCESS')?.includes(user.organizationId) ?? false;
+export const isContinuousScreeningAvailable = (entitlements: FeatureAccesses) =>
+  isAccessible(entitlements.continuousScreening);

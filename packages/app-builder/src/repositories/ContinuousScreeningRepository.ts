@@ -16,6 +16,7 @@ export interface ContinuousScreeningRepository {
   getConfiguration(stableId: string): Promise<ContinuousScreeningConfig>;
   updateMatchStatus(payload: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }): Promise<any>;
   dismiss(id: string): Promise<void>;
+  loadMoreMatches(id: string): Promise<void>;
 }
 
 export function makeGetContinuousScreeningRepository() {
@@ -49,6 +50,9 @@ export function makeGetContinuousScreeningRepository() {
     },
     dismiss: async (id: string) => {
       await marbleCoreApiClient.dismissContinuousScreening(id);
+    },
+    loadMoreMatches: async (id: string) => {
+      await marbleCoreApiClient.loadMoreContinuousScreeningMatches(id);
     },
   });
 }

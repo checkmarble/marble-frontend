@@ -629,6 +629,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/pivot+/related+/$pivotValue._index.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/related.$objectType.$objectId",
+        "path": "ressources/cases/related/:objectType/:objectId",
+        "file": "routes/ressources+/cases+/related.$objectType.$objectId.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/review-decision",
         "path": "ressources/cases/review-decision",
         "file": "routes/ressources+/cases+/review-decision.tsx"

@@ -12,23 +12,18 @@ export const action = createServerFn(
       i18nextService: { getFixedT },
     } = context.services;
     const { continuousScreening: continuousScreeningRepository } = context.authInfo;
-    const { screeningId } = params;
+
+    const screeningId = params['screeningId'];
+    invariant(screeningId, 'Screening ID is required');
 
     const [toastSession, t] = await Promise.all([
       toastSessionService.getSession(request),
       getFixedT(request, ['common', 'continuousScreening']),
     ]);
 
-    invariant(screeningId, 'Continuous screening ID is required');
-
     try {
-      setToastMessage(toastSession, {
-        type: 'success',
-        message: t('continuousScreening:success.dismissed'),
-      });
-
-      await continuousScreeningRepository.dismiss(screeningId);
-      return data({ success: true }, [['Set-Cookie', await toastSessionService.commitSession(toastSession)]]);
+      await continuousScreeningRepository.loadMoreMatches(screeningId);
+      return data({ success: true });
     } catch {
       setToastMessage(toastSession, {
         type: 'error',

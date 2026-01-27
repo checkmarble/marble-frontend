@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, Input, Modal, TextArea } from 'ui-design-system';
 import { z } from 'zod/v4';
@@ -19,7 +19,8 @@ export const CreationModal = ({ open, onOpenChange, onSubmit }: CreationModalPro
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const isValid = basePayloadSchema.safeParse({ name, description }).success;
-  const handleSubmit = () => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (isValid) {
       onSubmit({ name, description });
     }
@@ -36,31 +37,35 @@ export const CreationModal = ({ open, onOpenChange, onSubmit }: CreationModalPro
     <Modal.Root open={open} onOpenChange={innerOpenChange}>
       <Modal.Content>
         <Modal.Title>{t('continuousScreening:creation.modal.title')}</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <Input
-            name="name"
-            placeholder={t('continuousScreening:creation.modal.name_placeholder')}
-            value={name}
-            onChange={(e) => setName(e.currentTarget.value)}
-          />
-          <TextArea
-            name="description"
-            placeholder={t('continuousScreening:creation.modal.description_placeholder')}
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.currentTarget.value)}
-          />
-        </div>
-        <Modal.Footer>
-          <div className="flex gap-v2-sm justify-end p-v2-md">
-            <Modal.Close asChild>
-              <ButtonV2 variant="secondary">{t('common:cancel')}</ButtonV2>
-            </Modal.Close>
-            <ButtonV2 variant="primary" onClick={handleSubmit} disabled={!isValid}>
-              {t('common:create')}
-            </ButtonV2>
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-6 p-6">
+            <Input
+              name="name"
+              placeholder={t('continuousScreening:creation.modal.name_placeholder')}
+              value={name}
+              onChange={(e) => setName(e.currentTarget.value)}
+            />
+            <TextArea
+              name="description"
+              placeholder={t('continuousScreening:creation.modal.description_placeholder')}
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.currentTarget.value)}
+            />
           </div>
-        </Modal.Footer>
+          <Modal.Footer>
+            <div className="flex gap-v2-sm justify-end p-v2-md">
+              <Modal.Close asChild>
+                <ButtonV2 variant="secondary" type="button">
+                  {t('common:cancel')}
+                </ButtonV2>
+              </Modal.Close>
+              <ButtonV2 variant="primary" disabled={!isValid}>
+                {t('common:create')}
+              </ButtonV2>
+            </div>
+          </Modal.Footer>
+        </form>
       </Modal.Content>
     </Modal.Root>
   );

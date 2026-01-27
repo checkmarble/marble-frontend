@@ -37,12 +37,6 @@ const PublicEnvVarsSchema = z.object({
     .transform((val) => val === 'true')
     .optional(),
 
-  CONTINUOUS_SCREENING_ACCESS: z
-    .string()
-    .transform((val) => val?.split(',') ?? [])
-    .optional()
-    .default([]),
-
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
 });
@@ -96,7 +90,6 @@ interface ServerEnvVars {
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
-  CONTINUOUS_SCREENING_ACCESS: string[];
   CUSTOM_LOGO_URL?: string;
 }
 
