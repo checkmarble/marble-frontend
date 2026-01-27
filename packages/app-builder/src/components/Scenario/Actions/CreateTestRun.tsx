@@ -73,9 +73,11 @@ function CreateTestRunToContent({
     [scenarioIterations],
   );
   const testIterations = useMemo(
-    () => scenarioIterations.filter(({ type }) => type !== 'live version' && type !== 'draft'),
+    () => scenarioIterations.filter(({ type, archived }) => type !== 'live version' && type !== 'draft' && !archived),
     [scenarioIterations],
   );
+
+  console.log(testIterations);
   const refIterationsOptions = useMemo(() => refIterations.map(({ id }) => id), [refIterations]);
   const testIterationsOptions = useMemo(() => testIterations.map(({ id }) => id), [testIterations]);
 

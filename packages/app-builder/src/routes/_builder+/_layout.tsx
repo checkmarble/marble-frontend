@@ -15,7 +15,11 @@ import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpda
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { isAnalyticsAvailable, isAutoAssignmentAvailable } from '@app-builder/services/feature-access';
+import {
+  isAnalyticsAvailable,
+  isAutoAssignmentAvailable,
+  isScreeningSearchAvailable,
+} from '@app-builder/services/feature-access';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
@@ -60,6 +64,7 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
       },
       isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
       continuousScreening: entitlements.continuousScreening,
+      isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
     },
     versions: context.appConfig.versions,
     authProvider: context.appConfig.auth.provider,
@@ -180,13 +185,15 @@ export default function Builder() {
                                 Icon={(props) => <Icon icon="case-manager" {...props} />}
                               />
                             </li>
-                            <li>
-                              <SidebarLink
-                                labelTKey="navigation:screening_search"
-                                to={getRoute('/screening-search')}
-                                Icon={(props) => <Icon icon="search" {...props} />}
-                              />
-                            </li>
+                            {featuresAccess.isScreeningSearchAvailable ? (
+                              <li>
+                                <SidebarLink
+                                  labelTKey="navigation:screening_search"
+                                  to={getRoute('/screening-search')}
+                                  Icon={(props) => <Icon icon="search" {...props} />}
+                                />
+                              </li>
+                            ) : null}
                             <li>
                               {match(featuresAccess.analytics)
                                 .with('allowed', () =>

@@ -85,7 +85,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   const editorMode: EditorMode =
-    isEditScenarioAvailable(user) && isNullish(scenarioIteration.version) ? 'edit' : 'view';
+    isEditScenarioAvailable(user) && isNullish(scenarioIteration.version) && !scenarioIteration.archived
+      ? 'edit'
+      : 'view';
 
   return json({
     editorMode,

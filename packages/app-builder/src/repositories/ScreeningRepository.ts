@@ -46,6 +46,7 @@ export interface ScreeningRepository {
     fields: Record<string, string>;
     datasets?: string[];
     threshold?: number;
+    limit?: number;
   }): Promise<ScreeningMatchPayload[]>;
 }
 
@@ -106,7 +107,7 @@ export function makeGetScreeningRepository() {
     enrichMatch: async ({ matchId }) => {
       return adaptScreeningMatch(await marbleCoreApiClient.enrichScreeningMatch(matchId));
     },
-    freeformSearch: async ({ entityType, fields, datasets, threshold }) => {
+    freeformSearch: async ({ entityType, fields, datasets, threshold, limit }) => {
       const dto = {
         query: {
           [entityType]: fields,
@@ -114,7 +115,7 @@ export function makeGetScreeningRepository() {
         datasets,
         threshold,
       };
-      const results = await marbleCoreApiClient.freeformSearch(dto);
+      const results = await marbleCoreApiClient.freeformSearch(dto, { limit });
       return R.map(results, (result) => adaptScreeningMatchPayload(result.payload));
     },
   });
