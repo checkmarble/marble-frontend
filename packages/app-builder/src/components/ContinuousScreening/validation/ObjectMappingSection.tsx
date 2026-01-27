@@ -28,16 +28,42 @@ export const ObjectMappingSection = ({ updatedConfig, baseConfig }: EditionValid
               </ButtonV2>
             </div>
           ))
-          .with({ isSuccess: true }, ({ data: { dataModel } }) => (
-            <div className="grid grid-cols-2 gap-v2-md">
-              {updatedConfig.mappingConfigs.map((mappingConfig) => {
-                const table = dataModel.find((table) => table.name === mappingConfig.objectType);
-                return table ? (
-                  <TableValidation key={mappingConfig.objectType} table={table} objectMapping={mappingConfig} />
-                ) : null;
-              })}
-            </div>
-          ))
+          .with({ isSuccess: true }, ({ data: { dataModel } }) => {
+            const hasChanges = updatedConfig.mappingConfigs.some((mappingConfig) => {
+              const table = dataModel.find((table) => table.name === mappingConfig.objectType);
+              if (!table) return false;
+
+              return (
+                Object.entries(mappingConfig.fieldMapping)
+                  .map(([fieldId, ftmProperty]) => {
+                    const field = table.fields.find((field) => field.id === fieldId);
+                    return { field, ftmProperty };
+                  })
+                  .filter(({ field, ftmProperty }) => {
+                    return field && ftmProperty !== null && !field.ftmProperty;
+                  }).length > 0
+              );
+            });
+
+            if (!hasChanges) {
+              return (
+                <div className="flex flex-col gap-v2-sm">
+                  <span>{t('continuousScreening:edition.validation.objectMapping.no_changes')}</span>
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-2 gap-v2-md">
+                {updatedConfig.mappingConfigs.map((mappingConfig) => {
+                  const table = dataModel.find((table) => table.name === mappingConfig.objectType);
+                  return table ? (
+                    <TableValidation key={mappingConfig.objectType} table={table} objectMapping={mappingConfig} />
+                  ) : null;
+                })}
+              </div>
+            );
+          })
           .exhaustive()}
       </Collapsible.Content>
     </Collapsible.Container>
