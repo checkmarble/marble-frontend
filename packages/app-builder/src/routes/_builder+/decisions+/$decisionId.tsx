@@ -15,17 +15,19 @@ import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isNotFoundHttpError, Pivot } from '@app-builder/models';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { Screening } from '@app-builder/models/screening';
-import { initServerServices } from '@app-builder/services/init.server';
+import { ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -71,21 +73,52 @@ export const handle = {
   ],
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs): Promise<LoaderData> {
+const handleScreenings = async (screenings: Screening[], screeningRepository: ScreeningRepository) => {
+  if (screenings.length === 0) {
+    return [];
+  }
+
+  // Only call dataset API if there is at least one screening
+  const { sections } = await screeningRepository.listDatasets();
+
+  const datasets: Map<string, string> = new Map(
+    sections?.flatMap(({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? []) ?? [],
+  );
+
+  const sanctionsDatasets = [
+    ...new Set(screenings.flatMap(({ matches }) => matches.flatMap(({ payload }) => payload.datasets))),
+  ];
+
+  return screenings.map(({ matches, ...rest }) => ({
+    ...rest,
+    matches: matches.map(({ payload, ...rest }) => ({
+      ...rest,
+      payload: {
+        ...payload,
+        datasets: payload.datasets
+          ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
+          .map((dataset) => datasets.get(dataset) ?? dataset),
+      },
+    })),
+  }));
+};
+
+export const loader = createServerFn([authMiddleware], async function decisionLoader({ request, context, params }) {
   const {
-    authService,
+    toastSessionService,
     i18nextService: { getFixedT },
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
-  const { decision, scenario, dataModelRepository, screening } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  } = context.services;
+  const { decision, scenario, dataModelRepository, screening } = context.authInfo;
+
   const parsedParam = await parseParamsSafe(params, z.object({ decisionId: shortUUIDSchema }));
   if (!parsedParam.success) {
     throw handleParseParamError(request, parsedParam.error);
   }
 
-  const [toastSession, t] = await Promise.all([getSession(request), getFixedT(request, ['decisions'])]);
+  const [toastSession, t] = await Promise.all([
+    toastSessionService.getSession(request),
+    getFixedT(request, ['decisions']),
+  ]);
 
   const currentDecision = await decision.getDecisionById(parsedParam.data.decisionId).catch(async (error) => {
     if (isNotFoundHttpError(error)) {
@@ -110,7 +143,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
       }
 
       throw redirect(redirectPath, {
-        headers: { 'Set-Cookie': await commitSession(toastSession) },
+        headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) },
       });
     }
     throw error;
@@ -119,7 +152,6 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
   const independentOperations = Promise.all([
     dataModelRepository.listPivots({}),
     screening.listScreenings({ decisionId: parsedParam.data.decisionId }),
-    screening.listDatasets(),
   ]);
 
   const scenarioIteration = await scenario.getScenarioIteration({
@@ -127,35 +159,16 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
   });
   const scenarioRules = scenarioIteration.rules;
 
-  const [pivots, screeningResult, { sections }] = await independentOperations;
-
-  const datasets: Map<string, string> = new Map(
-    sections?.flatMap(({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? []) ?? [],
-  );
-
-  const sanctionsDatasets = [
-    ...new Set(screeningResult.flatMap(({ matches }) => matches.flatMap(({ payload }) => payload.datasets))),
-  ];
+  const [pivots, screeningResult] = await independentOperations;
 
   return {
     decision: currentDecision,
     scenarioRules,
     pivots,
-    screening: screeningResult.map(({ matches, ...rest }) => ({
-      ...rest,
-      matches: matches.map(({ payload, ...rest }) => ({
-        ...rest,
-        payload: {
-          ...payload,
-          datasets: payload.datasets
-            ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
-            .map((dataset) => datasets.get(dataset) ?? dataset),
-        },
-      })),
-    })),
+    screening: await handleScreenings(screeningResult, screening),
     isIterationArchived: scenarioIteration.archived,
   };
-}
+});
 
 export default function DecisionPage() {
   const { decision, pivots, scenarioRules, screening, isIterationArchived } = useLoaderData<typeof loader>();
