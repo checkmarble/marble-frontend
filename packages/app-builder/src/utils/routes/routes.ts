@@ -523,6 +523,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/$caseId.enqueue-review.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/$caseId.next-unassigned",
+        "path": "ressources/cases/:caseId/next-unassigned",
+        "file": "routes/ressources+/cases+/$caseId.next-unassigned.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/$caseId.rules-by-pivot",
         "path": "ressources/cases/:caseId/rules-by-pivot",
         "file": "routes/ressources+/cases+/$caseId.rules-by-pivot.tsx"
