@@ -22,10 +22,12 @@ export function RulesDetail({
   scenarioId,
   ruleExecutions,
   rules,
+  isIterationArchived = false,
 }: {
   scenarioId: string;
   ruleExecutions: RuleExecution[];
   rules: ScenarioIterationRule[];
+  isIterationArchived?: boolean;
 }) {
   const { t } = useTranslation(decisionsI18n);
 
@@ -40,7 +42,12 @@ export function RulesDetail({
                 <RuleExecutionTitle ruleExecution={ruleExecution} />
                 <RuleExecutionContent>
                   <RuleExecutionDescription description={ruleExecution.description} />
-                  <RuleExecutionDetail scenarioId={scenarioId} ruleExecution={ruleExecution} rules={rules} />
+                  <RuleExecutionDetail
+                    scenarioId={scenarioId}
+                    ruleExecution={ruleExecution}
+                    rules={rules}
+                    isIterationArchived={isIterationArchived}
+                  />
                 </RuleExecutionContent>
               </RuleExecutionCollapsible>
             );
@@ -55,10 +62,12 @@ export function RuleExecutionDetail({
   scenarioId,
   ruleExecution,
   rules,
+  isIterationArchived = false,
 }: {
   scenarioId: string;
   ruleExecution: RuleExecution;
   rules: ScenarioIterationRule[];
+  isIterationArchived?: boolean;
 }) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
@@ -73,6 +82,30 @@ export function RuleExecutionDetail({
       <p className="bg-red-background text-s text-red-primary flex h-8 items-center justify-center rounded-sm px-2 py-1 font-medium">
         {t('decisions:rules.error.not_found')}
       </p>
+    );
+  }
+
+  // When the scenario iteration is archived, show simplified view without formula
+  if (isIterationArchived) {
+    return (
+      <div className="flex w-full items-center gap-4">
+        <div className="bg-purple-background text-s text-purple-primary inline-flex h-8 w-fit shrink-0 items-center justify-center whitespace-pre rounded-sm border border-transparent px-2 font-normal dark:bg-transparent dark:border-purple-primary">
+          <Trans
+            t={t}
+            i18nKey="scenarios:rules.consequence.score_modifier"
+            components={{
+              Score: <span className="font-semibold" />,
+            }}
+            values={{
+              score: formatNumber(currentRule.scoreModifier, {
+                language,
+                signDisplay: 'always',
+              }),
+            }}
+          />
+        </div>
+        <p className="text-grey-primary text-s">{t('decisions:rules.archived_no_details')}</p>
+      </div>
     );
   }
 

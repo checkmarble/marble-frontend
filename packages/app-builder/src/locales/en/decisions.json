@@ -52,6 +52,7 @@
   "review_status.approve": "approve",
   "review_status.decline": "decline",
   "review_status.pending": "pending",
+  "rules.archived_no_details": "Scenario archived - no other information to display.",
   "rules.description": "Description",
   "rules.error.division_by_zero": "Division by zero",
   "rules.error.not_found": "The associated rule info could not be found. Please try again or contact your admin.",
