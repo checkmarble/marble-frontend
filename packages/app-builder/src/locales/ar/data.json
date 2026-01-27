@@ -61,7 +61,7 @@
   "delete_pivot.title": "حذف مجموعة القرارات {{name}}",
   "delete_table.confirm": "هل أنت متأكد من أنك تريد حذف الجدول \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
   "delete_table.title": "حذف الجدول {{name}}",
-  "delete.active_scenarios_linked": "يُستخدم العنصر \"{{name}}\" في سيناريوهات نشطة. يجب عليك تعديلها قبل الحذف.",
+  "delete.active_scenarios_linked": "يُستخدم العنصر \"{{name}}\" في النسخة النشطة من السيناريو. يجب عليك إلغاء تفعيلها قبل الحذف.",
   "delete.active_scenarios_need_modification_one": "إصدار سيناريو نشط واحد يحتاج إلى تعديل:",
   "delete.active_scenarios_need_modification_other": "{{count}} إصدارات سيناريوهات نشطة تحتاج إلى تعديل:",
   "delete.archived_iterations_hint": "سيتم أرشفة الإصدارات المسودة التالية:",

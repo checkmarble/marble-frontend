@@ -15,6 +15,7 @@ const callout = cva('text-s text-grey-primary flex flex-row items-center gap-2 r
       soft: 'bg-grey-background-light',
     },
     color: {
+      grey: null,
       purple: 'border-s-2 border-s-purple-primary',
       red: 'border-s-2 border-s-red-primary',
       orange: 'border-s-2 border-s-orange-primary',

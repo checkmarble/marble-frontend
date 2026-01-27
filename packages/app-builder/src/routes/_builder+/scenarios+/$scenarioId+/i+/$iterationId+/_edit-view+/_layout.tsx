@@ -6,6 +6,7 @@ import { CommitIterationDraft } from '@app-builder/components/Scenario/Iteration
 import { CreateDraftIteration } from '@app-builder/components/Scenario/Iteration/Actions/CreateDraft';
 import { DeactivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/DeactivateScenarioVersion';
 import { PrepareScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/PrepareScenarioVersion';
+import { ArchivedIterationView } from '@app-builder/components/Scenario/Iteration/ArchivedIterationView';
 import {
   useCurrentScenario,
   useScenarioIterationsSummary,
@@ -24,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { cn, Tabs, Tag, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { useCurrentScenarioValidation } from '../_layout';
+import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -61,6 +62,7 @@ export default function ScenarioEditLayout() {
   const currentScenario = useCurrentScenario();
   const scenarioValidation = useCurrentScenarioValidation();
   const { isCreateDraftAvailable, ...loaderData } = useLoaderData<typeof loader>();
+  const { archived } = useCurrentScenarioIteration();
 
   const scenarioIterations = useScenarioIterationsSummary();
 
@@ -76,7 +78,7 @@ export default function ScenarioEditLayout() {
   const editorMode = useEditorMode();
 
   const withEditTag = editorMode === 'edit';
-  const withCreateDraftIteration = isCreateDraftAvailable && currentIteration.type !== 'draft';
+  const withCreateDraftIteration = isCreateDraftAvailable && currentIteration.type !== 'draft' && !archived;
 
   return (
     <Page.Main>
@@ -90,64 +92,87 @@ export default function ScenarioEditLayout() {
             </Tag>
           ) : null}
         </div>
-        <div className="flex flex-row items-center gap-4">
-          {withCreateDraftIteration ? (
-            <CreateDraftIteration
-              iterationId={currentIteration.id}
-              scenarioId={currentScenario.id}
-              draftId={draftIteration?.id}
-            />
-          ) : null}
-          {loaderData.isDeploymentActionsAvailable ? (
-            <DeploymentActions
-              scenario={{
-                id: currentScenario.id,
-                isLive: !!currentScenario.liveVersionId,
-              }}
-              iteration={{
-                id: currentIteration.id,
-                type: currentIteration.type,
-                isValid:
-                  !hasTriggerErrors(scenarioValidation) &&
-                  !hasRulesErrors(scenarioValidation) &&
-                  !hasDecisionErrors(scenarioValidation),
-                status: loaderData.publicationPreparationStatus.status,
-              }}
-              isPreparationServiceOccupied={loaderData.publicationPreparationStatus.serviceStatus === 'occupied'}
-            />
-          ) : null}
-        </div>
+        {!archived ? (
+          <div className="flex flex-row items-center gap-4">
+            {withCreateDraftIteration ? (
+              <CreateDraftIteration
+                iterationId={currentIteration.id}
+                scenarioId={currentScenario.id}
+                draftId={draftIteration?.id}
+              />
+            ) : null}
+            {loaderData.isDeploymentActionsAvailable ? (
+              <DeploymentActions
+                scenario={{
+                  id: currentScenario.id,
+                  isLive: !!currentScenario.liveVersionId,
+                }}
+                iteration={{
+                  id: currentIteration.id,
+                  type: currentIteration.type,
+                  isValid:
+                    !hasTriggerErrors(scenarioValidation) &&
+                    !hasRulesErrors(scenarioValidation) &&
+                    !hasDecisionErrors(scenarioValidation),
+                  status: loaderData.publicationPreparationStatus.status,
+                }}
+                isPreparationServiceOccupied={loaderData.publicationPreparationStatus.serviceStatus === 'occupied'}
+              />
+            ) : null}
+          </div>
+        ) : null}
       </Page.Header>
       <Page.Container>
-        {currentScenario.description ? <Page.Description>{currentScenario.description}</Page.Description> : null}
+        {archived ? (
+          <aside className="bg-grey-background text-s text-grey-primary flex flex-row items-center gap-2 p-4 font-normal lg:px-8 lg:py-4">
+            <Icon icon="tip" className="size-5 shrink-0" />
+            {t('scenarios:iteration.archived_message')}
+          </aside>
+        ) : currentScenario.description ? (
+          <Page.Description>{currentScenario.description}</Page.Description>
+        ) : null}
         <Page.Content>
-          <Tabs>
-            <NavLink
-              to="./trigger"
-              className={cn(tabClassName, 'gap-2')}
-              aria-invalid={hasTriggerErrors(scenarioValidation)}
-            >
-              <ScenariosLinkIcon icon="trigger" withPing={hasTriggerErrors(scenarioValidation)} className="size-5" />
-              <span className="first-letter:capitalize">{t('navigation:scenario.trigger')}</span>
-            </NavLink>
-            <NavLink
-              to="./rules"
-              className={cn(tabClassName, 'gap-2')}
-              aria-invalid={hasRulesErrors(scenarioValidation)}
-            >
-              <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
-              <span className="first-letter:capitalize">{t('navigation:scenario.rules')}</span>
-            </NavLink>
-            <NavLink
-              to="./decision"
-              className={cn(tabClassName, 'gap-2')}
-              aria-invalid={hasDecisionErrors(scenarioValidation)}
-            >
-              <ScenariosLinkIcon icon="decision" withPing={hasDecisionErrors(scenarioValidation)} className="size-5" />
-              <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
-            </NavLink>
-          </Tabs>
-          <Outlet />
+          {archived ? (
+            <ArchivedIterationView />
+          ) : (
+            <>
+              <Tabs>
+                <NavLink
+                  to="./trigger"
+                  className={cn(tabClassName, 'gap-2')}
+                  aria-invalid={hasTriggerErrors(scenarioValidation)}
+                >
+                  <ScenariosLinkIcon
+                    icon="trigger"
+                    withPing={hasTriggerErrors(scenarioValidation)}
+                    className="size-5"
+                  />
+                  <span className="first-letter:capitalize">{t('navigation:scenario.trigger')}</span>
+                </NavLink>
+                <NavLink
+                  to="./rules"
+                  className={cn(tabClassName, 'gap-2')}
+                  aria-invalid={hasRulesErrors(scenarioValidation)}
+                >
+                  <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
+                  <span className="first-letter:capitalize">{t('navigation:scenario.rules')}</span>
+                </NavLink>
+                <NavLink
+                  to="./decision"
+                  className={cn(tabClassName, 'gap-2')}
+                  aria-invalid={hasDecisionErrors(scenarioValidation)}
+                >
+                  <ScenariosLinkIcon
+                    icon="decision"
+                    withPing={hasDecisionErrors(scenarioValidation)}
+                    className="size-5"
+                  />
+                  <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
+                </NavLink>
+              </Tabs>
+              <Outlet />
+            </>
+          )}
         </Page.Content>
       </Page.Container>
     </Page.Main>

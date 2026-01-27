@@ -5,7 +5,7 @@ import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { dataI18n } from '../data-i18n';
@@ -62,15 +62,16 @@ export function DeletePivot({ pivot, onDeleted }: DeletePivotProps) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Button variant="secondary" color="red" onClick={handleOpenModal} disabled={deletePivotMutation.isPending}>
+      <ButtonV2 variant="destructive" onClick={handleOpenModal} disabled={deletePivotMutation.isPending}>
         <Icon icon="delete" className="size-5" />
         {t('common:delete')}
-      </Button>
+      </ButtonV2>
       <Modal.Content>
         <DeleteDataModelContent
           report={report}
           entityType="pivot"
           entityName={pivotName}
+          confirmText="DELETE"
           onConfirm={handleConfirmDelete}
           onClose={handleClose}
           isPending={deletePivotMutation.isPending}

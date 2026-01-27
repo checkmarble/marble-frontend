@@ -129,3 +129,6 @@ export const hasAnyEntitlement = (entitlements: FeatureAccesses): boolean =>
 
 export const isContinuousScreeningAvailable = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.continuousScreening);
+
+export const isScreeningSearchAvailable = (entitlements: FeatureAccesses) =>
+  isAccessible(entitlements.sanctions) || isContinuousScreeningAvailable(entitlements);

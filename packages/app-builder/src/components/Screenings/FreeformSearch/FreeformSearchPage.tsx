@@ -13,6 +13,7 @@ export interface FreeformSearchState {
     fields: Record<string, string>;
     datasets: string[];
     threshold: number | undefined;
+    limit: number | undefined;
   };
 }
 
@@ -22,10 +23,12 @@ interface FreeformSearchPageProps {
 
 export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({ onSearchComplete }) => {
   const [results, setResults] = useState<ScreeningMatchPayload[] | null>(null);
+  const [currentLimit, setCurrentLimit] = useState<number | undefined>(undefined);
 
   const handleSearchComplete = useCallback(
     (data: ScreeningMatchPayload[], inputs: FreeformSearchInput) => {
       setResults(data);
+      setCurrentLimit(inputs.limit);
       onSearchComplete?.({
         results: data,
         inputs: {
@@ -33,6 +36,7 @@ export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({
           fields: inputs.fields as Record<string, string>,
           datasets: inputs.datasets ?? [],
           threshold: inputs.threshold,
+          limit: inputs.limit,
         },
       });
     },
@@ -50,7 +54,7 @@ export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({
 
       {/* Right content - results */}
       <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
-        <FreeformSearchResults results={results} />
+        <FreeformSearchResults results={results} limit={currentLimit} />
       </div>
     </div>
   );

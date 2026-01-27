@@ -14,6 +14,7 @@ import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
+import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
 import { ThresholdPopover } from './ThresholdPopover';
 
 function setAdditionalFields(fields: string[], prev: FreeformSearchInput['fields']): FreeformSearchInput['fields'] {
@@ -38,11 +39,13 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     defaultValues: {
       entityType: 'Thing',
       fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {} as FreeformSearchInput['fields']),
+      limit: DEFAULT_LIMIT,
     } as FreeformSearchInput,
     onSubmit: async ({ value }) => {
       const submitValue: FreeformSearchInput = {
         ...value,
         datasets: selectedDatasets.length > 0 ? selectedDatasets : undefined,
+        limit: value.limit ?? DEFAULT_LIMIT,
       };
 
       const result = await searchMutation.mutateAsync(submitValue);
@@ -57,6 +60,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const threshold = useStore(form.store, (state) => state.values.threshold);
+  const limit = useStore(form.store, (state) => state.values.limit);
   const additionalFields = entityType ? SEARCH_ENTITIES[entityType].fields : [];
 
   const onSearchEntityChange = ({ value }: { value: SearchableSchema }) => {
@@ -77,7 +81,10 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     setSelectedDatasets([]);
   };
 
-  const hasActiveFilters = selectedDatasets.length > 0 || (entityType && entityType !== 'Thing');
+  const hasActiveFilters =
+    selectedDatasets.length > 0 ||
+    (entityType && entityType !== 'Thing') ||
+    (limit !== undefined && limit !== DEFAULT_LIMIT);
 
   const hasEntityTypeSelected = entityType && entityType !== 'Thing';
   const entityTypeFields = additionalFields.filter((f) => f !== 'name');
@@ -130,9 +137,9 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
         <DatasetsPopover selectedDatasets={selectedDatasets} onApply={setSelectedDatasets} />
 
-        <div className="col-span-2 lg:col-span-1">
-          <ThresholdPopover value={threshold} onApply={(value) => form.setFieldValue('threshold', value)} />
-        </div>
+        <ThresholdPopover value={threshold} onApply={(value) => form.setFieldValue('threshold', value)} />
+
+        <LimitPopover value={limit} onApply={(value) => form.setFieldValue('limit', value)} />
       </div>
 
       {/* Entity-specific fields section (only show when entity type is selected) */}

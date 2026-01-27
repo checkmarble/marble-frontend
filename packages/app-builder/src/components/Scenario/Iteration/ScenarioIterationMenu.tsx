@@ -14,6 +14,7 @@ interface LabelledScenarioIteration {
   linkTo: string;
   formattedVersion: string;
   formattedLive?: string;
+  formattedArchived?: string;
   formattedUpdatedAt: string;
 }
 
@@ -35,6 +36,10 @@ export function getFormattedVersion(
 
 export function getFormattedLive({ type }: Pick<LabelledScenarioIteration, 'type'>, t: TFunction<['scenarios']>) {
   return type === 'live version' ? t('scenarios:live') : undefined;
+}
+
+export function getFormattedArchived({ archived }: { archived: boolean }, t: TFunction<['scenarios']>) {
+  return archived ? t('scenarios:archived') : undefined;
 }
 
 function sortScenarioIteration(lhs: LabelledScenarioIteration, rhs: LabelledScenarioIteration) {
@@ -105,6 +110,9 @@ function ScenarioIterationContent({ labelledScenarioIteration, searchValue }: Sc
                 />
                 {iteration.formattedLive ? (
                   <span className="text-purple-primary capitalize">{iteration.formattedLive}</span>
+                ) : null}
+                {iteration.formattedArchived ? (
+                  <span className="text-grey-secondary capitalize">{iteration.formattedArchived}</span>
                 ) : null}
               </span>
               <Highlight

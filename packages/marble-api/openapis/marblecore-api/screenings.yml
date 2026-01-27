@@ -237,6 +237,16 @@
       - Screening
     summary: Freeform search for sanctions matches
     operationId: freeformSearch
+    parameters:
+      - name: limit
+        description: Maximum number of results to return
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 10
+          maximum: 50
+          default: 10
     requestBody:
       description: 'Freeform search query'
       content:

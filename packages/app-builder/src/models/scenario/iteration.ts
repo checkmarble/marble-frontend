@@ -14,6 +14,7 @@ export interface ScenarioIterationSummary {
   version: number | null;
   createdAt: string;
   updatedAt: string;
+  archived: boolean;
 }
 
 export interface ScenarioIterationWithoutRules {
@@ -22,6 +23,7 @@ export interface ScenarioIterationWithoutRules {
   version: number | null;
   createdAt: string;
   updatedAt: string;
+  archived: boolean;
   scoreReviewThreshold?: number;
   scoreBlockAndReviewThreshold?: number;
   scoreDeclineThreshold?: number;
@@ -84,6 +86,7 @@ export function adaptScenarioIteration(scenarioIterationWithBody: ScenarioIterat
     version: scenarioIterationWithBody.version,
     createdAt: scenarioIterationWithBody.created_at,
     updatedAt: scenarioIterationWithBody.updated_at,
+    archived: scenarioIterationWithBody.archived,
     scoreReviewThreshold: scenarioIterationWithBody.body.score_review_threshold,
     scoreBlockAndReviewThreshold: scenarioIterationWithBody.body.score_block_and_review_threshold,
     scoreDeclineThreshold: scenarioIterationWithBody.body.score_decline_threshold,
@@ -105,6 +108,7 @@ export function adaptScenarioIterationWithoutRules(
     version: scenarioIterationWithBody.version,
     createdAt: scenarioIterationWithBody.created_at,
     updatedAt: scenarioIterationWithBody.updated_at,
+    archived: scenarioIterationWithBody.archived,
     scoreReviewThreshold: scenarioIterationWithBody.body.score_review_threshold,
     scoreBlockAndReviewThreshold: scenarioIterationWithBody.body.score_block_and_review_threshold,
     scoreDeclineThreshold: scenarioIterationWithBody.body.score_decline_threshold,
@@ -121,5 +125,6 @@ export function adaptScenarioIterationSummary(dto: ScenarioIterationDto): Scenar
     version: dto.version,
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
+    archived: dto.archived,
   };
 }

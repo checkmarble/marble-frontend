@@ -3547,11 +3547,15 @@ export function freeformSearch(body?: {
     };
     datasets?: string[];
     threshold?: number;
-}, opts?: Oazapfts.RequestOpts) {
+}, { limit }: {
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningMatchDto[];
-    }>("/screenings/freeform-search", oazapfts.json({
+    }>(`/screenings/freeform-search${QS.query(QS.explode({
+        limit
+    }))}`, oazapfts.json({
         ...opts,
         method: "POST",
         body

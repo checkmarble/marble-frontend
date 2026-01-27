@@ -4,15 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
+import { Callout } from '../../Callout';
 import { screeningsI18n } from '../screenings-i18n';
 import { FreeformMatchCard } from './FreeformMatchCard';
+import { DEFAULT_LIMIT } from './LimitPopover';
 
 interface FreeformSearchResultsProps {
   results: ScreeningMatchPayload[] | null;
+  limit?: number;
 }
 
-export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps> = ({ results }) => {
+export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps> = ({ results, limit }) => {
   const { t } = useTranslation(screeningsI18n);
+  const effectiveLimit = limit ?? DEFAULT_LIMIT;
+  const mayHaveMoreResults = results !== null && results.length === effectiveLimit;
 
   return match(results)
     .with(null, () => (
@@ -45,13 +50,18 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
     .with(P.array(), (data) => (
       // Results found
       <div className="flex flex-col gap-2">
-        <div className="bg-surface-card border-grey-border flex items-center rounded-md border px-4 py-3">
+        <div className="bg-surface-card border-grey-border flex flex-col gap-2 rounded-md border px-4 py-3">
           <div className="text-s flex items-center gap-2">
             <span className="text-grey-primary font-semibold">{t('screenings:freeform_search.results_title')}</span>
             <span className="text-grey-placeholder">
               {t('screenings:freeform_search.results_count', { count: data.length })}
             </span>
           </div>
+          {mayHaveMoreResults && (
+            <Callout color="orange" icon="warning">
+              {t('screenings:freeform_search.limit_warning')}
+            </Callout>
+          )}
         </div>
 
         {data.map((entity) => (

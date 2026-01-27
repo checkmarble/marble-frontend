@@ -8,6 +8,7 @@ import { Page } from '@app-builder/components/Page';
 import { CreateTestRun } from '@app-builder/components/Scenario/Actions/CreateTestRun';
 import { UpdateScenario } from '@app-builder/components/Scenario/Actions/UpdateScenario';
 import {
+  getFormattedArchived,
   getFormattedLive,
   getFormattedVersion,
   ScenarioIterationMenu,
@@ -254,6 +255,7 @@ function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIt
         }),
         formattedVersion: getFormattedVersion(si, t),
         formattedLive: getFormattedLive(si, t),
+        formattedArchived: getFormattedArchived(si, t),
         formattedUpdatedAt: formatDateRelative(si.updatedAt, {
           language,
         }),
@@ -290,6 +292,7 @@ function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: Scenario
 
   const currentFormattedVersion = getFormattedVersion(scenarioIteration, t);
   const currentFormattedLive = getFormattedLive(scenarioIteration, t);
+  const currentFormattedArchived = getFormattedArchived(scenarioIteration, t);
 
   return (
     <Link
@@ -303,6 +306,9 @@ function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: Scenario
       <span className="text-grey-primary text-s font-semibold capitalize">{currentFormattedVersion}</span>
       {currentFormattedLive ? (
         <span className="text-s text-purple-primary font-semibold capitalize">{currentFormattedLive}</span>
+      ) : null}
+      {currentFormattedArchived ? (
+        <span className="text-s text-grey-secondary font-semibold capitalize">{currentFormattedArchived}</span>
       ) : null}
     </Link>
   );

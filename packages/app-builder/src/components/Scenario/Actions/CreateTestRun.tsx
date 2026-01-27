@@ -29,13 +29,14 @@ export function CreateTestRun({
   const { t } = useTranslation(['common', 'scenarios']);
   const [open, setOpen] = useState(false);
 
-  const shouldAllowCreate = useMemo(
-    () =>
-      scenarioIterations.length > 1 &&
-      scenarioIterations.some((i) => i.type === 'live version') &&
-      !atLeastOneActiveTestRun,
-    [scenarioIterations, atLeastOneActiveTestRun],
+  const hasLiveVersion = useMemo(() => scenarioIterations.some((i) => i.type === 'live version'), [scenarioIterations]);
+
+  const hasTestableVersions = useMemo(
+    () => scenarioIterations.some(({ type, archived }) => type !== 'live version' && type !== 'draft' && !archived),
+    [scenarioIterations],
   );
+
+  const shouldAllowCreate = hasLiveVersion && hasTestableVersions && !atLeastOneActiveTestRun;
 
   if (shouldAllowCreate)
     return (
@@ -73,9 +74,10 @@ function CreateTestRunToContent({
     [scenarioIterations],
   );
   const testIterations = useMemo(
-    () => scenarioIterations.filter(({ type }) => type !== 'live version' && type !== 'draft'),
+    () => scenarioIterations.filter(({ type, archived }) => type !== 'live version' && type !== 'draft' && !archived),
     [scenarioIterations],
   );
+
   const refIterationsOptions = useMemo(() => refIterations.map(({ id }) => id), [refIterations]);
   const testIterationsOptions = useMemo(() => testIterations.map(({ id }) => id), [testIterations]);
 

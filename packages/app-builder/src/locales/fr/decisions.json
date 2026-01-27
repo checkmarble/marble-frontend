@@ -52,6 +52,7 @@
   "review_status.approve": "approuver",
   "review_status.decline": "refuser",
   "review_status.pending": "en attente",
+  "rules.archived_no_details": "Scénario archivé - pas d'autre information à afficher.",
   "rules.description": "Description",
   "rules.error.division_by_zero": "Division par zéro",
   "rules.error.not_found": "Les informations de la règle sont introuvables. Veuillez réessayer ou contacter votre administrateur.",

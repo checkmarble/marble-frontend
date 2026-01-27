@@ -9,7 +9,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type TFunction } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal } from 'ui-design-system';
+import { ButtonV2, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { dataI18n } from '../data-i18n';
@@ -20,6 +20,8 @@ interface DeleteDataModelContentProps {
   report: DestroyDataModelReport | null;
   entityType: DeleteDataModelEntityType;
   entityName: string;
+  /** Text that user must type to confirm deletion. Defaults to entityName. */
+  confirmText?: string;
   onConfirm?: () => void;
   onClose: () => void;
   isPending?: boolean;
@@ -29,6 +31,7 @@ export function DeleteDataModelContent({
   report,
   entityType,
   entityName,
+  confirmText,
   onConfirm,
   onClose,
   isPending,
@@ -42,51 +45,54 @@ export function DeleteDataModelContent({
 
   const isBlocked = hasBlockingConflicts(report);
   const hasArchivedIterations = report.archivedIterations.length > 0;
-  const isConfirmed = confirmationText === entityName;
+  const requiredConfirmText = confirmText ?? entityName;
+  const isConfirmed = confirmationText === requiredConfirmText;
 
   return (
     <>
       <Modal.Title>{t(`data:delete_${entityType}.title`, { name: entityName })}</Modal.Title>
-      <div className="flex flex-col gap-4 p-6">
-        {isBlocked ? (
-          <BlockedDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
-        ) : hasArchivedIterations ? (
-          <DraftDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
-        ) : (
-          <SimpleDeletionContent entityType={entityType} entityName={entityName} t={t} />
-        )}
+      <div className="flex max-h-[70vh] flex-col overflow-hidden">
+        <div className="flex flex-col gap-4 overflow-y-auto p-6">
+          {isBlocked ? (
+            <BlockedDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
+          ) : hasArchivedIterations ? (
+            <DraftDeletionContent report={report} entityType={entityType} entityName={entityName} t={t} />
+          ) : (
+            <SimpleDeletionContent entityType={entityType} entityName={entityName} t={t} />
+          )}
 
-        {!isBlocked ? (
-          <div className="flex flex-col gap-2">
-            <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
-              {t('data:delete.type_to_confirm', { text: entityName })}
-            </label>
-            <Input
-              id="delete-confirmation"
-              type="text"
-              value={confirmationText}
-              onChange={(e) => setConfirmationText(e.target.value)}
-              placeholder={entityName}
-              autoComplete="off"
-            />
-          </div>
-        ) : null}
+          {!isBlocked ? (
+            <div className="flex flex-col gap-2">
+              <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
+                {t('data:delete.type_to_confirm', { text: requiredConfirmText })}
+              </label>
+              <Input
+                id="delete-confirmation"
+                type="text"
+                value={confirmationText}
+                onChange={(e) => setConfirmationText(e.target.value)}
+                placeholder={requiredConfirmText}
+                autoComplete="off"
+              />
+            </div>
+          ) : null}
+        </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="border-t-grey-border flex justify-end gap-2 border-t p-6">
           <Modal.Close asChild>
-            <Button variant="secondary" onClick={onClose}>
+            <ButtonV2 variant="secondary" onClick={onClose}>
               {t('common:cancel')}
-            </Button>
+            </ButtonV2>
           </Modal.Close>
           {isBlocked ? (
-            <Button variant="primary" onClick={onClose}>
+            <ButtonV2 variant="primary" onClick={onClose}>
               {t('data:delete.understood')}
-            </Button>
+            </ButtonV2>
           ) : (
-            <Button color="red" variant="primary" onClick={onConfirm} disabled={isPending || !isConfirmed}>
+            <ButtonV2 variant="destructive" onClick={onConfirm} disabled={isPending || !isConfirmed}>
               <Icon icon="delete" className="size-5" />
               {t('common:delete')}
-            </Button>
+            </ButtonV2>
           )}
         </div>
       </div>

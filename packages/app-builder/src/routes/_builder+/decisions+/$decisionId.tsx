@@ -40,6 +40,7 @@ export type LoaderData = {
   scenarioRules: ScenarioIterationRule[];
   pivots: Pivot[];
   screening: Screening[];
+  isIterationArchived: boolean;
 };
 
 export const handle = {
@@ -121,11 +122,10 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
     screening.listDatasets(),
   ]);
 
-  const scenarioRules = await scenario
-    .getScenarioIteration({
-      iterationId: currentDecision.scenario.scenarioIterationId,
-    })
-    .then((iteration) => iteration.rules);
+  const scenarioIteration = await scenario.getScenarioIteration({
+    iterationId: currentDecision.scenario.scenarioIterationId,
+  });
+  const scenarioRules = scenarioIteration.rules;
 
   const [pivots, screeningResult, { sections }] = await independentOperations;
 
@@ -153,11 +153,12 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
         },
       })),
     })),
+    isIterationArchived: scenarioIteration.archived,
   };
 }
 
 export default function DecisionPage() {
-  const { decision, pivots, scenarioRules, screening } = useLoaderData<typeof loader>();
+  const { decision, pivots, scenarioRules, screening, isIterationArchived } = useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -188,7 +189,12 @@ export default function DecisionPage() {
               <div className="flex flex-col gap-4 lg:gap-8">
                 <DecisionDetail decision={decision} />
                 <PivotDetail pivotValues={pivotValues} existingPivotDefinition={existingPivotDefinition} />
-                <RulesDetail scenarioId={decision.scenario.id} ruleExecutions={decision.rules} rules={scenarioRules} />
+                <RulesDetail
+                  scenarioId={decision.scenario.id}
+                  ruleExecutions={decision.rules}
+                  rules={scenarioRules}
+                  isIterationArchived={isIterationArchived}
+                />
                 {screening.map((s) => (
                   <ScreeningDetail key={s.id} screening={s} />
                 ))}

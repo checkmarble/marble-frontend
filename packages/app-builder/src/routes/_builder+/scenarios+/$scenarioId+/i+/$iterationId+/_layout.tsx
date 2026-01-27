@@ -1,5 +1,6 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import {
+  getFormattedArchived,
   getFormattedLive,
   getFormattedVersion,
   ScenarioIterationMenu,
@@ -39,6 +40,7 @@ export const handle = {
 
       const currentFormattedVersion = getFormattedVersion(currentIteration, t);
       const currentFormattedLive = getFormattedLive(currentIteration, t);
+      const currentFormattedArchived = getFormattedArchived(currentIteration, t);
 
       if (!isLast) {
         return (
@@ -53,6 +55,9 @@ export const handle = {
               <span className="capitalize">{currentFormattedVersion}</span>
               {currentFormattedLive ? (
                 <span className="text-purple-primary capitalize">{currentFormattedLive}</span>
+              ) : null}
+              {currentFormattedArchived ? (
+                <span className="text-grey-secondary capitalize">{currentFormattedArchived}</span>
               ) : null}
             </p>
           </BreadCrumbLink>
@@ -85,7 +90,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   const editorMode: EditorMode =
-    isEditScenarioAvailable(user) && isNullish(scenarioIteration.version) ? 'edit' : 'view';
+    isEditScenarioAvailable(user) && isNullish(scenarioIteration.version) && !scenarioIteration.archived
+      ? 'edit'
+      : 'view';
 
   return json({
     editorMode,
@@ -180,6 +187,7 @@ export function VersionSelect({
         linkTo: location.pathname.replace(fromUUIDtoSUUID(currentIteration.id), fromUUIDtoSUUID(si.id)),
         formattedVersion: getFormattedVersion(si, t),
         formattedLive: getFormattedLive(si, t),
+        formattedArchived: getFormattedArchived(si, t),
         formattedUpdatedAt: formatDateRelative(si.updatedAt, {
           language,
         }),
@@ -189,6 +197,7 @@ export function VersionSelect({
 
   const currentFormattedVersion = getFormattedVersion(currentIteration, t);
   const currentFormattedLive = getFormattedLive(currentIteration, t);
+  const currentFormattedArchived = getFormattedArchived(currentIteration, t);
 
   return (
     <ScenarioIterationMenu labelledScenarioIteration={labelledScenarioIteration}>
@@ -196,6 +205,9 @@ export function VersionSelect({
         <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
           <span className="text-grey-primary capitalize">{currentFormattedVersion}</span>
           {currentFormattedLive ? <span className="text-purple-primary capitalize">{currentFormattedLive}</span> : null}
+          {currentFormattedArchived ? (
+            <span className="text-grey-secondary capitalize">{currentFormattedArchived}</span>
+          ) : null}
         </p>
         <Icon aria-hidden icon="arrow-2-down" className="text-grey-primary size-6 shrink-0" />
       </MenuButton>

@@ -15,6 +15,7 @@ export const freeformSearchSchema = z.discriminatedUnion('entityType', [
     }),
     datasets: z.array(z.string()).optional(),
     threshold: z.coerce.number().min(0).max(100).optional(),
+    limit: z.coerce.number().min(10).max(50).optional(),
   }),
   z.object({
     entityType: z.literal('Person'),
@@ -27,6 +28,7 @@ export const freeformSearchSchema = z.discriminatedUnion('entityType', [
     }),
     datasets: z.array(z.string()).optional(),
     threshold: z.coerce.number().min(0).max(100).optional(),
+    limit: z.coerce.number().min(10).max(50).optional(),
   }),
   z.object({
     entityType: z.literal('Organization'),
@@ -38,6 +40,7 @@ export const freeformSearchSchema = z.discriminatedUnion('entityType', [
     }),
     datasets: z.array(z.string()).optional(),
     threshold: z.coerce.number().min(0).max(100).optional(),
+    limit: z.coerce.number().min(10).max(50).optional(),
   }),
   z.object({
     entityType: z.literal('Vehicle'),
@@ -47,6 +50,7 @@ export const freeformSearchSchema = z.discriminatedUnion('entityType', [
     }),
     datasets: z.array(z.string()).optional(),
     threshold: z.coerce.number().min(0).max(100).optional(),
+    limit: z.coerce.number().min(10).max(50).optional(),
   }),
 ]);
 

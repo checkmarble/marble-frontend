@@ -52,6 +52,7 @@
   "review_status.approve": "مقبول",
   "review_status.decline": "مرفوض",
   "review_status.pending": "قيد الانتظار",
+  "rules.archived_no_details": "السيناريو مؤرشف - لا توجد معلومات أخرى للعرض.",
   "rules.description": "الوصف",
   "rules.error.division_by_zero": "القسمة على الصفر",
   "rules.error.not_found": "تعذر العثور على معلومات القاعدة المرتبطة. يرجى المحاولة مرة أخرى أو الاتصال بالمسؤول الخاص بك.",
