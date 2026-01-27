@@ -269,9 +269,13 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
                   </EditField>
                 </div>
               ) : null}
-              {isDeleteDataModelFieldAvailable && !['object_id', 'updated_at'].includes(cell.row.original.name) ? (
+              {isDeleteDataModelFieldAvailable ? (
                 <div className="flex-shrink-0">
-                  <DeleteField field={{ id: cell.row.original.id, name: cell.row.original.name }} />
+                  {!['object_id', 'updated_at'].includes(cell.row.original.name) ? (
+                    <DeleteField field={{ id: cell.row.original.id, name: cell.row.original.name }} />
+                  ) : (
+                    <div className="size-7" />
+                  )}
                 </div>
               ) : null}
             </div>

@@ -724,7 +724,7 @@ export interface DestroyDataModelReportDto {
 function adaptDestroyDataModelReportRef(dto: DestroyDataModelReportRefDto): DestroyDataModelReportRef {
   return {
     id: dto.id,
-    label: dto.label,
+    label: dto.label.replace(/\((\d+)\)$/, '(v$1)'),
   };
 }
 

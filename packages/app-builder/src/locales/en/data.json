@@ -61,7 +61,7 @@
   "delete_pivot.title": "Delete decision group {{name}}",
   "delete_table.confirm": "Are you sure you want to delete the table \"{{name}}\"? This action cannot be undone.",
   "delete_table.title": "Delete table {{name}}",
-  "delete.active_scenarios_linked": "The element \"{{name}}\" is used in active scenarios. You must modify them before deleting.",
+  "delete.active_scenarios_linked": "The element \"{{name}}\" is used in the active version of the scenario. You must deactivate it before deleting.",
   "delete.active_scenarios_need_modification_one": "{{count}} active scenario version needs modification:",
   "delete.active_scenarios_need_modification_other": "{{count}} active scenario versions need modification:",
   "delete.archived_iterations_hint": "The following draft versions will be archived:",

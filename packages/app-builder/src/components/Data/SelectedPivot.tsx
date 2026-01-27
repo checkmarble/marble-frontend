@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'reactflow';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { DeletePivot } from './DeleteDataModel/DeletePivot';
 import { dataI18n } from './data-i18n';
 import { PivotDetails } from './PivotDetails';
@@ -109,7 +109,7 @@ export function SelectedPivotPanel() {
           {selectedPivot ? <PivotDetails pivot={selectedPivot} /> : null}
 
           <div className="flex flex-row-reverse gap-2">
-            <Button onClick={() => setSelectedPivot(undefined)}>{t('common:close')}</Button>
+            <ButtonV2 onClick={() => setSelectedPivot(undefined)}>{t('common:close')}</ButtonV2>
             {selectedPivot ? <DeletePivot pivot={selectedPivot} onDeleted={() => setSelectedPivot(undefined)} /> : null}
           </div>
         </div>

@@ -61,7 +61,7 @@
   "delete_pivot.title": "Supprimer le regroupement {{name}}",
   "delete_table.confirm": "Êtes-vous sûr de vouloir supprimer la table \"{{name}}\" ? Cette action est irréversible.",
   "delete_table.title": "Supprimer la table {{name}}",
-  "delete.active_scenarios_linked": "L'élément \"{{name}}\" est utilisé dans des scénarios actifs. Vous devez les modifier avant de le supprimer.",
+  "delete.active_scenarios_linked": "L'élément \"{{name}}\" est utilisé dans la version active du scénario. Vous devez la désactiver avant de le supprimer.",
   "delete.active_scenarios_need_modification_one": "{{count}} version de scénario active nécessite une modification :",
   "delete.active_scenarios_need_modification_other": "{{count}} versions de scénarios actives nécessitent une modification :",
   "delete.archived_iterations_hint": "Les brouillons suivants seront archivés :",

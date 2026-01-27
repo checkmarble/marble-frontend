@@ -19,7 +19,7 @@ import {
 } from 'reactflow';
 import reactflowStyles from 'reactflow/dist/style.css?url';
 import * as R from 'remeda';
-import { Button, MenuButton } from 'ui-design-system';
+import { ButtonV2, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
@@ -246,10 +246,10 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
       {isCreateDataModelTableAvailable ? (
         <Panel position="bottom-right">
           <CreateTable>
-            <Button className="w-fit">
-              <Icon icon="plus" className="size-6" />
+            <ButtonV2 variant="primary">
+              <Icon icon="plus" className="size-5" />
               {t('data:create_table.title')}
-            </Button>
+            </ButtonV2>
           </CreateTable>
         </Panel>
       ) : null}

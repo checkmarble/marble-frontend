@@ -6,7 +6,7 @@ import { TableDetails } from '@app-builder/components/Data/TableDetails';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -25,10 +25,10 @@ export default function DataList() {
           <DataTabs />
           {isCreateDataModelTableAvailable ? (
             <CreateTable>
-              <Button>
-                <Icon icon="plus" className="size-4" />
+              <ButtonV2 variant="primary">
+                <Icon icon="plus" className="size-5" />
                 {t('data:create_table.title')}
-              </Button>
+              </ButtonV2>
             </CreateTable>
           ) : null}
         </div>
