@@ -6,9 +6,9 @@ import { match } from 'ts-pattern';
 import { ButtonV2, Collapsible } from 'ui-design-system';
 import { DatasetTag } from '../../Screenings/DatasetTag';
 import { Spinner } from '../../Spinner';
-import { EditionValidationPanelProps } from '../EditionValidationPanel';
+import { EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
-export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionValidationPanelProps) => {
+export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionValidationPanelBaseProps) => {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const datasetsQuery = useScreeningDatasetsQuery();
   const addedDatasets = Object.keys(updatedConfig.datasets).filter(

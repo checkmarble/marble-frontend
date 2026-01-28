@@ -7,9 +7,9 @@ import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Collapsible } from 'ui-design-system';
-import { EditionValidationPanelProps } from '../EditionValidationPanel';
+import { EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
-export const ScoringConfigurationSection = ({ updatedConfig, baseConfig }: EditionValidationPanelProps) => {
+export const ScoringConfigurationSection = ({ updatedConfig, baseConfig }: EditionValidationPanelBaseProps) => {
   const { t } = useTranslation(['continuousScreening', 'screenings']);
   const hasMatchThresholdChanged = updatedConfig.matchThreshold !== baseConfig.matchThreshold;
   const hasMatchLimitChanged = updatedConfig.matchLimit !== baseConfig.matchLimit;

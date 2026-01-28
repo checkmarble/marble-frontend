@@ -15,12 +15,16 @@ import { GeneralInfoSection } from './validation/GeneralInfoSection';
 import { ObjectMappingSection } from './validation/ObjectMappingSection';
 import { ScoringConfigurationSection } from './validation/ScoringConfigurationSection';
 
-export type EditionValidationPanelProps = {
+export type EditionValidationPanelBaseProps = {
   baseConfig: ContinuousScreeningConfig;
   updatedConfig: PrevalidationCreateContinuousScreeningConfig;
 };
 
-export const EditionValidationPanel = ({ baseConfig, updatedConfig }: EditionValidationPanelProps) => {
+export type EditionValidationPanelProps = EditionValidationPanelBaseProps & {
+  onCancel: (draft: PrevalidationCreateContinuousScreeningConfig) => void;
+};
+
+export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: EditionValidationPanelProps) => {
   const { t } = useTranslation(['continuousScreening']);
   const { closePanel } = usePanel();
   const updateConfigurationMutation = useUpdateContinuousScreeningConfigurationMutation(baseConfig.stableId);
@@ -53,7 +57,7 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig }: EditionVal
         <ObjectMappingSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
       </div>
       <div className="shrink-0 sticky bottom-0 p-v2-lg pt-v2-sm flex justify-end bg-purple-99 gap-v2-md bg-surface-page border-t border-grey-border">
-        <ButtonV2 variant="secondary" onClick={() => closePanel()}>
+        <ButtonV2 variant="secondary" onClick={() => onCancel(updatedConfig)}>
           {t('common:cancel')}
         </ButtonV2>
         <ButtonV2 variant="primary" onClick={handleValidateClick}>
