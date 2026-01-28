@@ -1,3 +1,4 @@
+import { AuthError } from '@app-builder/components/Auth/AuthError';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { SignInFirstConnection } from '@app-builder/components/Auth/SignInFirstConnection';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
@@ -71,7 +72,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble } = useLoaderData<typeof loader>();
+  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble, authError } = useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -94,16 +95,19 @@ export default function Login() {
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
         <div className="flex flex-col gap-2">
           {authProvider == 'oidc' ? (
-            <button
-              className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
-              onClick={() => navigate(getRoute('/oidc/auth'))}
-              disabled={loading}
-            >
-              <span className="text-s text-grey-white w-full whitespace-nowrap text-center align-middle font-medium">
-                Sign in with OpenID Connect
-              </span>
-              <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
-            </button>
+            <>
+              <button
+                className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
+                onClick={() => navigate(getRoute('/oidc/auth'))}
+                disabled={loading}
+              >
+                <span className="text-s text-grey-white w-full whitespace-nowrap text-center align-middle font-medium">
+                  Sign in with OpenID Connect
+                </span>
+                <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
+              </button>
+              <AuthError error={authError as AuthErrors} className="mt-8" />
+            </>
           ) : (
             <>
               <SignInWithGoogle signIn={signIn} loading={loading && type === 'google'} />
