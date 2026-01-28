@@ -16,11 +16,13 @@ import { ContinuousScreeningConfigurationStepper } from '../../context/CreationS
 export const DatasetSelection = () => {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const datasetsQuery = useScreeningDatasetsQuery();
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+  const tKey = mode === 'view' ? 'view' : 'creation';
 
   return (
     <div className="flex flex-col gap-v2-md">
       <Callout bordered className="bg-surface-card mx-v2-md">
-        {t('continuousScreening:creation.datasetSelection.callout')}
+        {t(`continuousScreening:${tKey}.datasetSelection.callout`)}
       </Callout>
       <div className="bg-surface-card rounded-v2-lg border border-grey-border">
         <div className="border-b border-grey-border p-v2-md flex justify-between items-center">

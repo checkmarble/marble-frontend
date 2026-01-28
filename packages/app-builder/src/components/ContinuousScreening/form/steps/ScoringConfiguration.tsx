@@ -14,15 +14,16 @@ export const ScoringConfiguration = () => {
   const matchThreshold = ContinuousScreeningConfigurationStepper.select((state) => state.data.$matchThreshold);
   const matchLimit = ContinuousScreeningConfigurationStepper.select((state) => state.data.$matchLimit);
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+  const tKey = mode === 'view' ? 'view' : 'creation';
 
   return (
     <div className="flex flex-col gap-v2-md">
       <Callout bordered className="bg-surface-card mx-v2-md">
-        {t('continuousScreening:creation.scoringConfiguration.callout')}
+        {t(`continuousScreening:${tKey}.scoringConfiguration.callout`)}
       </Callout>
       <Field
         title={t('continuousScreening:creation.scoringConfiguration.matchThreshold.title')}
-        description={t('continuousScreening:creation.scoringConfiguration.matchThreshold.subtitle')}
+        description={t(`continuousScreening:creation.scoringConfiguration.matchThreshold.subtitle`)}
         callout={t('continuousScreening:creation.scoringConfiguration.matchThreshold.callout')}
       >
         <Input
@@ -46,7 +47,7 @@ export const ScoringConfiguration = () => {
       </Field>
       <Field
         title={t('continuousScreening:creation.scoringConfiguration.matchLimit.title')}
-        description={t('continuousScreening:creation.scoringConfiguration.matchLimit.subtitle')}
+        description={t(`continuousScreening:creation.scoringConfiguration.matchLimit.subtitle`)}
         callout={t('continuousScreening:creation.scoringConfiguration.matchLimit.callout')}
       >
         <Input
@@ -61,7 +62,7 @@ export const ScoringConfiguration = () => {
         <Field
           required={mode === 'create'}
           title={t('continuousScreening:creation.scoringConfiguration.alertAutomation.title')}
-          description={t('continuousScreening:creation.scoringConfiguration.alertAutomation.subtitle')}
+          description={t(`continuousScreening:creation.scoringConfiguration.alertAutomation.subtitle`)}
         >
           <InboxSelector />
         </Field>
