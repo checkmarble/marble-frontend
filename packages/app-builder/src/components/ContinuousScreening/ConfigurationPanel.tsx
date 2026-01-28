@@ -46,7 +46,7 @@ export const ConfigurationPanel = ({ config, onUpdate }: ConfigurationPanelProps
         <div className="p-v2-lg grow">
           {match(configurationStepper.value.__internals.currentStep)
             .with(0, () => <GeneralInfo stableId={config.stableId} />)
-            .with(1, () => <ObjectMapping />)
+            .with(1, () => <ObjectMapping baseConfig={config} />)
             .with(2, () => <ScoringConfiguration />)
             .with(3, () => <DatasetSelection />)
             .otherwise(() => null)}
