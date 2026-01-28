@@ -1,5 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
 import { FTM_ENTITIES, FTM_ENTITIES_PROPERTIES } from '@app-builder/constants/ftm-entities';
+import { ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { TableModel } from '@app-builder/models/data-model';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { computed } from '@preact/signals-react';
@@ -29,7 +30,7 @@ const newMappingConfigFromTable = (table: TableModel): PartialCreateMappingConfi
   };
 };
 
-export const ObjectMapping = () => {
+export const ObjectMapping = ({ baseConfig }: { baseConfig?: ContinuousScreeningConfig }) => {
   const { t } = useTranslation(['continuousScreening']);
   const dataModelQuery = useDataModelQuery();
   const mappingConfigs = ContinuousScreeningConfigurationStepper.select((state) => state.data.$mappingConfigs);
@@ -67,6 +68,7 @@ export const ObjectMapping = () => {
           key={index}
           availableTables={availableTables.value}
           mappingConfig={mappingConfig}
+          baseConfig={baseConfig}
           onUpdate={(updatedMappingConfig) => {
             mappingConfigs.value[index] = updatedMappingConfig;
           }}
@@ -102,10 +104,12 @@ export const ObjectMapping = () => {
 const ObjectMappingConfigurator = ({
   availableTables,
   mappingConfig,
+  baseConfig,
   onUpdate,
 }: {
   availableTables: TableModel[];
   mappingConfig: PartialCreateMappingConfig | null;
+  baseConfig?: ContinuousScreeningConfig;
   onUpdate: (mappingConfig: PartialCreateMappingConfig) => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
@@ -114,6 +118,9 @@ const ObjectMappingConfigurator = ({
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   if (!dataModelQuery.isSuccess) return null;
+  const dataModel = dataModelQuery.data.dataModel;
+  const currentTable = dataModel.find((table) => table.name === mappingConfig?.objectType);
+  const isTableEditing = mappingConfig?.objectType ? baseConfig?.objectTypes.includes(mappingConfig.objectType) : false;
 
   return (
     <Collapsible.Root
@@ -138,7 +145,10 @@ const ObjectMappingConfigurator = ({
       <Collapsible.Content className="flex flex-col gap-v2-sm mt-v2-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         <MenuCommand.Menu open={isTableOpen} onOpenChange={setIsTableOpen}>
           <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="w-full shrink-0" readOnly={mode === 'view'}>
+            <MenuCommand.SelectButton
+              className="w-full shrink-0"
+              readOnly={mode === 'view' || (currentTable?.ftmEntity !== undefined && isTableEditing)}
+            >
               {mappingConfig?.objectType ??
                 t('continuousScreening:creation.objectMapping.configurator.tableName.placeholder')}
             </MenuCommand.SelectButton>

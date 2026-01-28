@@ -20,7 +20,7 @@ export const GeneralInfo = ({ stableId }: { stableId: string }) => {
       <TextArea
         readOnly={mode === 'view'}
         value={description.value}
-        placeholder={t('continuousScreening:field.description.placeholder')}
+        placeholder={mode === 'view' ? undefined : t('continuousScreening:field.description.placeholder')}
         onChange={(e) => (description.value = e.target.value)}
       />
     </div>

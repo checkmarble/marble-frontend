@@ -7,25 +7,41 @@ export const GeneralInfoSection = ({ updatedConfig, baseConfig }: EditionValidat
   const hasNameChanged = updatedConfig.name !== baseConfig.name;
   const hasDescriptionChanged = updatedConfig.description !== (baseConfig.description ?? '');
 
-  if (!hasNameChanged && !hasDescriptionChanged) return null;
-
   return (
     <Collapsible.Container>
       <Collapsible.Title>{t('continuousScreening:edition.validation.generalInfo.title')}</Collapsible.Title>
       <Collapsible.Content>
         <div className="flex flex-col gap-v2-sm">
-          <div className="flex items-center gap-v2-sm">
+          <div className="grid grid-cols-[140px_1fr] gap-v2-sm items-center">
             <span>{t('continuousScreening:field.name.label')}</span>
-            <span>{updatedConfig.name}</span>
-            {hasNameChanged ? <span className="line-through text-grey-secondary">{baseConfig.name}</span> : null}
-          </div>
-          {hasDescriptionChanged ? (
             <div className="flex items-center gap-v2-sm">
-              <span>{t('continuousScreening:field.description.label')}</span>
-              <span>{updatedConfig.description}</span>
-              <span className="line-through text-grey-secondary">{baseConfig.description}</span>
+              {hasNameChanged ? (
+                <>
+                  <span className="line-through text-grey-secondary">{baseConfig.name}</span>
+                  <span>-&gt;</span>
+                </>
+              ) : null}
+              <span>{updatedConfig.name}</span>
             </div>
-          ) : null}
+          </div>
+          <div className="grid grid-cols-[140px_1fr] gap-v2-sm items-center">
+            <span>{t('continuousScreening:field.description.label')}</span>
+            <div className="flex items-center gap-v2-sm">
+              {hasDescriptionChanged ? (
+                <>
+                  <span className="line-through text-grey-secondary">
+                    {!baseConfig.description ? (
+                      <span className="italic">(Empty)</span>
+                    ) : (
+                      <span>{baseConfig.description}</span>
+                    )}
+                  </span>
+                  <span>-&gt;</span>
+                </>
+              ) : null}
+              <span>{updatedConfig.description}</span>
+            </div>
+          </div>
         </div>
       </Collapsible.Content>
     </Collapsible.Container>

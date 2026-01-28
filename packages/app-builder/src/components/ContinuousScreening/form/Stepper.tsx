@@ -14,7 +14,9 @@ export const Stepper = ({
   const steps = creationStepper.select((state) => state.__internals.steps);
   const initialStep = creationStepper.select((state) => state.__internals.initialStep);
   const currentStep = creationStepper.computed.currentStep.value;
+  const mode = creationStepper.select((state) => state.__internals.mode);
   const handleStepChange = useCallbackRef((stepIndex: number) => {
+    if (mode !== 'view') return;
     creationStepper.actions.setCurrentStep(stepIndex);
   });
 
