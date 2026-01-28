@@ -64,6 +64,8 @@
   "delete.active_scenarios_linked": "The element \"{{name}}\" is used in the active version of the scenario. You must deactivate it before deleting.",
   "delete.active_scenarios_need_modification_one": "{{count}} active scenario version needs modification:",
   "delete.active_scenarios_need_modification_other": "{{count}} active scenario versions need modification:",
+  "delete.analytics_settings_affected_one": "This element is used in {{count}} analytics setting.",
+  "delete.analytics_settings_affected_other": "This element is used in {{count}} analytics settings.",
   "delete.archived_iterations_hint": "The following draft versions will be archived:",
   "delete.blocking_conflicts_hint": "This {{entityType}} is used in the following active elements. You must modify or delete them before deleting the {{entityType}}:",
   "delete.blocking_conflicts_title": "Cannot delete {{entityType}}",

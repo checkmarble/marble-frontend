@@ -293,6 +293,12 @@ function BlockedDeletionContent({
           {t('data:delete.test_runs_affected')}
         </Callout>
       ) : null}
+
+      {conflicts.analyticsSettings > 0 ? (
+        <Callout color="orange" icon="warning">
+          {t('data:delete.analytics_settings_affected', { count: conflicts.analyticsSettings })}
+        </Callout>
+      ) : null}
     </div>
   );
 }

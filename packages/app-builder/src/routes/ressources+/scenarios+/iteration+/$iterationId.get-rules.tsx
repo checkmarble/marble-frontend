@@ -5,13 +5,19 @@ import { ActionFunctionArgs } from '@remix-run/server-runtime';
 
 export async function loader({ request, params }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(request, {
+  const { scenarioIterationRuleRepository, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const iterationId = fromParams(params, 'iterationId');
 
+  const [rules, scenarioIteration] = await Promise.all([
+    scenarioIterationRuleRepository.listRules({ scenarioIterationId: iterationId }),
+    scenario.getScenarioIterationWithoutRules({ iterationId }),
+  ]);
+
   return Response.json({
-    rules: await scenarioIterationRuleRepository.listRules({ scenarioIterationId: iterationId }),
+    rules,
+    archived: scenarioIteration.archived,
   });
 }

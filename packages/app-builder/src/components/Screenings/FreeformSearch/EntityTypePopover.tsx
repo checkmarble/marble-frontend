@@ -37,15 +37,12 @@ export const EntityTypePopover = ({ value, onApply }: EntityTypePopoverProps) =>
               : 'border-grey-border text-grey-secondary bg-surface-card border',
           )}
         >
-          <span className="font-medium">{t('screenings:freeform_search.entity_type_label')}</span>
-          <div className="flex items-center gap-1">
-            {hasSelection && (
-              <span className="bg-surface-card text-grey-primary border-grey-border rounded-full border px-1.5 text-xs font-semibold">
-                1
-              </span>
-            )}
-            <Icon icon="caret-down" className="size-4" />
-          </div>
+          <span className="font-medium">
+            {hasSelection
+              ? t(`screenings:refine_modal.schema.${value.toLowerCase() as Lowercase<NonNullable<typeof value>>}`)
+              : t('screenings:freeform_search.entity_type_label')}
+          </span>
+          <Icon icon="caret-down" className="size-4" />
         </button>
       </Popover.Trigger>
       <Popover.Portal>
