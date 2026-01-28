@@ -36,10 +36,10 @@ export const ScoringConfiguration = () => {
           onChange={(e) => (matchThreshold.value = e.target.valueAsNumber)}
           onBlur={(e) => {
             if (e.target.valueAsNumber < 0) {
-              e.target.value = '0';
+              matchThreshold.value = 0;
             }
             if (e.target.valueAsNumber > 100) {
-              e.target.value = '100';
+              matchThreshold.value = 100;
             }
           }}
         />
