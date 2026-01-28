@@ -2,12 +2,16 @@ import {
   ContinuousScreeningConfig,
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelContainer, usePanel } from '../Panel';
-import { ContinuousScreeningConfigurationStepper } from './context/CreationStepper';
+import {
+  ContinuousScreeningConfigurationStepper,
+  PartialCreateContinuousScreeningConfig,
+} from './context/CreationStepper';
 import { FormPagination } from './context/FormPagination';
 import { Stepper } from './form/Stepper';
 import { DatasetSelection } from './form/steps/DatasetSelection';
@@ -16,28 +20,34 @@ import { ObjectMapping } from './form/steps/ObjectMapping';
 import { ScoringConfiguration } from './form/steps/ScoringConfiguration';
 
 type ConfigurationPanelProps = {
-  config: ContinuousScreeningConfig;
+  baseConfig: ContinuousScreeningConfig;
+  newConfig: PartialCreateContinuousScreeningConfig;
   onUpdate: (config: PrevalidationCreateContinuousScreeningConfig) => void;
+  initialMode?: 'view' | 'edit';
+  baseStep?: number;
 };
 
-export const ConfigurationPanel = ({ config, onUpdate }: ConfigurationPanelProps) => {
+export const ConfigurationPanel = ({
+  baseConfig,
+  newConfig,
+  onUpdate,
+  initialMode,
+  baseStep,
+}: ConfigurationPanelProps) => {
   const { t } = useTranslation(['continuousScreening']);
   const configurationStepper = ContinuousScreeningConfigurationStepper.createSharp(
-    'view',
-    {
-      name: config.name,
-      description: config.description ?? '',
-      mappingConfigs: config.objectTypes.map((ot) => ({ objectType: ot, ftmEntity: null, fieldMapping: {} })),
-      matchThreshold: config.matchThreshold,
-      matchLimit: config.matchLimit,
-      inboxId: config.inboxId,
-      inboxName: null,
-      datasets: Object.fromEntries(config.datasets.map((dataset) => [dataset, true])),
-    },
+    initialMode ?? 'view',
+    newConfig,
     (data) => {
       onUpdate(data);
     },
   );
+
+  useEffect(() => {
+    if (baseStep !== undefined) {
+      configurationStepper.actions.setCurrentStep(baseStep);
+    }
+  }, [baseStep]);
 
   return (
     <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col">
@@ -45,8 +55,8 @@ export const ConfigurationPanel = ({ config, onUpdate }: ConfigurationPanelProps
         <ConfigurationPanelHeader />
         <div className="p-v2-lg grow">
           {match(configurationStepper.value.__internals.currentStep)
-            .with(0, () => <GeneralInfo stableId={config.stableId} />)
-            .with(1, () => <ObjectMapping baseConfig={config} />)
+            .with(0, () => <GeneralInfo stableId={baseConfig.stableId} />)
+            .with(1, () => <ObjectMapping baseConfig={baseConfig} />)
             .with(2, () => <ScoringConfiguration />)
             .with(3, () => <DatasetSelection />)
             .otherwise(() => null)}

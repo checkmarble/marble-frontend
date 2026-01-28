@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
-import { type EditionValidationPanelProps } from '../EditionValidationPanel';
+import { type EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
-export const GeneralInfoSection = ({ updatedConfig, baseConfig }: EditionValidationPanelProps) => {
+export const GeneralInfoSection = ({ updatedConfig, baseConfig }: EditionValidationPanelBaseProps) => {
   const { t } = useTranslation(['continuousScreening']);
   const hasNameChanged = updatedConfig.name !== baseConfig.name;
   const hasDescriptionChanged = updatedConfig.description !== (baseConfig.description ?? '');

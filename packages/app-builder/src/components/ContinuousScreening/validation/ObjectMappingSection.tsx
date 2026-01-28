@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, Collapsible } from 'ui-design-system';
 import { Spinner } from '../../Spinner';
-import { type EditionValidationPanelProps } from '../EditionValidationPanel';
+import { type EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
-export const ObjectMappingSection = ({ updatedConfig, baseConfig }: EditionValidationPanelProps) => {
+export const ObjectMappingSection = ({ updatedConfig, baseConfig }: EditionValidationPanelBaseProps) => {
   const dataModelQuery = useDataModelQuery();
   const { t } = useTranslation(['common', 'continuousScreening']);
   return (

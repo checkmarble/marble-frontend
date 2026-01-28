@@ -41,15 +41,52 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
     });
   };
 
+  const handleValidationCancel = (
+    baseConfig: ContinuousScreeningConfig,
+    draft: PrevalidationCreateContinuousScreeningConfig,
+  ) => {
+    openPanel(
+      <ConfigurationPanel
+        baseConfig={baseConfig}
+        newConfig={draft}
+        onUpdate={(updatedConfig) => handleUpdate(baseConfig, updatedConfig)}
+        initialMode="edit"
+        baseStep={3}
+      />,
+    );
+  };
+
   const handleUpdate = (
     baseConfig: ContinuousScreeningConfig,
     updatedConfig: PrevalidationCreateContinuousScreeningConfig,
   ) => {
-    openPanel(<EditionValidationPanel baseConfig={baseConfig} updatedConfig={updatedConfig} />);
+    openPanel(
+      <EditionValidationPanel
+        baseConfig={baseConfig}
+        updatedConfig={updatedConfig}
+        onCancel={(draft) => handleValidationCancel(baseConfig, draft)}
+      />,
+    );
   };
 
-  const handleRowClick = (item: ContinuousScreeningConfig) => {
-    openPanel(<ConfigurationPanel config={item} onUpdate={(updatedConfig) => handleUpdate(item, updatedConfig)} />);
+  const handleRowClick = (baseConfig: ContinuousScreeningConfig) => {
+    const newConfig = {
+      name: baseConfig.name,
+      description: baseConfig.description ?? '',
+      mappingConfigs: baseConfig.objectTypes.map((ot) => ({ objectType: ot, ftmEntity: null, fieldMapping: {} })),
+      matchThreshold: baseConfig.matchThreshold,
+      matchLimit: baseConfig.matchLimit,
+      inboxId: baseConfig.inboxId,
+      inboxName: null,
+      datasets: Object.fromEntries(baseConfig.datasets.map((dataset) => [dataset, true])),
+    };
+    openPanel(
+      <ConfigurationPanel
+        baseConfig={baseConfig}
+        newConfig={newConfig}
+        onUpdate={(updatedConfig) => handleUpdate(baseConfig, updatedConfig)}
+      />,
+    );
   };
 
   return (
