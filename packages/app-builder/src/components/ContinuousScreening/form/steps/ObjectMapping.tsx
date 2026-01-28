@@ -36,6 +36,7 @@ export const ObjectMapping = ({ baseConfig }: { baseConfig?: ContinuousScreening
   const mappingConfigs = ContinuousScreeningConfigurationStepper.select((state) => state.data.$mappingConfigs);
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const [isEditingNewObject, setIsEditingNewObject] = useState(mappingConfigs.value.length === 0);
+  const tKey = mode === 'view' ? 'view' : 'creation';
 
   const availableTables = computed(() => {
     if (!dataModelQuery.isSuccess) return [];
@@ -61,7 +62,7 @@ export const ObjectMapping = ({ baseConfig }: { baseConfig?: ContinuousScreening
   return (
     <div className="flex flex-col gap-v2-md">
       <Callout bordered className="bg-surface-card mx-v2-md">
-        {t('continuousScreening:creation.objectMapping.callout')}
+        {t(`continuousScreening:${tKey}.objectMapping.callout`)}
       </Callout>
       {mappingConfigs.value.map((mappingConfig, index) => (
         <ObjectMappingConfigurator
@@ -145,13 +146,15 @@ const ObjectMappingConfigurator = ({
       <Collapsible.Content className="flex flex-col gap-v2-sm mt-v2-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         <MenuCommand.Menu open={isTableOpen} onOpenChange={setIsTableOpen}>
           <MenuCommand.Trigger>
-            <MenuCommand.SelectButton
-              className="w-full shrink-0"
-              readOnly={mode === 'view' || (currentTable?.ftmEntity !== undefined && isTableEditing)}
-            >
-              {mappingConfig?.objectType ??
-                t('continuousScreening:creation.objectMapping.configurator.tableName.placeholder')}
-            </MenuCommand.SelectButton>
+            {mode === 'view' ? null : (
+              <MenuCommand.SelectButton
+                className="w-full shrink-0"
+                readOnly={currentTable?.ftmEntity !== undefined && isTableEditing}
+              >
+                {mappingConfig?.objectType ??
+                  t('continuousScreening:creation.objectMapping.configurator.tableName.placeholder')}
+              </MenuCommand.SelectButton>
+            )}
           </MenuCommand.Trigger>
           <MenuCommand.Content side="bottom" align="start" sideOffset={4} sameWidth>
             <MenuCommand.List>
@@ -203,6 +206,7 @@ const ObjectMappingFtmContent = ({
             ftmEntity,
           });
         }}
+        table={table}
       />
       {ftmEntity ? (
         <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-lg bg-surface-card">
@@ -212,35 +216,37 @@ const ObjectMappingFtmContent = ({
             </div>
           </div>
           <div className="grid grid-cols-[auto_40px_1fr] gap-v2-sm p-v2-md">
-            {table.fields.map((field) => {
-              const ftmProperty = field.ftmProperty ?? mappingConfig.fieldMapping[field.id] ?? null;
-              const hasSavedMapping = field.ftmProperty !== undefined;
+            {table.fields
+              .filter((f) => f.dataType === 'String')
+              .map((field) => {
+                const ftmProperty = field.ftmProperty ?? mappingConfig.fieldMapping[field.id] ?? null;
+                const hasSavedMapping = field.ftmProperty !== undefined;
 
-              if (mode === 'view' && !hasSavedMapping) return null;
+                if (mode === 'view' && !hasSavedMapping) return null;
 
-              return (
-                <div key={field.id} className="grid grid-cols-subgrid col-span-full items-center">
-                  <div className="flex items-center px-v2-sm h-10">
-                    {mappingConfig.objectType}.{field.name}
+                return (
+                  <div key={field.id} className="grid grid-cols-subgrid col-span-full items-center">
+                    <div className="flex items-center px-v2-sm h-10">
+                      {mappingConfig.objectType}.{field.name}
+                    </div>
+                    <div className={cn('p-v2-sm', { 'opacity-50': hasSavedMapping })}>
+                      <Icon icon="arrow-forward" className="size-6 text-purple-primary" />
+                    </div>
+                    <FtmFieldSelector
+                      readOnly={hasSavedMapping}
+                      ftmEntity={ftmEntity}
+                      ftmProperty={ftmProperty}
+                      availableProperties={availableProperties}
+                      onChange={(ftmProperty) => {
+                        onUpdate({
+                          ...mappingConfig,
+                          fieldMapping: { ...mappingConfig.fieldMapping, [field.id]: ftmProperty },
+                        });
+                      }}
+                    />
                   </div>
-                  <div className={cn('p-v2-sm', { 'opacity-50': hasSavedMapping })}>
-                    <Icon icon="arrow-forward" className="size-6 text-purple-primary" />
-                  </div>
-                  <FtmFieldSelector
-                    readOnly={hasSavedMapping}
-                    ftmEntity={ftmEntity}
-                    ftmProperty={ftmProperty}
-                    availableProperties={availableProperties}
-                    onChange={(ftmProperty) => {
-                      onUpdate({
-                        ...mappingConfig,
-                        fieldMapping: { ...mappingConfig.fieldMapping, [field.id]: ftmProperty },
-                      });
-                    }}
-                  />
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         </div>
       ) : null}
@@ -253,19 +259,26 @@ const FTMEntitySelector = ({
   availableEntities,
   readOnly,
   onChange,
+  table,
 }: {
   ftmEntity: FtmEntity | null;
   availableEntities: FtmEntity[];
   readOnly: boolean;
   onChange: (ftmObject: FtmEntity) => void;
+  table: TableModel;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
   const [isOpen, setOpen] = useState(false);
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+  const tKey = mode === 'view' || readOnly ? 'view' : 'creation';
 
   return (
     <Field
       title={t('continuousScreening:creation.objectMapping.configurator.ftmEntity.title')}
-      description={t('continuousScreening:creation.objectMapping.configurator.ftmEntity.subtitle')}
+      description={t(`continuousScreening:${tKey}.objectMapping.configurator.ftmEntity.subtitle`, {
+        list_type: ftmEntity,
+        marble_type: table.name,
+      })}
       titleClassName="text-default"
     >
       <MenuCommand.Menu open={isOpen} onOpenChange={setOpen}>
