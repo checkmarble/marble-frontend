@@ -16,8 +16,6 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
   );
   const removedDatasets = baseConfig.datasets.filter((k) => !updatedConfig.datasets[k]);
 
-  if (addedDatasets.length === 0 && removedDatasets.length === 0) return null;
-
   return (
     <Collapsible.Container>
       <Collapsible.Title>{t('continuousScreening:edition.validation.datasetSelection.title')}</Collapsible.Title>

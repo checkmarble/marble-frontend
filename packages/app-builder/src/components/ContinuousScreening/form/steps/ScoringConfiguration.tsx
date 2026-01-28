@@ -33,6 +33,14 @@ export const ScoringConfiguration = () => {
           value={matchThreshold.value}
           readOnly={mode === 'view'}
           onChange={(e) => (matchThreshold.value = e.target.valueAsNumber)}
+          onBlur={(e) => {
+            if (e.target.valueAsNumber < 0) {
+              e.target.value = '0';
+            }
+            if (e.target.valueAsNumber > 100) {
+              e.target.value = '100';
+            }
+          }}
         />
         <span>%</span>
       </Field>
@@ -51,7 +59,7 @@ export const ScoringConfiguration = () => {
       </Field>
       <div className="grid grid-cols-1 gap-v2-md">
         <Field
-          required={mode !== 'view'}
+          required={mode === 'create'}
           title={t('continuousScreening:creation.scoringConfiguration.alertAutomation.title')}
           description={t('continuousScreening:creation.scoringConfiguration.alertAutomation.subtitle')}
         >
@@ -121,7 +129,7 @@ const InboxSelector = () => {
               </MenuCommand.List>
             </MenuCommand.Content>
           </MenuCommand.Menu>
-          {mode !== 'view' ? (
+          {mode === 'create' ? (
             <>
               <span>{t('continuousScreening:creation.scoringConfiguration.alertAutomation.create_new_inbox')}</span>
               <Input
