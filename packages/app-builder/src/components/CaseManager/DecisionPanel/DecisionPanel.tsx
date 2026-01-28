@@ -85,6 +85,7 @@ const DecisionRuleExecutions = ({ decision }: { decision: DecisionDetails }) => 
                   key={ruleExecution.ruleId}
                   ruleExecution={ruleExecution}
                   rules={scenarioIterationRules.data.rules}
+                  isIterationArchived={scenarioIterationRules.data.archived}
                 />
               </RuleExecutionContent>
             </RuleExecutionCollapsible>
