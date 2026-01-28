@@ -778,6 +778,7 @@ export function adaptDestroyDataModelReport(dto: DestroyDataModelReportDto): Des
  * - Continuous screening configuration
  * - Test runs
  * - Links or pivots depending on this resource
+ * - Analytics settings using this resource
  * Non-blocking conflicts are drafts that will be archived.
  */
 export function hasBlockingConflicts(report: DestroyDataModelReport): boolean {
@@ -789,6 +790,7 @@ export function hasBlockingConflicts(report: DestroyDataModelReport): boolean {
     conflicts.workflows.length > 0 ||
     conflicts.testRuns ||
     conflicts.links.length > 0 ||
-    conflicts.pivots.length > 0
+    conflicts.pivots.length > 0 ||
+    conflicts.analyticsSettings > 0
   );
 }

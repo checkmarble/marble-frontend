@@ -48,8 +48,9 @@ export function DeletePivot({ pivot, onDeleted }: DeletePivotProps) {
       perform: true,
     });
 
-    if (result.success && result.data.performed) {
+    if (result.success) {
       setOpen(false);
+      setReport(null);
       revalidate();
       onDeleted?.();
     }

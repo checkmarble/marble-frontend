@@ -64,6 +64,8 @@
   "delete.active_scenarios_linked": "يُستخدم العنصر \"{{name}}\" في النسخة النشطة من السيناريو. يجب عليك إلغاء تفعيلها قبل الحذف.",
   "delete.active_scenarios_need_modification_one": "إصدار سيناريو نشط واحد يحتاج إلى تعديل:",
   "delete.active_scenarios_need_modification_other": "{{count}} إصدارات سيناريوهات نشطة تحتاج إلى تعديل:",
+  "delete.analytics_settings_affected_one": "يُستخدم هذا العنصر في {{count}} إعداد تحليلات.",
+  "delete.analytics_settings_affected_other": "يُستخدم هذا العنصر في {{count}} إعدادات تحليلات.",
   "delete.archived_iterations_hint": "سيتم أرشفة الإصدارات المسودة التالية:",
   "delete.blocking_conflicts_hint": "يُستخدم {{entityType}} في العناصر النشطة التالية. يجب عليك تعديلها أو حذفها قبل حذف {{entityType}}:",
   "delete.blocking_conflicts_title": "لا يمكن حذف {{entityType}}",

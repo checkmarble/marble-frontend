@@ -64,6 +64,8 @@
   "delete.active_scenarios_linked": "L'élément \"{{name}}\" est utilisé dans la version active du scénario. Vous devez la désactiver avant de le supprimer.",
   "delete.active_scenarios_need_modification_one": "{{count}} version de scénario active nécessite une modification :",
   "delete.active_scenarios_need_modification_other": "{{count}} versions de scénarios actives nécessitent une modification :",
+  "delete.analytics_settings_affected_one": "Cet élément est utilisé dans {{count}} paramètre d'analyse.",
+  "delete.analytics_settings_affected_other": "Cet élément est utilisé dans {{count}} paramètres d'analyse.",
   "delete.archived_iterations_hint": "Les brouillons suivants seront archivés :",
   "delete.blocking_conflicts_hint": "Ce(tte) {{entityType}} est utilisé(e) dans les éléments actifs suivants. Vous devez les modifier ou les supprimer avant de supprimer le/la {{entityType}} :",
   "delete.blocking_conflicts_title": "Impossible de supprimer le/la {{entityType}}",
