@@ -14,14 +14,13 @@ import { categoriesToTopics, type ScreeningCategory, topicsToCategories } from '
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { ButtonV2, Modal, Stepper, type StepperStep } from 'ui-design-system';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { type OperandEditModalProps } from '../../EditModal';
 import { AdvancedSetupsSection } from './AdvancedSetupsSection';
 import { FilterSection } from './FilterSection';
 import { ObjectSelector } from './ObjectSelector';
-import { type Step, Stepper } from './Stepper';
 
 type WizardStep = 1 | 2 | 3;
 
@@ -105,10 +104,7 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
     linkedTableChecksToObjectChecks(config.linkedTableChecks),
   );
 
-  // Get the selected table model
-  const selectedTable = useMemo(() => {
-    return dataModel.find((t) => t.name === targetTableName);
-  }, [dataModel, targetTableName]);
+  const selectedTable = dataModel.find((t) => t.name === targetTableName);
 
   // Determine if we need step 3 (advanced setups)
   // Step 3 is shown when the selected object has related tables also under monitoring
@@ -135,18 +131,13 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
 
   const totalSteps = hasLinkedObjectsUnderMonitoring ? 3 : 2;
 
-  const steps: Step[] = useMemo(() => {
-    const baseSteps: Step[] = [
-      { key: 'object', label: t('scenarios:monitoring_list_check.step_object') },
-      { key: 'options', label: t('scenarios:monitoring_list_check.step_options') },
-    ];
-
-    if (hasLinkedObjectsUnderMonitoring) {
-      baseSteps.push({ key: 'advanced', label: t('scenarios:monitoring_list_check.step_advanced') });
-    }
-
-    return baseSteps;
-  }, [t, hasLinkedObjectsUnderMonitoring]);
+  const steps: StepperStep[] = [
+    { key: 'object', label: t('scenarios:monitoring_list_check.step_object') },
+    { key: 'options', label: t('scenarios:monitoring_list_check.step_options') },
+    ...(hasLinkedObjectsUnderMonitoring
+      ? [{ key: 'advanced', label: t('scenarios:monitoring_list_check.step_advanced') }]
+      : []),
+  ];
 
   const handleObjectChange = (tableName: string, path: ObjectPathSegment[]) => {
     setTargetTableName(tableName);
