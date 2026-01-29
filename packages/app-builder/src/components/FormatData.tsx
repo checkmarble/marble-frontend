@@ -1,6 +1,11 @@
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-
+import { Map as MapLibre, Marker } from '@vis.gl/react-maplibre';
 import { ExternalLink } from './ExternalLink';
+
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { DataType } from '@app-builder/models';
+import { t } from 'i18next';
+import { CopyToClipboardButton } from './CopyToClipboardButton';
 
 type Data =
   | {
@@ -12,16 +17,65 @@ type Data =
       value: number;
     }
   | {
+      type: 'DerivedData';
+      value: object;
+    }
+  | {
       type: 'unknown';
       value: unknown;
     };
 
-export function FormatData({ data, className }: { data?: Data; className?: string }) {
+export function FormatData({ type, data, className }: { type?: DataType; data?: Data; className?: string }) {
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
 
   if (!data) {
     return <span className={className}>-</span>;
+  }
+
+  const mapOptions = (s: string) => {
+    const [lat, lng] = s.split(',');
+
+    return { longitude: parseFloat(lng ?? '0.0'), latitude: parseFloat(lat ?? '0.0'), zoom: 5 };
+  };
+
+  if (data.type === 'DerivedData') {
+    return (
+      <dl className="grid grid-cols-[auto_1fr] col-start-2 gap-x-4 w-full border rounded-v2-lg my-3 p-v2-md border-grey-border bg-surface-card">
+        {Object.entries(data?.value ?? {})?.map(([k, v]) => (
+          <>
+            <dt className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</dt>
+            <dd>{v.toString()}</dd>
+          </>
+        ))}
+      </dl>
+    );
+  }
+
+  if (type === 'Coords') {
+    let opts = mapOptions(data.value as string);
+
+    return (
+      <>
+        <CopyToClipboardButton toCopy={`${opts.latitude},${opts.longitude}`}>
+          <span className="text-s line-clamp-1 font-semibold">
+            {opts.latitude}, {opts.longitude}
+          </span>
+        </CopyToClipboardButton>
+
+        <div className="col-start-2 border rounded-v2-lg overflow-hidden border-grey-border bg-surface-card">
+          <MapLibre
+            initialViewState={opts}
+            style={{ width: '100%', height: 400 }}
+            mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+          >
+            <Marker key={`marker`} longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
+              <Pin />
+            </Marker>
+          </MapLibre>
+        </div>
+      </>
+    );
   }
 
   switch (data.type) {
@@ -45,4 +99,22 @@ export function FormatData({ data, className }: { data?: Data; className?: strin
     case 'unknown':
       return <span className={className}>{data.value ? String(data.value) : '-'}</span>;
   }
+}
+
+const ICON = `M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,4.5,2,10c0,2,0.6,3.9,1.6,5.4c0,0.1,0.1,0.2,0.2,0.3
+  c0,0,0.1,0.1,0.1,0.2c0.2,0.3,0.4,0.6,0.7,0.9c2.6,3.1,7.4,7.6,7.4,7.6s4.8-4.5,7.4-7.5c0.2-0.3,0.5-0.6,0.7-0.9
+  C20.1,15.8,20.2,15.8,20.2,15.7z`;
+
+const pinStyle = {
+  cursor: 'pointer',
+  fill: '#d00',
+  stroke: 'none',
+};
+
+function Pin({ size = 20 }) {
+  return (
+    <svg height={size} viewBox="0 0 24 24" style={pinStyle}>
+      <path d={ICON} />
+    </svg>
+  );
 }

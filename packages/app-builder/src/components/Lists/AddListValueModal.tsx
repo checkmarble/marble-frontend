@@ -3,7 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useAddListValueMutation } from '@app-builder/queries/lists/add-value';
-import { AddValuePayload, addValuePayloadSchema } from '@app-builder/schemas/lists';
+import { AddValuePayload, addTextValuePayloadSchema } from '@app-builder/schemas/lists';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
@@ -34,7 +34,7 @@ export function AddListValueModal({ listId }: { listId: string }) {
       }
     },
     validators: {
-      onSubmitAsync: addValuePayloadSchema,
+      onSubmitAsync: addTextValuePayloadSchema,
     },
   });
 

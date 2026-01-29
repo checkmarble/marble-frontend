@@ -7,6 +7,7 @@ import {
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
+import { IpHasFlagAstNode, isIpHasFlag } from '@app-builder/models/astNode/ip';
 import {
   isMonitoringListCheckAstNode,
   type MonitoringListCheckAstNode,
@@ -33,7 +34,6 @@ import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
-
 import { formatConstant } from './formatConstant';
 import { getCustomListAccessCustomList } from './getCustomListAccessCustomList';
 
@@ -80,6 +80,10 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
     return getTimestampExtractDisplayName(astNode, context);
   }
 
+  if (isIpHasFlag(astNode)) {
+    return getIpHasFlagDisplayName(astNode, context);
+  }
+
   if (isFuzzyMatchComparator(astNode)) {
     return getFuzzyMatchComparatorDisplayName(astNode, context);
   }
@@ -105,7 +109,7 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
   }
 
   // If there is no name, return a default value (should never happen since constant are handled above)
-  if (!astNode.name) return '🤷‍♂️';
+  if (!astNode.name) return '🤷';
 
   // default AstNode toString() implementation
   const childrenArgs = R.pipe(
@@ -225,6 +229,24 @@ function getTimestampExtractDisplayName(
     replace: {
       operator: getOperatorName(context.t, part),
       timestamp: timestampStr,
+    },
+  });
+}
+
+function getIpHasFlagDisplayName(astNode: IdLessAstNode<IpHasFlagAstNode>, context: AstNodeStringifierContext) {
+  const flag = astNode.namedChildren['flag']?.constant ?? '';
+  const ip = astNode.namedChildren['ip'];
+
+  const ipStr = getAstNodeDisplayName(ip, context);
+
+  if (ipStr === '') {
+    return context.t('scenarios:edit_ip_has_flag.title');
+  }
+
+  return context.t('scenarios:edit_ip_has_flag.display_name', {
+    replace: {
+      flag: getOperatorName(context.t, flag),
+      ip: ipStr,
     },
   });
 }

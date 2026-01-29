@@ -7,7 +7,7 @@ import { CreateListPayload, createListPayloadSchema } from '@app-builder/schemas
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateListModal() {
@@ -19,6 +19,7 @@ export function CreateListModal() {
     defaultValues: {
       name: '',
       description: '',
+      kind: 'text',
     } as CreateListPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -81,6 +82,29 @@ export function CreateListModal() {
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('lists:create_list.description_placeholder')}
                     />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+
+              <form.Field name="kind">
+                {(field) => (
+                  <div className="flex flex-1 flex-col gap-2">
+                    <FormLabel name={field.name}>{t('lists:kind')}</FormLabel>
+                    <Select.Default
+                      className="w-full overflow-hidden"
+                      defaultValue={field.state.value}
+                      onValueChange={(e) => {
+                        field.handleChange(e as 'text' | 'cidrs');
+                      }}
+                    >
+                      <Select.DefaultItem key="text" value="text">
+                        Generic text
+                      </Select.DefaultItem>
+                      <Select.DefaultItem key="cidrs" value="cidrs">
+                        IP addresses and subnets
+                      </Select.DefaultItem>
+                    </Select.Default>
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}

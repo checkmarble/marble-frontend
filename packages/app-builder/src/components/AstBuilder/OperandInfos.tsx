@@ -13,6 +13,7 @@ import {
 } from '@app-builder/models/astNode/aggregation';
 import { type CustomListAccessAstNode, isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { type FuzzyMatchComparatorAstNode, isFuzzyMatchComparator } from '@app-builder/models/astNode/strings';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
@@ -24,7 +25,6 @@ import clsx from 'clsx';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
-
 import { AstBuilderDataSharpFactory } from './Provider';
 import { LogicalOperatorLabel } from './styles/LogicalOperatorLabel';
 import { ViewingAstBuilderOperand } from './viewing/ViewingOperand';
@@ -124,6 +124,9 @@ function OperandDescription({ node }: OperandDescriptionProps) {
   }
   if (isTimeAdd(node)) {
     return <Description description={t('scenarios:edit_date.now.description')} />;
+  }
+  if (isIpHasFlag(node)) {
+    return <Description description={t('scenarios:edit_ip_has_flag.description')} />;
   }
 }
 

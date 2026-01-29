@@ -13,6 +13,7 @@ import {
 import { type ConstantAstNode, isConstant } from './constant';
 import { type CustomListAccessAstNode, isCustomListAccess } from './custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor';
+import { type IpHasFlagAstNode, isIpHasFlag } from './ip';
 import { isMonitoringListCheckAstNode, type MonitoringListCheckAstNode } from './monitoring-list-check';
 import { type IsMultipleOfAstNode, isIsMultipleOf } from './multiple-of';
 import {
@@ -30,7 +31,9 @@ export type EditableAstNode =
   | IsMultipleOfAstNode
   | StringTemplateAstNode
   | FuzzyMatchFilterOptionsAstNode
-  | MonitoringListCheckAstNode;
+  | MonitoringListCheckAstNode
+  | FuzzyMatchFilterOptionsAstNode
+  | IpHasFlagAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -45,7 +48,9 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isTimestampExtract(node) ||
     isIsMultipleOf(node) ||
     isStringTemplateAstNode(node) ||
-    isMonitoringListCheckAstNode(node)
+    isMonitoringListCheckAstNode(node) ||
+    isStringTemplateAstNode(node) ||
+    isIpHasFlag(node)
   );
 }
 

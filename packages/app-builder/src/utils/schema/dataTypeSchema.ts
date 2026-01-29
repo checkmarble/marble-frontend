@@ -25,4 +25,8 @@ export const knownDataTypeSchema = z.union([
     type: 'number' as const,
     value,
   })),
+  z.looseObject({}).transform((value) => ({
+    type: 'DerivedData' as const,
+    value,
+  })),
 ]);

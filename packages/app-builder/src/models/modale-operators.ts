@@ -1,3 +1,4 @@
+import { ValidIpFlags, validIpFlags } from './astNode/ip';
 import { type ValidTimestampExtractParts, validTimestampExtractParts } from './astNode/time';
 
 export const aggregatorOperators = [
@@ -44,4 +45,8 @@ export function isTimeAddOperator(value: string): value is TimeAddOperator {
 
 export function isTimestampPart(value: string): value is ValidTimestampExtractParts {
   return validTimestampExtractParts.includes(value as ValidTimestampExtractParts);
+}
+
+export function isIpFlag(value: string): value is ValidIpFlags {
+  return validIpFlags.includes(value as ValidIpFlags);
 }

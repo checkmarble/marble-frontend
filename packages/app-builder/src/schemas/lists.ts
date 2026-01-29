@@ -5,6 +5,7 @@ import z from 'zod/v4';
 export const createListPayloadSchema = z.object({
   name: z.string().nonempty(),
   description: z.string(),
+  kind: z.enum(['text', 'cidrs']),
 });
 
 export type CreateListPayload = z.infer<typeof createListPayloadSchema>;

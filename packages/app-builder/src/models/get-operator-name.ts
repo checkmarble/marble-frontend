@@ -88,6 +88,14 @@ export function getOperatorName(
         return t('scenarios:timestamp_part.day_of_week');
       case 'hour':
         return t('scenarios:timestamp_part.hour');
+      case 'abuse':
+        return t('scenarios:ip_flag.abuse');
+      case 'vpn':
+        return t('scenarios:ip_flag.vpn');
+      case 'tor_exit_node':
+        return t('scenarios:ip_flag.tor_exit_node');
+      case 'cloud_provider':
+        return t('scenarios:ip_flag.cloud_provider');
       case undefinedAstNodeName:
         return '...';
       default:

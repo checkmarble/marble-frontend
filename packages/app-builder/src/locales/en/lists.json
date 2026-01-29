@@ -23,6 +23,7 @@
   "empty_custom_lists_list": "You do not have any list. Add your first one to see it here.",
   "errors.failure_message": "Upload failed with the following error: {{errorMessage}}",
   "errors.request_timeout": "The request timed out. Please try again.",
+  "kind": "Type of list",
   "list.row.values_count_one": "value",
   "list.row.values_count_other": "values",
   "name": "Name",

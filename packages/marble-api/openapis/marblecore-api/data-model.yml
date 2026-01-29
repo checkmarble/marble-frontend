@@ -687,7 +687,7 @@ components:
           type: string
         data_type:
           type: string
-          enum: [Bool, Int, Float, String, Timestamp, unknown]
+          enum: [Bool, Int, Float, String, Timestamp, IpAddress, Coords, unknown]
         description:
           type: string
         is_enum:
@@ -800,7 +800,7 @@ components:
           type: string
         type:
           type: string
-          enum: [Bool, Int, Float, String, Timestamp]
+          enum: [Bool, Int, Float, String, Timestamp, IpAddress, Coords]
         nullable:
           type: boolean
         is_enum:

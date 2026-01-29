@@ -25,6 +25,8 @@ const VALUE_TYPES = [
   { value: 'Bool', display: 'data:create_field.type_bool' },
   { value: 'Timestamp', display: 'data:create_field.type_timestamp' },
   { value: 'Float', display: 'data:create_field.type_float' },
+  { value: 'IpAddress', display: 'data:create_field.type_ip_address' },
+  { value: 'Coords', display: 'data:create_field.type_coords' },
 ] as const;
 
 const REQUIRED_OPTIONS = [

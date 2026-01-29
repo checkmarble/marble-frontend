@@ -1,12 +1,12 @@
 import { type DataModel, type DataType, type IdLessAstNode, type TableModel } from '@app-builder/models';
 import { type ConstantAstNode, isConstant } from '@app-builder/models/astNode/constant';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimeNow, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
 import * as R from 'remeda';
-
 import { getDataAccessorAstNodeField } from './getDataAccessorAstNodeField';
 
 export function getAstNodeDataType(
@@ -39,6 +39,10 @@ export function getAstNodeDataType(
 
   if (isTimeNow(astNode) || isTimeAdd(astNode)) {
     return 'Timestamp';
+  }
+
+  if (isIpHasFlag(astNode)) {
+    return 'Bool';
   }
 
   return 'unknown';

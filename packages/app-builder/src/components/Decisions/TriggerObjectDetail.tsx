@@ -1,19 +1,25 @@
-import { type TableModel } from '@app-builder/models';
+import { DataModelField, type TableModel } from '@app-builder/models';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import clsx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
-
 import { FormatData } from '../FormatData';
 import { decisionsI18n } from './decisions-i18n';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 function useParsedTriggerObject(triggerObject: Record<string, unknown>) {
   return React.useMemo(() => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.entries()), [triggerObject]);
 }
 
-export function DecisionDetailTriggerObject({ triggerObject }: { triggerObject: Record<string, unknown> }) {
+export function DecisionDetailTriggerObject({
+  fields,
+  triggerObject,
+}: {
+  fields: DataModelField[] | undefined;
+  triggerObject: Record<string, unknown>;
+}) {
   const { t } = useTranslation(decisionsI18n);
   const parsedTriggerObject = useParsedTriggerObject(triggerObject);
 
@@ -24,8 +30,8 @@ export function DecisionDetailTriggerObject({ triggerObject }: { triggerObject: 
         <div className="grid grid-cols-[max-content_1fr] gap-2 break-all">
           {parsedTriggerObject.map(([property, data]) => (
             <React.Fragment key={property}>
-              <span className="font-semibold">{property}</span>
-              <FormatData data={data} />
+              {!property.endsWith('.metadata') ? <span className="font-semibold">{property}</span> : null}
+              <FormatData type={fields?.find((f) => f.name == property)?.dataType ?? undefined} data={data} />
             </React.Fragment>
           ))}
         </div>

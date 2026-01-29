@@ -1,5 +1,6 @@
 import { isAggregation, isFuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { isMonitoringListCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
@@ -7,13 +8,13 @@ import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time'
 import { type ParseKeys } from 'i18next';
 import { type ComponentType, type ReactNode } from 'react';
 import { match } from 'ts-pattern';
-
 import { getEvaluationForNode } from '../helpers';
 import { useRoot } from '../hooks/useRoot';
 import { AstBuilderNodeSharpFactory } from '../node-store';
 import { EditAggregation } from './modals/Aggregation/Aggregation';
 import { EditFuzzyMatchAggregation } from './modals/FuzzyMatchComparator/FuzzyMatchAggregation';
 import { EditFuzzyMatchComparator } from './modals/FuzzyMatchComparator/FuzzyMatchComparator';
+import { EditIpHasFlag } from './modals/IpHasFlag/IpHasFlag';
 import { EditIsMultipleOf } from './modals/IsMultipleOf/IsMultipleOf';
 import { EditMonitoringListCheck } from './modals/MonitoringListCheck/MonitoringListCheck';
 import { EditStringTemplate } from './modals/StringTemplate/StringTemplate';
@@ -57,6 +58,7 @@ export function OperandEditModal({ node, ...props }: OperandEditModalProps) {
         .when(isStringTemplateAstNode, () => <EditStringTemplate {...props} />)
         .when(isFuzzyMatchFilterOptionsAstNode, () => <EditFuzzyMatchAggregation {...props} />)
         .when(isMonitoringListCheckAstNode, () => <EditMonitoringListCheck {...props} />)
+        .when(isIpHasFlag, () => <EditIpHasFlag {...props} />)
         .exhaustive()}
     </AstBuilderNodeSharpFactory.Provider>
   );

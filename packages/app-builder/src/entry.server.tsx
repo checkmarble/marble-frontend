@@ -118,7 +118,13 @@ function handleBrowserRequest(
           ? [appConfig.auth.firebase.emulatorUrl]
           : ['https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com'];
 
-        const externalDomains = ['cdn.segment.com', 'api.segment.io', '*.sentry.io'];
+        const externalDomains = [
+          'cdn.segment.com',
+          'api.segment.io',
+          '*.sentry.io',
+          '*.maplibre.org',
+          '*.cartocdn.com',
+        ];
 
         const frames: string[] = [];
         const metabaseUrl = clientEnv.METABASE_URL ?? appConfig.urls.metabase;

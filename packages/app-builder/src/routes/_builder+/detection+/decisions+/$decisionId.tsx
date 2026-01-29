@@ -17,7 +17,7 @@ import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/T
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isNotFoundHttpError, Pivot } from '@app-builder/models';
+import { DataModel, isNotFoundHttpError, Pivot } from '@app-builder/models';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { Screening } from '@app-builder/models/screening';
@@ -38,6 +38,7 @@ import { Icon } from 'ui-icons';
 import * as z from 'zod/v4';
 
 export type LoaderData = {
+  dataModel: DataModel;
   decision: DecisionDetails;
   scenarioRules: ScenarioIterationRule[];
   pivots: Pivot[];
@@ -150,6 +151,7 @@ export const loader = createServerFn([authMiddleware], async function decisionLo
   });
 
   const independentOperations = Promise.all([
+    dataModelRepository.getDataModel(),
     dataModelRepository.listPivots({}),
     screening.listScreenings({ decisionId: parsedParam.data.decisionId }),
   ]);
@@ -159,11 +161,12 @@ export const loader = createServerFn([authMiddleware], async function decisionLo
   });
   const scenarioRules = scenarioIteration.rules;
 
-  const [pivots, screeningResult] = await independentOperations;
+  const [dataModel, pivots, screeningResult] = await independentOperations;
 
   return {
     decision: currentDecision,
     scenarioRules,
+    dataModel,
     pivots,
     screening: await handleScreenings(screeningResult, screening),
     isIterationArchived: scenarioIteration.archived,
@@ -171,7 +174,7 @@ export const loader = createServerFn([authMiddleware], async function decisionLo
 });
 
 export default function DecisionPage() {
-  const { decision, pivots, scenarioRules, screening, isIterationArchived } = useLoaderData<typeof loader>();
+  const { dataModel, decision, pivots, scenarioRules, screening, isIterationArchived } = useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -188,6 +191,7 @@ export default function DecisionPage() {
   );
 
   const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
+  const fields = dataModel.find((table) => table.name == decision.triggerObjectType)?.fields;
 
   return (
     <DecisionRightPanel.Root>
@@ -217,7 +221,7 @@ export default function DecisionPage() {
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />
                 </div>
-                <DecisionDetailTriggerObject triggerObject={decision.triggerObject} />
+                <DecisionDetailTriggerObject fields={fields} triggerObject={decision.triggerObject} />
               </div>
             </div>
           </Page.Content>

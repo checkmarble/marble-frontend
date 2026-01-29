@@ -16,7 +16,7 @@ export const createFieldValueSchema = z.object({
     }),
   description: z.string(),
   required: z.string(),
-  type: z.enum(['String', 'Bool', 'Timestamp', 'Float', 'Int']),
+  type: z.enum(['String', 'Bool', 'Timestamp', 'Float', 'Int', 'IpAddress', 'Coords']),
   tableId: z.string(),
   isEnum: z.boolean(),
   isUnique: z.boolean(),

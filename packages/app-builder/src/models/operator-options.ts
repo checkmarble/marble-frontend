@@ -1,10 +1,12 @@
 import { type AggregationFilterOperator, isAggregationFilterOperator } from './astNode/aggregation';
 import type { undefinedAstNodeName } from './astNode/ast-node';
 import { isMainAstOperatorFunction, type MainAstOperatorFunction } from './astNode/builder-ast-node-node-operator';
+import { ValidIpFlags } from './astNode/ip';
 import type { ValidTimestampExtractParts } from './astNode/time';
 import {
   type AggregatorOperator,
   isAggregatorOperator,
+  isIpFlag,
   isTimeAddOperator,
   isTimestampPart,
   type TimeAddOperator,
@@ -18,7 +20,8 @@ export type OperatorOption =
   | AggregationFilterOperator
   | TimeAddOperator
   | ValidTimestampExtractParts
-  | AggregatorOperator;
+  | AggregatorOperator
+  | ValidIpFlags;
 
 export function isOperatorOption(value: string): value is OperatorOption {
   return (
@@ -27,6 +30,7 @@ export function isOperatorOption(value: string): value is OperatorOption {
     isAggregationFilterOperator(value) ||
     isTimeAddOperator(value) ||
     isAggregatorOperator(value) ||
-    isTimestampPart(value)
+    isTimestampPart(value) ||
+    isIpFlag(value)
   );
 }

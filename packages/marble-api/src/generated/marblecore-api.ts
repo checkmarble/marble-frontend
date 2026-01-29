@@ -732,6 +732,7 @@ export type CustomListDto = {
     id: string;
     name: string;
     description: string;
+    kind: "text" | "cidrs";
     created_at: string;
     updated_at: string;
     /** Count of values in a custom list */
@@ -743,6 +744,7 @@ export type CustomListDto = {
 export type CreateCustomListBodyDto = {
     name: string;
     description: string;
+    kind: "text" | "cidrs";
 };
 export type CustomListValueDto = {
     id: string;
@@ -1124,7 +1126,7 @@ export type ScenarioPublicationStatusDto = {
 };
 export type FieldDto = {
     id: string;
-    data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "unknown";
+    data_type: "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords" | "unknown";
     description: string;
     is_enum: boolean;
     name: string;
@@ -1235,7 +1237,7 @@ export type Schema = {
 export type CreateTableFieldDto = {
     name: string;
     description: string;
-    "type": "Bool" | "Int" | "Float" | "String" | "Timestamp";
+    "type": "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords";
     nullable: boolean;
     is_enum?: boolean;
     is_unique?: boolean;
