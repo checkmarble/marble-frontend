@@ -1,10 +1,9 @@
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { Callout } from '@app-builder/components/Callout';
-import { type DataModel } from '@app-builder/models';
 import {
-  isUpDirectionCheck,
+  fromLinkedTableChecks,
+  fromPathToTarget,
   type LinkedObjectCheck,
-  type LinkedTableCheck,
   type MonitoringListCheckAstNode,
   NewMonitoringListCheckAstNode,
   type ObjectPathSegment,
@@ -24,60 +23,6 @@ import { ObjectSelector } from './ObjectSelector';
 
 type WizardStep = 1 | 2 | 3;
 
-/**
- * Convert API config pathToTarget (string[]) to UI ObjectPathSegment[]
- * Requires dataModel to resolve table names from link names
- */
-function pathToTargetToSegments(
-  pathToTarget: string[],
-  dataModel: DataModel,
-  triggerTableName: string,
-): ObjectPathSegment[] {
-  if (pathToTarget.length === 0) return [];
-
-  const segments: ObjectPathSegment[] = [];
-  let currentTableName = triggerTableName;
-
-  for (const linkName of pathToTarget) {
-    const currentTable = dataModel.find((t) => t.name === currentTableName);
-    if (!currentTable) break;
-
-    const link = currentTable.linksToSingle.find((l) => l.name === linkName);
-    if (!link) break;
-
-    segments.push({ linkName, tableName: link.parentTableName });
-    currentTableName = link.parentTableName;
-  }
-
-  return segments;
-}
-
-/**
- * Convert API LinkedTableCheck[] to UI LinkedObjectCheck[]
- */
-function linkedTableChecksToObjectChecks(linkedTableChecks: LinkedTableCheck[]): LinkedObjectCheck[] {
-  return linkedTableChecks.map((check) => {
-    if (isUpDirectionCheck(check)) {
-      return {
-        tableName: check.tableName,
-        fieldPath: [{ linkName: check.linkToSingleName, tableName: check.tableName }],
-        direction: 'up' as const,
-        enabled: true,
-        validated: true,
-      };
-    } else {
-      return {
-        tableName: check.tableName,
-        fieldPath: [],
-        direction: 'down' as const,
-        enabled: true,
-        validated: true,
-        navigationOptionRef: check.navigationOption,
-      };
-    }
-  });
-}
-
 export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node'>) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
@@ -94,14 +39,14 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
   // UI state - initialized from config
   const [targetTableName, setTargetTableName] = useState(config.targetTableName);
   const [pathToTarget, setPathToTarget] = useState<ObjectPathSegment[]>(() =>
-    pathToTargetToSegments(config.pathToTarget, dataModel, triggerObjectTable.name),
+    fromPathToTarget(config.pathToTarget, dataModel, triggerObjectTable.name),
   );
   // UI uses topic categories, API uses individual topic strings - convert on load
   const [selectedTopics, setSelectedTopics] = useState<ScreeningCategory[]>(() =>
     topicsToCategories(config.topicFilters),
   );
   const [linkedObjectChecks, setLinkedObjectChecks] = useState<LinkedObjectCheck[]>(() =>
-    linkedTableChecksToObjectChecks(config.linkedTableChecks),
+    fromLinkedTableChecks(config.linkedTableChecks),
   );
 
   const selectedTable = dataModel.find((t) => t.name === targetTableName);

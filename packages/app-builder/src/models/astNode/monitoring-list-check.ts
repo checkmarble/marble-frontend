@@ -1,3 +1,4 @@
+import { type DataModel } from '@app-builder/models';
 import { v7 as uuidv7 } from 'uuid';
 
 import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
@@ -223,4 +224,52 @@ export function getMonitoringListCheckDisplayInfo(config: MonitoringListCheckCon
     targetTableName: config.targetTableName,
     topicFilters: config.topicFilters,
   };
+}
+
+/**
+ * Convert API pathToTarget (string[]) to UI ObjectPathSegment[].
+ * Resolves table names from link names using the dataModel.
+ */
+export function fromPathToTarget(
+  pathToTarget: string[],
+  dataModel: DataModel,
+  triggerTableName: string,
+): ObjectPathSegment[] {
+  const segments: ObjectPathSegment[] = [];
+  let currentTableName = triggerTableName;
+
+  for (const linkName of pathToTarget) {
+    const currentTable = dataModel.find((t) => t.name === currentTableName);
+    const link = currentTable?.linksToSingle.find((l) => l.name === linkName);
+    if (!link) break;
+
+    segments.push({ linkName, tableName: link.parentTableName });
+    currentTableName = link.parentTableName;
+  }
+
+  return segments;
+}
+
+/**
+ * Convert API LinkedTableCheck[] to UI LinkedObjectCheck[].
+ */
+export function fromLinkedTableChecks(linkedTableChecks: LinkedTableCheck[]): LinkedObjectCheck[] {
+  return linkedTableChecks.map((check) =>
+    isUpDirectionCheck(check)
+      ? {
+          tableName: check.tableName,
+          fieldPath: [{ linkName: check.linkToSingleName, tableName: check.tableName }],
+          direction: 'up' as const,
+          enabled: true,
+          validated: true,
+        }
+      : {
+          tableName: check.tableName,
+          fieldPath: [],
+          direction: 'down' as const,
+          enabled: true,
+          validated: true,
+          navigationOptionRef: check.navigationOption,
+        },
+  );
 }
