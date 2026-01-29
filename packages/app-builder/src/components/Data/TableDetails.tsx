@@ -79,8 +79,6 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
     [tableModel.linksToSingle, tableModel.name],
   );
 
-  console.log('tableModel', tableModel);
-  console.log('dataModel', dataModel);
   return (
     <CollapsiblePaper.Container defaultOpen={false}>
       <CollapsiblePaper.Title size="small">

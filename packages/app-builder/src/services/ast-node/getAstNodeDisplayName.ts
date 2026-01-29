@@ -28,6 +28,7 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { isAggregatorOperator } from '@app-builder/models/modale-operators';
+import { SCREENING_TOPICS_MAP, type ScreeningCategory } from '@app-builder/models/screening';
 import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
@@ -259,6 +260,33 @@ function getStringTemplateDisplayName(
   return value;
 }
 
+/**
+ * Maps ScreeningCategory to i18n key suffix.
+ * ScreeningCategory uses hyphens, i18n keys use underscores.
+ */
+const CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  'third-parties': 'third_parties',
+  'adverse-media': 'adverse_media',
+};
+
+/**
+ * Convert topic strings to categories for display purposes.
+ */
+function topicsToCategories(topics: string[]): ScreeningCategory[] {
+  if (topics.length === 0) return [];
+
+  const categories = new Set<ScreeningCategory>();
+  for (const topic of topics) {
+    const category = SCREENING_TOPICS_MAP.get(topic);
+    if (category) {
+      categories.add(category);
+    }
+  }
+  return Array.from(categories);
+}
+
 function getMonitoringListCheckDisplayName(
   astNode: IdLessAstNode<MonitoringListCheckAstNode>,
   context: AstNodeStringifierContext,
@@ -277,9 +305,13 @@ function getMonitoringListCheckDisplayName(
     });
   }
 
-  const topicsStr = topicFilters.join(', ');
+  // Convert individual topics to categories for user-friendly display
+  const categories = topicsToCategories(topicFilters);
+  const hitTypes = categories
+    .map((category) => context.t(`scenarios:monitoring_list_check.hit_type.${CATEGORY_I18N_KEY_MAP[category]}`))
+    .join(', ');
 
   return context.t('scenarios:monitoring_list_check.display_name', {
-    replace: { topics: topicsStr, objectTableName },
+    replace: { hitTypes, objectTableName },
   });
 }

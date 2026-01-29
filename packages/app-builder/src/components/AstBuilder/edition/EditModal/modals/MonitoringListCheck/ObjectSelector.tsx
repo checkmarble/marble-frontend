@@ -1,19 +1,16 @@
 import { type DataModel, type TableModel } from '@app-builder/models';
 import { type ObjectPathSegment } from '@app-builder/models/astNode/monitoring-list-check';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
-import { Radio, RadioGroup, RadioProvider } from '@ariakit/react';
-import { cva } from 'class-variance-authority';
-import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'ui-design-system';
+import { Radio, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type ObjectOption = {
   tableName: string;
   path: ObjectPathSegment[];
   displayLabel: string;
-  pathDisplay: string;
+  pathSegments: string[];
   activeMonitorings: ContinuousScreeningConfig[];
 };
 
@@ -25,18 +22,6 @@ type ObjectSelectorProps = {
   currentPath: ObjectPathSegment[];
   onChange: (tableName: string, path: ObjectPathSegment[]) => void;
 };
-
-const radioOption = cva(
-  'flex cursor-pointer flex-col gap-0.5 rounded-lg border p-3 transition-colors hover:border-purple-primary',
-  {
-    variants: {
-      checked: {
-        true: 'border-purple-primary bg-surface-elevated',
-        false: 'border-grey-border bg-surface-card',
-      },
-    },
-  },
-);
 
 export function ObjectSelector({
   dataModel,
@@ -60,7 +45,7 @@ export function ObjectSelector({
       tableName: triggerObjectTable.name,
       path: [],
       displayLabel: triggerObjectTable.name,
-      pathDisplay: t('scenarios:monitoring_list_check.path_trigger'),
+      pathSegments: [triggerObjectTable.name],
       activeMonitorings: getActiveMonitorings(triggerObjectTable.name),
     });
 
@@ -72,7 +57,7 @@ export function ObjectSelector({
           tableName: linkedTable.name,
           path: [{ linkName: link.name, tableName: linkedTable.name }],
           displayLabel: linkedTable.name,
-          pathDisplay: `${triggerObjectTable.name} → ${linkedTable.name}`,
+          pathSegments: [triggerObjectTable.name, linkedTable.name],
           activeMonitorings: getActiveMonitorings(linkedTable.name),
         });
 
@@ -87,7 +72,7 @@ export function ObjectSelector({
                 { linkName: nestedLink.name, tableName: nestedTable.name },
               ],
               displayLabel: nestedTable.name,
-              pathDisplay: `${triggerObjectTable.name} → ${linkedTable.name} → ${nestedTable.name}`,
+              pathSegments: [triggerObjectTable.name, linkedTable.name, nestedTable.name],
               activeMonitorings: getActiveMonitorings(nestedTable.name),
             });
           }
@@ -97,7 +82,7 @@ export function ObjectSelector({
 
     // Only return options that have active monitoring
     return options.filter((option) => option.activeMonitorings.length > 0);
-  }, [dataModel, triggerObjectTable, screeningConfigs, t]);
+  }, [dataModel, triggerObjectTable, screeningConfigs]);
 
   const currentValue = useMemo(() => {
     const found = objectOptions.find(
@@ -106,41 +91,57 @@ export function ObjectSelector({
     return found ? JSON.stringify({ tableName: found.tableName, path: found.path }) : '';
   }, [objectOptions, currentTableName, currentPath]);
 
-  const handleChange = (value: string | number | null) => {
-    if (typeof value !== 'string' || !value) return;
+  const handleChange = (value: string) => {
+    if (!value) return;
     const parsed = JSON.parse(value) as { tableName: string; path: ObjectPathSegment[] };
     onChange(parsed.tableName, parsed.path);
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <label className="text-s font-medium text-grey-primary">
-        {t('scenarios:monitoring_list_check.object_label')}
-      </label>
+    <div className="flex flex-col gap-2">
+      <label className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.object_label')}</label>
 
-      <RadioProvider value={currentValue} setValue={handleChange}>
-        <RadioGroup className="flex flex-col gap-2">
-          {objectOptions.map((option) => {
-            const value = JSON.stringify({ tableName: option.tableName, path: option.path });
-            const isChecked = currentValue === value;
+      <Radio.Root value={currentValue} onValueChange={handleChange} className="flex flex-col gap-4">
+        {objectOptions.map((option) => {
+          const value = JSON.stringify({ tableName: option.tableName, path: option.path });
 
-            return (
-              <label key={value} className={clsx(radioOption({ checked: isChecked }))}>
-                <Radio name="object" className="hidden" value={value} />
-                <div className="flex items-center gap-2">
-                  <Icon
-                    icon={isChecked ? 'radio-selected' : 'radio-unselected'}
-                    className="size-5 text-purple-primary"
-                  />
+          return (
+            <label key={value} className="flex cursor-pointer items-center gap-4">
+              <Radio.Item value={value} />
+
+              <div className="flex flex-col gap-0.5">
+                {/* Table name + info icon */}
+                <div className="flex items-center gap-1">
                   <span className="text-s font-medium text-grey-primary">{option.displayLabel}</span>
                   <ActiveMonitoringsTooltip monitorings={option.activeMonitorings} />
                 </div>
-                <span className="text-xs text-grey-secondary ml-7">{option.pathDisplay}</span>
-              </label>
-            );
-          })}
-        </RadioGroup>
-      </RadioProvider>
+
+                {/* Path breadcrumb */}
+                <PathBreadcrumb segments={option.pathSegments} />
+              </div>
+            </label>
+          );
+        })}
+      </Radio.Root>
+    </div>
+  );
+}
+
+type PathBreadcrumbProps = {
+  segments: string[];
+};
+
+function PathBreadcrumb({ segments }: PathBreadcrumbProps) {
+  if (segments.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-1">
+      {segments.map((segment, index) => (
+        <span key={index} className="flex items-center gap-1">
+          <span className="text-xs text-grey-secondary">{segment}</span>
+          {index < segments.length - 1 && <Icon icon="arrow-right" className="size-4 text-grey-secondary" />}
+        </span>
+      ))}
     </div>
   );
 }
@@ -154,8 +155,11 @@ function ActiveMonitoringsTooltip({ monitorings }: ActiveMonitoringsTooltipProps
 
   if (monitorings.length === 0) {
     return (
-      <Tooltip.Default content={t('scenarios:monitoring_list_check.no_active_monitoring')}>
-        <Icon icon="tip" className="size-4 text-grey-disabled" />
+      <Tooltip.Default
+        content={t('scenarios:monitoring_list_check.no_active_monitoring')}
+        className="border border-grey-border"
+      >
+        <Icon icon="tip" className="size-5 text-grey-disabled" />
       </Tooltip.Default>
     );
   }
@@ -174,8 +178,8 @@ function ActiveMonitoringsTooltip({ monitorings }: ActiveMonitoringsTooltipProps
   );
 
   return (
-    <Tooltip.Default content={content}>
-      <Icon icon="tip" className="size-4 text-purple-primary" />
+    <Tooltip.Default content={content} className="border border-grey-border">
+      <Icon icon="tip" className="size-5 text-purple-primary" />
     </Tooltip.Default>
   );
 }

@@ -3,30 +3,6 @@ import { v7 as uuidv7 } from 'uuid';
 import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
-/**
- * Screening categories that can be checked for hits.
- * These map to OpenSanctions topics.
- */
-export type MonitoringListHitType = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
-
-/**
- * OpenSanctions topics for monitoring list checks.
- * See: https://www.opensanctions.org/docs/topics/
- */
-export const MONITORING_LIST_TOPICS = [
-  'sanction',
-  'sanction.linked',
-  'sanction.counter',
-  'debarment',
-  'role.pep',
-  'role.rca',
-  'poi',
-  'reg.action',
-  'reg.warn',
-] as const;
-
-export type MonitoringListTopic = (typeof MONITORING_LIST_TOPICS)[number];
-
 // ============================================================================
 // API Format Types (for serialization to backend)
 // ============================================================================
@@ -80,8 +56,8 @@ export type MonitoringListCheckConfig = {
   targetTableName: string;
   /** Link names path to the target object (empty array = trigger object) */
   pathToTarget: string[];
-  /** OpenSanctions topics to filter by (empty = all) */
-  topicFilters: MonitoringListTopic[];
+  /** OpenSanctions topics to filter by (empty = all). Contains individual topic strings from SCREENING_TOPICS_MAP. */
+  topicFilters: string[];
   /** Additional linked tables to also check */
   linkedTableChecks: LinkedTableCheck[];
 };
@@ -176,7 +152,7 @@ export function NewMonitoringListCheckAstNode({
 }: {
   targetTableName?: string;
   pathToTarget?: string[];
-  topicFilters?: MonitoringListTopic[];
+  topicFilters?: string[];
   linkedTableChecks?: LinkedTableCheck[];
 } = {}): MonitoringListCheckAstNode {
   return {
@@ -208,7 +184,7 @@ export function NewMonitoringListCheckAstNode({
 export function toMonitoringListCheckConfig(
   targetTableName: string,
   pathToTarget: ObjectPathSegment[],
-  topicFilters: MonitoringListTopic[],
+  topicFilters: string[],
   linkedObjectChecks: LinkedObjectCheck[],
 ): MonitoringListCheckConfig {
   const enabledChecks = linkedObjectChecks.filter((check) => check.enabled && check.validated !== false);
@@ -241,7 +217,7 @@ export function toMonitoringListCheckConfig(
  */
 export function getMonitoringListCheckDisplayInfo(config: MonitoringListCheckConfig): {
   targetTableName: string;
-  topicFilters: MonitoringListTopic[];
+  topicFilters: string[];
 } {
   return {
     targetTableName: config.targetTableName,

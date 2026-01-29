@@ -6,11 +6,11 @@ import {
   type LinkedObjectCheck,
   type LinkedTableCheck,
   type MonitoringListCheckAstNode,
-  type MonitoringListTopic,
   NewMonitoringListCheckAstNode,
   type ObjectPathSegment,
   toMonitoringListCheckConfig,
 } from '@app-builder/models/astNode/monitoring-list-check';
+import { type ScreeningCategory } from '@app-builder/models/screening';
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ import { ButtonV2, Modal } from 'ui-design-system';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { type OperandEditModalProps } from '../../EditModal';
 import { AdvancedSetupsSection } from './AdvancedSetupsSection';
-import { FilterSection } from './FilterSection';
+import { categoriesToTopics, FilterSection, topicsToCategories } from './FilterSection';
 import { ObjectSelector } from './ObjectSelector';
 import { type Step, Stepper } from './Stepper';
 
@@ -97,7 +97,10 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
   const [pathToTarget, setPathToTarget] = useState<ObjectPathSegment[]>(() =>
     pathToTargetToSegments(config.pathToTarget, dataModel, triggerObjectTable.name),
   );
-  const [topicFilters, setTopicFilters] = useState<MonitoringListTopic[]>(config.topicFilters);
+  // UI uses topic categories, API uses individual topic strings - convert on load
+  const [selectedTopics, setSelectedTopics] = useState<ScreeningCategory[]>(() =>
+    topicsToCategories(config.topicFilters),
+  );
   const [linkedObjectChecks, setLinkedObjectChecks] = useState<LinkedObjectCheck[]>(() =>
     linkedTableChecksToObjectChecks(config.linkedTableChecks),
   );
@@ -152,8 +155,8 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
     setLinkedObjectChecks([]);
   };
 
-  const handleTopicsChange = (topics: MonitoringListTopic[]) => {
-    setTopicFilters(topics);
+  const handleTopicsChange = (topics: ScreeningCategory[]) => {
+    setSelectedTopics(topics);
   };
 
   const handleLinkedObjectChecksChange = (checks: LinkedObjectCheck[]) => {
@@ -164,10 +167,6 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
     if (!open) {
       props.onCancel();
     }
-  });
-
-  const handleImplicitClose = useCallbackRef((event: Event) => {
-    event.preventDefault();
   });
 
   const handleNext = () => {
@@ -183,6 +182,9 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
   };
 
   const handleSave = () => {
+    // Convert selected topics to individual topic strings for the API
+    const topicFilters = categoriesToTopics(selectedTopics);
+
     // Convert UI state to API config format
     const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, topicFilters, linkedObjectChecks);
 
@@ -211,7 +213,7 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
 
   return (
     <Modal.Root open onOpenChange={handleOpenChange}>
-      <Modal.Content size="medium" onInteractOutside={handleImplicitClose} onEscapeKeyDown={handleImplicitClose}>
+      <Modal.Content size="medium">
         <Modal.Title>{t('scenarios:monitoring_list_check.title')}</Modal.Title>
 
         <div className="flex max-h-[70dvh] flex-col gap-6 overflow-auto p-4">
@@ -239,8 +241,8 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
             />
           )}
 
-          {/* Step 2: Filter Options */}
-          {currentStep === 2 && <FilterSection currentTopics={topicFilters} onTopicsChange={handleTopicsChange} />}
+          {/* Step 2: Filter Options - topics */}
+          {currentStep === 2 && <FilterSection selectedTopics={selectedTopics} onTopicsChange={handleTopicsChange} />}
 
           {/* Step 3: Advanced Setups (if applicable) */}
           {currentStep === 3 && selectedTable && (

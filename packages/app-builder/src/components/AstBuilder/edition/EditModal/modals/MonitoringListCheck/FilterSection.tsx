@@ -1,72 +1,96 @@
-import { MONITORING_LIST_TOPICS, type MonitoringListTopic } from '@app-builder/models/astNode/monitoring-list-check';
+import { SCREENING_TOPICS_MAP, type ScreeningCategory } from '@app-builder/models/screening';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-type FilterSectionProps = {
-  currentTopics: MonitoringListTopic[];
-  onTopicsChange: (topics: MonitoringListTopic[]) => void;
+/**
+ * The available screening categories for monitoring list checks.
+ * Order matters for display.
+ */
+const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
+
+/**
+ * Maps ScreeningCategory to i18n key suffix.
+ * ScreeningCategory uses hyphens, i18n keys use underscores.
+ */
+const CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  'third-parties': 'third_parties',
+  'adverse-media': 'adverse_media',
 };
 
-export function FilterSection({ currentTopics, onTopicsChange }: FilterSectionProps) {
+type FilterSectionProps = {
+  selectedTopics: ScreeningCategory[];
+  onTopicsChange: (topics: ScreeningCategory[]) => void;
+};
+
+export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionProps) {
   const { t } = useTranslation(['scenarios']);
 
-  const [topicsFilterEnabled, setTopicsFilterEnabled] = useState(currentTopics.length > 0);
+  const [filterEnabled, setFilterEnabled] = useState(selectedTopics.length > 0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleTopicsFilterToggle = (checked: boolean) => {
-    setTopicsFilterEnabled(checked);
+  const handleFilterToggle = (checked: boolean) => {
+    setFilterEnabled(checked);
     if (!checked) {
       onTopicsChange([]);
     }
   };
 
-  const handleTopicToggle = (topic: MonitoringListTopic, checked: boolean) => {
+  const handleTopicToggle = (topic: ScreeningCategory, checked: boolean) => {
     if (checked) {
-      onTopicsChange([...currentTopics, topic]);
+      onTopicsChange([...selectedTopics, topic]);
     } else {
-      onTopicsChange(currentTopics.filter((t) => t !== topic));
+      onTopicsChange(selectedTopics.filter((t) => t !== topic));
     }
   };
 
   const selectedTopicsDisplay = useMemo(() => {
-    if (currentTopics.length === 0) return t('scenarios:monitoring_list_check.select_topics');
-    return currentTopics.join(', ');
-  }, [currentTopics, t]);
-
-  const [topicsMenuOpen, setTopicsMenuOpen] = useState(false);
+    if (selectedTopics.length === 0) {
+      return t('scenarios:monitoring_list_check.select_hit_types');
+    }
+    return selectedTopics
+      .map((topic) => t(`scenarios:monitoring_list_check.hit_type.${CATEGORY_I18N_KEY_MAP[topic]}`))
+      .join(', ');
+  }, [selectedTopics, t]);
 
   return (
     <div className="flex flex-col gap-4">
       <p className="text-s font-medium text-grey-primary">{t('scenarios:monitoring_list_check.filter_question')}</p>
 
-      {/* Topics Filter - Horizontal layout */}
+      {/* Horizontal layout: Checkbox + label on left, dropdown on right */}
       <div className="flex items-center gap-2">
+        {/* Left side: Checkbox + Hit types label + info icon */}
         <label className="flex shrink-0 cursor-pointer items-center gap-2">
-          <Checkbox checked={topicsFilterEnabled} onCheckedChange={handleTopicsFilterToggle} />
-          <span className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.topics_label')}</span>
-          <Icon icon="tip" className="size-4 text-purple-primary" />
+          <Checkbox checked={filterEnabled} onCheckedChange={handleFilterToggle} />
+          <span className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.hit_types_label')}</span>
+          <Icon icon="tip" className="size-5 text-purple-primary" />
         </label>
 
-        <MenuCommand.Menu open={topicsMenuOpen} onOpenChange={setTopicsMenuOpen}>
+        {/* Right side: MenuCommand dropdown for topic selection */}
+        <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
           <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="min-w-[200px] flex-1" disabled={!topicsFilterEnabled}>
+            <MenuCommand.SelectButton className="flex-1" disabled={!filterEnabled}>
               <span className="truncate">{selectedTopicsDisplay}</span>
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
           <MenuCommand.Content className="min-w-[250px]">
             <div className="flex flex-col gap-1 p-2">
-              {MONITORING_LIST_TOPICS.map((topic) => (
+              {SCREENING_CATEGORIES.map((topic) => (
                 <label
                   key={topic}
-                  className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-grey-background-light"
+                  className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-grey-02"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Checkbox
-                    checked={currentTopics.includes(topic)}
+                    checked={selectedTopics.includes(topic)}
                     onCheckedChange={(checked) => handleTopicToggle(topic, checked === true)}
                   />
-                  <span className="text-s text-grey-primary">{topic}</span>
+                  <span className="text-s text-grey-primary">
+                    {t(`scenarios:monitoring_list_check.hit_type.${CATEGORY_I18N_KEY_MAP[topic]}`)}
+                  </span>
                 </label>
               ))}
             </div>
@@ -75,4 +99,41 @@ export function FilterSection({ currentTopics, onTopicsChange }: FilterSectionPr
       </div>
     </div>
   );
+}
+
+// ============================================================================
+// Conversion utilities for categories <-> topics
+// ============================================================================
+
+/**
+ * Convert selected categories to individual topic strings for the API.
+ * When "Sanctions" is selected, all topics mapping to 'sanctions' in SCREENING_TOPICS_MAP are included.
+ */
+export function categoriesToTopics(categories: ScreeningCategory[]): string[] {
+  if (categories.length === 0) return [];
+
+  const topics: string[] = [];
+  for (const [topic, category] of SCREENING_TOPICS_MAP) {
+    if (categories.includes(category)) {
+      topics.push(topic);
+    }
+  }
+  return topics;
+}
+
+/**
+ * Convert topic strings from the API back to categories for UI display.
+ * Collapses individual topics back to their parent categories.
+ */
+export function topicsToCategories(topics: string[]): ScreeningCategory[] {
+  if (topics.length === 0) return [];
+
+  const categories = new Set<ScreeningCategory>();
+  for (const topic of topics) {
+    const category = SCREENING_TOPICS_MAP.get(topic);
+    if (category) {
+      categories.add(category);
+    }
+  }
+  return Array.from(categories);
 }
