@@ -10,7 +10,7 @@ import {
   type ObjectPathSegment,
   toMonitoringListCheckConfig,
 } from '@app-builder/models/astNode/monitoring-list-check';
-import { type ScreeningCategory } from '@app-builder/models/screening';
+import { categoriesToTopics, type ScreeningCategory, topicsToCategories } from '@app-builder/models/screening';
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ import { ButtonV2, Modal } from 'ui-design-system';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { type OperandEditModalProps } from '../../EditModal';
 import { AdvancedSetupsSection } from './AdvancedSetupsSection';
-import { categoriesToTopics, FilterSection, topicsToCategories } from './FilterSection';
+import { FilterSection } from './FilterSection';
 import { ObjectSelector } from './ObjectSelector';
 import { type Step, Stepper } from './Stepper';
 
@@ -79,7 +79,7 @@ function linkedTableChecksToObjectChecks(linkedTableChecks: LinkedTableCheck[]):
   });
 }
 
-export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node'>) {
+export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node'>) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
   const screeningConfigs = AstBuilderDataSharpFactory.select((s) => s.data.screeningConfigs) ?? [];
@@ -282,4 +282,4 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
       </Modal.Content>
     </Modal.Root>
   );
-}
+};

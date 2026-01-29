@@ -3,7 +3,6 @@ import { createContext, forwardRef, type InputHTMLAttributes, useContext, useId 
 
 import { cn } from '../utils';
 
-// Context for Radio group
 type RadioContextValue = {
   name: string;
   value: string;
@@ -20,17 +19,41 @@ function useRadioContext() {
   return context;
 }
 
-// Root component
 const radioRoot = cva(['flex flex-col gap-2']);
 
+/**
+ * Props for Radio.Root component.
+ */
 export type RadioRootProps = VariantProps<typeof radioRoot> & {
+  /** The currently selected value */
   value: string;
+  /** Callback fired when the selected value changes */
   onValueChange: (value: string) => void;
+  /** Radio items to render */
   children: React.ReactNode;
+  /** Additional CSS classes */
   className?: string;
+  /** HTML name attribute for the radio group (auto-generated if not provided) */
   name?: string;
 };
 
+/**
+ * Root container for a radio group. Provides context to Radio.Item children.
+ *
+ * @example
+ * ```tsx
+ * <Radio.Root value={selected} onValueChange={setSelected}>
+ *   <label className="flex items-center gap-2">
+ *     <Radio.Item value="option1" />
+ *     Option 1
+ *   </label>
+ *   <label className="flex items-center gap-2">
+ *     <Radio.Item value="option2" />
+ *     Option 2
+ *   </label>
+ * </Radio.Root>
+ * ```
+ */
 export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function RadioRoot(
   { className, value, onValueChange, children, name, ...props },
   ref,
@@ -47,12 +70,20 @@ export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function Rad
   );
 });
 
-// Item component
+/**
+ * Props for Radio.Item component.
+ */
 export type RadioItemProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'name' | 'checked' | 'onChange'> & {
+  /** The value of this radio option */
   value: string;
+  /** Additional CSS classes */
   className?: string;
 };
 
+/**
+ * Individual radio button item. Must be used within Radio.Root.
+ * Renders as a circular indicator with native input for accessibility.
+ */
 export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function RadioItem(
   { className, value, ...props },
   ref,
@@ -84,6 +115,29 @@ export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function R
   );
 });
 
+/**
+ * A controlled radio group component using the compound component pattern.
+ *
+ * **When to use Radio vs RadioGroup:**
+ * - Use `Radio` for standard form radio buttons with circular indicators
+ * - Use `RadioGroup` for tab-like selection with filled background styling
+ *
+ * @example
+ * ```tsx
+ * const [selected, setSelected] = useState('option1');
+ *
+ * <Radio.Root value={selected} onValueChange={setSelected}>
+ *   <label className="flex items-center gap-2">
+ *     <Radio.Item value="option1" />
+ *     Option 1
+ *   </label>
+ *   <label className="flex items-center gap-2">
+ *     <Radio.Item value="option2" />
+ *     Option 2
+ *   </label>
+ * </Radio.Root>
+ * ```
+ */
 export const Radio = {
   Root: RadioRoot,
   Item: RadioItem,

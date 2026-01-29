@@ -13,6 +13,22 @@ export const radioGroup = cva(['flex flex-row w-fit', 'p-1', 'rounded-lg', 'bg-p
 
 export type RadioGroupProps = VariantProps<typeof radioGroup> & RadixRadioGroupsProps;
 
+/**
+ * A tab-like radio group component built on Radix UI primitives.
+ * Displays options as horizontal pills with filled background when selected.
+ *
+ * **When to use RadioGroup vs Radio:**
+ * - Use `RadioGroup` for tab-like selection with filled background styling (e.g., view toggles)
+ * - Use `Radio` for standard form radio buttons with circular indicators
+ *
+ * @example
+ * ```tsx
+ * <RadioGroup value={view} onValueChange={setView}>
+ *   <RadioGroupItem value="list">List</RadioGroupItem>
+ *   <RadioGroupItem value="grid">Grid</RadioGroupItem>
+ * </RadioGroup>
+ * ```
+ */
 export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(function RadioGroup(
   { className, ...props },
   ref,

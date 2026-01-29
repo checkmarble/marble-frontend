@@ -1,4 +1,4 @@
-import { SCREENING_TOPICS_MAP, type ScreeningCategory } from '@app-builder/models/screening';
+import { SCREENING_CATEGORY_I18N_KEY_MAP, type ScreeningCategory } from '@app-builder/models/screening';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
@@ -9,17 +9,6 @@ import { Icon } from 'ui-icons';
  * Order matters for display.
  */
 const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
-
-/**
- * Maps ScreeningCategory to i18n key suffix.
- * ScreeningCategory uses hyphens, i18n keys use underscores.
- */
-const CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
-  sanctions: 'sanctions',
-  peps: 'peps',
-  'third-parties': 'third_parties',
-  'adverse-media': 'adverse_media',
-};
 
 type FilterSectionProps = {
   selectedTopics: ScreeningCategory[];
@@ -52,7 +41,7 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
       return t('scenarios:monitoring_list_check.select_hit_types');
     }
     return selectedTopics
-      .map((topic) => t(`scenarios:monitoring_list_check.hit_type.${CATEGORY_I18N_KEY_MAP[topic]}`))
+      .map((topic) => t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[topic]}`))
       .join(', ');
   }, [selectedTopics, t]);
 
@@ -89,7 +78,7 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
                     onCheckedChange={(checked) => handleTopicToggle(topic, checked === true)}
                   />
                   <span className="text-s text-grey-primary">
-                    {t(`scenarios:monitoring_list_check.hit_type.${CATEGORY_I18N_KEY_MAP[topic]}`)}
+                    {t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[topic]}`)}
                   </span>
                 </label>
               ))}
@@ -99,41 +88,4 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
       </div>
     </div>
   );
-}
-
-// ============================================================================
-// Conversion utilities for categories <-> topics
-// ============================================================================
-
-/**
- * Convert selected categories to individual topic strings for the API.
- * When "Sanctions" is selected, all topics mapping to 'sanctions' in SCREENING_TOPICS_MAP are included.
- */
-export function categoriesToTopics(categories: ScreeningCategory[]): string[] {
-  if (categories.length === 0) return [];
-
-  const topics: string[] = [];
-  for (const [topic, category] of SCREENING_TOPICS_MAP) {
-    if (categories.includes(category)) {
-      topics.push(topic);
-    }
-  }
-  return topics;
-}
-
-/**
- * Convert topic strings from the API back to categories for UI display.
- * Collapses individual topics back to their parent categories.
- */
-export function topicsToCategories(topics: string[]): ScreeningCategory[] {
-  if (topics.length === 0) return [];
-
-  const categories = new Set<ScreeningCategory>();
-  for (const topic of topics) {
-    const category = SCREENING_TOPICS_MAP.get(topic);
-    if (category) {
-      categories.add(category);
-    }
-  }
-  return Array.from(categories);
 }

@@ -15,7 +15,7 @@ import { EditAggregation } from './modals/Aggregation/Aggregation';
 import { EditFuzzyMatchAggregation } from './modals/FuzzyMatchComparator/FuzzyMatchAggregation';
 import { EditFuzzyMatchComparator } from './modals/FuzzyMatchComparator/FuzzyMatchComparator';
 import { EditIsMultipleOf } from './modals/IsMultipleOf/IsMultipleOf';
-import { EditMonitoringListCheck } from './modals/MonitoringListCheck';
+import { EditMonitoringListCheck } from './modals/MonitoringListCheck/MonitoringListCheck';
 import { EditStringTemplate } from './modals/StringTemplate/StringTemplate';
 import { EditTimeAdd } from './modals/TimeAdd/TimeAdd';
 import { EditTimestampExtract } from './modals/TimestampExtract/TimestampExtract';

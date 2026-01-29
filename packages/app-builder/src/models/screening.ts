@@ -399,6 +399,50 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['rel', 'third-parties'],
 ]);
 
+/**
+ * Maps ScreeningCategory to i18n key suffix.
+ * ScreeningCategory uses hyphens, i18n keys use underscores.
+ */
+export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  'third-parties': 'third_parties',
+  'adverse-media': 'adverse_media',
+};
+
+/**
+ * Convert topic strings from the API back to categories for UI display.
+ * Collapses individual topics back to their parent categories.
+ */
+export function topicsToCategories(topics: string[]): ScreeningCategory[] {
+  if (topics.length === 0) return [];
+
+  const categories = new Set<ScreeningCategory>();
+  for (const topic of topics) {
+    const category = SCREENING_TOPICS_MAP.get(topic);
+    if (category) {
+      categories.add(category);
+    }
+  }
+  return Array.from(categories);
+}
+
+/**
+ * Convert selected categories to individual topic strings for the API.
+ * When "Sanctions" is selected, all topics mapping to 'sanctions' in SCREENING_TOPICS_MAP are included.
+ */
+export function categoriesToTopics(categories: ScreeningCategory[]): string[] {
+  if (categories.length === 0) return [];
+
+  const topics: string[] = [];
+  for (const [topic, category] of SCREENING_TOPICS_MAP) {
+    if (categories.includes(category)) {
+      topics.push(topic);
+    }
+  }
+  return topics;
+}
+
 export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {
   sanctions: 1,
   'adverse-media': 2,

@@ -1,4 +1,4 @@
-import { Fragment } from 'react/jsx-runtime';
+import { Fragment } from 'react';
 import { cn } from 'ui-design-system';
 
 export type Step = {
