@@ -227,7 +227,6 @@ function LinkedObjectCheckItem({
   const [menuOpen, setMenuOpen] = useState(false);
 
   const needsNavigationConfig = option.direction === 'down' && !option.hasNavigationOptions;
-  const hasNavigationConfig = check?.validated ?? false;
 
   const handleFieldChange = (fieldName: string) => {
     setSelectedFieldName(fieldName);
@@ -249,10 +248,8 @@ function LinkedObjectCheckItem({
 
       {/* Navigation config for "down" direction without pre-configured navigationOptions */}
       {isEnabled && needsNavigationConfig && (
-        <div className="ml-6 flex flex-col gap-3 rounded-md bg-grey-background-light p-3">
-          <div className="flex items-center gap-2 text-xs text-grey-primary">
-            <span>{t('scenarios:monitoring_list_check.order_by_label')}</span>
-          </div>
+        <div className="ml-6 flex items-center gap-2 rounded-md bg-grey-background-light p-3">
+          <span className="text-xs text-grey-primary">{t('scenarios:monitoring_list_check.order_by_label')}</span>
 
           <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
             <MenuCommand.Trigger>
@@ -274,13 +271,6 @@ function LinkedObjectCheckItem({
               </MenuCommand.List>
             </MenuCommand.Content>
           </MenuCommand.Menu>
-
-          {hasNavigationConfig && (
-            <div className="flex items-center gap-1 text-xs text-green-primary">
-              <Icon icon="tick" className="size-4" />
-              {t('scenarios:monitoring_list_check.config_validated')}
-            </div>
-          )}
         </div>
       )}
     </div>

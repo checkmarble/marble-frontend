@@ -65,7 +65,6 @@ export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function R
       className={cn(
         'relative flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors',
         'border-purple-primary bg-white dark:bg-transparent',
-        'hover:bg-purple-96',
         isChecked && 'border-[4px]',
         className,
       )}
