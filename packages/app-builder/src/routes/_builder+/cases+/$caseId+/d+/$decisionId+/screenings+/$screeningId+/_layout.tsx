@@ -12,7 +12,7 @@ import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/n
 import { Outlet, useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -171,10 +171,10 @@ export default function CaseSanctionReviewPage() {
         </Page.Container>
         <div className="bg-surface-card border-t-grey-border flex shrink-0 flex-row items-center justify-end gap-4 border-t p-4">
           <UploadFile uploadFileEndpoint={uploadScreeningFile}>
-            <Button className="h-14 w-fit whitespace-nowrap" variant="secondary">
+            <ButtonV2 className="h-14 w-fit whitespace-nowrap" variant="secondary">
               <Icon icon="attachment" className="size-5" />
               {t('cases:add_file')}
-            </Button>
+            </ButtonV2>
           </UploadFile>
         </div>
       </div>

@@ -52,8 +52,22 @@ function ModalTitle(props: Dialog.DialogTitleProps) {
   );
 }
 
-export function ModalFooter({ children }: { children: ReactNode }) {
-  return <div className="shadow-sticky-bottom sticky bottom-0">{children}</div>;
+interface ModalFooterProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function ModalFooter({ children, className }: ModalFooterProps) {
+  return (
+    <div
+      className={clsx(
+        'border-t-grey-border bg-surface-card sticky bottom-0 flex justify-end gap-v2-sm border-t p-v2-md',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 export const Modal = {

@@ -3,7 +3,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useCreateDraftIterationMutation } from '@app-builder/queries/scenarios/create-draft-iteration';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateDraftIteration({
@@ -35,10 +35,10 @@ const NewDraftButton = ({ iterationId, scenarioId }: { iterationId: string; scen
   };
 
   return (
-    <Button onClick={handleNewDraft}>
-      <Icon icon="plus" className="size-6" />
+    <ButtonV2 onClick={handleNewDraft}>
+      <Icon icon="plus" className="size-5" />
       <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
-    </Button>
+    </ButtonV2>
   );
 };
 
@@ -65,10 +65,10 @@ const ExistingDraftModal = ({
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button>
-          <Icon icon="plus" className="size-6" />
+        <ButtonV2>
+          <Icon icon="plus" className="size-5" />
           <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('scenarios:create_iteration.title')}</Modal.Title>
@@ -77,22 +77,23 @@ const ExistingDraftModal = ({
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist')}</p>
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist_possibility')}</p>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button
+              <ButtonV2
                 className="flex-1"
                 variant="secondary"
+                appearance="stroked"
                 onClick={() =>
                   navigate(location.pathname.replace(fromUUIDtoSUUID(iterationId), fromUUIDtoSUUID(draftId)))
                 }
               >
                 {t('scenarios:create_draft.keep_existing_draft')}
-              </Button>
+              </ButtonV2>
             </Modal.Close>
-            <Button className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
+            <ButtonV2 className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
               {t('scenarios:create_draft.override_existing_draft')}
-            </Button>
-          </div>
+            </ButtonV2>
+          </Modal.Footer>
         </div>
       </Modal.Content>
     </Modal.Root>

@@ -17,7 +17,7 @@ import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import * as z from 'zod/v4';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '../Form/Tanstack/FormInput';
@@ -146,9 +146,9 @@ export function SignInWithEmailAndPassword({
         </Link>
       </div>
       <div className="flex flex-col gap-2">
-        <Button type="submit" disabled={!hydrated}>
+        <ButtonV2 type="submit" disabled={!hydrated}>
           {loading || form.state.isSubmitting ? <Spinner className="size-4" /> : t('auth:sign_in')}
-        </Button>
+        </ButtonV2>
         {additionalContent}
       </div>
     </form>
@@ -195,9 +195,9 @@ export const StaticSignInWithEmailAndPassword = ({
         </Link>
       </div>
       <div className="flex flex-col gap-2">
-        <Button type="submit" disabled={!hydrated}>
+        <ButtonV2 type="submit" disabled={!hydrated}>
           {t('auth:sign_in')}
-        </Button>
+        </ButtonV2>
         {additionalContent}
       </div>
     </form>

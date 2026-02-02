@@ -27,7 +27,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, isNonNullish, map, pipe } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Switch, Tabs, tabClassName } from 'ui-design-system';
+import { ButtonV2, Switch, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type DecisionPanelProps = {
@@ -259,7 +259,7 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
           'shadow-sticky-top': !intersection?.isIntersecting,
         })}
       >
-        <Button
+        <ButtonV2
           variant="secondary"
           size="small"
           onClick={() => {
@@ -268,7 +268,7 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
           }}
         >
           <Icon icon="left-panel-close" className="size-5" />
-        </Button>
+        </ButtonV2>
         <CaseManagerDrawerButtons expandable={true} />
       </div>
       <div className="flex flex-col pl-4 pr-2">

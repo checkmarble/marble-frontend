@@ -11,7 +11,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -30,10 +30,10 @@ export function UpdateOrganizationSettings({
   if (!isAutoAssignmentAvailable) {
     return (
       <div className="relative">
-        <Button className="w-fit whitespace-nowrap" disabled>
-          <Icon icon="edit-square" className="size-6" />
+        <ButtonV2 className="w-fit whitespace-nowrap" disabled>
+          <Icon icon="edit-square" className="size-5" />
           {t('common:edit')}
-        </Button>
+        </ButtonV2>
         <Nudge
           className="absolute -top-1 -right-1 size-4"
           iconClass="size-2.5"
@@ -49,10 +49,10 @@ export function UpdateOrganizationSettings({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
-        <Button className="w-fit whitespace-nowrap">
-          <Icon icon="edit-square" className="size-6" />
+        <ButtonV2 className="w-fit whitespace-nowrap">
+          <Icon icon="edit-square" className="size-5" />
           {t('common:edit')}
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <UpdateOrganizationSettingsContents
@@ -131,22 +131,16 @@ export function UpdateOrganizationSettingsContents({
           )}
         </form.Field>
 
-        <div className="flex flex-1 flex-row gap-2">
+        <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" type="button">
+            <ButtonV2 variant="secondary" appearance="stroked" type="button">
               {t('common:cancel')}
-            </Button>
+            </ButtonV2>
           </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="update"
-            disabled={updateOrganizationMutation.isPending}
-          >
+          <ButtonV2 variant="primary" type="submit" name="update" disabled={updateOrganizationMutation.isPending}>
             {t('common:save')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </div>
     </form>
   );

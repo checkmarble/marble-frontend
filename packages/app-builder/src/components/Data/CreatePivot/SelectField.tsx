@@ -5,7 +5,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Code, MenuCommand, Modal } from 'ui-design-system';
+import { ButtonV2, Code, MenuCommand, Modal } from 'ui-design-system';
 
 export function SelectField({
   pivotOptions,
@@ -89,15 +89,15 @@ export function SelectField({
           )}
         </form.Field>
 
-        <div className="flex flex-1 flex-row gap-2">
-          <Button className="flex-1" variant="secondary" onClick={onBack}>
+        <Modal.Footer>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" onClick={onBack}>
             {t('common:back')}
-          </Button>
+          </ButtonV2>
 
-          <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
+          <ButtonV2 className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
             {t('common:validate')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </div>
     </form>
   );

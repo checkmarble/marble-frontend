@@ -6,7 +6,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import { match } from 'ts-pattern';
-import { Button, MenuCommand } from 'ui-design-system';
+import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 
@@ -45,9 +45,9 @@ export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) 
             {selectedInbox ? <span>{selectedInbox.name}</span> : null}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
-                <Button disabled={!inboxesQuery.isSuccess} className="w-fit p-0.5" variant="secondary" size="icon">
+                <ButtonV2 disabled={!inboxesQuery.isSuccess} variant="secondary" mode="icon" size="small">
                   <Icon icon="edit-square" className="text-grey-secondary size-4" />
-                </Button>
+                </ButtonV2>
               </MenuCommand.Trigger>
               <MenuCommand.Content className="mt-2 min-w-[250px]">
                 {match(inboxesQuery)

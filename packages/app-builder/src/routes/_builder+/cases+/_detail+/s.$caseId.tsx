@@ -29,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { Button, ButtonV2, CtaV2ClassName, cn, Markdown, Tabs, tabClassName } from 'ui-design-system';
+import { ButtonV2, CtaV2ClassName, cn, Markdown, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const loader = createServerFn(
@@ -289,7 +289,9 @@ export function ErrorBoundary() {
       <div className="m-auto flex flex-col items-center gap-4">
         {t('common:errors.not_found')}
         <div className="mb-1">
-          <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
+          <ButtonV2 variant="primary" onClick={() => navigate(-1)}>
+            {t('common:go_back')}
+          </ButtonV2>
         </div>
       </div>
     );

@@ -12,7 +12,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ButtonV2, ModalV2, Select, Tooltip } from 'ui-design-system';
+import { ButtonV2, ModalV2, Select, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateTestRun({
@@ -195,14 +195,16 @@ function CreateTestRunToContent({
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" type="button" variant="secondary" />}>
+        <ModalV2.Footer>
+          <ModalV2.Close
+            render={<ButtonV2 className="flex-1" type="button" variant="secondary" appearance="stroked" />}
+          >
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
+          <ButtonV2 className="flex-1" variant="primary" type="submit">
             {t('common:save')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </ModalV2.Footer>
       </div>
     </form>
   );

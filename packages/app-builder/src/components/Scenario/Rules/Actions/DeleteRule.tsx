@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteRuleMutation } from '@app-builder/queries/scenarios/delete-rule';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2 } from 'ui-design-system';
+import { ButtonV2, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteRule({
@@ -37,22 +37,21 @@ export function DeleteRule({
             <h1 className="text-l font-semibold">{t('scenarios:delete_rule.title')}</h1>
             <p className="text-center">{t('scenarios:delete_rule.content')}</p>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
+          <ModalV2.Footer>
+            <ModalV2.Close render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
-              color="red"
+            <ButtonV2
               className="flex-1"
-              variant="primary"
+              variant="destructive"
               type="button"
               onClick={handleDeleteRule}
               disabled={deleteRuleMutation.isPending}
             >
-              <Icon icon="delete" className="size-6" />
+              <Icon icon="delete" className="size-5" />
               {t('common:delete')}
-            </Button>
-          </div>
+            </ButtonV2>
+          </ModalV2.Footer>
         </div>
       </ModalV2.Content>
     </ModalV2.Root>

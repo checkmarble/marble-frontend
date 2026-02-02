@@ -3,7 +3,7 @@ import { FORBIDDEN, NOT_FOUND } from '@app-builder/utils/http/http-status-codes'
 import { isRouteErrorResponse } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 
 export const handle = {
   i18n: ['common'] satisfies Namespace,
@@ -33,7 +33,9 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
       {subtitle ? <p className="text-grey-primary text-s mb-6">{subtitle}</p> : null}
 
       <div className="mb-1">
-        <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
+        <ButtonV2 variant="primary" onClick={() => navigate(-1)}>
+          {t('common:go_back')}
+        </ButtonV2>
       </div>
       {isDevMode ? <ErrorDetail error={error} /> : null}
     </div>

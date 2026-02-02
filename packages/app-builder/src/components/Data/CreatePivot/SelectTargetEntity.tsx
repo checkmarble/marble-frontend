@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/remix';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Code, MenuCommand, Modal } from 'ui-design-system';
+import { ButtonV2, Code, MenuCommand, Modal } from 'ui-design-system';
 
 export function SelectTargetEntity({
   pivotOptions,
@@ -120,17 +120,17 @@ export function SelectTargetEntity({
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
+        <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
+            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
               {t('common:cancel')}
-            </Button>
+            </ButtonV2>
           </Modal.Close>
 
-          <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
+          <ButtonV2 className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
             {t('data:create_pivot.entity_selection.button_accept')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
         {hasFieldOptions ? (
           <div className="flex flex-col gap-4">
             <div className="w-full border-b text-center leading-[0.1em]">
@@ -146,7 +146,7 @@ export function SelectTargetEntity({
                 }}
               />
             </p>
-            <Button
+            <ButtonV2
               variant="secondary"
               onClick={() => {
                 onSelected({
@@ -165,7 +165,7 @@ export function SelectTargetEntity({
                   Code: <Code />,
                 }}
               />
-            </Button>
+            </ButtonV2>
           </div>
         ) : null}
       </div>

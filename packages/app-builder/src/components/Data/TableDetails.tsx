@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, ButtonV2, Table, useTable } from 'ui-design-system';
+import { ButtonV2, Modal, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateField } from './CreateField';
 import { CreateLink } from './CreateLink';
@@ -165,10 +165,10 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
 
           {isCreateDataModelLinkAvailable && R.hasAtLeast(otherTablesWithUnique, 1) ? (
             <CreateLink thisTable={tableModel} otherTables={otherTablesWithUnique}>
-              <Button className="w-fit" variant="secondary">
-                <Icon icon="plus" className="size-6" />
+              <ButtonV2 className="w-fit" variant="secondary">
+                <Icon icon="plus" className="size-5" />
                 {t('data:create_link.title')}
-              </Button>
+              </ButtonV2>
             </CreateLink>
           ) : null}
         </div>

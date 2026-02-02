@@ -1,6 +1,6 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useTranslation } from 'react-i18next';
-import { Button, cn } from 'ui-design-system';
+import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { WorkflowRule } from './Rule';
 import { RuleProvider } from './RuleProvider';
@@ -107,10 +107,10 @@ export function WorkflowList() {
           hasModifiedRules ? 'opacity-40 pointer-events-none blur-xs' : ''
         }`}
       >
-        <Button variant="primary" onClick={createRule}>
+        <ButtonV2 variant="primary" onClick={createRule}>
           <Icon icon="plus" className="size-4" />
           {t('workflows:create_rule.label')}
-        </Button>
+        </ButtonV2>
       </div>
     </>
   );

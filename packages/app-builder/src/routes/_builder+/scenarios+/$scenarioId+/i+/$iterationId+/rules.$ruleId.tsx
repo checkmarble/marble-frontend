@@ -27,7 +27,7 @@ import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
+import { ButtonV2, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { useRuleGroups } from './_layout';
@@ -324,25 +324,25 @@ export default function RuleDetail() {
                       className="bg-surface-card border-grey-border mt-2 flex flex-col gap-2 rounded-sm border p-2"
                     >
                       <DuplicateRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
-                        <Button variant="secondary" type="button">
+                        <ButtonV2 variant="secondary" type="button">
                           <Icon icon="copy" className="size-5" aria-hidden />
                           {t('scenarios:clone_rule.button')}
-                        </Button>
+                        </ButtonV2>
                       </DuplicateRule>
 
                       <DeleteRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
-                        <Button color="red" type="button">
+                        <ButtonV2 variant="destructive" type="button">
                           <Icon icon="delete" className="size-5" aria-hidden />
                           {t('common:delete')}
-                        </Button>
+                        </ButtonV2>
                       </DeleteRule>
                     </Ariakit.Menu>
                   </Ariakit.MenuProvider>
 
-                  <Button type="submit" className="flex-1">
+                  <ButtonV2 variant="primary" type="submit" className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />
                     {t('common:save')}
-                  </Button>
+                  </ButtonV2>
                 </div>
               ) : null}
             </div>

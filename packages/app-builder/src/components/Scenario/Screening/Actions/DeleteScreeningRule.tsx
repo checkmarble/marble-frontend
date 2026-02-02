@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteScreeningRuleMutation } from '@app-builder/queries/scenarios/delete-screening-rule';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteScreeningRule({
@@ -37,25 +37,24 @@ export function DeleteScreeningRule({
             <h1 className="text-l font-semibold">{t('scenarios:delete_sanction.title')}</h1>
             <p className="text-center">{t('scenarios:delete_sanction.content')}</p>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary">
+              <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </Button>
+              </ButtonV2>
             </Modal.Close>
-            <Button
-              color="red"
-              variant="primary"
+            <ButtonV2
+              variant="destructive"
               className="flex-1"
               type="button"
               name="delete"
               onClick={handleDeleteScreeningRule}
               disabled={deleteScreeningRuleMutation.isPending}
             >
-              <Icon icon="delete" className="size-6" />
+              <Icon icon="delete" className="size-5" />
               {t('common:delete')}
-            </Button>
-          </div>
+            </ButtonV2>
+          </Modal.Footer>
         </div>
       </Modal.Content>
     </Modal.Root>

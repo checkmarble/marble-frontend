@@ -8,7 +8,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ButtonV2, Modal, Tooltip } from 'ui-design-system';
+import { ButtonV2, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId: string; isAdminUser: boolean }) => {
@@ -73,16 +73,15 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
           <Callout className="text-balance">
             <Trans i18nKey="cases:escalate-case.modal.callout" />
           </Callout>
-          <form onSubmit={handleSubmit(form)} className="flex w-full flex-row gap-2">
-            <Modal.Close asChild>
-              <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-
-            <Button type="submit" className="flex-1 first-letter:capitalize">
-              {t('cases:escalate-case.modal.submit-button.label')}
-            </Button>
+          <form onSubmit={handleSubmit(form)}>
+            <Modal.Footer>
+              <Modal.Close asChild>
+                <ButtonV2 variant="secondary" appearance="stroked" type="button">
+                  {t('common:cancel')}
+                </ButtonV2>
+              </Modal.Close>
+              <ButtonV2 type="submit">{t('cases:escalate-case.modal.submit-button.label')}</ButtonV2>
+            </Modal.Footer>
           </form>
         </div>
       </Modal.Content>

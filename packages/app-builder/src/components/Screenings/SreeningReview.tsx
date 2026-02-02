@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { MatchCard } from './MatchCard';
 import { RefineSearchModal } from './RefineSearchModal';
@@ -40,10 +40,10 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
             })}
           </span>
           {isRefinable ? (
-            <Button className="ml-auto" variant="secondary" onClick={() => setIsRefining(true)}>
+            <ButtonV2 className="ml-auto" variant="secondary" onClick={() => setIsRefining(true)}>
               <Icon icon="restart-alt" className="size-5" />
               {t('screenings:refine_search')}
-            </Button>
+            </ButtonV2>
           ) : null}
         </div>
         {match(screening)

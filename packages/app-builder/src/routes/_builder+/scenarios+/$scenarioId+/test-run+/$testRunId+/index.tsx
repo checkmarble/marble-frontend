@@ -16,7 +16,7 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mapToObj, pick } from 'remeda';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenario, useScenarioIterationsSummary } from '../../_layout';
@@ -98,10 +98,10 @@ export default function TestRun() {
         <BreadCrumbs />
         {run.status === 'up' ? (
           <CancelTestRun currentScenario={currentScenario} testRunId={run.id}>
-            <Button variant="secondary" color="red" className="isolate h-10 w-fit">
-              <Icon icon="stop" className="text-grey-white size-6" />
-              <span className="text-grey-white">{t('scenarios:testrun.cancel')}</span>
-            </Button>
+            <ButtonV2 variant="destructive" className="isolate h-10 w-fit">
+              <Icon icon="stop" className="size-5" />
+              {t('scenarios:testrun.cancel')}
+            </ButtonV2>
           </CancelTestRun>
         ) : null}
       </Page.Header>

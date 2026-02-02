@@ -18,7 +18,7 @@ import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ModalV2, Select, TextArea } from 'ui-design-system';
+import { ButtonV2, ModalV2, Select, TextArea } from 'ui-design-system';
 import { z } from 'zod/v4';
 
 const reviewDecisionSchema = z.object({
@@ -224,13 +224,15 @@ function ReviewDecisionContent({
           )}
         </form.Field>
 
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
+        <ModalV2.Footer>
+          <ModalV2.Close render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" />}>
+            {t('common:cancel')}
+          </ModalV2.Close>
+          <ButtonV2 className="flex-1" variant="primary" type="submit">
             <LoadingIcon icon="case-manager" className="size-5" loading={fetcher.state === 'submitting'} />
             {t('common:validate')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </ModalV2.Footer>
       </div>
     </form>
   );

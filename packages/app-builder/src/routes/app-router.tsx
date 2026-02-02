@@ -8,7 +8,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { Form, isRouteErrorResponse, redirect, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -32,15 +32,16 @@ export function ErrorBoundary() {
         <p className="text-s mb-6">{t('common:error_boundary.marble_admin.subtitle')}</p>
         <div className="mb-1">
           <Form action={getRoute('/ressources/auth/logout')} method="post">
-            <Button
+            <ButtonV2
               type="submit"
+              variant="primary"
               onClick={() => {
                 void segment.reset();
               }}
             >
               <Icon icon="logout" className="size-5" />
               {t('common:auth.logout')}
-            </Button>
+            </ButtonV2>
           </Form>
         </div>
       </div>

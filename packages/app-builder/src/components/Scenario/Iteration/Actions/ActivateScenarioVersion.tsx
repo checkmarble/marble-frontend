@@ -12,7 +12,7 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, CollapsibleV2, Modal, Tooltip } from 'ui-design-system';
+import { ButtonV2, Checkbox, CollapsibleV2, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type ActivateScenarioVersionProps = {
@@ -25,10 +25,10 @@ export function ActivateScenarioVersion({ scenario, iteration }: ActivateScenari
   const [open, setOpen] = React.useState(false);
 
   const button = (
-    <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
-      <Icon icon="pushtolive" className="size-6" />
+    <ButtonV2 className="flex-1" variant="primary" disabled={!iteration.isValid}>
+      <Icon icon="pushtolive" className="size-5" />
       {t('scenarios:deployment_modal.activate.button')}
-    </Button>
+    </ButtonV2>
   );
 
   if (!iteration.isValid) {
@@ -138,17 +138,17 @@ function ActivateScenarioVersionContent({
             <RuleSnoozeDetail scenarioId={scenario.id} iterationId={iterationId} />
           </div>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
+        <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
+            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
               {t('common:cancel')}
-            </Button>
+            </ButtonV2>
           </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            <Icon icon="pushtolive" className="size-6" />
+          <ButtonV2 className="flex-1" variant="primary" type="submit">
+            <Icon icon="pushtolive" className="size-5" />
             {t('scenarios:deployment_modal.activate.button')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </div>
     </form>
   );

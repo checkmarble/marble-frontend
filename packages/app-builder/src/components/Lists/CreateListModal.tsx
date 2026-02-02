@@ -7,7 +7,7 @@ import { CreateListPayload, createListPayloadSchema } from '@app-builder/schemas
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateListModal() {
@@ -35,10 +35,10 @@ export function CreateListModal() {
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button>
-          <Icon icon="plus" className="size-6" />
+        <ButtonV2>
+          <Icon icon="plus" className="size-5" />
           {t('lists:create_list.title')}
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content>
         <form
@@ -98,16 +98,16 @@ export function CreateListModal() {
                 )}
               </form.Field>
             </div>
-            <div className="flex flex-1 flex-row gap-2">
+            <Modal.Footer>
               <Modal.Close asChild>
-                <Button className="flex-1" type="button" variant="secondary">
+                <ButtonV2 type="button" variant="secondary" appearance="stroked">
                   {t('common:cancel')}
-                </Button>
+                </ButtonV2>
               </Modal.Close>
-              <Button className="flex-1" variant="primary" type="submit" name="create">
+              <ButtonV2 variant="primary" type="submit" name="create">
                 {t('lists:create_list.button_accept')}
-              </Button>
-            </div>
+              </ButtonV2>
+            </Modal.Footer>
           </div>
         </form>
       </Modal.Content>

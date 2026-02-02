@@ -7,7 +7,7 @@ import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, ButtonV2, Checkbox, Input } from 'ui-design-system';
+import { ButtonV2, Checkbox, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DatasetTag } from '../DatasetTag';
@@ -128,9 +128,9 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
               .with({ isError: true }, () => (
                 <div className="flex flex-col items-center gap-2 p-4">
                   <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
-                  <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
+                  <ButtonV2 variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
                     {t('common:retry')}
-                  </Button>
+                  </ButtonV2>
                 </div>
               ))
               .otherwise(() =>

@@ -15,7 +15,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { Button, cn, Modal } from 'ui-design-system';
+import { ButtonV2, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type EditCaseSuspicionProps = {
@@ -78,9 +78,9 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
               .with('none', () => (
                 <div className="flex items-center gap-2">
                   <span>{t('cases:sar.action.mark_as')}</span>
-                  <Button
+                  <ButtonV2
                     variant="secondary"
-                    size="xs"
+                    size="small"
                     onClick={() => {
                       field.handleChange('pending');
                       form.handleSubmit();
@@ -88,17 +88,17 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                   >
                     <Icon icon="half-flag" className="size-3.5 text-orange-primary" />
                     {t('cases:sar.status.pending')}
-                  </Button>
-                  <Button
+                  </ButtonV2>
+                  <ButtonV2
                     variant="secondary"
-                    size="xs"
+                    size="small"
                     onClick={() => {
                       setOpenReportModal(true);
                     }}
                   >
                     <Icon icon="full-flag" className="text-red-primary size-3.5" />
                     {t('cases:sar.status.completed')}
-                  </Button>
+                  </ButtonV2>
                 </div>
               ))
               .with('pending', () => (
@@ -107,26 +107,27 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                     <Icon icon="half-flag" className="size-3.5 text-orange-primary" />
                     <span className="text-xs font-medium">{t('cases:sar.status.pending')}</span>
                   </span>
-                  <Button
+                  <ButtonV2
                     variant="secondary"
-                    size="xs"
+                    size="small"
                     onClick={() => {
                       setOpenReportModal(true);
                     }}
                   >
                     <Icon icon="full-flag" className="text-red-primary size-3.5" />
                     {t('cases:sar.action.mark_as_completed')}
-                  </Button>
-                  <Button
+                  </ButtonV2>
+                  <ButtonV2
                     variant="secondary"
-                    size="icon"
+                    mode="icon"
+                    size="small"
                     onClick={() => {
                       field.handleChange('none');
                       form.handleSubmit();
                     }}
                   >
                     <Icon icon="cross" className="text-grey-secondary size-4" />
-                  </Button>
+                  </ButtonV2>
                 </div>
               ))
               .with('completed', () => (
@@ -140,10 +141,10 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                       {() => <ReportFile name={t('cases:sar.action.download')} caseId={id} reportId={reports[0]!.id} />}
                     </ClientOnly>
                   ) : (
-                    <Button variant="secondary" size="xs" onClick={() => setOpenReportModal(true)}>
+                    <ButtonV2 variant="secondary" size="small" onClick={() => setOpenReportModal(true)}>
                       <Icon icon="attachment" className="size-3.5" />
                       {t('cases:sar.action.upload')}
-                    </Button>
+                    </ButtonV2>
                   )}
                 </div>
               ))
@@ -172,28 +173,32 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                     </span>
                   </p>
                   <span className="text-grey-secondary text-r">or</span>
-                  <Button>
-                    <Icon icon="plus" className="size-6" />
+                  <ButtonV2>
+                    <Icon icon="plus" className="size-5" />
                     {t('cases:sar.modale.cta_choose_file')}
-                  </Button>
+                  </ButtonV2>
                   {reportFile ? (
                     <span className="border-grey-border flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
                       {reportFile.name}
-                      <Button variant="ghost" size="icon" onClick={() => form.setFieldValue('file', undefined)}>
+                      <ButtonV2
+                        variant="secondary"
+                        appearance="link"
+                        mode="icon"
+                        onClick={() => form.setFieldValue('file', undefined)}
+                      >
                         <Icon icon="cross" className="text-grey-primary size-4" />
-                      </Button>
+                      </ButtonV2>
                     </span>
                   ) : null}
                 </div>
-                <div className="flex flex-row gap-2">
+                <Modal.Footer>
                   <Modal.Close asChild>
-                    <Button variant="secondary" className="basis-1/2">
+                    <ButtonV2 variant="secondary" appearance="stroked">
                       {t('common:cancel')}
-                    </Button>
+                    </ButtonV2>
                   </Modal.Close>
-                  <Button
+                  <ButtonV2
                     type="submit"
-                    className="basis-1/2 first-letter:capitalize"
                     disabled={isCompleted && reportFile === undefined}
                     onClick={() => {
                       field.handleChange('completed');
@@ -205,8 +210,8 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                       : reportFile
                         ? t('cases:sar.modale.confirm_with_file')
                         : t('cases:sar.modale.confirm_without_file')}
-                  </Button>
-                </div>
+                  </ButtonV2>
+                </Modal.Footer>
               </div>
             </Modal.Content>
           </Modal.Root>
@@ -242,9 +247,9 @@ const ReportFile = ({ name, caseId, reportId }: ReportFileProps) => {
   });
 
   return (
-    <Button
+    <ButtonV2
       variant="secondary"
-      size="xs"
+      size="small"
       onClick={() => {
         void downloadCaseFile();
       }}
@@ -255,6 +260,6 @@ const ReportFile = ({ name, caseId, reportId }: ReportFileProps) => {
         className={cn('size-3.5', { 'animate-spin': downloadingCaseFile })}
       />
       {name}
-    </Button>
+    </ButtonV2>
   );
 };

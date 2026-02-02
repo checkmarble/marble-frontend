@@ -40,7 +40,7 @@ import { useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn, Switch, Tag } from 'ui-design-system';
+import { ButtonV2, cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { useCurrentScenario } from '../../_layout';
@@ -345,16 +345,16 @@ export default function ScreeningDetail() {
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
                   <DeleteScreeningRule iterationId={iterationId} scenarioId={scenario.id} screeningId={configId}>
-                    <Button color="red" className="w-fit" size="small">
+                    <ButtonV2 variant="destructive" className="w-fit" size="small">
                       <Icon icon="delete" className="size-4" aria-hidden />
                       {t('common:delete')}
-                    </Button>
+                    </ButtonV2>
                   </DeleteScreeningRule>
 
-                  <Button type="submit" className="flex-1" size="small">
+                  <ButtonV2 variant="primary" type="submit" className="flex-1" size="small">
                     <Icon icon="save" className="size-4" aria-hidden />
                     {t('common:save')}
-                  </Button>
+                  </ButtonV2>
                 </div>
               ) : null}
             </div>

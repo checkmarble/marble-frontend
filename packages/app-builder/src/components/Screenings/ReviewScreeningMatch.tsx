@@ -12,7 +12,7 @@ import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';
+import { ButtonV2, ModalV2, Switch, TextArea } from 'ui-design-system';
 
 export const ReviewScreeningMatch = ({
   open,
@@ -111,11 +111,13 @@ export const ReviewScreeningMatch = ({
             }}
           </form.Field>
         ) : null}
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
+        <ModalV2.Footer>
+          <ModalV2.Close
+            render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel" />}
+          >
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button
+          <ButtonV2
             type={currentStatus === 'confirmed_hit' ? 'button' : 'submit'}
             disabled={!currentStatus}
             className="flex-1"
@@ -128,16 +130,18 @@ export const ReviewScreeningMatch = ({
             }}
           >
             {t('common:save')}
-          </Button>
+          </ButtonV2>
           <ModalV2.Content open={isConfirming} onClose={() => setIsConfirming(false)}>
             <ModalV2.Title>{t('screenings:review_modal.confirmation')}</ModalV2.Title>
             <div className="flex flex-col gap-4 p-6">
               <div>{t('screenings:review_modal.callout_confirmed_hit')}</div>
-              <div className="flex justify-between gap-4">
-                <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
+              <ModalV2.Footer>
+                <ModalV2.Close
+                  render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel" />}
+                >
                   {t('common:cancel')}
                 </ModalV2.Close>
-                <Button
+                <ButtonV2
                   disabled={!currentStatus}
                   className="flex-1"
                   variant="primary"
@@ -146,11 +150,11 @@ export const ReviewScreeningMatch = ({
                   type="submit"
                 >
                   {t('common:save')}
-                </Button>
-              </div>
+                </ButtonV2>
+              </ModalV2.Footer>
             </div>
           </ModalV2.Content>
-        </div>
+        </ModalV2.Footer>
       </form>
     </ModalV2.Content>
   );

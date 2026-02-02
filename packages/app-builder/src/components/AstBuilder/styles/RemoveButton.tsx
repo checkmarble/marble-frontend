@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import * as React from 'react';
-import { type ButtonProps } from 'ui-design-system';
+import { type ButtonV2Props } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, ...props }, ref) => {
+export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonV2Props>(({ className, ...props }, ref) => {
   return (
     <button
       className={clsx(

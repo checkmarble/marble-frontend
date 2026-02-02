@@ -1,6 +1,6 @@
 import { type TagColor, tagColors } from '@app-builder/models/tags';
 import { useState } from 'react';
-import { Button, MenuCommand } from 'ui-design-system';
+import { ButtonV2, MenuCommand } from 'ui-design-system';
 
 import { ColorPreview } from './ColorPreview';
 
@@ -10,10 +10,10 @@ export const ColorSelect = ({ onChange, value }: { onChange: (color: TagColor) =
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary" className="h-10 gap-4">
+        <ButtonV2 variant="secondary" className="h-10 gap-4">
           <ColorPreview color={value} />
           <MenuCommand.Arrow />
-        </Button>
+        </ButtonV2>
       </MenuCommand.Trigger>
       <MenuCommand.Content className="mt-2" sameWidth>
         <MenuCommand.List>

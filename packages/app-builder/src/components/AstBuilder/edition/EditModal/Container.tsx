@@ -2,7 +2,7 @@ import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-no
 import { useCallbackRef } from '@marble/shared';
 import { type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Modal } from 'ui-design-system';
+import { ButtonV2, cn, Modal } from 'ui-design-system';
 
 import { AstBuilderNodeSharpFactory } from '../node-store';
 import { type OperandEditModalProps } from './EditModal';
@@ -32,23 +32,21 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
         <Modal.Title>{props.title}</Modal.Title>
         <div className={cn('flex flex-col gap-4 p-4', className)}>{props.children}</div>
         <Modal.Footer>
-          <div className="flex flex-1 flex-row gap-2 p-4">
-            <Modal.Close asChild>
-              <Button variant="secondary" className="flex-1">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button
-              variant="primary"
-              className="flex-1"
-              disabled={props.saveDisabled}
-              onClick={() => {
-                props.onSave(nodeSharp.value.node as EditableAstNode);
-              }}
-            >
-              {props.saveLabel ?? t('common:save')}
-            </Button>
-          </div>
+          <Modal.Close asChild>
+            <ButtonV2 variant="secondary" appearance="stroked" className="flex-1">
+              {t('common:cancel')}
+            </ButtonV2>
+          </Modal.Close>
+          <ButtonV2
+            variant="primary"
+            className="flex-1"
+            disabled={props.saveDisabled}
+            onClick={() => {
+              props.onSave(nodeSharp.value.node as EditableAstNode);
+            }}
+          >
+            {props.saveLabel ?? t('common:save')}
+          </ButtonV2>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

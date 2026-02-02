@@ -2,7 +2,7 @@ import { type PropertyForSchema } from '@app-builder/constants/screening-entity'
 import { type ScreeningMatch, type ScreeningSanctionEntity } from '@app-builder/models/screening';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { EntityProperties } from './EntityProperties';
@@ -68,9 +68,9 @@ export function MatchDetails({ entity, before }: MatchDetailsProps) {
                 <div className="relative">
                   <Modal.Title>{t('screenings:sanction_detail.title')}</Modal.Title>
                   <Modal.Close asChild>
-                    <Button variant="ghost" className="absolute top-2 right-2">
-                      <Icon icon="cross" className="size-6" />
-                    </Button>
+                    <ButtonV2 variant="secondary" appearance="link" className="absolute top-2 right-2">
+                      <Icon icon="cross" className="size-5" />
+                    </ButtonV2>
                   </Modal.Close>
                 </div>
                 <div className="overflow-y-auto p-6">

@@ -3,7 +3,15 @@ import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { unique } from 'remeda';
-import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from 'ui-design-system';
+import {
+  ButtonV2,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { RuleGroup } from '../Rules/RuleGroup';
@@ -43,15 +51,15 @@ export const FieldRuleGroup = ({
       <div className="flex items-center gap-2">
         {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} /> : null}
         <Trigger asChild>
-          <Button
+          <ButtonV2
             disabled={disabled}
             variant="secondary"
-            size={selectedRuleGroup ? 'icon' : undefined}
+            mode={selectedRuleGroup ? 'icon' : undefined}
             className={clsx({ 'w-fit': !selectedRuleGroup })}
           >
             <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="text-grey-disabled size-4" />
             {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}
-          </Button>
+          </ButtonV2>
         </Trigger>
       </div>
       <Content className="mt-1 min-w-[280px] shadow-md" align="start">
@@ -92,8 +100,9 @@ export const FieldRuleGroup = ({
             )}
             {value && !finalRuleGroups.includes(value) ? (
               <CommandItem asChild forceMount>
-                <Button
-                  variant="tertiary"
+                <ButtonV2
+                  variant="secondary"
+                  appearance="link"
                   onClick={() => {
                     setNewRule(value);
                     onChange?.(value);
@@ -105,7 +114,7 @@ export const FieldRuleGroup = ({
                     {t('scenarios:rules.create')}
                     {value ? <RuleGroup ruleGroup={value} /> : null}
                   </span>
-                </Button>
+                </ButtonV2>
               </CommandItem>
             ) : null}
           </CommandList>

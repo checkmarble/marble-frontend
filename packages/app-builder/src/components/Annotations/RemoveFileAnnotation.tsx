@@ -3,7 +3,7 @@ import { type FileAnnotation } from '@app-builder/models';
 import { useDeleteAnnotationMutation } from '@app-builder/queries/annotations/delete-annotation';
 import { useCallbackRef } from '@marble/shared';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 
 type RemoveFileAnnotationProps = {
   annotation: FileAnnotation;
@@ -43,14 +43,14 @@ export function RemoveFileAnnotation({ annotation, onClose, onDelete }: RemoveFi
             }}
           />
         </Modal.Title>
-        <div className="flex justify-between gap-4 p-6">
-          <Button variant="secondary" className="flex-1" onClick={onClose}>
+        <Modal.Footer>
+          <ButtonV2 variant="secondary" appearance="stroked" className="flex-1" onClick={onClose}>
             {t('common:cancel')}
-          </Button>
-          <Button variant="primary" color="red" className="flex-1" onClick={handleDelete}>
+          </ButtonV2>
+          <ButtonV2 variant="destructive" className="flex-1" onClick={handleDelete}>
             {t('common:delete')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

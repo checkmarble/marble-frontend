@@ -5,7 +5,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { DialogDisclosure, useDialogStore } from '@ariakit/react/dialog';
 import { Link } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, cn } from 'ui-design-system';
+import { ButtonV2, Checkbox, cn } from 'ui-design-system';
 import { casesI18n } from './cases-i18n';
 
 const Divider = ({ isLast = false }: { isLast?: boolean }) => (
@@ -86,7 +86,7 @@ export const RequiredActions = ({
       {isPendingDecision ? (
         <div className="flex items-center gap-2.5">
           <Checkbox size="small" disabled={true} />
-          <DialogDisclosure store={reviewDecisionModalStore} render={<Button variant="secondary" size="xs" />}>
+          <DialogDisclosure store={reviewDecisionModalStore} render={<ButtonV2 variant="secondary" size="small" />}>
             {t('cases:required_actions.decide_final_status')}
           </DialogDisclosure>
           <ReviewDecisionModal

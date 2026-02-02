@@ -11,7 +11,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2 } from 'ui-design-system';
+import { ButtonV2, ModalV2 } from 'ui-design-system';
 
 export function UpdateScenario({
   children,
@@ -110,12 +110,14 @@ function UpdateScenarioContent({
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
+        <ModalV2.Footer>
+          <ModalV2.Close render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" />}>
+            {t('common:cancel')}
+          </ModalV2.Close>
+          <ButtonV2 className="flex-1" variant="primary" type="submit">
             {t('common:save')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </ModalV2.Footer>
       </div>
     </form>
   );

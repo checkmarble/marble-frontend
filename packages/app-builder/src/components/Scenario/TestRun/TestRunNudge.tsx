@@ -2,7 +2,7 @@ import { CalloutV2 } from '@app-builder/components/Callout';
 import { Nudge } from '@app-builder/components/Nudge';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
-import { Button, cn } from 'ui-design-system';
+import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const TestRunNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, 'allowed' | 'test'> }) => {
@@ -22,10 +22,10 @@ export const TestRunNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, 'a
       <CalloutV2>{t('scenarios:testrun.description')}</CalloutV2>
 
       <div className="flex flex-row gap-4">
-        <Button variant="primary" disabled className="isolate h-10 w-fit">
-          <Icon icon="plus" className="size-6" aria-hidden />
+        <ButtonV2 variant="primary" disabled className="isolate h-10 w-fit">
+          <Icon icon="plus" className="size-5" aria-hidden />
           {t('scenarios:create_testrun.title')}
-        </Button>
+        </ButtonV2>
       </div>
     </section>
   );

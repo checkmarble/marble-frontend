@@ -11,7 +11,7 @@ import { isMutationSuccess } from '@app-builder/utils/http/mutation';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, ButtonV2, Input } from 'ui-design-system';
+import { ButtonV2, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ConfirmSaveModal } from './ConfirmSaveModal';
 
@@ -52,23 +52,31 @@ export const IpWhitelistingSettingsPage = ({
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:ip_whitelisting')}</span>
-            <Button
+            <ButtonV2
               variant="secondary"
+              appearance="stroked"
               onClick={(e) => {
                 e.stopPropagation();
                 form.reset();
               }}
             >
               {t('settings:ip_whitelisting.reset')}
-            </Button>
+            </ButtonV2>
             {removedNetworks.length > 0 ? (
               <ConfirmSaveModal onConfirm={() => form.handleSubmit()}>
-                <Button onClick={(e) => e.stopPropagation()}>{t('settings:ip_whitelisting.save')}</Button>
+                <ButtonV2 variant="primary" onClick={(e) => e.stopPropagation()}>
+                  {t('settings:ip_whitelisting.save')}
+                </ButtonV2>
               </ConfirmSaveModal>
             ) : (
-              <Button type="submit" form="ip-whitelisting-form" onClick={(e) => e.stopPropagation()}>
+              <ButtonV2
+                variant="primary"
+                type="submit"
+                form="ip-whitelisting-form"
+                onClick={(e) => e.stopPropagation()}
+              >
                 {t('settings:ip_whitelisting.save')}
-              </Button>
+              </ButtonV2>
             )}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
@@ -113,10 +121,10 @@ export const IpWhitelistingSettingsPage = ({
                       </form.Field>
                     ))}
                     <div className="flex gap-v2-md items-center col-span-full">
-                      <Button className="w-fit" onClick={() => networksField.pushValue('')}>
+                      <ButtonV2 variant="primary" className="w-fit" onClick={() => networksField.pushValue('')}>
                         <Icon icon="plus" className="size-3.5 shrink-0 cursor-pointer" />
                         {t('settings:ip_whitelisting.add_new')}
-                      </Button>
+                      </ButtonV2>
                     </div>
                     <FormError field={networksField} className="col-span-full" />
                   </>

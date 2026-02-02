@@ -5,7 +5,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import * as Popover from '@radix-ui/react-popover';
 import { Form } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, Tag } from 'ui-design-system';
+import { Avatar, ButtonV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CustomLogo } from './CustomLogo';
 import { LanguagePicker } from './LanguagePicker';
@@ -92,7 +92,7 @@ export function UserInfo({
             <UserAvailabilityStatus {...{ isAutoAssignmentAvailable }} />
 
             <Form action={getRoute('/ressources/auth/logout')} method="POST">
-              <Button
+              <ButtonV2
                 variant="secondary"
                 type="submit"
                 onClick={() => {
@@ -101,7 +101,7 @@ export function UserInfo({
               >
                 <Icon icon="logout" className="size-5" />
                 {t('common:auth.logout')}
-              </Button>
+              </ButtonV2>
             </Form>
           </div>
         </Popover.Content>

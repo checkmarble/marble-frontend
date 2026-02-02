@@ -5,7 +5,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, Modal } from 'ui-design-system';
+import { ButtonV2, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteListValueModal({
@@ -63,17 +63,17 @@ export function DeleteListValueModal({
               </p>
               <p className="text-center">{t('lists:delete_value.no_return')}</p>
             </div>
-            <div className="flex flex-1 flex-row gap-2">
+            <Modal.Footer>
               <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary">
+                <ButtonV2 variant="secondary" appearance="stroked">
                   {t('common:cancel')}
-                </Button>
+                </ButtonV2>
               </Modal.Close>
-              <Button color="red" className="flex-1" variant="primary" type="submit" name="delete">
-                <Icon icon="delete" className="size-6" />
+              <ButtonV2 variant="destructive" type="submit" name="delete">
+                <Icon icon="delete" className="size-5" />
                 <p>{t('common:delete')}</p>
-              </Button>
-            </div>
+              </ButtonV2>
+            </Modal.Footer>
           </div>
         </form>
       </Modal.Content>

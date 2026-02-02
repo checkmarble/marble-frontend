@@ -19,7 +19,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ModalV2, Select, TextArea } from 'ui-design-system';
+import { ButtonV2, ModalV2, Select, TextArea } from 'ui-design-system';
 
 export function AddRuleSnooze({
   decisionId,
@@ -188,13 +188,15 @@ function AddRuleSnoozeContent({
           </form.Field>
         </div>
 
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit" name="update">
+        <ModalV2.Footer>
+          <ModalV2.Close render={<ButtonV2 variant="secondary" appearance="stroked" />}>
+            {t('common:cancel')}
+          </ModalV2.Close>
+          <ButtonV2 variant="primary" type="submit" name="update">
             <LoadingIcon icon="snooze" className="size-5" loading={addRuleSnoozeMutation.isPending} />
             {t('cases:decisions.rule.snooze')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </ModalV2.Footer>
       </div>
     </form>
   );

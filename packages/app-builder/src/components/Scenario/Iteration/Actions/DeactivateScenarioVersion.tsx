@@ -7,7 +7,7 @@ import {
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Modal } from 'ui-design-system';
+import { ButtonV2, Checkbox, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
@@ -17,10 +17,10 @@ export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenari
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button className="flex-1" variant="primary" color="red">
-          <Icon icon="stop" className="size-6" />
+        <ButtonV2 className="flex-1" variant="destructive">
+          <Icon icon="stop" className="size-5" />
           {t('scenarios:deployment_modal.deactivate.button')}
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content>
         <DeactivateScenarioVersionContent scenarioId={scenarioId} iterationId={iterationId} />
@@ -106,17 +106,17 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
           </form.Field>
           <p className="text-grey-disabled text-xs font-medium">{t('scenarios:deployment_modal.deactivate.helper')}</p>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
+        <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
+            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
               {t('common:cancel')}
-            </Button>
+            </ButtonV2>
           </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" color="red">
-            <Icon icon="stop" className="size-6" />
+          <ButtonV2 className="flex-1" variant="destructive" type="submit">
+            <Icon icon="stop" className="size-5" />
             {t('scenarios:deployment_modal.deactivate.button')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </div>
     </form>
   );

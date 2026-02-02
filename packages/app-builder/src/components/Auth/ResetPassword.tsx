@@ -9,7 +9,7 @@ import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import * as z from 'zod/v4';
 
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
@@ -81,7 +81,7 @@ export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | nu
           </div>
         )}
       </form.Field>
-      <Button type="submit">{t('auth:reset-password.send')}</Button>
+      <ButtonV2 type="submit">{t('auth:reset-password.send')}</ButtonV2>
     </form>
   );
 }
@@ -95,7 +95,7 @@ export const StaticResetPassword = ({ prefilledEmail }: { prefilledEmail?: strin
         <FormLabel name="email">{t('auth:sign_in.email')}</FormLabel>
         <FormInput type="email" className="w-full" defaultValue={prefilledEmail ?? ''} />
       </div>
-      <Button>{t('auth:reset-password.send')}</Button>
+      <ButtonV2>{t('auth:reset-password.send')}</ButtonV2>
     </form>
   );
 };

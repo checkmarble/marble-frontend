@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Table, useVirtualTable } from 'ui-design-system';
+import { ButtonV2, Table, useVirtualTable } from 'ui-design-system';
 import { AddYourFirstFile } from './AddYourFirstFile';
 import { UploadFileContentProps } from './UploadFile';
 
@@ -121,7 +121,7 @@ function FileLink({ endpoint }: { endpoint: string }) {
   const { t } = useTranslation(['cases']);
 
   return (
-    <Button
+    <ButtonV2
       variant="secondary"
       onClick={() => {
         void downloadCaseFile();
@@ -130,6 +130,6 @@ function FileLink({ endpoint }: { endpoint: string }) {
       disabled={downloadingCaseFile}
     >
       {downloadingCaseFile ? t('cases:case.file.downloading') : t('cases:case.file.download')}
-    </Button>
+    </ButtonV2>
   );
 }

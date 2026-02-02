@@ -8,7 +8,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonV2, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const OpenCase = ({ id }: { id: string }) => {
@@ -65,17 +65,14 @@ export const OpenCase = ({ id }: { id: string }) => {
               </div>
             )}
           </form.Field>
-          <div className="flex w-full flex-row gap-2 justify-around">
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" className="flex-1 first-letter:capitalize">
+              <ButtonV2 variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </Button>
+              </ButtonV2>
             </Modal.Close>
-
-            <Button type="submit" className="flex-1 first-letter:capitalize">
-              Re-Open
-            </Button>
-          </div>
+            <ButtonV2 type="submit">Re-Open</ButtonV2>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

@@ -5,7 +5,7 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { endOfToday } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Calendar, Modal } from 'ui-design-system';
+import { ButtonV2, Calendar, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SetMyselfUnavailable() {
@@ -47,18 +47,15 @@ export function SetMyselfUnavailable() {
         </div>
 
         <Modal.Footer>
-          <div className="flex flex-1 flex-row gap-2 p-4">
-            <Modal.Close asChild>
-              <Button variant="secondary" className="flex-1">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="primary" className="flex-1" onClick={setMeUnavailable} disabled={!dateSelected}>
-              <Icon icon="account-circle-off" className="size-4" />
-
-              {t('settings:set_myself_unavailable.validate.button')}
-            </Button>
-          </div>
+          <Modal.Close asChild>
+            <ButtonV2 variant="secondary" appearance="stroked">
+              {t('common:cancel')}
+            </ButtonV2>
+          </Modal.Close>
+          <ButtonV2 variant="primary" onClick={setMeUnavailable} disabled={!dateSelected}>
+            <Icon icon="account-circle-off" className="size-4" />
+            {t('settings:set_myself_unavailable.validate.button')}
+          </ButtonV2>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

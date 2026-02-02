@@ -8,7 +8,7 @@ import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Select, Switch } from 'ui-design-system';
+import { ButtonV2, Select, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function AddToCase() {
@@ -138,10 +138,10 @@ export function AddToCase() {
                 </div>
               )}
             </form.Field>
-            <Button type="submit">
+            <ButtonV2 type="submit">
               <Icon icon="plus" className="size-5" />
               {t('decisions:add_to_case.create_new_case')}
-            </Button>
+            </ButtonV2>
           </>
         ) : (
           <>
@@ -173,10 +173,10 @@ export function AddToCase() {
                 </div>
               )}
             </form.Field>
-            <Button type="submit">
+            <ButtonV2 type="submit">
               <Icon icon="plus" className="size-5" />
               {t('decisions:add_to_case')}
-            </Button>
+            </ButtonV2>
           </>
         )}
       </div>

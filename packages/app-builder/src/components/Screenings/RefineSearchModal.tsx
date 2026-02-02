@@ -13,7 +13,7 @@ import { serialize as objectToFormData } from 'object-to-formdata';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Input, ModalV2, Select } from 'ui-design-system';
+import { ButtonV2, Input, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
 
@@ -147,19 +147,23 @@ export function RefineSearchModal({
             )}
           </div>
           <ModalV2.Footer>
-            <div className="bg-surface-card flex gap-2 p-8">
-              <Button className="flex-1" variant="secondary" name="cancel" onClick={handleBackToSearch}>
-                {t('screenings:refine_modal.back_search')}
-              </Button>
-              <Button
-                className="flex-1"
-                variant="primary"
-                onClick={handleRefine}
-                disabled={searchResults.length > (screening.request?.limit ?? Infinity)}
-              >
-                {t('screenings:refine_modal.apply_search')}
-              </Button>
-            </div>
+            <ButtonV2
+              className="flex-1"
+              variant="secondary"
+              appearance="stroked"
+              name="cancel"
+              onClick={handleBackToSearch}
+            >
+              {t('screenings:refine_modal.back_search')}
+            </ButtonV2>
+            <ButtonV2
+              className="flex-1"
+              variant="primary"
+              onClick={handleRefine}
+              disabled={searchResults.length > (screening.request?.limit ?? Infinity)}
+            >
+              {t('screenings:refine_modal.apply_search')}
+            </ButtonV2>
           </ModalV2.Footer>
         </>
       ) : (
@@ -189,18 +193,18 @@ export function RefineSearchModal({
             ))}
           </div>
           <ModalV2.Footer>
-            <div className="bg-surface-card flex gap-2 p-8">
-              <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
-                {t('common:cancel')}
-              </ModalV2.Close>
-              <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
-                {([isPristine, canSubmit, isSubmitting]) => (
-                  <Button type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
-                    {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
-                  </Button>
-                )}
-              </form.Subscribe>
-            </div>
+            <ModalV2.Close
+              render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel" />}
+            >
+              {t('common:cancel')}
+            </ModalV2.Close>
+            <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
+              {([isPristine, canSubmit, isSubmitting]) => (
+                <ButtonV2 type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
+                  {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
+                </ButtonV2>
+              )}
+            </form.Subscribe>
           </ModalV2.Footer>
         </searchFetcher.Form>
       )}

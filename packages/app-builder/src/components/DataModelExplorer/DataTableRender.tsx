@@ -15,7 +15,7 @@ import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
-import { Button, ButtonV2, MenuCommand, Popover } from 'ui-design-system';
+import { ButtonV2, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormatData } from '../FormatData';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
@@ -142,10 +142,10 @@ function DataTablePagination({ hasNext, isLoading, onNext }: DataTablePagination
   return (
     <>
       {hasNext ? (
-        <Button variant="secondary" size="small" onClick={onNext} disabled={isLoading}>
+        <ButtonV2 variant="secondary" size="small" onClick={onNext} disabled={isLoading}>
           <Icon icon="arrow-up" className="size-4 rotate-180" />
           {t('common:load_more_results')}
-        </Button>
+        </ButtonV2>
       ) : null}
     </>
   );
@@ -390,14 +390,14 @@ function DataTableActionsButton({
         <div className="relative flex">
           {showCommentAction ? (
             <Popover.Trigger asChild>
-              <Button
+              <ButtonV2
                 variant="secondary"
                 size="small"
                 className="hover:border-purple-primary data-[state=open]:border-purple-primary items-center rounded-r-none hover:z-10 data-[state=open]:z-10"
               >
                 <Icon icon="comment" className="size-4" />
                 <span className="text-xs font-normal">{annotationsCount}</span>
-              </Button>
+              </ButtonV2>
             </Popover.Trigger>
           ) : null}
           <Popover.Content

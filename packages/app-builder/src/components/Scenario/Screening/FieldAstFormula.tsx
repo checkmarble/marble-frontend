@@ -7,7 +7,7 @@ import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 
 import { EvaluationErrors } from '../ScenarioValidationError';
 
@@ -86,13 +86,13 @@ export const FieldAstFormula = ({
       ) : editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (
-            <Button type="button" variant="secondary" size="medium" onClick={handleAddTrigger}>
+            <ButtonV2 type="button" variant="secondary" onClick={handleAddTrigger}>
               <span className="text-xs">{t('scenarios:trigger.trigger_object.add_trigger')}</span>
-            </Button>
+            </ButtonV2>
           ) : (
-            <Button type="button" variant="secondary" size="medium" onClick={handleDeleteTrigger}>
+            <ButtonV2 type="button" variant="secondary" onClick={handleDeleteTrigger}>
               <span className="text-xs">{t('scenarios:trigger.trigger_object.delete_trigger')}</span>
-            </Button>
+            </ButtonV2>
           )}
         </div>
       ) : null}

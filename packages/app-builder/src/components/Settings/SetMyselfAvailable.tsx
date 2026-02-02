@@ -3,7 +3,7 @@ import { useUnavailabilitySettings } from '@app-builder/queries/personal-setting
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SetMyselfAvailable() {
@@ -38,18 +38,14 @@ export function SetMyselfAvailable() {
 
         <Modal.Footer>
           <Modal.Close asChild>
-            <div className="flex flex-1 flex-row gap-2 p-4">
-              <Button variant="secondary" className="flex-1">
-                {t('common:cancel')}
-              </Button>
-
-              <Button className="flex-1" variant="primary" onClick={() => setMeUnavailable()}>
-                <Icon icon="account-circle" className="size-4" />
-
-                {t('settings:set_myself_available.validate.button')}
-              </Button>
-            </div>
+            <ButtonV2 variant="secondary" appearance="stroked">
+              {t('common:cancel')}
+            </ButtonV2>
           </Modal.Close>
+          <ButtonV2 variant="primary" onClick={() => setMeUnavailable()}>
+            <Icon icon="account-circle" className="size-4" />
+            {t('settings:set_myself_available.validate.button')}
+          </ButtonV2>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

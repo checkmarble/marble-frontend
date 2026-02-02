@@ -9,7 +9,7 @@ import { type GroupedAnnotations } from 'marble-api';
 import { toggle } from 'radash';
 import { useTranslation } from 'react-i18next';
 import { isDeepEqual } from 'remeda';
-import { Button, MenuCommand } from 'ui-design-system';
+import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -108,13 +108,13 @@ export function ClientTagsEditSelect({
             <div className="border-grey-border flex justify-end gap-2 overflow-x-auto border-t p-2">
               <MenuCommand.HeadlessItem>
                 {isSubmitting ? (
-                  <Button size="icon" type="submit" disabled>
+                  <ButtonV2 mode="icon" type="submit" disabled>
                     <Icon icon="spinner" className="size-4 animate-spin" />
-                  </Button>
+                  </ButtonV2>
                 ) : (
-                  <Button size="small" type="submit">
+                  <ButtonV2 size="small" type="submit">
                     Confirm
-                  </Button>
+                  </ButtonV2>
                 )}
               </MenuCommand.HeadlessItem>
             </div>

@@ -11,7 +11,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, ButtonV2, cn, Modal } from 'ui-design-system';
+import { ButtonV2, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const CloseCase = ({
@@ -127,17 +127,14 @@ export const CloseCase = ({
               </div>
             )}
           </form.Field>
-          <div className="flex w-full flex-row gap-2">
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
+              <ButtonV2 variant="secondary" appearance="stroked" type="button">
                 {t('common:cancel')}
-              </Button>
+              </ButtonV2>
             </Modal.Close>
-
-            <Button type="submit" className="flex-1 first-letter:capitalize">
-              {t('common:validate')}
-            </Button>
-          </div>
+            <ButtonV2 type="submit">{t('common:validate')}</ButtonV2>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

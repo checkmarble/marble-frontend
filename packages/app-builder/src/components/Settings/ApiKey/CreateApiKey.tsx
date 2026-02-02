@@ -13,7 +13,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2, Select } from 'ui-design-system';
+import { ButtonV2, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateApiKey() {
@@ -22,8 +22,8 @@ export function CreateApiKey() {
 
   return (
     <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger onClick={(e) => e.stopPropagation()} render={<Button type="button" />}>
-        <Icon icon="plus" className="size-6" />
+      <ModalV2.Trigger onClick={(e) => e.stopPropagation()} render={<ButtonV2 type="button" />}>
+        <Icon icon="plus" className="size-5" />
         {t('settings:api_keys.new_api_key')}
       </ModalV2.Trigger>
       <ModalV2.Content onClick={(e) => e.stopPropagation()}>
@@ -95,14 +95,14 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button type="button" className="flex-1" variant="secondary" />}>
+        <ModalV2.Footer>
+          <ModalV2.Close render={<ButtonV2 type="button" variant="secondary" appearance="stroked" />}>
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
+          <ButtonV2 variant="primary" type="submit">
             {t('settings:api_keys.create')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </ModalV2.Footer>
       </div>
     </form>
   );

@@ -11,7 +11,7 @@ import { WorkflowAction } from '@app-builder/models/scenario/workflow';
 import { useListInboxesQuery } from '@app-builder/queries/Workflows/list-inboxes';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand } from 'ui-design-system';
+import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseNameEditor } from './CaseNameEditor';
 import { InboxSelector } from './InboxSelector';
@@ -200,7 +200,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
     <div className="flex flex-col gap-4">
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <Button variant="secondary">
+          <ButtonV2 variant="secondary">
             {selectedAction ? (
               <>
                 <Icon
@@ -215,7 +215,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
                 <span>{t('workflows:action.add_action')}</span>
               </>
             )}
-          </Button>
+          </ButtonV2>
         </MenuCommand.Trigger>
         <MenuCommand.Content>
           <MenuCommand.List>

@@ -24,7 +24,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { SchemaMenuMenuButton, SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
 import { CreateField } from './CreateField';
@@ -143,24 +143,24 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
 
             <div className="flex shrink-0 flex-col items-end gap-2">
               <div className="flex flex-row flex-wrap justify-end gap-2">
-                <Button
+                <ButtonV2
                   variant="secondary"
                   disabled={displayPivot}
                   onClick={toggleLinkedFilter}
                   className="flex items-center justify-center p-2"
                 >
-                  <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
-                </Button>
+                  <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-5" />
+                </ButtonV2>
                 <MoreMenu data={data} />
               </div>
               {data.pivot ? (
                 <DisplayPivot {...data.pivot} />
               ) : (
                 <CreatePivot key="create-pivot" tableModel={data.original} dataModel={data.dataModel}>
-                  <Button variant={'secondary'} disabled={displayPivot}>
-                    <Icon icon="plus" className="size-6" />
+                  <ButtonV2 variant={'secondary'} disabled={displayPivot}>
+                    <Icon icon="plus" className="size-5" />
                     {t('data:create_pivot.button.label')}
-                  </Button>
+                  </ButtonV2>
                 </CreatePivot>
               )}
             </div>
@@ -437,14 +437,14 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
 export function DisplayPivot(pivot: Pivot) {
   const { displayPivot, setSelectedPivot } = useSelectedPivot();
   return (
-    <Button
+    <ButtonV2
       disabled={displayPivot}
       variant="secondary"
       onClick={() => {
         setSelectedPivot(pivot);
       }}
     >
-      <Icon icon="center-focus" className="size-6" />
+      <Icon icon="center-focus" className="size-5" />
       {pivot.type === 'field' ? (
         <span className="text-grey-primary">{pivot.field === 'object_id' ? pivot.baseTable : pivot.field}</span>
       ) : (
@@ -455,6 +455,6 @@ export function DisplayPivot(pivot: Pivot) {
           </React.Fragment>
         ))
       )}
-    </Button>
+    </ButtonV2>
   );
 }

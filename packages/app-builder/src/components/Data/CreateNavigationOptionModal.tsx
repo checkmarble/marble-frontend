@@ -10,7 +10,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonV2, MenuCommand, Modal } from 'ui-design-system';
+import { ButtonV2, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type CreateNavigationOptionModalProps = {
@@ -136,21 +136,19 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
           <div className="col-span-full mt-4">{t('data:create_navigation_option.explanation_text')}</div>
         </form>
         <Modal.Footer>
-          <div className="flex flex-1 flex-row gap-2 p-4">
-            <Modal.Close asChild>
-              <Button variant="secondary" className="flex-1">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button
-              type="submit"
-              form={`create_navigation_option_form_${link.parentTableId}_${link.childTableId}`}
-              variant="primary"
-              className="flex-1"
-            >
-              {t('common:save')}
-            </Button>
-          </div>
+          <Modal.Close asChild>
+            <ButtonV2 variant="secondary" appearance="stroked" className="flex-1">
+              {t('common:cancel')}
+            </ButtonV2>
+          </Modal.Close>
+          <ButtonV2
+            type="submit"
+            form={`create_navigation_option_form_${link.parentTableId}_${link.childTableId}`}
+            variant="primary"
+            className="flex-1"
+          >
+            {t('common:save')}
+          </ButtonV2>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

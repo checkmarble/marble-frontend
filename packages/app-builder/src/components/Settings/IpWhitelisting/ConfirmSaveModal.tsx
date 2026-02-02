@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 
 type ConfirmSaveModalProps = {
   onConfirm: () => void;
@@ -24,16 +24,16 @@ export const ConfirmSaveModal = ({ onConfirm, children }: ConfirmSaveModalProps)
           <div className="text-s flex flex-1 flex-col gap-4">
             <p className="text-center">{t('settings:ip_whitelisting.save_confirm.content')}</p>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary" name="cancel">
+              <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
                 {t('common:cancel')}
-              </Button>
+              </ButtonV2>
             </Modal.Close>
-            <Button className="flex-1" variant="primary" name="delete" onClick={handleSaveClick}>
+            <ButtonV2 variant="primary" name="delete" onClick={handleSaveClick}>
               {t('common:save')}
-            </Button>
-          </div>
+            </ButtonV2>
+          </Modal.Footer>
         </div>
       </Modal.Content>
     </Modal.Root>

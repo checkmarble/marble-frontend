@@ -11,7 +11,7 @@ import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$sc
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { useDefaultCaseName } from './CaseNameEditor.hook';
 
@@ -69,13 +69,13 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
           {caseNameContent}
         </button>
         {!isDefaultCaseName ? (
-          <Button
+          <ButtonV2
             variant="secondary"
             onClick={() => onChange(initialValueRef.current ?? defaultCaseNameNode)}
             className="self-stretch"
           >
             <Icon icon="restart-alt" className="size-5" />
-          </Button>
+          </ButtonV2>
         ) : null}
         {isEditing ? (
           <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit">

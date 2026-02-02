@@ -6,7 +6,7 @@ import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '
 import { replace } from 'radash';
 import { useEffect, useState } from 'react';
 import { splice } from 'remeda';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchOperand } from './MatchOperand';
@@ -75,18 +75,20 @@ export function FieldNodeConcat({
                             <Icon icon="drag" className="text-grey-disabled size-3" />
                           </div>
                           {nodes.length > 1 ? (
-                            <Button
-                              size="icon"
-                              variant="tertiary"
+                            <ButtonV2
+                              mode="icon"
+                              variant="secondary"
+                              appearance="link"
                               onClick={() => setNodes((prev) => splice(prev, index, 1, []))}
                             >
                               <Icon icon="cross" className="size-4" />
-                            </Button>
+                            </ButtonV2>
                           ) : null}
                           {!limit || nodes.length < limit ? (
-                            <Button
-                              size="icon"
-                              variant="tertiary"
+                            <ButtonV2
+                              mode="icon"
+                              variant="secondary"
+                              appearance="link"
                               disabled={nodes.length === limit}
                               onClick={() =>
                                 setNodes((prev) =>
@@ -98,7 +100,7 @@ export function FieldNodeConcat({
                               }
                             >
                               <Icon icon="plus" className="size-4" />
-                            </Button>
+                            </ButtonV2>
                           ) : null}
                         </div>
                       ) : null}

@@ -13,7 +13,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal } from 'ui-design-system';
+import { ButtonV2, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateTag() {
@@ -27,10 +27,10 @@ export function CreateTag() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button onClick={(e) => e.stopPropagation()}>
-          <Icon icon="plus" className="size-6" />
+        <ButtonV2 onClick={(e) => e.stopPropagation()}>
+          <Icon icon="plus" className="size-5" />
           {t('settings:tags.new_tag')}
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateTagContent onSuccess={handleOnSuccess} />
@@ -137,22 +137,16 @@ const CreateTagContent = ({ onSuccess }: { onSuccess: () => void }) => {
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
+        <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" type="button" name="cancel">
+            <ButtonV2 variant="secondary" appearance="stroked" type="button" name="cancel">
               {t('common:cancel')}
-            </Button>
+            </ButtonV2>
           </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="create"
-            disabled={createTagMutation.isPending}
-          >
+          <ButtonV2 variant="primary" type="submit" name="create" disabled={createTagMutation.isPending}>
             {t('settings:tags.new_tag.create')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </div>
     </form>
   );

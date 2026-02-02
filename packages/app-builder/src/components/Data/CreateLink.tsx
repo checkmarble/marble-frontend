@@ -8,7 +8,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { ButtonV2, Modal, Select } from 'ui-design-system';
 
 export function CreateLink({
   thisTable,
@@ -235,16 +235,16 @@ function CreateLinkContent({
           </div>
           <p>{t('data:create_link.must_point_to_unique_field')}</p>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
+        <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
+            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
               {t('common:cancel')}
-            </Button>
+            </ButtonV2>
           </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" name="create">
+          <ButtonV2 className="flex-1" variant="primary" type="submit" name="create">
             {t('data:create.button_accept')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </div>
     </form>
   );

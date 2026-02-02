@@ -13,7 +13,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, ModalV2 } from 'ui-design-system';
+import { ButtonV2, HiddenInputs, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInbox({
@@ -28,7 +28,7 @@ export function CreateInbox({
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger
         onClick={(e) => e.stopPropagation()}
-        render={<Button className="whitespace-nowrap" variant="secondary" />}
+        render={<ButtonV2 className="whitespace-nowrap" variant="secondary" appearance="stroked" />}
       >
         <Icon icon="new-inbox" className="size-5 shrink-0" />
         {t('settings:inboxes.new_inbox.create')}
@@ -102,19 +102,15 @@ export function CreateInboxContent({
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="create"
-            disabled={createInboxMutation.isPending}
-          >
+        <ModalV2.Footer>
+          <ModalV2.Close render={<ButtonV2 variant="secondary" appearance="stroked" />}>
+            {t('common:cancel')}
+          </ModalV2.Close>
+          <ButtonV2 variant="primary" type="submit" name="create" disabled={createInboxMutation.isPending}>
             <Icon icon="new-inbox" className="size-5" />
             {t('settings:inboxes.new_inbox.create')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </ModalV2.Footer>
       </div>
     </form>
   );

@@ -13,7 +13,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Button, Select } from 'ui-design-system';
+import { ButtonV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateCase() {
@@ -111,10 +111,10 @@ export function CreateCase() {
             </div>
           )}
         </form.Field>
-        <Button type="submit">
-          <Icon icon="plus" className="size-6" />
+        <ButtonV2 type="submit">
+          <Icon icon="plus" className="size-5" />
           {t('cases:case.new_case.create')}
-        </Button>
+        </ButtonV2>
       </div>
     </form>
   );

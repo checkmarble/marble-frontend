@@ -34,7 +34,7 @@ import qs from 'qs';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input } from 'ui-design-system';
+import { ButtonV2, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -229,10 +229,10 @@ function AddToCase({
 
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
-      <Button disabled={!hasSelection}>
+      <ButtonV2 variant="primary" disabled={!hasSelection}>
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
-      </Button>
+      </ButtonV2>
     </DecisionRightPanel.Trigger>
   );
 }
@@ -264,9 +264,9 @@ function SearchById() {
         onChange={(e) => setDecisionId(e.target.value)}
         startAdornment="search"
       />
-      <Button type="submit" disabled={!decisionId}>
+      <ButtonV2 variant="primary" type="submit" disabled={!decisionId}>
         {t('common:search')}
-      </Button>
+      </ButtonV2>
     </Form>
   );
 }

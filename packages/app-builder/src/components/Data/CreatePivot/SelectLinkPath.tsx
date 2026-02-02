@@ -5,7 +5,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Code, MenuCommand } from 'ui-design-system';
+import { ButtonV2, Code, MenuCommand, Modal } from 'ui-design-system';
 
 export function SelectLinkPath({
   pivotOptions,
@@ -104,14 +104,14 @@ export function SelectLinkPath({
           )}
         </form.Field>
 
-        <div className="flex flex-1 flex-row gap-2">
-          <Button className="flex-1" variant="secondary" onClick={onBack}>
+        <Modal.Footer>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" onClick={onBack}>
             {t('common:back')}
-          </Button>
-          <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
+          </ButtonV2>
+          <ButtonV2 className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
             {t('common:validate')}
-          </Button>
-        </div>
+          </ButtonV2>
+        </Modal.Footer>
       </div>
     </form>
   );

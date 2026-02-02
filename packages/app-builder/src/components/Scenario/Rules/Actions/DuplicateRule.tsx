@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDuplicateRuleMutation } from '@app-builder/queries/scenarios/duplicate-rule';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2 } from 'ui-design-system';
+import { ButtonV2, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DuplicateRule({
@@ -37,21 +37,21 @@ export function DuplicateRule({
             <h1 className="text-l font-semibold">{t('scenarios:clone_rule.title')}</h1>
             <p className="text-center">{t('scenarios:clone_rule.content')}</p>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
+          <ModalV2.Footer>
+            <ModalV2.Close render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
+            <ButtonV2
               className="flex-1"
               variant="primary"
               type="button"
               onClick={handleDuplicateRule}
               disabled={duplicateRuleMutation.isPending}
             >
-              <Icon icon="copy" className="size-6" />
+              <Icon icon="copy" className="size-5" />
               {t('scenarios:clone_rule.confirmation_button')}
-            </Button>
-          </div>
+            </ButtonV2>
+          </ModalV2.Footer>
         </div>
       </ModalV2.Content>
     </ModalV2.Root>

@@ -12,7 +12,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 
 export function EditTable({ table, children }: { table: TableModel; children: React.ReactNode }) {
   const { t } = useTranslation(['data', 'navigation', 'common']);
@@ -76,16 +76,16 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
                 )}
               </form.Field>
             </div>
-            <div className="flex flex-1 flex-row gap-2">
+            <Modal.Footer>
               <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary">
+                <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
                   {t('common:cancel')}
-                </Button>
+                </ButtonV2>
               </Modal.Close>
-              <Button className="flex-1" variant="primary" type="submit" name="edit">
+              <ButtonV2 className="flex-1" variant="primary" type="submit" name="edit">
                 {t('data:edit_table.button_accept')}
-              </Button>
-            </div>
+              </ButtonV2>
+            </Modal.Footer>
           </div>
         </form>
       </Modal.Content>

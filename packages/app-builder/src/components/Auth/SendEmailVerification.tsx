@@ -11,15 +11,15 @@ import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 
 function SendEmailVerificationButton({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) {
   const isHydrated = useHydrated();
 
   return (
-    <Button variant="secondary" className="w-full capitalize" onClick={onClick} disabled={!isHydrated}>
+    <ButtonV2 variant="secondary" className="w-full capitalize" onClick={onClick} disabled={!isHydrated}>
       {children}
-    </Button>
+    </ButtonV2>
   );
 }
 

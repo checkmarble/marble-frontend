@@ -19,7 +19,7 @@ import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { Button, Table, useTable } from 'ui-design-system';
+import { ButtonV2, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -60,10 +60,10 @@ export default function WebhookDetail() {
               // Necessary to prevent click events from propagating to the Collapsible
               <span onClick={(e) => e.stopPropagation()}>
                 <UpdateWebhook defaultValue={webhook} webhookStatus={webhookStatus}>
-                  <Button>
-                    <Icon icon="plus" className="size-6" />
+                  <ButtonV2 variant="primary">
+                    <Icon icon="plus" className="size-5" />
                     {t('settings:webhooks.update_webhook')}
-                  </Button>
+                  </ButtonV2>
                 </UpdateWebhook>
               </span>
             ) : null}
@@ -101,10 +101,10 @@ export default function WebhookDetail() {
         </CollapsiblePaper.Container>
         {isDeleteWebhookAvailable ? (
           <DeleteWebhook webhookId={webhook.id}>
-            <Button color="red" className="w-fit">
-              <Icon icon="delete" className="size-6" />
+            <ButtonV2 variant="destructive" className="w-fit">
+              <Icon icon="delete" className="size-5" />
               {t('settings:webhooks.delete_webhook')}
-            </Button>
+            </ButtonV2>
           </DeleteWebhook>
         ) : null}
       </Page.Content>

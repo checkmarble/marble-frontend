@@ -3,7 +3,7 @@ import { type Rule } from '@app-builder/models/scenario/workflow';
 import { type DraggableProvided, type DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ActionSelector } from './ActionSelector';
 import { ConditionSelector } from './ConditionSelector';
@@ -105,19 +105,20 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                     >
                       {displayRule.name}
                     </span>
-                    <Button
-                      variant="ghost"
+                    <ButtonV2
+                      variant="secondary"
+                      appearance="link"
                       type="button"
                       onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
                       disabled={editingRuleId === displayRule.id}
                       className="opacity-0 group-hover:opacity-100 transition-all duration-200"
                     >
                       <Icon icon="edit" className="size-5 shrink-0" />
-                    </Button>
+                    </ButtonV2>
                   </div>
                 )}
                 <div className="flex items-center gap-2">
-                  <Button
+                  <ButtonV2
                     variant="secondary"
                     size="small"
                     onClick={() => deleteRule(displayRule.id, displayRule.name)}
@@ -125,7 +126,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   >
                     <Icon icon="delete" className="size-5" />
                     {t('common:delete')}
-                  </Button>
+                  </ButtonV2>
                 </div>
               </div>
               <div className="bg-surface-card p-4 transition-all duration-200 relative">
@@ -163,14 +164,15 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                                   }}
                                 />
                               </div>
-                              <Button
-                                variant="ghost"
+                              <ButtonV2
+                                variant="secondary"
+                                appearance="link"
                                 type="button"
                                 onClick={() => deleteCondition(condition.id)}
                                 className="opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
                               >
                                 <Icon icon="delete" className="size-5 shrink-0" />
-                              </Button>
+                              </ButtonV2>
                             </div>
                           </div>
                         );
@@ -218,8 +220,9 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
         </div>
         {isRuleModified && (
           <div className="mt-6 w-full flex justify-center gap-8">
-            <Button
+            <ButtonV2
               variant="secondary"
+              appearance="stroked"
               onClick={() => {
                 cancelChanges();
                 handleCancelRenaming();
@@ -228,8 +231,8 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             >
               <Icon icon="arrow-left" className="size-4" />
               {t('common:cancel')}
-            </Button>
-            <Button
+            </ButtonV2>
+            <ButtonV2
               variant="primary"
               onClick={() => {
                 saveRule();
@@ -240,7 +243,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             >
               <Icon icon="checked" className="size-5" />
               {t('common:save')}
-            </Button>
+            </ButtonV2>
           </div>
         )}
       </div>

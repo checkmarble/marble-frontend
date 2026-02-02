@@ -7,7 +7,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, ModalV2 } from 'ui-design-system';
+import { ButtonV2, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UploadFile({
@@ -121,10 +121,10 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
               <p className="text-center">{t('cases:drop_file_cta')}</p>
               <p>{t('cases:drop_file_accepted_types')}</p>
               <p className="text-grey-secondary uppercase">{t('common:or')}</p>
-              <Button>
-                <Icon icon="plus" className="size-6" />
+              <ButtonV2>
+                <Icon icon="plus" className="size-5" />
                 {t('cases:pick_file_cta')}
-              </Button>
+              </ButtonV2>
             </>
           ) : null}
         </div>

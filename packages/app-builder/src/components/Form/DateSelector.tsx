@@ -2,7 +2,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { Popover, PopoverDisclosure, PopoverProvider } from '@ariakit/react';
 import clsx from 'clsx';
 import { type ElementRef, forwardRef, useState } from 'react';
-import { Button, Calendar, type Input } from 'ui-design-system';
+import { ButtonV2, Calendar, type Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface DateSelectorProps {
@@ -24,10 +24,10 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
   return (
     <div ref={ref} className="flex flex-row items-center gap-2">
       <PopoverProvider open={open} setOpen={setOpen}>
-        <PopoverDisclosure render={<Button variant="secondary" />}>
+        <PopoverDisclosure render={<ButtonV2 variant="secondary" />}>
           <Icon
             icon="calendar-month"
-            className={clsx('size-6', {
+            className={clsx('size-5', {
               'text-grey-primary': selectedDate,
               'text-grey-secondary': !selectedDate,
             })}
