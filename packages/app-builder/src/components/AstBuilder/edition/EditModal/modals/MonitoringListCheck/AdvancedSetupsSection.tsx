@@ -1,3 +1,4 @@
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type DataModel, type LinkToSingle, type TableModel } from '@app-builder/models';
 import {
   type LinkedObjectCheck,
@@ -244,6 +245,7 @@ function LinkedObjectCheckItem({
   const { t } = useTranslation(['scenarios']);
   const [selectedFieldName, setSelectedFieldName] = useState(check?.navigationIndex?.fieldName ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
+  const revalidate = useLoaderRevalidator();
 
   // Mutation to create navigation option when none exists
   const createNavigationOption = useCreateNavigationOptionMutation(option.link?.parentTableId ?? '');
@@ -262,6 +264,8 @@ function LinkedObjectCheckItem({
         filterFieldId: option.link.childFieldId,
         orderingFieldId: fieldId,
       });
+      // Refresh dataModel so next time the modal opens, hasNavigationOptions will be true
+      revalidate();
     }
 
     onNavigationFieldChange(fieldName);
