@@ -35,47 +35,42 @@ export function ObjectSelector({
 
   const objectOptions = useMemo(() => {
     const options: ObjectOption[] = [];
+    const visited = new Set<string>();
 
-    // Helper to get active monitorings for a table
     const getActiveMonitorings = (tableName: string) =>
       screeningConfigs.filter((config) => config.objectTypes.includes(tableName));
 
-    // Add trigger object as first option
-    options.push({
-      tableName: triggerObjectTable.name,
-      path: [],
-      displayLabel: triggerObjectTable.name,
-      pathSegments: [triggerObjectTable.name],
-      activeMonitorings: getActiveMonitorings(triggerObjectTable.name),
-    });
+    // BFS to traverse all reachable tables via linksToSingle
+    const queue: { table: TableModel; path: ObjectPathSegment[]; pathSegments: string[] }[] = [
+      { table: triggerObjectTable, path: [], pathSegments: [triggerObjectTable.name] },
+    ];
 
-    // Add linked tables (pivots) from trigger object
-    for (const link of triggerObjectTable.linksToSingle) {
-      const linkedTable = dataModel.find((tbl) => tbl.name === link.parentTableName);
-      if (linkedTable) {
-        options.push({
-          tableName: linkedTable.name,
-          path: [{ linkName: link.name, tableName: linkedTable.name }],
-          displayLabel: linkedTable.name,
-          pathSegments: [triggerObjectTable.name, linkedTable.name],
-          activeMonitorings: getActiveMonitorings(linkedTable.name),
-        });
+    while (queue.length > 0) {
+      const { table, path, pathSegments } = queue.shift()!;
 
-        // Add second-level links
-        for (const nestedLink of linkedTable.linksToSingle) {
-          const nestedTable = dataModel.find((tbl) => tbl.name === nestedLink.parentTableName);
-          if (nestedTable) {
-            options.push({
-              tableName: nestedTable.name,
-              path: [
-                { linkName: link.name, tableName: linkedTable.name },
-                { linkName: nestedLink.name, tableName: nestedTable.name },
-              ],
-              displayLabel: nestedTable.name,
-              pathSegments: [triggerObjectTable.name, linkedTable.name, nestedTable.name],
-              activeMonitorings: getActiveMonitorings(nestedTable.name),
-            });
-          }
+      // Skip if already visited (avoid cycles)
+      const pathKey = pathSegments.join('→');
+      if (visited.has(pathKey)) continue;
+      visited.add(pathKey);
+
+      // Add this table as an option
+      options.push({
+        tableName: table.name,
+        path,
+        displayLabel: table.name,
+        pathSegments,
+        activeMonitorings: getActiveMonitorings(table.name),
+      });
+
+      // Add all linked parent tables to the queue
+      for (const link of table.linksToSingle) {
+        const linkedTable = dataModel.find((tbl) => tbl.name === link.parentTableName);
+        if (linkedTable) {
+          queue.push({
+            table: linkedTable,
+            path: [...path, { linkName: link.name, tableName: linkedTable.name }],
+            pathSegments: [...pathSegments, linkedTable.name],
+          });
         }
       }
     }
