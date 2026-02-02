@@ -4,12 +4,52 @@
     "defaultMode": "acceptEdits"
   },
   "hooks": {
-    "UserPromptSubmit": [
+    "SessionStart": [
       {
+        "matcher": "compact",
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/skill-activation-prompt.sh"
+            "command": "echo 'Context restored. Remember: Use Bun, run type-check before committing. Check dev/active/ for ongoing tasks.'"
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Branch: $(git branch --show-current 2>/dev/null || echo 'unknown')\""
+          }
+        ]
+      },
+      {
+        "matcher": "clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Session cleared. Use Bun, run type-check before committing.'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "A file was modified. If it's a TypeScript file (.ts/.tsx) in packages/app-builder or packages/ui-design-system, mentally note that type-check should be verified at the end."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before finishing, if TypeScript files were modified in this session, remind the user to run 'cd packages/app-builder && bun run type-check' or 'cd packages/ui-design-system && bun run type-check' depending on which package was affected."
           }
         ]
       }

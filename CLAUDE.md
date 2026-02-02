@@ -86,7 +86,11 @@ dev/active/[task-name]/
 
 | Hook | Trigger | Purpose |
 |------|---------|---------|
-| `skill-activation-prompt` | Before prompt | Suggests relevant skills |
+| SessionStart | Session start/compact | Show branch, restore context |
+| PostToolUse | After Edit/Write | Track modified files |
+| Stop | End of response | Remind to run type-check |
+
+Skills auto-activate based on their descriptions - no custom hook needed.
 
 After completing edits, run `bun run type-check` in the affected package. Use `auto-error-resolver` agent for multiple errors.
 
@@ -135,7 +139,7 @@ Run type-check manually after edits:
 2. Use `auto-error-resolver` agent for multiple errors
 
 ### Skill Not Activating
-Check `.claude/skills/skill-rules.json` for trigger keywords/patterns.
+Skills auto-activate based on descriptions in their SKILL.md files. Check `.claude/skills/[skill-name]/SKILL.md` description field.
 
 ### Build Issues
 ```bash
