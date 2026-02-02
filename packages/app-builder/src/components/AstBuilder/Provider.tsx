@@ -50,6 +50,11 @@ function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
     store.value.showValues = props.showValues;
   }, [store, props.showValues]);
 
+  // Sync data when it changes (e.g., after navigation options are created)
+  useEffect(() => {
+    store.value.data = props.data;
+  }, [store, props.data]);
+
   return <AstBuilderDataSharpFactory.Provider value={store}>{props.children}</AstBuilderDataSharpFactory.Provider>;
 }
 

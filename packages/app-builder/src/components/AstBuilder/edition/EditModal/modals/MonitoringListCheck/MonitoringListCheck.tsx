@@ -10,6 +10,7 @@ import {
   toMonitoringListCheckConfig,
 } from '@app-builder/models/astNode/monitoring-list-check';
 import { type ScreeningCategory, topicsToCategories } from '@app-builder/models/screening';
+import { useCreateNavigationOptionMutationV2 } from '@app-builder/queries/data/create-navigation-option';
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +18,7 @@ import { ButtonV2, Modal, Stepper, type StepperStep } from 'ui-design-system';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { type OperandEditModalProps } from '../../EditModal';
-import { AdvancedSetupsSection } from './AdvancedSetupsSection';
+import { AdvancedSetupsSection, type PendingNavigationOption } from './AdvancedSetupsSection';
 import { FilterSection } from './FilterSection';
 import { ObjectSelector } from './ObjectSelector';
 
@@ -25,6 +26,7 @@ type WizardStep = 1 | 2 | 3;
 
 export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node'>) => {
   const { t } = useTranslation(['common', 'scenarios']);
+  const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
   const screeningConfigs = AstBuilderDataSharpFactory.select((s) => s.data.screeningConfigs) ?? [];
   const triggerObjectTable = AstBuilderDataSharpFactory.useSharp().computed.triggerObjectTable.value;
@@ -48,8 +50,11 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
   const [linkedObjectChecks, setLinkedObjectChecks] = useState<LinkedObjectCheck[]>(() =>
     fromLinkedTableChecks(config.linkedTableChecks),
   );
+  // Track navigation options to create at save time
+  const [pendingNavigationOptions, setPendingNavigationOptions] = useState<PendingNavigationOption[]>([]);
 
   const selectedTable = dataModel.find((t) => t.name === targetTableName);
+  const createNavigationOptionMutation = useCreateNavigationOptionMutationV2();
 
   // Determine if we need step 3 (advanced setups)
   // Step 3 is shown when the selected object has related tables also under monitoring
@@ -99,6 +104,19 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
     setLinkedObjectChecks(checks);
   };
 
+  const handlePendingNavigationOptionAdd = (pending: PendingNavigationOption) => {
+    // Replace if same tableName, otherwise add
+    setPendingNavigationOptions((prev) => {
+      const existing = prev.findIndex((p) => p.tableName === pending.tableName);
+      if (existing >= 0) {
+        const updated = [...prev];
+        updated[existing] = pending;
+        return updated;
+      }
+      return [...prev, pending];
+    });
+  };
+
   const handleOpenChange = useCallbackRef((open: boolean) => {
     if (!open) {
       props.onCancel();
@@ -117,7 +135,20 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    // First, create any pending navigation options
+    // The mutation's onSuccess will invalidate builder-options query to refresh dataModel
+    for (const pending of pendingNavigationOptions) {
+      await createNavigationOptionMutation.mutateAsync({
+        scenarioId,
+        tableId: pending.tableId,
+        sourceFieldId: pending.sourceFieldId,
+        targetTableId: pending.targetTableId,
+        filterFieldId: pending.filterFieldId,
+        orderingFieldId: pending.orderingFieldId,
+      });
+    }
+
     // Convert UI state to API config format
     // topicFilters uses category values directly: ['sanctions', 'peps', 'third-parties', 'adverse-media']
     const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
@@ -186,6 +217,7 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
               screeningConfigs={screeningConfigs}
               linkedObjectChecks={linkedObjectChecks}
               onLinkedObjectChecksChange={handleLinkedObjectChecksChange}
+              onPendingNavigationOptionAdd={handlePendingNavigationOptionAdd}
             />
           )}
         </div>
@@ -203,7 +235,11 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
             )}
 
             {isLastStep ? (
-              <ButtonV2 variant="primary" disabled={currentStep === 3 && !canSaveFromStep3} onClick={handleSave}>
+              <ButtonV2
+                variant="primary"
+                disabled={createNavigationOptionMutation.isPending || (currentStep === 3 && !canSaveFromStep3)}
+                onClick={handleSave}
+              >
                 {t('scenarios:monitoring_list_check.validate')}
               </ButtonV2>
             ) : (

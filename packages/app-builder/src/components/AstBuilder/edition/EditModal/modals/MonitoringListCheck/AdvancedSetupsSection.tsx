@@ -1,4 +1,3 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type DataModel, type LinkToSingle, type TableModel } from '@app-builder/models';
 import {
   type LinkedObjectCheck,
@@ -6,11 +5,20 @@ import {
   type ObjectPathSegment,
 } from '@app-builder/models/astNode/monitoring-list-check';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
-import { useCreateNavigationOptionMutation } from '@app-builder/queries/data/create-navigation-option';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+/** Data needed to create a navigation option at save time */
+export type PendingNavigationOption = {
+  tableName: string;
+  tableId: string;
+  sourceFieldId: string;
+  targetTableId: string;
+  filterFieldId: string;
+  orderingFieldId: string;
+};
 
 type BaseNavRef = {
   targetTableName: string;
@@ -45,6 +53,7 @@ type AdvancedSetupsSectionProps = {
   screeningConfigs: ContinuousScreeningConfig[];
   linkedObjectChecks: LinkedObjectCheck[];
   onLinkedObjectChecksChange: (checks: LinkedObjectCheck[]) => void;
+  onPendingNavigationOptionAdd: (pending: PendingNavigationOption) => void;
 };
 
 export function AdvancedSetupsSection({
@@ -53,6 +62,7 @@ export function AdvancedSetupsSection({
   screeningConfigs,
   linkedObjectChecks,
   onLinkedObjectChecksChange,
+  onPendingNavigationOptionAdd,
 }: AdvancedSetupsSectionProps) {
   const { t } = useTranslation(['scenarios']);
 
@@ -89,8 +99,9 @@ export function AdvancedSetupsSection({
 
       for (const link of table.linksToSingle) {
         if (link.parentTableName === selectedTable.name && monitoredTableNames.has(table.name)) {
-          // Check if table has navigationOptions configured for this relationship
-          const navOption = table.navigationOptions?.find(
+          // Check if selectedTable (source/parent) has navigationOptions configured for this relationship
+          // NavigationOptions are stored on the SOURCE table, not the TARGET table
+          const navOption = selectedTable.navigationOptions?.find(
             (nav) => nav.sourceTableName === selectedTable.name && nav.targetTableName === table.name,
           );
           const hasNavOptions = !!navOption;
@@ -178,7 +189,12 @@ export function AdvancedSetupsSection({
     }
   };
 
-  const handleNavigationFieldChange = (tableName: string, orderingFieldName: string, option: LinkedTableOption) => {
+  const handleNavigationFieldChange = (
+    tableName: string,
+    orderingFieldId: string,
+    orderingFieldName: string,
+    option: LinkedTableOption,
+  ) => {
     // Build complete NavigationOptionRef with the selected ordering field
     const navigationOptionRef: NavigationOptionRef | undefined = option.baseNavRef
       ? { ...option.baseNavRef, orderingFieldName }
@@ -219,7 +235,10 @@ export function AdvancedSetupsSection({
             check={check}
             isEnabled={isEnabled}
             onToggle={(enabled) => handleToggleCheck(option, enabled)}
-            onNavigationFieldChange={(fieldName) => handleNavigationFieldChange(option.tableName, fieldName, option)}
+            onNavigationFieldChange={(fieldId, fieldName) =>
+              handleNavigationFieldChange(option.tableName, fieldId, fieldName, option)
+            }
+            onPendingNavigationOptionAdd={onPendingNavigationOptionAdd}
           />
         );
       })}
@@ -232,7 +251,8 @@ type LinkedObjectCheckItemProps = {
   check: LinkedObjectCheck | undefined;
   isEnabled: boolean;
   onToggle: (enabled: boolean) => void;
-  onNavigationFieldChange: (fieldName: string) => void;
+  onNavigationFieldChange: (fieldId: string, fieldName: string) => void;
+  onPendingNavigationOptionAdd: (pending: PendingNavigationOption) => void;
 };
 
 function LinkedObjectCheckItem({
@@ -241,34 +261,31 @@ function LinkedObjectCheckItem({
   isEnabled,
   onToggle,
   onNavigationFieldChange,
+  onPendingNavigationOptionAdd,
 }: LinkedObjectCheckItemProps) {
   const { t } = useTranslation(['scenarios']);
   const [selectedFieldName, setSelectedFieldName] = useState(check?.navigationIndex?.fieldName ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
-  const revalidate = useLoaderRevalidator();
-
-  // Mutation to create navigation option when none exists
-  const createNavigationOption = useCreateNavigationOptionMutation(option.link?.parentTableId ?? '');
 
   const needsNavigationConfig = option.direction === 'down' && !option.hasNavigationOptions;
 
-  const handleFieldChange = async (fieldId: string, fieldName: string) => {
+  const handleFieldChange = (fieldId: string, fieldName: string) => {
     setSelectedFieldName(fieldName);
     setMenuOpen(false);
 
-    // Create navigation option if link data is available
+    // Track pending navigation option to create at save time
     if (option.link) {
-      await createNavigationOption.mutateAsync({
+      onPendingNavigationOptionAdd({
+        tableName: option.tableName,
+        tableId: option.link.parentTableId,
         sourceFieldId: option.link.parentFieldId,
         targetTableId: option.link.childTableId,
         filterFieldId: option.link.childFieldId,
         orderingFieldId: fieldId,
       });
-      // Refresh dataModel so next time the modal opens, hasNavigationOptions will be true
-      revalidate();
     }
 
-    onNavigationFieldChange(fieldName);
+    onNavigationFieldChange(fieldId, fieldName);
   };
 
   const displayValue = selectedFieldName || t('scenarios:monitoring_list_check.select_field');
@@ -290,7 +307,7 @@ function LinkedObjectCheckItem({
 
           <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
             <MenuCommand.Trigger>
-              <MenuCommand.SelectButton className="w-48" disabled={createNavigationOption.isPending}>
+              <MenuCommand.SelectButton className="w-48">
                 <span className="truncate">{displayValue}</span>
               </MenuCommand.SelectButton>
             </MenuCommand.Trigger>
