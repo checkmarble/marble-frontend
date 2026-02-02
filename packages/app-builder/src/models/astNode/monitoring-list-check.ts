@@ -21,6 +21,8 @@ export type NavigationOptionRef = {
   sourceTableName: string;
   /** The field in the parent table being referenced (e.g., "id") */
   sourceFieldName: string;
+  /** The field used for ordering when navigating (e.g., "created_at") */
+  orderingFieldName: string;
 };
 
 /**
@@ -270,6 +272,10 @@ export function fromLinkedTableChecks(linkedTableChecks: LinkedTableCheck[]): Li
           enabled: true,
           validated: true,
           navigationOptionRef: check.navigationOption,
+          navigationIndex: {
+            fieldName: check.navigationOption.orderingFieldName,
+            order: 'desc' as const,
+          },
         },
   );
 }

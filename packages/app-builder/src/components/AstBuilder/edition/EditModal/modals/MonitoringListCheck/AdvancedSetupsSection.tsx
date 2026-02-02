@@ -11,6 +11,13 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+type BaseNavRef = {
+  targetTableName: string;
+  targetFieldName: string;
+  sourceTableName: string;
+  sourceFieldName: string;
+};
+
 type LinkedTableOption = {
   tableName: string;
   fieldPath: ObjectPathSegment[];
@@ -19,8 +26,10 @@ type LinkedTableOption = {
   linkDescription: string;
   /** For 'up' direction: the link name to use */
   linkToSingleName?: string;
-  /** For 'down' direction: the navigation option reference */
+  /** For 'down' direction: the navigation option reference (complete with orderingFieldName) */
   navigationOptionRef?: NavigationOptionRef;
+  /** For 'down' direction without nav options: base ref to build complete ref when user selects ordering field */
+  baseNavRef?: BaseNavRef;
   /** For 'down' direction: available timestamp fields for ordering */
   timestampFields?: { name: string; id: string }[];
   /** If the table has navigationOptions configured */
@@ -92,20 +101,23 @@ export function AdvancedSetupsSection({
 
           // Build the navigation option reference
           // For "down" direction: target is child table, source is parent (selectedTable)
-          const navigationOptionRef: NavigationOptionRef = navOption
+          const navigationOptionRef: NavigationOptionRef | undefined = navOption
             ? {
                 targetTableName: navOption.targetTableName,
                 targetFieldName: navOption.filterFieldName,
                 sourceTableName: navOption.sourceTableName,
                 sourceFieldName: navOption.sourceFieldName,
+                orderingFieldName: navOption.orderingFieldName,
               }
-            : {
-                // Default structure - will need ordering field selected
-                targetTableName: table.name,
-                targetFieldName: link.childFieldName,
-                sourceTableName: selectedTable.name,
-                sourceFieldName: link.parentFieldName,
-              };
+            : undefined; // Will be built when user selects ordering field
+
+          // Base ref info for building navigationOptionRef later
+          const baseNavRef = {
+            targetTableName: table.name,
+            targetFieldName: link.childFieldName,
+            sourceTableName: selectedTable.name,
+            sourceFieldName: link.parentFieldName,
+          };
 
           options.push({
             tableName: table.name,
@@ -117,6 +129,7 @@ export function AdvancedSetupsSection({
               selectedTable: selectedTable.name,
             }),
             navigationOptionRef,
+            baseNavRef: hasNavOptions ? undefined : baseNavRef,
             timestampFields,
             hasNavigationOptions: hasNavOptions,
             link: hasNavOptions ? undefined : link,
@@ -165,9 +178,11 @@ export function AdvancedSetupsSection({
   };
 
   const handleNavigationFieldChange = (tableName: string, orderingFieldName: string, option: LinkedTableOption) => {
-    // Update the navigationOptionRef with the selected ordering field
-    // Note: The ordering field selection is for validation purposes in the UI,
-    // but the actual navigation uses the pre-defined filter fields
+    // Build complete NavigationOptionRef with the selected ordering field
+    const navigationOptionRef: NavigationOptionRef | undefined = option.baseNavRef
+      ? { ...option.baseNavRef, orderingFieldName }
+      : option.navigationOptionRef;
+
     onLinkedObjectChecksChange(
       linkedObjectChecks.map((c) => {
         if (c.tableName !== tableName) return c;
@@ -175,7 +190,7 @@ export function AdvancedSetupsSection({
         return {
           ...c,
           validated: true,
-          navigationOptionRef: option.navigationOptionRef,
+          navigationOptionRef,
           navigationIndex: { fieldName: orderingFieldName, order: 'desc' as const },
         };
       }),
