@@ -9,7 +9,7 @@ import {
   type ObjectPathSegment,
   toMonitoringListCheckConfig,
 } from '@app-builder/models/astNode/monitoring-list-check';
-import { categoriesToTopics, type ScreeningCategory, topicsToCategories } from '@app-builder/models/screening';
+import { type ScreeningCategory, topicsToCategories } from '@app-builder/models/screening';
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -118,11 +118,9 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
   };
 
   const handleSave = () => {
-    // Convert selected topics to individual topic strings for the API
-    const topicFilters = categoriesToTopics(selectedTopics);
-
     // Convert UI state to API config format
-    const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, topicFilters, linkedObjectChecks);
+    // topicFilters uses category values directly: ['sanctions', 'peps', 'third-parties', 'adverse-media']
+    const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
 
     // Create new node with updated config
     const updatedNode = NewMonitoringListCheckAstNode({

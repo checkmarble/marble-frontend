@@ -410,37 +410,31 @@ export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> 
   'adverse-media': 'adverse_media',
 };
 
+const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
+
 /**
- * Convert topic strings from the API back to categories for UI display.
- * Collapses individual topics back to their parent categories.
+ * Convert topic filters from the API back to categories for UI display.
+ * Handles both:
+ * - Category values directly: ['sanctions', 'peps']
+ * - Individual topics (legacy): ['sanction', 'sanction.linked', 'role.pep']
  */
-export function topicsToCategories(topics: string[]): ScreeningCategory[] {
-  if (topics.length === 0) return [];
+export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] {
+  if (topicFilters.length === 0) return [];
 
   const categories = new Set<ScreeningCategory>();
-  for (const topic of topics) {
-    const category = SCREENING_TOPICS_MAP.get(topic);
-    if (category) {
-      categories.add(category);
+  for (const value of topicFilters) {
+    // Check if it's already a category
+    if (SCREENING_CATEGORIES.includes(value as ScreeningCategory)) {
+      categories.add(value as ScreeningCategory);
+    } else {
+      // Legacy: look up individual topic in the map
+      const category = SCREENING_TOPICS_MAP.get(value);
+      if (category) {
+        categories.add(category);
+      }
     }
   }
   return Array.from(categories);
-}
-
-/**
- * Convert selected categories to individual topic strings for the API.
- * When "Sanctions" is selected, all topics mapping to 'sanctions' in SCREENING_TOPICS_MAP are included.
- */
-export function categoriesToTopics(categories: ScreeningCategory[]): string[] {
-  if (categories.length === 0) return [];
-
-  const topics: string[] = [];
-  for (const [topic, category] of SCREENING_TOPICS_MAP) {
-    if (categories.includes(category)) {
-      topics.push(topic);
-    }
-  }
-  return topics;
 }
 
 export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {

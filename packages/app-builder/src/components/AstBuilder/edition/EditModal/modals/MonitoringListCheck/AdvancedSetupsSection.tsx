@@ -1,10 +1,11 @@
-import { type DataModel, type TableModel } from '@app-builder/models';
+import { type DataModel, type LinkToSingle, type TableModel } from '@app-builder/models';
 import {
   type LinkedObjectCheck,
   type NavigationOptionRef,
   type ObjectPathSegment,
 } from '@app-builder/models/astNode/monitoring-list-check';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
+import { useCreateNavigationOptionMutation } from '@app-builder/queries/data/create-navigation-option';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
@@ -24,6 +25,8 @@ type LinkedTableOption = {
   timestampFields?: { name: string; id: string }[];
   /** If the table has navigationOptions configured */
   hasNavigationOptions: boolean;
+  /** For 'down' direction without nav options: the link to create navigation option */
+  link?: LinkToSingle;
 };
 
 type AdvancedSetupsSectionProps = {
@@ -116,6 +119,7 @@ export function AdvancedSetupsSection({
             navigationOptionRef,
             timestampFields,
             hasNavigationOptions: hasNavOptions,
+            link: hasNavOptions ? undefined : link,
           });
         }
       }
@@ -226,12 +230,26 @@ function LinkedObjectCheckItem({
   const [selectedFieldName, setSelectedFieldName] = useState(check?.navigationIndex?.fieldName ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Mutation to create navigation option when none exists
+  const createNavigationOption = useCreateNavigationOptionMutation(option.link?.parentTableId ?? '');
+
   const needsNavigationConfig = option.direction === 'down' && !option.hasNavigationOptions;
 
-  const handleFieldChange = (fieldName: string) => {
+  const handleFieldChange = async (fieldId: string, fieldName: string) => {
     setSelectedFieldName(fieldName);
-    onNavigationFieldChange(fieldName);
     setMenuOpen(false);
+
+    // Create navigation option if link data is available
+    if (option.link) {
+      await createNavigationOption.mutateAsync({
+        sourceFieldId: option.link.parentFieldId,
+        targetTableId: option.link.childTableId,
+        filterFieldId: option.link.childFieldId,
+        orderingFieldId: fieldId,
+      });
+    }
+
+    onNavigationFieldChange(fieldName);
   };
 
   const displayValue = selectedFieldName || t('scenarios:monitoring_list_check.select_field');
@@ -253,7 +271,7 @@ function LinkedObjectCheckItem({
 
           <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
             <MenuCommand.Trigger>
-              <MenuCommand.SelectButton className="w-48">
+              <MenuCommand.SelectButton className="w-48" disabled={createNavigationOption.isPending}>
                 <span className="truncate">{displayValue}</span>
               </MenuCommand.SelectButton>
             </MenuCommand.Trigger>
@@ -263,7 +281,7 @@ function LinkedObjectCheckItem({
                   <MenuCommand.Item
                     key={field.id}
                     selected={selectedFieldName === field.name}
-                    onSelect={() => handleFieldChange(field.name)}
+                    onSelect={() => handleFieldChange(field.id, field.name)}
                   >
                     {field.name}
                   </MenuCommand.Item>
