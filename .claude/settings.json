@@ -66,6 +66,7 @@
     ],
     "Stop": [
       {
+        "matcher": "compact",
         "hooks": [
           {
             "type": "command",
