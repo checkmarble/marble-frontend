@@ -6,7 +6,6 @@ import { type DataModelExplorerNavigationTab } from './types';
 export type DataModelExplorerState = {
   tabs: DataModelExplorerNavigationTab[];
   currentTab: DataModelExplorerNavigationTab;
-  lastActiveTab: DataModelExplorerNavigationTab | null;
   closedTabsHistory: DataModelExplorerNavigationTab[];
 };
 
@@ -25,7 +24,6 @@ export function DataModelExplorerProvider({ children }: { children: ReactNode })
       _setExplorerState({
         closedTabsHistory: [],
         currentTab: tab,
-        lastActiveTab: null,
         tabs: [tab],
       });
     },

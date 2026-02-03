@@ -59,7 +59,7 @@ export type MonitoringListCheckConfig = {
   targetTableName: string;
   /** Link names path to the target object (empty array = trigger object) */
   pathToTarget: string[];
-  /** OpenSanctions topics to filter by (empty = all). Contains individual topic strings from SCREENING_TOPICS_MAP. */
+  /** Screening categories to filter by (empty = all). Values from ScreeningCategory: 'sanctions', 'peps', etc. */
   topicFilters: string[];
   /** Additional linked tables to also check */
   linkedTableChecks: LinkedTableCheck[];

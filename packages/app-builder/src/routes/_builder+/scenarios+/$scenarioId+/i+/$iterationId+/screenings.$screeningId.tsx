@@ -98,17 +98,19 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
   const { authService } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, screening, entitlements } =
+  const { customListsRepository, editor, dataModelRepository, screening, continuousScreening, entitlements } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, { sections }] = await Promise.all([
-    editor.listAccessors({ scenarioId }),
-    dataModelRepository.getDataModel(),
-    customListsRepository.listCustomLists(),
-    screening.listDatasets(),
-  ]);
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, { sections }, screeningConfigs] =
+    await Promise.all([
+      editor.listAccessors({ scenarioId }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      screening.listDatasets(),
+      continuousScreening.listConfigurations(),
+    ]);
 
   return {
     databaseAccessors,
@@ -117,6 +119,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     customLists,
     sections,
     entitlements,
+    screeningConfigs,
   };
 }
 
@@ -209,8 +212,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function ScreeningDetail() {
   const { t } = useTranslation(handle.i18n);
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, sections, entitlements } =
-    useLoaderData<typeof loader>();
+  const {
+    databaseAccessors,
+    payloadAccessors,
+    dataModel,
+    customLists,
+    sections,
+    entitlements,
+    screeningConfigs: continuousScreeningConfigs,
+  } = useLoaderData<typeof loader>();
   const editor = useEditorMode();
   const { submit, data } = useFetcher<typeof action>();
   const lastData = data as
@@ -264,7 +274,7 @@ export default function ScreeningDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
-    screeningConfigs: [],
+    screeningConfigs: continuousScreeningConfigs,
   };
 
   if (!form.state.isTouched && lastData?.status === 'error' && lastData?.errors) {

@@ -43,7 +43,6 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
     explorerContext.setExplorerState({
       closedTabsHistory: newClosedHistory,
       tabs: [...tabs, closedTab],
-      lastActiveTab: explorerContext.explorerState.currentTab,
       currentTab: closedTab,
     });
   });
@@ -57,7 +56,6 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
     if (existingTab) {
       explorerContext.setExplorerState({
         ...explorerContext.explorerState,
-        lastActiveTab: explorerContext.explorerState.currentTab,
         currentTab: existingTab,
       });
       return;
@@ -73,7 +71,6 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
 
     explorerContext.setExplorerState({
       tabs: [...explorerContext.explorerState.tabs, newTab],
-      lastActiveTab: explorerContext.explorerState.currentTab,
       currentTab: newTab,
     });
   });
