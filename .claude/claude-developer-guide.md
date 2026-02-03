@@ -18,11 +18,11 @@ Every component exists at multiple levels. **More specific scope wins.**
 
 There are 3 scopes you'll use daily:
 
-| Scope | Purpose | Shared with team? |
-|-------|---------|-------------------|
-| **User** (`~/.claude/`) | Your personal config, applies to all projects | No |
-| **Project** (`.claude/`) | Team config, committed to git | Yes |
-| **Local** (`.claude/*.local.*`) | Your overrides for this project, gitignored | No |
+| Scope                            | Purpose                                      | Shared with team? |
+|-------                           |---------                                     |-------------------|
+| **User** (`~/.claude/`)          | Your personal config, applies to all projects| No
+| **Project** (`.claude/`)         | Team config, committed to git                | Yes
+| **Local** (`.claude/*.local.*`)  | Your overrides for this project, gitignored  | No
 
 > Enterprise admins can also deploy managed settings at system level — these override everything and can't be changed by developers.
 
