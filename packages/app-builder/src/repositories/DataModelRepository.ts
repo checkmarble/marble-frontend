@@ -32,7 +32,7 @@ import {
   type UpdateFieldInput,
 } from '@app-builder/models';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
-import { type OpenApiSpec } from 'marble-api';
+import { GroupedAnnotations, type OpenApiSpec } from 'marble-api';
 
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
@@ -55,6 +55,7 @@ export interface DataModelRepository {
   deleteField(fieldId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
   deleteLink(linkId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
   deletePivot(pivotId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
+  getAnnotationsByTableNameAndObjectId(tableName: string, objectId: string): Promise<GroupedAnnotations>;
 }
 
 export function makeGetDataModelRepository() {
@@ -166,6 +167,9 @@ export function makeGetDataModelRepository() {
         }
         throw error;
       }
+    },
+    getAnnotationsByTableNameAndObjectId: async (tableName, objectId) => {
+      return marbleCoreApiClient.getAnnotationsByTableNameAndObjectId(tableName, objectId);
     },
   });
 }

@@ -132,6 +132,17 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/_builder+/client-detail+/$objectType.$objectId",
+            "path": "client-detail/:objectType/:objectId",
+            "file": "routes/_builder+/client-detail+/$objectType.$objectId.tsx"
+          },
+          {
+            "id": "routes/_builder+/client-detail+/index",
+            "index": true,
+            "path": "client-detail",
+            "file": "routes/_builder+/client-detail+/index.tsx"
+          },
+          {
             "id": "routes/_builder+/continuous-screening+/_layout",
             "path": "continuous-screening",
             "file": "routes/_builder+/continuous-screening+/_layout.tsx",
@@ -799,6 +810,16 @@ export const routes = [
         "id": "routes/ressources+/data+/editTable",
         "path": "ressources/data/editTable",
         "file": "routes/ressources+/data+/editTable.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/get-annotations.$objectType.$objectId",
+        "path": "ressources/data/get-annotations/:objectType/:objectId",
+        "file": "routes/ressources+/data+/get-annotations.$objectType.$objectId.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId",
+        "path": "ressources/data/get-hierarchy/:objectType/:objectId",
+        "file": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId.tsx"
       },
       {
         "id": "routes/ressources+/data+/object.$objectType.$objectId",
