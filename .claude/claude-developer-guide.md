@@ -2,13 +2,13 @@
 
 ## The 5 Components
 
-| Component | Triggered by | Purpose | Location |
-|-----------|-------------|---------|----------|
-| **CLAUDE.md** | Always loaded | What Claude always knows | `CLAUDE.md` |
-| **Skills** | Auto (context match) | Knowledge loaded when relevant | `.claude/skills/*/SKILL.md` |
-| **Commands** | You type `/name` | On-demand workflows | `.claude/commands/*.md` |
-| **Agents** | Claude delegates or you ask | Isolated workers with own context | `.claude/agents/*.md` |
-| **Hooks** | Lifecycle events | Deterministic shell scripts | `.claude/settings.json` |
+| Component      | Triggered by                | Purpose                          | Location                   |
+|----------------|-----------------------------|---------------------------------|----------------------------|
+| **CLAUDE.md**  | Always loaded               | What Claude always knows         | `CLAUDE.md`                |
+| **Skills**     | Auto (context match)        | Knowledge loaded when relevant   | `.claude/skills/*/SKILL.md`|
+| **Commands**   | You type `/name`            | On-demand workflows              | `.claude/commands/*.md`    |
+| **Agents**     | Claude delegates or you ask | Isolated workers with own context| `.claude/agents/*.md`      |
+| **Hooks**      | Lifecycle events            | Deterministic shell scripts      | `.claude/settings.json`    |
 
 ---
 
@@ -18,25 +18,25 @@ Every component exists at multiple levels. **More specific scope wins.**
 
 There are 3 scopes you'll use daily:
 
-| Scope                            | Purpose                                      | Shared with team? |
-|-------                           |---------                                     |-------------------|
-| **User** (`~/.claude/`)          | Your personal config, applies to all projects| No
-| **Project** (`.claude/`)         | Team config, committed to git                | Yes
-| **Local** (`.claude/*.local.*`)  | Your overrides for this project, gitignored  | No
+| Scope                           | Purpose                                       | Shared with team? |
+|---------------------------------|-----------------------------------------------|--------------------|
+| **User** (`~/.claude/`)         | Your personal config, applies to all projects | No                 |
+| **Project** (`.claude/`)        | Team config, committed to git                 | Yes                |
+| **Local** (`.claude/*.local.*`) | Your overrides for this project, gitignored   | No                 |
 
 > Enterprise admins can also deploy managed settings at system level — these override everything and can't be changed by developers.
 
 ### Where each feature lives
 
-| Feature | User (all projects) | Project (team-shared) | Local (personal, this repo) |
-|---------|--------------------|-----------------------|-----------------------------|
-| **Settings** | `~/.claude/settings.json` | `.claude/settings.json` | `.claude/settings.local.json` |
-| **CLAUDE.md** | `~/.claude/CLAUDE.md` | `CLAUDE.md` or `.claude/CLAUDE.md` | `CLAUDE.local.md` |
-| **Rules** | `~/.claude/rules/*.md` | `.claude/rules/*.md` | — |
-| **Agents** | `~/.claude/agents/*.md` | `.claude/agents/*.md` | — |
-| **Skills** | `~/.claude/skills/*/SKILL.md` | `.claude/skills/*/SKILL.md` | — |
-| **MCP servers** | `~/.claude.json` | `.mcp.json` | — |
-| **Commands** | `~/.claude/commands/*.md` | `.claude/commands/*.md` | — |
+| Feature          | User (all projects)           | Project (team-shared)            | Local (personal, this repo)       |
+|------------------|-------------------------------|----------------------------------|-----------------------------------|
+| **Settings**     | `~/.claude/settings.json`     | `.claude/settings.json`          | `.claude/settings.local.json`     |
+| **CLAUDE.md**    | `~/.claude/CLAUDE.md`         | `CLAUDE.md` or `.claude/CLAUDE.md`| `CLAUDE.local.md`                |
+| **Rules**        | `~/.claude/rules/*.md`        | `.claude/rules/*.md`             | —                                 |
+| **Agents**       | `~/.claude/agents/*.md`       | `.claude/agents/*.md`            | —                                 |
+| **Skills**       | `~/.claude/skills/*/SKILL.md` | `.claude/skills/*/SKILL.md`      | —                                 |
+| **MCP servers**  | `~/.claude.json`              | `.mcp.json`                      | —                                 |
+| **Commands**     | `~/.claude/commands/*.md`     | `.claude/commands/*.md`          | —                                 |
 
 ### Priority order
 
@@ -51,13 +51,13 @@ When multiple agents/skills share the same name, project wins over user.
 
 ### What goes where?
 
-| I want to... | Put it in... |
-|---|---|
-| Share conventions with my team | `.claude/settings.json` + `CLAUDE.md` (project) |
-| Keep personal preferences | `~/.claude/settings.json` + `~/.claude/CLAUDE.md` (user) |
-| Override project settings locally | `.claude/settings.local.json` + `CLAUDE.local.md` (local) |
-| Use an agent in all my projects | `~/.claude/agents/` (user) |
-| Use an agent only in this repo | `.claude/agents/` (project) |
+| I want to...                       | Put it in...                                                     |
+|------------------------------------|------------------------------------------------------------------|
+| Share conventions with my team     | `.claude/settings.json` + `CLAUDE.md` (project)                 |
+| Keep personal preferences          | `~/.claude/settings.json` + `~/.claude/CLAUDE.md` (user)        |
+| Override project settings locally  | `.claude/settings.local.json` + `CLAUDE.local.md` (local)       |
+| Use an agent in all my projects    | `~/.claude/agents/` (user)                                       |
+| Use an agent only in this repo     | `.claude/agents/` (project)                                      |
 
 ---
 
@@ -135,22 +135,22 @@ You: "Use the code-reviewer agent to check my work"
 
 ### Key properties
 
-| Field | Purpose |
-|-------|---------|
-| `description` | When Claude should delegate (add "Use proactively" for auto-delegation) |
-| `tools` | Restrict what the agent can do (read-only vs write) |
-| `model` | `haiku` (fast/cheap), `sonnet` (balanced), `opus` (deep reasoning), `inherit` |
-| `permissionMode` | `plan` (read-only), `default`, `acceptEdits`, `bypassPermissions` |
-| `skills` | Preload skill content into the agent's context |
+| Field              | Purpose                                                                   |
+|--------------------|---------------------------------------------------------------------------|
+| `description`      | When Claude should delegate (add "Use proactively" for auto-delegation)   |
+| `tools`            | Restrict what the agent can do (read-only vs write)                       |
+| `model`            | `haiku` (fast/cheap), `sonnet` (balanced), `opus` (deep reasoning), `inherit` |
+| `permissionMode`   | `plan` (read-only), `default`, `acceptEdits`, `bypassPermissions`         |
+| `skills`           | Preload skill content into the agent's context                            |
 
 ### When to use agents vs main conversation
 
-| Use agent | Use main conversation |
-|-----------|-----------------------|
-| Self-contained task | Iterative back-and-forth |
-| Produces verbose output | Needs conversation history |
-| Needs tool restrictions | Quick targeted change |
-| Can use cheaper model | Latency matters |
+| Use agent                  | Use main conversation        |
+|----------------------------|------------------------------|
+| Self-contained task        | Iterative back-and-forth     |
+| Produces verbose output    | Needs conversation history   |
+| Needs tool restrictions    | Quick targeted change        |
+| Can use cheaper model      | Latency matters              |
 
 ---
 
@@ -160,23 +160,23 @@ Shell scripts that run on lifecycle events. Cannot be bypassed by Claude.
 
 ### Hook events
 
-| Event | When it fires | Can block? |
-|-------|--------------|-----------|
-| `SessionStart` | Session starts/resumes/clears/compacts | No |
-| `PreToolUse` | Before Claude uses a tool | **Yes** — exit 2 blocks the action |
-| `PostToolUse` | After a tool completes | No (already happened) |
-| `Stop` | Claude finishes responding | **Yes** — can force Claude to continue |
-| `Notification` | Claude needs attention | No |
-| `UserPromptSubmit` | You submit a prompt | **Yes** — can reject the prompt |
-| `SubagentStart/Stop` | Agent starts/finishes | No/Yes |
+| Event               | When it fires                          | Can block?                              |
+|----------------------|----------------------------------------|-----------------------------------------|
+| `SessionStart`       | Session starts/resumes/clears/compacts | No                                      |
+| `PreToolUse`         | Before Claude uses a tool              | **Yes** — exit 2 blocks the action      |
+| `PostToolUse`        | After a tool completes                 | No (already happened)                   |
+| `Stop`               | Claude finishes responding             | **Yes** — can force Claude to continue  |
+| `Notification`       | Claude needs attention                 | No                                      |
+| `UserPromptSubmit`   | You submit a prompt                    | **Yes** — can reject the prompt         |
+| `SubagentStart/Stop` | Agent starts/finishes                  | No/Yes                                  |
 
 ### Hook types
 
-| Type | What it runs | Cost | Use for |
-|------|-------------|------|---------|
-| `command` | Shell script | Free | Format, lint, type-check, block commands |
-| `prompt` | Single LLM call (no tools) | Tokens | Yes/no judgment on input data |
-| `agent` | Sub-agent with Read/Grep/Glob | Tokens | Judgment that requires reading files |
+| Type        | What it runs                    | Cost     | Use for                                    |
+|-------------|--------------------------------|----------|---------------------------------------------|
+| `command`   | Shell script                    | Free     | Format, lint, type-check, block commands    |
+| `prompt`    | Single LLM call (no tools)     | Tokens   | Yes/no judgment on input data               |
+| `agent`     | Sub-agent with Read/Grep/Glob  | Tokens   | Judgment that requires reading files        |
 
 ### Common hook patterns
 
