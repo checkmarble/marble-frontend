@@ -12,6 +12,64 @@
 
 ---
 
+## Scope & Priority
+
+Every component exists at multiple levels. **More specific scope wins.**
+
+### Settings & Hooks priority (highest → lowest)
+
+| Priority | Scope | Location | Shared? |
+|----------|-------|----------|---------|
+| 1 | **Managed** (enterprise) | System-level `managed-settings.json` | All users (IT deployed) |
+| 2 | **CLI arguments** | `claude --agents '...'` | Session only |
+| 3 | **Local project** | `.claude/settings.local.json` | No (gitignored) |
+| 4 | **Project** | `.claude/settings.json` | Yes (committed) |
+| 5 | **User** | `~/.claude/settings.json` | No (your machine) |
+
+### Memory (CLAUDE.md) priority
+
+| Priority | Scope | Location | Shared? |
+|----------|-------|----------|---------|
+| 1 | **Managed** | System-level `CLAUDE.md` | All users (IT deployed) |
+| 2 | **Project** | `CLAUDE.md` or `.claude/CLAUDE.md` | Yes (committed) |
+| 3 | **Project rules** | `.claude/rules/*.md` | Yes (committed) |
+| 4 | **User** | `~/.claude/CLAUDE.md` | No (your machine) |
+| 5 | **Local** | `CLAUDE.local.md` | No (gitignored) |
+
+All memory files are loaded and combined. Higher priority files are loaded first.
+
+### Agents priority
+
+| Priority | Scope | Location |
+|----------|-------|----------|
+| 1 | **CLI flag** | `claude --agents '{...}'` (session only) |
+| 2 | **Project** | `.claude/agents/*.md` (committed) |
+| 3 | **User** | `~/.claude/agents/*.md` (all projects) |
+| 4 | **Plugin** | Plugin's `agents/` directory |
+
+When multiple agents share the same name, highest priority wins.
+
+### Skills priority
+
+| Priority | Scope | Location |
+|----------|-------|----------|
+| 1 | **Project** | `.claude/skills/*/SKILL.md` (committed) |
+| 2 | **User** | `~/.claude/skills/*/SKILL.md` (all projects) |
+| 3 | **Plugin** | Plugin's `skills/` directory |
+
+### What goes where?
+
+| I want to... | Put it in... |
+|---|---|
+| Share conventions with my team | `.claude/settings.json` + `CLAUDE.md` (project) |
+| Keep personal preferences | `~/.claude/settings.json` + `~/.claude/CLAUDE.md` (user) |
+| Override project settings locally | `.claude/settings.local.json` + `CLAUDE.local.md` (local) |
+| Use an agent in all my projects | `~/.claude/agents/` (user) |
+| Use an agent only in this repo | `.claude/agents/` (project) |
+| Enforce company-wide rules | `managed-settings.json` + managed `CLAUDE.md` (enterprise) |
+
+---
+
 ## CLAUDE.md — Project Memory
 
 Always loaded at session start. Put things Claude should **always** know.
