@@ -64,8 +64,14 @@ paths:
 
   # ANNOTATIONS
 
+  /annotations/{annotationId}:
+    $ref: ./marblecore-api/ingestion.yml#/~1annotations~1{annotationId}
+  /annotations/file/{annotationId}/{fileId}:
+    $ref: ./marblecore-api/annotations.yml#/~1annotations~1file~1{annotationId}~1{fileId}
   /client_data/annotations/{annotationId}:
     $ref: ./marblecore-api/annotations.yml#/~1client_data~1annotations~1{annotationId}
+  /client_data/{tableName}/{objectId}/annotations:
+    $ref: ./marblecore-api/annotations.yml#/~1client_data~1{tableName}~1{objectId}~1annotations
 
   # CASES
 
@@ -145,17 +151,8 @@ paths:
     $ref: ./marblecore-api/ingestion.yml#/~1ingestion~1{objectType}~1upload-logs
   /client_data/{tableName}/{objectId}:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1{objectId}
-  /client_data/{tableName}/{objectId}/annotations:
-    $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1{objectId}~1annotations
   /client_data/{tableName}/list:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1list
-
-  # ANNOTATIONS
-
-  /annotations/{annotationId}:
-    $ref: ./marblecore-api/ingestion.yml#/~1annotations~1{annotationId}
-  /annotations/file/{annotationId}/{fileId}:
-    $ref: ./marblecore-api/annotations.yml#/~1annotations~1file~1{annotationId}~1{fileId}
 
   # CUSTOM LISTS
 
