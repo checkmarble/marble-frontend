@@ -15,7 +15,7 @@
         ]
       },
       {
-        "matcher": "startup",
+        "matcher": "startup|resume",
         "hooks": [
           {
             "type": "command",
@@ -33,13 +33,33 @@
         ]
       }
     ],
-    "PostToolUse": [
+    "PreToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "A file was modified. If it's a TypeScript file (.ts/.tsx) in packages/app-builder or packages/ui-design-system, mentally note that type-check should be verified at the end."
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-main-edits.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-dangerous-commands.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
           }
         ]
       }
@@ -48,8 +68,9 @@
       {
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Before finishing, if TypeScript files were modified in this session, remind the user to run 'cd packages/app-builder && bun run type-check' or 'cd packages/ui-design-system && bun run type-check' depending on which package was affected."
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-check.sh",
+            "timeout": 120
           }
         ]
       }

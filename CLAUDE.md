@@ -84,15 +84,15 @@ dev/active/[task-name]/
 
 ## Hooks (Auto-Running)
 
-| Hook | Trigger | Purpose |
-|------|---------|---------|
-| SessionStart | Session start/compact | Show branch, restore context |
-| PostToolUse | After Edit/Write | Track modified files |
-| Stop | End of response | Remind to run type-check |
+| Hook | Event | Purpose |
+|------|-------|---------|
+| SessionStart | Session start/resume/compact/clear | Show branch, restore context |
+| PreToolUse | Edit/Write/MultiEdit | Block file edits on main/master branch |
+| PreToolUse | Bash | Block dangerous commands (rm -rf, git push --force, git reset --hard) |
+| Notification | Permission/idle prompt | macOS desktop notification when Claude needs attention |
+| Stop | End of response | Auto-format with Biome + type-check modified TS files |
 
-Skills auto-activate based on their descriptions - no custom hook needed.
-
-After completing edits, run `bun run type-check` in the affected package. Use `auto-error-resolver` agent for multiple errors.
+The Stop hook runs `biome format` and `bun run type-check` automatically. If type-check fails, Claude is blocked from stopping and shown the errors to fix. Use `auto-error-resolver` agent for complex multi-error situations.
 
 ## App-Builder Architecture
 
