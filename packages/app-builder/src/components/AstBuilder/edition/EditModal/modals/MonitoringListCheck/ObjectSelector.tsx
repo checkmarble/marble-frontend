@@ -81,16 +81,19 @@ export const ObjectSelector = ({
   }, [dataModel, triggerObjectTable, screeningConfigs]);
 
   const currentValue = useMemo(() => {
-    const found = objectOptions.find(
-      (opt) => opt.tableName === currentTableName && JSON.stringify(opt.path) === JSON.stringify(currentPath),
+    const index = objectOptions.findIndex(
+      (opt) =>
+        opt.tableName === currentTableName &&
+        opt.path.length === currentPath.length &&
+        opt.path.every((seg, i) => seg.linkName === currentPath[i]?.linkName),
     );
-    return found ? JSON.stringify({ tableName: found.tableName, path: found.path }) : '';
+    return index >= 0 ? String(index) : '';
   }, [objectOptions, currentTableName, currentPath]);
 
   const handleChange = (value: string) => {
-    if (!value) return;
-    const parsed = JSON.parse(value) as { tableName: string; path: ObjectPathSegment[] };
-    onChange(parsed.tableName, parsed.path);
+    const option = objectOptions[Number(value)];
+    if (!option) return;
+    onChange(option.tableName, option.path);
   };
 
   return (
@@ -98,8 +101,8 @@ export const ObjectSelector = ({
       <label className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.object_label')}</label>
 
       <Radio.Root value={currentValue} onValueChange={handleChange} className="flex flex-col gap-4">
-        {objectOptions.map((option) => {
-          const value = JSON.stringify({ tableName: option.tableName, path: option.path });
+        {objectOptions.map((option, index) => {
+          const value = String(index);
 
           return (
             <label key={value} className="flex cursor-pointer items-center gap-4">

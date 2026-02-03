@@ -207,7 +207,7 @@ export const AdvancedSetupsSection = ({
           ...check,
           validated: true,
           navigationOptionRef,
-          navigationIndex: { fieldName: orderingFieldName, order: 'desc' as const },
+          orderingFieldName,
         };
       }),
     );
@@ -261,7 +261,7 @@ const LinkedObjectCheckItem = ({
   onPendingNavigationOptionAdd,
 }: LinkedObjectCheckItemProps) => {
   const { t } = useTranslation(['scenarios']);
-  const [selectedFieldName, setSelectedFieldName] = useState(check?.navigationIndex?.fieldName ?? '');
+  const [selectedFieldName, setSelectedFieldName] = useState(check?.orderingFieldName ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
 
   const needsNavigationConfig = option.direction === 'down' && !option.hasNavigationOptions;

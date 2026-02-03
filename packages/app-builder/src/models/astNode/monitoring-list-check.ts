@@ -81,17 +81,6 @@ export type ObjectPathSegment = {
 };
 
 /**
- * Navigation index configuration for "down" traversal (to child entities).
- * Used internally by the UI for step 3 configuration.
- */
-export type NavigationIndex = {
-  /** Field name to order by (e.g., 'created_at', 'updated_at') */
-  fieldName: string;
-  /** Sort order */
-  order: 'asc' | 'desc';
-};
-
-/**
  * UI state for a linked object check in the wizard.
  * Contains additional fields for UI interaction (direction, enabled, validated).
  */
@@ -104,8 +93,8 @@ export type LinkedObjectCheck = {
   direction: 'up' | 'down';
   /** Whether this linked check is enabled */
   enabled: boolean;
-  /** Navigation index config - required for 'down' direction */
-  navigationIndex?: NavigationIndex;
+  /** Field name used for ordering in 'down' direction (e.g., 'created_at') */
+  orderingFieldName?: string;
   /** Whether the configuration has been validated (for 'down' direction) */
   validated?: boolean;
   /** For "down" direction: the full navigation option reference */
@@ -258,10 +247,7 @@ export function fromLinkedTableChecks(linkedTableChecks: LinkedTableCheck[]): Li
           enabled: true,
           validated: true,
           navigationOptionRef: check.navigationOption,
-          navigationIndex: {
-            fieldName: check.navigationOption.orderingFieldName,
-            order: 'desc' as const,
-          },
+          orderingFieldName: check.navigationOption.orderingFieldName,
         },
   );
 }
