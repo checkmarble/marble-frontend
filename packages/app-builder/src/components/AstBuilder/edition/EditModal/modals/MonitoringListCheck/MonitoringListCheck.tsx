@@ -10,7 +10,7 @@ import {
   toMonitoringListCheckConfig,
 } from '@app-builder/models/astNode/monitoring-list-check';
 import { type ScreeningCategory, topicsToCategories } from '@app-builder/models/screening';
-import { useCreateNavigationOptionMutationV2 } from '@app-builder/queries/data/create-navigation-option';
+import { useCreateNavigationOptionForAstMutation } from '@app-builder/queries/data/create-navigation-option';
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,7 @@ import { ObjectSelector } from './ObjectSelector';
 
 type WizardStep = 1 | 2 | 3;
 
-export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node'>) {
+export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node'>) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
@@ -54,7 +54,7 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
   const [pendingNavigationOptions, setPendingNavigationOptions] = useState<PendingNavigationOption[]>([]);
 
   const selectedTable = dataModel.find((t) => t.name === targetTableName);
-  const createNavigationOptionMutation = useCreateNavigationOptionMutationV2();
+  const createNavigationOptionMutation = useCreateNavigationOptionForAstMutation();
 
   // Determine if we need step 3 (advanced setups)
   // Step 3 is shown when the selected object has related tables also under monitoring
@@ -128,33 +128,28 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
   };
 
   const handleSave = async () => {
-    try {
-      // Create pending navigation options in parallel
-      // Note: if one fails, already-created options remain on the server but the AST node won't be saved
-      if (pendingNavigationOptions.length > 0) {
-        await Promise.all(
-          pendingNavigationOptions.map((pending) =>
-            createNavigationOptionMutation.mutateAsync({
-              scenarioId,
-              tableId: pending.tableId,
-              sourceFieldId: pending.sourceFieldId,
-              targetTableId: pending.targetTableId,
-              filterFieldId: pending.filterFieldId,
-              orderingFieldId: pending.orderingFieldId,
-            }),
-          ),
-        );
-      }
-
-      const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
-      const updatedNode = NewMonitoringListCheckAstNode(newConfig);
-      updatedNode.id = node.id;
-
-      props.onSave(updatedNode);
-    } catch {
-      // Error state is tracked by createNavigationOptionMutation.isError
-      // Modal stays open so the user can retry
+    // Create pending navigation options in parallel
+    // Note: if one fails, already-created options remain on the server but the AST node won't be saved
+    if (pendingNavigationOptions.length > 0) {
+      await Promise.all(
+        pendingNavigationOptions.map((pending) =>
+          createNavigationOptionMutation.mutateAsync({
+            scenarioId,
+            tableId: pending.tableId,
+            sourceFieldId: pending.sourceFieldId,
+            targetTableId: pending.targetTableId,
+            filterFieldId: pending.filterFieldId,
+            orderingFieldId: pending.orderingFieldId,
+          }),
+        ),
+      );
     }
+
+    const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
+    const updatedNode = NewMonitoringListCheckAstNode(newConfig);
+    updatedNode.id = node.id;
+
+    props.onSave(updatedNode);
   };
 
   const canProceedFromStep1 = !!targetTableName;
@@ -242,4 +237,4 @@ export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node
       </Modal.Content>
     </Modal.Root>
   );
-}
+};

@@ -23,14 +23,14 @@ type ObjectSelectorProps = {
   onChange: (tableName: string, path: ObjectPathSegment[]) => void;
 };
 
-export function ObjectSelector({
+export const ObjectSelector = ({
   dataModel,
   triggerObjectTable,
   screeningConfigs,
   currentTableName,
   currentPath,
   onChange,
-}: ObjectSelectorProps) {
+}: ObjectSelectorProps) => {
   const { t } = useTranslation(['scenarios']);
 
   const objectOptions = useMemo(() => {
@@ -121,13 +121,13 @@ export function ObjectSelector({
       </Radio.Root>
     </div>
   );
-}
+};
 
 type PathBreadcrumbProps = {
   segments: string[];
 };
 
-function PathBreadcrumb({ segments }: PathBreadcrumbProps) {
+const PathBreadcrumb = ({ segments }: PathBreadcrumbProps) => {
   if (segments.length === 0) return null;
 
   return (
@@ -140,13 +140,13 @@ function PathBreadcrumb({ segments }: PathBreadcrumbProps) {
       ))}
     </div>
   );
-}
+};
 
 type ActiveMonitoringsTooltipProps = {
   monitorings: ContinuousScreeningConfig[];
 };
 
-function ActiveMonitoringsTooltip({ monitorings }: ActiveMonitoringsTooltipProps) {
+const ActiveMonitoringsTooltip = ({ monitorings }: ActiveMonitoringsTooltipProps) => {
   const { t } = useTranslation(['scenarios']);
 
   if (monitorings.length === 0) {
@@ -178,4 +178,4 @@ function ActiveMonitoringsTooltip({ monitorings }: ActiveMonitoringsTooltipProps
       <Icon icon="tip" className="size-5 text-purple-primary" />
     </Tooltip.Default>
   );
-}
+};

@@ -14,7 +14,6 @@ type CreateNavigationOptionValue = z.infer<typeof createNavigationOptionSchema>;
 
 const endpoint = (tableId: string) => getRoute('/ressources/data/:tableId/createNavigationOption', { tableId });
 
-/** @deprecated Use useCreateNavigationOptionMutationV2 instead */
 export const useCreateNavigationOptionMutation = (tableId: string) => {
   return useMutation({
     mutationKey: ['data', 'create-navigation-option'],
@@ -37,7 +36,7 @@ type CreateNavigationOptionWithTableId = CreateNavigationOptionValue & {
  * tableId is passed as part of the mutation variables, allowing multiple calls with different tableIds.
  * Invalidates builder-options query on success to refresh the dataModel.
  */
-export const useCreateNavigationOptionMutationV2 = () => {
+export const useCreateNavigationOptionForAstMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({

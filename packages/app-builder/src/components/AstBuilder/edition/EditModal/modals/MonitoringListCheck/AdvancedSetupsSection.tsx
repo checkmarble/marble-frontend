@@ -56,14 +56,14 @@ type AdvancedSetupsSectionProps = {
   onPendingNavigationOptionAdd: (pending: PendingNavigationOption) => void;
 };
 
-export function AdvancedSetupsSection({
+export const AdvancedSetupsSection = ({
   dataModel,
   selectedTable,
   screeningConfigs,
   linkedObjectChecks,
   onLinkedObjectChecksChange,
   onPendingNavigationOptionAdd,
-}: AdvancedSetupsSectionProps) {
+}: AdvancedSetupsSectionProps) => {
   const { t } = useTranslation(['scenarios']);
 
   // Get tables that are under monitoring
@@ -95,7 +95,9 @@ export function AdvancedSetupsSection({
 
     // "Down" direction: child tables (tables that have links pointing to selectedTable)
     for (const table of dataModel) {
-      if (table.name === selectedTable.name) continue;
+      if (table.name === selectedTable.name) {
+        continue;
+      }
 
       for (const link of table.linksToSingle) {
         if (link.parentTableName === selectedTable.name && monitoredTableNames.has(table.name)) {
@@ -189,23 +191,20 @@ export function AdvancedSetupsSection({
     }
   };
 
-  const handleNavigationFieldChange = (
-    tableName: string,
-    orderingFieldId: string,
-    orderingFieldName: string,
-    option: LinkedTableOption,
-  ) => {
+  const handleNavigationFieldChange = (tableName: string, orderingFieldName: string, option: LinkedTableOption) => {
     // Build complete NavigationOptionRef with the selected ordering field
     const navigationOptionRef: NavigationOptionRef | undefined = option.baseNavRef
       ? { ...option.baseNavRef, orderingFieldName }
       : option.navigationOptionRef;
 
     onLinkedObjectChecksChange(
-      linkedObjectChecks.map((c) => {
-        if (c.tableName !== tableName) return c;
+      linkedObjectChecks.map((check) => {
+        if (check.tableName !== tableName) {
+          return check;
+        }
 
         return {
-          ...c,
+          ...check,
           validated: true,
           navigationOptionRef,
           navigationIndex: { fieldName: orderingFieldName, order: 'desc' as const },
@@ -235,34 +234,32 @@ export function AdvancedSetupsSection({
             check={check}
             isEnabled={isEnabled}
             onToggle={(enabled) => handleToggleCheck(option, enabled)}
-            onNavigationFieldChange={(fieldId, fieldName) =>
-              handleNavigationFieldChange(option.tableName, fieldId, fieldName, option)
-            }
+            onNavigationFieldChange={(fieldName) => handleNavigationFieldChange(option.tableName, fieldName, option)}
             onPendingNavigationOptionAdd={onPendingNavigationOptionAdd}
           />
         );
       })}
     </div>
   );
-}
+};
 
 type LinkedObjectCheckItemProps = {
   option: LinkedTableOption;
   check: LinkedObjectCheck | undefined;
   isEnabled: boolean;
   onToggle: (enabled: boolean) => void;
-  onNavigationFieldChange: (fieldId: string, fieldName: string) => void;
+  onNavigationFieldChange: (fieldName: string) => void;
   onPendingNavigationOptionAdd: (pending: PendingNavigationOption) => void;
 };
 
-function LinkedObjectCheckItem({
+const LinkedObjectCheckItem = ({
   option,
   check,
   isEnabled,
   onToggle,
   onNavigationFieldChange,
   onPendingNavigationOptionAdd,
-}: LinkedObjectCheckItemProps) {
+}: LinkedObjectCheckItemProps) => {
   const { t } = useTranslation(['scenarios']);
   const [selectedFieldName, setSelectedFieldName] = useState(check?.navigationIndex?.fieldName ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -285,7 +282,7 @@ function LinkedObjectCheckItem({
       });
     }
 
-    onNavigationFieldChange(fieldId, fieldName);
+    onNavigationFieldChange(fieldName);
   };
 
   const displayValue = selectedFieldName || t('scenarios:monitoring_list_check.select_field');
@@ -328,4 +325,4 @@ function LinkedObjectCheckItem({
       )}
     </div>
   );
-}
+};
