@@ -190,7 +190,7 @@ export function toMonitoringListCheckConfig(
   topicFilters: string[],
   linkedObjectChecks: LinkedObjectCheck[],
 ): MonitoringListCheckConfig {
-  const enabledChecks = linkedObjectChecks.filter((check) => check.enabled && check.validated !== false);
+  const enabledChecks = linkedObjectChecks.filter((check) => check.enabled && check.validated === true);
 
   const linkedTableChecks: LinkedTableCheck[] = enabledChecks.map((check) => {
     if (check.direction === 'up') {
@@ -211,20 +211,6 @@ export function toMonitoringListCheckConfig(
     pathToTarget: pathToTarget.map((segment) => segment.linkName),
     topicFilters,
     linkedTableChecks,
-  };
-}
-
-/**
- * Extract display information from a MonitoringListCheckConfig.
- * Used by getAstNodeDisplayName.
- */
-export function getMonitoringListCheckDisplayInfo(config: MonitoringListCheckConfig): {
-  targetTableName: string;
-  topicFilters: string[];
-} {
-  return {
-    targetTableName: config.targetTableName,
-    topicFilters: config.topicFilters,
   };
 }
 

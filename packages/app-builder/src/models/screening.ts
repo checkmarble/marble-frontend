@@ -410,7 +410,7 @@ export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> 
   'adverse-media': 'adverse_media',
 };
 
-const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
+export const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
 
 /**
  * Convert topic filters from the API back to categories for UI display.

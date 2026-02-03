@@ -296,8 +296,7 @@ function LinkedObjectCheckItem({
       <label className="flex cursor-pointer items-center gap-2">
         <Checkbox checked={isEnabled} onCheckedChange={onToggle} />
         <span className="text-s font-medium text-grey-primary">{option.linkDescription}</span>
-        {option.direction === 'up' && <Icon icon="arrow-up" className="size-4 text-grey-secondary" />}
-        {option.direction === 'down' && <Icon icon="arrow-down" className="size-4 text-grey-secondary" />}
+        <Icon icon={option.direction === 'up' ? 'arrow-up' : 'arrow-down'} className="size-4 text-grey-secondary" />
       </label>
 
       {/* Navigation config for "down" direction without pre-configured navigationOptions */}

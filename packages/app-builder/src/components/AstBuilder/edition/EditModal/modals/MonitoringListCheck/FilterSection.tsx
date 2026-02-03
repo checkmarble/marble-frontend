@@ -1,14 +1,12 @@
-import { SCREENING_CATEGORY_I18N_KEY_MAP, type ScreeningCategory } from '@app-builder/models/screening';
+import {
+  SCREENING_CATEGORIES,
+  SCREENING_CATEGORY_I18N_KEY_MAP,
+  type ScreeningCategory,
+} from '@app-builder/models/screening';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-/**
- * The available screening categories for monitoring list checks.
- * Order matters for display.
- */
-const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
 
 type FilterSectionProps = {
   selectedTopics: ScreeningCategory[];

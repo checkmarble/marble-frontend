@@ -24,7 +24,7 @@ import { ObjectSelector } from './ObjectSelector';
 
 type WizardStep = 1 | 2 | 3;
 
-export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node'>) => {
+export function EditMonitoringListCheck(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['common', 'scenarios']);
   const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
@@ -96,14 +96,6 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
     setLinkedObjectChecks([]);
   };
 
-  const handleTopicsChange = (topics: ScreeningCategory[]) => {
-    setSelectedTopics(topics);
-  };
-
-  const handleLinkedObjectChecksChange = (checks: LinkedObjectCheck[]) => {
-    setLinkedObjectChecks(checks);
-  };
-
   const handlePendingNavigationOptionAdd = (pending: PendingNavigationOption) => {
     // Replace if same tableName, otherwise add
     setPendingNavigationOptions((prev) => {
@@ -136,35 +128,33 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
   };
 
   const handleSave = async () => {
-    // First, create any pending navigation options
-    // The mutation's onSuccess will invalidate builder-options query to refresh dataModel
-    for (const pending of pendingNavigationOptions) {
-      await createNavigationOptionMutation.mutateAsync({
-        scenarioId,
-        tableId: pending.tableId,
-        sourceFieldId: pending.sourceFieldId,
-        targetTableId: pending.targetTableId,
-        filterFieldId: pending.filterFieldId,
-        orderingFieldId: pending.orderingFieldId,
-      });
+    try {
+      // Create pending navigation options in parallel
+      // Note: if one fails, already-created options remain on the server but the AST node won't be saved
+      if (pendingNavigationOptions.length > 0) {
+        await Promise.all(
+          pendingNavigationOptions.map((pending) =>
+            createNavigationOptionMutation.mutateAsync({
+              scenarioId,
+              tableId: pending.tableId,
+              sourceFieldId: pending.sourceFieldId,
+              targetTableId: pending.targetTableId,
+              filterFieldId: pending.filterFieldId,
+              orderingFieldId: pending.orderingFieldId,
+            }),
+          ),
+        );
+      }
+
+      const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
+      const updatedNode = NewMonitoringListCheckAstNode(newConfig);
+      updatedNode.id = node.id;
+
+      props.onSave(updatedNode);
+    } catch {
+      // Error state is tracked by createNavigationOptionMutation.isError
+      // Modal stays open so the user can retry
     }
-
-    // Convert UI state to API config format
-    // topicFilters uses category values directly: ['sanctions', 'peps', 'third-parties', 'adverse-media']
-    const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
-
-    // Create new node with updated config
-    const updatedNode = NewMonitoringListCheckAstNode({
-      targetTableName: newConfig.targetTableName,
-      pathToTarget: newConfig.pathToTarget,
-      topicFilters: newConfig.topicFilters,
-      linkedTableChecks: newConfig.linkedTableChecks,
-    });
-
-    // Preserve the original node ID
-    updatedNode.id = node.id;
-
-    props.onSave(updatedNode);
   };
 
   const canProceedFromStep1 = !!targetTableName;
@@ -207,7 +197,7 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
           )}
 
           {/* Step 2: Filter Options - topics */}
-          {currentStep === 2 && <FilterSection selectedTopics={selectedTopics} onTopicsChange={handleTopicsChange} />}
+          {currentStep === 2 && <FilterSection selectedTopics={selectedTopics} onTopicsChange={setSelectedTopics} />}
 
           {/* Step 3: Advanced Setups (if applicable) */}
           {currentStep === 3 && selectedTable && (
@@ -216,7 +206,7 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
               selectedTable={selectedTable}
               screeningConfigs={screeningConfigs}
               linkedObjectChecks={linkedObjectChecks}
-              onLinkedObjectChecksChange={handleLinkedObjectChecksChange}
+              onLinkedObjectChecksChange={setLinkedObjectChecks}
               onPendingNavigationOptionAdd={handlePendingNavigationOptionAdd}
             />
           )}
@@ -252,4 +242,4 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
       </Modal.Content>
     </Modal.Root>
   );
-};
+}

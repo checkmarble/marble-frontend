@@ -48,11 +48,6 @@ export function ObjectSelector({
     while (queue.length > 0) {
       const { table, path, pathSegments } = queue.shift()!;
 
-      // Skip if already visited (avoid cycles)
-      const pathKey = pathSegments.join('→');
-      if (visited.has(pathKey)) continue;
-      visited.add(pathKey);
-
       // Add this table as an option
       options.push({
         tableName: table.name,
@@ -64,6 +59,12 @@ export function ObjectSelector({
 
       // Add all linked parent tables to the queue
       for (const link of table.linksToSingle) {
+        // Track by tableName + linkName to allow different paths to the same table
+        // while preventing cycles through the same link
+        const visitKey = `${table.name}→${link.name}`;
+        if (visited.has(visitKey)) continue;
+        visited.add(visitKey);
+
         const linkedTable = dataModel.find((tbl) => tbl.name === link.parentTableName);
         if (linkedTable) {
           queue.push({

@@ -1,11 +1,11 @@
 import { type DataModelWithTableOptions } from '@app-builder/models';
 import { useCallbackRef } from '@marble/shared';
 import { useState } from 'react';
-import { ButtonV2, MenuCommand, Tag } from 'ui-design-system';
+import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DataTableRender } from './DataTableRender';
-import { DataModelExplorerContext, type DataModelExplorerState } from './Provider';
+import { DataModelExplorerContext } from './Provider';
 import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerProps = {
@@ -78,62 +78,16 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
     });
   });
 
-  const _closeTab = useCallbackRef((tab: DataModelExplorerNavigationTab) => {
-    const nextState: Partial<DataModelExplorerState> = {};
-    const tabIndex = tabs.indexOf(tab);
-
-    if (tabIndex < 0) {
-      return;
-    }
-
-    if (tab === currentTab) {
-      const nextTab = lastActiveTab ?? tabs[tabIndex + 1] ?? tabs[tabIndex - 1];
-      if (nextTab) {
-        nextState.lastActiveTab = null;
-        nextState.currentTab = nextTab;
-      }
-    }
-
-    const nextTabsState = [...tabs.slice(0, tabIndex), ...tabs.slice(tabIndex + 1)];
-    if (nextTabsState.length === 0) {
-      explorerContext.setExplorerState(null);
-    }
-
-    nextState.closedTabsHistory = [...closedTabsHistory, tab];
-    nextState.tabs = nextTabsState;
-
-    explorerContext.setExplorerState(nextState);
-  });
-
   if (!explorerContext.explorerState) {
     return null;
   }
 
-  const { currentTab, lastActiveTab, closedTabsHistory, tabs } = explorerContext.explorerState;
+  const { currentTab, closedTabsHistory, tabs } = explorerContext.explorerState;
 
   return (
     <div className="h-[calc(100vh-210px)] min-w-[80vw] overflow-y-scroll p-14 py-2">
       <div className="flex flex-col gap-3">
         <div className="before:bg-grey-border relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
-          {/* {tabs.map((tab) => {
-            const tabUniqValue = getTabUniqValue(tab);
-            return (
-              <DataModelExplorerTab
-                current={tab === currentTab}
-                key={tabUniqValue}
-                label={`${tab.targetTableName}`}
-                onClick={() => {
-                  explorerContext.setExplorerState({
-                    lastActiveTab: currentTab,
-                    currentTab: tab,
-                  });
-                }}
-                onClose={() => {
-                  closeTab(tab);
-                }}
-              />
-            );
-          })} */}
           <TabBarActions
             className="absolute right-2 top-2"
             options={[
@@ -163,24 +117,6 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
         </div>
       </div>
     </div>
-  );
-}
-
-function _DataModelExplorerTab(props: { current: boolean; label: string; onClick: () => void; onClose: () => void }) {
-  return (
-    <Tag color={props.current ? 'purple' : 'grey'} size="big" className="cursor-pointer gap-2" onClick={props.onClick}>
-      {props.label}
-      {props.current && (
-        <Icon
-          icon="cross"
-          className="size-3.5"
-          onClick={(e) => {
-            e.stopPropagation();
-            props.onClose?.();
-          }}
-        />
-      )}
-    </Tag>
   );
 }
 
