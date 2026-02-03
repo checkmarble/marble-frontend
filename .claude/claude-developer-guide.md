@@ -16,46 +16,38 @@
 
 Every component exists at multiple levels. **More specific scope wins.**
 
-### Settings & Hooks priority (highest → lowest)
+There are 3 scopes you'll use daily:
 
-| Priority | Scope | Location | Shared? |
-|----------|-------|----------|---------|
-| 1 | **Managed** (enterprise) | System-level `managed-settings.json` | All users (IT deployed) |
-| 2 | **CLI arguments** | `claude --agents '...'` | Session only |
-| 3 | **Local project** | `.claude/settings.local.json` | No (gitignored) |
-| 4 | **Project** | `.claude/settings.json` | Yes (committed) |
-| 5 | **User** | `~/.claude/settings.json` | No (your machine) |
+| Scope | Purpose | Shared with team? |
+|-------|---------|-------------------|
+| **User** (`~/.claude/`) | Your personal config, applies to all projects | No |
+| **Project** (`.claude/`) | Team config, committed to git | Yes |
+| **Local** (`.claude/*.local.*`) | Your overrides for this project, gitignored | No |
 
-### Memory (CLAUDE.md) priority
+> Enterprise admins can also deploy managed settings at system level — these override everything and can't be changed by developers.
 
-| Priority | Scope | Location | Shared? |
-|----------|-------|----------|---------|
-| 1 | **Managed** | System-level `CLAUDE.md` | All users (IT deployed) |
-| 2 | **Project** | `CLAUDE.md` or `.claude/CLAUDE.md` | Yes (committed) |
-| 3 | **Project rules** | `.claude/rules/*.md` | Yes (committed) |
-| 4 | **User** | `~/.claude/CLAUDE.md` | No (your machine) |
-| 5 | **Local** | `CLAUDE.local.md` | No (gitignored) |
+### Where each feature lives
 
-All memory files are loaded and combined. Higher priority files are loaded first.
+| Feature | User (all projects) | Project (team-shared) | Local (personal, this repo) |
+|---------|--------------------|-----------------------|-----------------------------|
+| **Settings** | `~/.claude/settings.json` | `.claude/settings.json` | `.claude/settings.local.json` |
+| **CLAUDE.md** | `~/.claude/CLAUDE.md` | `CLAUDE.md` or `.claude/CLAUDE.md` | `CLAUDE.local.md` |
+| **Rules** | `~/.claude/rules/*.md` | `.claude/rules/*.md` | — |
+| **Agents** | `~/.claude/agents/*.md` | `.claude/agents/*.md` | — |
+| **Skills** | `~/.claude/skills/*/SKILL.md` | `.claude/skills/*/SKILL.md` | — |
+| **MCP servers** | `~/.claude.json` | `.mcp.json` | — |
+| **Commands** | `~/.claude/commands/*.md` | `.claude/commands/*.md` | — |
 
-### Agents priority
+### Priority order
 
-| Priority | Scope | Location |
-|----------|-------|----------|
-| 1 | **CLI flag** | `claude --agents '{...}'` (session only) |
-| 2 | **Project** | `.claude/agents/*.md` (committed) |
-| 3 | **User** | `~/.claude/agents/*.md` (all projects) |
-| 4 | **Plugin** | Plugin's `agents/` directory |
+When the same setting exists in multiple scopes:
 
-When multiple agents share the same name, highest priority wins.
+```
+Project > User          (project deny overrides user allow)
+Local > Project > User  (local overrides everything)
+```
 
-### Skills priority
-
-| Priority | Scope | Location |
-|----------|-------|----------|
-| 1 | **Project** | `.claude/skills/*/SKILL.md` (committed) |
-| 2 | **User** | `~/.claude/skills/*/SKILL.md` (all projects) |
-| 3 | **Plugin** | Plugin's `skills/` directory |
+When multiple agents/skills share the same name, project wins over user.
 
 ### What goes where?
 
@@ -66,7 +58,6 @@ When multiple agents share the same name, highest priority wins.
 | Override project settings locally | `.claude/settings.local.json` + `CLAUDE.local.md` (local) |
 | Use an agent in all my projects | `~/.claude/agents/` (user) |
 | Use an agent only in this repo | `.claude/agents/` (project) |
-| Enforce company-wide rules | `managed-settings.json` + managed `CLAUDE.md` (enterprise) |
 
 ---
 
