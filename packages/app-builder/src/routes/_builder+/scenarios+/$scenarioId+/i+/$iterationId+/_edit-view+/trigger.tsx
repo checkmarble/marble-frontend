@@ -32,14 +32,16 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function triggerLoader({ params, context }) {
-  const { customListsRepository, editor, dataModelRepository, scenario, entitlements } = context.authInfo;
+  const { customListsRepository, editor, dataModelRepository, scenario, entitlements, continuousScreening } =
+    context.authInfo;
 
   const scenarioId = fromParams(params, 'scenarioId');
-  const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
+  const [currentScenario, customLists, dataModel, accessors, screeningConfigs] = await Promise.all([
     scenario.getScenario({ scenarioId }),
     customListsRepository.listCustomLists(),
     dataModelRepository.getDataModel(),
     editor.listAccessors({ scenarioId }),
+    continuousScreening.listConfigurations(),
   ]);
 
   return {
@@ -49,6 +51,7 @@ export const loader = createServerFn([authMiddleware], async function triggerLoa
     customLists,
     triggerObjectType: currentScenario.triggerObjectType,
     hasValidLicense: hasAnyEntitlement(entitlements),
+    screeningConfigs,
   };
 });
 
