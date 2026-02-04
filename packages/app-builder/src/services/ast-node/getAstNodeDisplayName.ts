@@ -7,6 +7,10 @@ import {
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
+import {
+  isMonitoringListCheckAstNode,
+  type MonitoringListCheckAstNode,
+} from '@app-builder/models/astNode/monitoring-list-check';
 import { type IsMultipleOfAstNode, isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
@@ -24,6 +28,7 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { isAggregatorOperator } from '@app-builder/models/modale-operators';
+import { SCREENING_CATEGORY_I18N_KEY_MAP, topicsToCategories } from '@app-builder/models/screening';
 import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
@@ -89,6 +94,10 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
 
   if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
     return getAstNodeDisplayName(astNode.namedChildren.value, context);
+  }
+
+  if (isMonitoringListCheckAstNode(astNode)) {
+    return getMonitoringListCheckDisplayName(astNode, context);
   }
 
   if (isUndefinedAstNode(astNode)) {
@@ -249,4 +258,35 @@ function getStringTemplateDisplayName(
     return context.t('scenarios:edit_string_template.title');
   }
   return value;
+}
+
+function getMonitoringListCheckDisplayName(
+  astNode: IdLessAstNode<MonitoringListCheckAstNode>,
+  context: AstNodeStringifierContext,
+) {
+  const config = astNode.namedChildren.config.constant;
+  const objectTableName = config.targetTableName;
+  const topicFilters = config.topicFilters;
+
+  if (!objectTableName) {
+    return context.t('scenarios:monitoring_list_check.title');
+  }
+
+  if (topicFilters.length === 0) {
+    return context.t('scenarios:monitoring_list_check.display_name_any', {
+      replace: { objectTableName },
+    });
+  }
+
+  // Convert individual topics to categories for user-friendly display
+  const categories = topicsToCategories(topicFilters);
+  const hitTypes = categories
+    .map((category) =>
+      context.t(`scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[category]}`),
+    )
+    .join(', ');
+
+  return context.t('scenarios:monitoring_list_check.display_name', {
+    replace: { hitTypes, objectTableName },
+  });
 }

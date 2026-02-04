@@ -399,6 +399,44 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['rel', 'third-parties'],
 ]);
 
+/**
+ * Maps ScreeningCategory to i18n key suffix.
+ * ScreeningCategory uses hyphens, i18n keys use underscores.
+ */
+export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  'third-parties': 'third_parties',
+  'adverse-media': 'adverse_media',
+};
+
+export const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
+
+/**
+ * Convert topic filters from the API back to categories for UI display.
+ * Handles both:
+ * - Category values directly: ['sanctions', 'peps']
+ * - Individual topics (legacy): ['sanction', 'sanction.linked', 'role.pep']
+ */
+export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] {
+  if (topicFilters.length === 0) return [];
+
+  const categories = new Set<ScreeningCategory>();
+  for (const value of topicFilters) {
+    // Check if it's already a category
+    if (SCREENING_CATEGORIES.includes(value as ScreeningCategory)) {
+      categories.add(value as ScreeningCategory);
+    } else {
+      // Legacy: look up individual topic in the map
+      const category = SCREENING_TOPICS_MAP.get(value);
+      if (category) {
+        categories.add(category);
+      }
+    }
+  }
+  return Array.from(categories);
+}
+
 export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {
   sanctions: 1,
   'adverse-media': 2,

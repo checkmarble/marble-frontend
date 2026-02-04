@@ -8,19 +8,20 @@ import { DuplicateRule } from '@app-builder/components/Scenario/Rules/Actions/Du
 import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescription';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
+import { type ServerFnResult } from '@app-builder/core/middleware-types';
+import { createServerFn, data } from '@app-builder/core/requests';
 import useIntersection from '@app-builder/hooks/useIntersection';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { hasAnyEntitlement } from '@app-builder/services/feature-access';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
@@ -81,21 +82,24 @@ export const handle = {
   ],
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService, appConfigRepository } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, scenarioIterationRuleRepository, entitlements } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+export const loader = createServerFn([authMiddleware], async function ruleLoader({ params, context }) {
+  const {
+    customListsRepository,
+    editor,
+    dataModelRepository,
+    scenarioIterationRuleRepository,
+    entitlements,
+    continuousScreening,
+  } = context.authInfo;
 
   const ruleId = fromParams(params, 'ruleId');
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig, rule] = await Promise.all([
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, rule, screeningConfigs] = await Promise.all([
     editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
     dataModelRepository.getDataModel(),
     customListsRepository.listCustomLists(),
-    appConfigRepository.getAppConfig(),
     scenarioIterationRuleRepository.getRule({ ruleId }),
+    continuousScreening.listConfigurations(),
   ]);
 
   return {
@@ -103,11 +107,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     payloadAccessors,
     dataModel,
     customLists,
-    isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
+    isAiRuleDescriptionEnabled: context.appConfig.isManagedMarble,
     rule,
     hasValidLicense: hasAnyEntitlement(entitlements),
+    screeningConfigs,
   };
-}
+});
 
 const editRuleFormSchema = z.object({
   name: z.string().nonempty(),
@@ -119,62 +124,52 @@ const editRuleFormSchema = z.object({
 
 type EditRuleForm = z.infer<typeof editRuleFormSchema>;
 
-export async function action({ request, params }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
+type EditRuleActionResult = ServerFnResult<
+  { status: 'success'; errors: never[] } | { status: 'error'; errors: unknown }
+>;
 
-  const [session, data, { scenarioIterationRuleRepository }] = await Promise.all([
-    getSession(request),
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+export const action = createServerFn(
+  [authMiddleware],
+  async function editRuleAction({ request, context, params }): EditRuleActionResult {
+    const { toastSessionService } = context.services;
+    const { scenarioIterationRuleRepository } = context.authInfo;
 
-  const result = editRuleFormSchema.safeParse(data);
+    const [toastSession, raw] = await Promise.all([toastSessionService.getSession(request), request.json()]);
 
-  if (!result.success) {
-    return json(
-      { status: 'error', errors: z.treeifyError(result.error) },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
+    const result = editRuleFormSchema.safeParse(raw);
 
-  try {
-    await scenarioIterationRuleRepository.updateRule({
-      ruleId: fromParams(params, 'ruleId'),
-      ...result.data,
-    });
+    if (!result.success) {
+      return data({ status: 'error' as const, errors: z.treeifyError(result.error) }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    }
 
-    setToastMessage(session, {
-      type: 'success',
-      messageKey: 'common:success.save',
-    });
+    try {
+      await scenarioIterationRuleRepository.updateRule({
+        ruleId: fromParams(params, 'ruleId'),
+        ...result.data,
+      });
 
-    return json(
-      { status: 'success', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  } catch (_error) {
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
+      setToastMessage(toastSession, {
+        type: 'success',
+        messageKey: 'common:success.save',
+      });
 
-    return json(
-      { status: 'error', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
-}
+      return data({ status: 'success' as const, errors: [] }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    } catch {
+      setToastMessage(toastSession, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
+
+      return data({ status: 'error' as const, errors: [] }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    }
+  },
+);
 
 export default function RuleDetail() {
   const {
@@ -185,6 +180,7 @@ export default function RuleDetail() {
     isAiRuleDescriptionEnabled,
     rule,
     hasValidLicense,
+    screeningConfigs,
   } = useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
@@ -258,6 +254,7 @@ export default function RuleDetail() {
     triggerObjectType: scenario.triggerObjectType,
     rule,
     hasValidLicense,
+    screeningConfigs,
   };
 
   //TODO Add errors from the servers if they are present
