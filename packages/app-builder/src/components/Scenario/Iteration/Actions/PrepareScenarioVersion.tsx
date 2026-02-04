@@ -157,18 +157,18 @@ function PrepareScenarioVersionContent({
             )}
           </form.Field>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 className="flex-1" variant="primary" type="submit">
-            <Icon icon="queue-list" className="size-5" />
-            {t('scenarios:deployment_modal.prepare.button')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 className="flex-1" variant="primary" type="submit">
+          <Icon icon="queue-list" className="size-5" />
+          {t('scenarios:deployment_modal.prepare.button')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

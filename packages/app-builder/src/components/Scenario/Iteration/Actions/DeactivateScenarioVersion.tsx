@@ -106,18 +106,18 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
           </form.Field>
           <p className="text-grey-disabled text-xs font-medium">{t('scenarios:deployment_modal.deactivate.helper')}</p>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 className="flex-1" variant="destructive" type="submit">
-            <Icon icon="stop" className="size-5" />
-            {t('scenarios:deployment_modal.deactivate.button')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 className="flex-1" variant="destructive" type="submit">
+          <Icon icon="stop" className="size-5" />
+          {t('scenarios:deployment_modal.deactivate.button')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

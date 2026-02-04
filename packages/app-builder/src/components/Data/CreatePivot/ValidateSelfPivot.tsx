@@ -17,16 +17,18 @@ export function ValidateSelfPivot({
   const { t } = useTranslation(['common', 'data']);
 
   return (
-    <div className="bg-surface-card inline-block w-full flex-col gap-6 p-6">
-      <Trans
-        t={t}
-        i18nKey="data:create_pivot.validate_self_link.description"
-        values={{ table: tableModel.name }}
-        components={{
-          Code: <Code />,
-        }}
-      />
-      <Modal.Footer className="pt-4">
+    <>
+      <div className="bg-surface-card inline-block w-full flex-col gap-6 p-6">
+        <Trans
+          t={t}
+          i18nKey="data:create_pivot.validate_self_link.description"
+          values={{ table: tableModel.name }}
+          components={{
+            Code: <Code />,
+          }}
+        />
+      </div>
+      <Modal.Footer>
         <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" onClick={onBack}>
           {t('common:back')}
         </ButtonV2>
@@ -35,6 +37,6 @@ export function ValidateSelfPivot({
           {t('common:validate')}
         </ButtonV2>
       </Modal.Footer>
-    </div>
+    </>
   );
 }

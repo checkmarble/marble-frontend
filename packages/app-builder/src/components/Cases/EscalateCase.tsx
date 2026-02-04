@@ -73,17 +73,17 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
           <Callout className="text-balance">
             <Trans i18nKey="cases:escalate-case.modal.callout" />
           </Callout>
-          <form onSubmit={handleSubmit(form)}>
-            <Modal.Footer>
-              <Modal.Close asChild>
-                <ButtonV2 variant="secondary" appearance="stroked" type="button">
-                  {t('common:cancel')}
-                </ButtonV2>
-              </Modal.Close>
-              <ButtonV2 type="submit">{t('cases:escalate-case.modal.submit-button.label')}</ButtonV2>
-            </Modal.Footer>
-          </form>
         </div>
+        <form onSubmit={handleSubmit(form)}>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <ButtonV2 variant="secondary" appearance="stroked" type="button">
+                {t('common:cancel')}
+              </ButtonV2>
+            </Modal.Close>
+            <ButtonV2 type="submit">{t('cases:escalate-case.modal.submit-button.label')}</ButtonV2>
+          </Modal.Footer>
+        </form>
       </Modal.Content>
     </Modal.Root>
   );

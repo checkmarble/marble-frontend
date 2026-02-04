@@ -231,17 +231,17 @@ export function EditField({
                 )}
               </form.Field>
             ) : null}
-            <Modal.Footer>
-              <Modal.Close asChild>
-                <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
-                  {t('common:cancel')}
-                </ButtonV2>
-              </Modal.Close>
-              <ButtonV2 className="flex-1" variant="primary" type="submit" name="edit">
-                {t('data:edit_field.button_accept')}
-              </ButtonV2>
-            </Modal.Footer>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </ButtonV2>
+            </Modal.Close>
+            <ButtonV2 className="flex-1" variant="primary" type="submit" name="edit">
+              {t('data:edit_field.button_accept')}
+            </ButtonV2>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

@@ -8,7 +8,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, ModalV2 as Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function AddListValueModal({ listId }: { listId: string }) {
@@ -39,10 +39,12 @@ export function AddListValueModal({ listId }: { listId: string }) {
   });
 
   return (
-    <Modal.Root open={isOpen} setOpen={setIsOpen}>
-      <Modal.Trigger render={<ButtonV2 />}>
-        <Icon icon="plus" className="size-5" />
-        {t('lists:create_value.title')}
+    <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Modal.Trigger asChild>
+        <ButtonV2>
+          <Icon icon="plus" className="size-5" />
+          {t('lists:create_value.title')}
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content>
         <form
@@ -77,28 +79,26 @@ export function AddListValueModal({ listId }: { listId: string }) {
                 </div>
               )}
             </form.Field>
-            <Modal.Footer>
-              <Modal.Close
-                render={
-                  <ButtonV2
-                    type="button"
-                    variant="secondary"
-                    appearance="stroked"
-                    key="cancel"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setIsOpen(false);
-                    }}
-                  />
-                }
+          </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <ButtonV2
+                type="button"
+                variant="secondary"
+                appearance="stroked"
+                key="cancel"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsOpen(false);
+                }}
               >
                 {t('common:cancel')}
-              </Modal.Close>
-              <ButtonV2 variant="primary" type="submit" key="create">
-                {t('common:save')}
               </ButtonV2>
-            </Modal.Footer>
-          </div>
+            </Modal.Close>
+            <ButtonV2 variant="primary" type="submit" key="create">
+              {t('common:save')}
+            </ButtonV2>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

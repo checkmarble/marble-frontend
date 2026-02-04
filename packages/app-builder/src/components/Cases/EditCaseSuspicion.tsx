@@ -191,28 +191,28 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                     </span>
                   ) : null}
                 </div>
-                <Modal.Footer>
-                  <Modal.Close asChild>
-                    <ButtonV2 variant="secondary" appearance="stroked">
-                      {t('common:cancel')}
-                    </ButtonV2>
-                  </Modal.Close>
-                  <ButtonV2
-                    type="submit"
-                    disabled={isCompleted && reportFile === undefined}
-                    onClick={() => {
-                      field.handleChange('completed');
-                      form.handleSubmit();
-                    }}
-                  >
-                    {isCompleted
-                      ? t('cases:sar.modale.save')
-                      : reportFile
-                        ? t('cases:sar.modale.confirm_with_file')
-                        : t('cases:sar.modale.confirm_without_file')}
-                  </ButtonV2>
-                </Modal.Footer>
               </div>
+              <Modal.Footer>
+                <Modal.Close asChild>
+                  <ButtonV2 variant="secondary" appearance="stroked">
+                    {t('common:cancel')}
+                  </ButtonV2>
+                </Modal.Close>
+                <ButtonV2
+                  type="submit"
+                  disabled={isCompleted && reportFile === undefined}
+                  onClick={() => {
+                    field.handleChange('completed');
+                    form.handleSubmit();
+                  }}
+                >
+                  {isCompleted
+                    ? t('cases:sar.modale.save')
+                    : reportFile
+                      ? t('cases:sar.modale.confirm_with_file')
+                      : t('cases:sar.modale.confirm_without_file')}
+                </ButtonV2>
+              </Modal.Footer>
             </Modal.Content>
           </Modal.Root>
         </div>

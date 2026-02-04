@@ -19,7 +19,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, ModalV2 } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 
 export function UpdateWebhook({
   defaultValue,
@@ -33,12 +33,12 @@ export function UpdateWebhook({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger render={children} />
-      <ModalV2.Content>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
         <UpdateWebhookContent defaultValue={defaultValue} webhookStatus={webhookStatus} setOpen={setOpen} />
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -80,7 +80,7 @@ function UpdateWebhookContent({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('settings:webhooks.update_webhook')}</ModalV2.Title>
+      <Modal.Title>{t('settings:webhooks.update_webhook')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <form.Field
           name="eventTypes"
@@ -149,17 +149,18 @@ function UpdateWebhookContent({
             </div>
           )}
         </form.Field>
-
-        <ModalV2.Footer>
-          <ModalV2.Close render={<ButtonV2 variant="secondary" appearance="stroked" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <ButtonV2 variant="primary" type="submit" name="update" disabled={updateWebhookMutation.isPending}>
-            <LoadingIcon icon="edit-square" className="size-5" loading={updateWebhookMutation.isPending} />
-            {t('settings:webhooks.update_webhook')}
-          </ButtonV2>
-        </ModalV2.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="primary" type="submit" name="update" disabled={updateWebhookMutation.isPending}>
+          <LoadingIcon icon="edit-square" className="size-5" loading={updateWebhookMutation.isPending} />
+          {t('settings:webhooks.update_webhook')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

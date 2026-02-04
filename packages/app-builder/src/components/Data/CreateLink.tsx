@@ -235,17 +235,17 @@ function CreateLinkContent({
           </div>
           <p>{t('data:create_link.must_point_to_unique_field')}</p>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 className="flex-1" variant="primary" type="submit" name="create">
-            {t('data:create.button_accept')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 className="flex-1" variant="primary" type="submit" name="create">
+          {t('data:create.button_accept')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

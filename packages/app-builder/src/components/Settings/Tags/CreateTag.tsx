@@ -137,17 +137,17 @@ const CreateTagContent = ({ onSuccess }: { onSuccess: () => void }) => {
             )}
           </form.Field>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" type="button" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 variant="primary" type="submit" name="create" disabled={createTagMutation.isPending}>
-            {t('settings:tags.new_tag.create')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked" type="button" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="primary" type="submit" name="create" disabled={createTagMutation.isPending}>
+          {t('settings:tags.new_tag.create')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 };

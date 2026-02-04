@@ -239,15 +239,15 @@ const ResultModal = ({
               </>
             ) : null}
           </div>
-          <Modal.Footer>
-            <Modal.Close asChild>
-              <ButtonV2 variant="primary">
-                <Icon icon="tick" className="size-5" />
-                {t('common:understand')}
-              </ButtonV2>
-            </Modal.Close>
-          </Modal.Footer>
         </div>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <ButtonV2 variant="primary">
+              <Icon icon="tick" className="size-5" />
+              {t('common:understand')}
+            </ButtonV2>
+          </Modal.Close>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

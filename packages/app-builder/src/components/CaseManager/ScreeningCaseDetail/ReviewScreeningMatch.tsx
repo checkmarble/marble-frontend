@@ -55,35 +55,37 @@ export const ReviewScreeningMatch = ({
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content size="small">
         <Modal.Title>{t('screenings:review_modal.title')}</Modal.Title>
-        <form className="flex flex-col gap-8 p-8" onSubmit={handleSubmit(form)} id="review-screening-match">
-          <input name="matchId" type="hidden" value={screeningMatch.id} />
-          <form.Field name="status">
-            {(field) => {
-              return (
-                <div className="flex flex-col gap-2">
-                  <div className="text-m">{t('screenings:review_modal.status_label')}</div>
-                  <StatusRadioGroup value={field.state.value} onChange={field.handleChange} />
-                  {currentStatus === 'confirmed_hit' && automaticallyConfirmScreening ? (
-                    <Callout>{t('screenings:review_modal.callout_confirmed_hit')}</Callout>
-                  ) : null}
-                </div>
-              );
-            }}
-          </form.Field>
-          <form.Field name="comment">
-            {(field) => {
-              return (
-                <div className="flex flex-col gap-2">
-                  <div className="text-m">{t('screenings:review_modal.comment_label')}</div>
-                  <TextArea
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                </div>
-              );
-            }}
-          </form.Field>
+        <form onSubmit={handleSubmit(form)} id="review-screening-match">
+          <div className="flex flex-col gap-8 p-8">
+            <input name="matchId" type="hidden" value={screeningMatch.id} />
+            <form.Field name="status">
+              {(field) => {
+                return (
+                  <div className="flex flex-col gap-2">
+                    <div className="text-m">{t('screenings:review_modal.status_label')}</div>
+                    <StatusRadioGroup value={field.state.value} onChange={field.handleChange} />
+                    {currentStatus === 'confirmed_hit' && automaticallyConfirmScreening ? (
+                      <Callout>{t('screenings:review_modal.callout_confirmed_hit')}</Callout>
+                    ) : null}
+                  </div>
+                );
+              }}
+            </form.Field>
+            <form.Field name="comment">
+              {(field) => {
+                return (
+                  <div className="flex flex-col gap-2">
+                    <div className="text-m">{t('screenings:review_modal.comment_label')}</div>
+                    <TextArea
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                  </div>
+                );
+              }}
+            </form.Field>
+          </div>
           <Modal.Footer>
             <Modal.Close asChild>
               <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">

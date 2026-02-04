@@ -102,17 +102,17 @@ export function EditListModal({ listId, name, description }: { listId: string; n
                 )}
               </form.Field>
             </div>
-            <Modal.Footer>
-              <Modal.Close asChild>
-                <ButtonV2 type="button" variant="secondary" appearance="stroked">
-                  {t('common:cancel')}
-                </ButtonV2>
-              </Modal.Close>
-              <ButtonV2 variant="primary" type="submit" name="editList">
-                {t('common:save')}
-              </ButtonV2>
-            </Modal.Footer>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <ButtonV2 type="button" variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </ButtonV2>
+            </Modal.Close>
+            <ButtonV2 variant="primary" type="submit" name="editList">
+              {t('common:save')}
+            </ButtonV2>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

@@ -120,17 +120,6 @@ export function SelectTargetEntity({
             </div>
           )}
         </form.Field>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-
-          <ButtonV2 className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
-            {t('data:create_pivot.entity_selection.button_accept')}
-          </ButtonV2>
-        </Modal.Footer>
         {hasFieldOptions ? (
           <div className="flex flex-col gap-4">
             <div className="w-full border-b text-center leading-[0.1em]">
@@ -169,6 +158,17 @@ export function SelectTargetEntity({
           </div>
         ) : null}
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+
+        <ButtonV2 className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
+          {t('data:create_pivot.entity_selection.button_accept')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

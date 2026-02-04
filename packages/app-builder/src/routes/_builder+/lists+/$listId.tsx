@@ -30,7 +30,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
-import { ButtonV2, CtaClassName, Input, ModalV2, Table, useVirtualTable } from 'ui-design-system';
+import { ButtonV2, CtaClassName, Input, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -364,13 +364,13 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
         {t('lists:pick_csv')}
       </ButtonV2>
 
-      <ModalV2.Root
+      <Modal.Root
         open={modalState.open}
-        setOpen={(open) => {
+        onOpenChange={(open) => {
           dispatch({ type: 'setOpen', open });
         }}
       >
-        <ModalV2.Content onClick={(e) => e.stopPropagation()}>
+        <Modal.Content onClick={(e) => e.stopPropagation()}>
           <div className="bg-surface-card text-s flex flex-col items-center gap-6 p-6">
             <Icon
               icon={modalState.success ? 'tick' : 'cross'}
@@ -408,15 +408,17 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
                 <p>{modalState.message}</p>
               )}
             </div>
-            <ModalV2.Footer>
-              <ModalV2.Close render={<ButtonV2 variant="primary" />}>
+          </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <ButtonV2 variant="primary">
                 <Icon icon="tick" className="size-5" />
                 {t('common:understand')}
-              </ModalV2.Close>
-            </ModalV2.Footer>
-          </div>
-        </ModalV2.Content>
-      </ModalV2.Root>
+              </ButtonV2>
+            </Modal.Close>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
     </UploadAsCsvDropzone>
   );
 }

@@ -130,18 +130,18 @@ function WorkflowContent() {
                         })}
                       </p>
                     </div>
-                    <Modal.Footer>
-                      <Modal.Close asChild>
-                        <ButtonV2 variant="secondary" appearance="stroked" onClick={cancelDeleteRule}>
-                          {t('common:cancel')}
-                        </ButtonV2>
-                      </Modal.Close>
-                      <ButtonV2 variant="destructive" onClick={confirmDeleteRule}>
-                        <Icon icon="delete" className="size-4" />
-                        {t('workflows:delete_rule.delete_button')}
-                      </ButtonV2>
-                    </Modal.Footer>
                   </div>
+                  <Modal.Footer>
+                    <Modal.Close asChild>
+                      <ButtonV2 variant="secondary" appearance="stroked" onClick={cancelDeleteRule}>
+                        {t('common:cancel')}
+                      </ButtonV2>
+                    </Modal.Close>
+                    <ButtonV2 variant="destructive" onClick={confirmDeleteRule}>
+                      <Icon icon="delete" className="size-4" />
+                      {t('workflows:delete_rule.delete_button')}
+                    </ButtonV2>
+                  </Modal.Footer>
                 </Modal.Content>
               </Modal.Root>
             </>

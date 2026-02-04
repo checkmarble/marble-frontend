@@ -167,17 +167,17 @@ function UpdateUserContent({
             )}
           </form.Field>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 variant="primary" type="submit" name="update">
-            {t('common:save')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="primary" type="submit" name="update">
+          {t('common:save')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

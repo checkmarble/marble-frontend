@@ -77,24 +77,24 @@ const ExistingDraftModal = ({
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist')}</p>
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist_possibility')}</p>
           </div>
-          <Modal.Footer>
-            <Modal.Close asChild>
-              <ButtonV2
-                className="flex-1"
-                variant="secondary"
-                appearance="stroked"
-                onClick={() =>
-                  navigate(location.pathname.replace(fromUUIDtoSUUID(iterationId), fromUUIDtoSUUID(draftId)))
-                }
-              >
-                {t('scenarios:create_draft.keep_existing_draft')}
-              </ButtonV2>
-            </Modal.Close>
-            <ButtonV2 className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
-              {t('scenarios:create_draft.override_existing_draft')}
-            </ButtonV2>
-          </Modal.Footer>
         </div>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <ButtonV2
+              className="flex-1"
+              variant="secondary"
+              appearance="stroked"
+              onClick={() =>
+                navigate(location.pathname.replace(fromUUIDtoSUUID(iterationId), fromUUIDtoSUUID(draftId)))
+              }
+            >
+              {t('scenarios:create_draft.keep_existing_draft')}
+            </ButtonV2>
+          </Modal.Close>
+          <ButtonV2 className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
+            {t('scenarios:create_draft.override_existing_draft')}
+          </ButtonV2>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

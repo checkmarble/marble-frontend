@@ -37,25 +37,25 @@ export function DeleteScreeningRule({
             <h1 className="text-l font-semibold">{t('scenarios:delete_sanction.title')}</h1>
             <p className="text-center">{t('scenarios:delete_sanction.content')}</p>
           </div>
-          <Modal.Footer>
-            <Modal.Close asChild>
-              <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
-                {t('common:cancel')}
-              </ButtonV2>
-            </Modal.Close>
-            <ButtonV2
-              variant="destructive"
-              className="flex-1"
-              type="button"
-              name="delete"
-              onClick={handleDeleteScreeningRule}
-              disabled={deleteScreeningRuleMutation.isPending}
-            >
-              <Icon icon="delete" className="size-5" />
-              {t('common:delete')}
-            </ButtonV2>
-          </Modal.Footer>
         </div>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+              {t('common:cancel')}
+            </ButtonV2>
+          </Modal.Close>
+          <ButtonV2
+            variant="destructive"
+            className="flex-1"
+            type="button"
+            name="delete"
+            onClick={handleDeleteScreeningRule}
+            disabled={deleteScreeningRuleMutation.isPending}
+          >
+            <Icon icon="delete" className="size-5" />
+            {t('common:delete')}
+          </ButtonV2>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

@@ -138,18 +138,18 @@ function ActivateScenarioVersionContent({
             <RuleSnoozeDetail scenarioId={scenario.id} iterationId={iterationId} />
           </div>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 className="flex-1" variant="primary" type="submit">
-            <Icon icon="pushtolive" className="size-5" />
-            {t('scenarios:deployment_modal.activate.button')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 className="flex-1" variant="primary" type="submit">
+          <Icon icon="pushtolive" className="size-5" />
+          {t('scenarios:deployment_modal.activate.button')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

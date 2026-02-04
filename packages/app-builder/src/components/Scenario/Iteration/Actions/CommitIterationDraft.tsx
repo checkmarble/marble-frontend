@@ -150,18 +150,18 @@ function CommitScenarioDraftContent({ scenarioId, iterationId }: { scenarioId: s
             )}
           </form.Field>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 className="flex-1" variant="primary" type="submit">
-            <Icon icon="commit" className="size-5" />
-            {t('scenarios:deployment_modal.commit.button')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 className="flex-1" variant="primary" type="submit">
+          <Icon icon="commit" className="size-5" />
+          {t('scenarios:deployment_modal.commit.button')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

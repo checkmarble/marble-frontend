@@ -98,17 +98,17 @@ export function CreateListModal() {
                 )}
               </form.Field>
             </div>
-            <Modal.Footer>
-              <Modal.Close asChild>
-                <ButtonV2 type="button" variant="secondary" appearance="stroked">
-                  {t('common:cancel')}
-                </ButtonV2>
-              </Modal.Close>
-              <ButtonV2 variant="primary" type="submit" name="create">
-                {t('lists:create_list.button_accept')}
-              </ButtonV2>
-            </Modal.Footer>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <ButtonV2 type="button" variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </ButtonV2>
+            </Modal.Close>
+            <ButtonV2 variant="primary" type="submit" name="create">
+              {t('lists:create_list.button_accept')}
+            </ButtonV2>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

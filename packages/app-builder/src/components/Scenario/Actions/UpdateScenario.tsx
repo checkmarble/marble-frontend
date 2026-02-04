@@ -11,7 +11,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, ModalV2 } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 
 export function UpdateScenario({
   children,
@@ -23,12 +23,12 @@ export function UpdateScenario({
   const [open, setOpen] = React.useState(false);
 
   return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger render={children} />
-      <ModalV2.Content>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
         <UpdateScenarioContent defaultValue={defaultValue} onUpdateSuccess={() => setOpen(false)} />
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -62,7 +62,7 @@ function UpdateScenarioContent({
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <ModalV2.Title>{t('scenarios:update_scenario.title')}</ModalV2.Title>
+      <Modal.Title>{t('scenarios:update_scenario.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <form.Field
           name="name"
@@ -110,15 +110,17 @@ function UpdateScenarioContent({
             </div>
           )}
         </form.Field>
-        <ModalV2.Footer>
-          <ModalV2.Close render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <ButtonV2 className="flex-1" variant="primary" type="submit">
-            {t('common:save')}
-          </ButtonV2>
-        </ModalV2.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 className="flex-1" variant="primary" type="submit">
+          {t('common:save')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

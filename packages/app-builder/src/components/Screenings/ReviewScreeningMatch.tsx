@@ -12,7 +12,7 @@ import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, ModalV2, Switch, TextArea } from 'ui-design-system';
+import { ButtonV2, Modal, Switch, TextArea } from 'ui-design-system';
 
 export const ReviewScreeningMatch = ({
   open,
@@ -52,77 +52,81 @@ export const ReviewScreeningMatch = ({
   const currentStatus = useStore(form.store, (state) => state.values.status);
 
   return (
-    <ModalV2.Content
+    <Modal.Root
       open={open}
-      hideOnInteractOutside={(event) => {
-        event.stopPropagation();
-        // Prevent people from losing their work by clicking accidentally outside the modal
-        return false;
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
       }}
-      onClose={onClose}
-      size="small"
     >
-      <ModalV2.Title>{t('screenings:review_modal.title')}</ModalV2.Title>
-      <form className="flex flex-col gap-8 p-8" onSubmit={handleSubmit(form)} id="review-screening-match">
-        <input name="matchId" type="hidden" value={screeningMatch.id} />
-        <form.Field name="status">
-          {(field) => {
-            return (
-              <div className="flex flex-col gap-2">
-                <div className="text-m">{t('screenings:review_modal.status_label')}</div>
-                <StatusRadioGroup value={field.state.value} onChange={field.handleChange} />
-                {currentStatus === 'confirmed_hit' ? (
-                  <Callout>{t('screenings:review_modal.callout_confirmed_hit')}</Callout>
-                ) : null}
-              </div>
-            );
-          }}
-        </form.Field>
-        <form.Field name="comment">
-          {(field) => {
-            return (
-              <div className="flex flex-col gap-2">
-                <div className="text-m">{t('screenings:review_modal.comment_label')}</div>
-                <TextArea
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-              </div>
-            );
-          }}
-        </form.Field>
-        {/* TODO: Whitelisting */}
-        {currentStatus === 'no_hit' && !!screeningMatch.uniqueCounterpartyIdentifier ? (
-          <form.Field name="whitelist">
+      <Modal.Content
+        size="small"
+        onInteractOutside={(event) => {
+          event.preventDefault();
+        }}
+      >
+        <Modal.Title>{t('screenings:review_modal.title')}</Modal.Title>
+        <form className="flex flex-col gap-8 p-8" onSubmit={handleSubmit(form)} id="review-screening-match">
+          <input name="matchId" type="hidden" value={screeningMatch.id} />
+          <form.Field name="status">
             {(field) => {
               return (
                 <div className="flex flex-col gap-2">
-                  <span className="flex items-center gap-2">
-                    <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
-                    {t('screenings:review_modal.whitelist_label')}
-                  </span>
-                  <div className="border-grey-border bg-grey-background-light flex flex-col gap-2 rounded-sm border p-2">
-                    <span className="font-semibold">{t('screenings:match.unique_counterparty_identifier')}</span>
-                    <span>{screeningMatch.uniqueCounterpartyIdentifier}</span>
-                  </div>
+                  <div className="text-m">{t('screenings:review_modal.status_label')}</div>
+                  <StatusRadioGroup value={field.state.value} onChange={field.handleChange} />
+                  {currentStatus === 'confirmed_hit' ? (
+                    <Callout>{t('screenings:review_modal.callout_confirmed_hit')}</Callout>
+                  ) : null}
                 </div>
               );
             }}
           </form.Field>
-        ) : null}
-        <ModalV2.Footer>
-          <ModalV2.Close
-            render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel" />}
-          >
-            {t('common:cancel')}
-          </ModalV2.Close>
+          <form.Field name="comment">
+            {(field) => {
+              return (
+                <div className="flex flex-col gap-2">
+                  <div className="text-m">{t('screenings:review_modal.comment_label')}</div>
+                  <TextArea
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                </div>
+              );
+            }}
+          </form.Field>
+          {/* TODO: Whitelisting */}
+          {currentStatus === 'no_hit' && !!screeningMatch.uniqueCounterpartyIdentifier ? (
+            <form.Field name="whitelist">
+              {(field) => {
+                return (
+                  <div className="flex flex-col gap-2">
+                    <span className="flex items-center gap-2">
+                      <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
+                      {t('screenings:review_modal.whitelist_label')}
+                    </span>
+                    <div className="border-grey-border bg-grey-background-light flex flex-col gap-2 rounded-sm border p-2">
+                      <span className="font-semibold">{t('screenings:match.unique_counterparty_identifier')}</span>
+                      <span>{screeningMatch.uniqueCounterpartyIdentifier}</span>
+                    </div>
+                  </div>
+                );
+              }}
+            </form.Field>
+          ) : null}
+        </form>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+              {t('common:cancel')}
+            </ButtonV2>
+          </Modal.Close>
           <ButtonV2
             type={currentStatus === 'confirmed_hit' ? 'button' : 'submit'}
             disabled={!currentStatus}
             className="flex-1"
             variant="primary"
             name="save"
+            form="review-screening-match"
             onClick={() => {
               if (currentStatus === 'confirmed_hit') {
                 setIsConfirming(true);
@@ -131,31 +135,33 @@ export const ReviewScreeningMatch = ({
           >
             {t('common:save')}
           </ButtonV2>
-          <ModalV2.Content open={isConfirming} onClose={() => setIsConfirming(false)}>
-            <ModalV2.Title>{t('screenings:review_modal.confirmation')}</ModalV2.Title>
+        </Modal.Footer>
+        <Modal.Root open={isConfirming} onOpenChange={setIsConfirming}>
+          <Modal.Content>
+            <Modal.Title>{t('screenings:review_modal.confirmation')}</Modal.Title>
             <div className="flex flex-col gap-4 p-6">
               <div>{t('screenings:review_modal.callout_confirmed_hit')}</div>
-              <ModalV2.Footer>
-                <ModalV2.Close
-                  render={<ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel" />}
-                >
-                  {t('common:cancel')}
-                </ModalV2.Close>
-                <ButtonV2
-                  disabled={!currentStatus}
-                  className="flex-1"
-                  variant="primary"
-                  name="save"
-                  form="review-screening-match"
-                  type="submit"
-                >
-                  {t('common:save')}
-                </ButtonV2>
-              </ModalV2.Footer>
             </div>
-          </ModalV2.Content>
-        </ModalV2.Footer>
-      </form>
-    </ModalV2.Content>
+            <Modal.Footer>
+              <Modal.Close asChild>
+                <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+                  {t('common:cancel')}
+                </ButtonV2>
+              </Modal.Close>
+              <ButtonV2
+                disabled={!currentStatus}
+                className="flex-1"
+                variant="primary"
+                name="save"
+                form="review-screening-match"
+                type="submit"
+              >
+                {t('common:save')}
+              </ButtonV2>
+            </Modal.Footer>
+          </Modal.Content>
+        </Modal.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 };

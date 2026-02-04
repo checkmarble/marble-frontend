@@ -57,24 +57,24 @@ const DeleteUserContent = ({ userId, onSuccess }: { userId: string; onSuccess: (
           <input name="userId" value={userId} type="hidden" />
           <p className="text-center">{t('settings:users.delete_user.content')}</p>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2
-            variant="destructive"
-            type="submit"
-            name="delete"
-            onClick={handleDeleteUser}
-            disabled={deleteUserMutation.isPending}
-          >
-            <Icon icon="delete" className="size-5" />
-            {t('common:delete')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2
+          variant="destructive"
+          type="submit"
+          name="delete"
+          onClick={handleDeleteUser}
+          disabled={deleteUserMutation.isPending}
+        >
+          <Icon icon="delete" className="size-5" />
+          {t('common:delete')}
+        </ButtonV2>
+      </Modal.Footer>
     </>
   );
 };

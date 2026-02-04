@@ -42,29 +42,31 @@ export const OpenCase = ({ id }: { id: string }) => {
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
-        <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
-          <Callout>Are you sure you want to re-open the case ?</Callout>
-          <form.Field
-            name="comment"
-            validators={{
-              onChange: openCasePayloadSchema.shape.comment,
-              onBlur: openCasePayloadSchema.shape.comment,
-            }}
-          >
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                <FormLabel name={field.name}>Add a comment</FormLabel>
-                <FormTextArea
-                  name={field.name}
-                  defaultValue={field.state.value}
-                  placeholder="Input your comment here"
-                  valid={field.state.meta.errors.length === 0}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
+        <form onSubmit={handleSubmit(form)}>
+          <div className="flex flex-col gap-8 p-8">
+            <Callout>Are you sure you want to re-open the case ?</Callout>
+            <form.Field
+              name="comment"
+              validators={{
+                onChange: openCasePayloadSchema.shape.comment,
+                onBlur: openCasePayloadSchema.shape.comment,
+              }}
+            >
+              {(field) => (
+                <div className="flex flex-col gap-2">
+                  <FormLabel name={field.name}>Add a comment</FormLabel>
+                  <FormTextArea
+                    name={field.name}
+                    defaultValue={field.state.value}
+                    placeholder="Input your comment here"
+                    valid={field.state.meta.errors.length === 0}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                </div>
+              )}
+            </form.Field>
+          </div>
           <Modal.Footer>
             <Modal.Close asChild>
               <ButtonV2 variant="secondary" appearance="stroked">

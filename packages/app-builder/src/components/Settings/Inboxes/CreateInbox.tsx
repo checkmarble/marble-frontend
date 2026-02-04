@@ -13,7 +13,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, HiddenInputs, ModalV2 } from 'ui-design-system';
+import { ButtonV2, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInbox({
@@ -25,18 +25,17 @@ export function CreateInbox({
   const [open, setOpen] = useState(false);
 
   return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger
-        onClick={(e) => e.stopPropagation()}
-        render={<ButtonV2 className="whitespace-nowrap" variant="secondary" appearance="stroked" />}
-      >
-        <Icon icon="new-inbox" className="size-5 shrink-0" />
-        {t('settings:inboxes.new_inbox.create')}
-      </ModalV2.Trigger>
-      <ModalV2.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxContent redirectRoutePath={redirectRoutePath} setOpen={setOpen} />
-      </ModalV2.Content>
-    </ModalV2.Root>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
+        <ButtonV2 className="whitespace-nowrap" variant="secondary" appearance="stroked">
+          <Icon icon="new-inbox" className="size-5 shrink-0" />
+          {t('settings:inboxes.new_inbox.create')}
+        </ButtonV2>
+      </Modal.Trigger>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
+        <CreateInboxContent setOpen={setOpen} redirectRoutePath={redirectRoutePath} />
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -78,7 +77,7 @@ export function CreateInboxContent({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('settings:inboxes.new_inbox.explain')}</ModalV2.Title>
+      <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <HiddenInputs redirectRoute={redirectRoutePath} />
         <form.Field
@@ -102,16 +101,18 @@ export function CreateInboxContent({
             </div>
           )}
         </form.Field>
-        <ModalV2.Footer>
-          <ModalV2.Close render={<ButtonV2 variant="secondary" appearance="stroked" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <ButtonV2 variant="primary" type="submit" name="create" disabled={createInboxMutation.isPending}>
-            <Icon icon="new-inbox" className="size-5" />
-            {t('settings:inboxes.new_inbox.create')}
-          </ButtonV2>
-        </ModalV2.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="primary" type="submit" name="create" disabled={createInboxMutation.isPending}>
+          <Icon icon="new-inbox" className="size-5" />
+          {t('settings:inboxes.new_inbox.create')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

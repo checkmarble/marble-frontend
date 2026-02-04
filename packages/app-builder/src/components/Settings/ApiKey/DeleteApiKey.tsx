@@ -44,18 +44,18 @@ function DeleteApiKeyContent({ apiKey, onSuccess }: { apiKey: ApiKey; onSuccess:
           <input name="apiKeyId" value={apiKey.id} type="hidden" />
           <p className="text-center">{t('settings:api_keys.delete.content')}</p>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 variant="destructive" name="delete" onClick={handleDeleteApiKey}>
-            <Icon icon="delete" className="size-5" />
-            {t('common:delete')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="destructive" name="delete" onClick={handleDeleteApiKey}>
+          <Icon icon="delete" className="size-5" />
+          {t('common:delete')}
+        </ButtonV2>
+      </Modal.Footer>
     </>
   );
 }

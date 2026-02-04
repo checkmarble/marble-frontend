@@ -19,7 +19,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, ModalV2, Select, TextArea } from 'ui-design-system';
+import { ButtonV2, Modal, Select, TextArea } from 'ui-design-system';
 
 export function AddRuleSnooze({
   decisionId,
@@ -33,12 +33,12 @@ export function AddRuleSnooze({
   const [open, setOpen] = useState(false);
 
   return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger render={children} />
-      <ModalV2.Content>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
         <AddRuleSnoozeContent setOpen={setOpen} decisionId={decisionId} ruleId={ruleId} />
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -95,19 +95,21 @@ function AddRuleSnoozeContent({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('cases:case_detail.add_rule_snooze.title')}</ModalV2.Title>
+      <Modal.Title>{t('cases:case_detail.add_rule_snooze.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre-wrap">
-            <Trans
-              t={t}
-              i18nKey="cases:case_detail.add_rule_snooze.callout"
-              components={{
-                DocLink: <ExternalLink href={ruleSnoozesDocHref} />,
-              }}
-            />
-          </p>
-        </ModalV2.Description>
+        <Modal.Description asChild>
+          <Callout variant="outlined">
+            <p className="whitespace-pre-wrap">
+              <Trans
+                t={t}
+                i18nKey="cases:case_detail.add_rule_snooze.callout"
+                components={{
+                  DocLink: <ExternalLink href={ruleSnoozesDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
+        </Modal.Description>
 
         <form.Field
           name="comment"
@@ -187,17 +189,18 @@ function AddRuleSnoozeContent({
             )}
           </form.Field>
         </div>
-
-        <ModalV2.Footer>
-          <ModalV2.Close render={<ButtonV2 variant="secondary" appearance="stroked" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <ButtonV2 variant="primary" type="submit" name="update">
-            <LoadingIcon icon="snooze" className="size-5" loading={addRuleSnoozeMutation.isPending} />
-            {t('cases:decisions.rule.snooze')}
-          </ButtonV2>
-        </ModalV2.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="primary" type="submit" name="update">
+          <LoadingIcon icon="snooze" className="size-5" loading={addRuleSnoozeMutation.isPending} />
+          {t('cases:decisions.rule.snooze')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

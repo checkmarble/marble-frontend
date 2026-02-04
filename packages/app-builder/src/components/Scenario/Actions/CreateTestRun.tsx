@@ -12,7 +12,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, ModalV2, Select, Tooltip } from 'ui-design-system';
+import { ButtonV2, Modal, Select, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateTestRun({
@@ -40,12 +40,12 @@ export function CreateTestRun({
 
   if (shouldAllowCreate)
     return (
-      <ModalV2.Root open={open} setOpen={setOpen}>
-        <ModalV2.Trigger render={children} />
-        <ModalV2.Content className="overflow-visible">
+      <Modal.Root open={open} onOpenChange={setOpen}>
+        <Modal.Trigger asChild>{children}</Modal.Trigger>
+        <Modal.Content className="overflow-visible">
           <CreateTestRunToContent currentScenario={currentScenario} scenarioIterations={scenarioIterations} />
-        </ModalV2.Content>
-      </ModalV2.Root>
+        </Modal.Content>
+      </Modal.Root>
     );
 
   return (
@@ -107,19 +107,21 @@ function CreateTestRunToContent({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('scenarios:create_testrun.title')}</ModalV2.Title>
+      <Modal.Title>{t('scenarios:create_testrun.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre-wrap">
-            <Trans
-              t={t}
-              i18nKey="scenarios:create_testrun.callout"
-              components={{
-                DocLink: <ExternalLink href={scenarioObjectDocHref} />,
-              }}
-            />
-          </p>
-        </ModalV2.Description>
+        <Modal.Description asChild>
+          <Callout variant="outlined">
+            <p className="whitespace-pre-wrap">
+              <Trans
+                t={t}
+                i18nKey="scenarios:create_testrun.callout"
+                components={{
+                  DocLink: <ExternalLink href={scenarioObjectDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
+        </Modal.Description>
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-row items-start gap-2">
             <form.Field
@@ -195,17 +197,17 @@ function CreateTestRunToContent({
             )}
           </form.Field>
         </div>
-        <ModalV2.Footer>
-          <ModalV2.Close
-            render={<ButtonV2 className="flex-1" type="button" variant="secondary" appearance="stroked" />}
-          >
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <ButtonV2 className="flex-1" variant="primary" type="submit">
-            {t('common:save')}
-          </ButtonV2>
-        </ModalV2.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 className="flex-1" type="button" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 className="flex-1" variant="primary" type="submit">
+          {t('common:save')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

@@ -189,17 +189,17 @@ function CreateUserContent({
             )}
           </form.Field>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 type="button" variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 variant="primary" type="submit" name="create">
-            {t('settings:users.new_user.create')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 type="button" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="primary" type="submit" name="create">
+          {t('settings:users.new_user.create')}
+        </ButtonV2>
+      </Modal.Footer>
     </form>
   );
 }

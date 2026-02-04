@@ -49,18 +49,18 @@ const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser
           <input name="inboxId" value={inboxUser.inboxId} type="hidden" />
           <p className="text-center">{t('settings:inboxes.inbox_user.delete.content')}</p>
         </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
-              {t('common:cancel')}
-            </ButtonV2>
-          </Modal.Close>
-          <ButtonV2 variant="destructive" name="delete" onClick={handleDeleteInboxUser}>
-            <Icon icon="delete" className="size-5" />
-            {t('common:delete')}
-          </ButtonV2>
-        </Modal.Footer>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </ButtonV2>
+        </Modal.Close>
+        <ButtonV2 variant="destructive" name="delete" onClick={handleDeleteInboxUser}>
+          <Icon icon="delete" className="size-5" />
+          {t('common:delete')}
+        </ButtonV2>
+      </Modal.Footer>
     </>
   );
 };

@@ -47,18 +47,18 @@ export function DeleteListModal({ listId }: { listId: string }) {
               <h1 className="text-l font-semibold">{t('lists:delete_list.title')}</h1>
               <p className="text-center">{t('lists:delete_list.content')}</p>
             </div>
-            <Modal.Footer>
-              <Modal.Close asChild>
-                <ButtonV2 variant="secondary" appearance="stroked">
-                  {t('common:cancel')}
-                </ButtonV2>
-              </Modal.Close>
-              <ButtonV2 variant="destructive" type="submit" name="delete">
-                <Icon icon="delete" className="size-5" />
-                {t('common:delete')}
-              </ButtonV2>
-            </Modal.Footer>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <ButtonV2 variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </ButtonV2>
+            </Modal.Close>
+            <ButtonV2 variant="destructive" type="submit" name="delete">
+              <Icon icon="delete" className="size-5" />
+              {t('common:delete')}
+            </ButtonV2>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>
