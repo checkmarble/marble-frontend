@@ -21,7 +21,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Calendar, MenuCommand } from 'ui-design-system';
+import { Button, Calendar, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type Durations = 'tomorrow' | 'oneWeek' | 'oneMonth' | 'nextMonday';
@@ -95,7 +95,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
     >
       {(field) =>
         field.state.value ? (
-          <ButtonV2
+          <Button
             variant="secondary"
             onClick={() => {
               field.handleChange(null);
@@ -104,14 +104,14 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
           >
             <Icon icon="snooze-on" className="size-5" aria-hidden />
             {t('cases:unsnooze_case.title')}
-          </ButtonV2>
+          </Button>
         ) : (
           <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
             <MenuCommand.Trigger>
-              <ButtonV2 variant="secondary">
+              <Button variant="secondary">
                 <Icon icon="snooze" className="size-5" aria-hidden />
                 {t('cases:snooze_case.title')}
-              </ButtonV2>
+              </Button>
             </MenuCommand.Trigger>
             <MenuCommand.Content className="mt-2 min-w-[264px]">
               <MenuCommand.List>

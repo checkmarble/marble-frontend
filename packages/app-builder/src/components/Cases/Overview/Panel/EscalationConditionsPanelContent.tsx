@@ -7,7 +7,7 @@ import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/upd
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { type EscalationCondition, EscalationConditionRow } from './EscalationConditionRow';
@@ -142,9 +142,9 @@ export const EscalationConditionsPanelContent = ({
 
                     {readOnly || conditions.length === inboxes.length ? null : (
                       <div>
-                        <ButtonV2 variant="primary" appearance="stroked" onClick={handleAddCondition}>
+                        <Button variant="primary" appearance="stroked" onClick={handleAddCondition}>
                           {t('cases:overview.panel.escalation.add_condition')}
-                        </ButtonV2>
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -155,7 +155,7 @@ export const EscalationConditionsPanelContent = ({
         </PanelContent>
         {readOnly ? null : (
           <PanelFooter>
-            <ButtonV2
+            <Button
               size="default"
               className="w-full justify-center"
               onClick={handleSave}
@@ -166,7 +166,7 @@ export const EscalationConditionsPanelContent = ({
               ) : (
                 t('cases:overview.validate_config')
               )}
-            </ButtonV2>
+            </Button>
           </PanelFooter>
         )}
       </PanelContainer>

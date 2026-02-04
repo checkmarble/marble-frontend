@@ -11,7 +11,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, TextArea } from 'ui-design-system';
+import { Button, Modal, TextArea } from 'ui-design-system';
 
 type ReviewScreeningMatchProps = {
   screeningMatch: ContinuousScreeningMatch;
@@ -88,13 +88,13 @@ export const ReviewScreeningMatch = ({
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+              <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 type="submit" disabled={!currentStatus} className="flex-1" variant="primary" name="save">
+            <Button type="submit" disabled={!currentStatus} className="flex-1" variant="primary" name="save">
               {t('common:save')}
-            </ButtonV2>
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

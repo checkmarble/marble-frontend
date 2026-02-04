@@ -30,7 +30,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
-import { ButtonV2, CtaClassName, Input, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaClassName, Input, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -359,10 +359,10 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
       <input {...getInputProps()} />
       <p>{t('lists:drop_csv_here')}</p>
       <p className="text-grey-secondary uppercase">{t('common:or')}</p>
-      <ButtonV2 variant="primary">
+      <Button variant="primary">
         <LoadingIcon icon="upload" loading={loading} className="size-5" />
         {t('lists:pick_csv')}
-      </ButtonV2>
+      </Button>
 
       <Modal.Root
         open={modalState.open}
@@ -411,10 +411,10 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 variant="primary">
+              <Button variant="primary">
                 <Icon icon="tick" className="size-5" />
                 {t('common:understand')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
           </Modal.Footer>
         </Modal.Content>

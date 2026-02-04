@@ -17,7 +17,7 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -49,10 +49,10 @@ export default function ScreeningSearchIndexPage() {
           <PrintView
             title={t('screenings:print.title')}
             trigger={
-              <ButtonV2 variant="secondary">
+              <Button variant="secondary">
                 <Icon icon="download" className="size-4" />
                 {t('screenings:print.open_print_view')}
-              </ButtonV2>
+              </Button>
             }
           >
             <PrintHeader title={t('screenings:print.title')} userName={userName} />

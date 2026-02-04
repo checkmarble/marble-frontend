@@ -8,7 +8,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Checkbox, Modal, Tooltip } from 'ui-design-system';
+import { Button, Checkbox, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CommitIterationDraft({
@@ -25,10 +25,10 @@ export function CommitIterationDraft({
   const [open, setOpen] = React.useState(false);
 
   const button = (
-    <ButtonV2 className="flex-1" variant="primary" disabled={!iteration.isValid}>
+    <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
       <Icon icon="commit" className="size-5" />
       {t('scenarios:deployment_modal.commit.button')}
-    </ButtonV2>
+    </Button>
   );
 
   if (!iteration.isValid) {
@@ -153,14 +153,14 @@ function CommitScenarioDraftContent({ scenarioId, iterationId }: { scenarioId: s
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 className="flex-1" variant="primary" type="submit">
+        <Button className="flex-1" variant="primary" type="submit">
           <Icon icon="commit" className="size-5" />
           {t('scenarios:deployment_modal.commit.button')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

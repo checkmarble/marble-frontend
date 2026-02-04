@@ -1,6 +1,6 @@
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, ReleaseMarkdown } from 'ui-design-system';
+import { Button, Modal, ReleaseMarkdown } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface VersionUpdateModalProps {
@@ -36,12 +36,10 @@ export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
 
         <Modal.Footer>
           <div className="flex items-center justify-end gap-2 p-4">
-            <ButtonV2 appearance="stroked" onClick={() => onOpenChange(false)}>
+            <Button appearance="stroked" onClick={() => onOpenChange(false)}>
               {t('common:understand')}
-            </ButtonV2>
-            <ButtonV2 onClick={() => window.open(releaseUrl, '_blank')}>
-              {t('common:version_update.view_release')}
-            </ButtonV2>
+            </Button>
+            <Button onClick={() => window.open(releaseUrl, '_blank')}>{t('common:version_update.view_release')}</Button>
           </div>
         </Modal.Footer>
       </Modal.Content>

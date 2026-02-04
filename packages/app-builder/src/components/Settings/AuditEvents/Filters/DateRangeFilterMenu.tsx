@@ -2,7 +2,7 @@ import { DateRangeFilter } from '@app-builder/components/Filters';
 import { DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { type FunctionComponent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Separator } from 'ui-design-system';
+import { Button, MenuCommand, Separator } from 'ui-design-system';
 
 type DateRangeFilterMenuProps = {
   onSelect: (value: NonNullable<DateRangeFilterType>) => void;
@@ -31,9 +31,9 @@ export const DateRangeFilterMenu: FunctionComponent<DateRangeFilterMenuProps> = 
             }
           }}
         >
-          <ButtonV2 disabled={!value} size="default">
+          <Button disabled={!value} size="default">
             {t('common:save')}
-          </ButtonV2>
+          </Button>
         </MenuCommand.HeadlessItem>
       </div>
     </>

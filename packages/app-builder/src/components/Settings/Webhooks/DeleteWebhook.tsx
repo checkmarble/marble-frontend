@@ -3,7 +3,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useDeleteWebhookMutation } from '@app-builder/queries/settings/webhooks/delete-webhook';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 
 export function DeleteWebhook({ webhookId, children }: { webhookId: string; children: React.ReactElement }) {
   const [open, setOpen] = React.useState(false);
@@ -43,11 +43,11 @@ function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onS
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2
+        <Button
           variant="destructive"
           type="submit"
           name="create"
@@ -56,7 +56,7 @@ function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onS
         >
           <LoadingIcon icon="delete" className="size-5" loading={deleteWebhookMutation.isPending} />
           {t('common:delete')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </>
   );

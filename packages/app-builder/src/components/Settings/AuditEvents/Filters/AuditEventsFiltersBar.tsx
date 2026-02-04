@@ -2,7 +2,7 @@ import { type ApiKey } from '@app-builder/models/api-keys';
 import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ActivatedAuditFilterItem, type FilterEntry } from './ActivatedAuditFilterItem';
 import { DisplayAuditFilterMenuItem } from './DisplayAuditFilterMenuItem';
@@ -47,10 +47,10 @@ export const AuditEventsFiltersBar = ({
       {remainingFilters.length > 0 && (
         <MenuCommand.Menu open={open} onOpenChange={setOpen}>
           <MenuCommand.Trigger>
-            <ButtonV2 variant="secondary" size="default">
+            <Button variant="secondary" size="default">
               <Icon icon="plus" className="size-4" />
               <span>{t('filters:ds.addNewFilter.label')}</span>
-            </ButtonV2>
+            </Button>
           </MenuCommand.Trigger>
           <MenuCommand.Content sameWidth align="start" sideOffset={4}>
             <MenuCommand.List>

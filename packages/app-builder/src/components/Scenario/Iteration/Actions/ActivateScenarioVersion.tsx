@@ -12,7 +12,7 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Checkbox, CollapsibleV2, Modal, Tooltip } from 'ui-design-system';
+import { Button, Checkbox, CollapsibleV2, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type ActivateScenarioVersionProps = {
@@ -25,10 +25,10 @@ export function ActivateScenarioVersion({ scenario, iteration }: ActivateScenari
   const [open, setOpen] = React.useState(false);
 
   const button = (
-    <ButtonV2 className="flex-1" variant="primary" disabled={!iteration.isValid}>
+    <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
       <Icon icon="pushtolive" className="size-5" />
       {t('scenarios:deployment_modal.activate.button')}
-    </ButtonV2>
+    </Button>
   );
 
   if (!iteration.isValid) {
@@ -141,14 +141,14 @@ function ActivateScenarioVersionContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 className="flex-1" variant="primary" type="submit">
+        <Button className="flex-1" variant="primary" type="submit">
           <Icon icon="pushtolive" className="size-5" />
           {t('scenarios:deployment_modal.activate.button')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

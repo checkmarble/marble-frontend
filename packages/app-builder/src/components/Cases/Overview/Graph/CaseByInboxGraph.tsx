@@ -6,7 +6,7 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { CaseStatusBadge } from '../../CaseStatus';
 import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../constants';
 
@@ -30,9 +30,9 @@ export const CaseByInboxGraph = () => {
             <div className="grid place-items-center h-full">
               <div className="flex flex-col items-center gap-v2-sm">
                 <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
-                <ButtonV2 variant="secondary" onClick={() => caseStatusByInboxQuery.refetch()}>
+                <Button variant="secondary" onClick={() => caseStatusByInboxQuery.refetch()}>
                   {t('common:retry')}
-                </ButtonV2>
+                </Button>
               </div>
             </div>
           ))

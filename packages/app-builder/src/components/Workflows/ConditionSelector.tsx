@@ -6,7 +6,7 @@ import { type OutcomeDto } from 'marble-api';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PayloadEvaluationCondition } from './PayloadEvaluationCondition';
 import { RuleHitSelector } from './RuleHitSelector';
@@ -161,7 +161,7 @@ export function ConditionSelector({
 
         <MenuCommand.Menu open={open} onOpenChange={setOpen}>
           <MenuCommand.Trigger>
-            <ButtonV2 variant="secondary">
+            <Button variant="secondary">
               {selectedCondition ? (
                 conditionOptions.find((opt) => opt.value === selectedCondition)?.label
               ) : (
@@ -170,7 +170,7 @@ export function ConditionSelector({
                   <span>{t('workflows:condition_selector.add_condition.label')}</span>
                 </>
               )}
-            </ButtonV2>
+            </Button>
           </MenuCommand.Trigger>
           <MenuCommand.Content>
             <MenuCommand.List>

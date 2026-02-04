@@ -3,7 +3,7 @@ import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { scenarioI18n } from '../scenario-i18n';
@@ -23,7 +23,7 @@ export const FieldEntityType = ({
     <div className="flex flex-col gap-4">
       <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <ButtonV2 variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
+          <Button variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
             <span className="text-grey-primary text-s font-medium">
               {match(entityType)
                 .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
@@ -33,7 +33,7 @@ export const FieldEntityType = ({
                 .otherwise(() => entityType)}
             </span>
             <Icon icon="caret-down" className="text-grey-secondary size-4" />
-          </ButtonV2>
+          </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth className="mt-2">
           <MenuCommand.List>

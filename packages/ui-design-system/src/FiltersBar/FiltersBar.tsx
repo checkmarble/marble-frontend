@@ -2,7 +2,7 @@ import { cva } from 'class-variance-authority';
 import { useEffect, useMemo, useState } from 'react';
 import { isDeepEqual } from 'remeda';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from '../Button/Button';
+import { Button } from '../Button/Button';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { useI18n } from '../contexts/I18nContext';
 import { BooleanValueFilter } from './internals/BooleanValueFilter';
@@ -265,7 +265,7 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
           {filtersByPriority.map((filters, priorityIndex) => (
             <div key={priorityIndex} className="flex flex-row items-center w-full gap-v2-xl h-v2-xl">
               {priorityIndex === 1 ? (
-                <ButtonV2
+                <Button
                   className="min-w-[110px] justify-center"
                   variant="primary"
                   size="default"
@@ -273,7 +273,7 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
                   disabled={!hasChanges}
                 >
                   {hasChanges ? t('filters:ds.reapply_button.label') : t('filters:ds.apply_button.label')}
-                </ButtonV2>
+                </Button>
               ) : null}
               {/* {priorityIndex === 1 && filters.length === 0 ? (
                 <div className="flex flex-row justify-start items-center gap-v2-sm">
@@ -330,14 +330,14 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
                   .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
               )}
               {priorityIndex === 1 && dynamicDescriptors.length ? (
-                <ButtonV2
+                <Button
                   variant="secondary"
                   size="default"
                   onClick={clearDynamicFilters}
                   disabled={!hasAnyDynamicSelected}
                 >
                   {t('filters:ds.clear_dynamic_button.label')}
-                </ButtonV2>
+                </Button>
               ) : null}
             </div>
           ))}

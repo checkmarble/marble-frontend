@@ -13,7 +13,7 @@ import { useForm } from '@tanstack/react-form';
 import { type Tag } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateTag({ tag }: { tag: Tag }) {
@@ -107,13 +107,13 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked" type="button" name="cancel">
+          <Button variant="secondary" appearance="stroked" type="button" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="update" disabled={updateTagMutation.isPending}>
+        <Button variant="primary" type="submit" name="update" disabled={updateTagMutation.isPending}>
           {t('common:save')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

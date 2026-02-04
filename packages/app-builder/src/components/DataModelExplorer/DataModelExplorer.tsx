@@ -1,7 +1,7 @@
 import { type DataModelWithTableOptions } from '@app-builder/models';
 import { useCallbackRef } from '@marble/shared';
 import { useState } from 'react';
-import { ButtonV2, MenuCommand, Tag } from 'ui-design-system';
+import { Button, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DataTableRender } from './DataTableRender';
@@ -194,9 +194,9 @@ function TabBarActions(props: {
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <ButtonV2 mode="icon" variant="secondary" className={props.className}>
+        <Button mode="icon" variant="secondary" className={props.className}>
           <Icon icon="more-menu" className="size-3.5" />
-        </ButtonV2>
+        </Button>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="end" sideOffset={4}>
         <MenuCommand.List>

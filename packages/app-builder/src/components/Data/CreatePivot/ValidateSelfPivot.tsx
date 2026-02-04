@@ -1,7 +1,7 @@
 import { type TableModel } from '@app-builder/models/data-model';
 import { type FieldPivotOption } from '@app-builder/services/data/pivot';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Code, Modal } from 'ui-design-system';
+import { Button, Code, Modal } from 'ui-design-system';
 
 export function ValidateSelfPivot({
   pivotOption,
@@ -29,13 +29,13 @@ export function ValidateSelfPivot({
         />
       </div>
       <Modal.Footer>
-        <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" onClick={onBack}>
+        <Button className="flex-1" variant="secondary" appearance="stroked" onClick={onBack}>
           {t('common:back')}
-        </ButtonV2>
+        </Button>
 
-        <ButtonV2 className="flex-1" variant="primary" type="submit" onClick={() => onValidate(pivotOption)}>
+        <Button className="flex-1" variant="primary" type="submit" onClick={() => onValidate(pivotOption)}>
           {t('common:validate')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </>
   );

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Switch } from 'ui-design-system';
+import { Button, MenuCommand, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { scenarioI18n } from '../scenario-i18n';
@@ -51,13 +51,13 @@ export const ScreeningTermIgnoreList = ({
         <div className="flex flex-col gap-1">
           <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
-              <ButtonV2 variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
+              <Button variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
                 <span className="text-grey-primary text-s font-medium">
                   {customLists.find((list) => list.id === selectedListId)?.name ||
                     t('scenarios:edit_sanction.select_list')}
                 </span>
                 <Icon icon="caret-down" className="text-grey-secondary size-4" />
-              </ButtonV2>
+              </Button>
             </MenuCommand.Trigger>
             <MenuCommand.Content sameWidth className="mt-2">
               <MenuCommand.List>

@@ -15,7 +15,7 @@ import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { differenceInDays, getWeek, getYear } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { GraphSpinnerOverlay } from './GraphSpinnerOverlay';
 import { OutcomeFilter } from './OutcomeFilter';
@@ -268,7 +268,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     >
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:decisions.title')}</h2>
-        <ButtonV2
+        <Button
           variant="secondary"
           className="flex items-center gap-v2-sm"
           disabled={
@@ -282,7 +282,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
         >
           <Icon icon="download" className="size-4" />
           {t('analytics:export.button')}
-        </ButtonV2>
+        </Button>
       </div>
 
       <div ref={divRef} className="bg-surface-card border border-grey-border rounded-lg p-v2-md mt-v2-sm relative">
@@ -292,7 +292,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
             <div className="flex items-center gap-v2-sm">
               <span className="text-s">{t('analytics:decisions.count.label')}:</span>
               <div className="flex gap-v2-sm">
-                <ButtonV2
+                <Button
                   variant="secondary"
                   onClick={() => {
                     setPercentage(true);
@@ -308,14 +308,14 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   className={percentage ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''}
                 >
                   %
-                </ButtonV2>
-                <ButtonV2
+                </Button>
+                <Button
                   variant="secondary"
                   onClick={() => setPercentage(false)}
                   className={!percentage ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''}
                 >
                   #
-                </ButtonV2>
+                </Button>
               </div>
             </div>
 
@@ -323,7 +323,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
               <div className="flex items-center gap-v2-sm">
                 <span className="text-s">{t('analytics:decisions.scale.label')}:</span>
                 <div className="flex gap-v2-sm">
-                  <ButtonV2
+                  <Button
                     variant="secondary"
                     onClick={() => {
                       setScale('linear');
@@ -333,8 +333,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                     }
                   >
                     {t('analytics:decisions.scale.linear.label')}
-                  </ButtonV2>
-                  <ButtonV2
+                  </Button>
+                  <Button
                     variant="secondary"
                     onClick={() => {
                       setGroupDate('weekly');
@@ -345,7 +345,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                     }
                   >
                     {t('analytics:decisions.scale.symlog.label')}
-                  </ButtonV2>
+                  </Button>
                 </div>
               </div>
             ) : null}
@@ -459,7 +459,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
           </div>
           <div className="flex w-full justify-end mt-v2-sm">
             <div className="flex gap-v2-sm">
-              <ButtonV2
+              <Button
                 disabled={!isDailyViewAvailable || !data?.metadata.totalDecisions}
                 variant="secondary"
                 mode="normal"
@@ -472,8 +472,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 }
               >
                 {t('analytics:time_granularity.day')}
-              </ButtonV2>
-              <ButtonV2
+              </Button>
+              <Button
                 disabled={!data?.weekly || !data?.metadata.totalDecisions}
                 variant="secondary"
                 mode="normal"
@@ -483,8 +483,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 }
               >
                 {t('analytics:time_granularity.week')}
-              </ButtonV2>
-              <ButtonV2
+              </Button>
+              <Button
                 disabled={!data?.monthly || !data?.metadata.totalDecisions}
                 variant="secondary"
                 mode="normal"
@@ -494,7 +494,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 }
               >
                 {t('analytics:time_granularity.month')}
-              </ButtonV2>
+              </Button>
             </div>
           </div>
           <div className="flex w-full justify-center">

@@ -108,9 +108,9 @@ const getStatusLabel = (status: CaseStatus) =>
 ### Button Loading State
 
 ```typescript
-<ButtonV2 disabled={isPending}>
+<Button disabled={isPending}>
   {isPending ? 'Saving...' : 'Save'}
-</ButtonV2>
+</Button>
 ```
 
 ---

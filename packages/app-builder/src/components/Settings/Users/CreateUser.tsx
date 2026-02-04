@@ -18,7 +18,7 @@ import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Select } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateUser({
@@ -43,10 +43,10 @@ export function CreateUser({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 onClick={(e) => e.stopPropagation()}>
+        <Button onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-5" />
           {t('settings:users.new_user')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateUserContent orgId={orgId} access={access} userRoles={userRoles} onSuccess={() => setOpen(false)} />
@@ -192,13 +192,13 @@ function CreateUserContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 type="button" variant="secondary" appearance="stroked" name="cancel">
+          <Button type="button" variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="create">
+        <Button variant="primary" type="submit" name="create">
           {t('settings:users.new_user.create')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

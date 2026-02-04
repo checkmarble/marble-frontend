@@ -3,7 +3,7 @@ import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/que
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Input, MenuCommand } from 'ui-design-system';
+import { Button, Input, MenuCommand } from 'ui-design-system';
 
 import { ApiKeyFilterMenu } from './ApiKeyFilter';
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
@@ -112,9 +112,9 @@ const TextInputFilterMenu = ({ placeholder, onSelect }: TextInputFilterMenuProps
           }
         }}
       >
-        <ButtonV2 disabled={!value.trim()} size="default" className="w-full">
+        <Button disabled={!value.trim()} size="default" className="w-full">
           {t('common:save')}
-        </ButtonV2>
+        </Button>
       </MenuCommand.HeadlessItem>
     </div>
   );

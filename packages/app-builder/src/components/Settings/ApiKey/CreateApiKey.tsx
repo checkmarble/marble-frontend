@@ -13,7 +13,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Select } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateApiKey() {
@@ -23,10 +23,10 @@ export function CreateApiKey() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
-        <ButtonV2 type="button">
+        <Button type="button">
           <Icon icon="plus" className="size-5" />
           {t('settings:api_keys.new_api_key')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateApiKeyContent onSuccess={() => setOpen(false)} />
@@ -100,13 +100,13 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 type="button" variant="secondary" appearance="stroked">
+          <Button type="button" variant="secondary" appearance="stroked">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           {t('settings:api_keys.create')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Input } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -39,9 +39,9 @@ export const SelectCaseById = ({ onNavigate }: { onNavigate: (caseId: string) =>
       onAdornmentClick={handleSubmitValue}
     />
   ) : (
-    <ButtonV2 variant="secondary" size="default" onClick={() => setOpen(true)}>
+    <Button variant="secondary" size="default" onClick={() => setOpen(true)}>
       {buttonText}
       <Icon icon="arrow-right" className="size-4" />
-    </ButtonV2>
+    </Button>
   );
 };

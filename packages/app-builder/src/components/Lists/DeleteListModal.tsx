@@ -4,7 +4,7 @@ import { DeleteListPayload, deleteListPayloadSchema } from '@app-builder/schemas
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, HiddenInputs, Modal } from 'ui-design-system';
+import { Button, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteListModal({ listId }: { listId: string }) {
@@ -31,10 +31,10 @@ export function DeleteListModal({ listId }: { listId: string }) {
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="destructive" className="w-fit">
+        <Button variant="destructive" className="w-fit">
           <Icon icon="delete" className="size-5" />
           <p>{t('lists:delete_list.button')}</p>
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <form onSubmit={handleSubmit(form)}>
@@ -50,14 +50,14 @@ export function DeleteListModal({ listId }: { listId: string }) {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 variant="secondary" appearance="stroked">
+              <Button variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 variant="destructive" type="submit" name="delete">
+            <Button variant="destructive" type="submit" name="delete">
               <Icon icon="delete" className="size-5" />
               {t('common:delete')}
-            </ButtonV2>
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

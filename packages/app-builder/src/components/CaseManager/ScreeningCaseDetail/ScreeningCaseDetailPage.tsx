@@ -18,7 +18,7 @@ import { Inbox } from '@app-builder/models/inbox';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Tag } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseDocuments } from '../shared/CaseDocuments/CaseDocuments';
 import { CaseInvestigation } from '../shared/CaseInvestigation/CaseInvestigation';
@@ -145,9 +145,9 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
         <div className="flex justify-between items-center gap-v2-sm">
           <span className="font-medium">{screening.opensanctionEntityPayload.caption}</span>
           <span className="text-small text-grey-placeholder mr-auto">{screening.opensanctionEntityPayload.schema}</span>
-          <ButtonV2 variant="secondary" onClick={handleViewAll}>
+          <Button variant="secondary" onClick={handleViewAll}>
             {t('continuousScreening:review.entity_details.view_all')}
-          </ButtonV2>
+          </Button>
         </div>
         <div className="flex items-center gap-v2-sm">
           {screening.opensanctionEntityPayload.properties['topics']?.map((topic) => {
@@ -177,9 +177,9 @@ const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPay
     <PanelContainer size="xxxl">
       <PanelContent>
         <div className="flex flex-col gap-v2-md">
-          <ButtonV2 variant="secondary" mode="icon" onClick={closePanel}>
+          <Button variant="secondary" mode="icon" onClick={closePanel}>
             <Icon icon="left-panel-close" className="size-4" />
-          </ButtonV2>
+          </Button>
           <div className="text-h1">{t('continuousScreening:review.entity_details.title')}</div>
           <div className="flex items-center gap-v2-sm">
             <span className="font-medium">{entity.caption}</span>

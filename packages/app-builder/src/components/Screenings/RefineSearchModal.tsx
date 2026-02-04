@@ -13,7 +13,7 @@ import { serialize as objectToFormData } from 'object-to-formdata';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2, Input, Modal, Select } from 'ui-design-system';
+import { Button, Input, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
 
@@ -151,7 +151,7 @@ export function RefineSearchModal({
               )}
             </div>
             <Modal.Footer>
-              <ButtonV2
+              <Button
                 className="flex-1"
                 variant="secondary"
                 appearance="stroked"
@@ -159,15 +159,15 @@ export function RefineSearchModal({
                 onClick={handleBackToSearch}
               >
                 {t('screenings:refine_modal.back_search')}
-              </ButtonV2>
-              <ButtonV2
+              </Button>
+              <Button
                 className="flex-1"
                 variant="primary"
                 onClick={handleRefine}
                 disabled={searchResults.length > (screening.request?.limit ?? Infinity)}
               >
                 {t('screenings:refine_modal.apply_search')}
-              </ButtonV2>
+              </Button>
             </Modal.Footer>
           </>
         ) : (
@@ -198,15 +198,15 @@ export function RefineSearchModal({
             </div>
             <Modal.Footer>
               <Modal.Close asChild>
-                <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+                <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
                   {t('common:cancel')}
-                </ButtonV2>
+                </Button>
               </Modal.Close>
               <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
                 {([isPristine, canSubmit, isSubmitting]) => (
-                  <ButtonV2 type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
+                  <Button type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
                     {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
-                  </ButtonV2>
+                  </Button>
                 )}
               </form.Subscribe>
             </Modal.Footer>

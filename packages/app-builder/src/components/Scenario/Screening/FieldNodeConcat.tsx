@@ -6,7 +6,7 @@ import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '
 import { replace } from 'radash';
 import { useEffect, useState } from 'react';
 import { splice } from 'remeda';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchOperand } from './MatchOperand';
@@ -75,17 +75,17 @@ export function FieldNodeConcat({
                             <Icon icon="drag" className="text-grey-disabled size-3" />
                           </div>
                           {nodes.length > 1 ? (
-                            <ButtonV2
+                            <Button
                               mode="icon"
                               variant="secondary"
                               appearance="link"
                               onClick={() => setNodes((prev) => splice(prev, index, 1, []))}
                             >
                               <Icon icon="cross" className="size-4" />
-                            </ButtonV2>
+                            </Button>
                           ) : null}
                           {!limit || nodes.length < limit ? (
-                            <ButtonV2
+                            <Button
                               mode="icon"
                               variant="secondary"
                               appearance="link"
@@ -100,7 +100,7 @@ export function FieldNodeConcat({
                               }
                             >
                               <Icon icon="plus" className="size-4" />
-                            </ButtonV2>
+                            </Button>
                           ) : null}
                         </div>
                       ) : null}

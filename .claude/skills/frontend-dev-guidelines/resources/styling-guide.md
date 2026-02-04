@@ -147,7 +147,7 @@ className="hover:bg-grey-background-light dark:hover:bg-grey-background"
 For complex UI, use pre-built components:
 
 ```typescript
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Modal } from 'ui-design-system';
 import { Select } from 'ui-design-system';
 import { Input } from 'ui-design-system';

@@ -6,7 +6,7 @@ import { toggle } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, flatMap, map, pipe, unique } from 'remeda';
-import { ButtonV2, Checkbox, Input, MenuCommand } from 'ui-design-system';
+import { Button, Checkbox, Input, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -68,14 +68,14 @@ export const FieldDatasetFilters = ({
       </div>
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <ButtonV2 variant="secondary">
+          <Button variant="secondary">
             <Icon icon="add-circle" className="size-3.5" />
             <span className="text-xs">Type</span>
             {filters.tags.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
             {filters.tags.map((tag) => (
               <DatasetTag key={tag} category={tag as ScreeningCategory} />
             ))}
-          </ButtonV2>
+          </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content className="mt-2 max-h-[400px] max-w-[210px]" align="end">
           <MenuCommand.Combobox className="m-1 mb-0 h-8 p-0" iconClasses="size-4" />
@@ -92,22 +92,22 @@ export const FieldDatasetFilters = ({
               </MenuCommand.Item>
             ))}
             <div className="bg-surface-card sticky bottom-0 flex w-full gap-2">
-              <ButtonV2
+              <Button
                 variant="secondary"
                 size="small"
                 className="basis-full"
                 onClick={() => setFilters((prev) => ({ ...prev, tags: [] }))}
               >
                 <Icon icon="filters-off" className="size-4" />
-              </ButtonV2>
-              <ButtonV2
+              </Button>
+              <Button
                 variant="secondary"
                 size="small"
                 className="basis-full"
                 onClick={() => setFilters((prev) => ({ ...prev, tags: tags }))}
               >
                 <Icon icon="checked" className="size-3.5" />
-              </ButtonV2>
+              </Button>
             </div>
           </MenuCommand.List>
         </MenuCommand.Content>

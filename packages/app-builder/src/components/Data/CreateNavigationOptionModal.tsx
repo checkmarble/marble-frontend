@@ -10,7 +10,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Modal } from 'ui-design-system';
+import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type CreateNavigationOptionModalProps = {
@@ -61,10 +61,10 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
   return (
     <Modal.Root onOpenChange={handleOpenChange}>
       <Modal.Trigger asChild>
-        <ButtonV2 size="small" variant="secondary">
+        <Button size="small" variant="secondary">
           {label}
           <Icon icon="plus" className="size-4" />
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content size="medium">
         <Modal.Title>{t('data:create_navigation_option.title')}</Modal.Title>
@@ -137,18 +137,18 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
         </form>
         <Modal.Footer>
           <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" className="flex-1">
+            <Button variant="secondary" appearance="stroked" className="flex-1">
               {t('common:cancel')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
-          <ButtonV2
+          <Button
             type="submit"
             form={`create_navigation_option_form_${link.parentTableId}_${link.childTableId}`}
             variant="primary"
             className="flex-1"
           >
             {t('common:save')}
-          </ButtonV2>
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

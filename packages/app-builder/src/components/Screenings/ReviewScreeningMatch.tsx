@@ -12,7 +12,7 @@ import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Switch, TextArea } from 'ui-design-system';
+import { Button, Modal, Switch, TextArea } from 'ui-design-system';
 
 export const ReviewScreeningMatch = ({
   open,
@@ -116,11 +116,11 @@ export const ReviewScreeningMatch = ({
         </form>
         <Modal.Footer>
           <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
               {t('common:cancel')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
-          <ButtonV2
+          <Button
             type={currentStatus === 'confirmed_hit' ? 'button' : 'submit'}
             disabled={!currentStatus}
             className="flex-1"
@@ -134,7 +134,7 @@ export const ReviewScreeningMatch = ({
             }}
           >
             {t('common:save')}
-          </ButtonV2>
+          </Button>
         </Modal.Footer>
         <Modal.Root open={isConfirming} onOpenChange={setIsConfirming}>
           <Modal.Content>
@@ -144,11 +144,11 @@ export const ReviewScreeningMatch = ({
             </div>
             <Modal.Footer>
               <Modal.Close asChild>
-                <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+                <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
                   {t('common:cancel')}
-                </ButtonV2>
+                </Button>
               </Modal.Close>
-              <ButtonV2
+              <Button
                 disabled={!currentStatus}
                 className="flex-1"
                 variant="primary"
@@ -157,7 +157,7 @@ export const ReviewScreeningMatch = ({
                 type="submit"
               >
                 {t('common:save')}
-              </ButtonV2>
+              </Button>
             </Modal.Footer>
           </Modal.Content>
         </Modal.Root>

@@ -23,7 +23,7 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Collapsible } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 
 import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
@@ -260,17 +260,17 @@ export default function Trigger() {
               <div className="flex flex-row-reverse items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {isTriggerNull ? (
-                    <ButtonV2 type="button" variant="secondary" onClick={handleAddTrigger}>
+                    <Button type="button" variant="secondary" onClick={handleAddTrigger}>
                       {t('scenarios:trigger.trigger_object.add_trigger')}
-                    </ButtonV2>
+                    </Button>
                   ) : (
-                    <ButtonV2 type="button" variant="secondary" onClick={handleDeleteTrigger}>
+                    <Button type="button" variant="secondary" onClick={handleDeleteTrigger}>
                       {t('scenarios:trigger.trigger_object.delete_trigger')}
-                    </ButtonV2>
+                    </Button>
                   )}
-                  <ButtonV2 variant="primary" type="submit" onClick={handleSave}>
+                  <Button variant="primary" type="submit" onClick={handleSave}>
                     {t('common:save')}
-                  </ButtonV2>
+                  </Button>
                 </div>
                 <EvaluationErrors
                   errors={validationErrors

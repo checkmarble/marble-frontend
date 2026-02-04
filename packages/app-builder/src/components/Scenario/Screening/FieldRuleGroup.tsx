@@ -3,15 +3,7 @@ import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { unique } from 'remeda';
-import {
-  ButtonV2,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from 'ui-design-system';
+import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { RuleGroup } from '../Rules/RuleGroup';
@@ -51,7 +43,7 @@ export const FieldRuleGroup = ({
       <div className="flex items-center gap-2">
         {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} /> : null}
         <Trigger asChild>
-          <ButtonV2
+          <Button
             disabled={disabled}
             variant="secondary"
             mode={selectedRuleGroup ? 'icon' : undefined}
@@ -59,7 +51,7 @@ export const FieldRuleGroup = ({
           >
             <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="text-grey-disabled size-4" />
             {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}
-          </ButtonV2>
+          </Button>
         </Trigger>
       </div>
       <Content className="mt-1 min-w-[280px] shadow-md" align="start">
@@ -100,7 +92,7 @@ export const FieldRuleGroup = ({
             )}
             {value && !finalRuleGroups.includes(value) ? (
               <CommandItem asChild forceMount>
-                <ButtonV2
+                <Button
                   variant="secondary"
                   appearance="link"
                   onClick={() => {
@@ -114,7 +106,7 @@ export const FieldRuleGroup = ({
                     {t('scenarios:rules.create')}
                     {value ? <RuleGroup ruleGroup={value} /> : null}
                   </span>
-                </ButtonV2>
+                </Button>
               </CommandItem>
             ) : null}
           </CommandList>

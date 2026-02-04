@@ -21,7 +21,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, cn, Input } from 'ui-design-system';
+import { Button, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
@@ -198,9 +198,9 @@ export const InboxPage = ({
                       }}
                     />
                     <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                      <ButtonV2 size="default" variant="primary" appearance="stroked" mode="icon">
+                      <Button size="default" variant="primary" appearance="stroked" mode="icon">
                         <Icon icon="plus" className="size-4" />
-                      </ButtonV2>
+                      </Button>
                     </CaseRightPanel.Trigger>
                   </div>
                 </div>
@@ -220,9 +220,9 @@ export const InboxPage = ({
                     return (
                       <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
                         <span>{t('cases:errors.fetching_cases')}</span>
-                        <ButtonV2 variant="secondary" onClick={() => casesQuery.refetch()}>
+                        <Button variant="secondary" onClick={() => casesQuery.refetch()}>
                           {t('common:retry')}
-                        </ButtonV2>
+                        </Button>
                       </div>
                     );
                   })

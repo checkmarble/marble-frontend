@@ -8,7 +8,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Checkbox, Modal, Tooltip } from 'ui-design-system';
+import { Button, Checkbox, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function PrepareScenarioVersion({
@@ -32,10 +32,10 @@ export function PrepareScenarioVersion({
   if (!iteration.isValid) {
     return (
       <Tooltip.Default className="text-xs" content={t('scenarios:deployment_modal.prepare.validation_error')}>
-        <ButtonV2 className="flex-1" variant="destructive" disabled>
+        <Button className="flex-1" variant="destructive" disabled>
           <Icon icon="queue-list" className="size-5" />
           {t('scenarios:deployment_modal.prepare.button')}
-        </ButtonV2>
+        </Button>
       </Tooltip.Default>
     );
   }
@@ -45,10 +45,10 @@ export function PrepareScenarioVersion({
         className="text-xs"
         content={t('scenarios:deployment_modal.prepare.preparation_service_occupied')}
       >
-        <ButtonV2 className="flex-1" variant="primary" disabled>
+        <Button className="flex-1" variant="primary" disabled>
           <Icon icon="queue-list" className="size-5" />
           {t('scenarios:deployment_modal.prepare.button')}
-        </ButtonV2>
+        </Button>
       </Tooltip.Default>
     );
   }
@@ -56,10 +56,10 @@ export function PrepareScenarioVersion({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 className="flex-1" variant="primary">
+        <Button className="flex-1" variant="primary">
           <Icon icon="queue-list" className="size-5" />
           {t('scenarios:deployment_modal.prepare.button')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <PrepareScenarioVersionContent scenarioId={scenarioId} iterationId={iteration.id} onSuccess={handleSuccess} />
@@ -160,14 +160,14 @@ function PrepareScenarioVersionContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 className="flex-1" variant="primary" type="submit">
+        <Button className="flex-1" variant="primary" type="submit">
           <Icon icon="queue-list" className="size-5" />
           {t('scenarios:deployment_modal.prepare.button')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

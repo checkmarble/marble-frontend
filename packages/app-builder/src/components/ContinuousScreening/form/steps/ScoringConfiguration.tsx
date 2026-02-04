@@ -4,7 +4,7 @@ import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Input, MenuCommand } from 'ui-design-system';
+import { Button, Input, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 import { Field } from '../../shared/Field';
@@ -98,9 +98,9 @@ const InboxSelector = () => {
     .with({ isError: true }, () => (
       <div className="flex gap-v2-md items-center">
         <div className="">{t('common:generic_fetch_data_error')}</div>
-        <ButtonV2 variant="secondary" onClick={() => inboxesQuery.refetch()}>
+        <Button variant="secondary" onClick={() => inboxesQuery.refetch()}>
           {t('common:retry')}
-        </ButtonV2>
+        </Button>
       </div>
     ))
     .with({ isSuccess: true }, ({ data }) => {

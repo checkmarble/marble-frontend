@@ -26,7 +26,7 @@ import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { EditionAstBuilderOperand } from '../../../EditionOperand';
@@ -213,9 +213,9 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                       ) : null}
                       {complexFilter && filter.namedChildren.operator.constant ? (
                         <>
-                          <ButtonV2 variant="secondary" onClick={() => setEditedFilterIndex(filterIndex)}>
+                          <Button variant="secondary" onClick={() => setEditedFilterIndex(filterIndex)}>
                             {displayName}
-                          </ButtonV2>
+                          </Button>
                           {filter.namedChildren.value && filterEditedIndex === filterIndex ? (
                             <OperandEditModal
                               node={R.clone(filter.namedChildren.value)}
@@ -255,10 +255,10 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
           tableName={tableName}
           options={options}
           trigger={
-            <ButtonV2 disabled={!tableName} className="h-fit" variant="secondary">
+            <Button disabled={!tableName} className="h-fit" variant="secondary">
               <Icon icon="plus" className="size-5" />
               {t('scenarios:edit_aggregation.add_filter')}
-            </ButtonV2>
+            </Button>
           }
           onChange={(filteredField) => {
             filters.push(

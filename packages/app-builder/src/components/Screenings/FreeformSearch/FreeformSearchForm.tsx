@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { type FunctionComponent, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Input } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { screeningsI18n } from '../screenings-i18n';
@@ -109,7 +109,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
         </form.Field>
         <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
           {([canSubmit, isSubmitting]) => (
-            <ButtonV2
+            <Button
               type="submit"
               disabled={!canSubmit || isSubmitting || searchMutation.isPending}
               variant="primary"
@@ -120,7 +120,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               ) : (
                 <Icon icon="search" className="size-5" />
               )}
-            </ButtonV2>
+            </Button>
           )}
         </form.Subscribe>
       </div>
@@ -184,7 +184,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
         {/* Apply button */}
         <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
           {([canSubmit, isSubmitting]) => (
-            <ButtonV2
+            <Button
               type="submit"
               disabled={!canSubmit || isSubmitting || searchMutation.isPending}
               variant="primary"
@@ -199,13 +199,13 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
                   <Icon icon="search" className="size-5" />
                 </>
               )}
-            </ButtonV2>
+            </Button>
           )}
         </form.Subscribe>
 
         {/* Clear filters button - only show when filters are active */}
         {hasActiveFilters && (
-          <ButtonV2
+          <Button
             type="button"
             variant="secondary"
             size="default"
@@ -214,7 +214,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
           >
             <Icon icon="cross" className="size-5" />
             {t('screenings:freeform_search.clear_filters')}
-          </ButtonV2>
+          </Button>
         )}
       </div>
     </form>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
-import { ButtonV2 } from '../../Button/Button';
+import { Button } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
 import { Tooltip } from '../../Tooltip/Tooltip';
@@ -79,7 +79,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
             }}
           />
           <div className="flex justify-end gap-v2-xs">
-            <ButtonV2
+            <Button
               variant="secondary"
               size="default"
               onClick={() => {
@@ -89,10 +89,10 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
               }}
             >
               {t('filters:ds.clear_button.label')}
-            </ButtonV2>
-            <ButtonV2 size="default" onClick={validate}>
+            </Button>
+            <Button size="default" onClick={validate}>
               {t('filters:ds.apply_button.label')}
-            </ButtonV2>
+            </Button>
           </div>
         </div>
       </FilterPopover.Content>

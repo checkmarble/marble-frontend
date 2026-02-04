@@ -3,7 +3,7 @@ import { type Inbox } from '@app-builder/models/inbox';
 import { useDeleteInboxMutation } from '@app-builder/queries/settings/inboxes/delete-inbox';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: boolean }) {
@@ -17,10 +17,10 @@ export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: bool
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="destructive" name="delete" disabled={disabled} className="w-fit">
+        <Button variant="destructive" name="delete" disabled={disabled} className="w-fit">
           <Icon icon="delete" className="size-5" aria-label={t('settings:inboxes.delete_inbox')} />
           {t('settings:inboxes.delete_inbox')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <DeleteInboxContent inboxId={inbox.id} onSuccess={handleOnSuccess} />
@@ -54,11 +54,11 @@ const DeleteInboxContent = ({ inboxId, onSuccess }: { inboxId: string; onSuccess
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+          <Button variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2
+        <Button
           variant="destructive"
           name="delete"
           onClick={handleDeleteInbox}
@@ -66,7 +66,7 @@ const DeleteInboxContent = ({ inboxId, onSuccess }: { inboxId: string; onSuccess
         >
           <Icon icon="delete" className="size-5" />
           {t('common:delete')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </>
   );

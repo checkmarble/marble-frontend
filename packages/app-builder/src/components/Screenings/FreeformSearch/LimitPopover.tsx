@@ -3,7 +3,7 @@ import * as RadioGroup from '@radix-ui/react-radio-group';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { screeningsI18n } from '../screenings-i18n';
@@ -117,7 +117,7 @@ export const LimitPopover = ({ value, onApply }: LimitPopoverProps) => {
 
           {/* Actions */}
           <div className="border-grey-border flex gap-2 border-t p-4">
-            <ButtonV2
+            <Button
               type="button"
               variant="secondary"
               size="default"
@@ -125,8 +125,8 @@ export const LimitPopover = ({ value, onApply }: LimitPopoverProps) => {
               onClick={handleCancel}
             >
               {t('common:cancel')}
-            </ButtonV2>
-            <ButtonV2
+            </Button>
+            <Button
               type="button"
               variant="primary"
               size="default"
@@ -134,7 +134,7 @@ export const LimitPopover = ({ value, onApply }: LimitPopoverProps) => {
               onClick={handleApply}
             >
               {t('screenings:freeform_search.apply')}
-            </ButtonV2>
+            </Button>
           </div>
         </Popover.Content>
       </Popover.Portal>

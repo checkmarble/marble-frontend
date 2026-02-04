@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Tag } from 'ui-design-system';
+import { Button, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface UpsaleModalProps {
@@ -67,13 +67,13 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
 
         <div className="border-t border-grey-border flex items-center justify-end gap-2 p-4">
           <Modal.Close asChild>
-            <ButtonV2 variant="secondary" type="button">
+            <Button variant="secondary" type="button">
               {t('common:cancel')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
-          <ButtonV2 variant="primary" onClick={handleContact}>
+          <Button variant="primary" onClick={handleContact}>
             {t('cases:overview.upsale.contact')}
-          </ButtonV2>
+          </Button>
         </div>
       </Modal.Content>
     </Modal.Root>

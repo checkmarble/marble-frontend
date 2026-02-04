@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
-import { ButtonV2 } from '../../Button/Button';
+import { Button } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { MenuCommand } from '../../MenuCommand/MenuCommand';
 import { Tooltip } from '../../Tooltip/Tooltip';
@@ -48,7 +48,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
     <div className="flex flex-col gap-2">
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <ButtonV2
+          <Button
             variant="primary"
             mode="normal"
             size="default"
@@ -68,7 +68,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
               ) : null}
             </span>
             <MenuCommand.Arrow />
-          </ButtonV2>
+          </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth align="start" sideOffset={4}>
           <MenuCommand.List>

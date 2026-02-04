@@ -14,7 +14,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Modal, Switch } from 'ui-design-system';
+import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateInbox({
@@ -38,10 +38,10 @@ export function UpdateInbox({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
-        <ButtonV2 className="w-fit whitespace-nowrap">
+        <Button className="w-fit whitespace-nowrap">
           <Icon icon="edit-square" className="size-5" />
           {t('settings:inboxes.update_inbox')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <UpdateInboxContent
@@ -196,13 +196,13 @@ export function UpdateInboxContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked" type="button">
+          <Button variant="secondary" appearance="stroked" type="button">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="update" disabled={updateInboxMutation.isPending}>
+        <Button variant="primary" type="submit" name="update" disabled={updateInboxMutation.isPending}>
           {t('common:save')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

@@ -1,7 +1,7 @@
 import { defaultPaginationSize, type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -180,12 +180,12 @@ export function CursorPaginationButtons({
       ) : (
         <FormattedDatesRange startTs={startTs} endTs={endTs} />
       )}
-      <ButtonV2 onClick={fetchPrevious} variant="secondary" mode="icon" disabled={previousDisabled}>
+      <Button onClick={fetchPrevious} variant="secondary" mode="icon" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />
-      </ButtonV2>
-      <ButtonV2 onClick={fetchNext} variant="secondary" mode="icon" disabled={nextDisabled}>
+      </Button>
+      <Button onClick={fetchNext} variant="secondary" mode="icon" disabled={nextDisabled}>
         <Icon icon="arrow-right" className="size-4" />
-      </ButtonV2>
+      </Button>
     </div>
   );
 }

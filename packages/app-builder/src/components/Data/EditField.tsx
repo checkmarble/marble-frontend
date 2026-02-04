@@ -12,7 +12,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Checkbox, Modal, Select } from 'ui-design-system';
+import { Button, Checkbox, Modal, Select } from 'ui-design-system';
 
 const REQUIRED_OPTIONS = [
   { value: 'optional', display: 'data:create_field.option_optional' },
@@ -234,13 +234,13 @@ export function EditField({
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+              <Button className="flex-1" variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 className="flex-1" variant="primary" type="submit" name="edit">
+            <Button className="flex-1" variant="primary" type="submit" name="edit">
               {t('data:edit_field.button_accept')}
-            </ButtonV2>
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

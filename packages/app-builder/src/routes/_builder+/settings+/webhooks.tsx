@@ -18,7 +18,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Table, useTable } from 'ui-design-system';
+import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -97,10 +97,10 @@ export default function Webhooks() {
               // Necessary to prevent click events from propagating to the Collapsible
               <span onClick={(e) => e.stopPropagation()}>
                 <CreateWebhook webhookStatus={webhooksStatus}>
-                  <ButtonV2 variant="primary">
+                  <Button variant="primary">
                     <Icon icon="plus" className="size-5" />
                     {t('settings:webhooks.new_webhook')}
-                  </ButtonV2>
+                  </Button>
                 </CreateWebhook>
               </span>
             ) : null}
@@ -192,10 +192,10 @@ export function ErrorBoundary() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhooks')}</span>
-            <ButtonV2 variant="primary" disabled>
+            <Button variant="primary" disabled>
               <Icon icon="plus" className="size-5" />
               {t('settings:webhooks.new_webhook')}
-            </ButtonV2>
+            </Button>
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Callout className="mb-4 lg:mb-6" variant="outlined">

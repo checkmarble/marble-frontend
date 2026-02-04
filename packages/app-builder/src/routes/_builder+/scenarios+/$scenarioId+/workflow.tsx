@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -133,14 +133,14 @@ function WorkflowContent() {
                   </div>
                   <Modal.Footer>
                     <Modal.Close asChild>
-                      <ButtonV2 variant="secondary" appearance="stroked" onClick={cancelDeleteRule}>
+                      <Button variant="secondary" appearance="stroked" onClick={cancelDeleteRule}>
                         {t('common:cancel')}
-                      </ButtonV2>
+                      </Button>
                     </Modal.Close>
-                    <ButtonV2 variant="destructive" onClick={confirmDeleteRule}>
+                    <Button variant="destructive" onClick={confirmDeleteRule}>
                       <Icon icon="delete" className="size-4" />
                       {t('workflows:delete_rule.delete_button')}
-                    </ButtonV2>
+                    </Button>
                   </Modal.Footer>
                 </Modal.Content>
               </Modal.Root>

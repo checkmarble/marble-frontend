@@ -14,7 +14,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Table, useTable } from 'ui-design-system';
+import { Button, Modal, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -185,7 +185,7 @@ export default function Filters() {
         cell: ({ row }) => {
           return (
             <div className="flex justify-center">
-              <ButtonV2
+              <Button
                 variant="secondary"
                 mode="icon"
                 className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -198,7 +198,7 @@ export default function Filters() {
                 title="Delete filter"
               >
                 <Icon icon="delete" className="size-4" />
-              </ButtonV2>
+              </Button>
             </div>
           );
         },
@@ -251,10 +251,10 @@ export default function Filters() {
             </Modal.Description>
             <Modal.Footer>
               <div className="bg-grey-background-light flex justify-end gap-3 border-t p-4">
-                <ButtonV2 variant="secondary" onClick={() => setIsConfirmOpen(false)}>
+                <Button variant="secondary" onClick={() => setIsConfirmOpen(false)}>
                   {t('common:cancel')}
-                </ButtonV2>
-                <ButtonV2
+                </Button>
+                <Button
                   variant="destructive"
                   onClick={() => {
                     if (!itemToDelete) return;
@@ -280,7 +280,7 @@ export default function Filters() {
                   }}
                 >
                   {t('settings:filters.delete_filter')}
-                </ButtonV2>
+                </Button>
               </div>
             </Modal.Footer>
           </Modal.Content>

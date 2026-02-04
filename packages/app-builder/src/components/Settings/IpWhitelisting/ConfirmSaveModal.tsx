@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 
 type ConfirmSaveModalProps = {
   onConfirm: () => void;
@@ -27,13 +27,13 @@ export const ConfirmSaveModal = ({ onConfirm, children }: ConfirmSaveModalProps)
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+            <Button variant="secondary" appearance="stroked" name="cancel">
               {t('common:cancel')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
-          <ButtonV2 variant="primary" name="delete" onClick={handleSaveClick}>
+          <Button variant="primary" name="delete" onClick={handleSaveClick}>
             {t('common:save')}
-          </ButtonV2>
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

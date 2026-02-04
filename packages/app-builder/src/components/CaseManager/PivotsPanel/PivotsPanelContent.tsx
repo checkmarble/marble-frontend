@@ -18,7 +18,7 @@ import { cva } from 'class-variance-authority';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, CtaClassName, CtaV2ClassName, cn } from 'ui-design-system';
+import { Button, CtaClassName, CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { KycEnrichment } from '../KycEnrichment';
 import { DataCard } from './DataCard';
@@ -176,7 +176,7 @@ export function PivotsPanelContent({
                             className="grid grid-cols-[116px_1fr] gap-x-3 items-center"
                           >
                             <div>{navOption.targetTableName}</div>
-                            <ButtonV2
+                            <Button
                               disabled={navOption.status === 'pending'}
                               variant="secondary"
                               onClick={() => {
@@ -205,7 +205,7 @@ export function PivotsPanelContent({
                               ) : (
                                 <Icon icon="arrow-up-right" className="size-3.5" />
                               )}
-                            </ButtonV2>
+                            </Button>
                           </div>
                         ))}
                       </div>

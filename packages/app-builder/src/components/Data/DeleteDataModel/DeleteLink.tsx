@@ -4,7 +4,7 @@ import { useDeleteLinkMutation } from '@app-builder/queries/data/delete-link';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { dataI18n } from '../data-i18n';
@@ -60,7 +60,7 @@ export function DeleteLink({ link }: DeleteLinkProps) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <ButtonV2
+      <Button
         variant="secondary"
         mode="icon"
         onClick={handleOpenModal}
@@ -69,7 +69,7 @@ export function DeleteLink({ link }: DeleteLinkProps) {
         className="flex size-7"
       >
         <Icon icon="delete" className="size-6 text-purple-primary" />
-      </ButtonV2>
+      </Button>
       <Modal.Content>
         <DeleteDataModelContent
           report={report}

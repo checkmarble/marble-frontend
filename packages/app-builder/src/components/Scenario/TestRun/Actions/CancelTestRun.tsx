@@ -4,7 +4,7 @@ import { Scenario } from '@app-builder/models/scenario';
 import { useCancelTestRunMutation } from '@app-builder/queries/scenarios/cancel-testrun';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 
 export function CancelTestRun({
   children,
@@ -38,18 +38,18 @@ export function CancelTestRun({
         </Modal.Description>
         <Modal.Footer>
           <Modal.Close asChild>
-            <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+            <Button className="flex-1" variant="secondary" appearance="stroked">
               {t('common:cancel')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
-          <ButtonV2
+          <Button
             className="flex-1"
             variant="primary"
             onClick={handleCancelScenario}
             disabled={cancelTestRunMutation.isPending}
           >
             {t('scenarios:testrun.cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

@@ -8,7 +8,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const OpenCase = ({ id }: { id: string }) => {
@@ -35,10 +35,10 @@ export const OpenCase = ({ id }: { id: string }) => {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize">
+        <Button variant="primary" className="flex-1 first-letter:capitalize">
           <Icon icon="save" className="size-3.5" />
           {t('cases:case.reopen')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
@@ -69,11 +69,11 @@ export const OpenCase = ({ id }: { id: string }) => {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 variant="secondary" appearance="stroked">
+              <Button variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 type="submit">Re-Open</ButtonV2>
+            <Button type="submit">Re-Open</Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

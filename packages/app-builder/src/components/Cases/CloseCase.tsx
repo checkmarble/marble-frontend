@@ -11,7 +11,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, cn, Modal } from 'ui-design-system';
+import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const CloseCase = ({
@@ -50,10 +50,10 @@ export const CloseCase = ({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize" disabled={disabled}>
+        <Button variant="primary" className="flex-1 first-letter:capitalize" disabled={disabled}>
           <Icon icon="save" className="size-3.5" />
           {t('cases:case.close')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('cases:case.close')}</Modal.Title>
@@ -131,11 +131,11 @@ export const CloseCase = ({
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 variant="secondary" appearance="stroked" type="button">
+              <Button variant="secondary" appearance="stroked" type="button">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 type="submit">{t('common:validate')}</ButtonV2>
+            <Button type="submit">{t('common:validate')}</Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

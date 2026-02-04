@@ -5,7 +5,7 @@ import { UseQueryResult } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { GraphSpinnerOverlay } from './GraphSpinnerOverlay';
 
@@ -84,7 +84,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
     <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:decisions_score_distribution.title')}</h2>
-        <ButtonV2
+        <Button
           disabled={!query.isSuccess || !query.data}
           variant="secondary"
           className="flex items-center gap-v2-sm"
@@ -92,7 +92,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
         >
           <Icon icon="download" className="size-4" />
           {t('analytics:export.button')}
-        </ButtonV2>
+        </Button>
       </div>
 
       <div className="min-h-[500px]">
@@ -142,7 +142,7 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
     <>
       <div className="flex justify-between w-full items-baseline">
         <span className="text-s">{t('analytics:decisions_score_distribution.left-axis-legend')}</span>
-        <ButtonV2
+        <Button
           variant="secondary"
           className="flex items-center gap-v2-sm"
           disabled={!hasOutliers}
@@ -150,7 +150,7 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
         >
           <Icon icon={isExpanded ? 'unfold_less' : 'unfold_more'} className="size-4" />
           {isExpanded ? 'Zoom in' : 'Zoom out'}
-        </ButtonV2>
+        </Button>
       </div>
       <div className="flex-1 w-full">
         <ResponsiveLine

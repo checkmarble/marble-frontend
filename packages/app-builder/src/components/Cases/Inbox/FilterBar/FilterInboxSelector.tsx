@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PartialInbox } from './types';
 
@@ -17,7 +17,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <ButtonV2 variant="primary" size="default">
+        <Button variant="primary" size="default">
           <span>
             {t('cases:case.inbox')}: {selectedInbox.name}
           </span>
@@ -27,7 +27,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
             </div>
           ) : null}
           <Icon icon="caret-down" className="size-4" />
-        </ButtonV2>
+        </Button>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4} sameWidth>
         <MenuCommand.List>

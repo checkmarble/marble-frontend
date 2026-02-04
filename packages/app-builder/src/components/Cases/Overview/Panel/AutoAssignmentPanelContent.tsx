@@ -14,7 +14,7 @@ import { useUpdateAutoAssignMutation } from '@app-builder/queries/cases/update-a
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { InboxCard } from './InboxCard';
@@ -145,7 +145,7 @@ export const AutoAssignmentPanelContent = ({
         </PanelContent>
         {canSave ? (
           <PanelFooter>
-            <ButtonV2
+            <Button
               size="default"
               className="w-full justify-center"
               onClick={handleSave}
@@ -156,7 +156,7 @@ export const AutoAssignmentPanelContent = ({
               ) : (
                 t('cases:overview.validate')
               )}
-            </ButtonV2>
+            </Button>
           </PanelFooter>
         ) : null}
       </PanelContainer>

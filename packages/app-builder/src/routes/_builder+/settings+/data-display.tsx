@@ -22,7 +22,7 @@ import { useForm } from '@tanstack/react-form';
 import { cva } from 'class-variance-authority';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2, Switch } from 'ui-design-system';
+import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -155,9 +155,9 @@ export default function DataDisplaySettings() {
         <form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex items-center justify-between p-2">
             <div>{t('settings:data_display.global_explanation')}</div>
-            <ButtonV2 type="submit" variant="primary">
+            <Button type="submit" variant="primary">
               {t('common:save')}
-            </ButtonV2>
+            </Button>
           </div>
           {dataModelWithTableOptions.map((tableModelWithOptions) => (
             <form.Field

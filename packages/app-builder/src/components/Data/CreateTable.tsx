@@ -11,7 +11,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 
 export function CreateTable({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation(['data', 'navigation', 'common']);
@@ -105,13 +105,13 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 className="flex-1" variant="secondary" appearance="stroked">
+              <Button className="flex-1" variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 className="flex-1" variant="primary" type="submit" name="create">
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               {t('data:create_table.button_accept')}
-            </ButtonV2>
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

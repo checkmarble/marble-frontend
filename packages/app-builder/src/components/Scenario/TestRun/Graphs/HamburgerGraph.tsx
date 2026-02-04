@@ -5,7 +5,7 @@ import { toggle } from 'radash';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { groupBy, keys, mapValues, omitBy, sumBy, unique } from 'remeda';
-import { ButtonV2, RadioGroup, RadioGroupItem, Tag } from 'ui-design-system';
+import { Button, RadioGroup, RadioGroupItem, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type Item<T extends string> = { version: string; count: number; option: T };
@@ -171,7 +171,7 @@ export function HamburgerChart<T extends string>({
       </div>
       <div className="flex flex-row justify-center gap-2 px-24">
         {options.map((option) => (
-          <ButtonV2
+          <Button
             variant="secondary"
             appearance="link"
             key={option}
@@ -196,7 +196,7 @@ export function HamburgerChart<T extends string>({
               })}
             />
             <span className="text-grey-primary">{mapping[option].name}</span>
-          </ButtonV2>
+          </Button>
         ))}
       </div>
     </div>

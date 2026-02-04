@@ -21,7 +21,7 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { allPass, filter, mapToObj, pick } from 'remeda';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenario, useScenarioIterationsSummary } from '../_layout';
@@ -111,10 +111,10 @@ export default function TestRuns() {
                     scenarioIterations={scenarioIterations}
                     atLeastOneActiveTestRun={atLeastOneActiveTestRun}
                   >
-                    <ButtonV2 variant="primary" className="isolate h-10 w-fit">
+                    <Button variant="primary" className="isolate h-10 w-fit">
                       <Icon icon="plus" className="size-5" aria-hidden />
                       {t('scenarios:create_testrun.title')}
-                    </ButtonV2>
+                    </Button>
                   </CreateTestRun>
                 </div>
               </div>

@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/remix';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Markdown, Modal, ScrollAreaV2 } from 'ui-design-system';
+import { Button, Markdown, Modal, ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../Callout';
 import { Spinner } from '../Spinner';
@@ -76,9 +76,9 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="secondary" className="align-baseline" onClick={() => handleOpen()}>
+        <Button variant="secondary" className="align-baseline" onClick={() => handleOpen()}>
           <Icon icon="ai-review" className="size-5" /> {t('cases:kyc_enrichment.title')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content size="xlarge" className="h-[90vh] flex flex-col">
         <Modal.Title>{t('cases:kyc_enrichment.title')}</Modal.Title>
@@ -123,17 +123,17 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
         </div>
         <Modal.Footer>
           <div className="flex flex-1 flex-row gap-2 p-4 justify-end">
-            <ButtonV2
+            <Button
               disabled={addCommentMutation.isPending || !isSuccess || isCommentAdded}
               variant="primary"
               onClick={() => handleAddComment()}
             >
               {t('cases:kyc_enrichment.attach_to_case')}
-            </ButtonV2>
+            </Button>
             <Modal.Close asChild>
-              <ButtonV2 disabled={addCommentMutation.isPending} variant="secondary" onClick={() => setOpen(false)}>
+              <Button disabled={addCommentMutation.isPending} variant="secondary" onClick={() => setOpen(false)}>
                 {t('common:close')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
           </div>
         </Modal.Footer>

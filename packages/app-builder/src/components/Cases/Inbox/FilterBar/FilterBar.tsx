@@ -4,7 +4,7 @@ import { InboxWithCasesCount } from '@app-builder/models/inbox';
 import type { Filters, filtersSchema } from '@app-builder/queries/cases/get-cases';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ActivatedFilterItem } from './ActivatedFilterItem';
 import { DisplayFilterMenuItem } from './DisplayFilterMenuItem';
@@ -67,10 +67,10 @@ const InboxFilters = ({ allowedFilters, filters, updateFilters }: InboxFiltersPr
 
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <ButtonV2 variant="secondary" size="default">
+          <Button variant="secondary" size="default">
             <Icon icon="plus" className="size-4" />
             <span>{t('filters:ds.addNewFilter.label')}</span>
-          </ButtonV2>
+          </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth align="start" sideOffset={4}>
           <MenuCommand.List>

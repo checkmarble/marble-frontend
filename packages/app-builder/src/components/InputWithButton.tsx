@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ButtonV2, Input } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
 import { IconName } from 'ui-icons';
 import { ZodType } from 'zod/v4';
 
@@ -43,9 +43,9 @@ export const InputWithButton = ({
         startAdornment={icon}
         className={inputClassName}
       />
-      <ButtonV2 onClick={() => onChange(value)} disabled={!isValid}>
+      <Button onClick={() => onChange(value)} disabled={!isValid}>
         {buttonLabel}
-      </ButtonV2>
+      </Button>
     </div>
   );
 };

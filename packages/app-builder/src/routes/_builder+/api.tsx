@@ -8,7 +8,7 @@ import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -53,7 +53,7 @@ export default function Api() {
       <Page.Container>
         <Page.Content>
           <div className="flex flex-col gap-2  items-start">
-            <ButtonV2
+            <Button
               variant="secondary"
               onClick={() => {
                 try {
@@ -69,8 +69,8 @@ export default function Api() {
             >
               <Icon icon="download" className="me-2 size-5" />
               {t('api:download_openapi_spec_v1')}
-            </ButtonV2>
-            <ButtonV2
+            </Button>
+            <Button
               variant="secondary"
               onClick={() => {
                 try {
@@ -86,7 +86,7 @@ export default function Api() {
             >
               <Icon icon="download" className="me-2 size-5" />
               {t('api:download_openapi_spec')}
-            </ButtonV2>
+            </Button>
           </div>
         </Page.Content>
       </Page.Container>

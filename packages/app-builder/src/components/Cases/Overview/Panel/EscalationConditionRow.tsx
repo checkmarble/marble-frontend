@@ -1,7 +1,7 @@
 import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export interface EscalationCondition {
@@ -100,9 +100,9 @@ export const EscalationConditionRow = ({
       </div>
 
       {!disabled && (
-        <ButtonV2 mode="icon" variant="secondary" onClick={onRemove}>
+        <Button mode="icon" variant="secondary" onClick={onRemove}>
           <Icon icon="delete" className="size-4 text-purple-primary" />
-        </ButtonV2>
+        </Button>
       )}
     </div>
   );

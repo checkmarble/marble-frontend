@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import { toggle } from 'radash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -115,12 +115,12 @@ export function ClientDocumentsPopover({
                   </div>
                   <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                     {([canSubmit, isSubmitting]) => (
-                      <ButtonV2 type="submit" mode="icon" variant="primary" disabled={!canSubmit || isSubmitting}>
+                      <Button type="submit" mode="icon" variant="primary" disabled={!canSubmit || isSubmitting}>
                         <Icon
                           icon={isSubmitting ? 'spinner' : 'send'}
                           className={clsx('size-4', { 'animate-spin': isSubmitting })}
                         />
-                      </ButtonV2>
+                      </Button>
                     )}
                   </form.Subscribe>
                 </div>

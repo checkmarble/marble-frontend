@@ -2,7 +2,7 @@ import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-no
 import { useCallbackRef } from '@marble/shared';
 import { type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, cn, Modal } from 'ui-design-system';
+import { Button, cn, Modal } from 'ui-design-system';
 
 import { AstBuilderNodeSharpFactory } from '../node-store';
 import { type OperandEditModalProps } from './EditModal';
@@ -33,11 +33,11 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
         <div className={cn('flex flex-col gap-4 p-4', className)}>{props.children}</div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <ButtonV2 variant="secondary" appearance="stroked" className="flex-1">
+            <Button variant="secondary" appearance="stroked" className="flex-1">
               {t('common:cancel')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
-          <ButtonV2
+          <Button
             variant="primary"
             className="flex-1"
             disabled={props.saveDisabled}
@@ -46,7 +46,7 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
             }}
           >
             {props.saveLabel ?? t('common:save')}
-          </ButtonV2>
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

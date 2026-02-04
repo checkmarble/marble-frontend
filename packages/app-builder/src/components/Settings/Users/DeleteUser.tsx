@@ -2,7 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useDeleteUserMutation } from '@app-builder/queries/settings/users/delete-user';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteUser({ userId, currentUserId }: { userId: string; currentUserId?: string }) {
@@ -60,11 +60,11 @@ const DeleteUserContent = ({ userId, onSuccess }: { userId: string; onSuccess: (
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+          <Button variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2
+        <Button
           variant="destructive"
           type="submit"
           name="delete"
@@ -73,7 +73,7 @@ const DeleteUserContent = ({ userId, onSuccess }: { userId: string; onSuccess: (
         >
           <Icon icon="delete" className="size-5" />
           {t('common:delete')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </>
   );

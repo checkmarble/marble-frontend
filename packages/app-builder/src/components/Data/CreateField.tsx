@@ -16,7 +16,7 @@ import { createErrorTranslator } from '@app-builder/utils/translate-error';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Checkbox, Modal, Select } from 'ui-design-system';
+import { Button, Checkbox, Modal, Select } from 'ui-design-system';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '../Form/Tanstack/FormInput';
 
@@ -279,13 +279,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" type="button">
+          <Button className="flex-1" variant="secondary" appearance="stroked" type="button">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 className="flex-1" variant="primary" type="submit" name="create" disabled={form.state.isSubmitting}>
+        <Button className="flex-1" variant="primary" type="submit" name="create" disabled={form.state.isSubmitting}>
           {t('data:create.button_accept')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

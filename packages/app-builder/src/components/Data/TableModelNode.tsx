@@ -24,7 +24,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { SchemaMenuMenuButton, SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
 import { CreateField } from './CreateField';
@@ -143,24 +143,24 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
 
             <div className="flex shrink-0 flex-col items-end gap-2">
               <div className="flex flex-row flex-wrap justify-end gap-2">
-                <ButtonV2
+                <Button
                   variant="secondary"
                   disabled={displayPivot}
                   onClick={toggleLinkedFilter}
                   className="flex items-center justify-center p-2"
                 >
                   <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-5" />
-                </ButtonV2>
+                </Button>
                 <MoreMenu data={data} />
               </div>
               {data.pivot ? (
                 <DisplayPivot {...data.pivot} />
               ) : (
                 <CreatePivot key="create-pivot" tableModel={data.original} dataModel={data.dataModel}>
-                  <ButtonV2 variant={'secondary'} disabled={displayPivot}>
+                  <Button variant={'secondary'} disabled={displayPivot}>
                     <Icon icon="plus" className="size-5" />
                     {t('data:create_pivot.button.label')}
-                  </ButtonV2>
+                  </Button>
                 </CreatePivot>
               )}
             </div>
@@ -437,7 +437,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
 export function DisplayPivot(pivot: Pivot) {
   const { displayPivot, setSelectedPivot } = useSelectedPivot();
   return (
-    <ButtonV2
+    <Button
       disabled={displayPivot}
       variant="secondary"
       onClick={() => {
@@ -455,6 +455,6 @@ export function DisplayPivot(pivot: Pivot) {
           </React.Fragment>
         ))
       )}
-    </ButtonV2>
+    </Button>
   );
 }

@@ -15,7 +15,7 @@ import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
-import { ButtonV2, MenuCommand, Popover } from 'ui-design-system';
+import { Button, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormatData } from '../FormatData';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
@@ -142,10 +142,10 @@ function DataTablePagination({ hasNext, isLoading, onNext }: DataTablePagination
   return (
     <>
       {hasNext ? (
-        <ButtonV2 variant="secondary" size="small" onClick={onNext} disabled={isLoading}>
+        <Button variant="secondary" size="small" onClick={onNext} disabled={isLoading}>
           <Icon icon="arrow-up" className="size-4 rotate-180" />
           {t('common:load_more_results')}
-        </ButtonV2>
+        </Button>
       ) : null}
     </>
   );
@@ -252,10 +252,10 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
         {list.length > 0 ? (
           <MenuCommand.Menu>
             <MenuCommand.Trigger>
-              <ButtonV2 variant="secondary">
+              <Button variant="secondary">
                 <Icon className="size-3.5" icon="column" />
                 {t('cases:data_explorer.columns')}
-              </ButtonV2>
+              </Button>
             </MenuCommand.Trigger>
             <MenuCommand.Content sideOffset={4} align="start" sameWidth>
               <MenuCommand.List>
@@ -390,14 +390,14 @@ function DataTableActionsButton({
         <div className="relative flex">
           {showCommentAction ? (
             <Popover.Trigger asChild>
-              <ButtonV2
+              <Button
                 variant="secondary"
                 size="small"
                 className="hover:border-purple-primary data-[state=open]:border-purple-primary items-center rounded-r-none hover:z-10 data-[state=open]:z-10"
               >
                 <Icon icon="comment" className="size-4" />
                 <span className="text-xs font-normal">{annotationsCount}</span>
-              </ButtonV2>
+              </Button>
             </Popover.Trigger>
           ) : null}
           <Popover.Content
@@ -418,7 +418,7 @@ function DataTableActionsButton({
           </Popover.Content>
           <MenuCommand.Menu>
             <MenuCommand.Trigger>
-              <ButtonV2
+              <Button
                 variant="secondary"
                 mode={showCommentAction ? 'normal' : 'icon'}
                 className={clsx(
@@ -429,7 +429,7 @@ function DataTableActionsButton({
                 )}
               >
                 <Icon icon="more-menu" className="size-3.5" />
-              </ButtonV2>
+              </Button>
             </MenuCommand.Trigger>
             <MenuCommand.Content side="right" align="start" sideOffset={4} className="text-r min-w-[280px]">
               <MenuCommand.List>

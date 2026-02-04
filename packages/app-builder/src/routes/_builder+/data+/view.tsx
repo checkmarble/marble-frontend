@@ -10,7 +10,7 @@ import { Outlet, useMatch } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Input, Select } from 'ui-design-system';
+import { Button, Input, Select } from 'ui-design-system';
 
 export const handle = {
   i18n: dataI18n satisfies Namespace,
@@ -76,7 +76,7 @@ export default function DataViewer() {
                 />
               </div>
             </div>
-            <ButtonV2
+            <Button
               type="button"
               variant="primary"
               disabled={!tableName || !objectId}
@@ -91,7 +91,7 @@ export default function DataViewer() {
               className="self-end"
             >
               {t('common:search')}
-            </ButtonV2>
+            </Button>
           </div>
           <Outlet />
         </div>

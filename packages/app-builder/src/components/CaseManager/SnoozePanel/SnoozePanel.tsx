@@ -14,7 +14,7 @@ import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, cn, Tabs, tabClassName } from 'ui-design-system';
+import { Button, cn, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DrawerContext } from '../Drawer/Drawer';
 import { PivotObjectDetails } from '../PivotsPanel/PivotsPanelContent';
@@ -56,7 +56,7 @@ export const SnoozePanel = ({
 
   return (
     <div className="flex flex-col gap-6 p-4">
-      <ButtonV2
+      <Button
         variant="secondary"
         size="small"
         onClick={() => {
@@ -65,7 +65,7 @@ export const SnoozePanel = ({
         }}
       >
         <Icon icon="left-panel-close" className="size-5" />
-      </ButtonV2>
+      </Button>
 
       <div className="flex w-full flex-col gap-6 px-2">
         <span className="text-l font-semibold">Rules</span>
@@ -136,7 +136,7 @@ export const SnoozePanel = ({
                       >
                         <div className="flex min-h-full items-center justify-center p-2">
                           <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>
-                            <ButtonV2
+                            <Button
                               variant="secondary"
                               size="small"
                               className={cn({ 'bg-purple-background': r.isSnoozed })}
@@ -147,7 +147,7 @@ export const SnoozePanel = ({
                             >
                               <Icon icon={r.isSnoozed ? 'snooze-on' : 'snooze'} className="size-4" aria-hidden />
                               <span className="text-xs font-medium">{t('cases:decisions.rule.snooze')}</span>
-                            </ButtonV2>
+                            </Button>
                           </AddRuleSnooze>
                         </div>
                         <div className="border-grey-border flex min-h-full items-center justify-center border-x p-2">

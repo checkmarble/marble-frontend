@@ -8,7 +8,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function EditListModal({ listId, name, description }: { listId: string; name: string; description: string }) {
@@ -39,10 +39,10 @@ export function EditListModal({ listId, name, description }: { listId: string; n
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="secondary" appearance="stroked">
+        <Button variant="secondary" appearance="stroked">
           <Icon icon="edit-square" className="size-5" />
           <p>{t('lists:edit_list.button')}</p>
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <form
@@ -105,13 +105,13 @@ export function EditListModal({ listId, name, description }: { listId: string; n
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 type="button" variant="secondary" appearance="stroked">
+              <Button type="button" variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 variant="primary" type="submit" name="editList">
+            <Button variant="primary" type="submit" name="editList">
               {t('common:save')}
-            </ButtonV2>
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

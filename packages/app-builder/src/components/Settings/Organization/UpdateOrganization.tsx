@@ -11,7 +11,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -30,10 +30,10 @@ export function UpdateOrganizationSettings({
   if (!isAutoAssignmentAvailable) {
     return (
       <div className="relative">
-        <ButtonV2 className="w-fit whitespace-nowrap" disabled>
+        <Button className="w-fit whitespace-nowrap" disabled>
           <Icon icon="edit-square" className="size-5" />
           {t('common:edit')}
-        </ButtonV2>
+        </Button>
         <Nudge
           className="absolute -top-1 -right-1 size-4"
           iconClass="size-2.5"
@@ -49,10 +49,10 @@ export function UpdateOrganizationSettings({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
-        <ButtonV2 className="w-fit whitespace-nowrap">
+        <Button className="w-fit whitespace-nowrap">
           <Icon icon="edit-square" className="size-5" />
           {t('common:edit')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <UpdateOrganizationSettingsContents
@@ -133,13 +133,13 @@ export function UpdateOrganizationSettingsContents({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked" type="button">
+          <Button variant="secondary" appearance="stroked" type="button">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="update" disabled={updateOrganizationMutation.isPending}>
+        <Button variant="primary" type="submit" name="update" disabled={updateOrganizationMutation.isPending}>
           {t('common:save')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

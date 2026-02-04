@@ -19,7 +19,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
-import { ButtonV2, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const MAX_FILE_SIZE_MB = 32;
@@ -167,10 +167,10 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
           <>
             <p>{t('upload:drop_file_cta')}</p>
             <p className="text-grey-secondary uppercase">{t('common:or')}</p>
-            <ButtonV2 variant="primary">
+            <Button variant="primary">
               <Icon icon="plus" className="size-5" />
               {t('upload:pick_file_cta')}
-            </ButtonV2>
+            </Button>
           </>
         ) : null}
       </div>
@@ -242,10 +242,10 @@ const ResultModal = ({
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <ButtonV2 variant="primary">
+            <Button variant="primary">
               <Icon icon="tick" className="size-5" />
               {t('common:understand')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
         </Modal.Footer>
       </Modal.Content>
@@ -427,10 +427,10 @@ const Loading = ({ className }: { className?: string }) => {
 const LoadingButton = () => {
   const { t } = useTranslation(handle.i18n);
   return (
-    <ButtonV2 variant="secondary" className="cursor-wait">
+    <Button variant="secondary" className="cursor-wait">
       <Icon icon="helpcenter" className="me-2 size-5" />
       {t('upload:download_template_cta')}
-    </ButtonV2>
+    </Button>
   );
 };
 

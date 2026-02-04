@@ -7,7 +7,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, cn, Tag } from 'ui-design-system';
+import { Button, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { InboxUserRow } from '../InboxUserRow';
 import { AutoAssignmentPanelContent } from '../Panel/AutoAssignmentPanelContent';
@@ -134,9 +134,9 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
                     );
                   })}
                   {hasMore ? (
-                    <ButtonV2 variant="secondary" appearance="link" onClick={handleOpenPanel}>
+                    <Button variant="secondary" appearance="link" onClick={handleOpenPanel}>
                       {t('cases:overview.config.view_more')}
-                    </ButtonV2>
+                    </Button>
                   ) : null}
                 </>
               );

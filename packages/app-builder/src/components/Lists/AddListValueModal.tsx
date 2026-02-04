@@ -8,7 +8,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function AddListValueModal({ listId }: { listId: string }) {
@@ -41,10 +41,10 @@ export function AddListValueModal({ listId }: { listId: string }) {
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2>
+        <Button>
           <Icon icon="plus" className="size-5" />
           {t('lists:create_value.title')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <form
@@ -82,7 +82,7 @@ export function AddListValueModal({ listId }: { listId: string }) {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2
+              <Button
                 type="button"
                 variant="secondary"
                 appearance="stroked"
@@ -93,11 +93,11 @@ export function AddListValueModal({ listId }: { listId: string }) {
                 }}
               >
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 variant="primary" type="submit" key="create">
+            <Button variant="primary" type="submit" key="create">
               {t('common:save')}
-            </ButtonV2>
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

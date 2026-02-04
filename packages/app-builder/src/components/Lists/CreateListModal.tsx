@@ -7,7 +7,7 @@ import { CreateListPayload, createListPayloadSchema } from '@app-builder/schemas
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateListModal() {
@@ -35,10 +35,10 @@ export function CreateListModal() {
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <ButtonV2>
+        <Button>
           <Icon icon="plus" className="size-5" />
           {t('lists:create_list.title')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <form
@@ -101,13 +101,13 @@ export function CreateListModal() {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 type="button" variant="secondary" appearance="stroked">
+              <Button type="button" variant="secondary" appearance="stroked">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 variant="primary" type="submit" name="create">
+            <Button variant="primary" type="submit" name="create">
               {t('lists:create_list.button_accept')}
-            </ButtonV2>
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

@@ -8,7 +8,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Tooltip } from 'ui-design-system';
+import { Button, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId: string; isAdminUser: boolean }) => {
@@ -61,10 +61,10 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
         }
       >
         <Modal.Trigger asChild>
-          <ButtonV2 variant="secondary" disabled={!canEscalate}>
+          <Button variant="secondary" disabled={!canEscalate}>
             <Icon icon="arrow-up" className="size-3.5" aria-hidden />
             {t('cases:escalate-button.label')}
-          </ButtonV2>
+          </Button>
         </Modal.Trigger>
       </Tooltip.Default>
       <Modal.Content>
@@ -77,11 +77,11 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
         <form onSubmit={handleSubmit(form)}>
           <Modal.Footer>
             <Modal.Close asChild>
-              <ButtonV2 variant="secondary" appearance="stroked" type="button">
+              <Button variant="secondary" appearance="stroked" type="button">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 type="submit">{t('cases:escalate-case.modal.submit-button.label')}</ButtonV2>
+            <Button type="submit">{t('cases:escalate-case.modal.submit-button.label')}</Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

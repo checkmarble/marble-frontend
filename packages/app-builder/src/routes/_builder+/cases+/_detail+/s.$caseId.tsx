@@ -29,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { ButtonV2, CtaV2ClassName, cn, Markdown, Tabs, tabClassName } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, Markdown, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const loader = createServerFn(
@@ -134,10 +134,10 @@ export default function CaseManagerIndexPage() {
           <AiAssist.Root>
             {aiAssistEnabled === 'allowed' ? (
               <AiAssist.Trigger>
-                <ButtonV2 variant="secondary">
+                <Button variant="secondary">
                   <Icon icon="case-manager" className="size-3.5" />
                   AI assist
-                </ButtonV2>
+                </Button>
               </AiAssist.Trigger>
             ) : null}
 
@@ -195,7 +195,7 @@ export default function CaseManagerIndexPage() {
                         : null}
                     </div>
                     <div className="flex gap-2">
-                      <ButtonV2
+                      <Button
                         variant="secondary"
                         onClick={() => {
                           enqueueReviewMutation.mutate(details.id);
@@ -207,7 +207,7 @@ export default function CaseManagerIndexPage() {
                         {hasRequestedReview
                           ? 'Review will be ready in a few minutes, refresh to see it'
                           : 'Generate Review'}
-                      </ButtonV2>
+                      </Button>
                       <Link
                         className={CtaV2ClassName({ variant: 'secondary', mode: 'normal' })}
                         reloadDocument
@@ -289,9 +289,9 @@ export function ErrorBoundary() {
       <div className="m-auto flex flex-col items-center gap-4">
         {t('common:errors.not_found')}
         <div className="mb-1">
-          <ButtonV2 variant="primary" onClick={() => navigate(-1)}>
+          <Button variant="primary" onClick={() => navigate(-1)}>
             {t('common:go_back')}
-          </ButtonV2>
+          </Button>
         </div>
       </div>
     );

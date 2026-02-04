@@ -8,7 +8,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Tag } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -36,10 +36,10 @@ export default function ScenariosPage() {
           <div className="flex flex-col gap-4">
             <div className="flex flex-row justify-end">
               <CreateScenario>
-                <ButtonV2 variant="primary">
+                <Button variant="primary">
                   <Icon icon="plus" className="size-5" aria-hidden />
                   {t('scenarios:create_scenario.title')}
-                </ButtonV2>
+                </Button>
               </CreateScenario>
             </div>
             <div className="flex flex-col gap-2 lg:gap-4">

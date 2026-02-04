@@ -8,7 +8,7 @@ import * as Collapsible from '@radix-ui/react-collapsible';
 import { FtmEntity } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, cn, MenuCommand } from 'ui-design-system';
+import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   ContinuousScreeningConfigurationStepper,
@@ -87,7 +87,7 @@ export const ObjectMapping = ({ baseConfig }: { baseConfig?: ContinuousScreening
       ) : null}
       {mode === 'view' ? null : (
         <div>
-          <ButtonV2
+          <Button
             variant="primary"
             appearance="stroked"
             disabled={isEditingNewObject || mappingConfigs.value.length === 0}
@@ -95,7 +95,7 @@ export const ObjectMapping = ({ baseConfig }: { baseConfig?: ContinuousScreening
           >
             <Icon icon="plus" className="size-4" />
             {t('continuousScreening:creation.objectMapping.addTable')}
-          </ButtonV2>
+          </Button>
         </div>
       )}
     </div>

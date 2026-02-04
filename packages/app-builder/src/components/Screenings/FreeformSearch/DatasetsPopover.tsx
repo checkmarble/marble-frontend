@@ -7,7 +7,7 @@ import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Checkbox, Input } from 'ui-design-system';
+import { Button, Checkbox, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DatasetTag } from '../DatasetTag';
@@ -128,9 +128,9 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
               .with({ isError: true }, () => (
                 <div className="flex flex-col items-center gap-2 p-4">
                   <span className="text-s text-grey-placeholder">{t('common:generic_fetch_data_error')}</span>
-                  <ButtonV2 variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
+                  <Button variant="secondary" size="small" onClick={() => datasetsQuery.refetch()}>
                     {t('common:retry')}
-                  </ButtonV2>
+                  </Button>
                 </div>
               ))
               .otherwise(() =>
@@ -158,7 +158,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
 
           {/* Actions */}
           <div className="border-grey-border flex gap-2 border-t p-4">
-            <ButtonV2
+            <Button
               type="button"
               variant="secondary"
               size="default"
@@ -166,8 +166,8 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
               onClick={handleCancel}
             >
               {t('common:cancel')}
-            </ButtonV2>
-            <ButtonV2
+            </Button>
+            <Button
               type="button"
               variant="primary"
               size="default"
@@ -175,7 +175,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
               onClick={handleApply}
             >
               {t('screenings:freeform_search.apply')}
-            </ButtonV2>
+            </Button>
           </div>
         </Popover.Content>
       </Popover.Portal>

@@ -16,7 +16,7 @@ import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Select } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateInboxUser({
@@ -134,13 +134,13 @@ export function UpdateInboxUserContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="update">
+        <Button variant="primary" type="submit" name="update">
           {t('common:save')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

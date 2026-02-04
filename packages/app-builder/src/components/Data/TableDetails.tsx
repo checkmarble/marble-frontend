@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2, Modal, Table, useTable } from 'ui-design-system';
+import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateField } from './CreateField';
 import { CreateLink } from './CreateLink';
@@ -93,14 +93,14 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             }}
           >
             <CreateField tableId={tableModel.id}>
-              <ButtonV2
+              <Button
                 variant="primary"
                 appearance="stroked"
                 className="h-6 gap-1 rounded-lg px-2 py-1 text-xs shadow-sm"
               >
                 <Icon icon="plus" className="size-4" />
                 {t('data:create_field.title')}
-              </ButtonV2>
+              </Button>
             </CreateField>
           </div>
         ) : null}
@@ -165,10 +165,10 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
 
           {isCreateDataModelLinkAvailable && R.hasAtLeast(otherTablesWithUnique, 1) ? (
             <CreateLink thisTable={tableModel} otherTables={otherTablesWithUnique}>
-              <ButtonV2 className="w-fit" variant="secondary">
+              <Button className="w-fit" variant="secondary">
                 <Icon icon="plus" className="size-5" />
                 {t('data:create_link.title')}
-              </ButtonV2>
+              </Button>
             </CreateLink>
           ) : null}
         </div>
@@ -263,9 +263,9 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
               {isEditDataModelFieldAvailable ? (
                 <div className="flex-shrink-0">
                   <EditField key={cell.row.original.id} field={cell.row.original} linksToThisTable={linksToThisTable}>
-                    <ButtonV2 variant="secondary" mode="icon" className="flex size-7">
+                    <Button variant="secondary" mode="icon" className="flex size-7">
                       <Icon icon="edit-square" className="size-6 text-purple-primary" />
-                    </ButtonV2>
+                    </Button>
                   </EditField>
                 </div>
               ) : null}

@@ -21,7 +21,7 @@ import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2, Collapsible } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 import * as z from 'zod/v4';
 
 import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
@@ -435,9 +435,9 @@ function EditScoreThresholds() {
 
       {editorMode === 'edit' ? (
         <div className="flex flex-row-reverse items-center justify-between gap-2">
-          <ButtonV2 variant="primary" type="submit">
+          <Button variant="primary" type="submit">
             {t('common:save')}
-          </ButtonV2>
+          </Button>
           <EvaluationErrors errors={serverErrors} />
         </div>
       ) : (

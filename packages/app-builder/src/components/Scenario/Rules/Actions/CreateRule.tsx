@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateRuleMutation } from '@app-builder/queries/scenarios/create-rule';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateRule({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
@@ -16,7 +16,7 @@ export function CreateRule({ scenarioId, iterationId }: { scenarioId: string; it
   };
 
   return (
-    <ButtonV2
+    <Button
       variant="secondary"
       appearance="link"
       disabled={createRuleMutation.isPending}
@@ -28,6 +28,6 @@ export function CreateRule({ scenarioId, iterationId }: { scenarioId: string; it
         <span className="text-grey-primary font-normal">{t('scenarios:create_rule.title')}</span>
         <span className="text-s text-grey-secondary font-normal">{t('scenarios:create_rule.description')}</span>
       </div>
-    </ButtonV2>
+    </Button>
   );
 }

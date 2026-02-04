@@ -139,9 +139,9 @@ export const EditCaseName: FunctionComponent<{ caseId: string }> = ({ caseId }) 
   return (
     <form onSubmit={handleSubmit}>
       <Input name="name" />
-      <ButtonV2 type="submit" disabled={editName.isPending}>
+      <Button type="submit" disabled={editName.isPending}>
         {editName.isPending ? 'Saving...' : 'Save'}
-      </ButtonV2>
+      </Button>
     </form>
   );
 };

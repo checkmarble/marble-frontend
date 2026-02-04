@@ -19,7 +19,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 
 export function UpdateWebhook({
   defaultValue,
@@ -152,14 +152,14 @@ function UpdateWebhookContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="update" disabled={updateWebhookMutation.isPending}>
+        <Button variant="primary" type="submit" name="update" disabled={updateWebhookMutation.isPending}>
           <LoadingIcon icon="edit-square" className="size-5" loading={updateWebhookMutation.isPending} />
           {t('settings:webhooks.update_webhook')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

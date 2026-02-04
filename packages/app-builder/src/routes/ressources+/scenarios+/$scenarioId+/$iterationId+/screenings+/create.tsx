@@ -11,7 +11,7 @@ import { type Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -70,7 +70,7 @@ export function CreateScreening({
   };
 
   return (
-    <ButtonV2
+    <Button
       type="submit"
       variant="secondary"
       disabled={disabled}
@@ -93,6 +93,6 @@ export function CreateScreening({
       {isSanctionAvailable !== 'allowed' ? (
         <Nudge kind={isSanctionAvailable} content={t('scenarios:sanction.nudge')} className="p-1" />
       ) : null}
-    </ButtonV2>
+    </Button>
   );
 }

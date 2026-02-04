@@ -9,7 +9,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Modal } from 'ui-design-system';
+import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type TriggerFieldItem = {
@@ -77,10 +77,10 @@ export function CreateFilter({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 onClick={(e) => e.stopPropagation()}>
+        <Button onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-4" />
           {t('settings:scenarios.filters.new_filter.create.button.label')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit(form)}>
@@ -157,13 +157,13 @@ export function CreateFilter({
             </div>
             <div className="flex flex-1 gap-2 justify-end">
               <Modal.Close asChild>
-                <ButtonV2 variant="secondary" onClick={() => setOpen(false)}>
+                <Button variant="secondary" onClick={() => setOpen(false)}>
                   {t('common:cancel')}
-                </ButtonV2>
+                </Button>
               </Modal.Close>
-              <ButtonV2 variant="primary" type="submit" className="align-baseline">
+              <Button variant="primary" type="submit" className="align-baseline">
                 {t('common:save')}
-              </ButtonV2>
+              </Button>
             </div>
           </div>
         </form>

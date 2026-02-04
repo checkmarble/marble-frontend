@@ -14,7 +14,7 @@ import { redirect, useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { decode as formDataToObject } from 'decode-formdata';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { z } from 'zod/v4';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -132,9 +132,9 @@ export default function Scenarios() {
         >
           <div className="flex items-center justify-between">
             <CalloutV2>{t('settings:scenario_sanction_callout')}</CalloutV2>
-            <ButtonV2 type="submit" variant="primary">
+            <Button type="submit" variant="primary">
               {t('common:save')}
-            </ButtonV2>
+            </Button>
           </div>
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>

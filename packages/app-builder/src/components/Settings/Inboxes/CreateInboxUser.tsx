@@ -18,7 +18,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Modal, Switch } from 'ui-design-system';
+import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInboxUser({
@@ -44,10 +44,10 @@ export function CreateInboxUser({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
-        <ButtonV2>
+        <Button>
           <Icon icon="plus" className="size-5" />
           {t('settings:inboxes.inbox_details.add_member')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()} aria-describedby={undefined}>
         <CreateInboxUserContent
@@ -249,14 +249,14 @@ export function CreateInboxUserContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 type="button" variant="secondary" appearance="stroked">
+          <Button type="button" variant="secondary" appearance="stroked">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="create">
+        <Button variant="primary" type="submit" name="create">
           <Icon icon="new-inbox" className="size-5" />
           {t('settings:inboxes.inbox_details.create_user')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

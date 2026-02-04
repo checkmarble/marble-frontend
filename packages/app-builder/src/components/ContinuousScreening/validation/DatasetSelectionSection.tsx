@@ -3,7 +3,7 @@ import { useScreeningDatasetsQuery } from '@app-builder/queries/screening/datase
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { ButtonV2, Collapsible } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 import { DatasetTag } from '../../Screenings/DatasetTag';
 import { Spinner } from '../../Spinner';
 import { EditionValidationPanelBaseProps } from '../EditionValidationPanel';
@@ -29,9 +29,9 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
           .with({ isError: true }, () => (
             <div className="flex flex-col gap-v2-md items-center justify-center h-50">
               <div className="">{t('common:generic_fetch_data_error')}</div>
-              <ButtonV2 variant="secondary" onClick={() => datasetsQuery.refetch()}>
+              <Button variant="secondary" onClick={() => datasetsQuery.refetch()}>
                 {t('common:retry')}
-              </ButtonV2>
+              </Button>
             </div>
           ))
           .with({ isSuccess: true }, ({ data: { datasets } }) => {

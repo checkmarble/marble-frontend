@@ -19,7 +19,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Select, TextArea } from 'ui-design-system';
+import { Button, Modal, Select, TextArea } from 'ui-design-system';
 
 export function AddRuleSnooze({
   decisionId,
@@ -192,14 +192,14 @@ function AddRuleSnoozeContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="primary" type="submit" name="update">
+        <Button variant="primary" type="submit" name="update">
           <LoadingIcon icon="snooze" className="size-5" loading={addRuleSnoozeMutation.isPending} />
           {t('cases:decisions.rule.snooze')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

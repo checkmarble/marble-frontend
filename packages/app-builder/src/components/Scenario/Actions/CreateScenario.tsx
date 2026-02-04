@@ -17,7 +17,7 @@ import * as Ariakit from '@ariakit/react';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Select } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
@@ -170,13 +170,13 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 className="flex-1" type="button" variant="secondary" appearance="stroked">
+          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 className="flex-1" variant="primary" type="submit">
+        <Button className="flex-1" variant="primary" type="submit">
           {t('common:save')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

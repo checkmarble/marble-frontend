@@ -1,6 +1,6 @@
 import { type AstNode } from '@app-builder/models';
 import { type ReactNode, useState } from 'react';
-import { ButtonV2, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import { DiscoveryList } from './DiscoveryList';
@@ -38,10 +38,10 @@ export function AstBuilderOperandMenu({
             {bottomActions.map((action) => {
               return (
                 <MenuCommand.HeadlessItem key={action.id} forceMount onSelect={action.onSelect}>
-                  <ButtonV2 type="button" variant="secondary">
+                  <Button type="button" variant="secondary">
                     {action.icon ? <Icon icon={action.icon} className="size-4" /> : null}
                     {action.label}
-                  </ButtonV2>
+                  </Button>
                 </MenuCommand.HeadlessItem>
               );
             })}

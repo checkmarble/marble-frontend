@@ -3,7 +3,7 @@ import { type InboxUser } from '@app-builder/models/inbox';
 import { useDeleteInboxUserMutation } from '@app-builder/queries/settings/inboxes/delete-inbox-user';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUser }) {
@@ -52,14 +52,14 @@ const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+          <Button variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="destructive" name="delete" onClick={handleDeleteInboxUser}>
+        <Button variant="destructive" name="delete" onClick={handleDeleteInboxUser}>
           <Icon icon="delete" className="size-5" />
           {t('common:delete')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </>
   );

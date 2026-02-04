@@ -3,7 +3,7 @@ import { type ApiKey } from '@app-builder/models/api-keys';
 import { useDeleteApiKeyMutation } from '@app-builder/queries/settings/api-keys/delete-api-key';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteApiKey({ apiKey }: { apiKey: ApiKey }) {
@@ -47,14 +47,14 @@ function DeleteApiKeyContent({ apiKey, onSuccess }: { apiKey: ApiKey; onSuccess:
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 variant="secondary" appearance="stroked" name="cancel">
+          <Button variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 variant="destructive" name="delete" onClick={handleDeleteApiKey}>
+        <Button variant="destructive" name="delete" onClick={handleDeleteApiKey}>
           <Icon icon="delete" className="size-5" />
           {t('common:delete')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </>
   );

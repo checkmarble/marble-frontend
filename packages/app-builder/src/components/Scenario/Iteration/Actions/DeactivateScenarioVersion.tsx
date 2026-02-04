@@ -7,7 +7,7 @@ import {
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Checkbox, Modal } from 'ui-design-system';
+import { Button, Checkbox, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
@@ -17,10 +17,10 @@ export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenari
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 className="flex-1" variant="destructive">
+        <Button className="flex-1" variant="destructive">
           <Icon icon="stop" className="size-5" />
           {t('scenarios:deployment_modal.deactivate.button')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <DeactivateScenarioVersionContent scenarioId={scenarioId} iterationId={iterationId} />
@@ -109,14 +109,14 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <ButtonV2 className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
             {t('common:cancel')}
-          </ButtonV2>
+          </Button>
         </Modal.Close>
-        <ButtonV2 className="flex-1" variant="destructive" type="submit">
+        <Button className="flex-1" variant="destructive" type="submit">
           <Icon icon="stop" className="size-5" />
           {t('scenarios:deployment_modal.deactivate.button')}
-        </ButtonV2>
+        </Button>
       </Modal.Footer>
     </form>
   );

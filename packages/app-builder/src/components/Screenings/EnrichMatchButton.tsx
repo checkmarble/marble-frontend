@@ -3,7 +3,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useEnrichMatchMutation } from '@app-builder/queries/screening/enrich-match';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function EnrichMatchButton({ matchId }: { matchId: string }) {
@@ -18,9 +18,9 @@ export function EnrichMatchButton({ matchId }: { matchId: string }) {
   });
 
   return (
-    <ButtonV2 type="button" variant="secondary" className="h-8" onClick={handleButtonClick}>
+    <Button type="button" variant="secondary" className="h-8" onClick={handleButtonClick}>
       <Icon icon="download" className="size-5" />
       {t('screenings:enrich_button')}
-    </ButtonV2>
+    </Button>
   );
 }

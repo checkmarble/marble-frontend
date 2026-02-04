@@ -33,7 +33,7 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod/v4';
 
@@ -237,10 +237,10 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
         onTriggerClick({ decisionIds });
       }}
     >
-      <ButtonV2 variant="primary">
+      <Button variant="primary">
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
-      </ButtonV2>
+      </Button>
     </DecisionRightPanel.Trigger>
   );
 }

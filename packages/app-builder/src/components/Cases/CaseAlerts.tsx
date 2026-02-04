@@ -7,7 +7,7 @@ import { useLoaderData } from '@remix-run/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, map, pipe, take } from 'remeda';
-import { ButtonV2, cn } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { OutcomeBadge } from '../Decisions';
 import { FormatData } from '../FormatData';
 import { ScoreModifier } from '../Scenario/Rules/ScoreModifier';
@@ -83,7 +83,7 @@ export const CaseAlerts = ({
                     </span>
                     <ScoreModifier score={decision.score} />
                   </div>
-                  <ButtonV2
+                  <Button
                     variant="secondary"
                     className="absolute right-0 top-0 hidden group-hover:flex"
                     onClick={() => {
@@ -93,7 +93,7 @@ export const CaseAlerts = ({
                     }}
                   >
                     {t('common:open')}
-                  </ButtonV2>
+                  </Button>
                 </div>
                 <RequiredActions decision={decision} caseId={caseDetail.id} />
               </div>
@@ -162,9 +162,9 @@ export const CaseAlerts = ({
         })}
       </div>
       {caseDecisionsQuery.hasNextPage ? (
-        <ButtonV2 variant="secondary" onClick={() => caseDecisionsQuery.fetchNextPage()}>
+        <Button variant="secondary" onClick={() => caseDecisionsQuery.fetchNextPage()}>
           {t('common:load_more_results')}
-        </ButtonV2>
+        </Button>
       ) : null}
     </>
   ) : null;
