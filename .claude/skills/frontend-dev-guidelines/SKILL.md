@@ -1,6 +1,6 @@
 ---
 name: frontend-dev-guidelines
-description: Frontend development guidelines for the Marble monorepo with React/TypeScript, Radix UI, Tailwind CSS, TanStack Query, and Remix. Modern patterns including layered architecture, lazy loading, file organization, performance optimization, and TypeScript best practices.
+description: Frontend development guidelines for React/TypeScript with Radix UI, Tailwind CSS 4, TanStack Query, and Remix in the Marble monorepo. Use when creating or modifying React components, writing TanStack Query hooks, styling with Tailwind and clsx, setting up Remix routes and loaders, handling loading/error states, or following the layered architecture (routes → components → queries → repositories → models). Activate for any work in packages/app-builder/src or packages/ui-design-system/src.
 ---
 
 # Frontend Development Guidelines

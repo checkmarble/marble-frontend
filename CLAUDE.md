@@ -84,11 +84,15 @@ dev/active/[task-name]/
 
 ## Hooks (Auto-Running)
 
-| Hook | Trigger | Purpose |
-|------|---------|---------|
-| `skill-activation-prompt` | Before prompt | Suggests relevant skills |
+| Hook | Event | Purpose |
+|------|-------|---------|
+| SessionStart | Session start/resume/compact/clear | Show branch, restore context |
+| PreToolUse | Edit/Write/MultiEdit | Block file edits on main/master branch |
+| PreToolUse | Bash | Block dangerous commands (rm -rf, git push --force, git reset --hard) |
+| Notification | Permission/idle prompt | macOS desktop notification when Claude needs attention |
+| Stop | End of response | Auto-format with Biome + type-check modified TS files |
 
-After completing edits, run `bun run type-check` in the affected package. Use `auto-error-resolver` agent for multiple errors.
+The Stop hook runs `biome format` and `bun run type-check` automatically. If type-check fails, Claude is blocked from stopping and shown the errors to fix. Use `auto-error-resolver` agent for complex multi-error situations.
 
 ## App-Builder Architecture
 
@@ -135,7 +139,7 @@ Run type-check manually after edits:
 2. Use `auto-error-resolver` agent for multiple errors
 
 ### Skill Not Activating
-Check `.claude/skills/skill-rules.json` for trigger keywords/patterns.
+Skills auto-activate based on descriptions in their SKILL.md files. Check `.claude/skills/[skill-name]/SKILL.md` description field.
 
 ### Build Issues
 ```bash
