@@ -17,12 +17,14 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   showUnavailable = false,
   before,
   after,
+  highlightText,
 }: {
   entity: T;
   forcedProperties?: PropertyForSchema<T['schema']>[];
   showUnavailable?: boolean;
   before?: ReactNode;
   after?: ReactNode;
+  highlightText?: string;
 }) {
   const [displayAll, setDisplayAll] = useState<Partial<Record<ScreeningEntityProperty, boolean>>>({});
 
@@ -46,8 +48,9 @@ export function EntityProperties<T extends OpenSanctionEntity>({
       createPropertyTransformer({
         language: i18n.language,
         formatLanguage: language,
+        highlightText,
       }),
-    [i18n.language, language],
+    [i18n.language, language, highlightText],
   );
 
   const handleShowMore = (prop: string) => {

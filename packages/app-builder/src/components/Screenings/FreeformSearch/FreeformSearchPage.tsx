@@ -24,11 +24,14 @@ interface FreeformSearchPageProps {
 export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({ onSearchComplete }) => {
   const [results, setResults] = useState<ScreeningMatchPayload[] | null>(null);
   const [currentLimit, setCurrentLimit] = useState<number | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
   const handleSearchComplete = useCallback(
     (data: ScreeningMatchPayload[], inputs: FreeformSearchInput) => {
       setResults(data);
       setCurrentLimit(inputs.limit);
+      // Extract the 'name' field value as the search term for highlighting
+      setSearchTerm(inputs.fields.name as string | undefined);
       onSearchComplete?.({
         results: data,
         inputs: {
@@ -54,7 +57,7 @@ export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({
 
       {/* Right content - results */}
       <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
-        <FreeformSearchResults results={results} limit={currentLimit} />
+        <FreeformSearchResults results={results} limit={currentLimit} searchTerm={searchTerm} />
       </div>
     </div>
   );
