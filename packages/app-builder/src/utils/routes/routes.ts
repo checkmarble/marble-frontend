@@ -67,6 +67,23 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/_builder+/account+/_layout",
+            "path": "account",
+            "file": "routes/_builder+/account+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/account+/_index",
+                "index": true,
+                "file": "routes/_builder+/account+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/account+/profile",
+                "path": "profile",
+                "file": "routes/_builder+/account+/profile.tsx"
+              }
+            ]
+          },
+          {
             "id": "routes/_builder+/analytics-legacy",
             "path": "analytics-legacy",
             "file": "routes/_builder+/analytics-legacy.tsx"
@@ -219,6 +236,38 @@ export const routes = [
                 "id": "routes/_builder+/decisions+/_index",
                 "index": true,
                 "file": "routes/_builder+/decisions+/_index.tsx"
+              }
+            ]
+          },
+          {
+            "id": "routes/_builder+/detection+/_layout",
+            "path": "detection",
+            "file": "routes/_builder+/detection+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/detection+/_index",
+                "index": true,
+                "file": "routes/_builder+/detection+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/detection+/analytics",
+                "path": "analytics",
+                "file": "routes/_builder+/detection+/analytics.tsx"
+              },
+              {
+                "id": "routes/_builder+/detection+/decisions",
+                "path": "decisions",
+                "file": "routes/_builder+/detection+/decisions.tsx"
+              },
+              {
+                "id": "routes/_builder+/detection+/lists",
+                "path": "lists",
+                "file": "routes/_builder+/detection+/lists.tsx"
+              },
+              {
+                "id": "routes/_builder+/detection+/scenarios",
+                "path": "scenarios",
+                "file": "routes/_builder+/detection+/scenarios.tsx"
               }
             ]
           },

@@ -16,6 +16,7 @@ import {
 } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
+import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
@@ -76,7 +77,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
 
   if (!parsedFilterQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/decisions'));
+    return redirect(getRoute('/detection/decisions'));
   }
 
   const { outcomeAndReviewStatus, ...filters } = parsedFilterQuery.data;
@@ -101,7 +102,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-export default function Decisions() {
+export default function DetectionDecisions() {
   const {
     decisionsData: initialDecisionsData,
     filters,
@@ -124,12 +125,12 @@ export default function Decisions() {
 
   const navigate = useAgnosticNavigation();
   const navigateDecisionList = useCallback(
-    (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
-      if (!pagination) {
+    (decisionFilters: DecisionFilters, paginationParams?: PaginationParams) => {
+      if (!paginationParams) {
         reset();
         navigate(
           {
-            pathname: getRoute('/decisions'),
+            pathname: getRoute('/detection/decisions'),
             search: qs.stringify(buildQueryParams(decisionFilters, null), {
               skipNulls: true,
               addQueryPrefix: true,
@@ -140,10 +141,10 @@ export default function Decisions() {
         return;
       }
 
-      if (pagination.next && pagination.offsetId) {
-        next(pagination.offsetId);
+      if (paginationParams.next && paginationParams.offsetId) {
+        next(paginationParams.offsetId);
       }
-      if (pagination.previous) {
+      if (paginationParams.previous) {
         previous();
       }
     },
@@ -161,7 +162,8 @@ export default function Decisions() {
         </Page.Header>
 
         <Page.Container>
-          <Page.Content>
+          <Page.ContentV2 className="gap-v2-md">
+            <DetectionNavigationTabs />
             <div className="flex flex-col gap-4">
               <DecisionFiltersProvider
                 scenarios={scenarios}
@@ -202,7 +204,7 @@ export default function Decisions() {
                 />
               </DecisionFiltersProvider>
             </div>
-          </Page.Content>
+          </Page.ContentV2>
         </Page.Container>
       </Page.Main>
     </DecisionRightPanel.Root>
@@ -229,7 +231,7 @@ function AddToCase({
 
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
-      <Button variant="primary" disabled={!hasSelection}>
+      <Button disabled={!hasSelection}>
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
@@ -244,6 +246,7 @@ const decisionIdToParams = (decisionId: string | null) => {
     return decisionId;
   }
 };
+
 function SearchById() {
   const { t } = useTranslation(handle.i18n);
   const [decisionId, setDecisionId] = useState<string | null>(null);
@@ -264,7 +267,7 @@ function SearchById() {
         onChange={(e) => setDecisionId(e.target.value)}
         startAdornment="search"
       />
-      <Button variant="primary" type="submit" disabled={!decisionId}>
+      <Button type="submit" disabled={!decisionId}>
         {t('common:search')}
       </Button>
     </Form>

@@ -1,3 +1,4 @@
+import account from '@app-builder/locales/en/account.json';
 import analytics from '@app-builder/locales/en/analytics.json';
 import api from '@app-builder/locales/en/api.json';
 import auth from '@app-builder/locales/en/auth.json';
@@ -17,6 +18,7 @@ import upload from '@app-builder/locales/en/upload.json';
 import workflows from '@app-builder/locales/en/workflows.json';
 
 export const en = {
+  account,
   analytics,
   api,
   cases,

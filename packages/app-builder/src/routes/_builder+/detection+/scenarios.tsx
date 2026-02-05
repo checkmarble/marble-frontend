@@ -1,5 +1,6 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -21,7 +22,7 @@ export const loader = createServerFn([authMiddleware], async function scenariosL
   };
 });
 
-export default function ScenariosPage() {
+export default function DetectionScenariosPage() {
   const { t } = useTranslation(handle.i18n);
   const { scenarios } = useLoaderData<typeof loader>();
 
@@ -32,12 +33,13 @@ export default function ScenariosPage() {
       </Page.Header>
       <Page.Container>
         <Page.Description>{t('scenarios:scenarios.description')}</Page.Description>
-        <Page.Content className="max-w-3xl">
-          <div className="flex flex-col gap-4">
+        <Page.ContentV2 className="gap-v2-md">
+          <DetectionNavigationTabs />
+          <div className="flex flex-col gap-4 max-w-3xl">
             <div className="flex flex-row justify-end">
               <CreateScenario>
-                <Button variant="primary">
-                  <Icon icon="plus" className="size-5" aria-hidden />
+                <Button>
+                  <Icon icon="plus" className="size-6" aria-hidden />
                   {t('scenarios:create_scenario.title')}
                 </Button>
               </CreateScenario>
@@ -75,7 +77,7 @@ export default function ScenariosPage() {
               )}
             </div>
           </div>
-        </Page.Content>
+        </Page.ContentV2>
       </Page.Container>
     </Page.Main>
   );
