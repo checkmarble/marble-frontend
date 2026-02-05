@@ -54,14 +54,12 @@ export const CreationModal = ({ open, onOpenChange, onSubmit }: CreationModalPro
             />
           </div>
           <Modal.Footer>
-            <div className="flex gap-v2-sm justify-end p-v2-md">
-              <Modal.Close asChild>
-                <Button variant="secondary">{t('common:cancel')}</Button>
-              </Modal.Close>
-              <Button type="submit" variant="primary" disabled={!isValid}>
-                {t('common:create')}
-              </Button>
-            </div>
+            <Modal.Close asChild>
+              <Button variant="secondary">{t('common:cancel')}</Button>
+            </Modal.Close>
+            <Button type="submit" variant="primary" disabled={!isValid}>
+              {t('common:create')}
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>
