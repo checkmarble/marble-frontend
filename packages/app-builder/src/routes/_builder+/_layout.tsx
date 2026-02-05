@@ -1,11 +1,5 @@
-import { navigationI18n, SidebarButton, SidebarLink } from '@app-builder/components';
-import { HelpCenter, useMarbleCoreResources } from '@app-builder/components/HelpCenter';
-import {
-  LeftSidebar,
-  LeftSidebarSharpFactory,
-  ToggleSidebar,
-  ToggleTheme,
-} from '@app-builder/components/Layout/LeftSidebar';
+import { navigationI18n, SidebarLink } from '@app-builder/components';
+import { LeftSidebar, LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { PanelProvider } from '@app-builder/components/Panel';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
@@ -90,7 +84,6 @@ export default function Builder() {
     orgTags,
     orgObjectTags,
     featuresAccess,
-    versions,
     isMenuExpanded,
     authProvider,
     sentryReplayEnabled,
@@ -100,8 +93,6 @@ export default function Builder() {
   useSentryReplay(sentryReplayEnabled);
   const { t } = useTranslation(handle.i18n);
   const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
-
-  const marbleCoreResources = useMarbleCoreResources();
 
   return (
     <>
@@ -129,13 +120,15 @@ export default function Builder() {
                         </div>
                         <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                           <ul className="flex flex-col gap-2">
+                            {/* Detection - flat link (tabs are inside the page) */}
                             <li>
                               <SidebarLink
-                                labelTKey="navigation:scenarios"
-                                to={getRoute('/scenarios')}
+                                labelTKey="navigation:detection"
+                                to={getRoute('/detection')}
                                 Icon={(props) => <Icon icon="scenarios" {...props} />}
                               />
                             </li>
+                            {/* Monitoring (Continuous Screening) */}
                             <li>
                               {match(featuresAccess.continuousScreening)
                                 .with(P.union('allowed', 'test'), () => {
@@ -164,20 +157,7 @@ export default function Builder() {
                                   );
                                 })}
                             </li>
-                            <li>
-                              <SidebarLink
-                                labelTKey="navigation:lists"
-                                to={getRoute('/lists')}
-                                Icon={(props) => <Icon icon="lists" {...props} />}
-                              />
-                            </li>
-                            <li>
-                              <SidebarLink
-                                labelTKey="navigation:decisions"
-                                to={`${getRoute('/decisions')}?dateRange%5Btype%5D=dynamic&dateRange%5BfromNow%5D=-P30D`}
-                                Icon={(props) => <Icon icon="decision" {...props} />}
-                              />
-                            </li>
+                            {/* Investigations (Cases) */}
                             <li>
                               <SidebarLink
                                 labelTKey="navigation:case_manager"
@@ -185,6 +165,7 @@ export default function Builder() {
                                 Icon={(props) => <Icon icon="case-manager" {...props} />}
                               />
                             </li>
+                            {/* Global Search (Screening Search) */}
                             {featuresAccess.isScreeningSearchAvailable ? (
                               <li>
                                 <SidebarLink
@@ -194,67 +175,12 @@ export default function Builder() {
                                 />
                               </li>
                             ) : null}
-                            <li>
-                              {match(featuresAccess.analytics)
-                                .with('allowed', () =>
-                                  featuresAccess.isAnalyticsAvailable ? (
-                                    <SidebarLink
-                                      labelTKey="navigation:analytics"
-                                      to={getRoute('/analytics')}
-                                      Icon={(props) => <Icon icon="analytics" {...props} />}
-                                    />
-                                  ) : null,
-                                )
-                                .with('restricted', () => (
-                                  <div className="text-grey-disabled relative flex gap-2 p-2">
-                                    <Icon icon="analytics" className="size-6 shrink-0" />
-                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-                                      {t('navigation:analytics')}
-                                    </span>
-                                    <Nudge
-                                      collapsed={!leftSidebarSharp.value.expanded}
-                                      className="size-6"
-                                      content={t('navigation:analytics.nudge')}
-                                    />
-                                  </div>
-                                ))
-                                .with('missing_configuration', () => (
-                                  <div className="text-grey-disabled relative flex gap-2 p-2">
-                                    <Icon icon="analytics" className="size-6 shrink-0" />
-                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-                                      {t('navigation:analytics')}
-                                    </span>
-                                    <Nudge
-                                      collapsed={!leftSidebarSharp.value.expanded}
-                                      kind="missing_configuration"
-                                      className="size-6"
-                                      content={t('navigation:analytics.nudge')}
-                                    />
-                                  </div>
-                                ))
-                                .with('test', () =>
-                                  featuresAccess.isAnalyticsAvailable ? (
-                                    <SidebarLink
-                                      labelTKey="navigation:analytics"
-                                      to={getRoute('/analytics')}
-                                      className="relative"
-                                      Icon={(props) => <Icon icon="analytics" {...props} />}
-                                    >
-                                      <Nudge
-                                        collapsed={!leftSidebarSharp.value.expanded}
-                                        className="size-6"
-                                        content={t('navigation:analytics.nudge')}
-                                        kind="test"
-                                      />
-                                    </SidebarLink>
-                                  ) : null,
-                                )
-                                .exhaustive()}
-                            </li>
                           </ul>
                         </nav>
+                        {/* Secondary Navigation - Bottom */}
                         <nav className="p-2 pb-4">
                           <ul className="flex flex-col gap-2">
+                            {/* Your Data */}
                             <li>
                               <SidebarLink
                                 labelTKey="navigation:data"
@@ -262,15 +188,9 @@ export default function Builder() {
                                 Icon={(props) => <Icon icon="harddrive" {...props} />}
                               />
                             </li>
-                            <li>
-                              <SidebarLink
-                                labelTKey="navigation:api"
-                                to={getRoute('/api')}
-                                Icon={(props) => <Icon icon="world" {...props} />}
-                              />
-                            </li>
+                            {/* Settings */}
                             {featuresAccess.settings.isAvailable ? (
-                              <li key="navigation:settings">
+                              <li>
                                 <SidebarLink
                                   labelTKey="navigation:settings"
                                   to={featuresAccess.settings.to as string}
@@ -278,24 +198,13 @@ export default function Builder() {
                                 />
                               </li>
                             ) : null}
+                            {/* My Account */}
                             <li>
-                              <HelpCenter
-                                defaultTab={marbleCoreResources.defaultTab}
-                                resources={marbleCoreResources.resources}
-                                MenuButton={
-                                  <SidebarButton
-                                    labelTKey="navigation:helpCenter"
-                                    Icon={(props) => <Icon icon="helpcenter" {...props} />}
-                                  />
-                                }
-                                versions={versions}
+                              <SidebarLink
+                                labelTKey="navigation:my_account"
+                                to={getRoute('/account')}
+                                Icon={(props) => <Icon icon="user" {...props} />}
                               />
-                            </li>
-                            <li>
-                              <ToggleTheme />
-                            </li>
-                            <li>
-                              <ToggleSidebar />
                             </li>
                           </ul>
                         </nav>
