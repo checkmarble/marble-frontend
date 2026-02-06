@@ -3885,6 +3885,83 @@ export function loadMoreContinuousScreeningMatches(id: string, opts?: Oazapfts.R
     }));
 }
 /**
+ * List debug update jobs for continuous screening
+ */
+export function listContinuousScreeningDebugUpdateJobs({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            has_next_page: boolean;
+            items: {
+                id: string;
+                dataset_update_id: string;
+                config_id: string;
+                org_id: string;
+                status: "pending" | "processing" | "completed" | "failed";
+                dataset_name: string;
+                dataset_version: string;
+                total_items: number;
+                items_processed: number;
+                created_at: string;
+                updated_at: string;
+            }[];
+        };
+    }>(`/continuous-screenings/debug/update-jobs${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List debug delta tracks for continuous screening
+ */
+export function listContinuousScreeningDebugDeltaTracks({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            has_next_page: boolean;
+            items: {
+                id: string;
+                org_id: string;
+                object_type: string;
+                object_id: string;
+                object_internal_id?: string | null;
+                entity_id: string;
+                operation: "add" | "update" | "delete";
+                processed: boolean;
+                dataset_file?: ({
+                    id: string;
+                    file_type: "full" | "delta";
+                    version: string;
+                    created_at: string;
+                }) | null;
+                created_at: string;
+                updated_at: string;
+            }[];
+        };
+    }>(`/continuous-screenings/debug/delta-tracks${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
+}
+/**
  * List scenario publications
  */
 export function listScenarioPublications({ scenarioId, scenarioIterationId }: {
