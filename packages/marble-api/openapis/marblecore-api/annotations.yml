@@ -20,6 +20,11 @@
         schema:
           type: string
           format: uuid
+      - name: load_thumbnails
+        description: Whether to generate links to thumbnails
+        in: query
+        schema:
+          type: boolean
     responses:
       '200':
         description: The annotations
@@ -226,6 +231,8 @@ components:
           type: string
           format: uuid
         filename:
+          type: string
+        thumbnail_url:
           type: string
       required:
         - id

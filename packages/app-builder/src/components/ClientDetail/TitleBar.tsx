@@ -13,7 +13,7 @@ type TitleBarProps = {
 
 export const TitleBar = ({ objectType, objectId }: TitleBarProps) => {
   const { t } = useTranslation(['common']);
-  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
+  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const { orgObjectTags } = useOrganizationObjectTags();
 
   return (
