@@ -1,11 +1,10 @@
 import { DetailedCaseDecision } from '@app-builder/models/cases';
-import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { DialogDisclosure, useDialogStore } from '@ariakit/react/dialog';
 import { Link } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, cn } from 'ui-design-system';
+import { ReviewDecisionModal } from '../Decisions/ReviewDecisionModal';
 import { casesI18n } from './cases-i18n';
 
 const Divider = ({ isLast = false }: { isLast?: boolean }) => (
@@ -24,7 +23,6 @@ export const RequiredActions = ({
   decision: Pick<DetailedCaseDecision, 'id' | 'outcome' | 'reviewStatus' | 'screenings'>;
 }) => {
   const { t } = useTranslation(casesI18n);
-  const reviewDecisionModalStore = useDialogStore();
 
   const hasPendingScreening = decision.screenings.some((s) => s.status === 'in_review');
   const isPendingDecision = decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
@@ -86,13 +84,15 @@ export const RequiredActions = ({
       {isPendingDecision ? (
         <div className="flex items-center gap-2.5">
           <Checkbox size="small" disabled={true} />
-          <DialogDisclosure store={reviewDecisionModalStore} render={<Button variant="secondary" size="xs" />}>
-            {t('cases:required_actions.decide_final_status')}
-          </DialogDisclosure>
           <ReviewDecisionModal
+            caseId={caseId}
             decisionId={decision.id}
-            store={reviewDecisionModalStore}
             screening={decision.screenings[0]}
+            trigger={
+              <Button variant="secondary" size="xs">
+                {t('cases:required_actions.decide_final_status')}
+              </Button>
+            }
           />
         </div>
       ) : null}
