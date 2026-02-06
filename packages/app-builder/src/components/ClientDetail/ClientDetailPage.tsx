@@ -1,11 +1,13 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
+import { DataModelObject } from '@app-builder/models';
+import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
-import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { parseUnknownData } from '@app-builder/utils/parse';
+import { Client360Table } from 'marble-api/generated/marblecore-api';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { match, P } from 'ts-pattern';
+import { match } from 'ts-pattern';
 import { ButtonV2, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormatData } from '../FormatData';
@@ -18,12 +20,14 @@ import { TitleBar } from './TitleBar';
 type ClientDetailPageProps = {
   objectType: string;
   objectId: string;
+  objectDetails: DataModelObject;
+  metadata: Client360Table;
 };
 
-export const ClientDetailPage = ({ objectType, objectId }: ClientDetailPageProps) => {
+export const ClientDetailPage = ({ objectType, objectId, objectDetails, metadata }: ClientDetailPageProps) => {
   const { t } = useTranslation(['common']);
   const dataModelQuery = useDataModelWithOptionsQuery();
-  const objectDetailsQuery = useObjectDetailsQuery(objectType, objectId);
+  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
 
   return (
     <Page.Main>
@@ -32,7 +36,7 @@ export const ClientDetailPage = ({ objectType, objectId }: ClientDetailPageProps
       </Page.Header>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-lg">
-          <TitleBar objectType={objectType} objectId={objectId} />
+          <TitleBar objectDetails={objectDetails} annotationsQuery={annotationsQuery} metadata={metadata} />
           {/* Client details */}
           <div className="flex gap-v2-md">
             {/* Score card */}
@@ -49,31 +53,21 @@ export const ClientDetailPage = ({ objectType, objectId }: ClientDetailPageProps
             {/* Rule: min 2 columns, max 3 columns */}
             <Card className="grow">
               <div className="min-h-[140px]">
-                {match([dataModelQuery, objectDetailsQuery])
-                  .with([{ isPending: true }, P.any], () => {
+                {match(dataModelQuery)
+                  .with({ isPending: true }, () => {
                     return (
                       <div className="flex justify-center items-center min-h-[140px]">
                         <Spinner className="size-10" />
                       </div>
                     );
                   })
-                  .with([P.any, { isPending: true }], () => {
-                    return (
-                      <div className="flex justify-center items-center min-h-[140px]">
-                        <Spinner className="size-10" />
-                      </div>
-                    );
-                  })
-                  .with([{ isError: true }, P.any], () => {
+                  .with({ isError: true }, () => {
                     return <div>{t('common:generic_fetch_data_error')}</div>;
                   })
-                  .with([P.any, { isError: true }], () => {
-                    return <div>{t('common:generic_fetch_data_error')}</div>;
-                  })
-                  .with([{ isSuccess: true }, { isSuccess: true }], ([dmQuery, objQuery]) => {
+                  .with({ isSuccess: true }, (dmQuery) => {
                     const tableModel = dmQuery.data.dataModel.find((t) => t.name === objectType);
                     if (!tableModel) return null;
-                    const parsedData = R.pipe(objQuery.data.data, R.mapValues(parseUnknownData));
+                    const parsedData = R.pipe(objectDetails.data, R.mapValues(parseUnknownData));
 
                     return (
                       <div className="grid grid-cols-1 min-lg:grid-cols-2 gap-x-v2-md grow min-h-[200px]">

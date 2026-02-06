@@ -195,6 +195,13 @@ export default function Builder() {
                               </li>
                             ) : null}
                             <li>
+                              <SidebarLink
+                                labelTKey="navigation:client_detail"
+                                to={getRoute('/client-detail')}
+                                Icon={(props) => <Icon icon="users" {...props} />}
+                              />
+                            </li>
+                            <li>
                               {match(featuresAccess.analytics)
                                 .with('allowed', () =>
                                   featuresAccess.isAnalyticsAvailable ? (

@@ -18,6 +18,11 @@ Pagination:
     has_next_page:
       type: boolean
 
+# 360 CLIENT
+
+Client360Table:
+  $ref: client-360.yml#/components/schemas/Client360Table
+
 # ANNOTATIONS
 
 GroupedAnnotations:

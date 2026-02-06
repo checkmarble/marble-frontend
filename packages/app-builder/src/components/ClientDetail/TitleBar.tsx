@@ -1,5 +1,7 @@
-import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
+import { DataModelObject } from '@app-builder/models';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
+import { UseQueryResult } from '@tanstack/react-query';
+import { Client360Table, GroupedAnnotations } from 'marble-api/generated/marblecore-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, Tag } from 'ui-design-system';
@@ -7,20 +9,20 @@ import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 
 type TitleBarProps = {
-  objectType: string;
-  objectId: string;
+  objectDetails: DataModelObject;
+  annotationsQuery: UseQueryResult<{ annotations: GroupedAnnotations }, Error>;
+  metadata: Client360Table;
 };
 
-export const TitleBar = ({ objectType, objectId }: TitleBarProps) => {
+export const TitleBar = ({ objectDetails, annotationsQuery, metadata }: TitleBarProps) => {
   const { t } = useTranslation(['common']);
-  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const { orgObjectTags } = useOrganizationObjectTags();
 
   return (
     <div className="flex gap-v2-md items-center">
       <div className="flex gap-v2-xs items-center">
-        <h1 className="text-h1 font-semibold">Studio Nomade's informations</h1>
-        <Tag color="grey">Companies</Tag>
+        <h1 className="text-h1 font-semibold">{objectDetails.data[metadata.caption_field] as string}'s informations</h1>
+        <Tag color="grey">{metadata.alias ?? metadata.name}</Tag>
       </div>
       <div className="w-px self-stretch bg-grey-border" />
       <div className="flex gap-v2-xs items-center">

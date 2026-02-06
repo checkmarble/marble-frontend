@@ -14,6 +14,14 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
+export type Client360Table = {
+    id: string;
+    name: string;
+    alias?: string;
+    description?: string;
+    caption_field: string;
+    ready: boolean;
+};
 export type Token = {
     access_token: string;
     token_type: string;
@@ -1694,6 +1702,23 @@ export type AvailableFiltersResponseDto = {
     "type": string;
     source: "trigger_object";
 }[];
+/**
+ * Get searchable tables
+ */
+export function getClient360Tables(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Client360Table[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/client360/tables", {
+        ...opts
+    }));
+}
 /**
  * Get an access token
  */

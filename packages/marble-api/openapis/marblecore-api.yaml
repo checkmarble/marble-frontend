@@ -52,6 +52,10 @@ servers:
   - url: "http://localhost:8080"
     description: Local devlopment server
 paths:
+  # CLIENT 360
+  /client360/tables:
+    $ref: ./marblecore-api/client-360.yml#/~1client360~1tables
+
   # AUTHORIZATION
 
   /token:
