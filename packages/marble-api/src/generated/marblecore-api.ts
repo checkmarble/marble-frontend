@@ -130,6 +130,7 @@ export type FileEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAll
         files: {
             id: string;
             filename: string;
+            thumbnail_url?: string;
         }[];
     };
 };
@@ -1328,6 +1329,7 @@ export type AppConfigDto = {
     urls: {
         marble: string;
         metabase: string;
+        blobs: string[];
     };
     auth: {
         provider: "firebase" | "oidc";
@@ -1844,7 +1846,9 @@ export function getAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts)
 /**
  * Get annotations by table name and object ID
  */
-export function getAnnotationsByTableNameAndObjectId(tableName: string, objectId: string, opts?: Oazapfts.RequestOpts) {
+export function getAnnotationsByTableNameAndObjectId(tableName: string, objectId: string, { loadThumbnails }: {
+    loadThumbnails?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: GroupedAnnotations;
@@ -1860,7 +1864,9 @@ export function getAnnotationsByTableNameAndObjectId(tableName: string, objectId
     } | {
         status: 422;
         data: object;
-    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}/annotations`, {
+    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}/annotations${QS.query(QS.explode({
+        load_thumbnails: loadThumbnails
+    }))}`, {
         ...opts
     }));
 }
