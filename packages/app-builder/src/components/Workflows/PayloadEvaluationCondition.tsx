@@ -3,7 +3,7 @@ import { NewUndefinedAstNode } from '@app-builder/models';
 import { isAggregation } from '@app-builder/models/astNode/aggregation';
 import { type AstNode } from '@app-builder/models/astNode/ast-node';
 import { isDatabaseAccess } from '@app-builder/models/astNode/data-accessor';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
 import { useMemo, useRef } from 'react';
 import { v7 as uuidv7 } from 'uuid';
 

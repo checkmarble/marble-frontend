@@ -16,7 +16,7 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function appRouterLoader({ context }) {
-  return redirect(getRoute('/scenarios'));
+  return redirect(getRoute('/detection'));
 });
 
 export function ErrorBoundary() {

@@ -188,7 +188,7 @@ export function DecisionsList({
     ...tableProps,
     rowLink: (decision) => (
       <Link
-        to={getRoute('/decisions/:decisionId', {
+        to={getRoute('/detection/decisions/:decisionId', {
           decisionId: fromUUIDtoSUUID(decision.id),
         })}
       />

@@ -10,10 +10,10 @@ interface PageViewNameAndProps {
 
 export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps | undefined {
   switch (thisPage.id as RouteID) {
-    case 'routes/_builder+/scenarios+/_index': {
+    case 'routes/_builder+/detection+/scenarios+/_index': {
       return { name: 'Scenarios', properties: undefined };
     }
-    case 'routes/_builder+/scenarios+/$scenarioId+/scheduled-executions': {
+    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/scheduled-executions': {
       const safeParseProperties = z
         .object({
           scenarioId: shortUUIDSchema,
@@ -28,7 +28,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger': {
+    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger': {
       const safeParseProperties = z
         .object({
           iterationId: shortUUIDSchema,
@@ -45,7 +45,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules': {
+    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules': {
       const safeParseProperties = z
         .object({
           iterationId: shortUUIDSchema,
@@ -62,7 +62,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision': {
+    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision': {
       const safeParseProperties = z
         .object({
           iterationId: shortUUIDSchema,
@@ -79,10 +79,10 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/decisions+/_index': {
+    case 'routes/_builder+/detection+/decisions+/_index': {
       return { name: 'Decisions', properties: undefined };
     }
-    case 'routes/_builder+/decisions+/$decisionId': {
+    case 'routes/_builder+/detection+/decisions+/$decisionId': {
       const safeParseProperties = z
         .object({
           decisionId: shortUUIDSchema,
@@ -100,10 +100,10 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
     case 'routes/_builder+/cases+/_index': {
       return { name: 'Cases', properties: undefined };
     }
-    case 'routes/_builder+/lists+/_index': {
+    case 'routes/_builder+/detection+/lists+/_index': {
       return { name: 'Lists', properties: undefined };
     }
-    case 'routes/_builder+/lists+/$listId': {
+    case 'routes/_builder+/detection+/lists+/$listId': {
       const safeParseProperties = z
         .object({
           listId: shortUUIDSchema,
@@ -118,7 +118,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/_analytics+/analytics._layout': {
+    case 'routes/_builder+/detection+/analytics+/_layout': {
       return { name: 'Analytics', properties: undefined };
     }
     case 'routes/_builder+/data+/list': {

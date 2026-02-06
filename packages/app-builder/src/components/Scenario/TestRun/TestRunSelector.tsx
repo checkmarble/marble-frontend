@@ -1,7 +1,7 @@
 import { type User } from '@app-builder/models';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { type TestRun } from '@app-builder/models/testrun';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -30,7 +30,7 @@ export const TestRunSelector = ({
 
   return (
     <Link
-      to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
+      to={getRoute('/detection/scenarios/:scenarioId/test-run/:testRunId', {
         scenarioId: fromUUIDtoSUUID(currentScenario.id),
         testRunId: fromUUIDtoSUUID(id),
       })}

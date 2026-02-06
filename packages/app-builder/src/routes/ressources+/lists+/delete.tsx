@@ -18,5 +18,5 @@ export async function action({ request }: ActionFunctionArgs) {
   const { listId } = parsedForm.data;
   await customListsRepository.deleteCustomList(listId);
 
-  return { redirectTo: getRoute('/lists') };
+  return { redirectTo: getRoute('/detection/lists') };
 }

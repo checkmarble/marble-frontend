@@ -176,7 +176,7 @@ function BlockedDeletionContent({
                 <li key={iterationId} className="flex items-center gap-2">
                   <span>{iteration.name}</span>
                   <a
-                    href={getRoute('/scenarios/:scenarioId', { scenarioId: shortId })}
+                    href={getRoute('/detection/scenarios/:scenarioId', { scenarioId: shortId })}
                     className="text-purple-primary text-s flex items-center gap-1 hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -206,7 +206,7 @@ function BlockedDeletionContent({
                 <li key={iterationId} className="flex items-center gap-2">
                   <span>{iteration.name}</span>
                   <a
-                    href={getRoute('/scenarios/:scenarioId', { scenarioId: shortId })}
+                    href={getRoute('/detection/scenarios/:scenarioId', { scenarioId: shortId })}
                     className="text-purple-primary text-s flex items-center gap-1 hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -316,7 +316,7 @@ function ScenarioLink({ item }: { item: DestroyDataModelReportRef }) {
 
   return (
     <a
-      href={getRoute('/scenarios/:scenarioId', { scenarioId: shortId })}
+      href={getRoute('/detection/scenarios/:scenarioId', { scenarioId: shortId })}
       className="text-purple-primary text-s flex items-center gap-1 hover:underline"
       target="_blank"
       rel="noopener noreferrer"
