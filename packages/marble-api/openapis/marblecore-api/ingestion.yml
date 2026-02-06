@@ -92,6 +92,45 @@
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
+/client_data/{objectType}/{objectId}/cases:
+  get:
+    tags:
+      - Ingestion
+    summary: Get cases for an object
+    operationId: getCasesForObject
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: objectType
+        description: Type of the object
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objectId
+        description: ID of the object
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The cases for the object
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: 'cases.yml#/components/schemas/CaseDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        $ref: 'components.yml#/responses/422'
 
 /client_data/{tableName}/list:
   post:

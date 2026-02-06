@@ -14,6 +14,14 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
+export type Client360Table = {
+    id: string;
+    name: string;
+    alias?: string;
+    description?: string;
+    caption_field: string;
+    ready: boolean;
+};
 export type Token = {
     access_token: string;
     token_type: string;
@@ -131,6 +139,7 @@ export type FileEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAll
             id: string;
             filename: string;
             thumbnail_url?: string;
+            content_type?: string;
         }[];
     };
 };
@@ -1202,8 +1211,11 @@ export type CreateTableBody = {
     description: string;
     ftm_entity?: FtmEntity;
 };
-export type UpdateTableBody = {
+export type UpdateTableBodyDto = {
     description?: string;
+    semantic_type?: "person" | "company";
+    caption_field?: string;
+    alias?: string;
     ftm_entity?: FtmEntity;
 };
 export type Items = {
@@ -1708,6 +1720,44 @@ export type AvailableFiltersResponseDto = {
     "type": string;
     source: "trigger_object";
 }[];
+/**
+ * Get searchable tables
+ */
+export function getClient360Tables(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Client360Table[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/client360/tables", {
+        ...opts
+    }));
+}
+/**
+ * Get a list of object corresponding to a search query
+ */
+export function searchClient360(body?: {
+    table: string;
+    terms: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            items: {
+                [key: string]: any;
+            }[];
+            has_next_page: boolean;
+        };
+    }>("/client360/search", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
 /**
  * Get an access token
  */
@@ -2827,6 +2877,29 @@ export function getIngestedObject(tableName: string, objectId: string, opts?: Oa
         status: 404;
         data: string;
     }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Get cases for an object
+ */
+export function getCasesForObject(objectType: string, objectId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client_data/${encodeURIComponent(objectType)}/${encodeURIComponent(objectId)}/cases`, {
         ...opts
     }));
 }
@@ -4110,7 +4183,7 @@ export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oaza
 /**
  * Update data model table
  */
-export function patchDataModelTable(tableId: string, updateTableBody: UpdateTableBody, opts?: Oazapfts.RequestOpts) {
+export function patchDataModelTable(tableId: string, updateTableBodyDto: UpdateTableBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -4125,7 +4198,7 @@ export function patchDataModelTable(tableId: string, updateTableBody: UpdateTabl
     }>(`/data-model/tables/${encodeURIComponent(tableId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateTableBody
+        body: updateTableBodyDto
     })));
 }
 /**

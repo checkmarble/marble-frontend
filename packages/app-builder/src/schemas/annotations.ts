@@ -4,7 +4,7 @@ import { z } from 'zod/v4';
 export const baseCreateAnnotationSchema = z.object({
   tableName: z.string(),
   objectId: z.string(),
-  caseId: z.uuid(),
+  caseId: z.uuid().optional(),
 });
 
 export const createTagAnnotationSchema = z.intersection(

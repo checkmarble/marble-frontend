@@ -26,7 +26,7 @@ const CHARACTER_WIDTH = 8;
 const DEFAULT_CELL_WIDTH = 300;
 
 export type DataTableRenderProps = {
-  caseId: string;
+  caseId?: string;
   item: DataModelExplorerNavigationTab;
   dataModel: DataModelWithTableOptions;
   navigateTo: (tabItem: DataModelExplorerNavigationTab) => void;
@@ -171,7 +171,7 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
 }
 
 type DataTableProps = {
-  caseId: string;
+  caseId?: string;
   pivotObject: DataModelExplorerNavigationTab['pivotObject'];
   table: TableModelWithOptions;
   list: ClientDataListResponse['data'];
@@ -363,7 +363,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
 }
 
 type DataTableActionsButtonProps = {
-  caseId: string;
+  caseId?: string;
   navigationOptions: NavigationOption[] | undefined;
   pivotObject: DataModelExplorerNavigationTab['pivotObject'];
   sourceObject: ClientObjectDetail;

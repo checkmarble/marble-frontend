@@ -101,7 +101,9 @@ export async function action({ request }: ActionFunctionArgs) {
         if (files.length > 0) {
           const body = new FormData();
           body.append('caption', 'File annotation');
-          body.append('case_id', data.caseId);
+          if (data.caseId) {
+            body.append('case_id', data.caseId);
+          }
           files.forEach((file) => {
             body.append('files[]', file);
           });

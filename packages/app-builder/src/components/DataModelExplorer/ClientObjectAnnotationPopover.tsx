@@ -12,7 +12,7 @@ import { ClientTagsList } from '../Annotations/ClientTagsList';
 import { ClientObjectComments } from './ClientObjectComments';
 
 type ClientObjectAnnotationPopoverProps = {
-  caseId: string;
+  caseId?: string;
   tableName: string;
   objectId: string;
   annotations: GroupedAnnotations | undefined;

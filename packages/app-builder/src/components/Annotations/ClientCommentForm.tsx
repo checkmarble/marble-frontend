@@ -12,7 +12,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 type ClientCommentFormProps = {
-  caseId: string;
+  caseId?: string;
   tableName: string;
   objectId: string;
   className?: string;
@@ -43,6 +43,8 @@ export function ClientCommentForm({
     } as z.infer<typeof createCommentAnnotationSchema>,
     validators: {
       onSubmit: createCommentAnnotationSchema,
+      onChange: createCommentAnnotationSchema,
+      onMount: createCommentAnnotationSchema,
     },
     onSubmit({ value }) {
       createAnnotationMutation.mutateAsync(value).then((result) => {
@@ -64,13 +66,7 @@ export function ClientCommentForm({
       onSubmit={handleSubmit(form)}
       className={cn('flex justify-between rounded-v2-md px-4 py-3 bg-surface-elevated', className)}
     >
-      <form.Field
-        name="payload.text"
-        validators={{
-          onChange: createCommentAnnotationSchema._def.right.shape.payload.shape.text,
-          onBlur: createCommentAnnotationSchema._def.right.shape.payload.shape.text,
-        }}
-      >
+      <form.Field name="payload.text">
         {(field) => (
           <div className="flex grow flex-col gap-1">
             <textarea
@@ -78,7 +74,7 @@ export function ClientCommentForm({
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-              className="form-textarea text-small max-h-40 w-full resize-none overflow-y-scroll border-none bg-transparent outline-hidden"
+              className="form-textarea text-small max-h-40 w-full grow resize-none overflow-y-scroll border-none bg-transparent outline-hidden"
             />
           </div>
         )}

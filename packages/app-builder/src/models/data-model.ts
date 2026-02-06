@@ -20,6 +20,7 @@ import {
   type PivotDto,
   type SetDataModelTableOptionsBodyDto,
   type TableDto,
+  UpdateTableBodyDto,
   type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
@@ -619,7 +620,7 @@ export function getTriggerObjectFields(
   );
 }
 
-export type CreateAnnotationBody = { caseId: string } & (
+export type CreateAnnotationBody = { caseId?: string } & (
   | {
       type: 'comment';
       payload: {
@@ -796,6 +797,24 @@ export function adaptDestroyDataModelReport(dto: DestroyDataModelReportDto): Des
     performed: dto.performed,
     conflicts: adaptDestroyDataModelReportConflicts(dto.conflicts),
     archivedIterations: dto.archived_iterations.map(adaptDestroyDataModelReportRef),
+  };
+}
+
+export type UpdateTableBody = {
+  description?: string;
+  ftmEntity?: FtmEntity;
+  semanticType?: 'person' | 'company';
+  captionField?: string;
+  alias?: string;
+};
+
+export function adaptUpdateTableBodyDto(model: UpdateTableBody): UpdateTableBodyDto {
+  return {
+    description: model.description,
+    ftm_entity: model.ftmEntity,
+    semantic_type: model.semanticType,
+    caption_field: model.captionField,
+    alias: model.alias,
   };
 }
 

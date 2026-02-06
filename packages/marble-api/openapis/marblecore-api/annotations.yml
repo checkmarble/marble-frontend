@@ -234,6 +234,8 @@ components:
           type: string
         thumbnail_url:
           type: string
+        content_type:
+          type: string
       required:
         - id
         - filename

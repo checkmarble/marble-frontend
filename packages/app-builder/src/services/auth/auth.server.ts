@@ -11,6 +11,7 @@ import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepositor
 import { AppConfigRepository } from '@app-builder/repositories/AppConfigRepository';
 import { type AuditEventsRepository } from '@app-builder/repositories/AuditEventsRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
+import { Client360Repository } from '@app-builder/repositories/Client360Repository';
 import { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
 import { type CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
@@ -68,6 +69,7 @@ interface AuthenticatedInfo {
   inbox: InboxRepository;
   personalSettings: PersonalSettingsRepository;
   aiAssistSettings: AiAssistRepository;
+  client360: Client360Repository;
   auditEvents: AuditEventsRepository;
 }
 
@@ -132,6 +134,7 @@ interface MakeAuthenticationServerServiceArgs {
   getFeatureAccessRepository: ReturnType<typeof makeGetFeatureAccessRepository>;
   getPersonalSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => PersonalSettingsRepository;
   getAiAssistSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => AiAssistRepository;
+  getClient360TablesRepository: (marbleCoreApiClient: MarbleCoreApi) => Client360Repository;
   getAuditEventsRepository: (marbleCoreApiClient: MarbleCoreApi) => AuditEventsRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   toastSessionService: SessionService<void, ToastFlashData>;
@@ -171,6 +174,7 @@ export function makeAuthenticationServerService({
   toastSessionService,
   csrfService,
   getAiAssistSettingsRepository,
+  getClient360TablesRepository,
   getAuditEventsRepository,
   makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
@@ -453,6 +457,7 @@ export function makeAuthenticationServerService({
       inbox: getInboxRepository(marbleCoreApiClient),
       personalSettings: getPersonalSettingsRepository(marbleCoreApiClient),
       aiAssistSettings: getAiAssistSettingsRepository(marbleCoreApiClient),
+      client360: getClient360TablesRepository(marbleCoreApiClient),
       auditEvents: getAuditEventsRepository(marbleCoreApiClient),
     };
   }
