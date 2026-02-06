@@ -6,7 +6,7 @@ import { type ScreeningConfig } from '@app-builder/models/screening-config';
 import {
   useCurrentScenarioIteration,
   useScenarioIterationRulesMetadata,
-} from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
+} from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';

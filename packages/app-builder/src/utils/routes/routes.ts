@@ -50,23 +50,6 @@ export const routes = [
         "file": "routes/_builder+/_layout.tsx",
         "children": [
           {
-            "id": "routes/_builder+/_analytics+/analytics._layout",
-            "path": "analytics",
-            "file": "routes/_builder+/_analytics+/analytics._layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/_analytics+/analytics.$scenarioId",
-                "path": ":scenarioId",
-                "file": "routes/_builder+/_analytics+/analytics.$scenarioId.tsx"
-              },
-              {
-                "id": "routes/_builder+/_analytics+/analytics._index",
-                "index": true,
-                "file": "routes/_builder+/_analytics+/analytics._index.tsx"
-              }
-            ]
-          },
-          {
             "id": "routes/_builder+/account+/_layout",
             "path": "account",
             "file": "routes/_builder+/account+/_layout.tsx",
@@ -223,23 +206,6 @@ export const routes = [
             ]
           },
           {
-            "id": "routes/_builder+/decisions+/_layout",
-            "path": "decisions",
-            "file": "routes/_builder+/decisions+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/decisions+/$decisionId",
-                "path": ":decisionId",
-                "file": "routes/_builder+/decisions+/$decisionId.tsx"
-              },
-              {
-                "id": "routes/_builder+/decisions+/_index",
-                "index": true,
-                "file": "routes/_builder+/decisions+/_index.tsx"
-              }
-            ]
-          },
-          {
             "id": "routes/_builder+/detection+/_layout",
             "path": "detection",
             "file": "routes/_builder+/detection+/_layout.tsx",
@@ -250,141 +216,155 @@ export const routes = [
                 "file": "routes/_builder+/detection+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/detection+/analytics",
+                "id": "routes/_builder+/detection+/analytics+/_layout",
                 "path": "analytics",
-                "file": "routes/_builder+/detection+/analytics.tsx"
-              },
-              {
-                "id": "routes/_builder+/detection+/decisions",
-                "path": "decisions",
-                "file": "routes/_builder+/detection+/decisions.tsx"
-              },
-              {
-                "id": "routes/_builder+/detection+/lists",
-                "path": "lists",
-                "file": "routes/_builder+/detection+/lists.tsx"
-              },
-              {
-                "id": "routes/_builder+/detection+/scenarios",
-                "path": "scenarios",
-                "file": "routes/_builder+/detection+/scenarios.tsx"
-              }
-            ]
-          },
-          {
-            "id": "routes/_builder+/lists+/_layout",
-            "path": "lists",
-            "file": "routes/_builder+/lists+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/lists+/$listId",
-                "path": ":listId",
-                "file": "routes/_builder+/lists+/$listId.tsx"
-              },
-              {
-                "id": "routes/_builder+/lists+/_index",
-                "index": true,
-                "file": "routes/_builder+/lists+/_index.tsx"
-              }
-            ]
-          },
-          {
-            "id": "routes/_builder+/scenarios+/_layout",
-            "path": "scenarios",
-            "file": "routes/_builder+/scenarios+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/scenarios+/$scenarioId+/_layout",
-                "path": ":scenarioId",
-                "file": "routes/_builder+/scenarios+/$scenarioId+/_layout.tsx",
+                "file": "routes/_builder+/detection+/analytics+/_layout.tsx",
                 "children": [
                   {
-                    "id": "routes/_builder+/scenarios+/$scenarioId+/_index",
+                    "id": "routes/_builder+/detection+/analytics+/$scenarioId",
+                    "path": ":scenarioId",
+                    "file": "routes/_builder+/detection+/analytics+/$scenarioId.tsx"
+                  },
+                  {
+                    "id": "routes/_builder+/detection+/analytics+/_index",
                     "index": true,
-                    "file": "routes/_builder+/scenarios+/$scenarioId+/_index.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/scenarios+/$scenarioId+/home",
-                    "path": "home",
-                    "file": "routes/_builder+/scenarios+/$scenarioId+/home.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout",
-                    "path": "i/:iterationId",
-                    "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout.tsx",
-                    "children": [
-                      {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_layout",
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_layout.tsx",
-                        "children": [
-                          {
-                            "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_index",
-                            "index": true,
-                            "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_index.tsx"
-                          },
-                          {
-                            "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision",
-                            "path": "decision",
-                            "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision.tsx"
-                          },
-                          {
-                            "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules",
-                            "path": "rules",
-                            "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules.tsx"
-                          },
-                          {
-                            "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger",
-                            "path": "trigger",
-                            "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger.tsx"
-                          }
-                        ]
-                      },
-                      {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId",
-                        "path": "rules/:ruleId",
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
-                      },
-                      {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/screenings.$screeningId",
-                        "path": "screenings/:screeningId",
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/screenings.$screeningId.tsx"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions",
-                    "path": "scheduled-executions",
-                    "file": "routes/_builder+/scenarios+/$scenarioId+/scheduled-executions.tsx"
-                  },
-                  {
-                    "id": "routes/_builder+/scenarios+/$scenarioId+/test-run+/_layout",
-                    "path": "test-run",
-                    "file": "routes/_builder+/scenarios+/$scenarioId+/test-run+/_layout.tsx",
-                    "children": [
-                      {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId+/index",
-                        "index": true,
-                        "path": ":testRunId",
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId+/index.tsx"
-                      },
-                      {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/test-run+/index",
-                        "index": true,
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/test-run+/index.tsx"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "routes/_builder+/scenarios+/$scenarioId+/workflow",
-                    "path": "workflow",
-                    "file": "routes/_builder+/scenarios+/$scenarioId+/workflow.tsx"
+                    "file": "routes/_builder+/detection+/analytics+/_index.tsx"
                   }
                 ]
               },
               {
-                "id": "routes/_builder+/scenarios+/_index",
-                "index": true,
-                "file": "routes/_builder+/scenarios+/_index.tsx"
+                "id": "routes/_builder+/detection+/decisions+/_layout",
+                "path": "decisions",
+                "file": "routes/_builder+/detection+/decisions+/_layout.tsx",
+                "children": [
+                  {
+                    "id": "routes/_builder+/detection+/decisions+/$decisionId",
+                    "path": ":decisionId",
+                    "file": "routes/_builder+/detection+/decisions+/$decisionId.tsx"
+                  },
+                  {
+                    "id": "routes/_builder+/detection+/decisions+/_index",
+                    "index": true,
+                    "file": "routes/_builder+/detection+/decisions+/_index.tsx"
+                  }
+                ]
+              },
+              {
+                "id": "routes/_builder+/detection+/lists+/_layout",
+                "path": "lists",
+                "file": "routes/_builder+/detection+/lists+/_layout.tsx",
+                "children": [
+                  {
+                    "id": "routes/_builder+/detection+/lists+/$listId",
+                    "path": ":listId",
+                    "file": "routes/_builder+/detection+/lists+/$listId.tsx"
+                  },
+                  {
+                    "id": "routes/_builder+/detection+/lists+/_index",
+                    "index": true,
+                    "file": "routes/_builder+/detection+/lists+/_index.tsx"
+                  }
+                ]
+              },
+              {
+                "id": "routes/_builder+/detection+/scenarios+/_layout",
+                "path": "scenarios",
+                "file": "routes/_builder+/detection+/scenarios+/_layout.tsx",
+                "children": [
+                  {
+                    "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/_layout",
+                    "path": ":scenarioId",
+                    "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/_layout.tsx",
+                    "children": [
+                      {
+                        "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/_index",
+                        "index": true,
+                        "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/_index.tsx"
+                      },
+                      {
+                        "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/home",
+                        "path": "home",
+                        "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/home.tsx"
+                      },
+                      {
+                        "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_layout",
+                        "path": "i/:iterationId",
+                        "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_layout.tsx",
+                        "children": [
+                          {
+                            "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_layout",
+                            "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_layout.tsx",
+                            "children": [
+                              {
+                                "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_index",
+                                "index": true,
+                                "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/_index.tsx"
+                              },
+                              {
+                                "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision",
+                                "path": "decision",
+                                "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision.tsx"
+                              },
+                              {
+                                "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules",
+                                "path": "rules",
+                                "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules.tsx"
+                              },
+                              {
+                                "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger",
+                                "path": "trigger",
+                                "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger.tsx"
+                              }
+                            ]
+                          },
+                          {
+                            "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId",
+                            "path": "rules/:ruleId",
+                            "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
+                          },
+                          {
+                            "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/screenings.$screeningId",
+                            "path": "screenings/:screeningId",
+                            "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/screenings.$screeningId.tsx"
+                          }
+                        ]
+                      },
+                      {
+                        "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/scheduled-executions",
+                        "path": "scheduled-executions",
+                        "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/scheduled-executions.tsx"
+                      },
+                      {
+                        "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/test-run+/_layout",
+                        "path": "test-run",
+                        "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/test-run+/_layout.tsx",
+                        "children": [
+                          {
+                            "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/test-run+/$testRunId+/index",
+                            "index": true,
+                            "path": ":testRunId",
+                            "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/test-run+/$testRunId+/index.tsx"
+                          },
+                          {
+                            "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/test-run+/index",
+                            "index": true,
+                            "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/test-run+/index.tsx"
+                          }
+                        ]
+                      },
+                      {
+                        "id": "routes/_builder+/detection+/scenarios+/$scenarioId+/workflow",
+                        "path": "workflow",
+                        "file": "routes/_builder+/detection+/scenarios+/$scenarioId+/workflow.tsx"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "routes/_builder+/detection+/scenarios+/_index",
+                    "index": true,
+                    "file": "routes/_builder+/detection+/scenarios+/_index.tsx"
+                  }
+                ]
               }
             ]
           },

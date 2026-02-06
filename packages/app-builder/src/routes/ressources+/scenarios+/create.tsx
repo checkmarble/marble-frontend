@@ -38,7 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     return {
-      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId', {
+      redirectTo: getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
         scenarioId: fromUUIDtoSUUID(createdScenario.id),
         iterationId: fromUUIDtoSUUID(scenarioIteration.id),
       }),

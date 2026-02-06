@@ -18,7 +18,7 @@ export const handle = {
       const { t } = useTranslation(['navigation']);
 
       return (
-        <BreadCrumbLink to={getRoute('/analytics')} isLast={isLast}>
+        <BreadCrumbLink to={getRoute('/detection/analytics')} isLast={isLast}>
           <Icon icon="analytics" className="me-2 size-6" />
           <span className="line-clamp-1 text-start">{t('navigation:analytics')}</span>
         </BreadCrumbLink>

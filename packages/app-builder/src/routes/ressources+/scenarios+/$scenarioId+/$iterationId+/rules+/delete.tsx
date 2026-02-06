@@ -29,7 +29,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await scenarioIterationRuleRepository.deleteRule({ ruleId: payload.data.ruleId });
 
     return Response.json({
-      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
+      redirectTo: getRoute('/detection/scenarios/:scenarioId/i/:iterationId/rules', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(iterationId),
       }),

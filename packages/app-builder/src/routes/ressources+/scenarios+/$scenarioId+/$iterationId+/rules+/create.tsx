@@ -24,7 +24,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return Response.json({
-      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
+      redirectTo: getRoute('/detection/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(iterationId),
         ruleId: fromUUIDtoSUUID(rule.id),

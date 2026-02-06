@@ -28,7 +28,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
 
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
-            to={getRoute('/scenarios/:scenarioId', {
+            to={getRoute('/detection/scenarios/:scenarioId', {
               scenarioId: fromUUIDtoSUUID(scenario.id),
             })}
             className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
@@ -38,7 +38,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
 
           <DetailLabel>{t('decisions:scenario.version')}</DetailLabel>
           <Link
-            to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
+            to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
               scenarioId: fromUUIDtoSUUID(scenario.id),
               iterationId: fromUUIDtoSUUID(scenario.scenarioIterationId),
             })}

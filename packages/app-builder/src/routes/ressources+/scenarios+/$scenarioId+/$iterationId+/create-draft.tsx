@@ -16,7 +16,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const draftIteration = await apiClient.createDraftFromScenarioIteration(iterationId);
 
     return {
-      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId', {
+      redirectTo: getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(draftIteration.id),
       }),

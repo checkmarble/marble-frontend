@@ -6,7 +6,7 @@ import {
   useActivateIterationMutation,
 } from '@app-builder/queries/scenarios/activate-iteration';
 import { useRuleSnoozesQuery } from '@app-builder/queries/scenarios/rule-snoozes';
-import { useScenarioIterationRulesMetadata } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
+import { useScenarioIterationRulesMetadata } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';

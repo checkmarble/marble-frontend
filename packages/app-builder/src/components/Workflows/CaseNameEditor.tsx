@@ -7,7 +7,7 @@ import {
   STRING_TEMPLATE_VARIABLE_REGEXP,
   type StringTemplateAstNode,
 } from '@app-builder/models/astNode/strings';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
