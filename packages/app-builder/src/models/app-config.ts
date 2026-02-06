@@ -14,6 +14,7 @@ export type AppConfig = {
   urls: {
     marble: string;
     metabase: string | null;
+    blobs: string[];
   };
   auth: {
     provider: string;
@@ -71,6 +72,7 @@ export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig
     urls: {
       marble: dto.urls.marble,
       metabase: dto.urls.metabase,
+      blobs: dto.urls.blobs,
     },
     auth: {
       provider: dto.auth.provider,

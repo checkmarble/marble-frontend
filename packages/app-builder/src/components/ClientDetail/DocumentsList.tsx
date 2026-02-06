@@ -18,7 +18,7 @@ type DocumentsListProps = {
 
 export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
   const { t } = useTranslation(['common']);
-  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
+  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const users = useOrganizationUsers();
   const language = useFormatLanguage();
 
@@ -53,7 +53,10 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
 
         return document.payload.files.map((file) => (
           <div key={file.id} className="flex gap-v2-sm items-center">
-            <div className="size-20 border border-grey-border rounded-v2-s" />
+            <div
+              className="size-20 border border-grey-border rounded-v2-s bg-cover"
+              style={{ backgroundImage: file.thumbnail_url != '' ? `url(${file.thumbnail_url})` : 'none' }}
+            />
             <div className="flex flex-col gap-v2-xs text-tiny text-grey-secondary">
               <div className="font-medium text-default text-grey-primary">{file.filename}</div>
               {caseLink ? (

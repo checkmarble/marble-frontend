@@ -55,7 +55,11 @@ export interface DataModelRepository {
   deleteField(fieldId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
   deleteLink(linkId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
   deletePivot(pivotId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
-  getAnnotationsByTableNameAndObjectId(tableName: string, objectId: string): Promise<GroupedAnnotations>;
+  getAnnotationsByTableNameAndObjectId(
+    tableName: string,
+    objectId: string,
+    loadThumbnails: boolean,
+  ): Promise<GroupedAnnotations>;
 }
 
 export function makeGetDataModelRepository() {
@@ -168,8 +172,8 @@ export function makeGetDataModelRepository() {
         throw error;
       }
     },
-    getAnnotationsByTableNameAndObjectId: async (tableName, objectId) => {
-      return marbleCoreApiClient.getAnnotationsByTableNameAndObjectId(tableName, objectId);
+    getAnnotationsByTableNameAndObjectId: async (tableName, objectId, loadThumbnails = false) => {
+      return marbleCoreApiClient.getAnnotationsByTableNameAndObjectId(tableName, objectId, { loadThumbnails });
     },
   });
 }

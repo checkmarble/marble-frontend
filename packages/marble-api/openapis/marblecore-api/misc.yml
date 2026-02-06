@@ -139,11 +139,16 @@ components:
           required:
             - marble
             - metabase
+            - blobs
           properties:
             marble:
               type: string
             metabase:
               type: string
+            blobs:
+              type: array
+              items:
+                type: string
         auth:
           type: object
           required:
