@@ -377,6 +377,11 @@ export const routes = [
                 "file": "routes/_builder+/settings+/audit-logs.tsx"
               },
               {
+                "id": "routes/_builder+/settings+/continuous-screening-debug",
+                "path": "continuous-screening-debug",
+                "file": "routes/_builder+/settings+/continuous-screening-debug.tsx"
+              },
+              {
                 "id": "routes/_builder+/settings+/data-display",
                 "path": "data-display",
                 "file": "routes/_builder+/settings+/data-display.tsx"
@@ -1002,6 +1007,16 @@ export const routes = [
         "id": "routes/ressources+/settings+/audit-events",
         "path": "ressources/settings/audit-events",
         "file": "routes/ressources+/settings+/audit-events.ts"
+      },
+      {
+        "id": "routes/ressources+/settings+/cs-debug-delta-tracks",
+        "path": "ressources/settings/cs-debug-delta-tracks",
+        "file": "routes/ressources+/settings+/cs-debug-delta-tracks.ts"
+      },
+      {
+        "id": "routes/ressources+/settings+/cs-debug-update-jobs",
+        "path": "ressources/settings/cs-debug-update-jobs",
+        "file": "routes/ressources+/settings+/cs-debug-update-jobs.ts"
       },
       {
         "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/delete",
