@@ -14,6 +14,7 @@ import { screeningsI18n } from './screenings-i18n';
 export type MatchDetailsProps = {
   entity: ScreeningMatch['payload'];
   before?: ReactNode;
+  highlightText?: string;
 };
 
 const sanctionProps = [
@@ -31,7 +32,7 @@ const sanctionProps = [
   'sourceUrl',
 ] satisfies PropertyForSchema<'Sanction'>[];
 
-export function MatchDetails({ entity, before }: MatchDetailsProps) {
+export function MatchDetails({ entity, before, highlightText }: MatchDetailsProps) {
   const { t } = useTranslation(screeningsI18n);
   const [selectedSanction, setSelectedSanction] = useState<ScreeningSanctionEntity | null>(null);
 
@@ -42,6 +43,7 @@ export function MatchDetails({ entity, before }: MatchDetailsProps) {
       <EntityProperties
         entity={entity}
         before={before}
+        highlightText={highlightText}
         after={
           entity.properties?.sanctions ? (
             <Modal.Root open={isOpen} onOpenChange={setIsOpen}>

@@ -12,9 +12,14 @@ import { DEFAULT_LIMIT } from './LimitPopover';
 interface FreeformSearchResultsProps {
   results: ScreeningMatchPayload[] | null;
   limit?: number;
+  searchTerm?: string;
 }
 
-export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps> = ({ results, limit }) => {
+export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps> = ({
+  results,
+  limit,
+  searchTerm,
+}) => {
   const { t } = useTranslation(screeningsI18n);
   const effectiveLimit = limit ?? DEFAULT_LIMIT;
   const mayHaveMoreResults = results !== null && results.length === effectiveLimit;
@@ -65,7 +70,7 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
         </div>
 
         {data.map((entity) => (
-          <FreeformMatchCard key={entity.id} entity={entity} defaultOpen={data.length === 1} />
+          <FreeformMatchCard key={entity.id} entity={entity} defaultOpen={data.length === 1} searchTerm={searchTerm} />
         ))}
       </div>
     ))
