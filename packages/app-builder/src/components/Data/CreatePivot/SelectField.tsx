@@ -88,17 +88,16 @@ export function SelectField({
             </div>
           )}
         </form.Field>
-
-        <div className="flex flex-1 flex-row gap-2">
-          <Button className="flex-1" variant="secondary" onClick={onBack}>
-            {t('common:back')}
-          </Button>
-
-          <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
-            {t('common:validate')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Button className="flex-1" variant="secondary" appearance="stroked" onClick={onBack}>
+          {t('common:back')}
+        </Button>
+
+        <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
+          {t('common:validate')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

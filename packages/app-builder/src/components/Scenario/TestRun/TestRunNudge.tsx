@@ -23,7 +23,7 @@ export const TestRunNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, 'a
 
       <div className="flex flex-row gap-4">
         <Button variant="primary" disabled className="isolate h-10 w-fit">
-          <Icon icon="plus" className="size-6" aria-hidden />
+          <Icon icon="plus" className="size-5" aria-hidden />
           {t('scenarios:create_testrun.title')}
         </Button>
       </div>

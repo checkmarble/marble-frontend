@@ -5,7 +5,7 @@ import {
 } from '@app-builder/models/continuous-screening';
 import { useUpdateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/update-configuration';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../Callout';
 import { PanelContainer } from '../Panel/Panel';
@@ -42,9 +42,9 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: 
   return (
     <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col">
       <div className="flex items-center justify-between gap-v2-md bg-surface-card h-16 px-v2-md border-b border-grey-border shrink-0 sticky top-0">
-        <ButtonV2 variant="secondary" mode="icon" onClick={closePanel}>
+        <Button variant="secondary" mode="icon" onClick={closePanel}>
           <Icon icon="arrow-left" className="size-4" />
-        </ButtonV2>
+        </Button>
         <span className="text-h1 mr-auto font-bold">{t('continuousScreening:edition.validation.title')}</span>
       </div>
       <div className="p-v2-lg grow flex flex-col gap-v2-md">
@@ -57,12 +57,12 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: 
         <ObjectMappingSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
       </div>
       <div className="shrink-0 sticky bottom-0 p-v2-lg pt-v2-sm flex justify-end bg-purple-99 gap-v2-md bg-surface-page border-t border-grey-border">
-        <ButtonV2 variant="secondary" onClick={() => onCancel(updatedConfig)}>
+        <Button variant="secondary" onClick={() => onCancel(updatedConfig)}>
           {t('common:cancel')}
-        </ButtonV2>
-        <ButtonV2 variant="primary" onClick={handleValidateClick}>
+        </Button>
+        <Button variant="primary" onClick={handleValidateClick}>
           {t('common:save')}
-        </ButtonV2>
+        </Button>
       </div>
     </PanelContainer>
   );

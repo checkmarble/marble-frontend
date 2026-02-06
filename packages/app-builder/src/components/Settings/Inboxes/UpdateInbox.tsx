@@ -39,7 +39,7 @@ export function UpdateInbox({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
         <Button className="w-fit whitespace-nowrap">
-          <Icon icon="edit-square" className="size-6" />
+          <Icon icon="edit-square" className="size-5" />
           {t('settings:inboxes.update_inbox')}
         </Button>
       </Modal.Trigger>
@@ -193,24 +193,17 @@ export function UpdateInboxContent({
             </div>
           )}
         </form.Field>
-
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" type="button">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="update"
-            disabled={updateInboxMutation.isPending}
-          >
-            {t('common:save')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button variant="secondary" appearance="stroked" type="button">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit" name="update" disabled={updateInboxMutation.isPending}>
+          {t('common:save')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

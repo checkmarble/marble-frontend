@@ -46,7 +46,7 @@ export const FieldRuleGroup = ({
           <Button
             disabled={disabled}
             variant="secondary"
-            size={selectedRuleGroup ? 'icon' : undefined}
+            mode={selectedRuleGroup ? 'icon' : undefined}
             className={clsx({ 'w-fit': !selectedRuleGroup })}
           >
             <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="text-grey-disabled size-4" />
@@ -93,7 +93,8 @@ export const FieldRuleGroup = ({
             {value && !finalRuleGroups.includes(value) ? (
               <CommandItem asChild forceMount>
                 <Button
-                  variant="tertiary"
+                  variant="secondary"
+                  appearance="link"
                   onClick={() => {
                     setNewRule(value);
                     onChange?.(value);

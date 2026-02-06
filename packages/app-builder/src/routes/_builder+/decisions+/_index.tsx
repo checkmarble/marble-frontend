@@ -229,7 +229,7 @@ function AddToCase({
 
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
-      <Button disabled={!hasSelection}>
+      <Button variant="primary" disabled={!hasSelection}>
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
@@ -264,7 +264,7 @@ function SearchById() {
         onChange={(e) => setDecisionId(e.target.value)}
         startAdornment="search"
       />
-      <Button type="submit" disabled={!decisionId}>
+      <Button variant="primary" type="submit" disabled={!decisionId}>
         {t('common:search')}
       </Button>
     </Form>

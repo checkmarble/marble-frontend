@@ -24,17 +24,17 @@ export const ConfirmSaveModal = ({ onConfirm, children }: ConfirmSaveModalProps)
           <div className="text-s flex flex-1 flex-col gap-4">
             <p className="text-center">{t('settings:ip_whitelisting.save_confirm.content')}</p>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary" name="cancel">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" name="delete" onClick={handleSaveClick}>
-              {t('common:save')}
-            </Button>
-          </div>
         </div>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <Button variant="secondary" appearance="stroked" name="cancel">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <Button variant="primary" name="delete" onClick={handleSaveClick}>
+            {t('common:save')}
+          </Button>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

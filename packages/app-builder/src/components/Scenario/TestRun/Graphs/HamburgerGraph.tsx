@@ -172,7 +172,8 @@ export function HamburgerChart<T extends string>({
       <div className="flex flex-row justify-center gap-2 px-24">
         {options.map((option) => (
           <Button
-            variant="tertiary"
+            variant="secondary"
+            appearance="link"
             key={option}
             className="gap-3"
             onClick={() =>

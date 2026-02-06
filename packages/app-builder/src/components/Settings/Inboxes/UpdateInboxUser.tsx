@@ -131,17 +131,17 @@ export function UpdateInboxUserContent({
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" name="update">
-            {t('common:save')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit" name="update">
+          {t('common:save')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

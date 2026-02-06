@@ -9,7 +9,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type TFunction } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Input, Modal } from 'ui-design-system';
+import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { dataI18n } from '../data-i18n';
@@ -80,19 +80,19 @@ export function DeleteDataModelContent({
 
         <div className="border-t-grey-border flex justify-end gap-2 border-t p-6">
           <Modal.Close asChild>
-            <ButtonV2 variant="secondary" onClick={onClose}>
+            <Button variant="secondary" onClick={onClose}>
               {t('common:cancel')}
-            </ButtonV2>
+            </Button>
           </Modal.Close>
           {isBlocked ? (
-            <ButtonV2 variant="primary" onClick={onClose}>
+            <Button variant="primary" onClick={onClose}>
               {t('data:delete.understood')}
-            </ButtonV2>
+            </Button>
           ) : (
-            <ButtonV2 variant="destructive" onClick={onConfirm} disabled={isPending || !isConfirmed}>
+            <Button variant="destructive" onClick={onConfirm} disabled={isPending || !isConfirmed}>
               <Icon icon="delete" className="size-5" />
               {t('common:delete')}
-            </ButtonV2>
+            </Button>
           )}
         </div>
       </div>

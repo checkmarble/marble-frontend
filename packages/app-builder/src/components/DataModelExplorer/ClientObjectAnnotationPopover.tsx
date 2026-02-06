@@ -2,7 +2,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { type GroupedAnnotations } from 'marble-api';
 import { type ReactNode, useState } from 'react';
-import { ButtonV2, MenuCommand, Popover } from 'ui-design-system';
+import { Button, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientCommentForm } from '../Annotations/ClientCommentForm';
 import { ClientDocumentsList } from '../Annotations/ClientDocumentsList';
@@ -43,9 +43,9 @@ export function ClientObjectAnnotationPopover({
                 <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
               </div>
               <MenuCommand.Trigger>
-                <ButtonV2 mode="icon" variant="secondary">
+                <Button mode="icon" variant="secondary">
                   <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
-                </ButtonV2>
+                </Button>
               </MenuCommand.Trigger>
               <MenuCommand.Content side="right" align="start" sideOffset={4} className="w-[340px]">
                 <ClientTagsEditSelect
@@ -72,9 +72,9 @@ export function ClientObjectAnnotationPopover({
                 <ClientDocumentsList documents={documents} />
               </div>
               <Popover.Trigger asChild>
-                <ButtonV2 mode="icon" variant="secondary">
+                <Button mode="icon" variant="secondary">
                   <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
-                </ButtonV2>
+                </Button>
               </Popover.Trigger>
               <Popover.Content side="right" align="start" sideOffset={4} collisionPadding={10} className="w-[340px]">
                 <ClientDocumentsPopover

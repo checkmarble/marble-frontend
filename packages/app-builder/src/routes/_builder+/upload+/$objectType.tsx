@@ -167,8 +167,8 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
           <>
             <p>{t('upload:drop_file_cta')}</p>
             <p className="text-grey-secondary uppercase">{t('common:or')}</p>
-            <Button>
-              <Icon icon="plus" className="size-6" />
+            <Button variant="primary">
+              <Icon icon="plus" className="size-5" />
               {t('upload:pick_file_cta')}
             </Button>
           </>
@@ -239,15 +239,15 @@ const ResultModal = ({
               </>
             ) : null}
           </div>
-          <Modal.Close asChild>
-            <div className="flex justify-center">
-              <Button>
-                <Icon icon="tick" className="size-6" />
-                {t('common:understand')}
-              </Button>
-            </div>
-          </Modal.Close>
         </div>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <Button variant="primary">
+              <Icon icon="tick" className="size-5" />
+              {t('common:understand')}
+            </Button>
+          </Modal.Close>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );
@@ -428,7 +428,7 @@ const LoadingButton = () => {
   const { t } = useTranslation(handle.i18n);
   return (
     <Button variant="secondary" className="cursor-wait">
-      <Icon icon="helpcenter" className="me-2 size-6" />
+      <Icon icon="helpcenter" className="me-2 size-5" />
       {t('upload:download_template_cta')}
     </Button>
   );

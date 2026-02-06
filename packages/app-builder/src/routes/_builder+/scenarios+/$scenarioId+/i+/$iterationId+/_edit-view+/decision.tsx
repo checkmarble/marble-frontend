@@ -435,7 +435,9 @@ function EditScoreThresholds() {
 
       {editorMode === 'edit' ? (
         <div className="flex flex-row-reverse items-center justify-between gap-2">
-          <Button type="submit">{t('common:save')}</Button>
+          <Button variant="primary" type="submit">
+            {t('common:save')}
+          </Button>
           <EvaluationErrors errors={serverErrors} />
         </div>
       ) : (

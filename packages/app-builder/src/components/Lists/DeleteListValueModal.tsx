@@ -63,18 +63,18 @@ export function DeleteListValueModal({
               </p>
               <p className="text-center">{t('lists:delete_value.no_return')}</p>
             </div>
-            <div className="flex flex-1 flex-row gap-2">
-              <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
-              <Button color="red" className="flex-1" variant="primary" type="submit" name="delete">
-                <Icon icon="delete" className="size-6" />
-                <p>{t('common:delete')}</p>
-              </Button>
-            </div>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <Button variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button variant="destructive" type="submit" name="delete">
+              <Icon icon="delete" className="size-5" />
+              <p>{t('common:delete')}</p>
+            </Button>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

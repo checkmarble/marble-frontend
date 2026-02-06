@@ -7,7 +7,7 @@ import { useDropzone } from 'react-dropzone-esm';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, ModalV2 } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UploadFile({
@@ -21,9 +21,9 @@ export function UploadFile({
   const revalidate = useLoaderRevalidator();
 
   return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger render={children} />
-      <ModalV2.Content>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
         <UploadFileContent
           uploadFileEndpoint={uploadFileEndpoint}
           setOpen={setOpen}
@@ -32,8 +32,8 @@ export function UploadFile({
             revalidate();
           }}
         />
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -105,7 +105,7 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
 
   return (
     <div>
-      <ModalV2.Title>{t('cases:add_file')}</ModalV2.Title>
+      <Modal.Title>{t('cases:add_file')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div
           {...getRootProps()}
@@ -122,7 +122,7 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
               <p>{t('cases:drop_file_accepted_types')}</p>
               <p className="text-grey-secondary uppercase">{t('common:or')}</p>
               <Button>
-                <Icon icon="plus" className="size-6" />
+                <Icon icon="plus" className="size-5" />
                 {t('cases:pick_file_cta')}
               </Button>
             </>

@@ -149,7 +149,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
                   onClick={toggleLinkedFilter}
                   className="flex items-center justify-center p-2"
                 >
-                  <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
+                  <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-5" />
                 </Button>
                 <MoreMenu data={data} />
               </div>
@@ -158,7 +158,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               ) : (
                 <CreatePivot key="create-pivot" tableModel={data.original} dataModel={data.dataModel}>
                   <Button variant={'secondary'} disabled={displayPivot}>
-                    <Icon icon="plus" className="size-6" />
+                    <Icon icon="plus" className="size-5" />
                     {t('data:create_pivot.button.label')}
                   </Button>
                 </CreatePivot>
@@ -444,7 +444,7 @@ export function DisplayPivot(pivot: Pivot) {
         setSelectedPivot(pivot);
       }}
     >
-      <Icon icon="center-focus" className="size-6" />
+      <Icon icon="center-focus" className="size-5" />
       {pivot.type === 'field' ? (
         <span className="text-grey-primary">{pivot.field === 'object_id' ? pivot.baseTable : pivot.field}</span>
       ) : (

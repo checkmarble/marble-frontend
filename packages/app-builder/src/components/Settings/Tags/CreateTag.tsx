@@ -28,7 +28,7 @@ export function CreateTag() {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button onClick={(e) => e.stopPropagation()}>
-          <Icon icon="plus" className="size-6" />
+          <Icon icon="plus" className="size-5" />
           {t('settings:tags.new_tag')}
         </Button>
       </Modal.Trigger>
@@ -137,23 +137,17 @@ const CreateTagContent = ({ onSuccess }: { onSuccess: () => void }) => {
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" type="button" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="create"
-            disabled={createTagMutation.isPending}
-          >
-            {t('settings:tags.new_tag.create')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button variant="secondary" appearance="stroked" type="button" name="cancel">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit" name="create" disabled={createTagMutation.isPending}>
+          {t('settings:tags.new_tag.create')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 };

@@ -331,7 +331,7 @@ export default function RuleDetail() {
                       </DuplicateRule>
 
                       <DeleteRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
-                        <Button color="red" type="button">
+                        <Button variant="destructive" type="button">
                           <Icon icon="delete" className="size-5" aria-hidden />
                           {t('common:delete')}
                         </Button>
@@ -339,7 +339,7 @@ export default function RuleDetail() {
                     </Ariakit.Menu>
                   </Ariakit.MenuProvider>
 
-                  <Button type="submit" className="flex-1">
+                  <Button variant="primary" type="submit" className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />
                     {t('common:save')}
                   </Button>

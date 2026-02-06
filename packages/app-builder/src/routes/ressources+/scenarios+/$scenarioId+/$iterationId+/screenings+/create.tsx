@@ -72,8 +72,7 @@ export function CreateScreening({
   return (
     <Button
       type="submit"
-      variant="dropdown"
-      size="dropdown"
+      variant="secondary"
       disabled={disabled}
       className="w-full"
       onClick={handleCreateScreeningRule}

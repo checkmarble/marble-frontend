@@ -13,7 +13,7 @@ import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, ModalV2 } from 'ui-design-system';
+import { Button, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInbox({
@@ -25,18 +25,17 @@ export function CreateInbox({
   const [open, setOpen] = useState(false);
 
   return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger
-        onClick={(e) => e.stopPropagation()}
-        render={<Button className="whitespace-nowrap" variant="secondary" />}
-      >
-        <Icon icon="new-inbox" className="size-5 shrink-0" />
-        {t('settings:inboxes.new_inbox.create')}
-      </ModalV2.Trigger>
-      <ModalV2.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxContent redirectRoutePath={redirectRoutePath} setOpen={setOpen} />
-      </ModalV2.Content>
-    </ModalV2.Root>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
+        <Button className="whitespace-nowrap" variant="secondary" appearance="stroked">
+          <Icon icon="new-inbox" className="size-5 shrink-0" />
+          {t('settings:inboxes.new_inbox.create')}
+        </Button>
+      </Modal.Trigger>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
+        <CreateInboxContent setOpen={setOpen} redirectRoutePath={redirectRoutePath} />
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -78,7 +77,7 @@ export function CreateInboxContent({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('settings:inboxes.new_inbox.explain')}</ModalV2.Title>
+      <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <HiddenInputs redirectRoute={redirectRoutePath} />
         <form.Field
@@ -102,20 +101,18 @@ export function CreateInboxContent({
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="create"
-            disabled={createInboxMutation.isPending}
-          >
-            <Icon icon="new-inbox" className="size-5" />
-            {t('settings:inboxes.new_inbox.create')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit" name="create" disabled={createInboxMutation.isPending}>
+          <Icon icon="new-inbox" className="size-5" />
+          {t('settings:inboxes.new_inbox.create')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

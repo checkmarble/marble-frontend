@@ -13,7 +13,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -65,7 +65,7 @@ export function MyForm() {
           </div>
         )}
       </form.Field>
-      <ButtonV2 type="submit">Submit</ButtonV2>
+      <Button type="submit">Submit</Button>
     </form>
   );
 }
@@ -77,7 +77,7 @@ export function MyForm() {
 
 ```typescript
 import { useState } from 'react';
-import { ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
@@ -94,11 +94,11 @@ export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
           <p className="text-center">Are you sure you want to delete this item?</p>
           <div className="flex flex-1 flex-row gap-2">
             <Modal.Close asChild>
-              <ButtonV2 className="flex-1" variant="secondary">
+              <Button className="flex-1" variant="secondary">
                 Cancel
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2
+            <Button
               color="red"
               className="flex-1"
               variant="primary"
@@ -109,7 +109,7 @@ export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
             >
               <Icon icon="delete" className="size-6" />
               Delete
-            </ButtonV2>
+            </Button>
           </div>
         </div>
       </Modal.Content>
@@ -199,7 +199,7 @@ export function MyComponent() {
   return (
     <div>
       <h1>{t('cases:case.title')}</h1>
-      <ButtonV2>{t('common:cancel')}</ButtonV2>
+      <Button>{t('common:cancel')}</Button>
     </div>
   );
 }

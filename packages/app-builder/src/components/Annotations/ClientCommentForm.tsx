@@ -7,7 +7,7 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, cn } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -85,7 +85,7 @@ export function ClientCommentForm({
       </form.Field>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
         {([canSubmit, isSubmitting]) => (
-          <ButtonV2
+          <Button
             type="submit"
             mode="icon"
             variant="primary"
@@ -96,7 +96,7 @@ export function ClientCommentForm({
               icon={isSubmitting ? 'spinner' : 'send'}
               className={clsx('size-3.5', { 'animate-spin': isSubmitting })}
             />
-          </ButtonV2>
+          </Button>
         )}
       </form.Subscribe>
     </form>

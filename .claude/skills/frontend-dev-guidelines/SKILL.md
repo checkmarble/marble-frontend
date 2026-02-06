@@ -14,7 +14,7 @@ Comprehensive guide for modern React development in the Marble monorepo, emphasi
 ```
 packages/
   app-builder/         # Main Remix application
-  ui-design-system/    # Reusable UI components (ButtonV2, Modal, Select, etc.)
+  ui-design-system/    # Reusable UI components (Button, Modal, Select, etc.)
   ui-icons/            # Icon components
   shared/              # Shared utilities
   marble-api/          # API client
@@ -102,7 +102,7 @@ import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { getRoute } from '@app-builder/utils/routes';
 
 // UI Design System
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Modal } from 'ui-design-system';
 
 // Remix
@@ -126,7 +126,7 @@ import toast from 'react-hot-toast';
 
 **[Complete Guide: resources/component-patterns.md](resources/component-patterns.md)**
 
-- Use `ui-design-system` components (ButtonV2, Modal, Select)
+- Use `ui-design-system` components (Button, Modal, Select)
 - Compose with Tailwind CSS
 - `clsx` for conditional classes
 
@@ -201,7 +201,7 @@ import toast from 'react-hot-toast';
 
 ```typescript
 import { type FunctionComponent } from 'react';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import type { Case } from '@app-builder/models/cases';
@@ -232,7 +232,7 @@ export const CaseCard: FunctionComponent<CaseCardProps> = ({
     >
       <h3 className="text-l font-semibold text-grey-primary">{caseData.name}</h3>
       <p className="text-s text-grey-placeholder">{caseData.status}</p>
-      <ButtonV2 onClick={handleSelect}>Select</ButtonV2>
+      <Button onClick={handleSelect}>Select</Button>
     </div>
   );
 };

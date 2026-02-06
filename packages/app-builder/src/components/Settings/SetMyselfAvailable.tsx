@@ -38,18 +38,14 @@ export function SetMyselfAvailable() {
 
         <Modal.Footer>
           <Modal.Close asChild>
-            <div className="flex flex-1 flex-row gap-2 p-4">
-              <Button variant="secondary" className="flex-1">
-                {t('common:cancel')}
-              </Button>
-
-              <Button className="flex-1" variant="primary" onClick={() => setMeUnavailable()}>
-                <Icon icon="account-circle" className="size-4" />
-
-                {t('settings:set_myself_available.validate.button')}
-              </Button>
-            </div>
+            <Button variant="secondary" appearance="stroked">
+              {t('common:cancel')}
+            </Button>
           </Modal.Close>
+          <Button variant="primary" onClick={() => setMeUnavailable()}>
+            <Icon icon="account-circle" className="size-4" />
+            {t('settings:set_myself_available.validate.button')}
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

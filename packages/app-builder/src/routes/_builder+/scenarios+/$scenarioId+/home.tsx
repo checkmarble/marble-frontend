@@ -37,7 +37,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { match } from 'ts-pattern';
-import { ButtonV2, CtaV2ClassName, HiddenInputs, MenuButton } from 'ui-design-system';
+import { Button, CtaV2ClassName, HiddenInputs, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { useCurrentScenario, useScenarioIterationsSummary } from './_layout';
@@ -171,10 +171,10 @@ export default function ScenarioHome() {
                 description: currentScenario.description,
               }}
             >
-              <ButtonV2 variant="secondary" disabled={!hydrated}>
+              <Button variant="secondary" disabled={!hydrated}>
                 <Icon icon="edit-square" className="size-3.5" />
                 <p>{t('scenarios:update_scenario.title')}</p>
-              </ButtonV2>
+              </Button>
             </UpdateScenario>
           </div>
         ) : null}
@@ -353,10 +353,10 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
           scenarioIterations={scenarioIterations}
           atLeastOneActiveTestRun={currentTestRun.length > 0}
         >
-          <ButtonV2 variant="primary" className="isolate">
+          <Button variant="primary" className="isolate">
             <Icon icon="plus" className="size-3.5" aria-hidden />
             {t('scenarios:create_testrun.title')}
-          </ButtonV2>
+          </Button>
         </CreateTestRun>
         {currentTestRun.length > 0 ? (
           <Link
@@ -554,10 +554,10 @@ function ManualTriggerScenarioExecutionForm({ iterationId, disabled }: { iterati
       }}
     >
       <HiddenInputs iterationId={iterationId} />
-      <ButtonV2 type="submit" disabled={disabled}>
+      <Button type="submit" disabled={disabled}>
         <Icon icon="play" className="size-3.5 shrink-0" aria-hidden />
         {t('scenarios:home.execution.batch.trigger_manual_execution')}
-      </ButtonV2>
+      </Button>
     </form>
   );
 }

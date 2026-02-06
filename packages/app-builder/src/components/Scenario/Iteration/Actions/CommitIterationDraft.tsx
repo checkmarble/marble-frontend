@@ -26,7 +26,7 @@ export function CommitIterationDraft({
 
   const button = (
     <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
-      <Icon icon="commit" className="size-6" />
+      <Icon icon="commit" className="size-5" />
       {t('scenarios:deployment_modal.commit.button')}
     </Button>
   );
@@ -150,18 +150,18 @@ function CommitScenarioDraftContent({ scenarioId, iterationId }: { scenarioId: s
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            <Icon icon="commit" className="size-6" />
-            {t('scenarios:deployment_modal.commit.button')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button className="flex-1" variant="primary" type="submit">
+          <Icon icon="commit" className="size-5" />
+          {t('scenarios:deployment_modal.commit.button')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

@@ -7,7 +7,7 @@ import { formatPercentage, useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeFilter } from './OutcomeFilter';
 import { AnalyticsTooltip } from './Tooltip';
@@ -78,7 +78,7 @@ export function RuleVsDecisionOutcomes({
           <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
           <AnalyticsTooltip className="size-5" content={t('analytics:rule_vs_decision_outcomes.tooltip')} />
         </span>
-        <ButtonV2
+        <Button
           variant="secondary"
           className="flex items-center gap-v2-sm"
           disabled={isLoading || !data?.length}
@@ -86,7 +86,7 @@ export function RuleVsDecisionOutcomes({
         >
           <Icon icon="download" className="size-4" />
           {t('analytics:export.button')}
-        </ButtonV2>
+        </Button>
       </div>
 
       <div className="flex flex-col relative">

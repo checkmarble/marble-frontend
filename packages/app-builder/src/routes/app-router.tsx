@@ -34,6 +34,7 @@ export function ErrorBoundary() {
           <Form action={getRoute('/ressources/auth/logout')} method="post">
             <Button
               type="submit"
+              variant="primary"
               onClick={() => {
                 void segment.reset();
               }}

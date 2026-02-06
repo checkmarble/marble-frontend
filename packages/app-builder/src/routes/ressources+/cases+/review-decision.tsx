@@ -12,13 +12,12 @@ import { blockingReviewDocHref } from '@app-builder/services/documentation-href'
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import type * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ModalV2, Select, TextArea } from 'ui-design-system';
+import { Button, Modal, Select, TextArea } from 'ui-design-system';
 import { z } from 'zod/v4';
 
 const reviewDecisionSchema = z.object({
@@ -88,16 +87,21 @@ export async function action({ request }: ActionFunctionArgs) {
 export function ReviewDecisionModal({
   decisionId,
   screening,
-  store,
+  children,
 }: {
+  children: React.ReactElement;
   decisionId: string;
   screening: { status: ScreeningStatus } | undefined;
-  store: Ariakit.DialogStore;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <ModalV2.Content store={store}>
-      <ReviewDecisionContent setOpen={store.setOpen} decisionId={decisionId} screening={screening} />
-    </ModalV2.Content>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
+        <ReviewDecisionContent setOpen={setOpen} decisionId={decisionId} screening={screening} />
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -147,19 +151,21 @@ function ReviewDecisionContent({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('cases:case_detail.review_decision.title')}</ModalV2.Title>
+      <Modal.Title>{t('cases:case_detail.review_decision.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre-wrap">
-            <Trans
-              t={t}
-              i18nKey="cases:case_detail.review_decision.callout"
-              components={{
-                DocLink: <ExternalLink href={blockingReviewDocHref} />,
-              }}
-            />
-          </p>
-        </ModalV2.Description>
+        <Modal.Description asChild>
+          <Callout variant="outlined">
+            <p className="whitespace-pre-wrap">
+              <Trans
+                t={t}
+                i18nKey="cases:case_detail.review_decision.callout"
+                components={{
+                  DocLink: <ExternalLink href={blockingReviewDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
+        </Modal.Description>
 
         <form.Field
           name="reviewStatus"
@@ -223,15 +229,18 @@ function ReviewDecisionContent({
             </div>
           )}
         </form.Field>
-
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            <LoadingIcon icon="case-manager" className="size-5" loading={fetcher.state === 'submitting'} />
-            {t('common:validate')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button className="flex-1" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button className="flex-1" variant="primary" type="submit">
+          <LoadingIcon icon="case-manager" className="size-5" loading={fetcher.state === 'submitting'} />
+          {t('common:validate')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

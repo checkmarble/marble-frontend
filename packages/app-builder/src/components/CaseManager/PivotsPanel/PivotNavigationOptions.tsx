@@ -5,7 +5,7 @@ import { type PivotObject } from '@app-builder/models/cases';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type PivotNavigationOptionsProps = {
@@ -52,7 +52,7 @@ export function PivotNavigationOptions({
                       {navOption.targetTableName}
                       {navigationOptions.length > 1 ? ` (${navOption.orderingFieldName})` : null}
                     </div>
-                    <ButtonV2
+                    <Button
                       disabled={navOption.status === 'pending'}
                       variant="secondary"
                       onClick={() => {
@@ -76,7 +76,7 @@ export function PivotNavigationOptions({
                       ) : (
                         <Icon icon="arrow-up-right" className="size-3.5" />
                       )}
-                    </ButtonV2>
+                    </Button>
                   </Fragment>
                 ))}
               </Fragment>

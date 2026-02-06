@@ -268,7 +268,7 @@ export default function Trigger() {
                       {t('scenarios:trigger.trigger_object.delete_trigger')}
                     </Button>
                   )}
-                  <Button type="submit" onClick={handleSave}>
+                  <Button variant="primary" type="submit" onClick={handleSave}>
                     {t('common:save')}
                   </Button>
                 </div>

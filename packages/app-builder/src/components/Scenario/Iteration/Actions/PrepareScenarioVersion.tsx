@@ -32,8 +32,8 @@ export function PrepareScenarioVersion({
   if (!iteration.isValid) {
     return (
       <Tooltip.Default className="text-xs" content={t('scenarios:deployment_modal.prepare.validation_error')}>
-        <Button className="flex-1" variant="primary" disabled color="red">
-          <Icon icon="queue-list" className="size-6" />
+        <Button className="flex-1" variant="destructive" disabled>
+          <Icon icon="queue-list" className="size-5" />
           {t('scenarios:deployment_modal.prepare.button')}
         </Button>
       </Tooltip.Default>
@@ -46,7 +46,7 @@ export function PrepareScenarioVersion({
         content={t('scenarios:deployment_modal.prepare.preparation_service_occupied')}
       >
         <Button className="flex-1" variant="primary" disabled>
-          <Icon icon="queue-list" className="size-6" />
+          <Icon icon="queue-list" className="size-5" />
           {t('scenarios:deployment_modal.prepare.button')}
         </Button>
       </Tooltip.Default>
@@ -57,7 +57,7 @@ export function PrepareScenarioVersion({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button className="flex-1" variant="primary">
-          <Icon icon="queue-list" className="size-6" />
+          <Icon icon="queue-list" className="size-5" />
           {t('scenarios:deployment_modal.prepare.button')}
         </Button>
       </Modal.Trigger>
@@ -157,18 +157,18 @@ function PrepareScenarioVersionContent({
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            <Icon icon="queue-list" className="size-6" />
-            {t('scenarios:deployment_modal.prepare.button')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button className="flex-1" variant="primary" type="submit">
+          <Icon icon="queue-list" className="size-5" />
+          {t('scenarios:deployment_modal.prepare.button')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

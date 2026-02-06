@@ -180,10 +180,10 @@ export function CursorPaginationButtons({
       ) : (
         <FormattedDatesRange startTs={startTs} endTs={endTs} />
       )}
-      <Button onClick={fetchPrevious} variant="secondary" disabled={previousDisabled}>
+      <Button onClick={fetchPrevious} variant="secondary" mode="icon" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />
       </Button>
-      <Button onClick={fetchNext} variant="secondary" disabled={nextDisabled}>
+      <Button onClick={fetchNext} variant="secondary" mode="icon" disabled={nextDisabled}>
         <Icon icon="arrow-right" className="size-4" />
       </Button>
     </div>

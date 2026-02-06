@@ -43,14 +43,14 @@ export function RemoveFileAnnotation({ annotation, onClose, onDelete }: RemoveFi
             }}
           />
         </Modal.Title>
-        <div className="flex justify-between gap-4 p-6">
-          <Button variant="secondary" className="flex-1" onClick={onClose}>
+        <Modal.Footer>
+          <Button variant="secondary" appearance="stroked" className="flex-1" onClick={onClose}>
             {t('common:cancel')}
           </Button>
-          <Button variant="primary" color="red" className="flex-1" onClick={handleDelete}>
+          <Button variant="destructive" className="flex-1" onClick={handleDelete}>
             {t('common:delete')}
           </Button>
-        </div>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

@@ -13,7 +13,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2, Select } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateApiKey() {
@@ -21,15 +21,17 @@ export function CreateApiKey() {
   const [open, setOpen] = useState(false);
 
   return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger onClick={(e) => e.stopPropagation()} render={<Button type="button" />}>
-        <Icon icon="plus" className="size-6" />
-        {t('settings:api_keys.new_api_key')}
-      </ModalV2.Trigger>
-      <ModalV2.Content onClick={(e) => e.stopPropagation()}>
+    <Modal.Root open={open} onOpenChange={setOpen}>
+      <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
+        <Button type="button">
+          <Icon icon="plus" className="size-5" />
+          {t('settings:api_keys.new_api_key')}
+        </Button>
+      </Modal.Trigger>
+      <Modal.Content onClick={(e) => e.stopPropagation()}>
         <CreateApiKeyContent onSuccess={() => setOpen(false)} />
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -58,7 +60,7 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <ModalV2.Title>{t('settings:api_keys.new_api_key')}</ModalV2.Title>
+      <Modal.Title>{t('settings:api_keys.new_api_key')}</Modal.Title>
       <div className="bg-surface-card flex flex-col gap-6 p-6">
         <form.Field name="description">
           {(field) => (
@@ -95,15 +97,17 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button type="button" className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            {t('settings:api_keys.create')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button type="button" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit">
+          {t('settings:api_keys.create')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 };

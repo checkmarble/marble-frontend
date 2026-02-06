@@ -3,7 +3,7 @@ import { TableModel } from '@app-builder/models/data-model';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Collapsible } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 import { Spinner } from '../../Spinner';
 import { type EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
@@ -23,9 +23,9 @@ export const ObjectMappingSection = ({ updatedConfig, baseConfig }: EditionValid
           .with({ isError: true }, () => (
             <div className="flex flex-col gap-v2-md items-center justify-center h-50">
               <div className="">{t('common:generic_fetch_data_error')}</div>
-              <ButtonV2 variant="secondary" onClick={() => dataModelQuery.refetch()}>
+              <Button variant="secondary" onClick={() => dataModelQuery.refetch()}>
                 {t('common:retry')}
-              </ButtonV2>
+              </Button>
             </div>
           ))
           .with({ isSuccess: true }, ({ data: { dataModel } }) => {

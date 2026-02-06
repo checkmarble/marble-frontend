@@ -2,7 +2,7 @@ import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2, cn } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type SuccessCasesQuery = ReturnType<typeof useGetCasesQuery> extends infer T
@@ -67,7 +67,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
             const isActive = limit === currentLimit;
 
             return (
-              <ButtonV2
+              <Button
                 variant="secondary"
                 appearance="stroked"
                 size="default"
@@ -80,7 +80,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
                 }}
               >
                 {limit}
-              </ButtonV2>
+              </Button>
             );
           })}
         </div>
@@ -92,7 +92,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
               From {pagesRanges[currentPage].startIndex} to {pagesRanges[currentPage].endIndex}
             </span>
           ) : null}
-          <ButtonV2
+          <Button
             mode="icon"
             size="default"
             variant="secondary"
@@ -103,8 +103,8 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
             }}
           >
             <Icon icon="arrow-left" className="size-5" />
-          </ButtonV2>
-          <ButtonV2
+          </Button>
+          <Button
             mode="icon"
             size="default"
             variant="secondary"
@@ -121,7 +121,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
             }}
           >
             <Icon icon="arrow-right" className="size-5" />
-          </ButtonV2>
+          </Button>
         </div>
       </div>
     );

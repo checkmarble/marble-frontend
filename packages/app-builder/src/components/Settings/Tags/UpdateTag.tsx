@@ -104,23 +104,17 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" type="button" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="update"
-            disabled={updateTagMutation.isPending}
-          >
-            {t('common:save')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button variant="secondary" appearance="stroked" type="button" name="cancel">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit" name="update" disabled={updateTagMutation.isPending}>
+          {t('common:save')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 };

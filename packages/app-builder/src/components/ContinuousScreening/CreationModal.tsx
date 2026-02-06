@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Input, Modal, TextArea } from 'ui-design-system';
+import { Button, Input, Modal, TextArea } from 'ui-design-system';
 import { z } from 'zod/v4';
 
 const basePayloadSchema = z.object({
@@ -54,14 +54,12 @@ export const CreationModal = ({ open, onOpenChange, onSubmit }: CreationModalPro
             />
           </div>
           <Modal.Footer>
-            <div className="flex gap-v2-sm justify-end p-v2-md">
-              <Modal.Close asChild>
-                <ButtonV2 variant="secondary">{t('common:cancel')}</ButtonV2>
-              </Modal.Close>
-              <ButtonV2 type="submit" variant="primary" disabled={!isValid}>
-                {t('common:create')}
-              </ButtonV2>
-            </div>
+            <Modal.Close asChild>
+              <Button variant="secondary">{t('common:cancel')}</Button>
+            </Modal.Close>
+            <Button type="submit" variant="primary" disabled={!isValid}>
+              {t('common:create')}
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

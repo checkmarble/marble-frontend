@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
-import { ButtonV2 } from '../../Button/Button';
+import { Button } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
 import { MenuCommand } from '../../MenuCommand/MenuCommand';
@@ -136,12 +136,12 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
             />
           </div>
           <div className="flex justify-end gap-v2-xs">
-            <ButtonV2 variant="secondary" size="default" onClick={clear}>
+            <Button variant="secondary" size="default" onClick={clear}>
               {t('filters:ds.clear_button.label')}
-            </ButtonV2>
-            <ButtonV2 size="default" onClick={validate}>
+            </Button>
+            <Button size="default" onClick={validate}>
               {t('filters:ds.apply_button.label')}
-            </ButtonV2>
+            </Button>
           </div>
         </div>
       </FilterPopover.Content>

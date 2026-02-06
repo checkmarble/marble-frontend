@@ -1,9 +1,9 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 import { Icon } from 'ui-icons';
 
-import { Button, type ButtonProps } from './Button';
+import { Button, type ButtonV2Props } from './Button';
 
-const Story: Meta<ButtonProps> = {
+const Story: Meta<ButtonV2Props> = {
   component: Button,
   title: 'Button',
   args: {
@@ -14,13 +14,18 @@ const Story: Meta<ButtonProps> = {
     disabled: { control: 'boolean' },
     variant: {
       control: { type: 'select' },
-      options: ['primary', 'secondary', 'tertiary', 'outline-solid'],
+      options: ['primary', 'secondary', 'destructive'],
       name: 'Variant',
     },
-    color: {
+    appearance: {
       control: { type: 'select' },
-      options: ['purple', 'grey', 'green', 'red'],
-      name: 'Color',
+      options: ['filled', 'stroked', 'link'],
+      name: 'Appearance',
+    },
+    size: {
+      control: { type: 'select' },
+      options: ['small', 'default'],
+      name: 'Size',
     },
     children: {
       type: 'string',
@@ -29,35 +34,30 @@ const Story: Meta<ButtonProps> = {
 };
 export default Story;
 
-const Template: StoryFn<ButtonProps> = (args) => {
+const Template: StoryFn<ButtonV2Props> = (args) => {
   return <Button {...args} />;
 };
 
-const TemplateWithIcon: StoryFn<ButtonProps> = ({ children, ...args }) => {
+const TemplateWithIcon: StoryFn<ButtonV2Props> = ({ children, ...args }) => {
   return (
     <Button {...args}>
-      <Icon icon="plus" className="size-6" />
+      <Icon icon="plus" className="size-5" />
       {children}
     </Button>
   );
 };
 
-const primaryArgss = {
-  variant: 'primary',
-} as const;
-
 export const Primary = Template.bind({});
-Primary.args = primaryArgss;
+Primary.args = { variant: 'primary' };
 
 export const PrimaryWithIcon = TemplateWithIcon.bind({});
-PrimaryWithIcon.args = primaryArgss;
-
-const secondaryArgs = {
-  variant: 'secondary',
-} as const;
+PrimaryWithIcon.args = { variant: 'primary' };
 
 export const Secondary = Template.bind({});
-Secondary.args = secondaryArgs;
+Secondary.args = { variant: 'secondary' };
 
 export const SecondaryWithIcon = TemplateWithIcon.bind({});
-SecondaryWithIcon.args = secondaryArgs;
+SecondaryWithIcon.args = { variant: 'secondary' };
+
+export const Destructive = Template.bind({});
+Destructive.args = { variant: 'destructive' };

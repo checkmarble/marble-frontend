@@ -3,7 +3,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ModalV2 } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 import { IngestedObjectDetail } from '../Data/IngestedObjectDetail';
 
@@ -35,21 +35,28 @@ export function IngestedObjectDetailModal({
   }
 
   return (
-    <ModalV2.Content open onClose={onClose} size="large">
-      <ModalV2.Title>{tableName}</ModalV2.Title>
-      {data.object ? (
-        <IngestedObjectDetail
-          light
-          bordered={false}
-          withLinks={false}
-          dataModel={dataModel}
-          tableName={tableName}
-          objectId={objectId}
-          object={data.object}
-        />
-      ) : (
-        <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
-      )}
-    </ModalV2.Content>
+    <Modal.Root
+      open
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
+    >
+      <Modal.Content size="large">
+        <Modal.Title>{tableName}</Modal.Title>
+        {data.object ? (
+          <IngestedObjectDetail
+            light
+            bordered={false}
+            withLinks={false}
+            dataModel={dataModel}
+            tableName={tableName}
+            objectId={objectId}
+            object={data.object}
+          />
+        ) : (
+          <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
+        )}
+      </Modal.Content>
+    </Modal.Root>
   );
 }

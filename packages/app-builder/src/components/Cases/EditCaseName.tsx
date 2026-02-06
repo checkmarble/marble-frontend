@@ -6,7 +6,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
@@ -46,7 +46,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                   <span className="text-grey-primary text-h1 border-none bg-transparent font-normal outline-hidden">
                     {field.state.value || t('cases:case.name')}
                   </span>
-                  <ButtonV2
+                  <Button
                     type="button"
                     onClick={() => setIsEditing(true)}
                     className="w-fit p-0.5"
@@ -54,16 +54,16 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                     mode="icon"
                   >
                     <Icon icon="edit-square" className="text-grey-placeholder size-3.5" />
-                  </ButtonV2>
+                  </Button>
                 </>
               ) : (
                 <>
                   <div className="flex items-center gap-2">
-                    <ButtonV2 type="submit" disabled={form.state.isSubmitting} variant="primary">
+                    <Button type="submit" disabled={form.state.isSubmitting} variant="primary">
                       <Icon icon="save" className="size-3.5" />
                       {t('common:save')}
-                    </ButtonV2>
-                    <ButtonV2
+                    </Button>
+                    <Button
                       type="button"
                       onClick={() => {
                         setIsEditing(false);
@@ -73,7 +73,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                       mode="icon"
                     >
                       <Icon icon="cross" className="text-grey-placeholder size-3.5" />
-                    </ButtonV2>
+                    </Button>
                   </div>
                   <input
                     type="text"

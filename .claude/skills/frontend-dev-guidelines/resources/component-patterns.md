@@ -11,7 +11,7 @@ Modern React component architecture for the Marble monorepo.
 For reusable UI primitives, import from `ui-design-system`:
 
 ```typescript
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Modal } from 'ui-design-system';
 import { Select } from 'ui-design-system';
 import { Input } from 'ui-design-system';
@@ -151,7 +151,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 ```typescript
 import * as Dialog from '@radix-ui/react-dialog';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 
 export const ConfirmDialog: FunctionComponent<{
   open: boolean;
@@ -171,9 +171,9 @@ export const ConfirmDialog: FunctionComponent<{
           </Dialog.Description>
           <div className="mt-4 flex gap-2 justify-end">
             <Dialog.Close asChild>
-              <ButtonV2 variant="secondary">Cancel</ButtonV2>
+              <Button variant="secondary">Cancel</Button>
             </Dialog.Close>
-            <ButtonV2 onClick={onConfirm}>Confirm</ButtonV2>
+            <Button onClick={onConfirm}>Confirm</Button>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

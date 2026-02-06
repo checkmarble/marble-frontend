@@ -112,7 +112,7 @@ export function CreateCase() {
           )}
         </form.Field>
         <Button type="submit">
-          <Icon icon="plus" className="size-6" />
+          <Icon icon="plus" className="size-5" />
           {t('cases:case.new_case.create')}
         </Button>
       </div>

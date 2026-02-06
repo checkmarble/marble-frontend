@@ -9,7 +9,7 @@ import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { BreadCrumbs } from '../Breadcrumbs';
 import GridTable from '../GridTable';
@@ -95,9 +95,9 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
         <BreadCrumbs />
         <div>
           {canEdit ? (
-            <ButtonV2 variant="primary" onClick={() => setCreationModalOpen(true)}>
+            <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
               {t('continuousScreening:configurations.add_configuration')}
-            </ButtonV2>
+            </Button>
           ) : null}
         </div>
       </Page.Header>
@@ -113,9 +113,9 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
             .with({ isError: true }, () => (
               <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
                 <div className="">{t('common:generic_fetch_data_error')}</div>
-                <ButtonV2 variant="secondary" onClick={() => configurationsQuery.refetch()}>
+                <Button variant="secondary" onClick={() => configurationsQuery.refetch()}>
                   {t('common:retry')}
-                </ButtonV2>
+                </Button>
               </div>
             ))
             .with({ isSuccess: true }, ({ data: configurations }) => {
@@ -126,10 +126,10 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                     <Icon icon="scan-eye" className="size-10 text-purple-primary" />
                     <span>{t('continuousScreening:configurations.list.empty')}</span>
                     {canEdit ? (
-                      <ButtonV2 variant="primary" onClick={() => setCreationModalOpen(true)}>
+                      <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
                         <Icon icon="plus" className="size-4" />
                         {t('continuousScreening:configurations.add_configuration')}
-                      </ButtonV2>
+                      </Button>
                     ) : null}
                   </div>
                 );

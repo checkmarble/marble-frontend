@@ -36,8 +36,8 @@ export default function ScenariosPage() {
           <div className="flex flex-col gap-4">
             <div className="flex flex-row justify-end">
               <CreateScenario>
-                <Button>
-                  <Icon icon="plus" className="size-6" aria-hidden />
+                <Button variant="primary">
+                  <Icon icon="plus" className="size-5" aria-hidden />
                   {t('scenarios:create_scenario.title')}
                 </Button>
               </CreateScenario>

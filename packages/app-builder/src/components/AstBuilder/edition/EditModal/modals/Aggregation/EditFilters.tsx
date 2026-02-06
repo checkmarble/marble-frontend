@@ -256,7 +256,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
           options={options}
           trigger={
             <Button disabled={!tableName} className="h-fit" variant="secondary">
-              <Icon icon="plus" className="size-6" />
+              <Icon icon="plus" className="size-5" />
               {t('scenarios:edit_aggregation.add_filter')}
             </Button>
           }

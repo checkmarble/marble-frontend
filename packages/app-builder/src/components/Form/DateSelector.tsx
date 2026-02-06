@@ -27,7 +27,7 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
         <PopoverDisclosure render={<Button variant="secondary" />}>
           <Icon
             icon="calendar-month"
-            className={clsx('size-6', {
+            className={clsx('size-5', {
               'text-grey-primary': selectedDate,
               'text-grey-secondary': !selectedDate,
             })}

@@ -26,7 +26,7 @@ export function ActivateScenarioVersion({ scenario, iteration }: ActivateScenari
 
   const button = (
     <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
-      <Icon icon="pushtolive" className="size-6" />
+      <Icon icon="pushtolive" className="size-5" />
       {t('scenarios:deployment_modal.activate.button')}
     </Button>
   );
@@ -138,18 +138,18 @@ function ActivateScenarioVersionContent({
             <RuleSnoozeDetail scenarioId={scenario.id} iterationId={iterationId} />
           </div>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            <Icon icon="pushtolive" className="size-6" />
-            {t('scenarios:deployment_modal.activate.button')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button className="flex-1" variant="primary" type="submit">
+          <Icon icon="pushtolive" className="size-5" />
+          {t('scenarios:deployment_modal.activate.button')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

@@ -97,8 +97,8 @@ export default function Webhooks() {
               // Necessary to prevent click events from propagating to the Collapsible
               <span onClick={(e) => e.stopPropagation()}>
                 <CreateWebhook webhookStatus={webhooksStatus}>
-                  <Button>
-                    <Icon icon="plus" className="size-6" />
+                  <Button variant="primary">
+                    <Icon icon="plus" className="size-5" />
                     {t('settings:webhooks.new_webhook')}
                   </Button>
                 </CreateWebhook>
@@ -192,8 +192,8 @@ export function ErrorBoundary() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhooks')}</span>
-            <Button disabled>
-              <Icon icon="plus" className="size-6" />
+            <Button variant="primary" disabled>
+              <Icon icon="plus" className="size-5" />
               {t('settings:webhooks.new_webhook')}
             </Button>
           </CollapsiblePaper.Title>

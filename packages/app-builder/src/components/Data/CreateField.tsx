@@ -276,17 +276,17 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             </form.Field>
           ) : null}
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" type="button">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" name="create" disabled={form.state.isSubmitting}>
-            {t('data:create.button_accept')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button className="flex-1" variant="secondary" appearance="stroked" type="button">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button className="flex-1" variant="primary" type="submit" name="create" disabled={form.state.isSubmitting}>
+          {t('data:create.button_accept')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

@@ -36,7 +36,7 @@ const NewDraftButton = ({ iterationId, scenarioId }: { iterationId: string; scen
 
   return (
     <Button onClick={handleNewDraft}>
-      <Icon icon="plus" className="size-6" />
+      <Icon icon="plus" className="size-5" />
       <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
     </Button>
   );
@@ -66,7 +66,7 @@ const ExistingDraftModal = ({
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button>
-          <Icon icon="plus" className="size-6" />
+          <Icon icon="plus" className="size-5" />
           <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
         </Button>
       </Modal.Trigger>
@@ -77,23 +77,24 @@ const ExistingDraftModal = ({
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist')}</p>
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist_possibility')}</p>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button
-                className="flex-1"
-                variant="secondary"
-                onClick={() =>
-                  navigate(location.pathname.replace(fromUUIDtoSUUID(iterationId), fromUUIDtoSUUID(draftId)))
-                }
-              >
-                {t('scenarios:create_draft.keep_existing_draft')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
-              {t('scenarios:create_draft.override_existing_draft')}
-            </Button>
-          </div>
         </div>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <Button
+              className="flex-1"
+              variant="secondary"
+              appearance="stroked"
+              onClick={() =>
+                navigate(location.pathname.replace(fromUUIDtoSUUID(iterationId), fromUUIDtoSUUID(draftId)))
+              }
+            >
+              {t('scenarios:create_draft.keep_existing_draft')}
+            </Button>
+          </Modal.Close>
+          <Button className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
+            {t('scenarios:create_draft.override_existing_draft')}
+          </Button>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

@@ -112,7 +112,7 @@ export default function TestRuns() {
                     atLeastOneActiveTestRun={atLeastOneActiveTestRun}
                   >
                     <Button variant="primary" className="isolate h-10 w-fit">
-                      <Icon icon="plus" className="size-6" aria-hidden />
+                      <Icon icon="plus" className="size-5" aria-hidden />
                       {t('scenarios:create_testrun.title')}
                     </Button>
                   </CreateTestRun>

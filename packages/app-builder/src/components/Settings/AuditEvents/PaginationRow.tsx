@@ -1,6 +1,6 @@
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, cn } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type PaginationRowProps = {
@@ -37,7 +37,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
           const isActive = limit === currentLimit;
 
           return (
-            <ButtonV2
+            <Button
               variant="secondary"
               appearance="stroked"
               size="default"
@@ -50,12 +50,12 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
               }}
             >
               {limit}
-            </ButtonV2>
+            </Button>
           );
         })}
       </div>
       <div className="flex items-center gap-v2-xs">
-        <ButtonV2
+        <Button
           mode="icon"
           size="default"
           variant="secondary"
@@ -64,8 +64,8 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
           onClick={onPreviousPage}
         >
           <Icon icon="arrow-left" className="size-5" />
-        </ButtonV2>
-        <ButtonV2
+        </Button>
+        <Button
           mode="icon"
           size="default"
           variant="secondary"
@@ -74,7 +74,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
           onClick={onNextPage}
         >
           <Icon icon="arrow-right" className="size-5" />
-        </ButtonV2>
+        </Button>
       </div>
     </div>
   );

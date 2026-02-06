@@ -31,8 +31,8 @@ export function DeleteListModal({ listId }: { listId: string }) {
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button color="red" className="w-fit">
-          <Icon icon="delete" className="size-6" />
+        <Button variant="destructive" className="w-fit">
+          <Icon icon="delete" className="size-5" />
           <p>{t('lists:delete_list.button')}</p>
         </Button>
       </Modal.Trigger>
@@ -47,18 +47,18 @@ export function DeleteListModal({ listId }: { listId: string }) {
               <h1 className="text-l font-semibold">{t('lists:delete_list.title')}</h1>
               <p className="text-center">{t('lists:delete_list.content')}</p>
             </div>
-            <div className="flex flex-1 flex-row gap-2">
-              <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
-              <Button color="red" className="flex-1" variant="primary" type="submit" name="delete">
-                <Icon icon="delete" className="size-6" />
-                {t('common:delete')}
-              </Button>
-            </div>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <Button variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button variant="destructive" type="submit" name="delete">
+              <Icon icon="delete" className="size-5" />
+              {t('common:delete')}
+            </Button>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

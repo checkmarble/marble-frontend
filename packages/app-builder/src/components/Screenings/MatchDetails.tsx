@@ -70,8 +70,8 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
                 <div className="relative">
                   <Modal.Title>{t('screenings:sanction_detail.title')}</Modal.Title>
                   <Modal.Close asChild>
-                    <Button variant="ghost" className="absolute top-2 right-2">
-                      <Icon icon="cross" className="size-6" />
+                    <Button variant="secondary" appearance="link" className="absolute top-2 right-2">
+                      <Icon icon="cross" className="size-5" />
                     </Button>
                   </Modal.Close>
                 </div>

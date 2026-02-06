@@ -13,7 +13,7 @@ import { serialize as objectToFormData } from 'object-to-formdata';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Input, ModalV2, Select } from 'ui-design-system';
+import { Button, Input, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
 
@@ -107,48 +107,57 @@ export function RefineSearchModal({
   };
 
   return (
-    <ModalV2.Content
-      fixedHeight={!searchResults}
+    <Modal.Root
       open={open}
-      onClose={onClose}
-      size="medium"
-      className={clsx({ 'h-[80vh]': !searchResults }, 'max-h-[80vh]')}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onClose();
+      }}
     >
-      <ModalV2.Title>{t('screenings:refine_modal.title')}</ModalV2.Title>
-      {searchResults ? (
-        <>
-          <div className="flex flex-col gap-8 overflow-y-scroll p-6">
-            {searchResults.length > 0 ? (
-              <>
-                <Field label={t('screenings:refine_modal.result_label')}>
-                  <div className="flex grow flex-col gap-2">
-                    {searchResults.map((match) => {
-                      return <MatchResult key={match.id} entity={match} />;
-                    })}
-                  </div>
-                </Field>
-                <Callout bordered>{t('screenings:refine_modal.refine_callout')}</Callout>
-              </>
-            ) : (
-              <>
-                <span>{t('screenings:refine_modal.no_match_label')}</span>
-                <Callout bordered>
-                  <div className="flex flex-col items-start gap-2">
-                    <Trans
-                      t={t}
-                      i18nKey="screenings:refine_modal.no_match_callout"
-                      components={{
-                        Status: <ScreeningStatusTag status="no_hit" />,
-                      }}
-                    />
-                  </div>
-                </Callout>
-              </>
-            )}
-          </div>
-          <ModalV2.Footer>
-            <div className="bg-surface-card flex gap-2 p-8">
-              <Button className="flex-1" variant="secondary" name="cancel" onClick={handleBackToSearch}>
+      <Modal.Content
+        fixedHeight={!searchResults}
+        size="medium"
+        className={clsx({ 'h-[80vh]': !searchResults }, 'max-h-[80vh]')}
+      >
+        <Modal.Title>{t('screenings:refine_modal.title')}</Modal.Title>
+        {searchResults ? (
+          <>
+            <div className="flex flex-col gap-8 overflow-y-scroll p-6">
+              {searchResults.length > 0 ? (
+                <>
+                  <Field label={t('screenings:refine_modal.result_label')}>
+                    <div className="flex grow flex-col gap-2">
+                      {searchResults.map((match) => {
+                        return <MatchResult key={match.id} entity={match} />;
+                      })}
+                    </div>
+                  </Field>
+                  <Callout bordered>{t('screenings:refine_modal.refine_callout')}</Callout>
+                </>
+              ) : (
+                <>
+                  <span>{t('screenings:refine_modal.no_match_label')}</span>
+                  <Callout bordered>
+                    <div className="flex flex-col items-start gap-2">
+                      <Trans
+                        t={t}
+                        i18nKey="screenings:refine_modal.no_match_callout"
+                        components={{
+                          Status: <ScreeningStatusTag status="no_hit" />,
+                        }}
+                      />
+                    </div>
+                  </Callout>
+                </>
+              )}
+            </div>
+            <Modal.Footer>
+              <Button
+                className="flex-1"
+                variant="secondary"
+                appearance="stroked"
+                name="cancel"
+                onClick={handleBackToSearch}
+              >
                 {t('screenings:refine_modal.back_search')}
               </Button>
               <Button
@@ -159,40 +168,40 @@ export function RefineSearchModal({
               >
                 {t('screenings:refine_modal.apply_search')}
               </Button>
-            </div>
-          </ModalV2.Footer>
-        </>
-      ) : (
-        <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
-          <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
-            {screening.request ? <SearchInput request={screening.request} /> : null}
-            <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
-              {(field) => (
-                <Field label={t('screenings:search_entity_type')}>
-                  <EntitySelect name={field.name} value={field.state.value} onChange={field.handleChange} />
-                </Field>
-              )}
-            </form.Field>
-            {additionalFields.map((field) => (
-              <form.Field key={field} name={`fields.${field}`}>
-                {(formField) => (
-                  <Field label={t(`screenings:entity.property.${field}`)}>
-                    <Input
-                      name={formField.name}
-                      value={formField.state.value as string}
-                      onChange={(e) => formField.handleChange(e.target.value)}
-                      className="grow"
-                    />
+            </Modal.Footer>
+          </>
+        ) : (
+          <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
+            <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
+              {screening.request ? <SearchInput request={screening.request} /> : null}
+              <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
+                {(field) => (
+                  <Field label={t('screenings:search_entity_type')}>
+                    <EntitySelect name={field.name} value={field.state.value} onChange={field.handleChange} />
                   </Field>
                 )}
               </form.Field>
-            ))}
-          </div>
-          <ModalV2.Footer>
-            <div className="bg-surface-card flex gap-2 p-8">
-              <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
-                {t('common:cancel')}
-              </ModalV2.Close>
+              {additionalFields.map((field) => (
+                <form.Field key={field} name={`fields.${field}`}>
+                  {(formField) => (
+                    <Field label={t(`screenings:entity.property.${field}`)}>
+                      <Input
+                        name={formField.name}
+                        value={formField.state.value as string}
+                        onChange={(e) => formField.handleChange(e.target.value)}
+                        className="grow"
+                      />
+                    </Field>
+                  )}
+                </form.Field>
+              ))}
+            </div>
+            <Modal.Footer>
+              <Modal.Close asChild>
+                <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+                  {t('common:cancel')}
+                </Button>
+              </Modal.Close>
               <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
                 {([isPristine, canSubmit, isSubmitting]) => (
                   <Button type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
@@ -200,11 +209,11 @@ export function RefineSearchModal({
                   </Button>
                 )}
               </form.Subscribe>
-            </div>
-          </ModalV2.Footer>
-        </searchFetcher.Form>
-      )}
-    </ModalV2.Content>
+            </Modal.Footer>
+          </searchFetcher.Form>
+        )}
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 

@@ -45,7 +45,7 @@ export function CreateInboxUser({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild onClick={(e) => e.stopPropagation()}>
         <Button>
-          <Icon icon="plus" className="size-6" />
+          <Icon icon="plus" className="size-5" />
           {t('settings:inboxes.inbox_details.add_member')}
         </Button>
       </Modal.Trigger>
@@ -246,18 +246,18 @@ export function CreateInboxUserContent({
             </div>
           )}
         </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button type="button" className="flex-1" variant="secondary">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" name="create">
-            <Icon icon="new-inbox" className="size-6" />
-            {t('settings:inboxes.inbox_details.create_user')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button type="button" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit" name="create">
+          <Icon icon="new-inbox" className="size-5" />
+          {t('settings:inboxes.inbox_details.create_user')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

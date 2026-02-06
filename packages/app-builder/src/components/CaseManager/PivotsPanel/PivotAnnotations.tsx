@@ -7,7 +7,7 @@ import { ClientObjectComments } from '@app-builder/components/DataModelExplorer/
 import { type GroupedAnnotations } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Popover } from 'ui-design-system';
+import { Button, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type PivotAnnotationsProps = {
@@ -37,9 +37,9 @@ export function PivotAnnotations({ caseId, tableName, objectId, annotations }: P
             </div>
             <MenuCommand.Menu persistOnSelect open={editTagsOpen} onOpenChange={setEditTagsOpen}>
               <MenuCommand.Trigger>
-                <ButtonV2 type="button" mode="icon" variant="secondary">
+                <Button type="button" mode="icon" variant="secondary">
                   <Icon icon="edit-square" className="size-3.5" />
-                </ButtonV2>
+                </Button>
               </MenuCommand.Trigger>
               <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-[340px]">
                 <ClientTagsEditSelect
@@ -61,9 +61,9 @@ export function PivotAnnotations({ caseId, tableName, objectId, annotations }: P
             </div>
             <Popover.Root>
               <Popover.Trigger asChild>
-                <ButtonV2 mode="icon" variant="secondary">
+                <Button mode="icon" variant="secondary">
                   <Icon icon="edit-square" className="size-3.5" />
-                </ButtonV2>
+                </Button>
               </Popover.Trigger>
               <Popover.Content side="bottom" align="end" sideOffset={4} collisionPadding={10} className="w-[340px]">
                 <ClientDocumentsPopover
@@ -80,9 +80,9 @@ export function PivotAnnotations({ caseId, tableName, objectId, annotations }: P
             className="group/comment data-[open=true]:border-grey-border col-span-full flex items-center justify-between pb-2 data-[open=true]:border-b"
           >
             {t('cases:annotations.comments.title')}
-            <ButtonV2 mode="icon" variant="secondary" onClick={() => setCommentSectionOpen((o) => !o)}>
+            <Button mode="icon" variant="secondary" onClick={() => setCommentSectionOpen((o) => !o)}>
               <Icon icon="caret-down" className="size-3.5 group-data-[open=true]/comment:rotate-180" />
-            </ButtonV2>
+            </Button>
           </div>
           {commentSectionOpen ? (
             <div className="col-span-full flex flex-col gap-4 pt-4">

@@ -16,7 +16,7 @@ import * as Collapsible from '@radix-ui/react-collapsible';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Modal, Tag } from 'ui-design-system';
+import { Button, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ObjectRelatedCases } from './ObjectRelatedCases';
 import { ReviewScreeningMatch } from './ReviewScreeningMatch';
@@ -149,10 +149,10 @@ export const ScreeningCaseMatches = ({
         })}
         {screening.partial ? (
           <div className="grid grid-cols-subgrid col-span-full p-v2-md">
-            <ButtonV2 variant="primary" onClick={() => handleLoadMore()} disabled={loadMoreMatchesMutation.isPending}>
+            <Button variant="primary" onClick={() => handleLoadMore()} disabled={loadMoreMatchesMutation.isPending}>
               {loadMoreMatchesMutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
               {t('continuousScreening:review.matches.partial_search_button')}
-            </ButtonV2>
+            </Button>
           </div>
         ) : null}
       </div>
@@ -185,10 +185,10 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         {
-          <ButtonV2 variant="secondary" size="small" disabled={screening.status !== 'in_review'}>
+          <Button variant="secondary" size="small" disabled={screening.status !== 'in_review'}>
             <Icon icon="snooze-stroke" className="size-4" />
             {t('continuousScreening:review.dismiss_alert')}
-          </ButtonV2>
+          </Button>
         }
       </Modal.Trigger>
       <Modal.Content>
@@ -203,13 +203,13 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
         <Modal.Footer>
           <div className="flex flex-row gap-v2-sm p-v2-md justify-end">
             <Modal.Close asChild>
-              <ButtonV2 variant="secondary" type="button">
+              <Button variant="secondary" type="button">
                 {t('common:cancel')}
-              </ButtonV2>
+              </Button>
             </Modal.Close>
-            <ButtonV2 variant="primary" onClick={dismissAlert}>
+            <Button variant="primary" onClick={dismissAlert}>
               {t('continuousScreening:review.dismiss_alert_modal.confirm_button')}
-            </ButtonV2>
+            </Button>
           </div>
         </Modal.Footer>
       </Modal.Content>

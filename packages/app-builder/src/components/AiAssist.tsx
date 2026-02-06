@@ -60,10 +60,11 @@ function Content({ children }: { children: React.ReactNode }) {
         <div className="p-2 flex justify-end">
           <Button
             variant="secondary"
+            appearance="link"
             onClick={() => setOpened(false)}
             className="cursor-pointer border-none bg-transparent"
           >
-            <Icon icon="cross" className="size-6" />
+            <Icon icon="cross" className="size-5" />
           </Button>
         </div>
         <div className="grow min-h-0">{children}</div>

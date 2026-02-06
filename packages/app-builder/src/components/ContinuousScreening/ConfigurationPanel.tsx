@@ -5,7 +5,7 @@ import {
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelContainer, usePanel } from '../Panel';
 import {
@@ -75,17 +75,17 @@ const ConfigurationPanelHeader = () => {
 
   return (
     <div className="flex items-center justify-between gap-v2-md bg-surface-card h-16 px-v2-md border-b border-grey-border shrink-0 sticky top-0">
-      <ButtonV2 variant="secondary" mode="icon" onClick={closePanel}>
+      <Button variant="secondary" mode="icon" onClick={closePanel}>
         <Icon icon="arrow-left" className="size-4" />
-      </ButtonV2>
+      </Button>
       <span className="text-h1 mr-auto font-bold">
         {mode === 'view' ? t('continuousScreening:panel.title.view') : t('continuousScreening:panel.title.edit')}
       </span>
       <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:panel.stepper.${stepName}`)} />
       {mode === 'view' ? (
-        <ButtonV2 variant="primary" onClick={() => configurationStepper.actions.setMode('edit', 0)}>
+        <Button variant="primary" onClick={() => configurationStepper.actions.setMode('edit', 0)}>
           {t('common:edit')}
-        </ButtonV2>
+        </Button>
       ) : null}
     </div>
   );

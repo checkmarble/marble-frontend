@@ -155,7 +155,9 @@ export default function DataDisplaySettings() {
         <form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex items-center justify-between p-2">
             <div>{t('settings:data_display.global_explanation')}</div>
-            <Button type="submit">{t('common:save')}</Button>
+            <Button type="submit" variant="primary">
+              {t('common:save')}
+            </Button>
           </div>
           {dataModelWithTableOptions.map((tableModelWithOptions) => (
             <form.Field

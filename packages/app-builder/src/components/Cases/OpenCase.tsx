@@ -8,7 +8,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonV2, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const OpenCase = ({ id }: { id: string }) => {
@@ -35,47 +35,46 @@ export const OpenCase = ({ id }: { id: string }) => {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize">
+        <Button variant="primary" className="flex-1 first-letter:capitalize">
           <Icon icon="save" className="size-3.5" />
           {t('cases:case.reopen')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
-        <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
-          <Callout>Are you sure you want to re-open the case ?</Callout>
-          <form.Field
-            name="comment"
-            validators={{
-              onChange: openCasePayloadSchema.shape.comment,
-              onBlur: openCasePayloadSchema.shape.comment,
-            }}
-          >
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                <FormLabel name={field.name}>Add a comment</FormLabel>
-                <FormTextArea
-                  name={field.name}
-                  defaultValue={field.state.value}
-                  placeholder="Input your comment here"
-                  valid={field.state.meta.errors.length === 0}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
-          <div className="flex w-full flex-row gap-2 justify-around">
+        <form onSubmit={handleSubmit(form)}>
+          <div className="flex flex-col gap-8 p-8">
+            <Callout>Are you sure you want to re-open the case ?</Callout>
+            <form.Field
+              name="comment"
+              validators={{
+                onChange: openCasePayloadSchema.shape.comment,
+                onBlur: openCasePayloadSchema.shape.comment,
+              }}
+            >
+              {(field) => (
+                <div className="flex flex-col gap-2">
+                  <FormLabel name={field.name}>Add a comment</FormLabel>
+                  <FormTextArea
+                    name={field.name}
+                    defaultValue={field.state.value}
+                    placeholder="Input your comment here"
+                    valid={field.state.meta.errors.length === 0}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                </div>
+              )}
+            </form.Field>
+          </div>
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" className="flex-1 first-letter:capitalize">
+              <Button variant="secondary" appearance="stroked">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-
-            <Button type="submit" className="flex-1 first-letter:capitalize">
-              Re-Open
-            </Button>
-          </div>
+            <Button type="submit">Re-Open</Button>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

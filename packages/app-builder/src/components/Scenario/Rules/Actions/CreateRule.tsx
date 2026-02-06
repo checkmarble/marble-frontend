@@ -17,8 +17,8 @@ export function CreateRule({ scenarioId, iterationId }: { scenarioId: string; it
 
   return (
     <Button
-      variant="tertiary"
-      size="dropdown"
+      variant="secondary"
+      appearance="link"
       disabled={createRuleMutation.isPending}
       className="w-full gap-2"
       onClick={handleCreateRule}

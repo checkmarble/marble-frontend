@@ -1,4 +1,3 @@
-import * as Ariakit from '@ariakit/react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
@@ -52,8 +51,22 @@ function ModalTitle(props: Dialog.DialogTitleProps) {
   );
 }
 
-export function ModalFooter({ children }: { children: ReactNode }) {
-  return <div className="shadow-sticky-bottom sticky bottom-0">{children}</div>;
+interface ModalFooterProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function ModalFooter({ children, className }: ModalFooterProps) {
+  return (
+    <div
+      className={clsx(
+        'border-t-grey-border bg-surface-card sticky bottom-0 flex justify-end gap-v2-sm border-t p-v2-md',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 export const Modal = {
@@ -63,57 +76,5 @@ export const Modal = {
   Description: Dialog.Description,
   Content: ModalContent,
   Title: ModalTitle,
-  Footer: ModalFooter,
-};
-
-export interface ModalContentV2Props extends Ariakit.DialogProps, VariantProps<typeof modalContentClassnames> {}
-
-export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(function ModalContentV2(
-  { className, size = 'small', fixedHeight, ...props },
-  ref,
-) {
-  return (
-    <Ariakit.Dialog
-      ref={ref}
-      className={modalContentClassnames({
-        size,
-        fixedHeight,
-        className: clsx(
-          'z-50 scale-95 opacity-0 transition-all data-enter:scale-100 data-enter:opacity-100',
-          className,
-        ),
-      })}
-      backdrop={
-        <div
-          onClick={(e) => e.stopPropagation()}
-          className="bg-grey-primary/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-xs transition-all data-enter:opacity-100"
-        />
-      }
-      unmountOnHide
-      render={({ className, ...p }) => <div className={clsx(className, 'fixed left-1/2 -translate-x-1/2')} {...p} />}
-      {...props}
-    />
-  );
-});
-
-export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
-  return (
-    <Ariakit.DialogHeading
-      className="border-b-grey-border bg-surface-row text-m rounded-t-lg border-b p-6 text-center font-bold"
-      {...props}
-    />
-  );
-}
-
-/**
- * @deprecated Use `Modal` instead.
- */
-export const ModalV2 = {
-  Root: Ariakit.DialogProvider,
-  Trigger: Ariakit.DialogDisclosure,
-  Close: Ariakit.DialogDismiss,
-  Description: Ariakit.DialogDescription,
-  Content: ModalContentV2,
-  Title: ModalTitleV2,
   Footer: ModalFooter,
 };

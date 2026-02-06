@@ -67,7 +67,7 @@ export default function Api() {
                 }
               }}
             >
-              <Icon icon="download" className="me-2 size-6" />
+              <Icon icon="download" className="me-2 size-5" />
               {t('api:download_openapi_spec_v1')}
             </Button>
             <Button
@@ -84,7 +84,7 @@ export default function Api() {
                 }
               }}
             >
-              <Icon icon="download" className="me-2 size-6" />
+              <Icon icon="download" className="me-2 size-5" />
               {t('api:download_openapi_spec')}
             </Button>
           </div>

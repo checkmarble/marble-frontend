@@ -106,7 +106,8 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                       {displayRule.name}
                     </span>
                     <Button
-                      variant="ghost"
+                      variant="secondary"
+                      appearance="link"
                       type="button"
                       onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
                       disabled={editingRuleId === displayRule.id}
@@ -164,7 +165,8 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                                 />
                               </div>
                               <Button
-                                variant="ghost"
+                                variant="secondary"
+                                appearance="link"
                                 type="button"
                                 onClick={() => deleteCondition(condition.id)}
                                 className="opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
@@ -220,6 +222,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
           <div className="mt-6 w-full flex justify-center gap-8">
             <Button
               variant="secondary"
+              appearance="stroked"
               onClick={() => {
                 cancelChanges();
                 handleCancelRenaming();

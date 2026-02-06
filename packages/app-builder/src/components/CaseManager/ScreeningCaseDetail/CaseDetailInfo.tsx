@@ -20,7 +20,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { ButtonV2, Tag, TagProps } from 'ui-design-system';
+import { Button, Tag, TagProps } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseDetailInfoProps = {
@@ -65,7 +65,7 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
         <div className="flex gap-v2-sm">
           <EscalateCase id={caseDetail.id} inboxId={caseInbox.id} isAdminUser={isUserAdmin} />
           {caseDetail.status !== 'closed' ? (
-            <ButtonV2
+            <Button
               variant="primary"
               className="flex-1 first-letter:capitalize"
               disabled={hasRemainingMatchesToExamine}
@@ -73,12 +73,12 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
             >
               <Icon icon="save" className="size-3.5" />
               {t('cases:case.close')}
-            </ButtonV2>
+            </Button>
           ) : (
-            <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize" onClick={handleReopenCase}>
+            <Button variant="primary" className="flex-1 first-letter:capitalize" onClick={handleReopenCase}>
               <Icon icon="save" className="size-3.5" />
               {t('cases:case.reopen')}
-            </ButtonV2>
+            </Button>
           )}
         </div>
       </div>

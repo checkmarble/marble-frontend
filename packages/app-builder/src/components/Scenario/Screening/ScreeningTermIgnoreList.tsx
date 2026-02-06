@@ -51,7 +51,7 @@ export const ScreeningTermIgnoreList = ({
         <div className="flex flex-col gap-1">
           <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
-              <Button variant="secondary" size="medium" className="w-52 justify-between" disabled={editor === 'view'}>
+              <Button variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
                 <span className="text-grey-primary text-s font-medium">
                   {customLists.find((list) => list.id === selectedListId)?.name ||
                     t('scenarios:edit_sanction.select_list')}

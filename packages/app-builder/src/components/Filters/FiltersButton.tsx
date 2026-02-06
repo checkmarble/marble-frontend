@@ -1,12 +1,12 @@
 import { clsx } from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, type ButtonProps } from 'ui-design-system';
+import { Button, type ButtonV2Props } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { filtersI18n } from './filters-i18n';
 
-type FiltersButtonProps = Omit<ButtonProps, 'variant' | 'color' | 'ref'>;
+type FiltersButtonProps = Omit<ButtonV2Props, 'variant' | 'color' | 'ref'>;
 
 export const FiltersButton = forwardRef<HTMLButtonElement, FiltersButtonProps>(function FiltersButton(
   { className, ...props },

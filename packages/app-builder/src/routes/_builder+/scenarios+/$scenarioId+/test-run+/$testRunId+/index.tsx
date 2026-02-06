@@ -98,9 +98,9 @@ export default function TestRun() {
         <BreadCrumbs />
         {run.status === 'up' ? (
           <CancelTestRun currentScenario={currentScenario} testRunId={run.id}>
-            <Button variant="secondary" color="red" className="isolate h-10 w-fit">
-              <Icon icon="stop" className="text-grey-white size-6" />
-              <span className="text-grey-white">{t('scenarios:testrun.cancel')}</span>
+            <Button variant="destructive" className="isolate h-10 w-fit">
+              <Icon icon="stop" className="size-5" />
+              {t('scenarios:testrun.cancel')}
             </Button>
           </CancelTestRun>
         ) : null}

@@ -10,7 +10,7 @@ import { useUpdateAiSettings } from '@app-builder/queries/cases/update-ai-settin
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Input, Switch, Tooltip } from 'ui-design-system';
+import { Button, Input, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { LanguageDropdown } from './LanguageDropdown';
@@ -244,14 +244,14 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                                 disabled={readOnly}
                               />
                               {!readOnly && (
-                                <ButtonV2
+                                <Button
                                   mode="icon"
                                   variant="secondary"
                                   type="button"
                                   onClick={() => domainsField.removeValue(idx)}
                                 >
                                   <Icon icon="delete" className="size-4 text-purple-primary" />
-                                </ButtonV2>
+                                </Button>
                               )}
                             </div>
                             <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -261,7 +261,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     ))}
 
                     {!readOnly && (
-                      <ButtonV2
+                      <Button
                         type="button"
                         variant="primary"
                         appearance="stroked"
@@ -270,7 +270,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                         className="w-fit"
                       >
                         {t('cases:ai_settings.kyc_enrichment.add_new.button')}
-                      </ButtonV2>
+                      </Button>
                     )}
                   </div>
                 )}
@@ -285,7 +285,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
               {(isSubmitting) => {
                 const isPending = isSubmitting || updateMutation.isPending;
                 return (
-                  <ButtonV2
+                  <Button
                     type="submit"
                     form="ai-config-panel-form"
                     variant="primary"
@@ -298,7 +298,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     ) : (
                       t('cases:overview.validate_config')
                     )}
-                  </ButtonV2>
+                  </Button>
                 );
               }}
             </form.Subscribe>

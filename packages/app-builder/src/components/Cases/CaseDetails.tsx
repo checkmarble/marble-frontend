@@ -12,7 +12,7 @@ import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, cn, Markdown } from 'ui-design-system';
+import { Button, cn, Markdown } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseFileButton } from '../CaseManager/shared/CaseDocuments/CaseFileButton';
 import { CaseAlerts } from './CaseAlerts';
@@ -183,10 +183,10 @@ export const CaseDetails = ({
             <div className="flex flex-col justify-start gap-1.5">
               <div className="text-h2 text-grey-primary flex items-center justify-between px-1 font-medium">
                 <span>{t('cases:alerts')}</span>
-                <ButtonV2 variant="secondary" onClick={() => setDrawerContentMode('snooze')}>
+                <Button variant="secondary" onClick={() => setDrawerContentMode('snooze')}>
                   <Icon icon="snooze" className="size-3.5" />
                   {t('cases:decisions.snooze_rules')}
-                </ButtonV2>
+                </Button>
               </div>
               <CaseAlerts
                 selectDecision={selectDecision}
@@ -221,24 +221,24 @@ export const CaseDetails = ({
               <h2 className="text-h2 font-medium">{t('cases:case_detail.ai_review.title')}</h2>
 
               <div className="flex gap-2 justify-end">
-                <ButtonV2
+                <Button
                   variant={caseReview?.reaction === 'ok' ? 'primary' : 'secondary'}
                   onClick={() => handleReviewReaction('ok')}
                 >
                   <Icon icon="thumb-up" className="size-4" />
                   {t('cases:case_detail.ai_review.actions.feedback_ok')}
-                </ButtonV2>
-                <ButtonV2
+                </Button>
+                <Button
                   variant={caseReview?.reaction === 'ko' ? 'primary' : 'secondary'}
                   onClick={() => handleReviewReaction('ko')}
                 >
                   <Icon icon="thumb-down" className="size-4" />
                   {t('cases:case_detail.ai_review.actions.feedback_ko')}
-                </ButtonV2>
-                <ButtonV2 variant="secondary" onClick={() => handleAddCommentReview()}>
+                </Button>
+                <Button variant="secondary" onClick={() => handleAddCommentReview()}>
                   <Icon icon="comment" className="size-4" />
                   {t('cases:case_detail.ai_review.actions.add_to_comment')}
-                </ButtonV2>
+                </Button>
               </div>
             </div>
             <div className="border border-grey-border rounded-lg p-4 bg-surface-card">

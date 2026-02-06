@@ -39,8 +39,8 @@ export function EditListModal({ listId, name, description }: { listId: string; n
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button variant="secondary">
-          <Icon icon="edit-square" className="size-6" />
+        <Button variant="secondary" appearance="stroked">
+          <Icon icon="edit-square" className="size-5" />
           <p>{t('lists:edit_list.button')}</p>
         </Button>
       </Modal.Trigger>
@@ -102,17 +102,17 @@ export function EditListModal({ listId, name, description }: { listId: string; n
                 )}
               </form.Field>
             </div>
-            <div className="flex flex-1 flex-row gap-2">
-              <Modal.Close asChild>
-                <Button className="flex-1" type="button" variant="secondary">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
-              <Button className="flex-1" variant="primary" type="submit" name="editList">
-                {t('common:save')}
-              </Button>
-            </div>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <Button type="button" variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button variant="primary" type="submit" name="editList">
+              {t('common:save')}
+            </Button>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

@@ -237,7 +237,7 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
         onTriggerClick({ decisionIds });
       }}
     >
-      <Button>
+      <Button variant="primary">
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>

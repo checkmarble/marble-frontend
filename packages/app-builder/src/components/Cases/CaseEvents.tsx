@@ -28,7 +28,7 @@ import { Fragment, type RefObject, useEffect, useMemo, useRef, useState } from '
 import { useTranslation } from 'react-i18next';
 import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
-import { ButtonV2, cn } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
@@ -117,10 +117,10 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
         </span>
         <div className="flex items-center gap-2">
           <CaseEventFilters filters={filters} setFilters={setFilters} />
-          <ButtonV2 variant="secondary" onClick={() => setShowAll(!showAll)}>
+          <Button variant="secondary" onClick={() => setShowAll(!showAll)}>
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
             {showAll ? t('cases:investigation.collapse') : t('cases:investigation.expand')}
-          </ButtonV2>
+          </Button>
         </div>
       </div>
       <div

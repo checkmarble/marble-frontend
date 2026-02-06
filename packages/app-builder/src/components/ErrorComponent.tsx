@@ -33,7 +33,9 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
       {subtitle ? <p className="text-grey-primary text-s mb-6">{subtitle}</p> : null}
 
       <div className="mb-1">
-        <Button onClick={() => navigate(-1)}>{t('common:go_back')}</Button>
+        <Button variant="primary" onClick={() => navigate(-1)}>
+          {t('common:go_back')}
+        </Button>
       </div>
       {isDevMode ? <ErrorDetail error={error} /> : null}
     </div>

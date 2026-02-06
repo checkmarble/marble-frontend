@@ -12,7 +12,7 @@ import {
 import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 
 import { AuditEventsTable } from './AuditEventsTable';
 import { type FilterEntry } from './Filters/ActivatedAuditFilterItem';
@@ -106,9 +106,9 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
               .with({ isError: true }, () => (
                 <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
                   <span>{t('common:errors.unknown')}</span>
-                  <ButtonV2 variant="secondary" onClick={() => auditEventsQuery.refetch()}>
+                  <Button variant="secondary" onClick={() => auditEventsQuery.refetch()}>
                     {t('common:retry')}
-                  </ButtonV2>
+                  </Button>
                 </div>
               ))
               .with({ isSuccess: true }, () => <AuditEventsTable auditEvents={auditEvents} apiKeys={apiKeys} />)

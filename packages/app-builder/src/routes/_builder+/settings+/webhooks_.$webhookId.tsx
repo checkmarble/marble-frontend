@@ -60,8 +60,8 @@ export default function WebhookDetail() {
               // Necessary to prevent click events from propagating to the Collapsible
               <span onClick={(e) => e.stopPropagation()}>
                 <UpdateWebhook defaultValue={webhook} webhookStatus={webhookStatus}>
-                  <Button>
-                    <Icon icon="plus" className="size-6" />
+                  <Button variant="primary">
+                    <Icon icon="plus" className="size-5" />
                     {t('settings:webhooks.update_webhook')}
                   </Button>
                 </UpdateWebhook>
@@ -101,8 +101,8 @@ export default function WebhookDetail() {
         </CollapsiblePaper.Container>
         {isDeleteWebhookAvailable ? (
           <DeleteWebhook webhookId={webhook.id}>
-            <Button color="red" className="w-fit">
-              <Icon icon="delete" className="size-6" />
+            <Button variant="destructive" className="w-fit">
+              <Icon icon="delete" className="size-5" />
               {t('settings:webhooks.delete_webhook')}
             </Button>
           </DeleteWebhook>

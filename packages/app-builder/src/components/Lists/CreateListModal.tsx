@@ -36,7 +36,7 @@ export function CreateListModal() {
     <Modal.Root>
       <Modal.Trigger asChild>
         <Button>
-          <Icon icon="plus" className="size-6" />
+          <Icon icon="plus" className="size-5" />
           {t('lists:create_list.title')}
         </Button>
       </Modal.Trigger>
@@ -98,17 +98,17 @@ export function CreateListModal() {
                 )}
               </form.Field>
             </div>
-            <div className="flex flex-1 flex-row gap-2">
-              <Modal.Close asChild>
-                <Button className="flex-1" type="button" variant="secondary">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
-              <Button className="flex-1" variant="primary" type="submit" name="create">
-                {t('lists:create_list.button_accept')}
-              </Button>
-            </div>
           </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <Button type="button" variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button variant="primary" type="submit" name="create">
+              {t('lists:create_list.button_accept')}
+            </Button>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>

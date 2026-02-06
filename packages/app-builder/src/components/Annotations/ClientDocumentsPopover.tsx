@@ -115,7 +115,7 @@ export function ClientDocumentsPopover({
                   </div>
                   <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                     {([canSubmit, isSubmitting]) => (
-                      <Button type="submit" size="icon" variant="primary" disabled={!canSubmit || isSubmitting}>
+                      <Button type="submit" mode="icon" variant="primary" disabled={!canSubmit || isSubmitting}>
                         <Icon
                           icon={isSubmitting ? 'spinner' : 'send'}
                           className={clsx('size-4', { 'animate-spin': isSubmitting })}

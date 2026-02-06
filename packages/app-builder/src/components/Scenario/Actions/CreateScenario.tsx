@@ -17,19 +17,21 @@ import * as Ariakit from '@ariakit/react';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ModalV2, Select } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
   const dataModelQuery = useDataModelQuery();
 
   return (
-    <ModalV2.Root>
-      <ModalV2.Trigger render={children} disabled={!dataModelQuery.isSuccess} />
-      <ModalV2.Content>
+    <Modal.Root>
+      <Modal.Trigger asChild disabled={!dataModelQuery.isSuccess}>
+        {children}
+      </Modal.Trigger>
+      <Modal.Content>
         {dataModelQuery.isSuccess ? <CreateScenarioContent dataModel={dataModelQuery.data.dataModel} /> : null}
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }
 
@@ -56,19 +58,21 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <ModalV2.Title>{t('scenarios:create_scenario.title')}</ModalV2.Title>
+      <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre-wrap">
-            <Trans
-              t={t}
-              i18nKey="scenarios:create_scenario.callout"
-              components={{
-                DocLink: <ExternalLink href={scenarioObjectDocHref} />,
-              }}
-            />
-          </p>
-        </ModalV2.Description>
+        <Modal.Description asChild>
+          <Callout variant="outlined">
+            <p className="whitespace-pre-wrap">
+              <Trans
+                t={t}
+                i18nKey="scenarios:create_scenario.callout"
+                components={{
+                  DocLink: <ExternalLink href={scenarioObjectDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
+        </Modal.Description>
         <div className="flex flex-1 flex-col gap-4">
           <form.Field
             name="name"
@@ -163,15 +167,17 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" type="button" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            {t('common:save')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button className="flex-1" variant="primary" type="submit">
+          {t('common:save')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

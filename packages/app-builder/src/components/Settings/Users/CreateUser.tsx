@@ -44,7 +44,7 @@ export function CreateUser({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button onClick={(e) => e.stopPropagation()}>
-          <Icon icon="plus" className="size-6" />
+          <Icon icon="plus" className="size-5" />
           {t('settings:users.new_user')}
         </Button>
       </Modal.Trigger>
@@ -189,17 +189,17 @@ function CreateUserContent({
             )}
           </form.Field>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button type="button" className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" name="create">
-            {t('settings:users.new_user.create')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button type="button" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button variant="primary" type="submit" name="create">
+          {t('settings:users.new_user.create')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

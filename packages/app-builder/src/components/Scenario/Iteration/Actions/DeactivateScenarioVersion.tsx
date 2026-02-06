@@ -17,8 +17,8 @@ export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenari
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button className="flex-1" variant="primary" color="red">
-          <Icon icon="stop" className="size-6" />
+        <Button className="flex-1" variant="destructive">
+          <Icon icon="stop" className="size-5" />
           {t('scenarios:deployment_modal.deactivate.button')}
         </Button>
       </Modal.Trigger>
@@ -106,18 +106,18 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
           </form.Field>
           <p className="text-grey-disabled text-xs font-medium">{t('scenarios:deployment_modal.deactivate.helper')}</p>
         </div>
-        <div className="flex flex-1 flex-row gap-2">
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" color="red">
-            <Icon icon="stop" className="size-6" />
-            {t('scenarios:deployment_modal.deactivate.button')}
-          </Button>
-        </div>
       </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+            {t('common:cancel')}
+          </Button>
+        </Modal.Close>
+        <Button className="flex-1" variant="destructive" type="submit">
+          <Icon icon="stop" className="size-5" />
+          {t('scenarios:deployment_modal.deactivate.button')}
+        </Button>
+      </Modal.Footer>
     </form>
   );
 }

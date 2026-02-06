@@ -47,18 +47,15 @@ export function SetMyselfUnavailable() {
         </div>
 
         <Modal.Footer>
-          <div className="flex flex-1 flex-row gap-2 p-4">
-            <Modal.Close asChild>
-              <Button variant="secondary" className="flex-1">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="primary" className="flex-1" onClick={setMeUnavailable} disabled={!dateSelected}>
-              <Icon icon="account-circle-off" className="size-4" />
-
-              {t('settings:set_myself_unavailable.validate.button')}
+          <Modal.Close asChild>
+            <Button variant="secondary" appearance="stroked">
+              {t('common:cancel')}
             </Button>
-          </div>
+          </Modal.Close>
+          <Button variant="primary" onClick={setMeUnavailable} disabled={!dateSelected}>
+            <Icon icon="account-circle-off" className="size-4" />
+            {t('settings:set_myself_unavailable.validate.button')}
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

@@ -2,12 +2,12 @@ import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app
 import { getRoute } from '@app-builder/utils/routes';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { type ButtonProps, ButtonV2, cn } from 'ui-design-system';
+import { Button, type ButtonV2Props, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseFileProps = {
   file: { id: string; fileName: string };
-} & ButtonProps;
+} & ButtonV2Props;
 
 export const CaseFileButton = ({ file, className, size }: CaseFileProps) => {
   const { t } = useTranslation(['cases']);
@@ -27,7 +27,7 @@ export const CaseFileButton = ({ file, className, size }: CaseFileProps) => {
   });
 
   return (
-    <ButtonV2
+    <Button
       variant="secondary"
       onClick={() => {
         void downloadCaseFile();
@@ -40,6 +40,6 @@ export const CaseFileButton = ({ file, className, size }: CaseFileProps) => {
         className={cn('size-3.5', { 'animate-spin': downloadingCaseFile })}
       />
       {file.fileName}
-    </ButtonV2>
+    </Button>
   );
 };

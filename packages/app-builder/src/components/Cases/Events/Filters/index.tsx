@@ -7,7 +7,7 @@ import { diff, toggle } from 'radash';
 import { type ComponentProps, type Dispatch, type SetStateAction, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Calendar, Checkbox, type CheckedState, MenuCommand } from 'ui-design-system';
+import { Button, Calendar, Checkbox, type CheckedState, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { casesI18n } from '../../cases-i18n';
@@ -49,14 +49,14 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
   return (
     <div className="flex items-center gap-2">
       {isDirty ? (
-        <ButtonV2 variant="secondary" onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_CATEGORIES_FILTER })}>
+        <Button variant="secondary" onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_CATEGORIES_FILTER })}>
           <Icon icon="cross" className="size-4" />
           {t('cases:case_detail.history.filter_reset')}
-        </ButtonV2>
+        </Button>
       ) : null}
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <ButtonV2 variant="secondary">
+          <Button variant="secondary">
             <Icon icon="add-circle" className="size-3.5" />
             <span>Type</span>
             {filters.types.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
@@ -67,7 +67,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
                 <Badge key={type}>{t(`cases:case_detail.history.event_type_category.${type}`)}</Badge>
               ))
             )}
-          </ButtonV2>
+          </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sideOffset={4} className="max-h-[400px] max-w-[210px]" align="end">
           <MenuCommand.Combobox className="m-1 mb-0 h-8 p-0" iconClasses="size-4" />
@@ -97,7 +97,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
       </MenuCommand.Menu>
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <ButtonV2 variant="secondary">
+          <Button variant="secondary">
             <Icon icon="add-circle" className="size-3.5" />
             <span>Date</span>
             {filters.startDate || filters.endDate ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
@@ -115,7 +115,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
                 })}
               </Badge>
             ) : null}
-          </ButtonV2>
+          </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content className="mt-2">
           <MenuCommand.List className="p-2">

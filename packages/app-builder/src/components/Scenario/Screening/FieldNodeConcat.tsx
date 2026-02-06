@@ -76,8 +76,9 @@ export function FieldNodeConcat({
                           </div>
                           {nodes.length > 1 ? (
                             <Button
-                              size="icon"
-                              variant="tertiary"
+                              mode="icon"
+                              variant="secondary"
+                              appearance="link"
                               onClick={() => setNodes((prev) => splice(prev, index, 1, []))}
                             >
                               <Icon icon="cross" className="size-4" />
@@ -85,8 +86,9 @@ export function FieldNodeConcat({
                           ) : null}
                           {!limit || nodes.length < limit ? (
                             <Button
-                              size="icon"
-                              variant="tertiary"
+                              mode="icon"
+                              variant="secondary"
+                              appearance="link"
                               disabled={nodes.length === limit}
                               onClick={() =>
                                 setNodes((prev) =>

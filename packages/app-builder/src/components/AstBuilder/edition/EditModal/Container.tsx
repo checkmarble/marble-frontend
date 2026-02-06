@@ -32,23 +32,21 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
         <Modal.Title>{props.title}</Modal.Title>
         <div className={cn('flex flex-col gap-4 p-4', className)}>{props.children}</div>
         <Modal.Footer>
-          <div className="flex flex-1 flex-row gap-2 p-4">
-            <Modal.Close asChild>
-              <Button variant="secondary" className="flex-1">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button
-              variant="primary"
-              className="flex-1"
-              disabled={props.saveDisabled}
-              onClick={() => {
-                props.onSave(nodeSharp.value.node as EditableAstNode);
-              }}
-            >
-              {props.saveLabel ?? t('common:save')}
+          <Modal.Close asChild>
+            <Button variant="secondary" appearance="stroked" className="flex-1">
+              {t('common:cancel')}
             </Button>
-          </div>
+          </Modal.Close>
+          <Button
+            variant="primary"
+            className="flex-1"
+            disabled={props.saveDisabled}
+            onClick={() => {
+              props.onSave(nodeSharp.value.node as EditableAstNode);
+            }}
+          >
+            {props.saveLabel ?? t('common:save')}
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

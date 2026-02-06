@@ -3,7 +3,7 @@ import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/pre
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface FavoriteInboxButtonProps {
@@ -27,7 +27,7 @@ export const FavoriteInboxButton: FunctionComponent<FavoriteInboxButtonProps> = 
   };
 
   return (
-    <ButtonV2
+    <Button
       variant={isFavorite ? 'primary' : 'secondary'}
       appearance="stroked"
       size="default"
@@ -44,6 +44,6 @@ export const FavoriteInboxButton: FunctionComponent<FavoriteInboxButtonProps> = 
             : 'size-5 fill-none text-grey-secondary group-hover:text-grey-primary'
         }
       />
-    </ButtonV2>
+    </Button>
   );
 };

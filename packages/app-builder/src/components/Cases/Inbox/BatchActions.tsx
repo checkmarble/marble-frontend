@@ -4,7 +4,7 @@ import { Inbox } from '@app-builder/models/inbox';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Avatar, ButtonV2, MenuCommand } from 'ui-design-system';
+import { Avatar, Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type MassUpdateCasesFn = (
@@ -31,11 +31,11 @@ export const BatchActions = ({ onMassUpdateCases, assignableUsers, inboxes, sele
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <ButtonV2 size="default" variant="secondary" appearance="stroked">
+        <Button size="default" variant="secondary" appearance="stroked">
           <Icon icon="checked" className="size-4" />
           {t('common:actions')}
           <Icon icon="arrow-right" className="size-4" />
-        </ButtonV2>
+        </Button>
       </MenuCommand.Trigger>
       <MenuCommand.Content side="right" align="start" sideOffset={4}>
         <MenuCommand.List>

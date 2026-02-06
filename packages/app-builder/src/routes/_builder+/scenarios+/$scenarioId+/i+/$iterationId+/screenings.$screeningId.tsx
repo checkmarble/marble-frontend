@@ -345,13 +345,13 @@ export default function ScreeningDetail() {
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
                   <DeleteScreeningRule iterationId={iterationId} scenarioId={scenario.id} screeningId={configId}>
-                    <Button color="red" className="w-fit" size="small">
+                    <Button variant="destructive" className="w-fit" size="small">
                       <Icon icon="delete" className="size-4" aria-hidden />
                       {t('common:delete')}
                     </Button>
                   </DeleteScreeningRule>
 
-                  <Button type="submit" className="flex-1" size="small">
+                  <Button variant="primary" type="submit" className="flex-1" size="small">
                     <Icon icon="save" className="size-4" aria-hidden />
                     {t('common:save')}
                   </Button>

@@ -8,7 +8,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, ButtonV2, Modal, Tooltip } from 'ui-design-system';
+import { Button, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId: string; isAdminUser: boolean }) => {
@@ -61,10 +61,10 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
         }
       >
         <Modal.Trigger asChild>
-          <ButtonV2 variant="secondary" disabled={!canEscalate}>
+          <Button variant="secondary" disabled={!canEscalate}>
             <Icon icon="arrow-up" className="size-3.5" aria-hidden />
             {t('cases:escalate-button.label')}
-          </ButtonV2>
+          </Button>
         </Modal.Trigger>
       </Tooltip.Default>
       <Modal.Content>
@@ -73,18 +73,17 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
           <Callout className="text-balance">
             <Trans i18nKey="cases:escalate-case.modal.callout" />
           </Callout>
-          <form onSubmit={handleSubmit(form)} className="flex w-full flex-row gap-2">
+        </div>
+        <form onSubmit={handleSubmit(form)}>
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
+              <Button variant="secondary" appearance="stroked" type="button">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-
-            <Button type="submit" className="flex-1 first-letter:capitalize">
-              {t('cases:escalate-case.modal.submit-button.label')}
-            </Button>
-          </form>
-        </div>
+            <Button type="submit">{t('cases:escalate-case.modal.submit-button.label')}</Button>
+          </Modal.Footer>
+        </form>
       </Modal.Content>
     </Modal.Root>
   );

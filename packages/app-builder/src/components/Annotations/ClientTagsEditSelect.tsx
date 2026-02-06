@@ -108,7 +108,7 @@ export function ClientTagsEditSelect({
             <div className="border-grey-border flex justify-end gap-2 overflow-x-auto border-t p-2">
               <MenuCommand.HeadlessItem>
                 {isSubmitting ? (
-                  <Button size="icon" type="submit" disabled>
+                  <Button mode="icon" type="submit" disabled>
                     <Icon icon="spinner" className="size-4 animate-spin" />
                   </Button>
                 ) : (

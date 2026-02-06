@@ -10,7 +10,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { toggle } from 'radash';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function AddComment({ caseId }: { caseId: string }) {
@@ -64,9 +64,9 @@ export function AddComment({ caseId }: { caseId: string }) {
             <div>
               <input {...getInputProps()} />
               <div className="flex items-center gap-2">
-                <ButtonV2 type="button" variant="secondary" mode="icon" {...getRootProps()}>
+                <Button type="button" variant="secondary" mode="icon" {...getRootProps()}>
                   <Icon icon="attachment" className="text-grey-secondary size-3.5" />
-                </ButtonV2>
+                </Button>
                 {field.state.value.map((file) => (
                   <div
                     key={file.name}
@@ -91,7 +91,7 @@ export function AddComment({ caseId }: { caseId: string }) {
       </div>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitSuccessful]}>
         {([canSubmit, isSubmitSuccessful]) => (
-          <ButtonV2
+          <Button
             type="submit"
             variant="primary"
             mode="icon"
@@ -103,7 +103,7 @@ export function AddComment({ caseId }: { caseId: string }) {
             ) : (
               <Icon icon="send" className="size-3.5" />
             )}
-          </ButtonV2>
+          </Button>
         )}
       </form.Subscribe>
     </form>

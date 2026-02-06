@@ -14,7 +14,7 @@ import { useCreateNavigationOptionForAstMutation } from '@app-builder/queries/da
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal, Stepper, type StepperStep } from 'ui-design-system';
+import { Button, Modal, Stepper, type StepperStep } from 'ui-design-system';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { type OperandEditModalProps } from '../../EditModal';
@@ -210,27 +210,27 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
         <Modal.Footer>
           <div className="flex gap-v2-sm justify-end p-v2-md">
             {currentStep > 1 ? (
-              <ButtonV2 variant="secondary" onClick={handleBack}>
+              <Button variant="secondary" onClick={handleBack}>
                 {t('scenarios:monitoring_list_check.back')}
-              </ButtonV2>
+              </Button>
             ) : (
               <Modal.Close asChild>
-                <ButtonV2 variant="secondary">{t('common:cancel')}</ButtonV2>
+                <Button variant="secondary">{t('common:cancel')}</Button>
               </Modal.Close>
             )}
 
             {isLastStep ? (
-              <ButtonV2
+              <Button
                 variant="primary"
                 disabled={createNavigationOptionMutation.isPending || (currentStep === 3 && !canSaveFromStep3)}
                 onClick={handleSave}
               >
                 {t('scenarios:monitoring_list_check.validate')}
-              </ButtonV2>
+              </Button>
             ) : (
-              <ButtonV2 variant="primary" disabled={!canProceedFromStep1} onClick={handleNext}>
+              <Button variant="primary" disabled={!canProceedFromStep1} onClick={handleNext}>
                 {t('scenarios:monitoring_list_check.next')}
-              </ButtonV2>
+              </Button>
             )}
           </div>
         </Modal.Footer>

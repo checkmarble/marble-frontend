@@ -1,11 +1,11 @@
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, type ButtonProps } from 'ui-design-system';
+import { Button, type ButtonV2Props } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { filtersI18n } from './filters-i18n';
 
-type AddNewFilterButtonProps = Omit<ButtonProps, 'variant' | 'color' | 'ref'>;
+type AddNewFilterButtonProps = Omit<ButtonV2Props, 'variant' | 'color' | 'ref'>;
 
 export const AddNewFilterButton = forwardRef<HTMLButtonElement, AddNewFilterButtonProps>(
   function AddNewFilterButton(props, ref) {

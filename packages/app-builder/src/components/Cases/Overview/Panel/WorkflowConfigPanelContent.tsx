@@ -13,7 +13,7 @@ import { useUpdateInboxWorkflowMutation } from '@app-builder/queries/cases/updat
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { WorkflowInboxCard, type WorkflowSettings } from './WorkflowInboxCard';
@@ -145,7 +145,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
         </PanelContent>
         {readOnly ? null : (
           <PanelFooter>
-            <ButtonV2
+            <Button
               size="default"
               className="w-full justify-center"
               onClick={handleSave}
@@ -156,7 +156,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
               ) : (
                 t('cases:overview.validate_config')
               )}
-            </ButtonV2>
+            </Button>
           </PanelFooter>
         )}
       </PanelContainer>

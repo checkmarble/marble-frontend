@@ -11,7 +11,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, ButtonV2, cn, Modal } from 'ui-design-system';
+import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const CloseCase = ({
@@ -50,94 +50,93 @@ export const CloseCase = ({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize" disabled={disabled}>
+        <Button variant="primary" className="flex-1 first-letter:capitalize" disabled={disabled}>
           <Icon icon="save" className="size-3.5" />
           {t('cases:case.close')}
-        </ButtonV2>
+        </Button>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('cases:case.close')}</Modal.Title>
-        <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
-          {!withoutOutcome ? (
+        <form onSubmit={handleSubmit(form)}>
+          <div className="flex flex-col gap-8 p-8">
+            {!withoutOutcome ? (
+              <form.Field
+                name="outcome"
+                validators={{
+                  onChange: closeCasePayloadSchema.shape.outcome,
+                  onBlur: closeCasePayloadSchema.shape.outcome,
+                }}
+              >
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>{t('cases:case.close.choose_outcome')}</FormLabel>
+                    <RadioGroup
+                      name={field.name}
+                      onValueChange={(v) => field.handleChange(v as FinalOutcome)}
+                      onBlur={field.handleBlur}
+                      className="flex items-center gap-1 rtl:flex-row-reverse"
+                    >
+                      {finalOutcomes.map((s) => {
+                        return (
+                          <RadioGroupItem
+                            key={s}
+                            value={s}
+                            className="border-grey-border data-[state=checked]:border-purple-hover flex items-center justify-center rounded-[20px] border bg-transparent p-1.5"
+                          >
+                            <span
+                              className={cn('rounded-[20px] border border-transparent px-2 py-[3px] text-xs', {
+                                'bg-red-background text-red-primary dark:bg-transparent dark:border-red-primary':
+                                  s === 'confirmed_risk',
+                                'bg-grey-background text-grey-secondary dark:bg-transparent dark:border-grey-placeholder':
+                                  s === 'false_positive',
+                                'bg-yellow-background text-yellow-primary dark:bg-transparent dark:border-yellow-primary':
+                                  s === 'valuable_alert',
+                              })}
+                            >
+                              {match(s)
+                                .with('confirmed_risk', () => t('cases:case.outcome.confirmed_risk'))
+                                .with('valuable_alert', () => t('cases:case.outcome.valuable_alert'))
+                                .with('false_positive', () => t('cases:case.outcome.false_positive'))
+                                .exhaustive()}
+                            </span>
+                          </RadioGroupItem>
+                        );
+                      })}
+                    </RadioGroup>
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+            ) : null}
             <form.Field
-              name="outcome"
+              name="comment"
               validators={{
-                onChange: closeCasePayloadSchema.shape.outcome,
-                onBlur: closeCasePayloadSchema.shape.outcome,
+                onChange: closeCasePayloadSchema.shape.comment,
+                onBlur: closeCasePayloadSchema.shape.comment,
               }}
             >
               {(field) => (
                 <div className="flex flex-col gap-2">
-                  <FormLabel name={field.name}>{t('cases:case.close.choose_outcome')}</FormLabel>
-                  <RadioGroup
+                  <FormTextArea
                     name={field.name}
-                    onValueChange={(v) => field.handleChange(v as FinalOutcome)}
-                    onBlur={field.handleBlur}
-                    className="flex items-center gap-1 rtl:flex-row-reverse"
-                  >
-                    {finalOutcomes.map((s) => {
-                      return (
-                        <RadioGroupItem
-                          key={s}
-                          value={s}
-                          className="border-grey-border data-[state=checked]:border-purple-hover flex items-center justify-center rounded-[20px] border bg-transparent p-1.5"
-                        >
-                          <span
-                            className={cn('rounded-[20px] border border-transparent px-2 py-[3px] text-xs', {
-                              'bg-red-background text-red-primary dark:bg-transparent dark:border-red-primary':
-                                s === 'confirmed_risk',
-                              'bg-grey-background text-grey-secondary dark:bg-transparent dark:border-grey-placeholder':
-                                s === 'false_positive',
-                              'bg-yellow-background text-yellow-primary dark:bg-transparent dark:border-yellow-primary':
-                                s === 'valuable_alert',
-                            })}
-                          >
-                            {match(s)
-                              .with('confirmed_risk', () => t('cases:case.outcome.confirmed_risk'))
-                              .with('valuable_alert', () => t('cases:case.outcome.valuable_alert'))
-                              .with('false_positive', () => t('cases:case.outcome.false_positive'))
-                              .exhaustive()}
-                          </span>
-                        </RadioGroupItem>
-                      );
-                    })}
-                  </RadioGroup>
+                    defaultValue={field.state.value}
+                    placeholder={t('cases:case.close.add_comment_placeholder')}
+                    valid={field.state.meta.errors.length === 0}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                  />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
-          ) : null}
-          <form.Field
-            name="comment"
-            validators={{
-              onChange: closeCasePayloadSchema.shape.comment,
-              onBlur: closeCasePayloadSchema.shape.comment,
-            }}
-          >
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                <FormTextArea
-                  name={field.name}
-                  defaultValue={field.state.value}
-                  placeholder={t('cases:case.close.add_comment_placeholder')}
-                  valid={field.state.meta.errors.length === 0}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
-          <div className="flex w-full flex-row gap-2">
+          </div>
+          <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
+              <Button variant="secondary" appearance="stroked" type="button">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-
-            <Button type="submit" className="flex-1 first-letter:capitalize">
-              {t('common:validate')}
-            </Button>
-          </div>
+            <Button type="submit">{t('common:validate')}</Button>
+          </Modal.Footer>
         </form>
       </Modal.Content>
     </Modal.Root>
