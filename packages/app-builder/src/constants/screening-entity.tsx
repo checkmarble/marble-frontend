@@ -1,4 +1,5 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { HighlightText } from '@app-builder/components/Screenings/HighlightText';
 import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
 
 export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
@@ -227,7 +228,7 @@ export function getSanctionEntityProperties(schema: OpenSanctionEntitySchema) {
   return properties;
 }
 
-export function createPropertyTransformer(ctx: { language: string; formatLanguage: string }) {
+export function createPropertyTransformer(ctx: { language: string; formatLanguage: string; highlightText?: string }) {
   const intlCountry = new Intl.DisplayNames(ctx.language, { type: 'region' });
   const intlDate = new Intl.DateTimeFormat(ctx.formatLanguage, {
     dateStyle: 'short',
@@ -238,7 +239,7 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
     const dataType = propertyMetadata[property].type;
     switch (dataType) {
       case 'string':
-        return <span>{value}</span>;
+        return <HighlightText text={value} highlight={ctx.highlightText} />;
       case 'url':
         return <ExternalLink href={value}>{value}</ExternalLink>;
       case 'country':

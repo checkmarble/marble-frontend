@@ -12,9 +12,10 @@ import { TopicTag } from '../TopicTag';
 interface FreeformMatchCardProps {
   entity: ScreeningMatchPayload;
   defaultOpen?: boolean;
+  searchTerm?: string;
 }
 
-export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ entity, defaultOpen }) => {
+export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ entity, defaultOpen, searchTerm }) => {
   const { t } = useTranslation(screeningsI18n);
 
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
@@ -78,7 +79,7 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
                 </div>
               </div>
             ) : null}
-            <MatchDetails entity={entity} />
+            <MatchDetails entity={entity} highlightText={searchTerm} />
           </div>
         </CollapsiblePrimitive.Content>
       </div>
