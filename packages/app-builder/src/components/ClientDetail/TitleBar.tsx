@@ -1,26 +1,33 @@
-import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
-import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
+import { DataModelObject } from '@app-builder/models';
+import { UseQueryResult, useQueryClient } from '@tanstack/react-query';
+import { Client360Table, GroupedAnnotations } from 'marble-api/generated/marblecore-api';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, Tag } from 'ui-design-system';
+import { Button, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { ClientTagsEditSelect } from '../Annotations/ClientTagsEditSelect';
+import { ClientTagsList } from '../Annotations/ClientTagsList';
 import { Spinner } from '../Spinner';
 
 type TitleBarProps = {
   objectType: string;
   objectId: string;
+  objectDetails: DataModelObject;
+  annotationsQuery: UseQueryResult<{ annotations: GroupedAnnotations }, Error>;
+  metadata: Client360Table;
 };
 
-export const TitleBar = ({ objectType, objectId }: TitleBarProps) => {
+export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery, metadata }: TitleBarProps) => {
   const { t } = useTranslation(['common']);
-  const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
-  const { orgObjectTags } = useOrganizationObjectTags();
+  const [editTagsOpen, setEditTagsOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   return (
     <div className="flex gap-v2-md items-center">
       <div className="flex gap-v2-xs items-center">
-        <h1 className="text-h1 font-semibold">Studio Nomade's informations</h1>
-        <Tag color="grey">Companies</Tag>
+        <h1 className="text-h1 font-semibold">{objectDetails.data[metadata.caption_field] as string}'s informations</h1>
+        <Tag color="grey">{metadata.alias ?? metadata.name}</Tag>
       </div>
       <div className="w-px self-stretch bg-grey-border" />
       <div className="flex gap-v2-xs items-center">
@@ -29,33 +36,47 @@ export const TitleBar = ({ objectType, objectId }: TitleBarProps) => {
           .with({ isError: true }, () => (
             <>
               <span>{t('common:generic_fetch_data_error')}</span>
-              <ButtonV2 variant="secondary" onClick={() => annotationsQuery.refetch()}>
+              <Button variant="secondary" onClick={() => annotationsQuery.refetch()}>
                 {t('common:retry')}
-              </ButtonV2>
+              </Button>
             </>
           ))
           .with({ isSuccess: true }, ({ data: { annotations } }) => {
-            const tagAnnotations = annotations.tags;
-            if (tagAnnotations.length === 0) {
-              return null;
-            }
-            console.log(tagAnnotations);
-            console.log(orgObjectTags);
+            const tagsAnnotations = annotations.tags;
 
-            return tagAnnotations.map((tagAnnotation) => {
-              const tag = orgObjectTags.find((t) => t.id === tagAnnotation.payload.tag_id);
-              console.log('found', tag);
-              if (!tag) return null;
-
-              return <Tag key={tag.id}>{tag.name}</Tag>;
-            });
+            return (
+              <>
+                {tagsAnnotations.length > 0 ? (
+                  <div>
+                    <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
+                  </div>
+                ) : (
+                  <span className="text-grey-secondary text-small">{t('common:no_data_to_display')}</span>
+                )}
+                <MenuCommand.Menu persistOnSelect open={editTagsOpen} onOpenChange={setEditTagsOpen}>
+                  <MenuCommand.Trigger>
+                    <Button type="button" mode="icon" variant="secondary">
+                      <Icon icon="edit-square" className="size-3.5" />
+                    </Button>
+                  </MenuCommand.Trigger>
+                  <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-[340px]">
+                    <ClientTagsEditSelect
+                      tableName={objectType}
+                      objectId={objectId}
+                      annotations={tagsAnnotations}
+                      onAnnotateSuccess={() => {
+                        setEditTagsOpen(false);
+                        queryClient.invalidateQueries({ queryKey: ['annotations', objectType, objectId] });
+                      }}
+                    />
+                  </MenuCommand.Content>
+                </MenuCommand.Menu>
+              </>
+            );
           })
           .exhaustive()}
-        <ButtonV2 variant="secondary" mode="icon">
-          <Icon icon="edit-square" className="size-4" />
-        </ButtonV2>
       </div>
-      <div className="w-px self-stretch bg-grey-border" />
+      {/* <div className="w-px self-stretch bg-grey-border" /> */}
     </div>
   );
 };

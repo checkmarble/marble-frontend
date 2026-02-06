@@ -67,7 +67,7 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UpdateTableBody'
+            $ref: '#/components/schemas/UpdateTableBodyDto'
       required: true
     security:
       - bearerAuth: []
@@ -779,10 +779,17 @@ components:
           type: string
         ftm_entity:
           $ref: '#/components/schemas/FtmEntity'
-    UpdateTableBody:
+    UpdateTableBodyDto:
       type: object
       properties:
         description:
+          type: string
+        semantic_type:
+          type: string
+          enum: [person, company]
+        caption_field:
+          type: string
+        alias:
           type: string
         ftm_entity:
           $ref: '#/components/schemas/FtmEntity'

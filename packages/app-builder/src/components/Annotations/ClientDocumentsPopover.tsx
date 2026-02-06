@@ -16,10 +16,10 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 type ClientDocumentsPopoverProps = {
-  caseId: string;
+  caseId?: string;
   tableName: string;
   objectId: string;
-  documents: FileAnnotation[];
+  documents?: FileAnnotation[];
   onAnnotateSuccess?: () => void;
 };
 
@@ -129,7 +129,7 @@ export function ClientDocumentsPopover({
           )}
         </form.Field>
       </form>
-      {documents.length > 0 ? (
+      {documents && documents.length > 0 ? (
         <>
           <div className="bg-grey-border h-px w-full" />
           <div className="flex flex-col gap-1 overflow-y-scroll px-2 py-1">

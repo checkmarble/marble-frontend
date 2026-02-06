@@ -15,6 +15,7 @@ import {
   adaptPivot,
   adaptSetDataModelTableOptionBodyDto,
   adaptUpdateFieldDto,
+  adaptUpdateTableBodyDto,
   type ClientDataListRequestBody,
   type ClientDataListResponse,
   type CreateAnnotationBody,
@@ -30,7 +31,9 @@ import {
   type Pivot,
   type SetDataModelTableOptionsBody,
   type UpdateFieldInput,
+  UpdateTableBody,
 } from '@app-builder/models';
+import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { GroupedAnnotations, type OpenApiSpec } from 'marble-api';
 
@@ -38,11 +41,13 @@ export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
   getOpenApiSpec(): Promise<OpenApiSpec>;
   getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
+  patchDataModelTable(tableId: string, body: UpdateTableBody): Promise<void>;
   postDataModelTableField(tableId: string, createFieldInput: CreateFieldInput): Promise<void>;
   patchDataModelField(tableId: string, updateFieldInput: UpdateFieldInput): Promise<void>;
   listPivots(args: { tableId?: string }): Promise<Pivot[]>;
   createPivot(pivot: CreatePivotInput): Promise<Pivot>;
   getIngestedObject(tableName: string, objectId: string): Promise<DataModelObject>;
+  getCasesForObject(objectType: string, objectId: string): Promise<Case[]>;
   listClientObjects(args: { tableName: string; body: ClientDataListRequestBody }): Promise<ClientDataListResponse>;
   createNavigationOption(tableId: string, options: CreateNavigationOption): Promise<void>;
   getDataModelTableOptions(tableId: string): Promise<DataModelTableOptions>;
@@ -75,6 +80,9 @@ export function makeGetDataModelRepository() {
     getOpenApiSpecOfVersion: async (version: string) => {
       return marbleCoreApiClient.getDataModelOpenApiOfVersion(version);
     },
+    patchDataModelTable: async (tableId, body) => {
+      await marbleCoreApiClient.patchDataModelTable(tableId, adaptUpdateTableBodyDto(body));
+    },
     postDataModelTableField: async (tableId, createFieldInput) => {
       await marbleCoreApiClient.postDataModelTableField(tableId, adaptCreateTableFieldDto(createFieldInput));
     },
@@ -95,6 +103,9 @@ export function makeGetDataModelRepository() {
     },
     getIngestedObject: async (tableName, objectId) => {
       return adaptDataModelObject(await marbleCoreApiClient.getIngestedObject(tableName, objectId));
+    },
+    getCasesForObject: async (objectType, objectId) => {
+      return (await marbleCoreApiClient.getCasesForObject(objectType, objectId)).map(adaptCase);
     },
     listClientObjects: async (params) => {
       return adaptClientDataListResponse(

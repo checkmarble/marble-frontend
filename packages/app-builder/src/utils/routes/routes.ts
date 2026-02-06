@@ -531,6 +531,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/$caseId+/enrich-kyc.ts"
       },
       {
+        "id": "routes/ressources+/cases+/$caseId+/get-name",
+        "path": "ressources/cases/:caseId/get-name",
+        "file": "routes/ressources+/cases+/$caseId+/get-name.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments",
         "path": "ressources/cases/:caseId/review/:reviewId/add-to-case-comments",
         "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments.tsx"
@@ -697,6 +702,16 @@ export const routes = [
         "file": "routes/ressources+/cases+/update-inbox-workflow.tsx"
       },
       {
+        "id": "routes/ressources+/client-360+/add-configuration",
+        "path": "ressources/client-360/add-configuration",
+        "file": "routes/ressources+/client-360+/add-configuration.tsx"
+      },
+      {
+        "id": "routes/ressources+/client-360+/search",
+        "path": "ressources/client-360/search",
+        "file": "routes/ressources+/client-360+/search.tsx"
+      },
+      {
         "id": "routes/ressources+/continuous-screening+/configuration.$stableId",
         "path": "ressources/continuous-screening/configuration/:stableId",
         "file": "routes/ressources+/continuous-screening+/configuration.$stableId.tsx"
@@ -740,6 +755,11 @@ export const routes = [
         "id": "routes/ressources+/data+/$tableName.list-objects",
         "path": "ressources/data/:tableName/list-objects",
         "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/cases.$objectType.$objectId",
+        "path": "ressources/data/cases/:objectType/:objectId",
+        "file": "routes/ressources+/data+/cases.$objectType.$objectId.tsx"
       },
       {
         "id": "routes/ressources+/data+/create-annotation",

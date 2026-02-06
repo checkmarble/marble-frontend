@@ -15,6 +15,7 @@ interface TagSelectorProps {
   onOpenChange?: (open: boolean) => void;
   /** Maximum number of tags to display inline. Additional tags show as "+X" */
   maxVisibleTags?: number;
+  tagList?: Tag[];
 }
 
 export function TagSelector({
@@ -22,27 +23,30 @@ export function TagSelector({
   onSelectedTagIdsChange,
   onOpenChange,
   maxVisibleTags,
+  tagList,
 }: TagSelectorProps) {
   const { t } = useTranslation(['workflows', 'common']);
   const { orgTags } = useOrganizationTags();
 
+  const tags = tagList ?? orgTags;
+
   const formattedTags = useMemo(
     () =>
-      orgTags.reduce(
+      tags.reduce(
         (acc, curr) => {
           acc[curr.id] = pick(curr, ['color', 'id', 'name']);
           return acc;
         },
         {} as Record<string, SimpleTag>,
       ),
-    [orgTags],
+    [tags],
   );
 
   const handleToggleTag = (tagId: string) => {
     onSelectedTagIdsChange(toggle(selectedTagIds, tagId));
   };
 
-  if (orgTags.length === 0) {
+  if (tags.length === 0) {
     return (
       <Button variant="secondary" disabled>
         <span className="text-grey-secondary text-xs">{t('workflows:action.tags.no_tags')}</span>
@@ -68,7 +72,7 @@ export function TagSelector({
         <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom" align="end">
           <MenuCommand.Combobox placeholder={t('workflows:action.tags.search_placeholder')} />
           <MenuCommand.List>
-            {orgTags.map(({ id: tagId }) => (
+            {tags.map(({ id: tagId }) => (
               <MenuCommand.Item
                 key={tagId}
                 value={formattedTags[tagId]!.name}

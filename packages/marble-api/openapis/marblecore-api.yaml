@@ -52,6 +52,12 @@ servers:
   - url: "http://localhost:8080"
     description: Local devlopment server
 paths:
+  # CLIENT 360
+  /client360/tables:
+    $ref: ./marblecore-api/client-360.yml#/~1client360~1tables
+  /client360/search:
+    $ref: ./marblecore-api/client-360.yml#/~1client360~1search
+
   # AUTHORIZATION
 
   /token:
@@ -151,6 +157,8 @@ paths:
     $ref: ./marblecore-api/ingestion.yml#/~1ingestion~1{objectType}~1upload-logs
   /client_data/{tableName}/{objectId}:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1{objectId}
+  /client_data/{object_type}/{object_id}/cases:
+    $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{objectType}~1{objectId}~1cases
   /client_data/{tableName}/list:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1list
 

@@ -1,3 +1,4 @@
+import { useGetCaseNameQuery } from '@app-builder/queries/cases/get-name';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -6,9 +7,12 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { formatDistanceToNow } from 'date-fns';
+import { FileEntityAnnotationDto } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ButtonV2, CtaV2ClassName, useFormatLanguage } from 'ui-design-system';
+import { Button, CtaV2ClassName, useFormatLanguage } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+import { PanelContainer, usePanel } from '../Panel';
 import { Spinner } from '../Spinner';
 
 type DocumentsListProps = {
@@ -21,47 +25,100 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const users = useOrganizationUsers();
   const language = useFormatLanguage();
+  const { openPanel } = usePanel();
+
+  const fetchFile = async (endpoint: string) => {
+    const response = await fetch(endpoint);
+    if (response.ok) {
+      return (await response.json()).url;
+    }
+    return null;
+  };
+
+  const onClickFile = async (annotationId: string, file: FileEntityAnnotationDto['payload']['files'][number]) => {
+    const fileEndpoint = getRoute('/ressources/annotations/download-file/:annotationId/:fileId', {
+      annotationId,
+      fileId: file.id,
+    });
+
+    const contentType = file.content_type;
+    if (contentType?.startsWith('image/')) {
+      const url = await fetchFile(fileEndpoint);
+      if (!url) {
+        return;
+      }
+
+      openPanel(
+        <PanelContainer size="xxl">
+          <img src={url} />
+        </PanelContainer>,
+      );
+    } else if (contentType?.startsWith('application/pdf')) {
+      const url = await fetchFile(fileEndpoint);
+      if (!url) {
+        return;
+      }
+
+      console.log(`the link is: ${url}`);
+      // window.open(url, '_blank');
+    } else {
+      console.log('other');
+      return;
+    }
+  };
 
   return match(annotationsQuery)
     .with({ isPending: true }, () => (
-      <div className="h-20 flex items-center justify-center">
+      <div className="h-20 flex items-center justify-center col-span-full">
         <Spinner className="size-6" />
       </div>
     ))
     .with({ isError: true }, () => (
-      <div className="h-20 flex items-center justify-center">
+      <div className="h-20 flex items-center justify-center col-span-full">
         <span className="text-center">{t('common:generic_fetch_data_error')}</span>
-        <ButtonV2 variant="secondary" onClick={() => annotationsQuery.refetch()}>
+        <Button variant="secondary" onClick={() => annotationsQuery.refetch()}>
           {t('common:retry')}
-        </ButtonV2>
+        </Button>
       </div>
     ))
     .with({ isSuccess: true }, ({ data: { annotations } }) => {
       const documents = annotations.files;
       if (documents.length === 0) {
         return (
-          <div className="h-20 flex justify-center">
-            <span className="text-center">{t('common:no_documents')}</span>
+          <div className="flex col-span-full">
+            <span>{t('common:no_data_to_display')}</span>
           </div>
         );
       }
       return documents.map((document) => {
         const annotatedBy = users.getOrgUserById(document.annotated_by);
-        const caseLink = document.case_id
-          ? getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(document.case_id) })
-          : null;
 
         return document.payload.files.map((file) => (
-          <div key={file.id} className="flex gap-v2-sm items-center">
+          <button
+            key={file.id}
+            className="flex gap-v2-sm items-center text-left cursor-pointer"
+            onClick={() => onClickFile(document.id, file)}
+          >
             <div
-              className="size-20 border border-grey-border rounded-v2-s bg-cover"
-              style={{ backgroundImage: file.thumbnail_url != '' ? `url(${file.thumbnail_url})` : 'none' }}
-            />
-            <div className="flex flex-col gap-v2-xs text-tiny text-grey-secondary">
-              <div className="font-medium text-default text-grey-primary">{file.filename}</div>
-              {caseLink ? (
-                <Link to={CtaV2ClassName({ variant: 'primary', appearance: 'link' })}>[Case name]</Link>
-              ) : null}
+              className="size-20 border border-grey-border rounded-v2-s bg-cover shrink-0 relative bg-grey-background-light grid place-items-center"
+              style={{ backgroundImage: file.thumbnail_url ? `url(${file.thumbnail_url})` : 'none' }}
+            >
+              {file.thumbnail_url && file.content_type !== 'text/plain' ? null : (
+                <Icon icon="image-placeholder" className="size-4" />
+              )}
+              <div
+                className={CtaV2ClassName({
+                  variant: 'secondary',
+                  mode: 'icon',
+                  className: 'absolute top-v2-xs right-v2-xs',
+                })}
+              >
+                <Icon icon={file.content_type?.startsWith('image/') ? 'eye' : 'download'} className="size-3.5" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-v2-xs text-tiny text-grey-secondary truncate">
+              <div className="font-medium text-default text-grey-primary truncate">{file.filename}</div>
+              {document.case_id ? <CaseLink caseId={document.case_id} /> : null}
               <span>by @{annotatedBy ? getFullName(annotatedBy) : 'Unknown'}</span>
               <span>
                 {formatDistanceToNow(new Date(document.created_at), {
@@ -70,9 +127,20 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
                 })}
               </span>
             </div>
-          </div>
+          </button>
         ));
       });
     })
     .exhaustive();
+};
+
+const CaseLink = ({ caseId }: { caseId: string }) => {
+  const link = getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseId) });
+  const caseQuery = useGetCaseNameQuery(caseId);
+
+  return (
+    <Link to={link} className="text-purple-primary hover:text-purple-hover truncate">
+      {caseQuery.isPending ? <Spinner className="size-4" /> : caseQuery.isSuccess ? caseQuery.data.name : 'Unknown'}
+    </Link>
+  );
 };
