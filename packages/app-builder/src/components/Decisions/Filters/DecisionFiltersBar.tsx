@@ -11,6 +11,20 @@ import { DecisionFiltersMenu, FiltersMenuContextProvider } from './DecisionFilte
 import { FilterDetail } from './FilterDetail';
 import { type DecisionFilterName, getFilterIcon, getFilterTKey } from './filters';
 
+function getFilterDisplayValue(
+  filterName: DecisionFilterName,
+  filterValues: ReturnType<typeof useDecisionFiltersContext>['filterValues'],
+): string | undefined {
+  switch (filterName) {
+    case 'triggerObjectId':
+      return filterValues.triggerObjectId;
+    case 'pivotValue':
+      return filterValues.pivotValue;
+    default:
+      return undefined;
+  }
+}
+
 function FilterPopoverWithContext({
   filterName,
   onDecisionFilterClose,
@@ -21,6 +35,7 @@ function FilterPopoverWithContext({
   clearFilter: (filterName: DecisionFilterName) => void;
 }) {
   const { t } = useTranslation(decisionsI18n);
+  const { filterValues } = useDecisionFiltersContext();
   const [open, setOpen] = useState(false);
 
   const onOpenChange = useCallback(
@@ -42,13 +57,17 @@ function FilterPopoverWithContext({
 
   const icon = getFilterIcon(filterName);
   const tKey = getFilterTKey(filterName);
+  const displayValue = getFilterDisplayValue(filterName, filterValues);
 
   return (
     <FilterPopover.Root open={open} onOpenChange={onOpenChange}>
       <FilterItem.Root>
         <FilterItem.Trigger>
           <Icon icon={icon} className="size-5" />
-          <span className="text-s font-semibold first-letter:capitalize">{t(tKey)}</span>
+          <span className="text-s font-semibold first-letter:capitalize">
+            {t(tKey)}
+            {displayValue ? <span className="text-grey-primary font-normal">: {displayValue}</span> : null}
+          </span>
         </FilterItem.Trigger>
         <FilterItem.Clear
           onClick={() => {
