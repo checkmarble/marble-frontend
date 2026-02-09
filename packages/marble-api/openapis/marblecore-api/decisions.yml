@@ -82,6 +82,14 @@
           type: array
           items:
             type: string
+      - name: trigger_object_id
+        description: trigger object IDs (object_id field from the trigger object) used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
       # Pagination and sorting parameters
       - $ref: 'components.yml#/parameters/limit'
       - $ref: 'components.yml#/parameters/offset_id'

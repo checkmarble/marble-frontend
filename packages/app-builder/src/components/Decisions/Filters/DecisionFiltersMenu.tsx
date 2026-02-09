@@ -1,5 +1,6 @@
 import { FiltersDropdownMenu } from '@app-builder/components/Filters';
-import { forwardRef, useCallback, useState } from 'react';
+import * as React from 'react';
+import { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
@@ -7,6 +8,22 @@ import { decisionsI18n } from '../decisions-i18n';
 import { useDecisionFiltersContext } from './DecisionFiltersContext';
 import { FilterDetail } from './FilterDetail';
 import { type DecisionFilterName, getFilterIcon, getFilterTKey } from './filters';
+
+interface FiltersMenuContextValue {
+  closeMenu: () => void;
+}
+
+const FiltersMenuContext = React.createContext<FiltersMenuContextValue>({
+  closeMenu: () => {
+    // Default no-op, will be overridden by Provider
+  },
+});
+
+export const FiltersMenuContextProvider = FiltersMenuContext.Provider;
+
+export function useFiltersMenuContext() {
+  return React.useContext(FiltersMenuContext);
+}
 
 export function DecisionFiltersMenu({
   children,
@@ -16,21 +33,28 @@ export function DecisionFiltersMenu({
   filterNames: readonly DecisionFilterName[];
 }) {
   const { onDecisionFilterClose } = useDecisionFiltersContext();
+  const [open, setOpen] = useState(false);
 
   const onOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
+    (newOpen: boolean) => {
+      setOpen(newOpen);
+      if (!newOpen) {
         onDecisionFilterClose();
       }
     },
     [onDecisionFilterClose],
   );
 
+  const closeMenu = useCallback(() => {
+    setOpen(false);
+    onDecisionFilterClose();
+  }, [onDecisionFilterClose]);
+
   return (
-    <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
+    <FiltersDropdownMenu.Root open={open} onOpenChange={onOpenChange}>
       <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
-        <FilterContent filterNames={filterNames} />
+        <FilterContent filterNames={filterNames} closeMenu={closeMenu} />
       </FiltersDropdownMenu.Content>
     </FiltersDropdownMenu.Root>
   );
@@ -55,11 +79,22 @@ const FiltersMenuItem = forwardRef<
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({ filterNames }: { filterNames: readonly DecisionFilterName[] }) {
+function FilterContent({
+  filterNames,
+  closeMenu,
+}: {
+  filterNames: readonly DecisionFilterName[];
+  closeMenu: () => void;
+}) {
   const [selectedFilter, setSelectedFilter] = useState<DecisionFilterName>();
+  const contextValue = useMemo(() => ({ closeMenu }), [closeMenu]);
 
   if (selectedFilter) {
-    return <FilterDetail filterName={selectedFilter} />;
+    return (
+      <FiltersMenuContext.Provider value={contextValue}>
+        <FilterDetail filterName={selectedFilter} />
+      </FiltersMenuContext.Provider>
+    );
   }
 
   return (
