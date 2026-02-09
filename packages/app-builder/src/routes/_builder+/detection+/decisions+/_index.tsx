@@ -45,6 +45,7 @@ export const buildQueryParams = (filters: DecisionFilters, offsetId: string | nu
   return {
     outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
     triggerObject: filters.triggerObject ?? [],
+    triggerObjectId: filters.triggerObjectId || null,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
         ? {

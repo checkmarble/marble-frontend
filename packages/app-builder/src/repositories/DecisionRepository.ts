@@ -44,6 +44,7 @@ export type DecisionFilters = {
   reviewStatus?: ReviewStatus[];
   scheduledExecutionId?: string[];
   triggerObject?: string[];
+  triggerObjectId?: string;
 };
 
 export type DecisionFiltersWithPagination = FiltersWithPagination<DecisionFilters>;
@@ -69,6 +70,7 @@ export function makeGetDecisionRepository() {
       reviewStatus,
       scheduledExecutionId,
       triggerObject,
+      triggerObjectId,
       ...rest
     }) => {
       let startDate, endDate: string | undefined;
@@ -93,6 +95,7 @@ export function makeGetDecisionRepository() {
         caseInboxId,
         scheduledExecutionId,
         triggerObject,
+        triggerObjectId: triggerObjectId ? [triggerObjectId] : undefined,
         startDate,
         reviewStatus,
         limit: defaultPaginationSize,
