@@ -89,9 +89,7 @@ export function EditField({
       }
     },
     validators: {
-      onChangeAsync: editFieldPayloadSchema,
-      onBlurAsync: editFieldPayloadSchema,
-      onSubmitAsync: editFieldPayloadSchema,
+      onSubmit: editFieldPayloadSchema,
     },
   });
 
@@ -140,12 +138,7 @@ export function EditField({
                   </div>
                 )}
               </form.Field>
-              <form.Field
-                name="required"
-                validators={{
-                  onChange: editFieldPayloadSchema.shape.required,
-                }}
-              >
+              <form.Field name="required">
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('data:create_field.option_required')}</FormLabel>

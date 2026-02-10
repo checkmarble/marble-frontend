@@ -113,12 +113,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       <Modal.Title>{t('data:create_field.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
-          <form.Field
-            name="name"
-            validators={{
-              onChange: createFieldValueSchema.shape.name,
-            }}
-          >
+          <form.Field name="name">
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('data:field_name')}</FormLabel>
@@ -135,12 +130,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               </div>
             )}
           </form.Field>
-          <form.Field
-            name="description"
-            validators={{
-              onChange: createFieldValueSchema.shape.description,
-            }}
-          >
+          <form.Field name="description">
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('data:description')}</FormLabel>
@@ -158,12 +148,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             )}
           </form.Field>
           <div className="flex flex-row justify-around gap-2">
-            <form.Field
-              name="required"
-              validators={{
-                onChange: createFieldValueSchema.shape.required,
-              }}
-            >
+            <form.Field name="required">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_field.option_required')}</FormLabel>
@@ -186,12 +171,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                 </div>
               )}
             </form.Field>
-            <form.Field
-              name="type"
-              validators={{
-                onChange: createFieldValueSchema.shape.type,
-              }}
-            >
+            <form.Field name="type">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_field.type')}</FormLabel>
@@ -219,12 +199,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             <span className="text-red-primary text-s">{t('data:create_field.option_required_warning')}</span>
           ) : null}
           {EnumDataTypes.includes(selectedType) ? (
-            <form.Field
-              name="isEnum"
-              validators={{
-                onChange: createFieldValueSchema.shape.isEnum,
-              }}
-            >
+            <form.Field name="isEnum">
               {(field) => (
                 <div className="flex flex-row items-center gap-4">
                   <Checkbox
@@ -245,12 +220,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             </form.Field>
           ) : null}
           {UniqueDataTypes.includes(selectedType) ? (
-            <form.Field
-              name="isUnique"
-              validators={{
-                onChange: createFieldValueSchema.shape.isUnique,
-              }}
-            >
+            <form.Field name="isUnique">
               {(field) => (
                 <div className="flex flex-row items-center gap-4">
                   <Checkbox
