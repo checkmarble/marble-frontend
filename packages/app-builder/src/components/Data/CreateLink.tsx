@@ -96,13 +96,7 @@ function CreateLinkContent({
       <Modal.Title>{t('data:create_link.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
-          <form.Field
-            name="name"
-            validators={{
-              onBlur: createLinkValueSchema.shape.name,
-              onChange: createLinkValueSchema.shape.name,
-            }}
-          >
+          <form.Field name="name">
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('data:link_name')}</FormLabel>
@@ -121,13 +115,7 @@ function CreateLinkContent({
           </form.Field>
 
           <div className="flex flex-row justify-around gap-2">
-            <form.Field
-              name="childTableId"
-              validators={{
-                onBlur: createLinkValueSchema.shape.childTableId,
-                onChange: createLinkValueSchema.shape.childTableId,
-              }}
-            >
+            <form.Field name="childTableId">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.child_table')}</FormLabel>
@@ -149,13 +137,7 @@ function CreateLinkContent({
                 </div>
               )}
             </form.Field>
-            <form.Field
-              name="childFieldId"
-              validators={{
-                onBlur: createLinkValueSchema.shape.childFieldId,
-                onChange: createLinkValueSchema.shape.childFieldId,
-              }}
-            >
+            <form.Field name="childFieldId">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.child_field')}</FormLabel>
@@ -179,13 +161,7 @@ function CreateLinkContent({
             </form.Field>
           </div>
           <div className="flex flex-row justify-around gap-2">
-            <form.Field
-              name="parentTableId"
-              validators={{
-                onBlur: createLinkValueSchema.shape.parentTableId,
-                onChange: createLinkValueSchema.shape.parentTableId,
-              }}
-            >
+            <form.Field name="parentTableId">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.parent_table')}</FormLabel>
@@ -209,13 +185,7 @@ function CreateLinkContent({
                 </div>
               )}
             </form.Field>
-            <form.Field
-              name="parentFieldId"
-              validators={{
-                onBlur: createLinkValueSchema.shape.parentFieldId,
-                onChange: createLinkValueSchema.shape.parentFieldId,
-              }}
-            >
+            <form.Field name="parentFieldId">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.parent_field')}</FormLabel>
