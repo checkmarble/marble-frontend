@@ -27,7 +27,6 @@ export const loader = createServerFn([authMiddleware], async function casesOverv
     entitlements: {
       autoAssignment: entitlements.autoAssignment,
       aiAssist: entitlements.caseAiAssist,
-      workflows: entitlements.workflows,
     },
   };
 });
