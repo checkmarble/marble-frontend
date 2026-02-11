@@ -23,7 +23,7 @@ import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, type ScreeningOutcome } from '@app-builder/models/outcome';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { isAccessible } from '@app-builder/services/feature-access';
+import { isAccessible, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
@@ -109,7 +109,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       dataModelRepository.getDataModel(),
       customListsRepository.listCustomLists(),
       screening.listDatasets(),
-      continuousScreening.listConfigurations(),
+      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
     ]);
 
   return {
@@ -274,6 +274,7 @@ export default function ScreeningDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
+    hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
     screeningConfigs: continuousScreeningConfigs,
   };
 

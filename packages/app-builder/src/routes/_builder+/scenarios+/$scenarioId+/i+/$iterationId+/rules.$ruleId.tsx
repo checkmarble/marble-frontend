@@ -16,7 +16,7 @@ import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { hasAnyEntitlement } from '@app-builder/services/feature-access';
+import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -99,7 +99,7 @@ export const loader = createServerFn([authMiddleware], async function ruleLoader
     dataModelRepository.getDataModel(),
     customListsRepository.listCustomLists(),
     scenarioIterationRuleRepository.getRule({ ruleId }),
-    continuousScreening.listConfigurations(),
+    isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
   ]);
 
   return {
@@ -110,6 +110,7 @@ export const loader = createServerFn([authMiddleware], async function ruleLoader
     isAiRuleDescriptionEnabled: context.appConfig.isManagedMarble,
     rule,
     hasValidLicense: hasAnyEntitlement(entitlements),
+    hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
     screeningConfigs,
   };
 });
@@ -180,6 +181,7 @@ export default function RuleDetail() {
     isAiRuleDescriptionEnabled,
     rule,
     hasValidLicense,
+    hasContinuousScreening,
     screeningConfigs,
   } = useLoaderData<typeof loader>();
 
@@ -254,6 +256,7 @@ export default function RuleDetail() {
     triggerObjectType: scenario.triggerObjectType,
     rule,
     hasValidLicense,
+    hasContinuousScreening,
     screeningConfigs,
   };
 
