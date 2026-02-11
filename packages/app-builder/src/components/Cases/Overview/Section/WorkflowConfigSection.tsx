@@ -2,7 +2,7 @@ import { usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
-import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
+import { isAccessible } from '@app-builder/services/feature-access';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -13,23 +13,26 @@ import { ConfigRow } from './ConfigRow';
 
 interface WorkflowConfigSectionProps {
   isGlobalAdmin: boolean;
-  access: FeatureAccessLevelDto;
+  aiAssistAccess: FeatureAccessLevelDto;
   allInboxesMetadata: InboxMetadata[];
 }
 
-export const WorkflowConfigSection = ({ isGlobalAdmin, access, allInboxesMetadata }: WorkflowConfigSectionProps) => {
+export const WorkflowConfigSection = ({
+  isGlobalAdmin,
+  aiAssistAccess,
+  allInboxesMetadata,
+}: WorkflowConfigSectionProps) => {
   const { t } = useTranslation(['cases']);
   const { openPanel } = usePanel();
   const inboxesQuery = useGetInboxesQuery();
 
-  const restricted = isRestricted(access);
-  const hasAccess = isAccessible(access);
+  const aiAssistHasAccess = isAccessible(aiAssistAccess);
 
   const handleOpenEscalationPanel = () => {
     openPanel(<EscalationConditionsPanelContent readOnly={!isGlobalAdmin} allInboxesMetadata={allInboxesMetadata} />);
   };
 
-  const canEditAiReview = hasAccess && isGlobalAdmin;
+  const canEditAiReview = aiAssistHasAccess && isGlobalAdmin;
 
   const handleOpenWorkflowPanel = () => {
     openPanel(<WorkflowConfigPanelContent readOnly={!canEditAiReview} />);
@@ -90,7 +93,7 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access, allInboxesMetadat
               />
               {isGlobalAdmin ? (
                 <ConfigRow
-                  isRestricted={restricted}
+                  isRestricted={!aiAssistHasAccess}
                   canEdit={canEditAiReview}
                   label={t('cases:overview.config.ai_review_trigger')}
                   statusTag={
