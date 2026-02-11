@@ -111,10 +111,7 @@ export function SignInWithEmailAndPassword({
                 valid={field.state.meta.errors.length === 0}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
-                data-1p-ignore={undefined}
-                data-lpignore={undefined}
-                data-bwignore={undefined}
-                data-form-type={undefined}
+                enablePasswordManagers
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
@@ -140,10 +137,7 @@ export function SignInWithEmailAndPassword({
                 valid={field.state.meta.errors.length === 0}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
-                data-1p-ignore={undefined}
-                data-lpignore={undefined}
-                data-bwignore={undefined}
-                data-form-type={undefined}
+                enablePasswordManagers
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
@@ -185,10 +179,7 @@ export const StaticSignInWithEmailAndPassword = ({
             className="w-full"
             valid
             defaultValue={prefilledEmail ?? ''}
-            data-1p-ignore={undefined}
-            data-lpignore={undefined}
-            data-bwignore={undefined}
-            data-form-type={undefined}
+            enablePasswordManagers
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -200,10 +191,7 @@ export const StaticSignInWithEmailAndPassword = ({
             disabled={!hydrated}
             className="w-full"
             valid
-            data-1p-ignore={undefined}
-            data-lpignore={undefined}
-            data-bwignore={undefined}
-            data-form-type={undefined}
+            enablePasswordManagers
           />
         </div>
         <Link className="text-s text-purple-primary underline" to={getRoute('/create-password')}>

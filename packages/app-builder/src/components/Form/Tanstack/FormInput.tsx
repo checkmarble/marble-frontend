@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Input, type InputProps } from 'ui-design-system';
 
 interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
+  enablePasswordManagers?: boolean;
   valid?: boolean;
   type:
     | 'color'
@@ -23,7 +24,7 @@ interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
 }
 
 export const FormInput = React.forwardRef<React.ElementRef<typeof Input>, FormInputProps>(function FormInput(
-  { valid, ...props },
+  { valid, enablePasswordManagers, ...props },
   ref,
 ) {
   return (
@@ -31,10 +32,12 @@ export const FormInput = React.forwardRef<React.ElementRef<typeof Input>, FormIn
       ref={ref}
       id={props.name}
       borderColor={valid ? 'greyfigma-90' : 'redfigma-47'}
-      data-1p-ignore
-      data-lpignore="true"
-      data-bwignore="true"
-      data-form-type="other"
+      {...(!enablePasswordManagers && {
+        'data-1p-ignore': 'true', // 1password
+        'data-lpignore': 'true', // lastpass
+        'data-bwignore': 'true', // bitwarden
+        'data-form-type': 'other', // used by dashlane, tells it to ignore this field for password saving
+      })}
       {...props}
     />
   );
