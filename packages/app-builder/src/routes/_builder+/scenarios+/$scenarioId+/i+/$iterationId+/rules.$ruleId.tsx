@@ -110,6 +110,7 @@ export const loader = createServerFn([authMiddleware], async function ruleLoader
     isAiRuleDescriptionEnabled: context.appConfig.isManagedMarble,
     rule,
     hasValidLicense: hasAnyEntitlement(entitlements),
+    hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
     screeningConfigs,
   };
 });
@@ -180,6 +181,7 @@ export default function RuleDetail() {
     isAiRuleDescriptionEnabled,
     rule,
     hasValidLicense,
+    hasContinuousScreening,
     screeningConfigs,
   } = useLoaderData<typeof loader>();
 
@@ -254,6 +256,7 @@ export default function RuleDetail() {
     triggerObjectType: scenario.triggerObjectType,
     rule,
     hasValidLicense,
+    hasContinuousScreening,
     screeningConfigs,
   };
 

@@ -325,6 +325,7 @@
   "monitoring_list_check.no_objects_under_monitoring": "Aucun objet n'est actuellement sous monitoring.",
   "monitoring_list_check.object_label": "Pour quel objet souhaitez-vous filtrer les alertes de listes réglementaires ?",
   "monitoring_list_check.order_by_label": "Trier par",
+  "monitoring_list_check.premium_callout": "Les alertes de screening sont une fonctionnalité premium. L'accès au screening continu est requis pour enregistrer cette configuration.",
   "monitoring_list_check.select_field": "Sélectionnez un champ...",
   "monitoring_list_check.select_hit_types": "Sélectionnez les types d'alertes...",
   "monitoring_list_check.step_advanced": "Configuration avancée",

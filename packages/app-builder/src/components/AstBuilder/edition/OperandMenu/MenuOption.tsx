@@ -34,10 +34,13 @@ export function MenuOption({
   const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
   const fieldPath = showFieldPath ? getDataAccessorPath(option.astNode) : null;
 
+  const hasContinuousScreening = AstBuilderDataSharpFactory.select((s) => s.data.hasContinuousScreening);
+
   // Check if this is a restricted aggregator option
   const isRestrictedOption =
     isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
-  const showNudge = isRestrictedOption && !hasValidLicense;
+  const isRestrictedClientRisk = option.operandType === 'ClientRisk' && !hasContinuousScreening;
+  const showNudge = (isRestrictedOption && !hasValidLicense) || isRestrictedClientRisk;
 
   return (
     <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>

@@ -274,6 +274,7 @@ export default function ScreeningDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
+    hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
     screeningConfigs: continuousScreeningConfigs,
   };
 

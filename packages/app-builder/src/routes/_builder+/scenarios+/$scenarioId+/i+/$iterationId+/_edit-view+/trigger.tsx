@@ -51,6 +51,7 @@ export const loader = createServerFn([authMiddleware], async function triggerLoa
     customLists,
     triggerObjectType: currentScenario.triggerObjectType,
     hasValidLicense: hasAnyEntitlement(entitlements),
+    hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
     screeningConfigs,
   };
 });

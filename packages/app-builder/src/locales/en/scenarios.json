@@ -325,6 +325,7 @@
   "monitoring_list_check.no_objects_under_monitoring": "No objects are currently under monitoring.",
   "monitoring_list_check.object_label": "For which object do you want to filter on regulatory list hits?",
   "monitoring_list_check.order_by_label": "Order by",
+  "monitoring_list_check.premium_callout": "Screening alerts is a premium feature. Continuous screening access is required to save this configuration.",
   "monitoring_list_check.select_field": "Select field...",
   "monitoring_list_check.select_hit_types": "Select hit types...",
   "monitoring_list_check.step_advanced": "Advanced setups",

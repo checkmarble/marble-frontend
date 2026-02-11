@@ -28,6 +28,7 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
   const { t } = useTranslation(['common', 'scenarios']);
   const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
+  const hasContinuousScreening = AstBuilderDataSharpFactory.select((s) => s.data.hasContinuousScreening);
   const screeningConfigs = AstBuilderDataSharpFactory.select((s) => s.data.screeningConfigs) ?? [];
   const triggerObjectTable = AstBuilderDataSharpFactory.useSharp().computed.triggerObjectTable.value;
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
@@ -179,6 +180,12 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
             </Callout>
           )}
 
+          {!hasContinuousScreening ? (
+            <Callout icon="lock" variant="outlined" color="red">
+              {t('scenarios:monitoring_list_check.premium_callout')}
+            </Callout>
+          ) : null}
+
           {/* Step 1: Object Selection */}
           {currentStep === 1 && (
             <ObjectSelector
@@ -222,13 +229,17 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
             {isLastStep ? (
               <Button
                 variant="primary"
-                disabled={createNavigationOptionMutation.isPending || (currentStep === 3 && !canSaveFromStep3)}
+                disabled={
+                  !hasContinuousScreening ||
+                  createNavigationOptionMutation.isPending ||
+                  (currentStep === 3 && !canSaveFromStep3)
+                }
                 onClick={handleSave}
               >
                 {t('scenarios:monitoring_list_check.validate')}
               </Button>
             ) : (
-              <Button variant="primary" disabled={!canProceedFromStep1} onClick={handleNext}>
+              <Button variant="primary" disabled={!hasContinuousScreening || !canProceedFromStep1} onClick={handleNext}>
                 {t('scenarios:monitoring_list_check.next')}
               </Button>
             )}

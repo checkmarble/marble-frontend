@@ -14,6 +14,7 @@ export type BuilderOptionsResource = {
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
   hasValidLicense?: boolean;
+  hasContinuousScreening?: boolean;
   screeningConfigs: ContinuousScreeningConfig[];
 };
 
@@ -38,6 +39,7 @@ export const loader = createServerFn([authMiddleware], async function builderOpt
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
     hasValidLicense: hasAnyEntitlement(entitlements),
+    hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
     screeningConfigs,
   };
 });
