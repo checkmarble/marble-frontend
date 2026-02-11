@@ -96,6 +96,17 @@ export const ObjectSelector = ({
     onChange(option.tableName, option.path);
   };
 
+  if (objectOptions.length === 0) {
+    return (
+      <div className="flex flex-col gap-2">
+        <label className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.object_label')}</label>
+        <div className="text-s text-grey-secondary">
+          {t('scenarios:monitoring_list_check.no_objects_under_monitoring')}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <label className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.object_label')}</label>

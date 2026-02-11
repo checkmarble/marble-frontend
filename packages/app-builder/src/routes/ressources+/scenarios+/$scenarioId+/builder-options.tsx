@@ -4,7 +4,7 @@ import { type DataModel } from '@app-builder/models';
 import { type DatabaseAccessAstNode, type PayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { hasAnyEntitlement } from '@app-builder/services/feature-access';
+import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { fromParams } from '@app-builder/utils/short-uuid';
 
 export type BuilderOptionsResource = {
@@ -27,7 +27,7 @@ export const loader = createServerFn([authMiddleware], async function builderOpt
     customListsRepository.listCustomLists(),
     dataModelRepository.getDataModel(),
     editor.listAccessors({ scenarioId }),
-    continuousScreening.listConfigurations(),
+    isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
   ]);
 
   return {
