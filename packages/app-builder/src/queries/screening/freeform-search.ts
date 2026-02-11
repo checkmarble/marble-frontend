@@ -21,6 +21,7 @@ export const useFreeformSearchMutation = () => {
 
       const formData = objectToFormData(input, {
         dotsForObjectNotation: true,
+        noAttributesWithArrayNotation: true,
       });
 
       const response = await fetch(getRoute('/ressources/screenings/freeform-search'), {
