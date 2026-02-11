@@ -1,5 +1,5 @@
 import { navigationI18n, SidebarLink } from '@app-builder/components';
-import { LeftSidebar, LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
+import { LeftSidebar, LeftSidebarSharpFactory, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { PanelProvider } from '@app-builder/components/Panel';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
@@ -208,6 +208,9 @@ export default function Builder() {
                             </li>
                           </ul>
                         </nav>
+                        <div className="p-2 pb-4">
+                          <ToggleSidebar />
+                        </div>
                       </LeftSidebar>
 
                       <Outlet />

@@ -50,21 +50,9 @@ export const routes = [
         "file": "routes/_builder+/_layout.tsx",
         "children": [
           {
-            "id": "routes/_builder+/account+/_layout",
+            "id": "routes/_builder+/account",
             "path": "account",
-            "file": "routes/_builder+/account+/_layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/account+/_index",
-                "index": true,
-                "file": "routes/_builder+/account+/_index.tsx"
-              },
-              {
-                "id": "routes/_builder+/account+/profile",
-                "path": "profile",
-                "file": "routes/_builder+/account+/profile.tsx"
-              }
-            ]
+            "file": "routes/_builder+/account.tsx"
           },
           {
             "id": "routes/_builder+/analytics-legacy",
