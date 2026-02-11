@@ -80,13 +80,7 @@ export function CreateInboxContent({
       <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <HiddenInputs redirectRoute={redirectRoutePath} />
-        <form.Field
-          name="name"
-          validators={{
-            onBlur: createInboxPayloadSchema.shape.name,
-            onChange: createInboxPayloadSchema.shape.name,
-          }}
-        >
+        <form.Field name="name">
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name}>{t('settings:inboxes.new_inbox.name')}</FormLabel>

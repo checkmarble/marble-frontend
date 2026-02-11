@@ -27,6 +27,15 @@ export const FormInput = React.forwardRef<React.ElementRef<typeof Input>, FormIn
   ref,
 ) {
   return (
-    <Input ref={ref} id={props.name} borderColor={valid ? 'greyfigma-90' : 'redfigma-47'} data-1p-ignore {...props} />
+    <Input
+      ref={ref}
+      id={props.name}
+      borderColor={valid ? 'greyfigma-90' : 'redfigma-47'}
+      data-1p-ignore
+      data-lpignore="true"
+      data-bwignore="true"
+      data-form-type="other"
+      {...props}
+    />
   );
 });

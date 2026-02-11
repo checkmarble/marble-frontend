@@ -51,13 +51,7 @@ export function CreateListModal() {
           <Modal.Title>{t('lists:create_list.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col gap-4">
-              <form.Field
-                name="name"
-                validators={{
-                  onBlur: createListPayloadSchema.shape.name,
-                  onChange: createListPayloadSchema.shape.name,
-                }}
-              >
+              <form.Field name="name">
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
@@ -74,13 +68,7 @@ export function CreateListModal() {
                   </div>
                 )}
               </form.Field>
-              <form.Field
-                name="description"
-                validators={{
-                  onBlur: createListPayloadSchema.shape.description,
-                  onChange: createListPayloadSchema.shape.description,
-                }}
-              >
+              <form.Field name="description">
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
