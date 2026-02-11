@@ -112,6 +112,9 @@ export function SignInWithEmailAndPassword({
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 data-1p-ignore={undefined}
+                data-lpignore={undefined}
+                data-bwignore={undefined}
+                data-form-type={undefined}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
@@ -138,6 +141,9 @@ export function SignInWithEmailAndPassword({
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 data-1p-ignore={undefined}
+                data-lpignore={undefined}
+                data-bwignore={undefined}
+                data-form-type={undefined}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
@@ -180,6 +186,9 @@ export const StaticSignInWithEmailAndPassword = ({
             valid
             defaultValue={prefilledEmail ?? ''}
             data-1p-ignore={undefined}
+            data-lpignore={undefined}
+            data-bwignore={undefined}
+            data-form-type={undefined}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -192,6 +201,9 @@ export const StaticSignInWithEmailAndPassword = ({
             className="w-full"
             valid
             data-1p-ignore={undefined}
+            data-lpignore={undefined}
+            data-bwignore={undefined}
+            data-form-type={undefined}
           />
         </div>
         <Link className="text-s text-purple-primary underline" to={getRoute('/create-password')}>

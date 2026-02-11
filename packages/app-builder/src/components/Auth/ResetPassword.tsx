@@ -77,6 +77,9 @@ export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | nu
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
               data-1p-ignore={undefined}
+              data-lpignore={undefined}
+              data-bwignore={undefined}
+              data-form-type={undefined}
             />
             <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
@@ -94,7 +97,15 @@ export const StaticResetPassword = ({ prefilledEmail }: { prefilledEmail?: strin
     <form className="flex w-full flex-col gap-4">
       <div className="flex flex-col items-start gap-2">
         <FormLabel name="email">{t('auth:sign_in.email')}</FormLabel>
-        <FormInput type="email" className="w-full" defaultValue={prefilledEmail ?? ''} data-1p-ignore={undefined} />
+        <FormInput
+          type="email"
+          className="w-full"
+          defaultValue={prefilledEmail ?? ''}
+          data-1p-ignore={undefined}
+          data-lpignore={undefined}
+          data-bwignore={undefined}
+          data-form-type={undefined}
+        />
       </div>
       <Button>{t('auth:reset-password.send')}</Button>
     </form>

@@ -56,13 +56,7 @@ export function AddListValueModal({ listId }: { listId: string }) {
         >
           <Modal.Title>{t('lists:create_value.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
-            <form.Field
-              name="value"
-              validators={{
-                onBlur: addValuePayloadSchema.shape.value,
-                onChange: addValuePayloadSchema.shape.value,
-              }}
-            >
+            <form.Field name="value">
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <FormLabel name={field.name}>{t('lists:detail.value.create.form.label')}</FormLabel>
