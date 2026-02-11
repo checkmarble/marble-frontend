@@ -317,10 +317,10 @@ export default function RuleDetail() {
                       className={CtaClassName({
                         variant: 'secondary',
                         size: 'icon',
-                        className: 'size-[40px]',
+                        className: 'size-8',
                       })}
                     >
-                      <Icon icon="dots-three" className="size-4" />
+                      <Icon icon="dots-three" className="size-5" />
                     </Ariakit.MenuButton>
                     <Ariakit.Menu
                       shift={-80}
@@ -342,7 +342,7 @@ export default function RuleDetail() {
                     </Ariakit.Menu>
                   </Ariakit.MenuProvider>
 
-                  <Button variant="primary" type="submit" className="flex-1">
+                  <Button variant="primary" type="submit">
                     <Icon icon="save" className="size-5" aria-hidden />
                     {t('common:save')}
                   </Button>
