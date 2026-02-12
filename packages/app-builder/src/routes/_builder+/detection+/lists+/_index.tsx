@@ -1,5 +1,4 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { CreateListModal } from '@app-builder/components/Lists/CreateListModal';
 import { createServerFn } from '@app-builder/core/requests';
@@ -83,14 +82,10 @@ export default function DetectionListsPage() {
 
   return (
     <Page.Main>
-      <Page.Header>
-        <BreadCrumbs />
-      </Page.Header>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
-          <DetectionNavigationTabs />
+          <DetectionNavigationTabs actions={isCreateListAvailable ? <CreateListModal /> : undefined} />
           <div className="flex flex-col gap-4">
-            <div className="flex flex-row justify-end">{isCreateListAvailable ? <CreateListModal /> : null}</div>
             {isEmpty ? (
               <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">{t('lists:empty_custom_lists_list')}</p>

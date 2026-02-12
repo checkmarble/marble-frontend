@@ -404,7 +404,6 @@
   "sanction.match_settings.title": "Paramètres correspondants",
   "sanction.nudge": "Améliorez votre détection avec une règle de filtrage basée sur les données de OpenSanctions",
   "sanction.trigger_object.callout": "Détermine si le filtrage des listes est pertinent pour chaque objet déclencheur (<DocLink>en savoir plus</DocLink>)",
-  "scenarios.description": "Un scénario permet de détecter un certain type de risque, selon des règles métier spécifiques, pour un événement déclencheur spécifique.",
   "scheduled": "Ce scénario est planifié et sera exécuté <ScheduleLocale>{{schedule}}</ScheduleLocale>.",
   "scheduled_execution.created_at": "Créé à",
   "scheduled_execution.finished_at": "Terminé à",

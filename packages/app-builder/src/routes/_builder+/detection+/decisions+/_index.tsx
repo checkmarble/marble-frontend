@@ -14,7 +14,6 @@ import {
   paginationSchema,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
@@ -157,10 +156,6 @@ export default function DetectionDecisions() {
   return (
     <DecisionRightPanel.Root>
       <Page.Main>
-        <Page.Header>
-          <BreadCrumbs />
-        </Page.Header>
-
         <Page.Container>
           <Page.ContentV2 className="gap-v2-md">
             <DetectionNavigationTabs />

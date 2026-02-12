@@ -1,5 +1,4 @@
 import { Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CaseRightPanel } from '@app-builder/components/Cases';
 import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
 import { FavoriteInboxButton } from '@app-builder/components/Cases/Inbox/FavoriteInboxButton';
@@ -135,9 +134,6 @@ export const InboxPage = ({
 
   return (
     <Page.Main className="flex flex-col">
-      <Page.Header>
-        <BreadCrumbs />
-      </Page.Header>
       <div
         className={cn(
           'h-1 animate-gradient bg-linear-to-r from-transparent from-25% via-purple-primary to-transparent to-75% invisible',

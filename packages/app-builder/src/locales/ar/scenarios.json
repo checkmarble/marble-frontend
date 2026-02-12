@@ -404,7 +404,6 @@
   "sanction.match_settings.title": "إعدادات المطابقة",
   "sanction.nudge": "عزِّز الاكتشاف بقواعد فحص تعتمد على بيانات OpenSanction",
   "sanction.trigger_object.callout": "يحدّد ما إذا كان الفحص ذا صلة بكل كائن مُشغِّل (<DocLink>معرفة المزيد</DocLink>)",
-  "scenarios.description": "يُستخدم السيناريو لاكتشاف نوع محدد من المخاطر وفق قواعد عمل محددة ولحدث مُشغِّل معيّن.",
   "scheduled": "هذا السيناريو مجدول وسيتم تشغيله <ScheduleLocale>{{schedule}}</ScheduleLocale>.",
   "scheduled_execution.created_at": "أنشئ في",
   "scheduled_execution.finished_at": "انتهت في",

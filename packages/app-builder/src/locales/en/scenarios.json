@@ -404,7 +404,6 @@
   "sanction.match_settings.title": "Matching settings",
   "sanction.nudge": "Enhance your detection with a screening rule based on OpenSanction data",
   "sanction.trigger_object.callout": "Determines whether the screening is relevant for each trigger object (<DocLink>learn more</DocLink>)",
-  "scenarios.description": "A scenario is used to detect a certain type of risk, following specific business rules, for a specific triggering event.",
   "scheduled": "This scenario is scheduled and will run <ScheduleLocale>{{schedule}}</ScheduleLocale>.",
   "scheduled_execution.created_at": "Created at",
   "scheduled_execution.finished_at": "Finished at",

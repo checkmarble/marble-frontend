@@ -21,17 +21,18 @@ export default function DataList() {
   return (
     <Page.Container>
       <Page.Content>
-        <div className="flex items-center justify-between">
-          <DataTabs />
-          {isCreateDataModelTableAvailable ? (
-            <CreateTable>
-              <Button variant="primary">
-                <Icon icon="plus" className="size-5" />
-                {t('data:create_table.title')}
-              </Button>
-            </CreateTable>
-          ) : null}
-        </div>
+        <DataTabs
+          actions={
+            isCreateDataModelTableAvailable ? (
+              <CreateTable>
+                <Button variant="primary">
+                  <Icon icon="plus" className="size-5" />
+                  {t('data:create_table.title')}
+                </Button>
+              </CreateTable>
+            ) : undefined
+          }
+        />
         {dataModel.map((table) => (
           <TableDetails key={table.name} tableModel={table} dataModel={dataModel} />
         ))}

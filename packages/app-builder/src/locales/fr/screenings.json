@@ -1,4 +1,5 @@
 {
+  "": "Recherchez dans les listes réglementaires (sanctions, PPE, médias défavorables) sans créer de dossier de filtrage.",
   "callout.needs_refine": "Il y a trop de correspondances potentielles (> {{matchCount}}). Pour obtenir des résultats plus pertinents, veuillez affiner votre recherche.",
   "callout.needs_review": "{{toReview}}/{{totalMatches}} à examiner",
   "callout.review": "Des correspondances potentielles ont été identifiées lors de ce filtrage. Veuillez vérifier si ces correspondances constituent de véritables liens entre les valeurs recherchées et des entités figurant sur les listes de sanctions, PEP ou médias défavorables.",
@@ -104,7 +105,6 @@
   "freeform_search.datasets_no_results": "Aucun jeu de données trouvé",
   "freeform_search.datasets_search_placeholder": "Rechercher une liste spécifique",
   "freeform_search.datasets_selected": "{{count}} sélectionné(s)",
-  "freeform_search.description": "Rechercher dans les listes réglementaires (sanctions, PEPs, médias adverses) sans créer d'enregistrement de screening.",
   "freeform_search.entity_type_label": "Type d'entité",
   "freeform_search.entity_type_placeholder": "Sélectionner un type d'entité...",
   "freeform_search.fields_for_entity": "Champs pour {{entity}}",

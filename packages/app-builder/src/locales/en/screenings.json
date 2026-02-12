@@ -1,4 +1,5 @@
 {
+  "": "Search against regulatory lists (sanctions, PEPs, adverse media) without creating a screening record.",
   "callout.needs_refine": "There are too many potential matches (>{{matchCount}}). To get more relevant results, please refine your search.",
   "callout.needs_review": "{{toReview}}/{{totalMatches}} to review",
   "callout.review": "There are unreviewed matches for this screening search. Confirm if any of them is a real match for the input data that was provided.",
@@ -104,7 +105,6 @@
   "freeform_search.datasets_no_results": "No datasets found",
   "freeform_search.datasets_search_placeholder": "Search for a specific list",
   "freeform_search.datasets_selected": "{{count}} selected",
-  "freeform_search.description": "Search against regulatory lists (sanctions, PEPs, adverse media) without creating a screening record.",
   "freeform_search.entity_type_label": "Entity Type",
   "freeform_search.entity_type_placeholder": "Select entity type...",
   "freeform_search.fields_for_entity": "Fields for {{entity}}",

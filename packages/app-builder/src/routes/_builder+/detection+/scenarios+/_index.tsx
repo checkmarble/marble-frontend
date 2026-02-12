@@ -1,5 +1,4 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
 import { createServerFn } from '@app-builder/core/requests';
@@ -28,22 +27,19 @@ export default function DetectionScenariosPage() {
 
   return (
     <Page.Main>
-      <Page.Header>
-        <BreadCrumbs />
-      </Page.Header>
       <Page.Container>
-        <Page.Description>{t('scenarios:scenarios.description')}</Page.Description>
         <Page.ContentV2 className="gap-v2-md">
-          <DetectionNavigationTabs />
-          <div className="flex flex-col gap-4 max-w-3xl">
-            <div className="flex flex-row justify-end">
+          <DetectionNavigationTabs
+            actions={
               <CreateScenario>
                 <Button>
                   <Icon icon="plus" className="size-6" aria-hidden />
                   {t('scenarios:create_scenario.title')}
                 </Button>
               </CreateScenario>
-            </div>
+            }
+          />
+          <div className="flex flex-col gap-4 max-w-3xl">
             <div className="flex flex-col gap-2 lg:gap-4">
               {scenarios.length ? (
                 scenarios.map((scenario) => {

@@ -4,7 +4,6 @@ import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/De
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVsDecisionOutcomes';
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import type {
@@ -317,20 +316,20 @@ export default function Analytics() {
 
   return (
     <Page.Main className="bg-grey-background-light">
-      <Page.Header className="justify-between">
-        <BreadCrumbs />
-        <Link
-          to={getRoute('/analytics-legacy')}
-          target="_blank"
-          className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
-        >
-          <Icon icon="openinnew" className="size-4" />
-          <span>{t('analytics:legacy-analytics-link')}</span>
-        </Link>
-      </Page.Header>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
-          <DetectionNavigationTabs />
+          <DetectionNavigationTabs
+            actions={
+              <Link
+                to={getRoute('/analytics-legacy')}
+                target="_blank"
+                className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
+              >
+                <Icon icon="openinnew" className="size-4" />
+                <span>{t('analytics:legacy-analytics-link')}</span>
+              </Link>
+            }
+          />
           <FormattingProvider
             value={{
               language: i18n.language,
