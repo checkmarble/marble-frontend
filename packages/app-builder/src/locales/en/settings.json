@@ -35,7 +35,7 @@
   "audit.table.operation": "Operation",
   "audit.table.table": "Table",
   "audit.table.timestamp": "Timestamp",
-  "case_manager": "Case Manager",
+  "case_manager": "Investigations",
   "current_state_available": "Available",
   "current_state_unavailable": "Unavailable",
   "data_display": "Data display",

@@ -18,23 +18,32 @@ import {
 } from '@app-builder/services/feature-access';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
 import { initServerServices } from '@app-builder/services/init.server';
+import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService, authSessionService } = initServerServices(request);
-  const { apiKey, webhookRepository, user, entitlements } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { apiKey, webhookRepository, dataModelRepository, user, entitlements } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
   if (!isReadApiKeyAvailable(user)) return redirect(getRoute('/'));
-  const apiKeys = await apiKey.listApiKeys();
+  const [apiKeys, openapi, openapiV1] = await Promise.all([
+    apiKey.listApiKeys(),
+    dataModelRepository.getOpenApiSpec(),
+    dataModelRepository.getOpenApiSpecOfVersion('v1'),
+  ]);
 
   const authSession = await authSessionService.getSession(request);
   const createdApiKey = authSession.get('createdApiKey');
@@ -57,6 +66,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json(
     {
       apiKeys,
+      openapi,
+      openapiV1,
       createdApiKey,
       isCreateApiKeyAvailable: isCreateApiKeyAvailable(user),
       isDeleteApiKeyAvailable: isDeleteApiKeyAvailable(user),
@@ -76,9 +87,11 @@ const apiKeyColumnHelper = createColumnHelper<ApiKey>();
 const webhookColumnHelper = createColumnHelper<Webhook>();
 
 export default function ApiKeys() {
-  const { t } = useTranslation(['settings']);
+  const { t } = useTranslation(['common', 'settings', 'api']);
   const {
     apiKeys,
+    openapi,
+    openapiV1,
     createdApiKey,
     isCreateApiKeyAvailable,
     isDeleteApiKeyAvailable,
@@ -139,6 +152,42 @@ export default function ApiKeys() {
   return (
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
+        <div className="flex flex-col items-start gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => {
+              try {
+                const blob = new Blob([JSON.stringify(openapiV1)], {
+                  type: 'application/json;charset=utf-8,',
+                });
+                const url = URL.createObjectURL(blob);
+                void downloadFile(url, 'openapi-v1.json');
+              } catch (_error) {
+                toast.error(t('common:errors.unknown'));
+              }
+            }}
+          >
+            <Icon icon="download" className="me-2 size-5" />
+            {t('api:download_openapi_spec_v1')}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              try {
+                const blob = new Blob([JSON.stringify(openapi)], {
+                  type: 'application/json;charset=utf-8,',
+                });
+                const url = URL.createObjectURL(blob);
+                void downloadFile(url, 'openapi.json');
+              } catch (_error) {
+                toast.error(t('common:errors.unknown'));
+              }
+            }}
+          >
+            <Icon icon="download" className="me-2 size-5" />
+            {t('api:download_openapi_spec')}
+          </Button>
+        </div>
         {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>

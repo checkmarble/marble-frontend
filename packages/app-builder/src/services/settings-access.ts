@@ -21,10 +21,10 @@ export type Section = {
 };
 
 export type Sections = {
+  api: Section;
   users: Section;
   scenarios: Section;
   case_manager: Section;
-  api: Section;
   audit: Section;
   ip_whitelisting: Section;
 };
@@ -32,6 +32,13 @@ export type Sections = {
 export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inboxes: Inbox[]): Sections {
   // Define all sections with their icon and settings, Order of the sections and settings is important
   const sections: Sections = {
+    api: {
+      icon: 'world',
+      settings: [
+        ...(isReadApiKeyAvailable(user) ? [{ title: 'api', to: getRoute('/settings/api-keys') }] : []),
+        ...(user.permissions.canManageWebhooks ? [{ title: 'webhooks', to: getRoute('/settings/webhooks') }] : []),
+      ],
+    },
     users: {
       icon: 'users',
       settings: [...(isReadUserAvailable(user) ? [{ title: 'users', to: getRoute('/settings/users') }] : [])],
@@ -46,16 +53,9 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
     case_manager: {
       icon: 'case-manager',
       settings: [
-        ...(canAccessInboxesSettings(user, inboxes) ? [{ title: 'inboxes', to: getRoute('/settings/inboxes') }] : []),
-        ...(isReadTagAvailable(user) ? [{ title: 'tags', to: getRoute('/settings/tags') }] : []),
-        ...(isAdmin(user) ? [{ title: 'data_display', to: getRoute('/settings/data-display') }] : []),
-      ],
-    },
-    api: {
-      icon: 'world',
-      settings: [
-        ...(isReadApiKeyAvailable(user) ? [{ title: 'api', to: getRoute('/settings/api-keys') }] : []),
-        ...(user.permissions.canManageWebhooks ? [{ title: 'webhooks', to: getRoute('/settings/webhooks') }] : []),
+        ...(canAccessInboxesSettings(user, inboxes) || isReadTagAvailable(user) || isAdmin(user)
+          ? [{ title: 'case_manager', to: getRoute('/settings/inboxes') }]
+          : []),
       ],
     },
     audit: {

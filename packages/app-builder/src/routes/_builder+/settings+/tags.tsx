@@ -21,10 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 export const handle = {
-  BreadCumb: () => {
-    const { t } = useTranslation(['settings']);
-    return <span>{t('settings:tags')}</span>;
-  },
+  i18n: ['settings'] as const,
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {

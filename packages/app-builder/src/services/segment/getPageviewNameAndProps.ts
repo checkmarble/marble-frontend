@@ -127,7 +127,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
     case 'routes/_builder+/data+/schema': {
       return { name: 'Your data (schema)', properties: undefined };
     }
-    case 'routes/_builder+/api': {
+    case 'routes/_builder+/settings+/api-keys': {
       return { name: 'Marble API', properties: undefined };
     }
   }

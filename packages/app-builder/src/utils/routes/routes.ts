@@ -60,11 +60,6 @@ export const routes = [
             "file": "routes/_builder+/analytics-legacy.tsx"
           },
           {
-            "id": "routes/_builder+/api",
-            "path": "api",
-            "file": "routes/_builder+/api.tsx"
-          },
-          {
             "id": "routes/_builder+/cases+/_layout",
             "path": "cases",
             "file": "routes/_builder+/cases+/_layout.tsx",
