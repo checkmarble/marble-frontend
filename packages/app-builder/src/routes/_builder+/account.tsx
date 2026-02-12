@@ -1,7 +1,7 @@
 import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
-import { useTheme } from '@app-builder/contexts/ThemeContext';
+import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
@@ -9,7 +9,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { Form } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, Switch, Tag } from 'ui-design-system';
+import { Avatar, Button, Radio, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -30,7 +30,7 @@ export const handle = {
 export default function AccountPage() {
   const { t } = useTranslation(handle.i18n);
   const { currentUser, org } = useOrganizationDetails();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   const { firstName, lastName, email } = currentUser.actorIdentity;
   const fullName = getFullName({ firstName, lastName });
@@ -73,9 +73,18 @@ export default function AccountPage() {
                 <label className="text-s">{t('account:language')}</label>
                 <LanguagePicker />
               </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
-                <label className="text-s">{t('account:dark_mode')}</label>
+              <div className="flex flex-col gap-2">
+                <span className="text-s">{t('account:dark_mode')}</span>
+                <Radio.Root value={theme} onValueChange={(value) => setTheme(value as Theme)}>
+                  <label className="flex items-center gap-2">
+                    <Radio.Item value="light" />
+                    <span className="text-s">{t('account:theme.light')}</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <Radio.Item value="dark" />
+                    <span className="text-s">{t('account:theme.dark')}</span>
+                  </label>
+                </Radio.Root>
               </div>
             </div>
           </div>

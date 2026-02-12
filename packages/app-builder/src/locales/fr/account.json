@@ -4,5 +4,7 @@
   "language": "Langue",
   "organization": "Organisation",
   "organization_name": "Nom",
-  "profile": "Infos compte"
+  "profile": "Infos compte",
+  "theme.dark": "Sombre",
+  "theme.light": "Clair"
 }
