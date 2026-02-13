@@ -150,6 +150,7 @@
   "users.new_user.create": "Create new user",
   "users.role": "Rule Engine Role",
   "users.role.admin": "ADMIN",
+  "users.role.analyst": "ANALYST",
   "users.role.builder": "BUILDER",
   "users.role.nudge": "Assign roles and streamline your team's workflow with ease",
   "users.role.publisher": "PUBLISHER",

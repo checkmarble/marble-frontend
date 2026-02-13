@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAnalyst } from '@app-builder/models';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import {
   isCreateDataModelFieldAvailable,
@@ -15,7 +16,8 @@ import {
   isEditDataModelInfoAvailable,
   isIngestDataAvailable,
 } from '@app-builder/services/feature-access';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { getRoute } from '@app-builder/utils/routes';
+import { Outlet, redirect, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 
 export const handle = {
@@ -24,6 +26,10 @@ export const handle = {
 
 export const loader = createServerFn([authMiddleware], async function dataLayout({ context }) {
   const { user, dataModelRepository } = context.authInfo;
+
+  if (isAnalyst(user)) {
+    return redirect(getRoute('/cases'));
+  }
 
   const dataModel = await dataModelRepository.getDataModel();
   return {

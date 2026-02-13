@@ -151,6 +151,7 @@
   "users.new_user.create": "إنشاء مستخدم جديد",
   "users.role": "دور محرك القواعد",
   "users.role.admin": "مسؤول",
+  "users.role.analyst": "ANALYST",
   "users.role.builder": "المنشئ",
   "users.role.nudge": "قم بتعيين الأدوار وتبسيط سير عمل فريقك بسهولة",
   "users.role.publisher": "الناشر",

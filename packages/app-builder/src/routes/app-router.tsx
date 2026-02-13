@@ -2,6 +2,7 @@ import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAnalyst } from '@app-builder/models';
 import { segment } from '@app-builder/services/segment';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
@@ -16,7 +17,8 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function appRouterLoader({ context }) {
-  return redirect(getRoute('/detection'));
+  const route = isAnalyst(context.authInfo.user) ? getRoute('/cases') : getRoute('/detection');
+  return redirect(route);
 });
 
 export function ErrorBoundary() {

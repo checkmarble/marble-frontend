@@ -107,7 +107,9 @@ export const isEditTagAvailable = ({ permissions }: CurrentUser) => permissions.
 export const isDeleteTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
 export const getUserRoles = (entitlements: FeatureAccesses) =>
-  isAccessible(entitlements.userRoles) ? (['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const) : (['ADMIN'] as const);
+  isAccessible(entitlements.userRoles)
+    ? (['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST'] as const)
+    : (['ADMIN'] as const);
 
 export const isCreateUserAvailable = ({ permissions }: CurrentUser) => permissions.canCreateUser;
 

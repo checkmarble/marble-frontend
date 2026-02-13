@@ -1,9 +1,19 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAnalyst } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
-import { Outlet } from '@remix-run/react';
+import { Outlet, redirect } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
+
+export const loader = createServerFn([authMiddleware], async function detectionLayout({ context }) {
+  if (isAnalyst(context.authInfo.user)) {
+    return redirect(getRoute('/cases'));
+  }
+  return null;
+});
 
 export const handle = {
   i18n: ['navigation'] satisfies Namespace,

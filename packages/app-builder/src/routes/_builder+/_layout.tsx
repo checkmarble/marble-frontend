@@ -8,6 +8,7 @@ import { UserInfo } from '@app-builder/components/UserInfo';
 import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpdate';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAnalyst } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import {
   isAnalyticsAvailable,
@@ -121,42 +122,46 @@ export default function Builder() {
                         <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                           <ul className="flex flex-col gap-2">
                             {/* Detection - flat link (tabs are inside the page) */}
-                            <li>
-                              <SidebarLink
-                                labelTKey="navigation:detection"
-                                to={getRoute('/detection')}
-                                Icon={(props) => <Icon icon="scenarios" {...props} />}
-                              />
-                            </li>
+                            {!isAnalyst(user) && (
+                              <li>
+                                <SidebarLink
+                                  labelTKey="navigation:detection"
+                                  to={getRoute('/detection')}
+                                  Icon={(props) => <Icon icon="scenarios" {...props} />}
+                                />
+                              </li>
+                            )}
                             {/* Monitoring (Continuous Screening) */}
-                            <li>
-                              {match(featuresAccess.continuousScreening)
-                                .with(P.union('allowed', 'test'), () => {
-                                  return (
-                                    <SidebarLink
-                                      labelTKey="navigation:continuous_screening"
-                                      to={getRoute('/continuous-screening')}
-                                      Icon={(props) => <Icon icon="scan-eye" {...props} />}
-                                    />
-                                  );
-                                })
-                                .otherwise((value) => {
-                                  return (
-                                    <div className="text-grey-disabled relative flex gap-2 p-2">
-                                      <Icon icon="scan-eye" className="size-6 shrink-0" />
-                                      <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-                                        {t('navigation:continuous_screening')}
-                                      </span>
-                                      <Nudge
-                                        collapsed={!leftSidebarSharp.value.expanded}
-                                        kind={value}
-                                        className="size-6"
-                                        content={t('navigation:continuous_screening.nudge')}
+                            {!isAnalyst(user) && (
+                              <li>
+                                {match(featuresAccess.continuousScreening)
+                                  .with(P.union('allowed', 'test'), () => {
+                                    return (
+                                      <SidebarLink
+                                        labelTKey="navigation:continuous_screening"
+                                        to={getRoute('/continuous-screening')}
+                                        Icon={(props) => <Icon icon="scan-eye" {...props} />}
                                       />
-                                    </div>
-                                  );
-                                })}
-                            </li>
+                                    );
+                                  })
+                                  .otherwise((value) => {
+                                    return (
+                                      <div className="text-grey-disabled relative flex gap-2 p-2">
+                                        <Icon icon="scan-eye" className="size-6 shrink-0" />
+                                        <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                                          {t('navigation:continuous_screening')}
+                                        </span>
+                                        <Nudge
+                                          collapsed={!leftSidebarSharp.value.expanded}
+                                          kind={value}
+                                          className="size-6"
+                                          content={t('navigation:continuous_screening.nudge')}
+                                        />
+                                      </div>
+                                    );
+                                  })}
+                              </li>
+                            )}
                             {/* Investigations (Cases) */}
                             <li>
                               <SidebarLink
@@ -181,13 +186,15 @@ export default function Builder() {
                         <nav className="p-2 pb-4">
                           <ul className="flex flex-col gap-2">
                             {/* Your Data */}
-                            <li>
-                              <SidebarLink
-                                labelTKey="navigation:data"
-                                to={getRoute('/data')}
-                                Icon={(props) => <Icon icon="harddrive" {...props} />}
-                              />
-                            </li>
+                            {!isAnalyst(user) && (
+                              <li>
+                                <SidebarLink
+                                  labelTKey="navigation:data"
+                                  to={getRoute('/data')}
+                                  Icon={(props) => <Icon icon="harddrive" {...props} />}
+                                />
+                              </li>
+                            )}
                             {/* Settings */}
                             {featuresAccess.settings.isAvailable ? (
                               <li>
