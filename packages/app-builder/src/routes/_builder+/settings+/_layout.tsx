@@ -1,9 +1,10 @@
 import { Page } from '@app-builder/components';
 import { SettingsNavigationTabs } from '@app-builder/components/Settings/Navigation/Tabs';
+import { isAnalyst } from '@app-builder/models/user';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 
@@ -16,6 +17,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { user, entitlements, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
+
+  if (isAnalyst(user)) {
+    return redirect(getRoute('/cases'));
+  }
 
   const appConfig = await appConfigRepository.getAppConfig();
   const inboxes = await inbox.listInboxes();

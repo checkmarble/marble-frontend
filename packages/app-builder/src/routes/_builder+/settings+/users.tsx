@@ -3,6 +3,7 @@ import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
 import { DeleteUser } from '@app-builder/components/Settings/Users/DeleteUser';
 import { UpdateUser } from '@app-builder/components/Settings/Users/UpdateUser';
 import { type User } from '@app-builder/models';
+import { tKeyForUserRole } from '@app-builder/models/user';
 import {
   getUserRoles,
   isCreateUserAvailable,
@@ -176,21 +177,6 @@ export default function Users() {
     </Page.Container>
   );
 }
-
-const tKeyForUserRole = (role: User['role']) => {
-  switch (role) {
-    case 'ADMIN':
-      return 'settings:users.role.admin';
-    case 'PUBLISHER':
-      return 'settings:users.role.publisher';
-    case 'BUILDER':
-      return 'settings:users.role.builder';
-    case 'VIEWER':
-      return 'settings:users.role.viewer';
-    default:
-      return 'settings:users.role.unknown';
-  }
-};
 
 const tKeyForInboxUserRole = (role: string) => {
   switch (role) {

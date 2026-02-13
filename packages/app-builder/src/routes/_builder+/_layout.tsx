@@ -54,7 +54,7 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
       isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
       analytics: entitlements.analytics,
       settings: {
-        isAvailable: firstSetting !== undefined,
+        isAvailable: !isAnalyst(user) && firstSetting !== undefined,
         ...(firstSetting !== undefined && { to: firstSetting.to }),
       },
       isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
