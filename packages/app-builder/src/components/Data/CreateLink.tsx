@@ -49,7 +49,12 @@ function CreateLinkContent({
   const { t } = useTranslation(['data', 'navigation', 'common']);
   const [selectedParentTable, setSelectedParentTable] = useState(otherTables[0]);
   const selectedParentTableFields = useMemo(() => {
-    return selectedParentTable.fields.filter((field) => field.unicityConstraint === 'active_unique_constraint');
+    return selectedParentTable.fields.filter(
+      (field) => field.dataType === 'String' && field.unicityConstraint === 'active_unique_constraint',
+    );
+  }, [selectedParentTable]);
+  const selectedChildTableFields = useMemo(() => {
+    return thisTable.fields.filter((field) => field.dataType === 'String');
   }, [selectedParentTable]);
   const revalidate = useLoaderRevalidator();
 
@@ -147,7 +152,7 @@ function CreateLinkContent({
                       field.handleChange(type);
                     }}
                   >
-                    {thisTable.fields.map(({ id, name }) => {
+                    {selectedChildTableFields.map(({ id, name }) => {
                       return (
                         <Select.DefaultItem key={id} value={id}>
                           {name}
