@@ -1,8 +1,11 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { SecretValue } from '@app-builder/components/SecretValue';
+import { CreateWebhookSecret } from '@app-builder/components/Settings/Webhooks/CreateWebhookSecret';
 import { DeleteWebhook } from '@app-builder/components/Settings/Webhooks/DeleteWebhook';
+import { RevokeWebhookSecret } from '@app-builder/components/Settings/Webhooks/RevokeWebhookSecret';
 import { UpdateWebhook } from '@app-builder/components/Settings/Webhooks/UpdateWebhook';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
+import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { type WebhookSecret } from '@app-builder/models/webhook';
 import {
   isDeleteWebhookAvailable,
@@ -49,7 +52,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function WebhookDetail() {
   const { t } = useTranslation(['settings']);
   const { webhook, isEditWebhookAvailable, isDeleteWebhookAvailable, webhookStatus } = useLoaderData<typeof loader>();
-
+  const { features } = AppConfigContext.useValue();
+  const isWebhookSecretRotationAvailable = features.webhookSecretRotation && isEditWebhookAvailable;
   return (
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
@@ -94,9 +98,23 @@ export default function WebhookDetail() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhook_secrets')}</span>
+            {isWebhookSecretRotationAvailable ? (
+              <span onClick={(e) => e.stopPropagation()}>
+                <CreateWebhookSecret webhookId={webhook.id}>
+                  <Button variant="primary">
+                    <Icon icon="restart-alt" className="size-5" />
+                    {t('settings:webhooks.create_secret')}
+                  </Button>
+                </CreateWebhookSecret>
+              </span>
+            ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <WebhookSecrets secrets={webhook.secrets} />
+            <WebhookSecrets
+              secrets={webhook.secrets}
+              webhookId={webhook.id}
+              isWebhookSecretRotationAvailable={isWebhookSecretRotationAvailable}
+            />
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
         {isDeleteWebhookAvailable ? (
@@ -125,20 +143,30 @@ const WebhookValue = ({ children }: { children: React.ReactNode }) => {
 
 const columnHelper = createColumnHelper<WebhookSecret>();
 
-function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
+function WebhookSecrets({
+  secrets,
+  webhookId,
+  isWebhookSecretRotationAvailable,
+}: {
+  secrets: WebhookSecret[];
+  webhookId: string;
+  isWebhookSecretRotationAvailable: boolean;
+}) {
   const { t } = useTranslation(['settings']);
   const formatDateTime = useFormatDateTime();
 
-  const columns = React.useMemo(() => {
-    return [
+  const columns = React.useMemo(
+    () => [
       columnHelper.accessor((row) => row.value, {
         id: 'value',
         header: t('settings:webhooks.secret.value'),
         size: 200,
         enableSorting: false,
-        cell: ({ getValue }) => {
+        cell: ({ getValue, row }) => {
           const value = getValue();
-          return <SecretValue value={value} />;
+          const isExpired = row.original.expiresAt ? new Date(row.original.expiresAt) < new Date() : false;
+          const isDeactivated = !!row.original.deletedAt || isExpired;
+          return <SecretValue value={value} alwaysVisible={isDeactivated} />;
         },
       }),
       columnHelper.accessor((row) => row.createdAt, {
@@ -165,22 +193,38 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
       columnHelper.accessor((row) => row.deletedAt, {
         id: 'deletedAt',
         header: t('settings:webhooks.secret.deleted_at'),
-        size: 100,
-        cell: ({ getValue }) => {
+        size: 200,
+        cell: ({ getValue, row }) => {
           const dateTime = getValue();
-          if (!dateTime) {
-            return '-';
-          }
-          return <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>;
+          const isLastActiveNonExpiring =
+            !row.original.deletedAt &&
+            !row.original.expiresAt &&
+            secrets.filter((s) => !s.deletedAt && !s.expiresAt).length <= 1;
+          const showRevoke = isWebhookSecretRotationAvailable && !row.original.deletedAt && !isLastActiveNonExpiring;
+          return (
+            <div className="flex items-center justify-between gap-2">
+              <span>
+                {dateTime ? <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time> : '-'}
+              </span>
+              {showRevoke ? (
+                <RevokeWebhookSecret webhookId={webhookId} secretId={row.original.id}>
+                  <Button variant="secondary" size="small">
+                    {t('settings:webhooks.revoke_secret')}
+                  </Button>
+                </RevokeWebhookSecret>
+              ) : null}
+            </div>
+          );
         },
       }),
-    ];
-  }, [formatDateTime, t]);
+    ],
+    [formatDateTime, t, isWebhookSecretRotationAvailable, webhookId, secrets],
+  );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: secrets,
     columns,
-    columnResizeMode: 'onChange',
+    enableColumnResizing: false,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
@@ -190,7 +234,11 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
-          return <Table.Row key={row.id} row={row} />;
+          const isExpired = row.original.expiresAt ? new Date(row.original.expiresAt) < new Date() : false;
+          const isDeactivated = !!row.original.deletedAt || isExpired;
+          return (
+            <Table.Row key={row.id} row={row} className={isDeactivated ? 'text-grey-disabled opacity-50' : undefined} />
+          );
         })}
       </Table.Body>
     </Table.Container>

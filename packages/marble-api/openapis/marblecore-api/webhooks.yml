@@ -147,6 +147,76 @@
       '403':
         $ref: 'components.yml#/responses/403'
 
+/webhooks/{webhookId}/secrets:
+  post:
+    tags:
+      - Webhooks
+    summary: Create a webhook secret
+    operationId: createWebhookSecret
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: webhookId
+        description: ID of the webhook
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Options for creating the secret
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateWebhookSecretBodyDto'
+      required: true
+    responses:
+      '201':
+        description: The created webhook secret
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - secret
+              properties:
+                secret:
+                  $ref: '#/components/schemas/WebhookSecretDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/webhooks/{webhookId}/secrets/{secretId}:
+  delete:
+    tags:
+      - Webhooks
+    summary: Revoke a webhook secret
+    operationId: revokeWebhookSecret
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: webhookId
+        description: ID of the webhook
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: secretId
+        description: ID of the secret to revoke
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The webhook secret has been revoked
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
 components:
   schemas:
     WebhookDto:
@@ -232,4 +302,9 @@ components:
         rate_limit:
           type: integer
         rate_limit_duration:
+          type: integer
+    CreateWebhookSecretBodyDto:
+      type: object
+      properties:
+        expire_existing_in_days:
           type: integer
