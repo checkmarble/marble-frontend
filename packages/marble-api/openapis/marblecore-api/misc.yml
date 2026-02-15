@@ -202,10 +202,13 @@ components:
           required:
             - sso
             - segment
+            - webhook_secret_rotation
           properties:
             sso:
               type: boolean
             segment:
+              type: boolean
+            webhook_secret_rotation:
               type: boolean
         is_managed_marble:
           type: boolean

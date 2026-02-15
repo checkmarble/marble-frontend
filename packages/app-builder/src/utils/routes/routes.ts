@@ -1107,6 +1107,11 @@ export const routes = [
         "file": "routes/ressources+/settings+/users+/update.tsx"
       },
       {
+        "id": "routes/ressources+/settings+/webhooks+/create-secret",
+        "path": "ressources/settings/webhooks/create-secret",
+        "file": "routes/ressources+/settings+/webhooks+/create-secret.tsx"
+      },
+      {
         "id": "routes/ressources+/settings+/webhooks+/create",
         "path": "ressources/settings/webhooks/create",
         "file": "routes/ressources+/settings+/webhooks+/create.tsx"
@@ -1115,6 +1120,11 @@ export const routes = [
         "id": "routes/ressources+/settings+/webhooks+/delete",
         "path": "ressources/settings/webhooks/delete",
         "file": "routes/ressources+/settings+/webhooks+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/webhooks+/revoke-secret",
+        "path": "ressources/settings/webhooks/revoke-secret",
+        "file": "routes/ressources+/settings+/webhooks+/revoke-secret.tsx"
       },
       {
         "id": "routes/ressources+/settings+/webhooks+/update",
