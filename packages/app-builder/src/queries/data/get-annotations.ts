@@ -11,6 +11,7 @@ const EMPTY_GROUPED_ANNOTATIONS: GroupedAnnotations = {
   comments: [],
   tags: [],
   files: [],
+  risk_topics: [],
 };
 
 export const useGetAnnotationsQuery = (objectType: string, objectId: string, loadThumbnails: boolean = false) => {

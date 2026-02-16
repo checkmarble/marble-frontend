@@ -1,6 +1,5 @@
 import { OutcomeBadge } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
-import { filtersI18n } from '@app-builder/components/Filters/filters-i18n';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
 import { CreateRule } from '@app-builder/components/Scenario/Rules/Actions/CreateRule';

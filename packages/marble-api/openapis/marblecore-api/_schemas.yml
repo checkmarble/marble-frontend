@@ -33,6 +33,8 @@ CommentEntityAnnotationDto:
   $ref: annotations.yml#/components/schemas/CommentEntityAnnotationDto
 FileEntityAnnotationDto:
   $ref: annotations.yml#/components/schemas/FileEntityAnnotationDto
+RiskTopicEntityAnnotationDto:
+  $ref: annotations.yml#/components/schemas/RiskTopicEntityAnnotationDto
 CreateAnnotationDto:
   $ref: annotations.yml#/components/schemas/CreateAnnotationDto
 

@@ -166,10 +166,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileEntityAnnotationDto'
+        risk_topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskTopicEntityAnnotationDto'
       required:
         - comments
         - tags
         - files
+        - risk_topics
     CommonEntityAnnotationDto:
       type: object
       required:
@@ -239,6 +244,18 @@ components:
       required:
         - id
         - filename
+    RiskTopicEntityAnnotationPayloadDto:
+      type: object
+      properties:
+        topic:
+          type: string
+          enum: ['sanctions', 'peps', 'third-parties', 'adverse-media']
+        continuous_screening_id:
+          type: string
+        opensanction_entity_id:
+          type: string
+      required:
+        - topic
     BareTagEntityAnnotationDto:
       type: object
       properties:
@@ -284,11 +301,27 @@ components:
       allOf:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
         - $ref: '#/components/schemas/BareFileEntityAnnotationDto'
+    BareRiskTopicEntityAnnotationDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ['risk_topic']
+        payload:
+          $ref: '#/components/schemas/RiskTopicEntityAnnotationPayloadDto'
+      required:
+        - type
+        - payload
+    RiskTopicEntityAnnotationDto:
+      allOf:
+        - $ref: '#/components/schemas/CommonEntityAnnotationDto'
+        - $ref: '#/components/schemas/BareRiskTopicEntityAnnotationDto'
     CreateAnnotationDto:
       allOf:
         - anyOf:
             - $ref: '#/components/schemas/BareTagEntityAnnotationDto'
             - $ref: '#/components/schemas/BareCommentEntityAnnotationDto'
+            - $ref: '#/components/schemas/BareRiskTopicEntityAnnotationDto'
         - type: object
           required:
             - case_id

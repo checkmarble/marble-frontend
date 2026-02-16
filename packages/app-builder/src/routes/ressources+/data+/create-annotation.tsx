@@ -56,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { data, success, error } = createAnnotationPayloadSchema.safeParse(
     decode(raw, {
-      arrays: ['payload.files', 'payload.addedTags', 'payload.removedAnnotations'],
+      arrays: ['payload.files', 'payload.addedTags', 'payload.removedAnnotations', 'payload.addedCategories'],
     }),
   );
 
@@ -85,6 +85,24 @@ export async function action({ request }: ActionFunctionArgs) {
               caseId: data.caseId,
               payload: {
                 tagId: tagAdded,
+              },
+            }),
+          ),
+          ...removedAnnotations.map((annotationId) => dataModelRepository.deleteAnnotation(annotationId)),
+        ];
+
+        await Promise.all(promises);
+
+        return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
+      })
+      .with({ type: 'risk_topic' }, async ({ payload: { addedCategories = [], removedAnnotations = [] }, ...data }) => {
+        const promises: Promise<Response | void>[] = [
+          ...addedCategories.map((categoryAdded) =>
+            dataModelRepository.createAnnotation(data.tableName, data.objectId, {
+              type: 'risk_topic',
+              caseId: data.caseId,
+              payload: {
+                topic: categoryAdded,
               },
             }),
           ),

@@ -1,2 +1,2 @@
-export { PanelRoot, PanelContainer, PanelContent, PanelFooter, PanelHeader, type PanelSize } from './Panel';
+export { PanelContainer, PanelContent, PanelFooter, PanelHeader, PanelRoot, type PanelSize } from './Panel';
 export { PanelOverlay } from './PanelOverlay';

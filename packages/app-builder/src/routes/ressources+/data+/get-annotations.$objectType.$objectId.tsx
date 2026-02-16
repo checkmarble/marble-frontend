@@ -27,8 +27,6 @@ export const loader = createServerFn(
       parsedSearchParams.load_thumbnails ?? false,
     );
 
-    console.log('annotations', annotations);
-
     return data({ annotations });
   },
 );

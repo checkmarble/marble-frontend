@@ -46,6 +46,7 @@ export const ClientDetailPage = ({
   const queryClient = useQueryClient();
   const containerRef = useRef<HTMLDivElement>(null);
   const [showHierarchyPanel, setShowHierarchyPanel] = useState(false);
+  // const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
 
   return (
     <DataModelExplorerProvider>
@@ -105,15 +106,7 @@ export const ClientDetailPage = ({
             {/* Client timeline */}
             {/* <Card className="flex flex-col gap-v2-sm">
               <div className="font-medium">User's history</div>
-              <div className="flex gap-v2-sm">
-                <Button variant="secondary" size="default" mode="icon">
-                  <Icon icon="arrow-left" className="size-5" />
-                </Button>
-                <ul className="grow"></ul>
-                <Button variant="secondary" size="default" mode="icon">
-                  <Icon icon="arrow-right" className="size-5" />
-                </Button>
-              </div>
+              <ClientTimeline />
             </Card> */}
 
             {/* Client relationships */}

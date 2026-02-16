@@ -1,3 +1,4 @@
+import { SCREENING_CATEGORIES } from '@app-builder/models/screening';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
@@ -48,10 +49,32 @@ export const createCommentAnnotationSchema = z.intersection(
   }),
 );
 
+export const createRiskAnnotationSchema = z.intersection(
+  baseCreateAnnotationSchema,
+  z.object({
+    type: z.literal('risk_topic'),
+    payload: z.object({
+      addedCategories: protectArray(z.array(z.enum(SCREENING_CATEGORIES))).optional(),
+      removedAnnotations: protectArray(z.array(z.uuid())).optional(),
+    }),
+  }),
+);
+
+export const riskAnnotationFormSchema = z.intersection(
+  baseCreateAnnotationSchema,
+  z.object({
+    type: z.literal('risk_topic'),
+    payload: z.object({
+      categories: protectArray(z.array(z.enum(SCREENING_CATEGORIES))),
+    }),
+  }),
+);
+
 export const createAnnotationPayloadSchema = z.union([
   createTagAnnotationSchema,
   createFileAnnotationSchema,
   createCommentAnnotationSchema,
+  createRiskAnnotationSchema,
 ]);
 
 export type CreateAnnotationPayload = z.infer<typeof createAnnotationPayloadSchema>;
