@@ -1,5 +1,4 @@
 {
-  "": "Search against regulatory lists (sanctions, PEPs, adverse media) without creating a screening record.",
   "callout.needs_refine": "There are too many potential matches (>{{matchCount}}). To get more relevant results, please refine your search.",
   "callout.needs_review": "{{toReview}}/{{totalMatches}} to review",
   "callout.review": "There are unreviewed matches for this screening search. Confirm if any of them is a real match for the input data that was provided.",

@@ -1,5 +1,4 @@
 {
-  "": "Recherchez dans les listes réglementaires (sanctions, PPE, médias défavorables) sans créer de dossier de filtrage.",
   "callout.needs_refine": "Il y a trop de correspondances potentielles (> {{matchCount}}). Pour obtenir des résultats plus pertinents, veuillez affiner votre recherche.",
   "callout.needs_review": "{{toReview}}/{{totalMatches}} à examiner",
   "callout.review": "Des correspondances potentielles ont été identifiées lors de ce filtrage. Veuillez vérifier si ces correspondances constituent de véritables liens entre les valeurs recherchées et des entités figurant sur les listes de sanctions, PEP ou médias défavorables.",
