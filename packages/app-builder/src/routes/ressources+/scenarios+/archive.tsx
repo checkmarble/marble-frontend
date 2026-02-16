@@ -34,7 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
     await scenario.archiveScenario({ scenarioId: data.scenarioId });
 
     return {
-      redirectTo: getRoute('/scenarios'),
+      redirectTo: getRoute('/detection/scenarios'),
     };
   } catch (_error) {
     setToastMessage(session, {

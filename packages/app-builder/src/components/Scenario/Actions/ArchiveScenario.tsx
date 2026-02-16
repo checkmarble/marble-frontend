@@ -26,10 +26,6 @@ function ArchiveScenarioContent({ scenarioId, scenarioName }: { scenarioId: stri
   const { t } = useTranslation(['scenarios', 'common']);
   const archiveScenarioMutation = useArchiveScenarioMutation();
 
-  const handleArchive = () => {
-    archiveScenarioMutation.mutateAsync({ scenarioId });
-  };
-
   return (
     <>
       <Modal.Title>{t('scenarios:archive_scenario.title')}</Modal.Title>
@@ -44,7 +40,14 @@ function ArchiveScenarioContent({ scenarioId, scenarioName }: { scenarioId: stri
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button className="flex-1" variant="destructive" onClick={handleArchive}>
+        <Button
+          className="flex-1"
+          variant="destructive"
+          disabled={archiveScenarioMutation.isPending}
+          onClick={() => {
+            archiveScenarioMutation.mutate({ scenarioId });
+          }}
+        >
           {t('scenarios:archive_scenario.button')}
         </Button>
       </Modal.Footer>

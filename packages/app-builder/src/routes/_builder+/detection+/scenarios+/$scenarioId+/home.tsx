@@ -8,7 +8,7 @@ import { Page } from '@app-builder/components/Page';
 import { ArchiveScenario } from '@app-builder/components/Scenario/Actions/ArchiveScenario';
 import { CopyScenario } from '@app-builder/components/Scenario/Actions/CopyScenario';
 import { CreateTestRun } from '@app-builder/components/Scenario/Actions/CreateTestRun';
-import { UnarchiveScenario } from '@app-builder/components/Scenario/Actions/UnarchiveScenario';
+import { UnarchiveScenarioButton } from '@app-builder/components/Scenario/Actions/UnarchiveScenario';
 import { UpdateScenario } from '@app-builder/components/Scenario/Actions/UpdateScenario';
 import {
   getFormattedArchived,
@@ -167,12 +167,14 @@ export default function ScenarioHome() {
         <BreadCrumbs />
         {featureAccess.isEditScenarioAvailable ? (
           <div className="flex flex-row gap-4">
-            <CopyScenario scenarioId={currentScenario.id} scenarioName={currentScenario.name}>
-              <Button variant="secondary" disabled={!hydrated}>
-                <Icon icon="copy" className="size-3.5" />
-                <p>{t('scenarios:copy_scenario.title')}</p>
-              </Button>
-            </CopyScenario>
+            {!currentScenario.archived ? (
+              <CopyScenario scenarioId={currentScenario.id} scenarioName={currentScenario.name}>
+                <Button variant="secondary" disabled={!hydrated}>
+                  <Icon icon="copy" className="size-3.5" />
+                  <p>{t('scenarios:copy_scenario.title')}</p>
+                </Button>
+              </CopyScenario>
+            ) : null}
             <UpdateScenario
               defaultValue={{
                 name: currentScenario.name,
@@ -186,12 +188,7 @@ export default function ScenarioHome() {
               </Button>
             </UpdateScenario>
             {currentScenario.archived ? (
-              <UnarchiveScenario scenarioId={currentScenario.id}>
-                <Button variant="secondary" disabled={!hydrated}>
-                  <Icon icon="restart-alt" className="size-3.5" />
-                  <p>{t('scenarios:unarchive_scenario.title')}</p>
-                </Button>
-              </UnarchiveScenario>
+              <UnarchiveScenarioButton scenarioId={currentScenario.id} disabled={!hydrated} />
             ) : !currentScenario.liveVersionId ? (
               <ArchiveScenario scenarioId={currentScenario.id} scenarioName={currentScenario.name}>
                 <Button

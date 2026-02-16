@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     return {
-      redirectTo: getRoute('/scenarios'),
+      redirectTo: getRoute('/detection/scenarios'),
     };
   } catch (_error) {
     setToastMessage(session, {
