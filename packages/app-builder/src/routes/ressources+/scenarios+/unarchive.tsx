@@ -1,12 +1,9 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { unarchiveScenarioPayloadSchema } from '@app-builder/queries/scenarios/unarchive-scenario';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { z } from 'zod/v4';
-
-const unarchiveScenarioPayloadSchema = z.object({
-  scenarioId: z.uuid(),
-});
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
