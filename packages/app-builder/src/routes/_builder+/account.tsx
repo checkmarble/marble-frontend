@@ -2,6 +2,7 @@ import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
 import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
+import { tKeyForUserRole } from '@app-builder/models/user';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
@@ -13,7 +14,7 @@ import { Avatar, Button, Radio, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
-  i18n: ['navigation', 'account', 'common'] satisfies Namespace,
+  i18n: ['navigation', 'account', 'common', 'settings'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['navigation']);
@@ -30,6 +31,7 @@ export const handle = {
 export default function AccountPage() {
   const { t } = useTranslation(handle.i18n);
   const { currentUser, org } = useOrganizationDetails();
+
   const { theme, setTheme } = useTheme();
 
   const { firstName, lastName, email } = currentUser.actorIdentity;
@@ -58,7 +60,7 @@ export default function AccountPage() {
               <Avatar size="xl" firstName={firstName} lastName={lastName} />
               {fullName ? <p className="text-xl font-semibold tracking-tight">{fullName}</p> : null}
               <div className="flex items-center gap-2">
-                <Tag color="purple">{currentUser.role}</Tag>
+                <Tag color="purple">{t(tKeyForUserRole(currentUser.role))}</Tag>
                 <Tag color="grey">{org.name}</Tag>
               </div>
               {email ? (

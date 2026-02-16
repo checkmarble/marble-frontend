@@ -53,10 +53,10 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
     featuresAccess: {
       isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
       analytics: entitlements.analytics,
-      settings: {
-        isAvailable: !isAnalyst(user) && firstSetting !== undefined,
-        ...(firstSetting !== undefined && { to: firstSetting.to }),
-      },
+      settings:
+        !isAnalyst(user) && firstSetting !== undefined
+          ? { isAvailable: true as const, to: firstSetting.to }
+          : { isAvailable: false as const },
       isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
       continuousScreening: entitlements.continuousScreening,
       isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
@@ -200,7 +200,7 @@ export default function Builder() {
                               <li>
                                 <SidebarLink
                                   labelTKey="navigation:settings"
-                                  to={featuresAccess.settings.to as string}
+                                  to={featuresAccess.settings.to}
                                   Icon={(props) => <Icon icon="settings" {...props} />}
                                 />
                               </li>

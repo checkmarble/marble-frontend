@@ -1,31 +1,36 @@
 import { type Sections } from '@app-builder/services/settings-access';
-import { Link, useLocation } from '@remix-run/react';
+import { NavLink } from '@remix-run/react';
+import { type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Tabs, tabClassName } from 'ui-design-system';
 
+const sectionTKeys: Record<keyof Sections, ParseKeys<['settings']>> = {
+  api: 'settings:api',
+  users: 'settings:users',
+  scenarios: 'settings:scenarios',
+  case_manager: 'settings:case_manager',
+  data_display: 'settings:data_display',
+  audit: 'settings:audit',
+  ip_whitelisting: 'settings:ip_whitelisting',
+};
+
 export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
   const { t } = useTranslation(['navigation', 'settings']);
-  const location = useLocation();
 
   return (
     <div className="flex flex-col gap-v2-sm">
       <h1 className="text-xl font-bold">{t('navigation:settings')}</h1>
       <Tabs>
-        {Object.entries(sections).map(([sectionKey, { settings }]) => {
+        {(Object.keys(sections) as Array<keyof Sections>).map((sectionKey) => {
+          const { settings } = sections[sectionKey];
           if (settings.length === 0) return null;
 
           const firstSetting = settings[0]!;
-          const isActive = settings.some((s) => location.pathname.startsWith(s.to));
 
           return (
-            <Link
-              key={sectionKey}
-              to={firstSetting.to}
-              className={tabClassName}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              {t(`settings:${sectionKey}` as any)}
-            </Link>
+            <NavLink key={sectionKey} to={firstSetting.to} className={tabClassName}>
+              {t(sectionTKeys[sectionKey])}
+            </NavLink>
           );
         })}
       </Tabs>
