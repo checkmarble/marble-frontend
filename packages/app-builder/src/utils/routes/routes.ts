@@ -946,6 +946,16 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/validate-ast.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/archive",
+        "path": "ressources/scenarios/archive",
+        "file": "routes/ressources+/scenarios+/archive.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/copy",
+        "path": "ressources/scenarios/copy",
+        "file": "routes/ressources+/scenarios+/copy.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"
@@ -959,6 +969,11 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/rule-description",
         "path": "ressources/scenarios/rule-description",
         "file": "routes/ressources+/scenarios+/rule-description.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/unarchive",
+        "path": "ressources/scenarios/unarchive",
+        "file": "routes/ressources+/scenarios+/unarchive.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/update",

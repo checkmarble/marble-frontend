@@ -9,6 +9,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import clsx from 'clsx';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
@@ -35,12 +36,19 @@ export default function DetectionScenariosPage() {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor('liveVersionId', {
+      columnHelper.accessor((row) => ({ liveVersionId: row.liveVersionId, archived: row.archived }), {
         id: 'status',
         header: t('scenarios:list.column.status'),
         size: 100,
         cell: ({ getValue }) => {
-          const liveVersionId = getValue();
+          const { liveVersionId, archived } = getValue();
+          if (archived) {
+            return (
+              <Tag color="grey" size="small" className="capitalize">
+                {t('scenarios:archived')}
+              </Tag>
+            );
+          }
           return liveVersionId ? (
             <Tag color="purple" size="small" className="capitalize">
               {t('scenarios:live')}
@@ -129,7 +137,11 @@ export default function DetectionScenariosPage() {
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {rows.map((row) => (
-                    <Table.Row key={row.id} row={row} />
+                    <Table.Row
+                      key={row.id}
+                      row={row}
+                      className={clsx(row.original.archived && 'opacity-50')}
+                    />
                   ))}
                 </Table.Body>
               </Table.Container>
