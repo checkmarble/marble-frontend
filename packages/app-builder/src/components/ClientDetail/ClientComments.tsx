@@ -22,6 +22,7 @@ type ClientCommentsProps = {
 };
 
 export const ClientComments = ({ objectType, objectId, annotationsQuery, root }: ClientCommentsProps) => {
+  const { t } = useTranslation(['common']);
   const queryClient = useQueryClient();
 
   return (

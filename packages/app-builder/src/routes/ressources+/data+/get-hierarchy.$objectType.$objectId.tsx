@@ -105,8 +105,6 @@ export const loader = createServerFn(
           context.authInfo.dataModelRepository,
           parentObjectHierarchyNode,
         );
-
-        console.log(parentObjectHierarchyNode);
       }
 
       baseObjectHierarchyNode.parents.push(parentObjectHierarchyNode);

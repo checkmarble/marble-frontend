@@ -94,6 +94,7 @@
     "decode-formdata": "^0.8.0",
     "deepsignal": "^1.6.0",
     "dinero.js": "2.0.0-alpha.14",
+    "embla-carousel-react": "^8.6.0",
     "firebase": "^12.5.0",
     "fuse.js": "^7.1.0",
     "i18next": "^23.16.8",

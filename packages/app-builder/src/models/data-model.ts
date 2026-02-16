@@ -26,6 +26,7 @@ import {
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
+import { ScreeningCategory } from './screening';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'DerivedData' | 'unknown';
@@ -633,6 +634,12 @@ export type CreateAnnotationBody = { caseId?: string } & (
         tagId: string;
       };
     }
+  | {
+      type: 'risk_topic';
+      payload: {
+        topic: ScreeningCategory;
+      };
+    }
 );
 
 export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnnotationDto {
@@ -654,6 +661,17 @@ export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnn
           type: 'tag',
           payload: {
             tag_id: tagId,
+          },
+        }) as const,
+    )
+    .with(
+      { type: 'risk_topic' },
+      ({ payload: { topic }, caseId }) =>
+        ({
+          case_id: caseId,
+          type: 'risk_topic',
+          payload: {
+            topic,
           },
         }) as const,
     )
