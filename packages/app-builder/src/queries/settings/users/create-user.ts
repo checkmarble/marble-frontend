@@ -6,7 +6,7 @@ export const createUserPayloadSchema = z.object({
   firstName: z.string().nonempty(),
   lastName: z.string().nonempty(),
   email: z.email().nonempty(),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN']),
+  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
   organizationId: z.uuid().nonempty(),
 });
 

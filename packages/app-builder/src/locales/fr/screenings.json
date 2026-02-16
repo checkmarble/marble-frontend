@@ -104,7 +104,6 @@
   "freeform_search.datasets_no_results": "Aucun jeu de données trouvé",
   "freeform_search.datasets_search_placeholder": "Rechercher une liste spécifique",
   "freeform_search.datasets_selected": "{{count}} sélectionné(s)",
-  "freeform_search.description": "Rechercher dans les listes réglementaires (sanctions, PEPs, médias adverses) sans créer d'enregistrement de screening.",
   "freeform_search.entity_type_label": "Type d'entité",
   "freeform_search.entity_type_placeholder": "Sélectionner un type d'entité...",
   "freeform_search.fields_for_entity": "Champs pour {{entity}}",

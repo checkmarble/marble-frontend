@@ -1,0 +1,276 @@
+import {
+  CursorPaginationButtons,
+  type DecisionFilters,
+  DecisionFiltersBar,
+  DecisionFiltersMenu,
+  DecisionFiltersProvider,
+  DecisionRightPanel,
+  DecisionsList,
+  DecisionViewModel,
+  decisionFiltersSchema,
+  decisionsI18n,
+  ErrorComponent,
+  Page,
+  paginationSchema,
+  useDecisionRightPanelContext,
+} from '@app-builder/components';
+import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
+import { DetectionNavigationTabs } from '@app-builder/components/Detection';
+import { FiltersButton } from '@app-builder/components/Filters';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
+import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
+import { type Decision } from '@app-builder/models/decision';
+import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
+import { initServerServices } from '@app-builder/services/init.server';
+import { parseQuerySafe } from '@app-builder/utils/input-validation';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { Form, useLoaderData, useRouteError } from '@remix-run/react';
+import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import { type Namespace } from 'i18next';
+import qs from 'qs';
+import { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { Button, Input } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+
+export const handle = {
+  i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
+};
+
+export const buildQueryParams = (filters: DecisionFilters, offsetId: string | null) => {
+  return {
+    outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
+    triggerObject: filters.triggerObject ?? [],
+    dateRange: filters.dateRange
+      ? filters.dateRange.type === 'static'
+        ? {
+            type: 'static',
+            endDate: filters.dateRange.endDate || null,
+            startDate: filters.dateRange.startDate || null,
+          }
+        : {
+            type: 'dynamic',
+            fromNow: filters.dateRange.fromNow,
+          }
+      : {},
+    pivotValue: filters.pivotValue || null,
+    scenarioId: filters.scenarioId ?? [],
+    scheduledExecutionId: filters.scheduledExecutionId ?? [],
+    caseInboxId: filters.caseInboxId ?? [],
+    hasCase: filters?.hasCase ?? null,
+    offsetId,
+  };
+};
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { authService } = initServerServices(request);
+  const { decision, scenario, dataModelRepository, inbox } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
+
+  const parsedFilterQuery = await parseQuerySafe(request, decisionFiltersSchema);
+  const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
+
+  if (!parsedFilterQuery.success || !parsedPaginationQuery.success) {
+    return redirect(getRoute('/detection/decisions'));
+  }
+
+  const { outcomeAndReviewStatus, ...filters } = parsedFilterQuery.data;
+  const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
+    decision.listDecisions({
+      outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
+      reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
+      ...filters,
+      ...parsedPaginationQuery.data,
+    }),
+    scenario.listScenarios(),
+    dataModelRepository.listPivots({}),
+    inbox.listInboxes(),
+  ]);
+
+  return json({
+    decisionsData,
+    scenarios,
+    filters: parsedFilterQuery.data,
+    hasPivots: pivots.length > 0,
+    inboxes,
+  });
+}
+
+export default function DetectionDecisions() {
+  const {
+    decisionsData: initialDecisionsData,
+    filters,
+    scenarios,
+    hasPivots,
+    inboxes,
+  } = useLoaderData<typeof loader>();
+
+  const { data, next, previous, reset, hasPreviousPage, pageNb } = useCursorPaginatedFetcher<
+    typeof loader,
+    PaginatedResponse<Decision>
+  >({
+    resourceId: 'decisions',
+    transform: (fetcherData) => fetcherData.decisionsData,
+    initialData: initialDecisionsData,
+    getQueryParams: (cursor) => buildQueryParams(filters, cursor),
+    validateData: (data) => data.items.length > 0,
+  });
+  const { items: decisions, ...pagination } = data;
+
+  const navigate = useAgnosticNavigation();
+  const navigateDecisionList = useCallback(
+    (decisionFilters: DecisionFilters, paginationParams?: PaginationParams) => {
+      if (!paginationParams) {
+        reset();
+        navigate(
+          {
+            pathname: getRoute('/detection/decisions'),
+            search: qs.stringify(buildQueryParams(decisionFilters, null), {
+              skipNulls: true,
+              addQueryPrefix: true,
+            }),
+          },
+          { replace: true },
+        );
+        return;
+      }
+
+      if (paginationParams.next && paginationParams.offsetId) {
+        next(paginationParams.offsetId);
+      }
+      if (paginationParams.previous) {
+        previous();
+      }
+    },
+    [navigate, next, previous, reset],
+  );
+
+  const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
+    useTanstackTableListSelection<DecisionViewModel>(decisions, (row) => row.id);
+
+  return (
+    <DecisionRightPanel.Root>
+      <Page.Main>
+        <Page.Container>
+          <Page.ContentV2 className="gap-v2-md">
+            <DetectionNavigationTabs />
+            <div className="flex flex-col gap-4">
+              <DecisionFiltersProvider
+                scenarios={scenarios}
+                submitDecisionFilters={navigateDecisionList}
+                filterValues={filters}
+                hasPivots={hasPivots}
+                inboxes={inboxes}
+              >
+                <div className="flex justify-between gap-4">
+                  <SearchById />
+                  <div className="flex gap-4">
+                    <DecisionFiltersMenu filterNames={decisionFilterNames}>
+                      <FiltersButton />
+                    </DecisionFiltersMenu>
+                    <AddToCase hasSelection={hasSelectedRows} getSelectedDecisions={getSelectedRows} />
+                  </div>
+                </div>
+                <DecisionFiltersBar />
+                <DecisionsList
+                  className="max-h-[60dvh]"
+                  decisions={decisions}
+                  selectable
+                  selectionProps={selectionProps}
+                  tableProps={tableProps}
+                  columnVisibility={{
+                    pivot_value: false,
+                  }}
+                />
+                <CursorPaginationButtons
+                  items={decisions}
+                  onPaginationChange={(paginationParams: PaginationParams) =>
+                    navigateDecisionList(filters, paginationParams)
+                  }
+                  hasPreviousPage={hasPreviousPage}
+                  pageNb={pageNb}
+                  boundariesDisplay="dates"
+                  {...pagination}
+                />
+              </DecisionFiltersProvider>
+            </div>
+          </Page.ContentV2>
+        </Page.Container>
+      </Page.Main>
+    </DecisionRightPanel.Root>
+  );
+}
+
+function AddToCase({
+  hasSelection,
+  getSelectedDecisions,
+}: {
+  hasSelection: boolean;
+  getSelectedDecisions: () => { id: string; case?: object }[];
+}) {
+  const { t } = useTranslation(handle.i18n);
+  const { onTriggerClick } = useDecisionRightPanelContext();
+  const getDecisionIds = () => {
+    const selectedDecisions = getSelectedDecisions();
+    if (selectedDecisions.some((decision) => decision.case)) {
+      toast.error(t('common:errors.add_to_case.invalid'));
+    } else {
+      onTriggerClick({ decisionIds: selectedDecisions.map(({ id }) => id) });
+    }
+  };
+
+  return (
+    <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
+      <Button disabled={!hasSelection}>
+        <Icon icon="plus" className="size-5" />
+        {t('decisions:add_to_case')}
+      </Button>
+    </DecisionRightPanel.Trigger>
+  );
+}
+
+const decisionIdToParams = (decisionId: string | null) => {
+  try {
+    return fromUUIDtoSUUID(decisionId ?? '');
+  } catch {
+    return decisionId;
+  }
+};
+
+function SearchById() {
+  const { t } = useTranslation(handle.i18n);
+  const [decisionId, setDecisionId] = useState<string | null>(null);
+
+  return (
+    <Form
+      className="flex gap-1"
+      method="GET"
+      action={getRoute('/detection/decisions/:decisionId', {
+        decisionId: decisionIdToParams(decisionId) ?? '',
+      })}
+    >
+      <Input
+        type="search"
+        aria-label={t('decisions:search.placeholder')}
+        placeholder={t('decisions:search.placeholder')}
+        value={decisionId ?? ''}
+        onChange={(e) => setDecisionId(e.target.value)}
+        startAdornment="search"
+      />
+      <Button type="submit" disabled={!decisionId}>
+        {t('common:search')}
+      </Button>
+    </Form>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  captureRemixErrorBoundaryError(error);
+  return <ErrorComponent error={error} />;
+}

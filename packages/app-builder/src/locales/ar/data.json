@@ -130,6 +130,5 @@
   "view_pivot.type": "النوع",
   "viewer.no_object_found": "لم يتم العثور على كائن بالمعرف \"{{objectId}}\" في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
-  "viewer.object_type": "نوع الكائن",
-  "your_data_callout": "هذه قائمة بجميع الكائنات التي يمكنك إرسالها إلى Marble، إضافةً إلى خصائصها. تواصل مع فريق Marble إذا رغبت في إجراء تغييرات على نموذج بياناتك."
+  "viewer.object_type": "نوع الكائن"
 }

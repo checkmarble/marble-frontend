@@ -104,7 +104,6 @@
   "freeform_search.datasets_no_results": "لم يتم العثور على مجموعات بيانات",
   "freeform_search.datasets_search_placeholder": "البحث عن قائمة محددة",
   "freeform_search.datasets_selected": "{{count}} محدد",
-  "freeform_search.description": "البحث في القوائم التنظيمية (العقوبات، الشخصيات السياسية، الإعلام السلبي) دون إنشاء سجل فحص.",
   "freeform_search.entity_type_label": "نوع الكيان",
   "freeform_search.entity_type_placeholder": "اختر نوع الكيان...",
   "freeform_search.fields_for_entity": "حقول {{entity}}",

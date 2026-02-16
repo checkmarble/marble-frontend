@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { BreadCrumbs } from '../Breadcrumbs';
 import GridTable from '../GridTable';
 import { Page } from '../Page';
 import { usePanel } from '../Panel';
@@ -27,7 +26,7 @@ const CellCapsule = ({ children }: { children: React.ReactNode }) => {
 };
 
 export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
-  const { t } = useTranslation(['common', 'continuousScreening']);
+  const { t } = useTranslation(['common', 'continuousScreening', 'navigation']);
   const configurationsQuery = useContinuousScreeningConfigurationsQuery();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
   const navigate = useAgnosticNavigation();
@@ -91,18 +90,16 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between">
-        <BreadCrumbs />
-        <div>
-          {canEdit ? (
-            <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
-              {t('continuousScreening:configurations.add_configuration')}
-            </Button>
-          ) : null}
-        </div>
-      </Page.Header>
       <Page.Container>
-        <Page.ContentV2>
+        <Page.ContentV2 className="gap-v2-md">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">{t('navigation:continuous-screening.configurations')}</h1>
+            {canEdit ? (
+              <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
+                {t('continuousScreening:configurations.add_configuration')}
+              </Button>
+            ) : null}
+          </div>
           {match(configurationsQuery)
             .with({ isPending: true }, () => (
               <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">

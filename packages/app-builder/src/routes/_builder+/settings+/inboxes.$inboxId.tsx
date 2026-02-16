@@ -1,5 +1,4 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { CreateInboxUser } from '@app-builder/components/Settings/Inboxes/CreateInboxUser';
@@ -28,10 +27,10 @@ import {
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { ActionFunctionArgs, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
-import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromParams } from '@app-builder/utils/short-uuid';
+import { ActionFunctionArgs, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
@@ -42,32 +41,6 @@ import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
-  BreadCrumbs: [
-    ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['settings']);
-      return (
-        <BreadCrumbLink to={getRoute('/settings/inboxes')} isLast={isLast}>
-          {t('settings:inboxes')}
-        </BreadCrumbLink>
-      );
-    },
-    ({ isLast }: BreadCrumbProps) => {
-      const { inbox } = useRouteLoaderData(
-        'routes/_builder+/settings+/inboxes.$inboxId' satisfies RouteID,
-      ) as SerializeFrom<typeof loader>;
-
-      return (
-        <BreadCrumbLink
-          isLast={isLast}
-          to={getRoute('/settings/inboxes/:inboxId', {
-            inboxId: fromUUIDtoSUUID(inbox.id),
-          })}
-        >
-          {inbox.name}
-        </BreadCrumbLink>
-      );
-    },
-  ],
 };
 
 type LoaderData = {

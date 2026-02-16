@@ -1,4 +1,3 @@
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
 import { type InboxMetadata } from '@app-builder/models/inbox';
@@ -34,9 +33,6 @@ export const OverviewPage = ({
 
   return (
     <Page.Main>
-      <Page.Header>
-        <BreadCrumbs />
-      </Page.Header>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
           <div className="grid grid-cols-[1fr_calc(var(--spacing-v2-xs)_*_90)] gap-v2-lg">

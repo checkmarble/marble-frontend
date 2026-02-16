@@ -146,5 +146,5 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
 
 function getDecisionRoute(decisionFilters: Pick<DecisionFilters, 'pivotValue'>) {
   const searchParams = new URLSearchParams(decisionFilters);
-  return `${getRoute('/decisions')}?${searchParams.toString()}`;
+  return `${getRoute('/detection/decisions')}?${searchParams.toString()}`;
 }

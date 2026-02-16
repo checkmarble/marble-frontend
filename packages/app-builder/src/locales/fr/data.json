@@ -130,6 +130,5 @@
   "view_pivot.type": "Type",
   "viewer.no_object_found": "Aucun objet trouvé avec l'ID \"{{objectId}}\" dans {{tableName}}",
   "viewer.object_id": "ID de l'objet",
-  "viewer.object_type": "Type d'objet",
-  "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. Contactez l'équipe Marble si vous souhaitez modifier votre modèle de données."
+  "viewer.object_type": "Type d'objet"
 }

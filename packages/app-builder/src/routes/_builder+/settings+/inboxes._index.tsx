@@ -1,35 +1,40 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { Nudge } from '@app-builder/components/Nudge';
 import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbox';
 import { UpdateOrganizationSettings } from '@app-builder/components/Settings/Organization/UpdateOrganization';
+import { CreateTag } from '@app-builder/components/Settings/Tags/CreateTag';
+import { DeleteTag } from '@app-builder/components/Settings/Tags/DeleteTag';
+import { UpdateTag } from '@app-builder/components/Settings/Tags/UpdateTag';
+import { ColorPreview } from '@app-builder/components/Tags/ColorPreview';
 import { isAdmin } from '@app-builder/models';
 import { type InboxWithCasesCount, tKeyForInboxUserRole } from '@app-builder/models/inbox';
-import { isAutoAssignmentAvailable, isCreateInboxAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
+import { type TagColor } from '@app-builder/models/tags';
+import {
+  isAutoAssignmentAvailable,
+  isCreateInboxAvailable,
+  isCreateTagAvailable,
+  isDeleteTagAvailable,
+  isEditTagAvailable,
+  isInboxAdmin,
+  isReadTagAvailable,
+} from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import { Namespace } from 'i18next';
+import { type Namespace } from 'i18next';
+import { type Tag } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { cn, Table, useTable } from 'ui-design-system';
+import { Table, useTable } from 'ui-design-system';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
-type LoaderData = {
-  isAutoAssignmentAvailable: boolean;
-  inboxes: InboxWithCasesCount[];
-  organizationId: string;
-  isCreateInboxAvailable: boolean;
-  autoAssignQueueLimit: number;
-};
-
-export async function loader({ request }: LoaderFunctionArgs): Promise<Response> {
+export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
   const { entitlements, inbox, user, organization } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
@@ -45,32 +50,62 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
     return redirect(getRoute('/'));
   }
 
-  const data: LoaderData = {
+  // Tags data
+  const canReadTags = isReadTagAvailable(user);
+  let tags: (Tag & { target: 'case' | 'object' })[] = [];
+  if (canReadTags) {
+    const [caseTags, objectTags] = await Promise.all([
+      organization
+        .listTags({ withCaseCount: true })
+        .then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
+      organization
+        .listTags({ target: 'object' })
+        .then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
+    ]);
+    tags = [...caseTags, ...objectTags];
+  }
+
+  return Response.json({
     isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
     inboxes,
     organizationId: currentOrganization.id,
     isCreateInboxAvailable: isCreateInboxAvailable(user),
     autoAssignQueueLimit: currentOrganization.autoAssignQueueLimit ?? 0,
-  };
-
-  return Response.json(data);
+    // Tags
+    canReadTags,
+    tags,
+    isCreateTagAvailable: canReadTags && isCreateTagAvailable(user),
+    isEditTagAvailable: canReadTags && isEditTagAvailable(user),
+    isDeleteTagAvailable: canReadTags && isDeleteTagAvailable(user),
+  });
 }
 
-const columnHelper = createColumnHelper<InboxWithCasesCount>();
+const inboxColumnHelper = createColumnHelper<InboxWithCasesCount>();
+const tagColumnHelper = createColumnHelper<(Tag & { target: 'case' }) | (Tag & { target: 'object' })>();
 
-export default function Inboxes() {
-  const { t } = useTranslation(['settings']);
-  const { isAutoAssignmentAvailable, inboxes, isCreateInboxAvailable, autoAssignQueueLimit, organizationId } =
-    useLoaderData<LoaderData>();
+export default function CaseManagerSettings() {
+  const { t } = useTranslation(['common', 'settings']);
+  const {
+    isAutoAssignmentAvailable,
+    inboxes,
+    isCreateInboxAvailable,
+    autoAssignQueueLimit,
+    organizationId,
+    canReadTags,
+    tags,
+    isCreateTagAvailable,
+    isEditTagAvailable,
+    isDeleteTagAvailable,
+  } = useLoaderData<typeof loader>();
 
-  const columns = useMemo(() => {
+  const inboxColumns = useMemo(() => {
     return [
-      columnHelper.accessor((row) => row.name, {
+      inboxColumnHelper.accessor((row) => row.name, {
         id: 'name',
         header: t('settings:inboxes.name'),
         size: 100,
       }),
-      columnHelper.accessor((row) => row.users, {
+      inboxColumnHelper.accessor((row) => row.users, {
         id: 'users',
         header: t('settings:inboxes.users'),
         size: 200,
@@ -89,7 +124,7 @@ export default function Inboxes() {
           );
         },
       }),
-      columnHelper.accessor((row) => row.casesCount, {
+      inboxColumnHelper.accessor((row) => row.casesCount, {
         id: 'cases',
         header: t('settings:inboxes.cases'),
         size: 100,
@@ -97,9 +132,9 @@ export default function Inboxes() {
     ];
   }, [t]);
 
-  const { table, getBodyProps, rows, getContainerProps } = useTable({
+  const inboxTable = useTable({
     data: inboxes,
-    columns,
+    columns: inboxColumns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     enableSorting: false,
@@ -118,49 +153,129 @@ export default function Inboxes() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:inboxes')}</span>
+            <UpdateOrganizationSettings
+              isAutoAssignmentAvailable={isAutoAssignmentAvailable}
+              organizationId={organizationId}
+              autoAssignQueueLimit={autoAssignQueueLimit}
+            />
             {isCreateInboxAvailable ? <CreateInbox redirectRoutePath="/settings/inboxes/:inboxId" /> : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <Table.Container {...getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={table.getHeaderGroups()} />
-              <Table.Body {...getBodyProps()}>
-                {rows.map((row) => {
+            <Table.Container {...inboxTable.getContainerProps()} className="max-h-96">
+              <Table.Header headerGroups={inboxTable.table.getHeaderGroups()} />
+              <Table.Body {...inboxTable.getBodyProps()}>
+                {inboxTable.rows.map((row) => {
                   return <Table.Row key={row.id} row={row} />;
                 })}
               </Table.Body>
             </Table.Container>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:global_settings.title')}</span>
-            {isAutoAssignmentAvailable ? (
-              <UpdateOrganizationSettings
-                isAutoAssignmentAvailable={isAutoAssignmentAvailable}
-                organizationId={organizationId}
-                autoAssignQueueLimit={autoAssignQueueLimit}
-              />
-            ) : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <div className="grid w-full grid-cols-[max-content_1fr] gap-4 items-center">
-              <span className="font-bold flex items-center gap-2">
-                {t('settings:global_settings.auto_assign_queue_limit')}
-                {!isAutoAssignmentAvailable ? (
-                  <Nudge
-                    className="size-5"
-                    kind="restricted"
-                    content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
-                      defaultValue: 'N/A',
-                    })}
-                  />
-                ) : null}
-              </span>
-              <span className={cn({ 'blur-xs': !isAutoAssignmentAvailable })}>{autoAssignQueueLimit}</span>
-            </div>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
+        {canReadTags ? (
+          <TagsSection
+            tags={tags}
+            isCreateTagAvailable={isCreateTagAvailable}
+            isEditTagAvailable={isEditTagAvailable}
+            isDeleteTagAvailable={isDeleteTagAvailable}
+          />
+        ) : null}
       </Page.Content>
     </Page.Container>
+  );
+}
+
+// Tags Section
+
+function TagsSection({
+  tags,
+  isCreateTagAvailable,
+  isEditTagAvailable,
+  isDeleteTagAvailable,
+}: {
+  tags: (Tag & { target: 'case' | 'object' })[];
+  isCreateTagAvailable: boolean;
+  isEditTagAvailable: boolean;
+  isDeleteTagAvailable: boolean;
+}) {
+  const { t } = useTranslation(['settings']);
+
+  const columns = useMemo(() => {
+    return [
+      tagColumnHelper.accessor((row) => row.name, {
+        id: 'name',
+        header: t('settings:tags.name'),
+        size: 200,
+      }),
+      tagColumnHelper.accessor((row) => row.color, {
+        id: 'color',
+        header: t('settings:tags.color'),
+        size: 100,
+        cell: ({ getValue }) => <ColorPreview color={getValue() as TagColor} />,
+      }),
+      tagColumnHelper.accessor((row) => row.cases_count, {
+        id: 'cases',
+        header: t('settings:tags.cases'),
+        size: 200,
+      }),
+      tagColumnHelper.accessor((row) => row.target, {
+        id: 'target',
+        header: t('settings:tags.target'),
+        cell: ({ cell }) => {
+          return t(`settings:tags.target.${cell.getValue()}`);
+        },
+        size: 100,
+      }),
+      ...(isEditTagAvailable || isDeleteTagAvailable
+        ? [
+            tagColumnHelper.display({
+              id: 'actions',
+              size: 100,
+              cell: ({ cell }) => {
+                return (
+                  <div className="flex gap-2">
+                    {isEditTagAvailable ? (
+                      <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
+                        <UpdateTag tag={cell.row.original} />
+                      </div>
+                    ) : null}
+                    {isDeleteTagAvailable ? (
+                      <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
+                        <DeleteTag tag={cell.row.original} />
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              },
+            }),
+          ]
+        : []),
+    ];
+  }, [isDeleteTagAvailable, isEditTagAvailable, t]);
+
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
+    data: tags,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    enableSorting: false,
+  });
+
+  return (
+    <CollapsiblePaper.Container>
+      <CollapsiblePaper.Title>
+        <span className="flex-1">{t('settings:tags')}</span>
+        {isCreateTagAvailable ? <CreateTag /> : null}
+      </CollapsiblePaper.Title>
+      <CollapsiblePaper.Content>
+        <Table.Container {...getContainerProps()} className="max-h-96">
+          <Table.Header headerGroups={table.getHeaderGroups()} />
+          <Table.Body {...getBodyProps()}>
+            {rows.map((row) => {
+              return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
+            })}
+          </Table.Body>
+        </Table.Container>
+      </CollapsiblePaper.Content>
+    </CollapsiblePaper.Container>
   );
 }

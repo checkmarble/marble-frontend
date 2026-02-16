@@ -1,5 +1,4 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { PrintHeader, PrintView } from '@app-builder/components/Print';
 import {
   FreeformSearchPage,
@@ -43,27 +42,26 @@ export default function ScreeningSearchIndexPage() {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between">
-        <BreadCrumbs />
-        {hasResults && (
-          <PrintView
-            title={t('screenings:print.title')}
-            trigger={
-              <Button variant="secondary">
-                <Icon icon="download" className="size-4" />
-                {t('screenings:print.open_print_view')}
-              </Button>
-            }
-          >
-            <PrintHeader title={t('screenings:print.title')} userName={userName} />
-            <PrintSearchSummary searchInputs={searchState.inputs} />
-            <PrintResults results={searchState.results} />
-          </PrintView>
-        )}
-      </Page.Header>
       <Page.Container>
-        <Page.Description>{t('screenings:freeform_search.description')}</Page.Description>
-        <Page.ContentV2 className="h-full">
+        <Page.ContentV2 className="h-full gap-v2-md">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">{t('navigation:screening_search')}</h1>
+            {hasResults && (
+              <PrintView
+                title={t('screenings:print.title')}
+                trigger={
+                  <Button variant="secondary">
+                    <Icon icon="download" className="size-4" />
+                    {t('screenings:print.open_print_view')}
+                  </Button>
+                }
+              >
+                <PrintHeader title={t('screenings:print.title')} userName={userName} />
+                <PrintSearchSummary searchInputs={searchState.inputs} />
+                <PrintResults results={searchState.results} />
+              </PrintView>
+            )}
+          </div>
           <FreeformSearchPage onSearchComplete={handleSearchComplete} />
         </Page.ContentV2>
       </Page.Container>

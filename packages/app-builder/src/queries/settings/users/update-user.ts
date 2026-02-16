@@ -7,7 +7,7 @@ export const updateUserPayloadSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.email().min(5),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN']),
+  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
   organizationId: z.uuid(),
 });
 

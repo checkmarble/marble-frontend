@@ -7,15 +7,11 @@ import { getRoute } from '@app-builder/utils/routes';
 import { redirect, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import QueryString from 'qs';
-import { useTranslation } from 'react-i18next';
+
 import { z } from 'zod';
 
 export const handle = {
   i18n: ['settings', 'common', 'filters'] satisfies Namespace,
-  BreadCrumb: function AuditEventsBreadcrumb() {
-    const { t } = useTranslation(['settings']);
-    return <span>{t('settings:audit')}</span>;
-  },
 };
 
 const DEFAULT_LIMIT = 25;

@@ -1,30 +1,39 @@
-import { CollapsiblePaper, Page } from '@app-builder/components';
+import { CalloutV2, CollapsiblePaper, Page } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { type ServerFnResult } from '@app-builder/core/middleware-types';
+import { createServerFn, data } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import {
   type DataModel,
   type DataModelWithTableOptions,
+  isAdmin,
   mergeDataModelWithTableOptions,
   type SetDataModelTableOptionsBody,
   type TableModel,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { initServerServices } from '@app-builder/services/init.server';
 import { handleSubmit } from '@app-builder/utils/form';
 import { reorder } from '@app-builder/utils/list';
 import { getRoute } from '@app-builder/utils/routes';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
-import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { useForm } from '@tanstack/react-form';
 import { cva } from 'class-variance-authority';
+import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Switch } from 'ui-design-system';
+import { Button, Collapsible, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
+
+export const handle = {
+  i18n: ['settings', 'common'] satisfies Namespace,
+};
 
 function createTableOptionSchema(dataModel: DataModel) {
   return z.object(
@@ -45,77 +54,81 @@ function createTableOptionSchema(dataModel: DataModel) {
   );
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function dataDisplayLoader({ context }) {
+  const { user, dataModelRepository } = context.authInfo;
+
+  if (!isAdmin(user)) {
+    return redirect(getRoute('/'));
+  }
 
   const dataModel = await dataModelRepository.getDataModel();
-  const dataModelWithTableOptions = (await Promise.all(
+  const dataModelWithTableOptions = await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
       dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
         return mergeDataModelWithTableOptions(table, options);
       }),
     ),
-  )) satisfies DataModelWithTableOptions;
+  );
 
   return { dataModelWithTableOptions };
-}
+});
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
-  const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+type DataDisplayActionResult = ServerFnResult<{ success: boolean; errors: any }>;
 
-  const dataModel = await dataModelRepository.getDataModel();
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function dataDisplayAction({ request, context }): DataDisplayActionResult {
+    const { toastSessionService } = context.services;
+    const toastSession = await toastSessionService.getSession(request);
+    const { dataModelRepository } = context.authInfo;
 
-  const schema = createTableOptionSchema(dataModel);
-  const data = await request.json();
-  const submission = schema.safeParse(data);
+    const dataModel = await dataModelRepository.getDataModel();
+    const schema = createTableOptionSchema(dataModel);
+    const rawData = await request.json();
+    const submission = schema.safeParse(rawData);
 
-  const session = await getSession(request);
+    if (!submission.success) {
+      return { success: false, errors: z.treeifyError(submission.error) };
+    }
 
-  if (!submission.success) {
-    return { success: false, errors: z.treeifyError(submission.error) };
-  }
+    try {
+      const payloadEntries = Dict.entries(submission.data);
 
-  try {
-    const payloadEntries = Dict.entries(submission.data);
+      await Promise.all(
+        payloadEntries.map(([tableId, body]) =>
+          dataModelRepository.setDataModelTableOptions(tableId, {
+            ...body,
+            displayedFields: body.displayedFields ?? [],
+          }),
+        ),
+      );
 
-    await Promise.all(
-      payloadEntries.map(([tableId, body]) =>
-        dataModelRepository.setDataModelTableOptions(tableId, {
-          ...body,
-          displayedFields: body.displayedFields ?? [],
-        }),
-      ),
-    );
+      setToastMessage(toastSession, {
+        type: 'success',
+        messageKey: 'common:success.save',
+      });
 
-    setToastMessage(session, {
-      type: 'success',
-      messageKey: 'common:success.save',
-    });
+      return data({ success: true, errors: null }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    } catch (_err) {
+      setToastMessage(toastSession, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
 
-    return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  } catch (_err) {
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
-
-    return Response.json({ status: 'error', errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  }
-}
+      return data({ success: false, errors: [] }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    }
+  },
+);
 
 export default function DataDisplaySettings() {
   const { t } = useTranslation(['common', 'settings']);
   const { dataModelWithTableOptions } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
+
   const form = useForm({
     defaultValues: R.pipe(
       dataModelWithTableOptions,
@@ -141,7 +154,6 @@ export default function DataDisplaySettings() {
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
-          action: getRoute('/settings/data-display'),
           method: 'POST',
           encType: 'application/json',
         });
@@ -152,44 +164,53 @@ export default function DataDisplaySettings() {
   return (
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
-        <form onSubmit={handleSubmit(form)} className="contents">
-          <div className="flex items-center justify-between p-2">
-            <div>{t('settings:data_display.global_explanation')}</div>
+        <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8">
+          <div className="flex items-center justify-between gap-4">
+            <CalloutV2>{t('settings:data_display.global_explanation')}</CalloutV2>
             <Button type="submit" variant="primary">
               {t('common:save')}
             </Button>
           </div>
-          {dataModelWithTableOptions.map((tableModelWithOptions) => (
-            <form.Field
-              key={tableModelWithOptions.id}
-              name={tableModelWithOptions.id}
-              validators={{
-                onChange: createTableOptionSchema(dataModelWithTableOptions).shape[
-                  tableModelWithOptions.id
-                ] as unknown as any,
-                onBlur: createTableOptionSchema(dataModelWithTableOptions).shape[
-                  tableModelWithOptions.id
-                ] as unknown as any,
-              }}
-            >
-              {(field) => {
-                return (
-                  <CollapsiblePaper.Container defaultOpen={false}>
-                    <CollapsiblePaper.Title>
-                      <span className="flex-1">{tableModelWithOptions.name}</span>
-                    </CollapsiblePaper.Title>
-                    <CollapsiblePaper.Content>
-                      <TableModelFieldDnD
-                        tableModel={tableModelWithOptions}
-                        options={field.state.value}
-                        onChange={field.handleChange}
-                      />
-                    </CollapsiblePaper.Content>
-                  </CollapsiblePaper.Container>
-                );
-              }}
-            </form.Field>
-          ))}
+          <CollapsiblePaper.Container>
+            <CollapsiblePaper.Title>
+              <span className="flex-1">{t('settings:data_display')}</span>
+            </CollapsiblePaper.Title>
+            <CollapsiblePaper.Content>
+              <div className="flex flex-col gap-2">
+                {dataModelWithTableOptions.map((tableModelWithOptions) => (
+                  <form.Field
+                    key={tableModelWithOptions.id}
+                    name={tableModelWithOptions.id}
+                    validators={{
+                      onChange: createTableOptionSchema(dataModelWithTableOptions).shape[
+                        tableModelWithOptions.id
+                      ] as unknown as any,
+                      onBlur: createTableOptionSchema(dataModelWithTableOptions).shape[
+                        tableModelWithOptions.id
+                      ] as unknown as any,
+                    }}
+                  >
+                    {(field) => {
+                      return (
+                        <Collapsible.Container defaultOpen={false}>
+                          <Collapsible.Title size="small" className="!px-4 !py-3">
+                            <span className="flex-1 truncate font-normal">{tableModelWithOptions.name}</span>
+                          </Collapsible.Title>
+                          <Collapsible.Content className="[&>div]:!p-2">
+                            <TableModelFieldDnD
+                              tableModel={tableModelWithOptions}
+                              options={field.state.value}
+                              onChange={field.handleChange}
+                            />
+                          </Collapsible.Content>
+                        </Collapsible.Container>
+                      );
+                    }}
+                  </form.Field>
+                ))}
+              </div>
+            </CollapsiblePaper.Content>
+          </CollapsiblePaper.Container>
         </form>
       </Page.Content>
     </Page.Container>

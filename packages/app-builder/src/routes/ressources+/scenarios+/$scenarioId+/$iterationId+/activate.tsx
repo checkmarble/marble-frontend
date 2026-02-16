@@ -49,7 +49,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return Response.json({
-      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId', {
+      redirectTo: getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(iterationId),
       }),
