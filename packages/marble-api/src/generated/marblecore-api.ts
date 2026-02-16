@@ -760,6 +760,7 @@ export type CreateCustomListValueBody = {
 };
 export type ScenarioDto = {
     id: string;
+    archived: boolean;
     created_at: string;
     description: string;
     live_version_id?: string;
@@ -773,6 +774,7 @@ export type ScenarioCreateInputDto = {
     trigger_object_type: string;
 };
 export type ScenarioUpdateInputDto = {
+    archived?: boolean;
     description?: string;
     name?: string;
 };
@@ -3067,6 +3069,30 @@ export function updateScenario(scenarioId: string, scenarioUpdateInputDto: Scena
         ...opts,
         method: "PATCH",
         body: scenarioUpdateInputDto
+    })));
+}
+/**
+ * Copy a scenario
+ */
+export function copyScenario(scenarioId: string, body: {
+    name?: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenarios/${encodeURIComponent(scenarioId)}/copy`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
     })));
 }
 /**

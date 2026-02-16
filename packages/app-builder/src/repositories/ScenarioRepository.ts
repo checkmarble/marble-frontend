@@ -52,6 +52,9 @@ export interface ScenarioRepository {
   getScenario(args: { scenarioId: string }): Promise<Scenario>;
   createScenario(args: ScenarioCreateInput): Promise<Scenario>;
   updateScenario(args: { scenarioId: string; name: string; description: string | null }): Promise<Scenario>;
+  copyScenario(args: { scenarioId: string; name?: string }): Promise<Scenario>;
+  archiveScenario(args: { scenarioId: string }): Promise<Scenario>;
+  unarchiveScenario(args: { scenarioId: string }): Promise<Scenario>;
   createScenarioIteration(args: { scenarioId: string }): Promise<ScenarioIteration>;
   updateScenarioIteration(iterationId: string, input: UpdateScenarioIterationBody): Promise<ScenarioIteration>;
   getScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
@@ -113,6 +116,18 @@ export function makeGetScenarioRepository() {
         name,
         description: description ?? '',
       });
+      return adaptScenario(scenario);
+    },
+    copyScenario: async ({ scenarioId, name }) => {
+      const scenario = await marbleCoreApiClient.copyScenario(scenarioId, { name });
+      return adaptScenario(scenario);
+    },
+    archiveScenario: async ({ scenarioId }) => {
+      const scenario = await marbleCoreApiClient.updateScenario(scenarioId, { archived: true });
+      return adaptScenario(scenario);
+    },
+    unarchiveScenario: async ({ scenarioId }) => {
+      const scenario = await marbleCoreApiClient.updateScenario(scenarioId, { archived: false });
       return adaptScenario(scenario);
     },
     createScenarioIteration: async ({ scenarioId }) => {

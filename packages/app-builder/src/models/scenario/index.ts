@@ -4,6 +4,7 @@ export type DecisionToCaseWorkflowType = 'DISABLED' | 'CREATE_CASE' | 'ADD_TO_CA
 
 export interface Scenario {
   id: string;
+  archived: boolean;
   createdAt: string;
   description: string;
   liveVersionId?: string;
@@ -15,6 +16,7 @@ export interface Scenario {
 export function adaptScenario(dto: ScenarioDto): Scenario {
   return {
     id: dto.id,
+    archived: dto.archived,
     createdAt: dto.created_at,
     description: dto.description,
     liveVersionId: dto.live_version_id,
