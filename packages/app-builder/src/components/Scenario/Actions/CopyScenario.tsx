@@ -43,7 +43,7 @@ function CopyScenarioContent({ scenarioId, scenarioName }: { scenarioId: string;
     onSubmit: async ({ value }) => {
       await copyScenarioMutation.mutateAsync({
         scenarioId,
-        name: value.name || undefined,
+        name: value.name || t('scenarios:copy_scenario.name_placeholder', { name: scenarioName }),
       });
     },
     validators: {
