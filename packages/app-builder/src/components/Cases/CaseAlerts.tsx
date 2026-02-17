@@ -1,20 +1,23 @@
 import { DetailedCaseDecision } from '@app-builder/models/cases';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
+import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { useLoaderData } from '@remix-run/react';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { Link, useLoaderData } from '@remix-run/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, map, pipe, take } from 'remeda';
 import { Button, cn } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { OutcomeBadge } from '../Decisions';
 import { FormatData } from '../FormatData';
-import { ScoreModifier } from '../Scenario/Rules/ScoreModifier';
 import { casesI18n } from './cases-i18n';
-import { RequiredActions } from './RequiredActions';
 
-const MAX_ITEMS_DISPLAYED = 4;
+const MAX_TRIGGER_FIELDS_DISPLAYED = 4;
+const MAX_RULES_DISPLAYED = 3;
 
 export const CaseAlerts = ({
   selectDecision,
@@ -43,119 +46,157 @@ export const CaseAlerts = ({
 
   return decisions ? (
     <>
-      <div className="text-small border-grey-border bg-surface-card rounded-lg border">
-        <div className="text-default text-grey-secondary grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
-          <span className="p-v2-sm">{t('cases:decisions.date')}</span>
-          <span className="p-v2-sm">{t('cases:decisions.alert')}</span>
-          <span className="p-v2-sm">{t('cases:decisions.trigger_object')}</span>
-          <span className="p-v2-sm">{t('cases:decisions.rule_hits')}</span>
-        </div>
+      <div className="flex flex-col gap-2">
         {decisions.map((decision) => {
           const triggerObjectOptions = dataModelWithTableOptions.find(
             ({ name }) => name === decision.triggerObjectType,
           );
 
+          const triggerObjectFields = pipe(
+            triggerObjectOptions?.options.fieldOrder ?? [],
+            filter((id) =>
+              triggerObjectOptions?.options.displayedFields
+                ? triggerObjectOptions.options.displayedFields.includes(id)
+                : true,
+            ),
+            map((id) => {
+              const field = triggerObjectOptions?.fields.find((f) => f.id === id);
+              return field ? { id, name: field.name } : null;
+            }),
+            filter((f): f is { id: string; name: string } => f !== null),
+          );
+
+          const hitRules = pipe(
+            decision.rules,
+            filter((r) => r.outcome === 'hit'),
+          );
+
+          const isPendingReview = decision.outcome === 'block_and_review' && decision.reviewStatus === 'pending';
+          const isActive = selectedDecision === decision.id && drawerContentMode === 'decision';
+
           return (
             <div
               key={decision.id}
               className={cn(
-                'border-grey-border hover:bg-grey-background-light group grid min-h-28 grid-cols-[82px_2fr_1.3fr_1fr] border-t transition-colors',
-                {
-                  'bg-purple-background-light': selectedDecision === decision.id && drawerContentMode === 'decision',
-                },
+                'border-grey-border bg-surface-card grid cursor-pointer grid-cols-[80px_1fr] gap-2 rounded-lg border p-4 transition-colors',
+                { 'bg-purple-background-light': isActive },
               )}
+              onClick={() => {
+                selectDecision(decision);
+                setSelectedDecision(decision.id);
+                setDrawerContentMode('decision');
+              }}
             >
-              <div className="flex min-h-full flex-col items-center p-2">
+              {/* Left column: Date */}
+              <div className="flex h-6 items-center">
                 <span className="text-grey-secondary text-xs font-normal">
                   {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
                 </span>
               </div>
-              <div className="border-grey-border flex min-h-full flex-col gap-2 border-x p-2">
-                <div className="relative flex items-center justify-between">
-                  <div className="flex size-full items-center gap-2.5">
+
+              {/* Right column: Vertical content */}
+              <div className="flex flex-col gap-1">
+                {/* Row 1: Header — outcome, scenario, score, actions */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 overflow-hidden">
                     <OutcomeBadge
                       outcome={decision.outcome}
                       reviewStatus={decision.reviewStatus}
                       showBackground={false}
+                      className="gap-1 p-0"
                     />
-                    <span className="text-grey-secondary text-ellipsis text-xs font-normal">
-                      {decision.scenario.name}
+                    <span className="truncate text-xs font-normal">{decision.scenario.name}</span>
+                    <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-normal">
+                      {decision.score >= 0 ? '+' : ''}
+                      {decision.score}
                     </span>
-                    <ScoreModifier score={decision.score} />
                   </div>
-                  <Button
-                    variant="secondary"
-                    className="absolute right-0 top-0 hidden group-hover:flex"
-                    onClick={() => {
-                      selectDecision(decision);
-                      setSelectedDecision(decision.id);
-                      setDrawerContentMode('decision');
-                    }}
-                  >
-                    {t('common:open')}
-                  </Button>
+                  {isPendingReview ? (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                    <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
+                        <Button variant="primary" size="small">
+                          {t('cases:decisions.approve_or_decline')}
+                        </Button>
+                      </ReviewDecisionModal>
+                    </div>
+                  ) : null}
                 </div>
-                <RequiredActions decision={decision} caseId={caseDetail.id} />
-              </div>
-              <div className="border-grey-border flex h-full flex-col items-start gap-1 overflow-hidden border-r p-2">
-                {pipe(
-                  triggerObjectOptions?.options.fieldOrder ?? [],
-                  filter((id) =>
-                    triggerObjectOptions?.options.displayedFields
-                      ? triggerObjectOptions.options.displayedFields.includes(id)
-                      : true,
-                  ),
-                  take(MAX_ITEMS_DISPLAYED),
-                  map((id) => {
-                    const property = triggerObjectOptions?.fields.find((f) => f.id === id)?.name;
 
-                    return property ? (
-                      <span
-                        key={id}
-                        className="border-grey-border flex w-fit gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
-                      >
-                        <span>{property}:</span>
-                        <FormatData data={parseUnknownData(decision.triggerObject[property])} />
+                {/* Row 2: Trigger objects */}
+                {triggerObjectFields.length > 0 ? (
+                  <div className="flex flex-wrap items-center gap-1 text-xs">
+                    <span className="text-grey-secondary shrink-0">{t('cases:decisions.trigger_objects')}</span>
+                    {pipe(
+                      triggerObjectFields,
+                      take(MAX_TRIGGER_FIELDS_DISPLAYED),
+                      map((field) => (
+                        <span
+                          key={field.id}
+                          className="border-grey-border inline-flex items-center gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
+                        >
+                          <span className="font-medium">{field.name}:</span>
+                          <FormatData data={parseUnknownData(decision.triggerObject[field.name])} />
+                        </span>
+                      )),
+                    )}
+                    {triggerObjectFields.length > MAX_TRIGGER_FIELDS_DISPLAYED ? (
+                      <span className="border-grey-border rounded-xs border px-1.5 py-0.5 text-xs font-medium">
+                        +{triggerObjectFields.length - MAX_TRIGGER_FIELDS_DISPLAYED}
                       </span>
-                    ) : null;
-                  }),
-                )}
-              </div>
-              <div className="flex min-h-full flex-col items-start gap-1 truncate p-2">
-                {pipe(
-                  decision.rules,
-                  filter((r) => r.outcome === 'hit'),
-                  (arr) => {
-                    if (arr.length > MAX_ITEMS_DISPLAYED) {
-                      // We add a fake rule execution to display the number of remaining executions
-                      const items = take(arr, MAX_ITEMS_DISPLAYED - 1);
-                      items.push({
-                        name: 'executions-remains',
-                        scoreModifier: arr.length - items.length,
-                        outcome: 'hit',
-                        ruleId: '',
-                      });
-                      return items;
-                    }
-                    return take(arr, MAX_ITEMS_DISPLAYED);
-                  },
-                  map((r) => (
-                    <span
-                      key={r.name}
-                      className="border-grey-border flex items-center gap-1 rounded-xs border px-1.5 py-0.5 text-xs font-normal"
-                    >
-                      {r.name === 'executions-remains' ? (
-                        <span>{t('common:more_remains', { count: r.scoreModifier })}</span>
-                      ) : (
-                        <>
-                          <span>{r.scoreModifier > 0 ? '+' : '-'}</span>
-                          <span>{Math.abs(r.scoreModifier)}</span>
-                          <span>{r.name}</span>
-                        </>
-                      )}
-                    </span>
-                  )),
-                )}
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {/* Row 3: Rules hit */}
+                {hitRules.length > 0 ? (
+                  <div className="flex flex-wrap items-center gap-1 text-xs">
+                    <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}:</span>
+                    {pipe(
+                      hitRules,
+                      take(MAX_RULES_DISPLAYED),
+                      map((r) => (
+                        <span
+                          key={r.ruleId || r.name}
+                          className="border-grey-border truncate rounded-xs border px-1.5 py-0.5 text-xs font-normal"
+                        >
+                          {r.scoreModifier > 0 ? '+' : ''}
+                          {r.scoreModifier} {r.name}
+                        </span>
+                      )),
+                    )}
+                    {hitRules.length > MAX_RULES_DISPLAYED ? (
+                      <span className="border-grey-border rounded-xs border px-1.5 py-0.5 text-xs font-medium">
+                        +{hitRules.length - MAX_RULES_DISPLAYED}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                {/* Row 4: Status on hits (screenings) */}
+                {decision.screenings.length > 0 ? (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
+                    <div className="flex flex-col gap-2">
+                      {decision.screenings.map((screening) => (
+                        <div key={screening.id} className="flex items-center gap-2">
+                          <span className="text-grey-placeholder list-disc text-xs font-medium">&bull;</span>
+                          <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
+                          <Link
+                            to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
+                              caseId: fromUUIDtoSUUID(caseDetail.id),
+                              decisionId: fromUUIDtoSUUID(decision.id),
+                              screeningId: fromUUIDtoSUUID(screening.id),
+                            })}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ScreeningStatusButton status={screening.status} count={screening.count} />
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
           );
@@ -169,3 +210,43 @@ export const CaseAlerts = ({
     </>
   ) : null;
 };
+
+function ScreeningStatusButton({ status, count }: { status: string; count: number }) {
+  const { t } = useTranslation(casesI18n);
+
+  if (status === 'in_review') {
+    return (
+      <Button variant="warning" size="small" className="shadow-sm" tabIndex={-1}>
+        {t('screenings:status.in_review')}
+        {count > 0 ? ` (${count})` : ''}
+        <Icon icon="eye" className="size-4 shrink-0" />
+      </Button>
+    );
+  }
+
+  if (status === 'no_hit') {
+    return (
+      <Button variant="success" appearance="stroked" size="small" className="shadow-sm" tabIndex={-1}>
+        {t('screenings:status.no_hit')}
+        <Icon icon="eye" className="size-4 shrink-0" />
+      </Button>
+    );
+  }
+
+  if (status === 'confirmed_hit') {
+    return (
+      <Button variant="destructive" appearance="stroked" size="small" className="shadow-sm" tabIndex={-1}>
+        {t('screenings:status.confirmed_hit')}
+        <Icon icon="eye" className="size-4 shrink-0" />
+      </Button>
+    );
+  }
+
+  // error or unknown status
+  return (
+    <Button variant="secondary" size="small" className="shadow-sm" tabIndex={-1}>
+      {t(`screenings:status.${status}`)}
+      <Icon icon="eye" className="size-4 shrink-0" />
+    </Button>
+  );
+}
