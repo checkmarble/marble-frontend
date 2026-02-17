@@ -30,10 +30,7 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
       <span
         className={clsx(
           'text-s flex h-6 flex-1 items-center justify-center rounded-sm border px-2 font-medium capitalize leading-none shadow-sm',
-          isRuleExecutionHit(ruleExecution) && 'border-red-primary text-red-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'grey' && 'border-green-primary text-green-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'lavender' && 'border-purple-primary text-purple-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'red' && 'border-red-primary text-red-primary',
+          getRuleExecutionBadgeColor(ruleExecution),
         )}
       >
         {getRuleExecutionStatusLabel(t, ruleExecution)}
@@ -42,17 +39,11 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   );
 }
 
-function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
-  if (isRuleExecutionHit(ruleExecution)) {
-    return 'green';
-  }
-  if (isRuleExecutionError(ruleExecution)) {
-    return 'red';
-  }
-  if (isRuleExecutionSnoozed(ruleExecution)) {
-    return 'lavender';
-  }
-  return 'grey';
+function getRuleExecutionBadgeColor(ruleExecution: RuleExecution) {
+  if (isRuleExecutionHit(ruleExecution)) return 'border-red-primary text-red-primary';
+  if (isRuleExecutionError(ruleExecution)) return 'border-red-primary text-red-primary';
+  if (isRuleExecutionSnoozed(ruleExecution)) return 'border-purple-primary text-purple-primary';
+  return 'border-green-primary text-green-primary';
 }
 
 function getRuleExecutionStatusLabel(t: TFunction<typeof decisionsI18n>, ruleExecution: RuleExecution) {

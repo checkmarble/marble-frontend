@@ -1,4 +1,4 @@
-import { DetailedCaseDecision } from '@app-builder/models/cases';
+import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
@@ -204,7 +204,7 @@ export const AlertCard = ({
             <div className="flex flex-col gap-2">
               {decision.screenings.map((screening) => (
                 <div key={screening.id} className="flex items-center gap-2">
-                  <span className="text-grey-placeholder list-disc text-xs font-medium">&bull;</span>
+                  <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
                   <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
                   <Link
                     to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {

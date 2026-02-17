@@ -124,7 +124,9 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
             <Spinner className="size-8" />
           </div>
         ))
-        .with({ isError: true }, () => <div>Error</div>)
+        .with({ isError: true }, () => (
+          <div className="text-grey-secondary p-4 text-center text-xs">{t('common:global_error')}</div>
+        ))
         .otherwise(() =>
           filteredRuleExecutions.length === 0 ? null : (
             <div className="flex flex-col gap-2">
