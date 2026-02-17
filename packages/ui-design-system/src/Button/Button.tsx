@@ -63,7 +63,7 @@ export const CtaV2ClassName = cva(
         icon: 'aspect-square justify-center',
       },
       size: {
-        small: '',
+        small: 'text-small',
         default: '',
       },
     },
