@@ -1,14 +1,18 @@
-import { ErrorComponent, Page } from '@app-builder/components';
+import { Callout, ErrorComponent, Page } from '@app-builder/components';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { type Scenario } from '@app-builder/models/scenario';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
+import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Tag } from 'ui-design-system';
+import { Button, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -21,14 +25,88 @@ export const loader = createServerFn([authMiddleware], async function scenariosL
   };
 });
 
+const columnHelper = createColumnHelper<Scenario>();
+
 export default function DetectionScenariosPage() {
   const { t } = useTranslation(handle.i18n);
   const { scenarios } = useLoaderData<typeof loader>();
+  const formatDateTime = useFormatDateTime();
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('liveVersionId', {
+        id: 'status',
+        header: t('scenarios:list.column.status'),
+        size: 100,
+        cell: ({ getValue }) => {
+          const liveVersionId = getValue();
+          return liveVersionId ? (
+            <Tag color="purple" size="small" className="capitalize">
+              {t('scenarios:live')}
+            </Tag>
+          ) : null;
+        },
+      }),
+      columnHelper.accessor('name', {
+        id: 'name',
+        header: t('scenarios:list.column.name'),
+        size: 250,
+        sortingFn: 'text',
+        enableSorting: true,
+      }),
+      columnHelper.accessor('description', {
+        id: 'description',
+        header: t('scenarios:list.column.description'),
+        size: 300,
+      }),
+      columnHelper.accessor('triggerObjectType', {
+        id: 'triggerObjectType',
+        header: t('scenarios:list.column.trigger_object'),
+        size: 140,
+        cell: ({ getValue }) => {
+          const triggerObjectType = getValue();
+          return (
+            <Tag color="purple" size="small" border="rounded-sm">
+              {triggerObjectType}
+            </Tag>
+          );
+        },
+      }),
+      columnHelper.accessor('createdAt', {
+        id: 'lastEdition',
+        header: t('scenarios:list.column.last_edition'),
+        size: 200,
+        cell: ({ getValue }) => {
+          const createdAt = getValue();
+          return formatDateTime(createdAt, {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          });
+        },
+      }),
+    ],
+    [t, formatDateTime],
+  );
+
+  const { table, isEmpty, getBodyProps, rows, getContainerProps } = useVirtualTable({
+    data: scenarios,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    rowLink: ({ id }) => (
+      <Link
+        to={getRoute('/detection/scenarios/:scenarioId', {
+          scenarioId: fromUUIDtoSUUID(id),
+        })}
+      />
+    ),
+  });
 
   return (
     <Page.Main>
       <Page.Container>
-        <Page.ContentV2 className="gap-v2-md">
+        <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
           <DetectionNavigationTabs
             actions={
               <CreateScenario>
@@ -39,39 +117,22 @@ export default function DetectionScenariosPage() {
               </CreateScenario>
             }
           />
-          <div className="flex flex-col gap-4 max-w-3xl">
-            <div className="flex flex-col gap-2 lg:gap-4">
-              {scenarios.length ? (
-                scenarios.map((scenario) => {
-                  return (
-                    <Link
-                      key={scenario.id}
-                      to={getRoute('/detection/scenarios/:scenarioId', {
-                        scenarioId: fromUUIDtoSUUID(scenario.id),
-                      })}
-                    >
-                      <div className="bg-surface-card border-grey-border flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md dark:hover:border-purple-hover">
-                        <div className="text-m flex flex-row gap-2 font-bold">
-                          {scenario.name}
-                          {scenario.liveVersionId ? (
-                            <Tag color="purple" className="capitalize">
-                              {t('scenarios:live')}
-                            </Tag>
-                          ) : null}
-                        </div>
-                        {scenario.description ? (
-                          <p className="text-s line-clamp-2 font-medium">{scenario.description}</p>
-                        ) : null}
-                      </div>
-                    </Link>
-                  );
-                })
-              ) : (
-                <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-                  <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
-                </div>
-              )}
-            </div>
+          <Callout variant="outlined">{t('scenarios:list.callout')}</Callout>
+          <div className="flex flex-col gap-4">
+            {isEmpty ? (
+              <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+                <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
+              </div>
+            ) : (
+              <Table.Container {...getContainerProps()} className="bg-surface-card max-h-[70dvh]">
+                <Table.Header headerGroups={table.getHeaderGroups()} />
+                <Table.Body {...getBodyProps()}>
+                  {rows.map((row) => (
+                    <Table.Row key={row.id} row={row} />
+                  ))}
+                </Table.Body>
+              </Table.Container>
+            )}
           </div>
         </Page.ContentV2>
       </Page.Container>

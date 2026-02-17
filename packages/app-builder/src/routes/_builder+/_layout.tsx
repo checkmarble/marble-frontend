@@ -110,14 +110,7 @@ export default function Builder() {
                     <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
                       <LeftSidebar>
                         <div className="h-24 px-2 pt-3">
-                          <UserInfo
-                            email={user.actorIdentity.email}
-                            firstName={user.actorIdentity.firstName}
-                            lastName={user.actorIdentity.lastName}
-                            role={user.role}
-                            orgName={organization.name}
-                            isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable}
-                          />
+                          <UserInfo isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable} />
                         </div>
                         <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                           <ul className="flex flex-col gap-2">
