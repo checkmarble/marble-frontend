@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { waitForHydration, waitForThen } from 'tests/common/utils';
 
 test('Create new list', async ({ page }) => {
-  await page.goto('/lists');
+  await page.goto('/detection/lists');
   await waitForHydration(page);
 
   const listName = crypto.randomUUID();
@@ -19,7 +19,7 @@ test('Create new list', async ({ page }) => {
     async (button) => await button.click(),
   );
 
-  await page.waitForURL('/lists/**');
+  await page.waitForURL('/detection/lists/**');
   await page.waitForLoadState();
 
   for (const value of values) {
@@ -31,12 +31,12 @@ test('Create new list', async ({ page }) => {
     await page.getByRole('textbox', { name: 'Value' }).waitFor({ state: 'hidden' });
   }
 
-  await page.getByRole('listitem').filter({ hasText: 'Lists' }).getByRole('link').click();
-  await page.waitForURL('/lists');
+  await page.getByRole('link', { name: 'Lists' }).click();
+  await page.waitForURL('/detection/lists');
   await page.waitForLoadState();
 
   await page.getByRole('cell', { name: listName }).click();
-  await page.waitForURL('/lists/**');
+  await page.waitForURL('/detection/lists/**');
   await page.waitForLoadState();
 
   for (const value of values) {
