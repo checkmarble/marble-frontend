@@ -3,23 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 
 import { decisionsI18n } from '../../decisions-i18n';
-import { useDecisionFiltersContext, useTriggerObjectIdFilter } from '../DecisionFiltersContext';
+import { useTriggerObjectIdFilter } from '../DecisionFiltersContext';
 import { useFiltersMenuContext } from '../DecisionFiltersMenu';
 
 export function TriggerObjectIdFilter() {
   const { t } = useTranslation(decisionsI18n);
   const { selectedTriggerObjectId, setSelectedTriggerObjectId } = useTriggerObjectIdFilter();
-  const { submitDecisionFilters } = useDecisionFiltersContext();
   const { closeMenu } = useFiltersMenuContext();
-
-  const handleValidate = () => {
-    submitDecisionFilters();
-    closeMenu();
-  };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      handleValidate();
+      closeMenu();
     }
   };
 
@@ -35,7 +29,7 @@ export function TriggerObjectIdFilter() {
         placeholder={t('decisions:filters.trigger_object_id.placeholder')}
         autoFocus
       />
-      <Button variant="secondary" onClick={handleValidate}>
+      <Button variant="secondary" onClick={closeMenu}>
         {t('common:validate')}
       </Button>
     </div>

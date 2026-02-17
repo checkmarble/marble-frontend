@@ -8,23 +8,17 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 
 import { decisionsI18n } from '../../decisions-i18n';
-import { useDecisionFiltersContext, usePivotValueFilter } from '../DecisionFiltersContext';
+import { usePivotValueFilter } from '../DecisionFiltersContext';
 import { useFiltersMenuContext } from '../DecisionFiltersMenu';
 
 export function PivotValueFilter() {
   const { t } = useTranslation(decisionsI18n);
   const { hasPivots, selectedPivotValue, setSelectedPivotValue } = usePivotValueFilter();
-  const { submitDecisionFilters } = useDecisionFiltersContext();
   const { closeMenu } = useFiltersMenuContext();
-
-  const handleValidate = () => {
-    submitDecisionFilters();
-    closeMenu();
-  };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      handleValidate();
+      closeMenu();
     }
   };
 
@@ -52,7 +46,7 @@ export function PivotValueFilter() {
             onKeyDown={handleKeyDown}
             autoFocus
           />
-          <Button variant="secondary" onClick={handleValidate}>
+          <Button variant="secondary" onClick={closeMenu}>
             {t('common:validate')}
           </Button>
         </div>
