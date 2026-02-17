@@ -18,9 +18,9 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   const isHit = isRuleExecutionHit(ruleExecution);
 
   return (
-    <div className="inline-flex h-8 gap-1">
+    <div className="inline-flex h-6 gap-1">
       {isHit ? (
-        <span className="text-s text-purple-primary flex items-center justify-center rounded-full border border-purple-primary px-2 font-semibold">
+        <span className="text-s text-purple-primary flex h-6 items-center justify-center rounded-full border border-purple-primary px-2 font-normal leading-none">
           {formatNumber(ruleExecution.scoreModifier, {
             language,
             signDisplay: 'exceptZero',
@@ -29,9 +29,9 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
       ) : null}
       <span
         className={clsx(
-          'text-s flex flex-1 items-center justify-center rounded-sm border px-2 font-semibold capitalize shadow-sm',
+          'text-s flex h-6 flex-1 items-center justify-center rounded-sm border px-2 font-medium capitalize leading-none shadow-sm',
           isRuleExecutionHit(ruleExecution) && 'border-red-primary text-red-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'grey' && 'border-grey-placeholder text-grey-primary',
+          getRuleExecutionStatusColor(ruleExecution) === 'grey' && 'border-green-primary text-green-primary',
           getRuleExecutionStatusColor(ruleExecution) === 'lavender' && 'border-purple-primary text-purple-primary',
           getRuleExecutionStatusColor(ruleExecution) === 'red' && 'border-red-primary text-red-primary',
         )}

@@ -78,7 +78,10 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
           <div className="flex items-center gap-2">
             <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} showLabel={false} />
             <span className="text-l text-grey-primary font-semibold">{decision.scenario.name}</span>
-            <ScoreModifier score={decision.score} />
+            <ScoreModifier
+              score={decision.score}
+              className="border-grey-placeholder text-grey-placeholder border bg-transparent"
+            />
           </div>
           {isPendingReview ? (
             <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
