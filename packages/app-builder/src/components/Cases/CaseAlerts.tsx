@@ -11,7 +11,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData } from '@remix-run/react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
@@ -21,7 +21,7 @@ import { FormatData } from '../FormatData';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 
-const MAX_TRIGGER_FIELDS_DISPLAYED = 4;
+const MAX_TRIGGER_FIELDS_DISPLAYED = 3;
 const MAX_RULES_DISPLAYED = 3;
 
 export const CaseAlerts = ({
@@ -148,27 +148,28 @@ export const AlertCard = ({
 
         {/* Row 2: Trigger objects */}
         {triggerObjectFields.length > 0 ? (
-          <div className="flex flex-wrap items-center gap-1 text-xs">
-            <span className="text-grey-secondary shrink-0">{t('cases:decisions.trigger_objects')}</span>
+          <span className="truncate text-xs">
+            <span className="text-grey-secondary">{t('cases:decisions.trigger_objects')}</span>
             {pipe(
               triggerObjectFields,
               take(MAX_TRIGGER_FIELDS_DISPLAYED),
-              map((field) => (
-                <span
-                  key={field.id}
-                  className="border-grey-border inline-flex items-center gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
-                >
-                  <span className="font-medium">{field.name}:</span>
+              map((field, index) => (
+                <React.Fragment key={field.id}>
+                  {index > 0 ? <span className="text-grey-placeholder mx-1">&middot;</span> : ' '}
+                  <span className="font-medium">{field.name}:</span>{' '}
                   <FormatData data={parseUnknownData(decision.triggerObject[field.name])} />
-                </span>
+                </React.Fragment>
               )),
             )}
             {triggerObjectFields.length > MAX_TRIGGER_FIELDS_DISPLAYED ? (
-              <span className="border-grey-border rounded-xs border px-1.5 py-0.5 text-xs font-medium">
-                +{triggerObjectFields.length - MAX_TRIGGER_FIELDS_DISPLAYED}
-              </span>
+              <>
+                {' '}
+                <span className="border-grey-border inline-flex rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                  +{triggerObjectFields.length - MAX_TRIGGER_FIELDS_DISPLAYED}
+                </span>
+              </>
             ) : null}
-          </div>
+          </span>
         ) : null}
 
         {/* Row 3: Rules hit */}
@@ -181,7 +182,7 @@ export const AlertCard = ({
               map((r) => (
                 <span
                   key={r.ruleId || r.name}
-                  className="border-grey-border truncate rounded-xs border px-1.5 py-0.5 text-xs font-normal"
+                  className="border-grey-border truncate rounded-sm border px-1.5 py-0.5 text-xs font-normal"
                 >
                   {r.scoreModifier > 0 ? '+' : ''}
                   {r.scoreModifier} {r.name}
@@ -189,7 +190,7 @@ export const AlertCard = ({
               )),
             )}
             {hitRules.length > MAX_RULES_DISPLAYED ? (
-              <span className="border-grey-border rounded-xs border px-1.5 py-0.5 text-xs font-medium">
+              <span className="border-grey-border rounded-sm border px-1.5 py-0.5 text-xs font-medium">
                 +{hitRules.length - MAX_RULES_DISPLAYED}
               </span>
             ) : null}
