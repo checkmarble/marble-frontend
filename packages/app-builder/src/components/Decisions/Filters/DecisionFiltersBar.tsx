@@ -25,18 +25,12 @@ function getFilterDisplayValue(
   }
 }
 
-function FilterPopoverWithContext({
-  filterName,
-  onDecisionFilterClose,
-  clearFilter,
-}: {
-  filterName: DecisionFilterName;
-  onDecisionFilterClose: () => void;
-  clearFilter: (filterName: DecisionFilterName) => void;
-}) {
+function FilterPopoverWithContext({ filterName }: { filterName: DecisionFilterName }) {
   const { t } = useTranslation(decisionsI18n);
   const { filterValues } = useDecisionFiltersContext();
   const [open, setOpen] = useState(false);
+  const clearFilter = useClearFilter();
+  const { onDecisionFilterClose } = useDecisionFiltersContext();
 
   const onOpenChange = useCallback(
     (newOpen: boolean) => {
@@ -85,9 +79,7 @@ function FilterPopoverWithContext({
 }
 
 export function DecisionFiltersBar() {
-  const { onDecisionFilterClose } = useDecisionFiltersContext();
   const { undefinedDecisionFilterNames, definedDecisionFilterNames } = useDecisionFiltersPartition();
-  const clearFilter = useClearFilter();
 
   if (definedDecisionFilterNames.length === 0) {
     return null;
@@ -99,12 +91,7 @@ export function DecisionFiltersBar() {
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-2">
           {definedDecisionFilterNames.map((filterName) => (
-            <FilterPopoverWithContext
-              key={filterName}
-              filterName={filterName}
-              onDecisionFilterClose={onDecisionFilterClose}
-              clearFilter={clearFilter}
-            />
+            <FilterPopoverWithContext key={filterName} filterName={filterName} />
           ))}
           {undefinedDecisionFilterNames.length > 0 ? (
             <DecisionFiltersMenu filterNames={undefinedDecisionFilterNames}>
