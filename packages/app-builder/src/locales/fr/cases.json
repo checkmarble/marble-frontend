@@ -191,7 +191,7 @@
   "decisions.approve_or_decline": "Approuver ou refuser",
   "decisions.date": "Date",
   "decisions.outcome": "Résultat",
-  "decisions.rule_hits": "Règles déclenchées",
+  "decisions.rule_hits": "Règles déclenchées :",
   "decisions.rule.description": "Description",
   "decisions.rule.last_hit_timestamp": "Dernière occurrence",
   "decisions.rule.name_and_score": "Nom et score",

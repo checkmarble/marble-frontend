@@ -191,7 +191,7 @@
   "decisions.approve_or_decline": "Approve or decline",
   "decisions.date": "Date",
   "decisions.outcome": "Outcome",
-  "decisions.rule_hits": "Rule hits",
+  "decisions.rule_hits": "Rule hits:",
   "decisions.rule.description": "Description",
   "decisions.rule.last_hit_timestamp": "Last hit date",
   "decisions.rule.name_and_score": "Name and score modifier",

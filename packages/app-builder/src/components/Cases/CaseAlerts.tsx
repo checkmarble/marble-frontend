@@ -1,4 +1,5 @@
 import { DetailedCaseDecision } from '@app-builder/models/cases';
+import { type ScreeningStatus } from '@app-builder/models/screening';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
@@ -10,7 +11,7 @@ import { Link, useLoaderData } from '@remix-run/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, map, pipe, take } from 'remeda';
-import { Button, cn } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeBadge } from '../Decisions';
 import { FormatData } from '../FormatData';
@@ -77,6 +78,8 @@ export const CaseAlerts = ({
           return (
             <div
               key={decision.id}
+              role="button"
+              tabIndex={0}
               className={cn(
                 'border-grey-border bg-surface-card grid cursor-pointer grid-cols-[80px_1fr] gap-2 rounded-lg border p-4 transition-colors',
                 { 'bg-purple-background-light': isActive },
@@ -112,14 +115,11 @@ export const CaseAlerts = ({
                     </span>
                   </div>
                   {isPendingReview ? (
-                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-                    <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
-                      <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
-                        <Button variant="primary" size="small">
-                          {t('cases:decisions.approve_or_decline')}
-                        </Button>
-                      </ReviewDecisionModal>
-                    </div>
+                    <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
+                      <Button variant="primary" size="small" onClick={(e) => e.stopPropagation()}>
+                        {t('cases:decisions.approve_or_decline')}
+                      </Button>
+                    </ReviewDecisionModal>
                   ) : null}
                 </div>
 
@@ -151,7 +151,7 @@ export const CaseAlerts = ({
                 {/* Row 3: Rules hit */}
                 {hitRules.length > 0 ? (
                   <div className="flex flex-wrap items-center gap-1 text-xs">
-                    <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}:</span>
+                    <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}</span>
                     {pipe(
                       hitRules,
                       take(MAX_RULES_DISPLAYED),
@@ -190,7 +190,7 @@ export const CaseAlerts = ({
                             })}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <ScreeningStatusButton status={screening.status} count={screening.count} />
+                            <ScreeningStatusBadge status={screening.status} count={screening.count} />
                           </Link>
                         </div>
                       ))}
@@ -211,42 +211,30 @@ export const CaseAlerts = ({
   ) : null;
 };
 
-function ScreeningStatusButton({ status, count }: { status: string; count: number }) {
+const screeningStatusConfig: Record<
+  ScreeningStatus,
+  { variant: 'warning' | 'success' | 'destructive' | 'secondary'; appearance?: 'stroked' }
+> = {
+  in_review: { variant: 'warning' },
+  no_hit: { variant: 'success', appearance: 'stroked' },
+  confirmed_hit: { variant: 'destructive', appearance: 'stroked' },
+  error: { variant: 'secondary' },
+};
+
+function ScreeningStatusBadge({ status, count }: { status: ScreeningStatus; count: number }) {
   const { t } = useTranslation(casesI18n);
+  const config = screeningStatusConfig[status];
 
-  if (status === 'in_review') {
-    return (
-      <Button variant="warning" size="small" className="shadow-sm" tabIndex={-1}>
-        {t('screenings:status.in_review')}
-        {count > 0 ? ` (${count})` : ''}
-        <Icon icon="eye" className="size-4 shrink-0" />
-      </Button>
-    );
-  }
-
-  if (status === 'no_hit') {
-    return (
-      <Button variant="success" appearance="stroked" size="small" className="shadow-sm" tabIndex={-1}>
-        {t('screenings:status.no_hit')}
-        <Icon icon="eye" className="size-4 shrink-0" />
-      </Button>
-    );
-  }
-
-  if (status === 'confirmed_hit') {
-    return (
-      <Button variant="destructive" appearance="stroked" size="small" className="shadow-sm" tabIndex={-1}>
-        {t('screenings:status.confirmed_hit')}
-        <Icon icon="eye" className="size-4 shrink-0" />
-      </Button>
-    );
-  }
-
-  // error or unknown status
   return (
-    <Button variant="secondary" size="small" className="shadow-sm" tabIndex={-1}>
+    <span
+      className={cn(
+        CtaV2ClassName({ variant: config.variant, appearance: config.appearance, size: 'small' }),
+        'shadow-sm',
+      )}
+    >
       {t(`screenings:status.${status}`)}
+      {status === 'in_review' && count > 0 ? ` (${count})` : ''}
       <Icon icon="eye" className="size-4 shrink-0" />
-    </Button>
+    </span>
   );
 }

@@ -191,7 +191,7 @@
   "decisions.approve_or_decline": "قبول أو رفض",
   "decisions.date": "التاريخ",
   "decisions.outcome": "النتيجة",
-  "decisions.rule_hits": "مطابقات القاعدة",
+  "decisions.rule_hits": "مطابقات القاعدة:",
   "decisions.rule.description": "الوصف",
   "decisions.rule.last_hit_timestamp": "تاريخ آخر مطابقة",
   "decisions.rule.name_and_score": "الاسم ومعدّل الدرجة",
