@@ -8,6 +8,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
+import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
@@ -73,8 +74,8 @@ export default function DetectionScenariosPage() {
         },
       }),
       columnHelper.accessor('createdAt', {
-        id: 'lastEdition',
-        header: t('scenarios:list.column.last_edition'),
+        id: 'createdAt',
+        header: t('scenarios:list.column.created_at'),
         size: 200,
         cell: ({ getValue }) => {
           const createdAt = getValue();
@@ -141,5 +142,7 @@ export default function DetectionScenariosPage() {
 }
 
 export function ErrorBoundary() {
-  return <ErrorComponent error={useRouteError()} />;
+  const error = useRouteError();
+  captureRemixErrorBoundaryError(error);
+  return <ErrorComponent error={error} />;
 }
