@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { waitForHydration, waitForThen } from 'tests/common/utils';
 
 test('Create a simple scenario', async ({ page }) => {
-  await page.goto('/scenarios');
+  await page.goto('/detection/scenarios');
   await waitForHydration(page);
 
   const scenarioName = crypto.randomUUID();
@@ -51,11 +51,11 @@ test('Create a simple scenario', async ({ page }) => {
   await page.getByPlaceholder('Select or create an operand').press('Enter');
   await page.getByRole('button', { name: 'Save' }).click();
 
-  await page.getByRole('listitem').filter({ hasText: 'Scenarios' }).getByRole('link').click();
+  await page.getByRole('link', { name: 'Detection' }).first().click();
 
-  await expect(page.getByRole('link', { name: `${scenarioName} DESC` })).toBeVisible();
+  await expect(page.getByRole('cell', { name: scenarioName })).toBeVisible();
 
-  await page.getByRole('link', { name: `${scenarioName} DESC` }).click();
+  await page.getByRole('cell', { name: scenarioName }).click();
   await page.getByRole('link', { name: 'draft' }).click();
 
   await expect(page.getByRole('button', { name: 'edit_operand.operator_type.' })).toHaveText('amount');

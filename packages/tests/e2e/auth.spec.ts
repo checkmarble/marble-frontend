@@ -39,9 +39,9 @@ test('Authentication', async ({ page }) => {
   await page.getByRole('textbox').and(page.locator('[name="credentials.password"]')).fill('very-secret');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
-  await page.waitForURL('/scenarios');
+  await page.waitForURL('/detection/scenarios');
 
-  await expect(page.locator('nav').getByRole('link', { name: 'Scenarios ' })).toBeVisible();
+  await expect(page.locator('nav').getByRole('link', { name: 'Detection' })).toBeVisible();
 
   await page.context().storageState({ path: authState, indexedDB: true });
 });
