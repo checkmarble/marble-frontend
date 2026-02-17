@@ -199,6 +199,7 @@
   "decisions.rule.snooze": "Snooze",
   "decisions.rule.snooze_until": "Snoozed until",
   "decisions.rules": "Rules",
+  "decisions.screenings_rules": "Screenings rules",
   "decisions.snooze_rules": "Snooze rules",
   "decisions.status_on_hits": "Status on hits:",
   "decisions.trigger_object": "Trigger object",

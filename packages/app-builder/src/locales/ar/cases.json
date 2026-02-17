@@ -199,6 +199,7 @@
   "decisions.rule.snooze": "تأجيل",
   "decisions.rule.snooze_until": "مؤجّلة حتى",
   "decisions.rules": "القواعد",
+  "decisions.screenings_rules": "قواعد الفحص",
   "decisions.snooze_rules": "قواعد التأجيل",
   "decisions.status_on_hits": "حالة المطابقات:",
   "decisions.trigger_object": "الكائن المُشغِّل",
