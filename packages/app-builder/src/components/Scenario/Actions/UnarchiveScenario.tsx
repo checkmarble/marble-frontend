@@ -16,7 +16,7 @@ export function UnarchiveScenarioButton({ scenarioId, disabled }: { scenarioId: 
       }}
     >
       <Icon icon="restart-alt" className="size-3.5" />
-      <p>{t('scenarios:unarchive_scenario.title')}</p>
+      <p>{t('scenarios:unarchive_scenario.button')}</p>
     </Button>
   );
 }

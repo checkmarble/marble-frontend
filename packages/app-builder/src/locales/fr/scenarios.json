@@ -18,7 +18,7 @@
   "aggregator.sum": "Somme",
   "aggregator.sum.tooltip": "Calcule la somme (total) de toutes les valeurs numériques.\n\nRequiert : Champ numérique\n\nSi aucune entité trouvée : Retourne 0",
   "archive_scenario.button": "Archiver",
-  "archive_scenario.description": "Êtes-vous sûr de vouloir archiver le scénario \"{{name}}\" ? Vous gardez la possibilté de le désarchiver plus tard.",
+  "archive_scenario.description": "Êtes-vous sûr de vouloir archiver le scénario \"{{name}}\" ? Vous gardez la possibilité de le désarchiver plus tard.",
   "archive_scenario.title": "Archiver",
   "archived": "archivé",
   "archived_scenario_banner": "Ce scénario est archivé.",
