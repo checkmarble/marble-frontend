@@ -778,6 +778,9 @@ export type ScenarioUpdateInputDto = {
     description?: string;
     name?: string;
 };
+export type ScenarioCopyInputDto = {
+    name?: string;
+};
 export type NodeDto = {
     id?: string;
     name?: string;
@@ -3074,9 +3077,7 @@ export function updateScenario(scenarioId: string, scenarioUpdateInputDto: Scena
 /**
  * Copy a scenario
  */
-export function copyScenario(scenarioId: string, body: {
-    name?: string;
-}, opts?: Oazapfts.RequestOpts) {
+export function copyScenario(scenarioId: string, scenarioCopyInputDto: ScenarioCopyInputDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScenarioDto;
@@ -3092,7 +3093,7 @@ export function copyScenario(scenarioId: string, body: {
     }>(`/scenarios/${encodeURIComponent(scenarioId)}/copy`, oazapfts.json({
         ...opts,
         method: "POST",
-        body
+        body: scenarioCopyInputDto
     })));
 }
 /**

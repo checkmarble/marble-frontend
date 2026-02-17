@@ -204,6 +204,8 @@ ScenarioDto:
   $ref: scenarios.yml#/components/schemas/ScenarioDto
 ScenarioCreateInputDto:
   $ref: scenarios.yml#/components/schemas/ScenarioCreateInputDto
+ScenarioCopyInputDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioCopyInputDto
 ScenarioUpdateInputDto:
   $ref: scenarios.yml#/components/schemas/ScenarioUpdateInputDto
 ScenarioAstValidateInputDto:
