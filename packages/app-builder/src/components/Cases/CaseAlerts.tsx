@@ -228,9 +228,11 @@ export const AlertCard = ({
 export const AlertOutcomeIcon = ({
   outcome,
   reviewStatus,
+  showLabel = true,
 }: {
   outcome: Outcome;
   reviewStatus?: ReviewStatus | null;
+  showLabel?: boolean;
 }) => {
   const { t } = useTranslation(casesI18n);
 
@@ -263,7 +265,7 @@ export const AlertOutcomeIcon = ({
   return (
     <span className="inline-flex shrink-0 items-center gap-1">
       {icon}
-      <span className="text-xs font-medium">{label}</span>
+      {showLabel ? <span className="text-xs font-medium">{label}</span> : null}
     </span>
   );
 };

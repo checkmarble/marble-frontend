@@ -20,7 +20,7 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   return (
     <div className="inline-flex h-8 gap-1">
       {isHit ? (
-        <span className="bg-purple-background text-s text-purple-primary flex items-center justify-center rounded-sm border border-transparent p-2 font-semibold dark:bg-transparent dark:border-purple-primary">
+        <span className="text-s text-purple-primary flex items-center justify-center rounded-full border border-purple-primary px-2 font-semibold">
           {formatNumber(ruleExecution.scoreModifier, {
             language,
             signDisplay: 'exceptZero',
@@ -29,15 +29,11 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
       ) : null}
       <span
         className={clsx(
-          'text-s flex flex-1 items-center justify-center rounded-sm border border-transparent p-2 font-semibold capitalize',
-          isRuleExecutionHit(ruleExecution) &&
-            'bg-green-background-light text-green-primary dark:bg-transparent dark:border-green-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'grey' &&
-            'bg-grey-border text-grey-primary dark:bg-transparent dark:border-grey-placeholder',
-          getRuleExecutionStatusColor(ruleExecution) === 'lavender' &&
-            'text-grey-white bg-[#AAA6CC] dark:bg-transparent dark:border-purple-primary dark:text-purple-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'red' &&
-            'bg-red-background text-red-primary dark:bg-transparent dark:border-red-primary',
+          'text-s flex flex-1 items-center justify-center rounded-sm border px-2 font-semibold capitalize shadow-sm',
+          isRuleExecutionHit(ruleExecution) && 'border-red-primary text-red-primary',
+          getRuleExecutionStatusColor(ruleExecution) === 'grey' && 'border-grey-placeholder text-grey-primary',
+          getRuleExecutionStatusColor(ruleExecution) === 'lavender' && 'border-purple-primary text-purple-primary',
+          getRuleExecutionStatusColor(ruleExecution) === 'red' && 'border-red-primary text-red-primary',
         )}
       >
         {getRuleExecutionStatusLabel(t, ruleExecution)}

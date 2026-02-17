@@ -1,5 +1,6 @@
 import { DrawerContext } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { casesI18n } from '@app-builder/components/Cases';
+import { AlertOutcomeIcon, ScreeningStatusBadge } from '@app-builder/components/Cases/CaseAlerts';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
 import { RuleExecutionDetail } from '@app-builder/components/Decisions';
 import {
@@ -13,7 +14,6 @@ import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/Trigg
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
-import { type ScreeningStatus } from '@app-builder/models/screening';
 import { useDetailDecisionQuery } from '@app-builder/queries/decisions/detail-decision';
 import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenario-iteration-rules';
 import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
@@ -23,15 +23,9 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData } from '@remix-run/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Switch, Tag } from 'ui-design-system';
+import { match } from 'ts-pattern';
+import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-const screeningTagColor: Record<ScreeningStatus, 'yellow' | 'green' | 'red' | 'grey'> = {
-  in_review: 'yellow',
-  no_hit: 'green',
-  confirmed_hit: 'red',
-  error: 'grey',
-};
 
 type DecisionPanelProps = {
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
@@ -82,6 +76,7 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
         </Button>
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center gap-2">
+            <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} showLabel={false} />
             <span className="text-l text-grey-primary font-semibold">{decision.scenario.name}</span>
             <ScoreModifier score={decision.score} />
           </div>
@@ -111,10 +106,7 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
                     screeningId: fromUUIDtoSUUID(screening.id),
                   })}
                 >
-                  <Tag color={screeningTagColor[screening.status]} size="small">
-                    {t(`screenings:status.${screening.status}`)}
-                    {screening.status === 'in_review' && screening.count > 0 ? ` (${screening.count})` : ''}
-                  </Tag>
+                  <ScreeningStatusBadge status={screening.status} count={screening.count} />
                 </Link>
               </div>
             ))}
@@ -123,43 +115,46 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
       ) : null}
 
       {/* Rules */}
-      {detailDecisionQuery.isPending ? (
-        <div className="flex items-center justify-center p-4">
-          <Spinner className="size-8" />
-        </div>
-      ) : detailDecisionQuery.isError ? (
-        <div>Error</div>
-      ) : filteredRuleExecutions.length === 0 ? null : (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-m text-grey-primary font-medium">{t('cases:decisions.rules')}</span>
-            <div className="flex items-center gap-2">
-              <label htmlFor="showHitOnly" className="text-grey-primary cursor-pointer select-none text-xs">
-                {t('cases:case_detail.rules_execution.show_hit_only')}
-              </label>
-              <Switch id="showHitOnly" checked={showHitOnly} onCheckedChange={setShowHitOnly} />
-            </div>
+      {match(detailDecisionQuery)
+        .with({ isPending: true }, () => (
+          <div className="flex items-center justify-center p-4">
+            <Spinner className="size-8" />
           </div>
-          <RulesExecutionsContainer className="h-fit">
-            {filteredRuleExecutions.map((ruleExecution) => (
-              <RuleExecutionCollapsible key={ruleExecution.ruleId}>
-                <RuleExecutionTitle ruleExecution={ruleExecution} />
-                <RuleExecutionContent>
-                  <RuleExecutionDescription description={ruleExecution.description} />
-                  {scenarioIterationRules.data ? (
-                    <RuleExecutionDetail
-                      scenarioId={detailDecisionQuery.data.decision.scenario.id}
-                      ruleExecution={ruleExecution}
-                      rules={scenarioIterationRules.data.rules}
-                      isIterationArchived={scenarioIterationRules.data.archived}
-                    />
-                  ) : null}
-                </RuleExecutionContent>
-              </RuleExecutionCollapsible>
-            ))}
-          </RulesExecutionsContainer>
-        </div>
-      )}
+        ))
+        .with({ isError: true }, () => <div>Error</div>)
+        .otherwise(() =>
+          filteredRuleExecutions.length === 0 ? null : (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-m text-grey-primary font-medium">{t('cases:decisions.rules')}</span>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="showHitOnly" className="text-grey-primary cursor-pointer select-none text-xs">
+                    {t('cases:case_detail.rules_execution.show_hit_only')}
+                  </label>
+                  <Switch id="showHitOnly" checked={showHitOnly} onCheckedChange={setShowHitOnly} />
+                </div>
+              </div>
+              <RulesExecutionsContainer className="h-fit">
+                {filteredRuleExecutions.map((ruleExecution) => (
+                  <RuleExecutionCollapsible key={ruleExecution.ruleId}>
+                    <RuleExecutionTitle ruleExecution={ruleExecution} />
+                    <RuleExecutionContent>
+                      <RuleExecutionDescription description={ruleExecution.description} />
+                      {scenarioIterationRules.data ? (
+                        <RuleExecutionDetail
+                          scenarioId={detailDecisionQuery.data?.decision.scenario.id ?? ''}
+                          ruleExecution={ruleExecution}
+                          rules={scenarioIterationRules.data.rules}
+                          isIterationArchived={scenarioIterationRules.data.archived}
+                        />
+                      ) : null}
+                    </RuleExecutionContent>
+                  </RuleExecutionCollapsible>
+                ))}
+              </RulesExecutionsContainer>
+            </div>
+          ),
+        )}
 
       {/* Trigger Object */}
       {detailDecisionQuery.data ? (
