@@ -9,8 +9,8 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import clsx from 'clsx';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -137,11 +137,7 @@ export default function DetectionScenariosPage() {
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {rows.map((row) => (
-                    <Table.Row
-                      key={row.id}
-                      row={row}
-                      className={clsx(row.original.archived && 'opacity-50')}
-                    />
+                    <Table.Row key={row.id} row={row} className={clsx(row.original.archived && 'opacity-50')} />
                   ))}
                 </Table.Body>
               </Table.Container>
