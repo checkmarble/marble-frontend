@@ -1,52 +1,41 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { type ServerFnResult } from '@app-builder/core/middleware-types';
+import { createServerFn, data } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { archiveScenarioPayloadSchema } from '@app-builder/queries/scenarios/archive-scenario';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { z } from 'zod/v4';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function archiveScenarioAction({
+    request,
+    context,
+  }): ServerFnResult<Response | { success: boolean; errors: any }> {
+    const { toastSessionService } = context.services;
+    const toastSession = await toastSessionService.getSession(request);
+    const rawPayload = await request.json();
 
-  const [session, rawData, { scenario }] = await Promise.all([
-    getSession(request),
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+    const result = archiveScenarioPayloadSchema.safeParse(rawPayload);
+    if (!result.success) {
+      return { success: false, errors: z.treeifyError(result.error) };
+    }
 
-  const { data, success, error } = archiveScenarioPayloadSchema.safeParse(rawData);
+    try {
+      await context.authInfo.scenario.archiveScenario({ scenarioId: result.data.scenarioId });
 
-  if (!success) {
-    return json(
-      { status: 'error', errors: z.treeifyError(error) },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
+      return redirect(getRoute('/detection/scenarios'));
+    } catch (_error) {
+      setToastMessage(toastSession, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
 
-  try {
-    await scenario.archiveScenario({ scenarioId: data.scenarioId });
-
-    return {
-      redirectTo: getRoute('/detection/scenarios'),
-    };
-  } catch (_error) {
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
-
-    return json(
-      { status: 'error', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
-}
+      return data({ success: false, errors: [] }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    }
+  },
+);

@@ -1,60 +1,36 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { createServerFn, data } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { unarchiveScenarioPayloadSchema } from '@app-builder/queries/scenarios/unarchive-scenario';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { z } from 'zod/v4';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
+export const action = createServerFn([authMiddleware], async function unarchiveScenarioAction({ request, context }) {
+  const { toastSessionService } = context.services;
+  const toastSession = await toastSessionService.getSession(request);
+  const rawPayload = await request.json();
 
-  const [session, rawData, { scenario }] = await Promise.all([
-    getSession(request),
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
-
-  const { data, success, error } = unarchiveScenarioPayloadSchema.safeParse(rawData);
-
-  if (!success) {
-    return json(
-      { status: 'error', errors: z.treeifyError(error) },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+  const result = unarchiveScenarioPayloadSchema.safeParse(rawPayload);
+  if (!result.success) {
+    return { success: false, errors: z.treeifyError(result.error) };
   }
 
   try {
-    await scenario.unarchiveScenario({ scenarioId: data.scenarioId });
+    await context.authInfo.scenario.unarchiveScenario({ scenarioId: result.data.scenarioId });
 
-    setToastMessage(session, {
+    setToastMessage(toastSession, {
       type: 'success',
       messageKey: 'common:success.save',
     });
 
-    return json(
-      { status: 'success' },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return data({ success: true }, [['Set-Cookie', await toastSessionService.commitSession(toastSession)]]);
   } catch (_error) {
-    setToastMessage(session, {
+    setToastMessage(toastSession, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
 
-    return json(
-      { status: 'error', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return data({ success: false, errors: [] }, [
+      ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+    ]);
   }
-}
+});
