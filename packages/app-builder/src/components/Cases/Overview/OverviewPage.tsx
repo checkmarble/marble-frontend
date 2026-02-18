@@ -18,7 +18,6 @@ interface OverviewPageProps {
   entitlements: {
     autoAssignment: FeatureAccessLevelDto;
     aiAssist: FeatureAccessLevelDto;
-    workflows: FeatureAccessLevelDto;
   };
 }
 
@@ -58,7 +57,7 @@ export const OverviewPage = ({
               {canViewAdminSections ? (
                 <WorkflowConfigSection
                   isGlobalAdmin={isGlobalAdmin}
-                  access={entitlements.workflows}
+                  aiAssistAccess={entitlements.aiAssist}
                   allInboxesMetadata={allInboxesMetadata}
                 />
               ) : null}

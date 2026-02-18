@@ -23,6 +23,8 @@
   "filters.scheduled_execution.no_results": "No successful scheduled executions match your search",
   "filters.scheduled_execution.no_schedule": "No successful scheduled executions",
   "filters.scheduled_execution.placeholder": "Successful scheduled executions",
+  "filters.trigger_object_id": "Object ID",
+  "filters.trigger_object_id.placeholder": "Enter the object id",
   "forced_outcome": "Forced outcome",
   "live_update": "Live update",
   "object_type": "Object Type",

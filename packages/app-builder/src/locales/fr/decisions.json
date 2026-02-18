@@ -23,6 +23,8 @@
   "filters.scheduled_execution.no_results": "Aucune exécution programmée réussie ne correspond à votre recherche",
   "filters.scheduled_execution.no_schedule": "Aucune exécution programmée réussie",
   "filters.scheduled_execution.placeholder": "Exécutions programmées réussies",
+  "filters.trigger_object_id": "ID de l'objet",
+  "filters.trigger_object_id.placeholder": "Entrez l'ID de l'objet",
   "forced_outcome": "Résultat forcé",
   "live_update": "Mise à jour en direct",
   "object_type": "Type d'objet",

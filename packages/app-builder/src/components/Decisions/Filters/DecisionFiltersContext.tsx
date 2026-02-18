@@ -30,6 +30,7 @@ export const decisionFiltersSchema = z.object({
   scheduledExecutionId: protectArray(z.array(z.string().uuid())).optional(),
   caseInboxId: protectArray(z.array(z.string())).optional(),
   triggerObject: protectArray(z.array(z.string())).optional(),
+  triggerObjectId: z.string().optional(),
 });
 
 export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
@@ -57,6 +58,7 @@ export type DecisionFiltersForm = {
   scheduledExecutionId: string[];
   caseInboxId: string[];
   triggerObject: string[];
+  triggerObjectId: string | null;
 };
 const emptyDecisionFilters: DecisionFiltersForm = {
   dateRange: null,
@@ -67,6 +69,7 @@ const emptyDecisionFilters: DecisionFiltersForm = {
   scheduledExecutionId: [],
   caseInboxId: [],
   triggerObject: [],
+  triggerObjectId: null,
 };
 
 function adaptFilterValues({ dateRange, ...otherFilters }: DecisionFilters): DecisionFiltersForm {
@@ -118,6 +121,7 @@ export function DecisionFiltersProvider({
       dateRange: formValues.dateRange ?? undefined,
       hasCase: formValues.hasCase ?? undefined,
       pivotValue: formValues.pivotValue ?? undefined,
+      triggerObjectId: formValues.triggerObjectId ?? undefined,
     });
   });
   const onDecisionFilterClose = useCallbackRef(() => {
@@ -236,6 +240,15 @@ export function useTriggerObjectFilter() {
   const selectedTriggerObjects = field.value;
   const setSelectedTriggerObjects = field.onChange;
   return { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects };
+}
+
+export function useTriggerObjectIdFilter() {
+  const { field } = useController<DecisionFiltersForm, 'triggerObjectId'>({
+    name: 'triggerObjectId',
+  });
+  const selectedTriggerObjectId = field.value;
+  const setSelectedTriggerObjectId = field.onChange;
+  return { selectedTriggerObjectId, setSelectedTriggerObjectId };
 }
 
 /**

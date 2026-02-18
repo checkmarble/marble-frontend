@@ -9,6 +9,7 @@ import { PivotValueFilter } from './PivotValueFilter';
 import { ScenarioFilter } from './ScenarioFilter';
 import { ScheduledExecutionFilter } from './ScheduledExecutionFilter';
 import { TriggerObjectFilter } from './TriggerObjectFilter';
+import { TriggerObjectIdFilter } from './TriggerObjectIdFilter';
 
 export function FilterDetail({ filterName }: { filterName: DecisionFilterName }) {
   switch (filterName) {
@@ -22,6 +23,8 @@ export function FilterDetail({ filterName }: { filterName: DecisionFilterName })
       return <OutcomeAndReviewStatusFilter />;
     case 'triggerObject':
       return <TriggerObjectFilter />;
+    case 'triggerObjectId':
+      return <TriggerObjectIdFilter />;
     case 'hasCase':
       return <HasCaseFilter />;
     case 'pivotValue':

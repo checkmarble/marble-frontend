@@ -5,6 +5,7 @@ export const decisionFilterNames = [
   'dateRange',
   'scenarioId',
   'triggerObject',
+  'triggerObjectId',
   'outcomeAndReviewStatus',
   'caseInboxId',
   'hasCase',
@@ -26,6 +27,8 @@ export function getFilterIcon(filterName: DecisionFilterName): IconName {
       return 'category';
     case 'triggerObject':
       return 'alt-route';
+    case 'triggerObjectId':
+      return 'search';
     case 'hasCase':
       return 'case-manager';
     case 'pivotValue':
@@ -49,6 +52,8 @@ export function getFilterTKey(filterName: DecisionFilterName) {
       return 'decisions:outcome';
     case 'triggerObject':
       return 'decisions:trigger_object.type';
+    case 'triggerObjectId':
+      return 'decisions:filters.trigger_object_id';
     case 'hasCase':
       return 'decisions:filters.has_case';
     case 'pivotValue':

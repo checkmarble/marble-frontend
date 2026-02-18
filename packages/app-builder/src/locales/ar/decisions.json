@@ -23,6 +23,8 @@
   "filters.scheduled_execution.no_results": "لا توجد عمليات تنفيذ مجدولة ناجحة تطابق بحثك",
   "filters.scheduled_execution.no_schedule": "لا توجد عمليات تنفيذ مجدولة ناجحة",
   "filters.scheduled_execution.placeholder": "عمليات التنفيذ المجدولة الناجحة",
+  "filters.trigger_object_id": "معرّف الكائن",
+  "filters.trigger_object_id.placeholder": "أدخل معرّف الكائن",
   "forced_outcome": "النتيجة المفروضة",
   "live_update": "تحديث مباشر",
   "object_type": "نوع الكائن",
