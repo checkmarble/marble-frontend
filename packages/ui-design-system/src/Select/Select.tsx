@@ -19,8 +19,9 @@ import {
 } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef } from 'react';
-import { Icon } from 'ui-icons';
+import { forwardRef, useState } from 'react';
+import { Icon, IconName } from 'ui-icons';
+import { MenuCommand } from '../MenuCommand/MenuCommand';
 
 function SelectContent({ children, className, ...props }: React.PropsWithChildren<SelectContentProps>) {
   return (
@@ -191,3 +192,56 @@ export const Select = {
   ItemText,
   Value: SelectValue,
 };
+
+type Option<T> = {
+  label: string;
+  value: T;
+};
+
+export type SelectV2Props<T, O extends Option<T> = Option<T>> = {
+  value: T;
+  placeholder: string;
+  onChange: (value: T) => void;
+  options: O[];
+  disabled?: boolean;
+  className?: string;
+  displayedValue?: (option: O) => string;
+  selectedIcon?: IconName;
+};
+
+export function SelectV2<T>({
+  value,
+  placeholder,
+  onChange,
+  options,
+  disabled,
+  className,
+  displayedValue,
+  selectedIcon,
+}: SelectV2Props<T>) {
+  const [open, setOpen] = useState(false);
+  const currentOption = options.find((option) => option.value === value);
+  const valueLabel = currentOption
+    ? displayedValue
+      ? displayedValue(currentOption)
+      : currentOption.label
+    : placeholder;
+
+  return (
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+      <MenuCommand.Trigger>
+        <MenuCommand.SelectButton disabled={disabled} className={className}>
+          {valueLabel}
+        </MenuCommand.SelectButton>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content align="start" sameWidth sideOffset={4}>
+        {options.map((option, idx) => (
+          <MenuCommand.Item key={idx} onSelect={() => onChange(option.value)}>
+            {option.label}
+            {option.value === value && <Icon icon={selectedIcon ?? 'tick'} className="size-5 text-purple-primary" />}
+          </MenuCommand.Item>
+        ))}
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
+  );
+}
