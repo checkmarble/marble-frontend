@@ -60,7 +60,9 @@ For coding patterns and best practices, use the skills system:
 | React components, queries, routing, styling | `frontend-dev-guidelines` |
 | Creating/managing skills and hooks | `skill-developer` |
 
-Skills auto-activate based on your prompts. Check `.claude/skills/` for details.
+Skills auto-activate based on your prompts. A `UserPromptSubmit` hook enforces skill evaluation on every prompt.
+
+**Plan mode fallback**: When in plan mode (Skill tool unavailable), read the relevant resources directly from `.claude/skills/frontend-dev-guidelines/resources/` before planning any frontend work.
 
 ## Task Management
 
@@ -87,6 +89,7 @@ dev/active/[task-name]/
 | Hook | Event | Purpose |
 |------|-------|---------|
 | SessionStart | Session start/resume/compact/clear | Show branch, restore context |
+| UserPromptSubmit | Every user prompt | Force skill evaluation and activation before responding |
 | PreToolUse | Edit/Write/MultiEdit | Block file edits on main/master branch |
 | PreToolUse | Bash | Block dangerous commands (rm -rf, git push --force, git reset --hard) |
 | Notification | Permission/idle prompt | macOS desktop notification when Claude needs attention |
@@ -139,7 +142,9 @@ Run type-check manually after edits:
 2. Use `auto-error-resolver` agent for multiple errors
 
 ### Skill Not Activating
-Skills auto-activate based on descriptions in their SKILL.md files. Check `.claude/skills/[skill-name]/SKILL.md` description field.
+The `UserPromptSubmit` hook forces skill evaluation on every prompt. If a skill still doesn't activate:
+1. Check the description in `.claude/skills/[skill-name]/SKILL.md` includes keywords matching your prompt
+2. In plan mode, the Skill tool is unavailable — read resource files directly from `.claude/skills/*/resources/`
 
 ### Build Issues
 ```bash
