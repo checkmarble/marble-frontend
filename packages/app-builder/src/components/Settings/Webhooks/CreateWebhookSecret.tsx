@@ -10,12 +10,12 @@ import {
 } from '@app-builder/queries/settings/webhooks/create-webhook-secret';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import * as React from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 
-export function CreateWebhookSecret({ webhookId, children }: { webhookId: string; children: React.ReactElement }) {
-  const [open, setOpen] = React.useState(false);
+export function CreateWebhookSecret({ webhookId, children }: { webhookId: string; children: ReactElement }) {
+  const [open, setOpen] = useState(false);
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
