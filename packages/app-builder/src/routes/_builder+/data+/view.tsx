@@ -48,7 +48,7 @@ export default function DataViewer() {
       <Page.Content>
         <DataTabs />
         <div className="flex flex-col gap-4">
-          <div className="flex gap-2">
+          <div className="flex items-end gap-2">
             <div className="text-s flex flex-col gap-1">
               <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
               <Select.Default
@@ -88,7 +88,7 @@ export default function DataViewer() {
                   }),
                 );
               }}
-              className="self-end"
+              className="h-10"
             >
               {t('common:search')}
             </Button>

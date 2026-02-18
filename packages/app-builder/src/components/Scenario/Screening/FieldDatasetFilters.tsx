@@ -95,7 +95,7 @@ export const FieldDatasetFilters = ({
               <Button
                 variant="secondary"
                 size="small"
-                className="basis-full"
+                className="basis-full justify-center"
                 onClick={() => setFilters((prev) => ({ ...prev, tags: [] }))}
               >
                 <Icon icon="filters-off" className="size-4" />
@@ -103,7 +103,7 @@ export const FieldDatasetFilters = ({
               <Button
                 variant="secondary"
                 size="small"
-                className="basis-full"
+                className="basis-full justify-center"
                 onClick={() => setFilters((prev) => ({ ...prev, tags: tags }))}
               >
                 <Icon icon="checked" className="size-3.5" />
