@@ -59,7 +59,7 @@ export function CaseDetailTriggerObject({
   return (
     <div
       className={clsx(
-        'text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4',
+        'text-s text-grey-primary border-grey-border grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg border bg-surface-card p-4',
         className,
       )}
     >

@@ -18,9 +18,9 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   const isHit = isRuleExecutionHit(ruleExecution);
 
   return (
-    <div className="inline-flex h-8 gap-1">
+    <div className="inline-flex h-6 gap-1">
       {isHit ? (
-        <span className="bg-purple-background text-s text-purple-primary flex items-center justify-center rounded-sm border border-transparent p-2 font-semibold dark:bg-transparent dark:border-purple-primary">
+        <span className="text-s text-purple-primary flex h-6 items-center justify-center rounded-full border border-purple-primary px-2 font-normal leading-none">
           {formatNumber(ruleExecution.scoreModifier, {
             language,
             signDisplay: 'exceptZero',
@@ -29,15 +29,8 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
       ) : null}
       <span
         className={clsx(
-          'text-s flex flex-1 items-center justify-center rounded-sm border border-transparent p-2 font-semibold capitalize',
-          isRuleExecutionHit(ruleExecution) &&
-            'bg-green-background-light text-green-primary dark:bg-transparent dark:border-green-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'grey' &&
-            'bg-grey-border text-grey-primary dark:bg-transparent dark:border-grey-placeholder',
-          getRuleExecutionStatusColor(ruleExecution) === 'lavender' &&
-            'text-grey-white bg-[#AAA6CC] dark:bg-transparent dark:border-purple-primary dark:text-purple-primary',
-          getRuleExecutionStatusColor(ruleExecution) === 'red' &&
-            'bg-red-background text-red-primary dark:bg-transparent dark:border-red-primary',
+          'text-s flex h-6 flex-1 items-center justify-center rounded-sm border px-2 font-medium capitalize leading-none shadow-sm',
+          getRuleExecutionBadgeColor(ruleExecution),
         )}
       >
         {getRuleExecutionStatusLabel(t, ruleExecution)}
@@ -46,17 +39,11 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   );
 }
 
-function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
-  if (isRuleExecutionHit(ruleExecution)) {
-    return 'green';
-  }
-  if (isRuleExecutionError(ruleExecution)) {
-    return 'red';
-  }
-  if (isRuleExecutionSnoozed(ruleExecution)) {
-    return 'lavender';
-  }
-  return 'grey';
+function getRuleExecutionBadgeColor(ruleExecution: RuleExecution) {
+  if (isRuleExecutionHit(ruleExecution)) return 'border-red-primary text-red-primary';
+  if (isRuleExecutionError(ruleExecution)) return 'border-red-primary text-red-primary';
+  if (isRuleExecutionSnoozed(ruleExecution)) return 'border-purple-primary text-purple-primary';
+  return 'border-green-primary text-green-primary';
 }
 
 function getRuleExecutionStatusLabel(t: TFunction<typeof decisionsI18n>, ruleExecution: RuleExecution) {

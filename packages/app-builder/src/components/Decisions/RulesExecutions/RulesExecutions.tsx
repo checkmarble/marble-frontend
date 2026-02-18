@@ -1,21 +1,20 @@
 import { type RuleExecution } from '@app-builder/models/decision';
-import clsx from 'clsx';
 import type * as React from 'react';
-import { CollapsibleV2 } from 'ui-design-system';
+import { CollapsibleV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { RuleExecutionStatus } from './RuleExecutionStatus';
 
 export function RulesExecutionsContainer({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div className={clsx('grid grid-cols-[max-content_1fr_max-content] gap-2', className)} {...props} />;
+  return <div className={cn('grid grid-cols-[max-content_1fr_max-content] gap-2', className)} {...props} />;
 }
 
 export function RuleExecutionCollapsible({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <CollapsibleV2.Provider>
       <div
-        className={clsx(
-          'bg-grey-background-light col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg p-2',
+        className={cn(
+          'border-grey-border col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg border bg-surface-card p-2',
           className,
         )}
         {...props}
@@ -26,7 +25,7 @@ export function RuleExecutionCollapsible({ className, ...props }: React.Componen
 
 export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecution }) {
   return (
-    <CollapsibleV2.Title className="bg-grey-background-light group col-span-full grid grid-cols-subgrid items-center outline-hidden">
+    <CollapsibleV2.Title className="group col-span-full grid grid-cols-subgrid items-center outline-hidden">
       <Icon
         icon="smallarrow-up"
         aria-hidden
@@ -41,7 +40,7 @@ export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecu
 export function RuleExecutionContent({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <CollapsibleV2.Content className="col-span-full">
-      <div className={clsx('flex flex-col gap-4 p-2', className)} {...props} />
+      <div className={cn('flex flex-col gap-4 p-2', className)} {...props} />
     </CollapsibleV2.Content>
   );
 }

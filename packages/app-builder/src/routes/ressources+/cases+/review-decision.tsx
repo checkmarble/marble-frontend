@@ -232,11 +232,11 @@ function ReviewDecisionContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button className="flex-1" variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           <LoadingIcon icon="case-manager" className="size-5" loading={fetcher.state === 'submitting'} />
           {t('common:validate')}
         </Button>

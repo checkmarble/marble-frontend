@@ -50,6 +50,8 @@ export const CtaV2ClassName = cva(
           'bg-red-primary border-red-primary text-white enabled:hover:bg-red-hover enabled:hover:border-red-hover disabled:bg-red-disabled disabled:border-red-disabled dark:text-grey-primary dark:disabled:text-grey-secondary',
         secondary:
           'bg-surface-card border-grey-border text-grey-primary enabled:hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-disabled dark:enabled:hover:bg-grey-background-light dark:disabled:bg-grey-background-light',
+        warning: '',
+        success: '',
       },
       appearance: {
         filled: '',
@@ -61,7 +63,7 @@ export const CtaV2ClassName = cva(
         icon: 'aspect-square justify-center',
       },
       size: {
-        small: '',
+        small: 'text-small',
         default: '',
       },
     },
@@ -121,6 +123,34 @@ export const CtaV2ClassName = cva(
         appearance: 'link',
         class:
           'bg-transparent border-transparent p-0 h-auto rounded-none enabled:hover:underline enabled:hover:bg-transparent text-grey-secondary enabled:hover:text-grey-primary disabled:text-grey-disabled disabled:no-underline dark:text-grey-secondary dark:enabled:hover:text-grey-primary dark:disabled:text-grey-disabled',
+      },
+      // Warning + Filled
+      {
+        variant: 'warning',
+        appearance: 'filled',
+        class:
+          'bg-orange-primary border-orange-primary text-white enabled:hover:bg-orange-hover enabled:hover:border-orange-hover disabled:bg-orange-primary/50 disabled:border-orange-primary/50',
+      },
+      // Warning + Stroked
+      {
+        variant: 'warning',
+        appearance: 'stroked',
+        class:
+          'bg-transparent border-orange-primary text-orange-primary enabled:hover:bg-orange-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled',
+      },
+      // Success + Filled
+      {
+        variant: 'success',
+        appearance: 'filled',
+        class:
+          'bg-green-primary border-green-primary text-white enabled:hover:bg-green-hover enabled:hover:border-green-hover disabled:bg-green-disabled disabled:border-green-disabled',
+      },
+      // Success + Stroked
+      {
+        variant: 'success',
+        appearance: 'stroked',
+        class:
+          'bg-transparent border-green-primary text-green-primary enabled:hover:bg-green-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled',
       },
     ],
     defaultVariants: {

@@ -590,6 +590,25 @@ export function mergeDataModelWithTableOptions(
   };
 }
 
+export function getTriggerObjectFields(
+  dataModelWithTableOptions: DataModelWithTableOptions,
+  triggerObjectType: string,
+): { id: string; name: string }[] {
+  const tableOptions = dataModelWithTableOptions.find(({ name }) => name === triggerObjectType);
+
+  return R.pipe(
+    tableOptions?.options.fieldOrder ?? [],
+    R.filter((id) =>
+      tableOptions?.options.displayedFields ? tableOptions.options.displayedFields.includes(id) : true,
+    ),
+    R.map((id) => {
+      const field = tableOptions?.fields.find((f) => f.id === id);
+      return field ? { id, name: field.name } : null;
+    }),
+    R.filter((f): f is { id: string; name: string } => f !== null),
+  );
+}
+
 export type CreateAnnotationBody = { caseId: string } & (
   | {
       type: 'comment';
