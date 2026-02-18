@@ -1,7 +1,7 @@
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useRevokeWebhookSecretMutation } from '@app-builder/queries/settings/webhooks/revoke-webhook-secret';
-import * as React from 'react';
+import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 
@@ -12,9 +12,9 @@ export function RevokeWebhookSecret({
 }: {
   webhookId: string;
   secretId: string;
-  children: React.ReactElement;
+  children: ReactElement;
 }) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
