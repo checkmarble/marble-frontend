@@ -9,8 +9,9 @@ import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { Nudge } from '../Nudge';
 
-export function CreateListModal() {
+export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolean }) {
   const { t } = useTranslation(['lists', 'navigation', 'common']);
   const createListMutation = useCreateListMutation();
   const revalidate = useLoaderRevalidator();
@@ -101,9 +102,12 @@ export function CreateListModal() {
                       <Select.DefaultItem key="text" value="text">
                         {t('lists:kind.text')}
                       </Select.DefaultItem>
-                      <Select.DefaultItem key="cidrs" value="cidrs">
-                        {t('lists:kind.cidrs')}
-                      </Select.DefaultItem>
+                      <Select.Item key="cidrs" value="cidrs" className="min-h-10" disabled={!isIpGpsAvailable}>
+                        <div className="flex w-full items-center gap-2">
+                          <Select.ItemText>{t('lists:kind.cidrs')}</Select.ItemText>
+                          {!isIpGpsAvailable ? <Nudge kind="restricted" content={t('common:premium')} /> : null}
+                        </div>
+                      </Select.Item>
                     </Select.Default>
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>

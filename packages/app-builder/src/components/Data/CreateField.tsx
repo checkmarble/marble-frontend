@@ -6,6 +6,7 @@ import {
   createFieldValueSchema,
   useCreateFieldMutation,
 } from '@app-builder/queries/data/create-field';
+import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import {
   type CreateFieldValidationErrorCode,
   createFieldErrorResolver,
@@ -19,14 +20,15 @@ import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal, Select } from 'ui-design-system';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '../Form/Tanstack/FormInput';
+import { Nudge } from '../Nudge';
 
 const VALUE_TYPES = [
   { value: 'String', display: 'data:create_field.type_string' },
   { value: 'Bool', display: 'data:create_field.type_bool' },
   { value: 'Timestamp', display: 'data:create_field.type_timestamp' },
   { value: 'Float', display: 'data:create_field.type_float' },
-  { value: 'IpAddress', display: 'data:create_field.type_ip_address' },
-  { value: 'Coords', display: 'data:create_field.type_coords' },
+  { value: 'IpAddress', display: 'data:create_field.type_ip_address', nudge: true },
+  { value: 'Coords', display: 'data:create_field.type_coords', nudge: true },
 ] as const;
 
 const REQUIRED_OPTIONS = [
@@ -54,6 +56,7 @@ export function CreateField({ tableId, children }: { tableId: string; children: 
 
 function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeModal: () => void }) {
   const { t } = useTranslation(['data', 'navigation', 'common']);
+  const { isIpGpsAvailable } = useDataModelFeatureAccess();
   const translateError = useMemo(() => createErrorTranslator(t, [createFieldErrorResolver]), [t]);
   const getCreateFieldErrorMessage = useGetCreateFieldValidationErrorMessage();
 
@@ -184,11 +187,15 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       field.handleChange(type as (typeof VALUE_TYPES)[number]['value']);
                     }}
                   >
-                    {VALUE_TYPES.map(({ value, display }) => {
+                    {VALUE_TYPES.map((type) => {
+                      const hasNudge = 'nudge' in type && type.nudge && !isIpGpsAvailable;
                       return (
-                        <Select.DefaultItem key={value} value={value}>
-                          {t(display)}
-                        </Select.DefaultItem>
+                        <Select.Item key={type.value} value={type.value} className="min-h-10" disabled={hasNudge}>
+                          <div className="flex w-full items-center gap-2">
+                            <Select.ItemText>{t(type.display)}</Select.ItemText>
+                            {hasNudge ? <Nudge kind="restricted" content={t('common:premium')} /> : null}
+                          </div>
+                        </Select.Item>
                       );
                     })}
                   </Select.Default>

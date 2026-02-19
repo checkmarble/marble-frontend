@@ -1,3 +1,4 @@
+import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { Callout } from '@app-builder/components/Callout';
 import { IpHasFlagAstNode, isIpFieldAstNode, validIpFlags } from '@app-builder/models/astNode/ip';
 import { useTranslation } from 'react-i18next';
@@ -12,12 +13,18 @@ import { type OperandEditModalProps } from '../../EditModal';
 
 export function EditIpHasFlag(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios', 'common']);
+  const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as IpHasFlagAstNode);
   const evaluation = nodeSharp.select((s) => s.validation);
 
   return (
-    <OperandEditModalContainer {...props} title={t('scenarios:edit_ip_has_flag.title')} size="medium">
+    <OperandEditModalContainer
+      {...props}
+      saveDisabled={!hasValidLicense}
+      title={t('scenarios:edit_ip_has_flag.title')}
+      size="medium"
+    >
       <Callout variant="outlined">
         <Modal.Description className="whitespace-pre-wrap">
           {t('scenarios:edit_ip_has_flag.description')}
@@ -50,6 +57,11 @@ export function EditIpHasFlag(props: Omit<OperandEditModalProps, 'node'>) {
         </div>
         <EditionEvaluationErrors id={node.id} filterOut={['FUNCTION_ERROR']} />
       </div>
+      {!hasValidLicense ? (
+        <Callout icon="lock" variant="outlined" color="red">
+          {t('scenarios:edit_ip_has_flag.premium_callout')}
+        </Callout>
+      ) : null}
     </OperandEditModalContainer>
   );
 }
