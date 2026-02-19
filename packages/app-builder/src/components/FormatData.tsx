@@ -1,7 +1,7 @@
 import { type DataType } from '@app-builder/models';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { Map as MapLibre, Marker } from '@vis.gl/react-maplibre';
-import React from 'react';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CopyToClipboardButton } from './CopyToClipboardButton';
 import { ExternalLink } from './ExternalLink';
@@ -26,61 +26,21 @@ type Data =
       value: unknown;
     };
 
-function parseMapOptions(s: string) {
-  const [lat, lng] = s.split(',');
-
-  return { longitude: parseFloat(lng ?? '0.0'), latitude: parseFloat(lat ?? '0.0'), zoom: 5 };
-}
-
 export function FormatData({ type, data, className }: { type?: DataType; data?: Data; className?: string }) {
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
-  const { t } = useTranslation(['scenarios']);
 
   if (!data) {
     return <span className={className}>-</span>;
   }
 
-  if (data.type === 'DerivedData') {
-    return (
-      <dl className="grid grid-cols-[auto_1fr] col-start-2 gap-x-4 w-full border rounded-v2-lg my-3 p-v2-md border-grey-border bg-surface-card">
-        {Object.entries(data?.value ?? {})?.map(([k, v]) => (
-          <React.Fragment key={k}>
-            <dt className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</dt>
-            <dd>{v.toString()}</dd>
-          </React.Fragment>
-        ))}
-      </dl>
-    );
-  }
-
   if (type === 'Coords') {
-    const opts = parseMapOptions(data.value as string);
-
-    return (
-      <>
-        <CopyToClipboardButton toCopy={`${opts.latitude},${opts.longitude}`}>
-          <span className="text-s line-clamp-1 font-semibold">
-            {opts.latitude}, {opts.longitude}
-          </span>
-        </CopyToClipboardButton>
-
-        <div className="col-start-2 border rounded-v2-lg overflow-hidden border-grey-border bg-surface-card">
-          <MapLibre
-            initialViewState={opts}
-            style={{ width: '100%', height: 400 }}
-            mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-          >
-            <Marker key={`marker`} longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
-              <Pin />
-            </Marker>
-          </MapLibre>
-        </div>
-      </>
-    );
+    return <CoordsMap value={data.value as string} />;
   }
 
   switch (data.type) {
+    case 'DerivedData':
+      return <DerivedDataDetails value={data.value} />;
     case 'url':
       return (
         <ExternalLink href={data.value} className={className}>
@@ -103,20 +63,64 @@ export function FormatData({ type, data, className }: { type?: DataType; data?: 
   }
 }
 
-const ICON = `M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,4.5,2,10c0,2,0.6,3.9,1.6,5.4c0,0.1,0.1,0.2,0.2,0.3
+function DerivedDataDetails({ value }: { value: object }) {
+  const { t } = useTranslation(['scenarios']);
+
+  return (
+    <div className="col-start-2 grid w-full grid-cols-[auto_1fr] gap-x-4 rounded-v2-lg border border-grey-border bg-surface-card p-v2-md">
+      {Object.entries(value).map(([k, v]) => (
+        <Fragment key={k}>
+          <span className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</span>
+          <span>{String(v)}</span>
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+function parseCoords(s: string) {
+  const [lat, lng] = s.split(',');
+  return {
+    latitude: parseFloat(lat ?? '0.0'),
+    longitude: parseFloat(lng ?? '0.0'),
+    zoom: 5,
+  };
+}
+
+function CoordsMap({ value }: { value: string }) {
+  const opts = parseCoords(value);
+
+  return (
+    <>
+      <CopyToClipboardButton toCopy={`${opts.latitude},${opts.longitude}`}>
+        <span className="text-s line-clamp-1 font-semibold">
+          {opts.latitude}, {opts.longitude}
+        </span>
+      </CopyToClipboardButton>
+
+      <div className="col-start-2 overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+        <MapLibre
+          initialViewState={opts}
+          style={{ width: '100%', height: 400 }}
+          mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        >
+          <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
+            <MapPin />
+          </Marker>
+        </MapLibre>
+      </div>
+    </>
+  );
+}
+
+const MAP_PIN_PATH = `M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,4.5,2,10c0,2,0.6,3.9,1.6,5.4c0,0.1,0.1,0.2,0.2,0.3
   c0,0,0.1,0.1,0.1,0.2c0.2,0.3,0.4,0.6,0.7,0.9c2.6,3.1,7.4,7.6,7.4,7.6s4.8-4.5,7.4-7.5c0.2-0.3,0.5-0.6,0.7-0.9
   C20.1,15.8,20.2,15.8,20.2,15.7z`;
 
-const pinStyle = {
-  cursor: 'pointer',
-  fill: '#d00',
-  stroke: 'none',
-};
-
-function Pin({ size = 20 }) {
+function MapPin({ size = 20 }: { size?: number }) {
   return (
-    <svg height={size} viewBox="0 0 24 24" style={pinStyle}>
-      <path d={ICON} />
+    <svg height={size} viewBox="0 0 24 24" style={{ cursor: 'pointer', fill: '#d00', stroke: 'none' }}>
+      <path d={MAP_PIN_PATH} />
     </svg>
   );
 }

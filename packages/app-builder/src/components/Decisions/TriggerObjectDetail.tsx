@@ -1,7 +1,7 @@
-import { DataModelField, type TableModel } from '@app-builder/models';
+import { type DataModelField, type TableModel } from '@app-builder/models';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import clsx from 'clsx';
-import * as React from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
@@ -9,7 +9,7 @@ import { FormatData } from '../FormatData';
 import { decisionsI18n } from './decisions-i18n';
 
 function useParsedTriggerObject(triggerObject: Record<string, unknown>) {
-  return React.useMemo(() => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.entries()), [triggerObject]);
+  return useMemo(() => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.entries()), [triggerObject]);
 }
 
 export function DecisionDetailTriggerObject({
@@ -26,12 +26,12 @@ export function DecisionDetailTriggerObject({
     <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:trigger_object.type')}</Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[max-content_1fr] gap-2 break-all">
+        <div className="grid grid-cols-[max-content_1fr] gap-y-2 break-all">
           {parsedTriggerObject.map(([property, data]) => (
-            <React.Fragment key={property}>
+            <Fragment key={property}>
               {!property.endsWith('.metadata') ? <span className="font-semibold">{property}</span> : null}
-              <FormatData type={fields?.find((f) => f.name == property)?.dataType ?? undefined} data={data} />
-            </React.Fragment>
+              <FormatData type={fields?.find((f) => f.name === property)?.dataType ?? undefined} data={data} />
+            </Fragment>
           ))}
         </div>
       </Collapsible.Content>
@@ -69,7 +69,7 @@ export function CaseDetailTriggerObject({
       )}
     >
       {parsedTriggerObject.map(([property, data]) => (
-        <React.Fragment key={property}>
+        <Fragment key={property}>
           <span className="font-semibold">{property}</span>
           <div className="inline-flex items-center gap-2">
             {links[property] && !!data.value ? (
@@ -83,7 +83,7 @@ export function CaseDetailTriggerObject({
               <FormatData data={data} />
             )}
           </div>
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   );
