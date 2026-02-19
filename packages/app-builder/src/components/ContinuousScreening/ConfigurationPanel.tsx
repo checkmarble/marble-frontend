@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PanelContainer, usePanel } from '../Panel';
+import { PanelContainer } from '../Panel';
+import { PanelSharpFactory } from '../Panel/Panel';
 import {
   ContinuousScreeningConfigurationStepper,
   PartialCreateContinuousScreeningConfig,
@@ -68,14 +69,14 @@ export const ConfigurationPanel = ({
 };
 
 const ConfigurationPanelHeader = () => {
-  const { closePanel } = usePanel();
+  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening']);
   const configurationStepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   return (
     <div className="flex items-center justify-between gap-v2-md bg-surface-card h-16 px-v2-md border-b border-grey-border shrink-0 sticky top-0">
-      <Button variant="secondary" mode="icon" onClick={closePanel}>
+      <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
         <Icon icon="arrow-left" className="size-4" />
       </Button>
       <span className="text-h1 mr-auto font-bold">

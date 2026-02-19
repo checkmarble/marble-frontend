@@ -1,18 +1,13 @@
-import { type ReactNode } from 'react';
+import { PanelSharpFactory } from './Panel';
 
-import { usePanel } from './PanelProvider';
-
-interface PanelOverlayProps {
-  children: ReactNode;
-}
-
-export function PanelOverlay({ children }: PanelOverlayProps) {
-  const { closePanel } = usePanel();
+export function PanelOverlay() {
+  const sharp = PanelSharpFactory.useSharp();
 
   return (
-    <div className="fixed inset-0 z-30">
-      <div className="absolute inset-0 bggrey-primary/20" onClick={closePanel} aria-hidden="true" />
-      {children}
-    </div>
+    <div
+      className="absolute inset-0 bg-grey-primary/10 z-20 backdrop-blur-xs animate-overlay-show"
+      onClick={sharp.actions.close}
+      aria-hidden="true"
+    />
   );
 }

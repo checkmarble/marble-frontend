@@ -1,11 +1,5 @@
-import {
-  PanelContainer,
-  PanelContent,
-  PanelFooter,
-  PanelHeader,
-  PanelOverlay,
-  usePanel,
-} from '@app-builder/components/Panel';
+import { PanelContainer, PanelContent, PanelFooter, PanelHeader } from '@app-builder/components/Panel';
+import { PanelSharpFactory } from '@app-builder/components/Panel/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -15,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { WorkflowInboxCard, type WorkflowSettings } from './WorkflowInboxCard';
 
 type InboxWorkflowState = Map<string, WorkflowSettings>;
@@ -25,9 +18,9 @@ interface WorkflowConfigPanelContentProps {
 }
 
 export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelContentProps) => {
+  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
-  const { closePanel } = usePanel();
   const updateWorkflowMutation = useUpdateInboxWorkflowMutation();
   const revalidate = useLoaderRevalidator();
 
@@ -95,71 +88,69 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
         {
           onSuccess: () => {
             revalidate();
-            closePanel();
+            panelSharp.actions.close();
           },
         },
       );
     } else {
-      closePanel();
+      panelSharp.actions.close();
     }
   };
 
   return (
-    <PanelOverlay>
-      <PanelContainer size="xxl">
-        <PanelHeader>
-          <div className="flex items-center gap-v2-sm">
-            <span>{t('cases:overview.panel.workflow.title')}</span>
-          </div>
-        </PanelHeader>
-        <PanelContent>
-          {match(inboxesQuery)
-            .with({ isPending: true }, () => (
-              <div className="flex items-center justify-center py-8">
-                <Spinner className="size-8" />
-              </div>
-            ))
-            .with({ isError: true }, () => (
-              <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
-            ))
-            .with({ isSuccess: true }, () => (
-              <div className="flex flex-col gap-v2-md">
-                {inboxes.map((inbox) => {
-                  const settings = workflowState.get(inbox.id);
-                  if (!settings) return null;
+    <PanelContainer size="xxl">
+      <PanelHeader>
+        <div className="flex items-center gap-v2-sm">
+          <span>{t('cases:overview.panel.workflow.title')}</span>
+        </div>
+      </PanelHeader>
+      <PanelContent>
+        {match(inboxesQuery)
+          .with({ isPending: true }, () => (
+            <div className="flex items-center justify-center py-8">
+              <Spinner className="size-8" />
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
+          ))
+          .with({ isSuccess: true }, () => (
+            <div className="flex flex-col gap-v2-md">
+              {inboxes.map((inbox) => {
+                const settings = workflowState.get(inbox.id);
+                if (!settings) return null;
 
-                  return (
-                    <WorkflowInboxCard
-                      key={inbox.id}
-                      inbox={inbox}
-                      settings={settings}
-                      onToggle={(field, value) => handleToggle(inbox.id, field, value)}
-                      disabled={readOnly}
-                      defaultOpen={inboxes.length < 6}
-                    />
-                  );
-                })}
-              </div>
-            ))
-            .exhaustive()}
-        </PanelContent>
-        {readOnly ? null : (
-          <PanelFooter>
-            <Button
-              size="default"
-              className="w-full justify-center"
-              onClick={handleSave}
-              disabled={updateWorkflowMutation.isPending}
-            >
-              {updateWorkflowMutation.isPending ? (
-                <Icon icon="spinner" className="size-4 animate-spin" />
-              ) : (
-                t('cases:overview.validate_config')
-              )}
-            </Button>
-          </PanelFooter>
-        )}
-      </PanelContainer>
-    </PanelOverlay>
+                return (
+                  <WorkflowInboxCard
+                    key={inbox.id}
+                    inbox={inbox}
+                    settings={settings}
+                    onToggle={(field, value) => handleToggle(inbox.id, field, value)}
+                    disabled={readOnly}
+                    defaultOpen={inboxes.length < 6}
+                  />
+                );
+              })}
+            </div>
+          ))
+          .exhaustive()}
+      </PanelContent>
+      {readOnly ? null : (
+        <PanelFooter>
+          <Button
+            size="default"
+            className="w-full justify-center"
+            onClick={handleSave}
+            disabled={updateWorkflowMutation.isPending}
+          >
+            {updateWorkflowMutation.isPending ? (
+              <Icon icon="spinner" className="size-4 animate-spin" />
+            ) : (
+              t('cases:overview.validate_config')
+            )}
+          </Button>
+        </PanelFooter>
+      )}
+    </PanelContainer>
   );
 };

@@ -1,11 +1,11 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
-import { usePanel } from '@app-builder/components/Panel';
+import { PanelRoot } from '@app-builder/components/Panel/Panel';
 import { ApiKey } from '@app-builder/models/api-keys';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import { type FunctionComponent, useCallback, useMemo } from 'react';
+import { type FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 import { AuditEventDetailPanel } from './AuditEventDetailPanel';
@@ -21,7 +21,7 @@ interface AuditEventsTableProps {
 export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ auditEvents, apiKeys }) => {
   const { t } = useTranslation(['settings']);
   const language = useFormatLanguage();
-  const { openPanel } = usePanel();
+  const [currentAuditEvent, setCurrentAuditEvent] = useState<AuditEvent | null>(null);
   const { getOrgUserById } = useOrganizationUsers();
 
   const columns = useMemo(
@@ -123,12 +123,9 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
     enableSorting: false,
   });
 
-  const handleRowClick = useCallback(
-    (event: AuditEvent) => {
-      openPanel(<AuditEventDetailPanel event={event} />);
-    },
-    [openPanel],
-  );
+  const handleRowClick = useCallback((event: AuditEvent) => {
+    setCurrentAuditEvent(event);
+  }, []);
 
   return (
     <Table.Container {...getContainerProps()}>
@@ -143,6 +140,11 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
           />
         ))}
       </Table.Body>
+      {currentAuditEvent ? (
+        <PanelRoot open onOpenChange={() => setCurrentAuditEvent(null)}>
+          <AuditEventDetailPanel event={currentAuditEvent} />
+        </PanelRoot>
+      ) : null}
     </Table.Container>
   );
 };

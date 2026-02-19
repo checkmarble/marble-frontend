@@ -1,4 +1,4 @@
-import { usePanel } from '@app-builder/components/Panel';
+import { PanelRoot } from '@app-builder/components/Panel/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -24,7 +24,7 @@ interface AutoAssignmentSectionProps {
 export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: AutoAssignmentSectionProps) => {
   const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
-  const { openPanel } = usePanel();
+  const [autoAssignPanelOpen, setAutoAssignPanelOpen] = useState(false);
   const [expandedInboxIds, setExpandedInboxIds] = useState<string[]>([]);
 
   const restricted = isRestricted(access);
@@ -35,13 +35,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
   const isInboxMember = (inbox: InboxWithCasesCount) => inbox.users.some((u) => u.userId === currentUserId);
 
   const handleOpenPanel = () => {
-    openPanel(
-      <AutoAssignmentPanelContent
-        currentUserId={currentUserId}
-        isGlobalAdmin={isGlobalAdmin}
-        hasEntitlement={hasAccess}
-      />,
-    );
+    setAutoAssignPanelOpen(true);
   };
 
   const toggleInbox = (inboxId: string) => {
@@ -144,6 +138,13 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
             .exhaustive()}
         </div>
       ) : null}
+      <PanelRoot open={autoAssignPanelOpen} onOpenChange={setAutoAssignPanelOpen}>
+        <AutoAssignmentPanelContent
+          currentUserId={currentUserId}
+          isGlobalAdmin={isGlobalAdmin}
+          hasEntitlement={hasAccess}
+        />
+      </PanelRoot>
     </div>
   );
 };

@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../Callout';
-import { PanelContainer } from '../Panel/Panel';
-import { usePanel } from '../Panel/PanelProvider';
+import { PanelContainer, PanelSharpFactory } from '../Panel/Panel';
 import { DatasetSelectionSection } from './validation/DatasetSelectionSection';
 import { GeneralInfoSection } from './validation/GeneralInfoSection';
 import { ObjectMappingSection } from './validation/ObjectMappingSection';
@@ -25,15 +24,15 @@ export type EditionValidationPanelProps = EditionValidationPanelBaseProps & {
 };
 
 export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: EditionValidationPanelProps) => {
+  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening']);
-  const { closePanel } = usePanel();
   const updateConfigurationMutation = useUpdateContinuousScreeningConfigurationMutation(baseConfig.stableId);
   const revalidate = useLoaderRevalidator();
 
   const handleValidateClick = () => {
     updateConfigurationMutation.mutateAsync(updatedConfig).then((res) => {
       if (res.success) {
-        closePanel();
+        panelSharp.actions.close();
       }
       revalidate();
     });
@@ -42,7 +41,7 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: 
   return (
     <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col">
       <div className="flex items-center justify-between gap-v2-md bg-surface-card h-16 px-v2-md border-b border-grey-border shrink-0 sticky top-0">
-        <Button variant="secondary" mode="icon" onClick={closePanel}>
+        <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
           <Icon icon="arrow-left" className="size-4" />
         </Button>
         <span className="text-h1 mr-auto font-bold">{t('continuousScreening:edition.validation.title')}</span>

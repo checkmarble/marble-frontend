@@ -13,11 +13,12 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import GridTable from '../GridTable';
 import { Page } from '../Page';
-import { usePanel } from '../Panel';
+import { PanelRoot } from '../Panel/Panel';
 import { Spinner } from '../Spinner';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { CopyToClipboardChip } from './CopyToClipboardChip';
 import { CreationModal } from './CreationModal';
+import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
 import { Capsule } from './shared/Capsule';
 
@@ -30,7 +31,16 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
   const configurationsQuery = useContinuousScreeningConfigurationsQuery();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
   const navigate = useAgnosticNavigation();
-  const { openPanel } = usePanel();
+
+  const [editingConfig, setEditingConfig] = useState<ContinuousScreeningConfig | null>(null);
+  const [draft, setDraft] = useState<PartialCreateContinuousScreeningConfig | null>(null);
+  const [updatedConfig, setUpdatedConfig] = useState<PrevalidationCreateContinuousScreeningConfig | null>(null);
+
+  const handlePanelOpenChange = () => {
+    setEditingConfig(null);
+    setDraft(null);
+    setUpdatedConfig(null);
+  };
 
   const handleCreationSubmit = (value: { name: string; description: string }) => {
     const qs = QueryString.stringify(value, { addQueryPrefix: true });
@@ -38,34 +48,6 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
       pathname: getRoute('/continuous-screening/create'),
       search: qs,
     });
-  };
-
-  const handleValidationCancel = (
-    baseConfig: ContinuousScreeningConfig,
-    draft: PrevalidationCreateContinuousScreeningConfig,
-  ) => {
-    openPanel(
-      <ConfigurationPanel
-        baseConfig={baseConfig}
-        newConfig={draft}
-        onUpdate={(updatedConfig) => handleUpdate(baseConfig, updatedConfig)}
-        initialMode="edit"
-        baseStep={3}
-      />,
-    );
-  };
-
-  const handleUpdate = (
-    baseConfig: ContinuousScreeningConfig,
-    updatedConfig: PrevalidationCreateContinuousScreeningConfig,
-  ) => {
-    openPanel(
-      <EditionValidationPanel
-        baseConfig={baseConfig}
-        updatedConfig={updatedConfig}
-        onCancel={(draft) => handleValidationCancel(baseConfig, draft)}
-      />,
-    );
   };
 
   const handleRowClick = (baseConfig: ContinuousScreeningConfig) => {
@@ -79,13 +61,8 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
       inboxName: null,
       datasets: Object.fromEntries(baseConfig.datasets.map((dataset) => [dataset, true])),
     };
-    openPanel(
-      <ConfigurationPanel
-        baseConfig={baseConfig}
-        newConfig={newConfig}
-        onUpdate={(updatedConfig) => handleUpdate(baseConfig, updatedConfig)}
-      />,
-    );
+    setEditingConfig(baseConfig);
+    setDraft(newConfig);
   };
 
   return (
@@ -168,6 +145,24 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
             })
             .exhaustive()}
           <CreationModal open={creationModalOpen} onOpenChange={setCreationModalOpen} onSubmit={handleCreationSubmit} />
+          {editingConfig && draft ? (
+            <PanelRoot open onOpenChange={handlePanelOpenChange}>
+              <ConfigurationPanel
+                baseConfig={editingConfig}
+                newConfig={draft}
+                onUpdate={(config) => {
+                  setUpdatedConfig(config);
+                }}
+              />
+              {updatedConfig ? (
+                <EditionValidationPanel
+                  baseConfig={editingConfig}
+                  updatedConfig={updatedConfig}
+                  onCancel={() => setUpdatedConfig(null)}
+                />
+              ) : null}
+            </PanelRoot>
+          ) : null}
         </Page.ContentV2>
       </Page.Container>
     </Page.Main>
