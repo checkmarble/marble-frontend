@@ -99,10 +99,10 @@ export function CreateListModal() {
                       }}
                     >
                       <Select.DefaultItem key="text" value="text">
-                        Generic text
+                        {t('lists:kind.text')}
                       </Select.DefaultItem>
                       <Select.DefaultItem key="cidrs" value="cidrs">
-                        IP addresses and subnets
+                        {t('lists:kind.cidrs')}
                       </Select.DefaultItem>
                     </Select.Default>
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

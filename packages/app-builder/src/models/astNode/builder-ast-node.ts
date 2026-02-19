@@ -32,7 +32,6 @@ export type EditableAstNode =
   | StringTemplateAstNode
   | FuzzyMatchFilterOptionsAstNode
   | MonitoringListCheckAstNode
-  | FuzzyMatchFilterOptionsAstNode
   | IpHasFlagAstNode;
 
 /**
@@ -49,7 +48,6 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isIsMultipleOf(node) ||
     isStringTemplateAstNode(node) ||
     isMonitoringListCheckAstNode(node) ||
-    isStringTemplateAstNode(node) ||
     isIpHasFlag(node)
   );
 }

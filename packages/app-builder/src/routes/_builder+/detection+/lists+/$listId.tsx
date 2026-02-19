@@ -155,7 +155,9 @@ export default function Lists() {
                   }}
                 />
               </form>
-              {listFeatureAccess.isCreateListValueAvailable ? <AddListValueModal listId={customList.id} /> : null}
+              {listFeatureAccess.isCreateListValueAvailable ? (
+                <AddListValueModal listId={customList.id} kind={customList.kind} />
+              ) : null}
             </div>
             {virtualTable.isEmpty ? (
               <div className="bg-surface-card border-grey-border flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">

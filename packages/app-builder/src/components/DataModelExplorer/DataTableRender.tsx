@@ -161,7 +161,7 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
   return match(fieldStatistic)
     .with({ type: 'Timestamp' }, () => ({ minWidth: '160px' }))
     .with({ type: 'IpAddress' }, () => ({ minWidth: '160px' }))
-    .with({ type: 'Coordinates' }, () => ({ minWidth: '160px' }))
+    .with({ type: 'Coords' }, () => ({ minWidth: '160px' }))
     .with({ type: 'Bool' }, () => ({ minWidth: '50px' }))
     .with({ type: 'String', format: 'uuid' }, () => ({ minWidth: '100px' }))
     .with({ type: P.union('String', 'Float') }, ({ maxLength }) => ({

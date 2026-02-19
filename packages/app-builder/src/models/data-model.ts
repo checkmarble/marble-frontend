@@ -468,7 +468,7 @@ export type FieldStatistics =
   | { type: 'String'; maxLength?: number; format?: string }
   | { type: 'Float'; maxLength?: number }
   | {
-      type: 'Bool' | 'Timestamp' | 'IpAddress' | 'Coordinates';
+      type: 'Bool' | 'Timestamp' | 'IpAddress' | 'Coords';
     };
 
 export type ClientDataListResponse = {

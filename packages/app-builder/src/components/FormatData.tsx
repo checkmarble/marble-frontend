@@ -1,11 +1,12 @@
+import { type DataType } from '@app-builder/models';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { Map as MapLibre, Marker } from '@vis.gl/react-maplibre';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { CopyToClipboardButton } from './CopyToClipboardButton';
 import { ExternalLink } from './ExternalLink';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { DataType } from '@app-builder/models';
-import { t } from 'i18next';
-import { CopyToClipboardButton } from './CopyToClipboardButton';
 
 type Data =
   | {
@@ -25,35 +26,36 @@ type Data =
       value: unknown;
     };
 
+function parseMapOptions(s: string) {
+  const [lat, lng] = s.split(',');
+
+  return { longitude: parseFloat(lng ?? '0.0'), latitude: parseFloat(lat ?? '0.0'), zoom: 5 };
+}
+
 export function FormatData({ type, data, className }: { type?: DataType; data?: Data; className?: string }) {
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
+  const { t } = useTranslation(['scenarios']);
 
   if (!data) {
     return <span className={className}>-</span>;
   }
 
-  const mapOptions = (s: string) => {
-    const [lat, lng] = s.split(',');
-
-    return { longitude: parseFloat(lng ?? '0.0'), latitude: parseFloat(lat ?? '0.0'), zoom: 5 };
-  };
-
   if (data.type === 'DerivedData') {
     return (
       <dl className="grid grid-cols-[auto_1fr] col-start-2 gap-x-4 w-full border rounded-v2-lg my-3 p-v2-md border-grey-border bg-surface-card">
         {Object.entries(data?.value ?? {})?.map(([k, v]) => (
-          <>
+          <React.Fragment key={k}>
             <dt className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</dt>
             <dd>{v.toString()}</dd>
-          </>
+          </React.Fragment>
         ))}
       </dl>
     );
   }
 
   if (type === 'Coords') {
-    let opts = mapOptions(data.value as string);
+    const opts = parseMapOptions(data.value as string);
 
     return (
       <>

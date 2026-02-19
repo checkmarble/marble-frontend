@@ -1,8 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
-import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { IpHasFlagAstNode, isIpFieldAstNode, validIpFlags } from '@app-builder/models/astNode/ip';
-import { dateDocHref } from '@app-builder/services/documentation-href';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 import { EditionAstBuilderOperand } from '../../../EditionOperand';
 import { EditionEvaluationErrors } from '../../../EvaluationErrors';
@@ -22,13 +20,7 @@ export function EditIpHasFlag(props: Omit<OperandEditModalProps, 'node'>) {
     <OperandEditModalContainer {...props} title={t('scenarios:edit_ip_has_flag.title')} size="medium">
       <Callout variant="outlined">
         <Modal.Description className="whitespace-pre-wrap">
-          <Trans
-            t={t}
-            i18nKey="scenarios:edit_ip_has_flag.description"
-            components={{
-              DocLink: <ExternalLink href={dateDocHref} />,
-            }}
-          />
+          {t('scenarios:edit_ip_has_flag.description')}
         </Modal.Description>
       </Callout>
       <div className="flex flex-col gap-2">

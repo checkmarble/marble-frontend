@@ -1,26 +1,32 @@
-import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormError } from '@app-builder/components/Form/Tanstack/FormError';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { type CustomListKind } from '@app-builder/models/custom-list';
 import { useAddListValueMutation } from '@app-builder/queries/lists/add-value';
-import { AddValuePayload, addTextValuePayloadSchema } from '@app-builder/schemas/lists';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { type AddValuePayload, addCidrValuePayloadSchema, addValuePayloadSchema } from '@app-builder/schemas/lists';
 import { useForm } from '@tanstack/react-form';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function AddListValueModal({ listId }: { listId: string }) {
+export function AddListValueModal({ listId, kind }: { listId: string; kind: CustomListKind }) {
   const { t } = useTranslation(['lists', 'navigation', 'common']);
   const addListValueMutation = useAddListValueMutation();
   const revalidate = useLoaderRevalidator();
   const [isOpen, setIsOpen] = useState(false);
 
+  const validationSchema = useMemo(
+    () => (kind === 'cidrs' ? addCidrValuePayloadSchema : addValuePayloadSchema),
+    [kind],
+  );
+
   const form = useForm({
     defaultValues: {
       listId,
       value: '',
+      kind,
     } as AddValuePayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -34,7 +40,7 @@ export function AddListValueModal({ listId }: { listId: string }) {
       }
     },
     validators: {
-      onSubmitAsync: addTextValuePayloadSchema,
+      onSubmitAsync: validationSchema,
     },
   });
 
@@ -67,9 +73,19 @@ export function AddListValueModal({ listId }: { listId: string }) {
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     valid={field.state.meta.errors.length === 0}
-                    placeholder={t('lists:create_value.value_placeholder')}
+                    placeholder={
+                      kind === 'cidrs'
+                        ? t('lists:create_value.cidr_placeholder')
+                        : t('lists:create_value.value_placeholder')
+                    }
                   />
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  <FormError
+                    field={field}
+                    asString
+                    translations={{
+                      invalid_union: t('lists:create_value.cidr_error'),
+                    }}
+                  />
                 </div>
               )}
             </form.Field>

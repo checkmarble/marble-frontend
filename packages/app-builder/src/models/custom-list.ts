@@ -10,10 +10,13 @@ export type CustomListValuesCount = {
   count: number;
   hasMore: boolean;
 };
+export type CustomListKind = 'text' | 'cidrs';
+
 export interface CustomList {
   id: string;
   name: string;
   description: string;
+  kind: CustomListKind;
   createdAt: string;
   updatedAt: string;
   ValuesCount: CustomListValuesCount;
@@ -22,6 +25,7 @@ export interface CustomList {
 export type CreateCustomListBody = {
   name: string;
   description: string;
+  kind: CustomListKind;
 };
 export type CustomListValue = {
   id: string;
@@ -43,6 +47,7 @@ export function adaptCustomList(dto: CustomListDto): CustomList {
     id: dto.id,
     name: dto.name,
     description: dto.description,
+    kind: dto.kind,
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
     ValuesCount: {
@@ -70,6 +75,7 @@ export function adaptCreateCustomListBody(body: CreateCustomListBodyDto): Create
   return {
     name: body.name,
     description: body.description,
+    kind: body.kind,
   };
 }
 

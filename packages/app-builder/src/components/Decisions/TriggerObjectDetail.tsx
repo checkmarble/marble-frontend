@@ -7,7 +7,6 @@ import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
 import { FormatData } from '../FormatData';
 import { decisionsI18n } from './decisions-i18n';
-import 'maplibre-gl/dist/maplibre-gl.css';
 
 function useParsedTriggerObject(triggerObject: Record<string, unknown>) {
   return React.useMemo(() => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.entries()), [triggerObject]);
