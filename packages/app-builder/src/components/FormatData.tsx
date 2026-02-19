@@ -1,3 +1,4 @@
+import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataType } from '@app-builder/models';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { Map as MapLibre, Marker } from '@vis.gl/react-maplibre';
@@ -7,6 +8,11 @@ import { CopyToClipboardButton } from './CopyToClipboardButton';
 import { ExternalLink } from './ExternalLink';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
+
+const CARTO_BASEMAP = {
+  light: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+  dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+} as const;
 
 type Data =
   | {
@@ -89,6 +95,7 @@ function parseCoords(s: string) {
 
 function CoordsMap({ value }: { value: string }) {
   const opts = parseCoords(value);
+  const { theme } = useTheme();
 
   return (
     <>
@@ -99,11 +106,7 @@ function CoordsMap({ value }: { value: string }) {
       </CopyToClipboardButton>
 
       <div className="col-start-2 overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
-        <MapLibre
-          initialViewState={opts}
-          style={{ width: '100%', height: 400 }}
-          mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
-        >
+        <MapLibre initialViewState={opts} style={{ width: '100%', height: 400 }} mapStyle={CARTO_BASEMAP[theme]}>
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
             <MapPin />
           </Marker>
