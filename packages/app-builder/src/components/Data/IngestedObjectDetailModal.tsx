@@ -43,19 +43,21 @@ export function IngestedObjectDetailModal({
     >
       <Modal.Content size="large">
         <Modal.Title>{tableName}</Modal.Title>
-        {data.object ? (
-          <IngestedObjectDetail
-            light
-            bordered={false}
-            withLinks={false}
-            dataModel={dataModel}
-            tableName={tableName}
-            objectId={objectId}
-            object={data.object}
-          />
-        ) : (
-          <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
-        )}
+        <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
+          {data.object ? (
+            <IngestedObjectDetail
+              light
+              bordered={false}
+              withLinks={false}
+              dataModel={dataModel}
+              tableName={tableName}
+              objectId={objectId}
+              object={data.object}
+            />
+          ) : (
+            <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
+          )}
+        </div>
       </Modal.Content>
     </Modal.Root>
   );
