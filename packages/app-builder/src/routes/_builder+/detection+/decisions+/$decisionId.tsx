@@ -151,7 +151,7 @@ export const loader = createServerFn([authMiddleware], async function decisionLo
   });
 
   const independentOperations = Promise.all([
-    dataModelRepository.getDataModel(),
+    dataModelRepository.getDataModel().catch(() => [] as DataModel),
     dataModelRepository.listPivots({}),
     screening.listScreenings({ decisionId: parsedParam.data.decisionId }),
   ]);

@@ -1,6 +1,6 @@
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { Callout } from '@app-builder/components/Callout';
-import { IpHasFlagAstNode, isIpFieldAstNode, validIpFlags } from '@app-builder/models/astNode/ip';
+import { type IpHasFlagAstNode, isIpFieldAstNode, validIpFlags } from '@app-builder/models/astNode/ip';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 import { EditionAstBuilderOperand } from '../../../EditionOperand';

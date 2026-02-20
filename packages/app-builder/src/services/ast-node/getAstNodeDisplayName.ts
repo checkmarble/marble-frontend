@@ -7,7 +7,7 @@ import {
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
-import { IpHasFlagAstNode, isIpHasFlag } from '@app-builder/models/astNode/ip';
+import { type IpHasFlagAstNode, isIpHasFlag } from '@app-builder/models/astNode/ip';
 import {
   isMonitoringListCheckAstNode,
   type MonitoringListCheckAstNode,

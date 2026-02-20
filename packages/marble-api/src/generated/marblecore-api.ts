@@ -713,7 +713,13 @@ export type FloatFieldStatisticsDto = {
 export type TimestampFieldStatisticsDto = {
     "type": "Timestamp";
 } & FieldStatisticsDtoBase;
-export type FieldStatisticsDto = StringFieldStatisticsDto | BoolFieldStatisticsDto | FloatFieldStatisticsDto | TimestampFieldStatisticsDto;
+export type IpAddressFieldStatisticsDto = {
+    "type": "IpAddress";
+} & FieldStatisticsDtoBase;
+export type CoordsFieldStatisticsDto = {
+    "type": "Coords";
+} & FieldStatisticsDtoBase;
+export type FieldStatisticsDto = StringFieldStatisticsDto | BoolFieldStatisticsDto | FloatFieldStatisticsDto | TimestampFieldStatisticsDto | IpAddressFieldStatisticsDto | CoordsFieldStatisticsDto;
 export type ClientDataListResponseDto = {
     data: ClientObjectDetailDto[];
     metadata: {

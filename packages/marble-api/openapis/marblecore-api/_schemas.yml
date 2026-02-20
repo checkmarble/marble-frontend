@@ -147,6 +147,10 @@ FloatFieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/FloatFieldStatisticsDto
 TimestampFieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/TimestampFieldStatisticsDto
+IpAddressFieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/IpAddressFieldStatisticsDto
+CoordsFieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/CoordsFieldStatisticsDto
 KYCAnalysisDto:
   $ref: cases.yml#/components/schemas/KYCAnalysisDto
 GroundingCitationDto:

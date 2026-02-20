@@ -499,6 +499,12 @@ export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
     .with({ type: 'Timestamp' }, () => ({
       type: 'Timestamp' as const,
     }))
+    .with({ type: 'IpAddress' }, () => ({
+      type: 'IpAddress' as const,
+    }))
+    .with({ type: 'Coords' }, () => ({
+      type: 'Coords' as const,
+    }))
     .exhaustive();
 }
 

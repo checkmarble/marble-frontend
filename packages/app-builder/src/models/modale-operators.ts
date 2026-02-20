@@ -1,4 +1,4 @@
-import { ValidIpFlags, validIpFlags } from './astNode/ip';
+import { type ValidIpFlags, validIpFlags } from './astNode/ip';
 import { type ValidTimestampExtractParts, validTimestampExtractParts } from './astNode/time';
 
 export const aggregatorOperators = [

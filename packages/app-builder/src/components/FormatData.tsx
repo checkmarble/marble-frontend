@@ -40,8 +40,8 @@ export function FormatData({ type, data, className }: { type?: DataType; data?: 
     return <span className={className}>-</span>;
   }
 
-  if (type === 'Coords') {
-    return <CoordsMap value={data.value as string} />;
+  if (type === 'Coords' && typeof data.value === 'string') {
+    return <CoordsMap value={data.value} />;
   }
 
   switch (data.type) {
