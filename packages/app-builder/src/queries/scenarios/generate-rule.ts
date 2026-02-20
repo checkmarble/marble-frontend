@@ -4,20 +4,29 @@ import { z } from 'zod';
 // API response types matching backend
 const ASTValidationDetailSchema = z.object({
   is_valid: z.boolean(),
-  errors: z
-    .array(z.string())
-    .nullable()
-    .transform((e) => e ?? []),
-  warnings: z
-    .array(z.string())
-    .nullable()
-    .transform((w) => w ?? []),
+  errors: z.array(z.string()),
+  warnings: z.array(z.string()),
 });
 
-const GenerateRuleResponseSchema = z.object({
-  rule_ast: z.any(), // NodeDto from backend
-  validation: ASTValidationDetailSchema,
-});
+const GenerateRuleResponseSchema = z.preprocess(
+  (data: unknown) => {
+    if (typeof data !== 'object' || !data) return data;
+    const obj = data as Record<string, unknown>;
+    const validation = obj['validation'] as Record<string, unknown> | undefined;
+    return {
+      ...obj,
+      validation: {
+        ...validation,
+        errors: Array.isArray(validation?.['errors']) ? validation['errors'] : [],
+        warnings: Array.isArray(validation?.['warnings']) ? validation['warnings'] : [],
+      },
+    };
+  },
+  z.object({
+    rule_ast: z.any(), // NodeDto from backend
+    validation: ASTValidationDetailSchema,
+  }),
+);
 
 export type GenerateRuleResponse = z.infer<typeof GenerateRuleResponseSchema>;
 export type ASTValidationDetail = z.infer<typeof ASTValidationDetailSchema>;
