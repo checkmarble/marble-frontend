@@ -7,7 +7,7 @@ async function globalSetup() {
 
   const net = await new Network().start();
 
-  const db = await new GenericContainer('postgres:15')
+  const db = await new GenericContainer('postgis/postgis:17-3.6-alpine')
     .withNetwork(net)
     .withNetworkAliases('db')
     .withEnvironment({
