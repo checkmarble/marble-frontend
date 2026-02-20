@@ -130,6 +130,7 @@
   "case_detail.review_decision.warning_approve": "تنبيه: لا تزال هناك نتائج فحص تحتاج إلى المراجعة لهذا القرار.",
   "case_detail.rules_execution": "تنفيذ القواعد ({{count}})",
   "case_detail.rules_execution.show_hit_only": "إظهار المطابقات فقط",
+  "case_detail.rules.no_rules": "لا توجد قواعد تم تشغيلها لهذه الحالة بعد.",
   "case_detail.tab.ai_review": "مراجعة الذكاء الاصطناعي",
   "case_detail.tab.principal": "رئيسي",
   "case_detail.trigger_object": "الكائن المُشغِّل",
