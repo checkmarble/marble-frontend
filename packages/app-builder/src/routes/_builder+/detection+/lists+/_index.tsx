@@ -4,7 +4,7 @@ import { CreateListModal } from '@app-builder/components/Lists/CreateListModal';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { isCreateListAvailable } from '@app-builder/services/feature-access';
+import { hasAnyEntitlement, isCreateListAvailable } from '@app-builder/services/feature-access';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
@@ -16,11 +16,15 @@ import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
 export const loader = createServerFn([authMiddleware], async ({ context }) => {
-  const { user, customListsRepository } = context.authInfo;
+  const { user, customListsRepository, entitlements } = context.authInfo;
 
   const customLists = await customListsRepository.listCustomLists();
 
-  return { customLists, isCreateListAvailable: isCreateListAvailable(user) };
+  return {
+    customLists,
+    isCreateListAvailable: isCreateListAvailable(user),
+    isIpGpsAvailable: hasAnyEntitlement(entitlements),
+  };
 });
 
 export const handle = {
@@ -31,7 +35,7 @@ const columnHelper = createColumnHelper<CustomList>();
 
 export default function DetectionListsPage() {
   const { t } = useTranslation(handle.i18n);
-  const { customLists, isCreateListAvailable } = useLoaderData<typeof loader>();
+  const { customLists, isCreateListAvailable, isIpGpsAvailable } = useLoaderData<typeof loader>();
 
   const columns = useMemo(
     () => [
@@ -84,7 +88,9 @@ export default function DetectionListsPage() {
     <Page.Main>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
-          <DetectionNavigationTabs actions={isCreateListAvailable ? <CreateListModal /> : undefined} />
+          <DetectionNavigationTabs
+            actions={isCreateListAvailable ? <CreateListModal isIpGpsAvailable={isIpGpsAvailable} /> : undefined}
+          />
           <div className="flex flex-col gap-4">
             {isEmpty ? (
               <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">

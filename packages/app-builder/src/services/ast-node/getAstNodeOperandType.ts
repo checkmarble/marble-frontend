@@ -3,6 +3,7 @@ import { isAggregation } from '@app-builder/models/astNode/aggregation';
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { isMonitoringListCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
@@ -49,7 +50,8 @@ export function getAstNodeOperandType(
     isFuzzyMatchComparator(astNode) ||
     isTimestampExtract(astNode) ||
     isIsMultipleOf(astNode) ||
-    isStringTemplateAstNode(astNode)
+    isStringTemplateAstNode(astNode) ||
+    isIpHasFlag(astNode)
   ) {
     return 'Function';
   }

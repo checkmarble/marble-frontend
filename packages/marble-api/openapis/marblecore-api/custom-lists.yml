@@ -281,6 +281,7 @@ components:
         - id
         - name
         - description
+        - kind
         - created_at
         - updated_at
         - values_count
@@ -292,6 +293,9 @@ components:
           type: string
         description:
           type: string
+        kind:
+          type: string
+          enum: [text, cidrs]
         created_at:
           type: string
           format: date-time
@@ -327,11 +331,15 @@ components:
       required:
         - name
         - description
+        - kind
       properties:
         name:
           type: string
         description:
           type: string
+        kind:
+          type: string
+          enum: [text, cidrs]
     UpdateCustomListBodyDto:
       type: object
       required:

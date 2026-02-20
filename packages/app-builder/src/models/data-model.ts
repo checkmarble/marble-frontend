@@ -26,8 +26,8 @@ import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 
-type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
-export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
+type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
+export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'DerivedData' | 'unknown';
 export const EnumDataTypes = ['Float', 'Int', 'String'];
 export const UniqueDataTypes = ['Float', 'Int', 'String'];
 export type UnicityConstraintType = 'no_unicity_constraint' | 'pending_unique_constraint' | 'active_unique_constraint';
@@ -229,7 +229,7 @@ export function adaptCreatePivotInputDto(createPivotInput: CreatePivotInput): Cr
 export interface CreateFieldInput {
   name: string;
   description: string;
-  type: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
+  type: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
   nullable: boolean;
   isEnum?: boolean;
   isUnique?: boolean;
@@ -323,6 +323,10 @@ export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
     case 'String':
     case 'String[]':
       return 'string';
+    case 'IpAddress':
+      return 'world';
+    case 'Coords':
+      return 'tip';
     case 'Int':
     case 'Int[]':
     case 'Float':
@@ -464,7 +468,7 @@ export type FieldStatistics =
   | { type: 'String'; maxLength?: number; format?: string }
   | { type: 'Float'; maxLength?: number }
   | {
-      type: 'Bool' | 'Timestamp';
+      type: 'Bool' | 'Timestamp' | 'IpAddress' | 'Coords';
     };
 
 export type ClientDataListResponse = {
@@ -494,6 +498,12 @@ export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
     }))
     .with({ type: 'Timestamp' }, () => ({
       type: 'Timestamp' as const,
+    }))
+    .with({ type: 'IpAddress' }, () => ({
+      type: 'IpAddress' as const,
+    }))
+    .with({ type: 'Coords' }, () => ({
+      type: 'Coords' as const,
     }))
     .exhaustive();
 }

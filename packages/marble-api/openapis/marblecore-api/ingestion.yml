@@ -333,6 +333,8 @@ components:
           Bool: '#/components/schemas/BoolFieldStatisticsDto'
           Float: '#/components/schemas/FloatFieldStatisticsDto'
           Timestamp: '#/components/schemas/TimestampFieldStatisticsDto'
+          IpAddress: '#/components/schemas/IpAddressFieldStatisticsDto'
+          Coords: '#/components/schemas/CoordsFieldStatisticsDto'
     StringFieldStatisticsDto:
       allOf:
         - $ref: '#/components/schemas/FieldStatisticsDto'
@@ -353,6 +355,12 @@ components:
             max_length:
               type: number
     TimestampFieldStatisticsDto:
+      allOf:
+        - $ref: '#/components/schemas/FieldStatisticsDto'
+    IpAddressFieldStatisticsDto:
+      allOf:
+        - $ref: '#/components/schemas/FieldStatisticsDto'
+    CoordsFieldStatisticsDto:
       allOf:
         - $ref: '#/components/schemas/FieldStatisticsDto'
     ClientObjectDetailDto:

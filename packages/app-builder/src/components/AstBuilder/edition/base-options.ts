@@ -1,5 +1,6 @@
 import { type AstNode, type DataType, type IdLessAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
+import { NewIpHasFlagAstNode } from '@app-builder/models/astNode/ip';
 import { NewMonitoringListCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
@@ -25,6 +26,7 @@ const FUNCTIONS_OPTIONS: OperandMenuOption[] = [
   NewTimestampExtractAstNode(),
   NewTimeNowAstNode(),
   NewIsMultipleOfAstNode(),
+  NewIpHasFlagAstNode(),
 ].map((n) => ({ astNode: n }));
 
 export const MODELING_OPTIONS = ({

@@ -5,6 +5,7 @@ import z from 'zod/v4';
 export const createListPayloadSchema = z.object({
   name: z.string().nonempty(),
   description: z.string(),
+  kind: z.enum(['text', 'cidrs']),
 });
 
 export type CreateListPayload = z.infer<typeof createListPayloadSchema>;
@@ -29,9 +30,18 @@ export type EditListPayload = z.infer<typeof editListPayloadSchema>;
 
 // Add value
 
+export const cidrValueSchema = z.union([z.cidrv4(), z.cidrv6()]);
+
 export const addValuePayloadSchema = z.object({
   listId: z.uuid(),
   value: z.string().nonempty(),
+  kind: z.enum(['text', 'cidrs']),
+});
+
+export const addCidrValuePayloadSchema = z.object({
+  listId: z.uuid(),
+  value: cidrValueSchema,
+  kind: z.literal('cidrs'),
 });
 
 export type AddValuePayload = z.infer<typeof addValuePayloadSchema>;

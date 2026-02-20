@@ -3,6 +3,7 @@ import { Highlight } from '@app-builder/components/Highlight';
 import { Nudge } from '@app-builder/components/Nudge';
 import { type AstNode, getDataTypeIcon, injectIdToNode } from '@app-builder/models';
 import { isAggregation } from '@app-builder/models/astNode/aggregation';
+import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { isRestrictedAggregator } from '@app-builder/models/modale-operators';
 import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +42,7 @@ export function MenuOption({
     isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
   const isRestrictedClientRisk = option.operandType === 'ClientRisk' && !hasContinuousScreening;
   const showNudge = (isRestrictedOption && !hasValidLicense) || isRestrictedClientRisk;
+  const showIpNudge = isIpHasFlag(option.astNode) && !hasValidLicense;
 
   return (
     <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>
@@ -67,6 +69,7 @@ export function MenuOption({
               />
             )}
             {showNudge ? <Nudge kind="restricted" content={t('common:premium')} className="size-5" /> : null}
+            {showIpNudge ? <Nudge kind="restricted" content={t('common:premium')} className="size-5" /> : null}
           </div>
         </div>
       </div>

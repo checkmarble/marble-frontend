@@ -4,6 +4,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import {
+  hasAnyEntitlement,
   isCreateDataModelFieldAvailable,
   isCreateDataModelLinkAvailable,
   isCreateDataModelPivotAvailable,
@@ -25,7 +26,7 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function dataLayout({ context }) {
-  const { user, dataModelRepository } = context.authInfo;
+  const { user, dataModelRepository, entitlements } = context.authInfo;
 
   if (isAnalyst(user)) {
     return redirect(getRoute('/cases'));
@@ -46,6 +47,7 @@ export const loader = createServerFn([authMiddleware], async function dataLayout
       isDeleteDataModelFieldAvailable: isDeleteDataModelFieldAvailable(user),
       isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),
       isDeleteDataModelPivotAvailable: isDeleteDataModelPivotAvailable(user),
+      isIpGpsAvailable: hasAnyEntitlement(entitlements),
     },
   };
 });
