@@ -2,7 +2,6 @@ import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   isKnownOperandAstNode,
   isMainAstBinaryNode,
-  isMainAstNode,
   isMainAstUnaryNode,
 } from '@app-builder/models/astNode/builder-ast-node';
 import {
@@ -128,11 +127,8 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
 
   const children = match(node.value)
     .when(isMainAstBinaryNode, (node) => {
-      const hasNestedLeftChild = isMainAstNode(node.children[0]) && node.children[0].children.length > 0;
-      const hasNestedRightChild = isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
-      const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
       const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
-      const showBrackets = !props.root || hasAllNestedChildren;
+      const showBrackets = !props.root;
 
       const children = (
         <>
