@@ -101,7 +101,7 @@ export const EditCaseAssignee = ({
                       <MenuCommand.Item
                         key={userId}
                         className="cursor-pointer"
-                        value={userId}
+                        value={`${userId} ${firstName} ${lastName}`}
                         onSelect={() => {
                           field.handleChange(userId === selectedUserId ? null : userId);
                           form.handleSubmit();
