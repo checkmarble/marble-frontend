@@ -29,7 +29,7 @@ export function DecisionDetailTriggerObject({
         <div className="grid grid-cols-[max-content_1fr] gap-y-2 break-all">
           {parsedTriggerObject.map(([property, data]) => (
             <Fragment key={property}>
-              {!property.endsWith('.metadata') ? <span className="font-semibold">{property}</span> : null}
+              <span className="font-semibold">{!property.endsWith('.metadata') ? property : null}</span>
               <FormatData type={fields?.find((f) => f.name === property)?.dataType ?? undefined} data={data} />
             </Fragment>
           ))}
