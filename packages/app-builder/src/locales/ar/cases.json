@@ -53,6 +53,7 @@
   "case_detail.ai_review.actions.add_to_comment.success": "تمت إضافة المراجعة بنجاح إلى التعليقات",
   "case_detail.ai_review.actions.feedback_ko": "هذه المراجعة غير مفيدة",
   "case_detail.ai_review.actions.feedback_ok": "هذه المراجعة مفيدة",
+  "case_detail.ai_review.consistency_warning": "لم تجتز عملية التحقق من التناسق. قد تحتوي هذه المراجعة على معلومات غير دقيقة — يرجى التحقق من محتواها بعناية.",
   "case_detail.ai_review.title": "ملخص المراجعة",
   "case_detail.assign_to_myself_button.label": "تعيين لنفسي",
   "case_detail.history.event_detail.case_assigned": "<Style>{{actor}}</Style> أعاد التعيين إلى <Style>{{assignee}}</Style>",
