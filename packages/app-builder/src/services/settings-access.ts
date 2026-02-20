@@ -28,6 +28,7 @@ export type Sections = {
   data_display: Section;
   audit: Section;
   ip_whitelisting: Section;
+  debug: Section;
 };
 
 export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inboxes: Inbox[]): Sections {
@@ -74,6 +75,14 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
       settings: [
         ...(isAdmin(user) && appConfig.isManagedMarble
           ? [{ title: 'ip_whitelisting', to: getRoute('/settings/ip-whitelisting') }]
+          : []),
+      ],
+    },
+    debug: {
+      icon: 'code',
+      settings: [
+        ...(isAdmin(user)
+          ? [{ title: 'continuous_screening_debug', to: getRoute('/settings/continuous-screening-debug') }]
           : []),
       ],
     },
