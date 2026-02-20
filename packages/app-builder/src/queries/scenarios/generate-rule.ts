@@ -19,7 +19,7 @@ export type ASTValidationDetail = z.infer<typeof ASTValidationDetailSchema>;
 export function useGenerateRuleMutation(ruleId: string) {
   return useMutation({
     mutationFn: async (instruction: string) => {
-      const response = await fetch(`/api/scenario-iteration-rules/${ruleId}/generate`, {
+      const response = await fetch(`/ressources/scenario-iteration-rules/${ruleId}/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ instruction }),
