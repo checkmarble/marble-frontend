@@ -4,8 +4,14 @@ import { z } from 'zod';
 // API response types matching backend
 const ASTValidationDetailSchema = z.object({
   is_valid: z.boolean(),
-  errors: z.array(z.string()),
-  warnings: z.array(z.string()),
+  errors: z
+    .array(z.string())
+    .nullable()
+    .transform((e) => e ?? []),
+  warnings: z
+    .array(z.string())
+    .nullable()
+    .transform((w) => w ?? []),
 });
 
 const GenerateRuleResponseSchema = z.object({
