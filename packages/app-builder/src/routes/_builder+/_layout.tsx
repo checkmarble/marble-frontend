@@ -1,7 +1,6 @@
 import { navigationI18n, SidebarLink } from '@app-builder/components';
 import { LeftSidebar, LeftSidebarSharpFactory, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
-import { PanelProvider } from '@app-builder/components/Panel';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
@@ -103,122 +102,120 @@ export default function Builder() {
         <OrganizationUsersContextProvider orgUsers={orgUsers}>
           <OrganizationTagsContextProvider orgTags={orgTags}>
             <OrganizationObjectTagsContextProvider tags={orgObjectTags}>
-              <PanelProvider>
-                <div className="flex h-screen flex-1 flex-col">
-                  <DatasetFreshnessBanner />
-                  <div className="flex flex-1 flex-row overflow-hidden">
-                    <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
-                      <LeftSidebar>
-                        <div className="h-24 px-2 pt-3">
-                          <UserInfo isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable} />
-                        </div>
-                        <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
-                          <ul className="flex flex-col gap-2">
-                            {/* Detection - flat link (tabs are inside the page) */}
-                            {!isAnalyst(user) && (
-                              <li>
-                                <SidebarLink
-                                  labelTKey="navigation:detection"
-                                  to={getRoute('/detection')}
-                                  Icon={(props) => <Icon icon="scenarios" {...props} />}
-                                />
-                              </li>
-                            )}
-                            {/* Monitoring (Continuous Screening) */}
-                            {!isAnalyst(user) && (
-                              <li>
-                                {match(featuresAccess.continuousScreening)
-                                  .with(P.union('allowed', 'test'), () => {
-                                    return (
-                                      <SidebarLink
-                                        labelTKey="navigation:continuous_screening"
-                                        to={getRoute('/continuous-screening')}
-                                        Icon={(props) => <Icon icon="scan-eye" {...props} />}
+              <div className="flex h-screen flex-1 flex-col">
+                <DatasetFreshnessBanner />
+                <div className="flex flex-1 flex-row overflow-hidden">
+                  <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
+                    <LeftSidebar>
+                      <div className="h-24 px-2 pt-3">
+                        <UserInfo isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable} />
+                      </div>
+                      <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
+                        <ul className="flex flex-col gap-2">
+                          {/* Detection - flat link (tabs are inside the page) */}
+                          {!isAnalyst(user) && (
+                            <li>
+                              <SidebarLink
+                                labelTKey="navigation:detection"
+                                to={getRoute('/detection')}
+                                Icon={(props) => <Icon icon="scenarios" {...props} />}
+                              />
+                            </li>
+                          )}
+                          {/* Monitoring (Continuous Screening) */}
+                          {!isAnalyst(user) && (
+                            <li>
+                              {match(featuresAccess.continuousScreening)
+                                .with(P.union('allowed', 'test'), () => {
+                                  return (
+                                    <SidebarLink
+                                      labelTKey="navigation:continuous_screening"
+                                      to={getRoute('/continuous-screening')}
+                                      Icon={(props) => <Icon icon="scan-eye" {...props} />}
+                                    />
+                                  );
+                                })
+                                .otherwise((value) => {
+                                  return (
+                                    <div className="text-grey-disabled relative flex gap-2 p-2">
+                                      <Icon icon="scan-eye" className="size-6 shrink-0" />
+                                      <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                                        {t('navigation:continuous_screening')}
+                                      </span>
+                                      <Nudge
+                                        collapsed={!leftSidebarSharp.value.expanded}
+                                        kind={value}
+                                        className="size-6"
+                                        content={t('navigation:continuous_screening.nudge')}
                                       />
-                                    );
-                                  })
-                                  .otherwise((value) => {
-                                    return (
-                                      <div className="text-grey-disabled relative flex gap-2 p-2">
-                                        <Icon icon="scan-eye" className="size-6 shrink-0" />
-                                        <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-                                          {t('navigation:continuous_screening')}
-                                        </span>
-                                        <Nudge
-                                          collapsed={!leftSidebarSharp.value.expanded}
-                                          kind={value}
-                                          className="size-6"
-                                          content={t('navigation:continuous_screening.nudge')}
-                                        />
-                                      </div>
-                                    );
-                                  })}
-                              </li>
-                            )}
-                            {/* Investigations (Cases) */}
+                                    </div>
+                                  );
+                                })}
+                            </li>
+                          )}
+                          {/* Investigations (Cases) */}
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:case_manager"
+                              to={getRoute('/cases')}
+                              Icon={(props) => <Icon icon="case-manager" {...props} />}
+                            />
+                          </li>
+                          {/* Global Search (Screening Search) */}
+                          {featuresAccess.isScreeningSearchAvailable ? (
                             <li>
                               <SidebarLink
-                                labelTKey="navigation:case_manager"
-                                to={getRoute('/cases')}
-                                Icon={(props) => <Icon icon="case-manager" {...props} />}
+                                labelTKey="navigation:screening_search"
+                                to={getRoute('/screening-search')}
+                                Icon={(props) => <Icon icon="search" {...props} />}
                               />
                             </li>
-                            {/* Global Search (Screening Search) */}
-                            {featuresAccess.isScreeningSearchAvailable ? (
-                              <li>
-                                <SidebarLink
-                                  labelTKey="navigation:screening_search"
-                                  to={getRoute('/screening-search')}
-                                  Icon={(props) => <Icon icon="search" {...props} />}
-                                />
-                              </li>
-                            ) : null}
-                          </ul>
-                        </nav>
-                        {/* Secondary Navigation - Bottom */}
-                        <nav className="p-2 pb-4">
-                          <ul className="flex flex-col gap-2">
-                            {/* Your Data */}
-                            {!isAnalyst(user) && (
-                              <li>
-                                <SidebarLink
-                                  labelTKey="navigation:data"
-                                  to={getRoute('/data')}
-                                  Icon={(props) => <Icon icon="harddrive" {...props} />}
-                                />
-                              </li>
-                            )}
-                            {/* Settings */}
-                            {featuresAccess.settings.isAvailable ? (
-                              <li>
-                                <SidebarLink
-                                  labelTKey="navigation:settings"
-                                  to={featuresAccess.settings.to}
-                                  Icon={(props) => <Icon icon="settings" {...props} />}
-                                />
-                              </li>
-                            ) : null}
-                            {/* My Account */}
+                          ) : null}
+                        </ul>
+                      </nav>
+                      {/* Secondary Navigation - Bottom */}
+                      <nav className="p-2 pb-4">
+                        <ul className="flex flex-col gap-2">
+                          {/* Your Data */}
+                          {!isAnalyst(user) && (
                             <li>
                               <SidebarLink
-                                labelTKey="navigation:my_account"
-                                to={getRoute('/account')}
-                                Icon={(props) => <Icon icon="user" {...props} />}
+                                labelTKey="navigation:data"
+                                to={getRoute('/data')}
+                                Icon={(props) => <Icon icon="harddrive" {...props} />}
                               />
                             </li>
-                          </ul>
-                        </nav>
-                        <div className="p-2 pb-4">
-                          <ToggleSidebar />
-                        </div>
-                      </LeftSidebar>
+                          )}
+                          {/* Settings */}
+                          {featuresAccess.settings.isAvailable ? (
+                            <li>
+                              <SidebarLink
+                                labelTKey="navigation:settings"
+                                to={featuresAccess.settings.to}
+                                Icon={(props) => <Icon icon="settings" {...props} />}
+                              />
+                            </li>
+                          ) : null}
+                          {/* My Account */}
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:my_account"
+                              to={getRoute('/account')}
+                              Icon={(props) => <Icon icon="user" {...props} />}
+                            />
+                          </li>
+                        </ul>
+                      </nav>
+                      <div className="p-2 pb-4">
+                        <ToggleSidebar />
+                      </div>
+                    </LeftSidebar>
 
-                      <Outlet />
-                      {featuresAccess.isAutoAssignmentAvailable ? <UnavailableBanner /> : null}
-                    </LeftSidebarSharpFactory.Provider>
-                  </div>
+                    <Outlet />
+                    {featuresAccess.isAutoAssignmentAvailable ? <UnavailableBanner /> : null}
+                  </LeftSidebarSharpFactory.Provider>
                 </div>
-              </PanelProvider>
+              </div>
             </OrganizationObjectTagsContextProvider>
           </OrganizationTagsContextProvider>
         </OrganizationUsersContextProvider>

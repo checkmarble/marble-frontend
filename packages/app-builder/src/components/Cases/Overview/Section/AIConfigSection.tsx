@@ -1,9 +1,10 @@
-import { usePanel } from '@app-builder/components/Panel';
+import { PanelRoot } from '@app-builder/components/Panel/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetAiSettingsQuery } from '@app-builder/queries/cases/get-ai-settings';
 import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
@@ -17,7 +18,7 @@ interface AIConfigSectionProps {
 
 export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps) {
   const { t } = useTranslation(['cases']);
-  const { openPanel, closePanel } = usePanel();
+  const [aiConfigPanelOpen, setAiConfigPanelOpen] = useState(false);
   const aiSettingsQuery = useGetAiSettingsQuery();
   const revalidate = useLoaderRevalidator();
 
@@ -27,18 +28,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
 
   const handleOpenPanel = () => {
     if (!aiSettingsQuery.data) return;
-
-    openPanel(
-      <AIConfigPanelContent
-        settings={aiSettingsQuery.data.settings}
-        readOnly={!canEdit}
-        onSuccess={() => {
-          revalidate();
-          closePanel();
-          aiSettingsQuery.refetch();
-        }}
-      />,
-    );
+    setAiConfigPanelOpen(true);
   };
 
   return (
@@ -114,6 +104,17 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                 upsaleDescription={t('cases:overview.upsale.ai_config.description')}
                 onClick={handleOpenPanel}
               />
+              <PanelRoot open={aiConfigPanelOpen} onOpenChange={setAiConfigPanelOpen}>
+                <AIConfigPanelContent
+                  settings={data.settings}
+                  readOnly={!canEdit}
+                  onSuccess={() => {
+                    revalidate();
+                    setAiConfigPanelOpen(false);
+                    aiSettingsQuery.refetch();
+                  }}
+                />
+              </PanelRoot>
             </>
           );
         })

@@ -1,7 +1,8 @@
 import { Callout, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DataListGrid } from '@app-builder/components/DataModelExplorer/DataListGrid';
-import { PanelContainer, PanelContent, usePanel } from '@app-builder/components/Panel';
+import { PanelContainer, PanelContent } from '@app-builder/components/Panel';
+import { PanelRoot, PanelSharpFactory } from '@app-builder/components/Panel/Panel';
 import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { SquareTag } from '@app-builder/components/SquareTag';
@@ -15,7 +16,7 @@ import {
   OpenSanctionEntityPayload,
 } from '@app-builder/models/continuous-screening';
 import { Inbox } from '@app-builder/models/inbox';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Tag } from 'ui-design-system';
@@ -130,10 +131,7 @@ const DirectScreeningRequestDetail = ({
 
 const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousScreeningScreeningEntityToMarble }) => {
   const { t } = useTranslation(['continuousScreening', 'screenings']);
-  const { openPanel } = usePanel();
-  const handleViewAll = () => {
-    openPanel(<ScreeningEntityDetailsPanel entity={screening.opensanctionEntityPayload} />);
-  };
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -145,7 +143,7 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
         <div className="flex justify-between items-center gap-v2-sm">
           <span className="font-medium">{screening.opensanctionEntityPayload.caption}</span>
           <span className="text-small text-grey-placeholder mr-auto">{screening.opensanctionEntityPayload.schema}</span>
-          <Button variant="secondary" onClick={handleViewAll}>
+          <Button variant="secondary" onClick={() => setOpen(true)}>
             {t('continuousScreening:review.entity_details.view_all')}
           </Button>
         </div>
@@ -165,19 +163,22 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
           </div>
         </DataListGrid>
       </div>
+      <PanelRoot open={open} onOpenChange={setOpen}>
+        <ScreeningEntityDetailsPanel entity={screening.opensanctionEntityPayload} />
+      </PanelRoot>
     </>
   );
 };
 
 const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPayload }) => {
-  const { closePanel } = usePanel();
+  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening', 'screenings']);
 
   return (
     <PanelContainer size="xxxl">
       <PanelContent>
         <div className="flex flex-col gap-v2-md">
-          <Button variant="secondary" mode="icon" onClick={closePanel}>
+          <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
             <Icon icon="left-panel-close" className="size-4" />
           </Button>
           <div className="text-h1">{t('continuousScreening:review.entity_details.title')}</div>

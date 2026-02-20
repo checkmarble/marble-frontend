@@ -65,6 +65,7 @@
         "noUnusedLabels": "error",
         "noUnusedPrivateClassMembers": "error",
         "noUnusedVariables": "error",
+        "noUnusedImports": { "fix": "safe", "level": "warn" },
         "useIsNan": "error",
         "useValidForDirection": "error",
         "useValidTypeof": "error",

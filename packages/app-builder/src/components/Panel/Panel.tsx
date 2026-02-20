@@ -1,8 +1,9 @@
 import { type ReactNode, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { createSharpFactory } from 'sharpstate';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { usePanel } from './PanelProvider';
+import { PanelOverlay } from './PanelOverlay';
 
 export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | 'max';
 
@@ -16,6 +17,76 @@ const sizeClasses: Record<PanelSize, string> = {
   max: 'max-w-[1000px]',
 };
 
+type OnOpenChangeFn = (state: boolean) => void;
+
+interface PanelRootProps {
+  children: ReactNode;
+  open?: boolean;
+  onOpenChange?: OnOpenChangeFn;
+}
+
+type PanelSharpInitParams = {
+  open: boolean | undefined;
+  onOpenChange: OnOpenChangeFn | undefined;
+};
+
+export const PanelSharpFactory = createSharpFactory({
+  name: 'Panel',
+  initializer: (params: PanelSharpInitParams) => {
+    const isControlled = params.open !== undefined;
+
+    return {
+      isOpen: !!params.open,
+      onOpenChange: params.onOpenChange,
+      isControlled,
+    };
+  },
+}).withActions({
+  open(api) {
+    if (api.value.isControlled) {
+      api.value.onOpenChange?.(true);
+    } else {
+      api.value.isOpen = true;
+    }
+  },
+  close(api) {
+    if (api.value.isControlled) {
+      api.value.onOpenChange?.(false);
+    } else {
+      api.value.isOpen = false;
+    }
+  },
+});
+
+export function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const sharp = PanelSharpFactory.createSharp({
+    open,
+    onOpenChange,
+  });
+
+  useEffect(() => {
+    if (!sharp.value.isControlled && open !== undefined) {
+      console.warn(`Panel was initialized as uncontrolled but has its value change to ${open}`);
+    }
+    sharp.value.isOpen = !!open;
+  }, [sharp, open]);
+
+  return (
+    <PanelSharpFactory.Provider value={sharp}>
+      {sharp.value.isOpen
+        ? createPortal(
+            <div className="fixed inset-0 z-20" ref={wrapperRef}>
+              <PanelOverlay />
+              {children}
+            </div>,
+            document.body,
+          )
+        : null}
+    </PanelSharpFactory.Provider>
+  );
+}
+
 interface PanelContainerProps {
   children: ReactNode;
   className?: string;
@@ -23,19 +94,19 @@ interface PanelContainerProps {
 }
 
 export function PanelContainer({ children, className, size = 'md' }: PanelContainerProps) {
-  const { closePanel } = usePanel();
+  const sharp = PanelSharpFactory.useSharp();
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        closePanel();
+        sharp.actions.close();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [closePanel]);
+  }, [sharp]);
 
   // Focus trap = when panel is open, pressing Tab keeps focus inside the panel
   // (can't tab to elements behind it).
@@ -74,25 +145,18 @@ export function PanelContainer({ children, className, size = 'md' }: PanelContai
   }, []);
 
   return (
-    <>
-      <div
-        className="fixed inset-0 bg-grey-primary/10 z-20 backdrop-blur-xs animate-overlay-show"
-        onClick={closePanel}
-        aria-hidden="true"
-      />
-      <div
-        ref={panelRef}
-        className={cn(
-          'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
-          sizeClasses[size],
-          className,
-        )}
-        role="dialog"
-        aria-modal="true"
-      >
-        {children}
-      </div>
-    </>
+    <div
+      ref={panelRef}
+      className={cn(
+        'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
+        sizeClasses[size],
+        className,
+      )}
+      role="dialog"
+      aria-modal="true"
+    >
+      {children}
+    </div>
   );
 }
 
@@ -102,7 +166,7 @@ interface PanelHeaderProps {
 }
 
 export function PanelHeader({ children, className }: PanelHeaderProps) {
-  const { closePanel } = usePanel();
+  const sharp = PanelSharpFactory.useSharp();
 
   return (
     <div className={cn('flex items-center justify-between pb-v2-md', className)}>
@@ -110,7 +174,7 @@ export function PanelHeader({ children, className }: PanelHeaderProps) {
       <Icon
         icon="cross"
         className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary"
-        onClick={closePanel}
+        onClick={sharp.actions.close}
         aria-label="Close panel"
       />
     </div>
