@@ -42,6 +42,7 @@ export type AppConfig = {
   features: {
     sso: boolean;
     segment: boolean;
+    webhookSecretRotation: boolean;
   };
   isManagedMarble: boolean;
   outdated: {
@@ -91,6 +92,7 @@ export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig
     features: {
       sso: dto.features.sso,
       segment: dto.features.segment,
+      webhookSecretRotation: dto.features.webhook_secret_rotation,
     },
     isManagedMarble: process.env['NODE_ENV'] === 'development' ? true : dto.is_managed_marble,
     outdated: {

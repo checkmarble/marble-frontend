@@ -1,11 +1,14 @@
 import { CopyToClipboardButton } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
-import { CalloutV2 } from '@app-builder/components/Callout';
+import { Callout, CalloutV2 } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { Page } from '@app-builder/components/Page';
+import { ArchiveScenario } from '@app-builder/components/Scenario/Actions/ArchiveScenario';
+import { CopyScenario } from '@app-builder/components/Scenario/Actions/CopyScenario';
 import { CreateTestRun } from '@app-builder/components/Scenario/Actions/CreateTestRun';
+import { UnarchiveScenarioButton } from '@app-builder/components/Scenario/Actions/UnarchiveScenario';
 import { UpdateScenario } from '@app-builder/components/Scenario/Actions/UpdateScenario';
 import {
   getFormattedArchived,
@@ -164,6 +167,14 @@ export default function ScenarioHome() {
         <BreadCrumbs />
         {featureAccess.isEditScenarioAvailable ? (
           <div className="flex flex-row gap-4">
+            {!currentScenario.archived ? (
+              <CopyScenario scenarioId={currentScenario.id} scenarioName={currentScenario.name}>
+                <Button variant="secondary" disabled={!hydrated}>
+                  <Icon icon="copy" className="size-3.5" />
+                  <p>{t('scenarios:copy_scenario.title')}</p>
+                </Button>
+              </CopyScenario>
+            ) : null}
             <UpdateScenario
               defaultValue={{
                 name: currentScenario.name,
@@ -176,10 +187,29 @@ export default function ScenarioHome() {
                 <p>{t('scenarios:update_scenario.title')}</p>
               </Button>
             </UpdateScenario>
+            {currentScenario.archived ? (
+              <UnarchiveScenarioButton scenarioId={currentScenario.id} disabled={!hydrated} />
+            ) : !currentScenario.liveVersionId ? (
+              <ArchiveScenario scenarioId={currentScenario.id} scenarioName={currentScenario.name}>
+                <Button
+                  variant="secondary"
+                  disabled={!hydrated}
+                  className="border-red-primary text-red-primary hover:bg-red-background"
+                >
+                  <Icon icon="inbox" className="size-3.5" />
+                  <p>{t('scenarios:archive_scenario.title')}</p>
+                </Button>
+              </ArchiveScenario>
+            ) : null}
           </div>
         ) : null}
       </Page.Header>
       <Page.Container>
+        {currentScenario.archived ? (
+          <Callout color="red" icon="warning">
+            {t('scenarios:archived_scenario_banner')}
+          </Callout>
+        ) : null}
         {currentScenario.description ? <Page.Description>{currentScenario.description}</Page.Description> : null}
         <Page.ContentV2 centered className="flex flex-col gap-v2-lg w-225">
           <VersionSection scenarioIterations={scenarioIterations} />

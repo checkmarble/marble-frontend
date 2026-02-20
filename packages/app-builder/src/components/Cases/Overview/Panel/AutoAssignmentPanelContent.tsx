@@ -1,11 +1,5 @@
-import {
-  PanelContainer,
-  PanelContent,
-  PanelFooter,
-  PanelHeader,
-  PanelOverlay,
-  usePanel,
-} from '@app-builder/components/Panel';
+import { PanelContainer, PanelContent, PanelFooter, PanelHeader } from '@app-builder/components/Panel';
+import { PanelSharpFactory } from '@app-builder/components/Panel/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
@@ -16,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { InboxCard } from './InboxCard';
 
 interface AutoAssignmentChanges {
@@ -35,9 +28,9 @@ export const AutoAssignmentPanelContent = ({
   isGlobalAdmin,
   hasEntitlement,
 }: AutoAssignmentPanelContentProps) => {
+  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
-  const { closePanel } = usePanel();
   const updateAutoAssignMutation = useUpdateAutoAssignMutation();
   const revalidate = useLoaderRevalidator();
 
@@ -100,7 +93,7 @@ export const AutoAssignmentPanelContent = ({
       {
         onSuccess: () => {
           revalidate();
-          closePanel();
+          panelSharp.actions.close();
         },
       },
     );
@@ -109,57 +102,55 @@ export const AutoAssignmentPanelContent = ({
   const hasChanges = Object.keys(changes.inboxes).length > 0 || Object.keys(changes.users).length > 0;
 
   return (
-    <PanelOverlay>
-      <PanelContainer size="xxl">
-        <PanelHeader>
-          <div className="flex items-center gap-v2-sm">
-            <span>{t('cases:overview.panel.auto_assignment.title')}</span>
-          </div>
-        </PanelHeader>
-        <PanelContent>
-          {match(inboxesQuery)
-            .with({ isPending: true }, () => (
-              <div className="flex items-center justify-center py-8">
-                <Spinner className="size-8" />
-              </div>
-            ))
-            .with({ isError: true }, () => (
-              <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
-            ))
-            .with({ isSuccess: true }, () => (
-              <div className="flex flex-col gap-v2-md">
-                {inboxes.map((inbox) => (
-                  <InboxCard
-                    key={inbox.id}
-                    inbox={inbox}
-                    inboxChecked={changes.inboxes[inbox.id]}
-                    userCheckedMap={changes.users}
-                    onToggleInbox={handleToggleInbox}
-                    onToggleUser={handleToggleUser}
-                    disabled={!canEditInbox(inbox)}
-                  />
-                ))}
-              </div>
-            ))
-            .exhaustive()}
-        </PanelContent>
-        {canSave ? (
-          <PanelFooter>
-            <Button
-              size="default"
-              className="w-full justify-center"
-              onClick={handleSave}
-              disabled={updateAutoAssignMutation.isPending || !hasChanges}
-            >
-              {updateAutoAssignMutation.isPending ? (
-                <Icon icon="spinner" className="size-4 animate-spin" />
-              ) : (
-                t('cases:overview.validate')
-              )}
-            </Button>
-          </PanelFooter>
-        ) : null}
-      </PanelContainer>
-    </PanelOverlay>
+    <PanelContainer size="xxl">
+      <PanelHeader>
+        <div className="flex items-center gap-v2-sm">
+          <span>{t('cases:overview.panel.auto_assignment.title')}</span>
+        </div>
+      </PanelHeader>
+      <PanelContent>
+        {match(inboxesQuery)
+          .with({ isPending: true }, () => (
+            <div className="flex items-center justify-center py-8">
+              <Spinner className="size-8" />
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
+          ))
+          .with({ isSuccess: true }, () => (
+            <div className="flex flex-col gap-v2-md">
+              {inboxes.map((inbox) => (
+                <InboxCard
+                  key={inbox.id}
+                  inbox={inbox}
+                  inboxChecked={changes.inboxes[inbox.id]}
+                  userCheckedMap={changes.users}
+                  onToggleInbox={handleToggleInbox}
+                  onToggleUser={handleToggleUser}
+                  disabled={!canEditInbox(inbox)}
+                />
+              ))}
+            </div>
+          ))
+          .exhaustive()}
+      </PanelContent>
+      {canSave ? (
+        <PanelFooter>
+          <Button
+            size="default"
+            className="w-full justify-center"
+            onClick={handleSave}
+            disabled={updateAutoAssignMutation.isPending || !hasChanges}
+          >
+            {updateAutoAssignMutation.isPending ? (
+              <Icon icon="spinner" className="size-4 animate-spin" />
+            ) : (
+              t('cases:overview.validate')
+            )}
+          </Button>
+        </PanelFooter>
+      ) : null}
+    </PanelContainer>
   );
 };

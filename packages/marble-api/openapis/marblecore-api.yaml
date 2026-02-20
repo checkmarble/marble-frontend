@@ -174,6 +174,8 @@ paths:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios
   /scenarios/{scenarioId}:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}
+  /scenarios/{scenarioId}/copy:
+    $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}~1copy
   /scenarios/{scenarioId}/validate-ast:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}~1validate-ast
   /scenarios/{scenarioId}/rules/latest:
@@ -346,6 +348,10 @@ paths:
     $ref: ./marblecore-api/webhooks.yml#/~1webhooks
   /webhooks/{webhookId}:
     $ref: ./marblecore-api/webhooks.yml#/~1webhooks~1{webhookId}
+  /webhooks/{webhookId}/secrets:
+    $ref: ./marblecore-api/webhooks.yml#/~1webhooks~1{webhookId}~1secrets
+  /webhooks/{webhookId}/secrets/{secretId}:
+    $ref: ./marblecore-api/webhooks.yml#/~1webhooks~1{webhookId}~1secrets~1{secretId}
 
   # RULE SNOOZES
 

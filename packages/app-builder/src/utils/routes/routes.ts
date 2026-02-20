@@ -946,6 +946,16 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/validate-ast.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/archive",
+        "path": "ressources/scenarios/archive",
+        "file": "routes/ressources+/scenarios+/archive.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/copy",
+        "path": "ressources/scenarios/copy",
+        "file": "routes/ressources+/scenarios+/copy.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"
@@ -959,6 +969,11 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/rule-description",
         "path": "ressources/scenarios/rule-description",
         "file": "routes/ressources+/scenarios+/rule-description.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/unarchive",
+        "path": "ressources/scenarios/unarchive",
+        "file": "routes/ressources+/scenarios+/unarchive.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/update",
@@ -1107,6 +1122,11 @@ export const routes = [
         "file": "routes/ressources+/settings+/users+/update.tsx"
       },
       {
+        "id": "routes/ressources+/settings+/webhooks+/create-secret",
+        "path": "ressources/settings/webhooks/create-secret",
+        "file": "routes/ressources+/settings+/webhooks+/create-secret.tsx"
+      },
+      {
         "id": "routes/ressources+/settings+/webhooks+/create",
         "path": "ressources/settings/webhooks/create",
         "file": "routes/ressources+/settings+/webhooks+/create.tsx"
@@ -1115,6 +1135,11 @@ export const routes = [
         "id": "routes/ressources+/settings+/webhooks+/delete",
         "path": "ressources/settings/webhooks/delete",
         "file": "routes/ressources+/settings+/webhooks+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/webhooks+/revoke-secret",
+        "path": "ressources/settings/webhooks/revoke-secret",
+        "file": "routes/ressources+/settings+/webhooks+/revoke-secret.tsx"
       },
       {
         "id": "routes/ressources+/settings+/webhooks+/update",

@@ -1,9 +1,10 @@
-import { usePanel } from '@app-builder/components/Panel';
+import { PanelRoot } from '@app-builder/components/Panel/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
@@ -23,19 +24,20 @@ export const WorkflowConfigSection = ({
   allInboxesMetadata,
 }: WorkflowConfigSectionProps) => {
   const { t } = useTranslation(['cases']);
-  const { openPanel } = usePanel();
+  const [escalationPanelOpen, setEscalationPanelOpen] = useState(false);
+  const [workflowPanelOpen, setWorkflowPanelOpen] = useState(false);
   const inboxesQuery = useGetInboxesQuery();
 
   const aiAssistHasAccess = isAccessible(aiAssistAccess);
 
   const handleOpenEscalationPanel = () => {
-    openPanel(<EscalationConditionsPanelContent readOnly={!isGlobalAdmin} allInboxesMetadata={allInboxesMetadata} />);
+    setEscalationPanelOpen(true);
   };
 
   const canEditAiReview = aiAssistHasAccess && isGlobalAdmin;
 
   const handleOpenWorkflowPanel = () => {
-    openPanel(<WorkflowConfigPanelContent readOnly={!canEditAiReview} />);
+    setWorkflowPanelOpen(true);
   };
 
   return (
@@ -116,6 +118,12 @@ export const WorkflowConfigSection = ({
           );
         })
         .exhaustive()}
+      <PanelRoot open={escalationPanelOpen} onOpenChange={setEscalationPanelOpen}>
+        <EscalationConditionsPanelContent readOnly={!isGlobalAdmin} allInboxesMetadata={allInboxesMetadata} />
+      </PanelRoot>
+      <PanelRoot open={workflowPanelOpen} onOpenChange={setWorkflowPanelOpen}>
+        <WorkflowConfigPanelContent readOnly={!canEditAiReview} />
+      </PanelRoot>
     </div>
   );
 };

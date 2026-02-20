@@ -768,6 +768,7 @@ export type CreateCustomListValueBody = {
 };
 export type ScenarioDto = {
     id: string;
+    archived: boolean;
     created_at: string;
     description: string;
     live_version_id?: string;
@@ -781,7 +782,11 @@ export type ScenarioCreateInputDto = {
     trigger_object_type: string;
 };
 export type ScenarioUpdateInputDto = {
+    archived?: boolean;
     description?: string;
+    name?: string;
+};
+export type ScenarioCopyInputDto = {
     name?: string;
 };
 export type NodeDto = {
@@ -1359,6 +1364,7 @@ export type AppConfigDto = {
     features: {
         sso: boolean;
         segment: boolean;
+        webhook_secret_rotation: boolean;
     };
     is_managed_marble: boolean;
 };
@@ -3074,6 +3080,28 @@ export function updateScenario(scenarioId: string, scenarioUpdateInputDto: Scena
         ...opts,
         method: "PATCH",
         body: scenarioUpdateInputDto
+    })));
+}
+/**
+ * Copy a scenario
+ */
+export function copyScenario(scenarioId: string, scenarioCopyInputDto: ScenarioCopyInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenarios/${encodeURIComponent(scenarioId)}/copy`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: scenarioCopyInputDto
     })));
 }
 /**
@@ -5242,6 +5270,46 @@ export function deleteWebhook(webhookId: string, opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>(`/webhooks/${encodeURIComponent(webhookId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Create a webhook secret
+ */
+export function createWebhookSecret(webhookId: string, body: {
+    expire_existing_in_days?: number;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: {
+            secret: WebhookSecretDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/webhooks/${encodeURIComponent(webhookId)}/secrets`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Revoke a webhook secret
+ */
+export function revokeWebhookSecret(webhookId: string, secretId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/webhooks/${encodeURIComponent(webhookId)}/secrets/${encodeURIComponent(secretId)}`, {
         ...opts,
         method: "DELETE"
     }));

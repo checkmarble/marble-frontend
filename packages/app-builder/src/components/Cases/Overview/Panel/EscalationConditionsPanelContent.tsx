@@ -1,4 +1,5 @@
-import { PanelContainer, PanelContent, PanelFooter, PanelOverlay, usePanel } from '@app-builder/components/Panel';
+import { PanelContainer, PanelContent, PanelFooter } from '@app-builder/components/Panel';
+import { PanelSharpFactory } from '@app-builder/components/Panel/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxMetadata } from '@app-builder/models/inbox';
@@ -9,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { type EscalationCondition, EscalationConditionRow } from './EscalationConditionRow';
 
 interface EscalationConditionsPanelContentProps {
@@ -25,9 +25,9 @@ export const EscalationConditionsPanelContent = ({
   readOnly,
   allInboxesMetadata,
 }: EscalationConditionsPanelContentProps) => {
+  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
-  const { closePanel } = usePanel();
   const updateEscalationMutation = useUpdateInboxEscalationMutation();
   const revalidate = useLoaderRevalidator();
   const baseId = useId();
@@ -100,76 +100,74 @@ export const EscalationConditionsPanelContent = ({
       {
         onSuccess: () => {
           revalidate();
-          closePanel();
+          panelSharp.actions.close();
         },
       },
     );
   };
 
   return (
-    <PanelOverlay>
-      <PanelContainer size="xxl">
-        <div className="flex items-center gap-v2-sm pb-4">
-          <h2 className="text-l font-semibold">{t('cases:overview.panel.escalation.title')}</h2>
-        </div>
-        <PanelContent>
-          {match(inboxesQuery)
-            .with({ isPending: true }, () => (
-              <div className="flex items-center justify-center py-8">
-                <Spinner className="size-8" />
-              </div>
-            ))
-            .with({ isError: true }, () => (
-              <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
-            ))
-            .with({ isSuccess: true }, () => (
-              <div className="flex flex-col gap-v2-md">
-                <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light dark:bg-surface-card flex flex-col gap-v2-md">
-                  <div className="text-s font-medium">{t('cases:overview.panel.escalation.conditions_title')}</div>
+    <PanelContainer size="xxl">
+      <div className="flex items-center gap-v2-sm pb-4">
+        <h2 className="text-l font-semibold">{t('cases:overview.panel.escalation.title')}</h2>
+      </div>
+      <PanelContent>
+        {match(inboxesQuery)
+          .with({ isPending: true }, () => (
+            <div className="flex items-center justify-center py-8">
+              <Spinner className="size-8" />
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
+          ))
+          .with({ isSuccess: true }, () => (
+            <div className="flex flex-col gap-v2-md">
+              <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light dark:bg-surface-card flex flex-col gap-v2-md">
+                <div className="text-s font-medium">{t('cases:overview.panel.escalation.conditions_title')}</div>
 
-                  <div className="flex flex-col gap-v2-md">
-                    {conditions.map((condition) => (
-                      <EscalationConditionRow
-                        key={condition.id}
-                        condition={condition}
-                        allInboxesMetadata={allInboxesMetadata}
-                        usedSourceIds={conditions.filter((c) => c.id !== condition.id).map((c) => c.sourceInboxId)}
-                        onUpdate={(field, value) => handleUpdateCondition(condition.id, field, value)}
-                        onRemove={() => handleRemoveCondition(condition.id)}
-                        disabled={readOnly}
-                      />
-                    ))}
+                <div className="flex flex-col gap-v2-md">
+                  {conditions.map((condition) => (
+                    <EscalationConditionRow
+                      key={condition.id}
+                      condition={condition}
+                      allInboxesMetadata={allInboxesMetadata}
+                      usedSourceIds={conditions.filter((c) => c.id !== condition.id).map((c) => c.sourceInboxId)}
+                      onUpdate={(field, value) => handleUpdateCondition(condition.id, field, value)}
+                      onRemove={() => handleRemoveCondition(condition.id)}
+                      disabled={readOnly}
+                    />
+                  ))}
 
-                    {readOnly || conditions.length === inboxes.length ? null : (
-                      <div>
-                        <Button variant="primary" appearance="stroked" onClick={handleAddCondition}>
-                          {t('cases:overview.panel.escalation.add_condition')}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
+                  {readOnly || conditions.length === inboxes.length ? null : (
+                    <div>
+                      <Button variant="primary" appearance="stroked" onClick={handleAddCondition}>
+                        {t('cases:overview.panel.escalation.add_condition')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
-            ))
-            .exhaustive()}
-        </PanelContent>
-        {readOnly ? null : (
-          <PanelFooter>
-            <Button
-              size="default"
-              className="w-full justify-center"
-              onClick={handleSave}
-              disabled={updateEscalationMutation.isPending}
-            >
-              {updateEscalationMutation.isPending ? (
-                <Icon icon="spinner" className="size-4 animate-spin" />
-              ) : (
-                t('cases:overview.validate_config')
-              )}
-            </Button>
-          </PanelFooter>
-        )}
-      </PanelContainer>
-    </PanelOverlay>
+            </div>
+          ))
+          .exhaustive()}
+      </PanelContent>
+      {readOnly ? null : (
+        <PanelFooter>
+          <Button
+            size="default"
+            className="w-full justify-center"
+            onClick={handleSave}
+            disabled={updateEscalationMutation.isPending}
+          >
+            {updateEscalationMutation.isPending ? (
+              <Icon icon="spinner" className="size-4 animate-spin" />
+            ) : (
+              t('cases:overview.validate_config')
+            )}
+          </Button>
+        </PanelFooter>
+      )}
+    </PanelContainer>
   );
 };

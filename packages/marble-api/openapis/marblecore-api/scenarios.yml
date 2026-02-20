@@ -110,6 +110,42 @@
         $ref: "components.yml#/responses/403"
       "404":
         $ref: "components.yml#/responses/404"
+/scenarios/{scenarioId}/copy:
+  post:
+    tags:
+      - Scenarios
+    summary: Copy a scenario
+    operationId: copyScenario
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioId
+        description: ID of the scenario to copy
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: "Optional name for the copied scenario"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ScenarioCopyInputDto"
+      required: true
+    responses:
+      "200":
+        description: The copied scenario
+        content:
+          application/json:
+            schema:
+              $ref: "components.yml#/schemas/ScenarioDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /scenarios/{scenarioId}/validate-ast:
   post:
     tags:
@@ -225,6 +261,8 @@ components:
         id:
           type: string
           format: uuid
+        archived:
+          type: boolean
         created_at:
           type: string
           format: date-time
@@ -242,6 +280,7 @@ components:
           type: string
       required:
         - id
+        - archived
         - created_at
         - description
         - name
@@ -282,9 +321,16 @@ components:
             $ref: "#/components/schemas/ScenarioValidationErrorDto"
         evaluation:
           $ref: "ast.yml#/components/schemas/NodeEvaluationDto"
+    ScenarioCopyInputDto:
+      type: object
+      properties:
+        name:
+          type: string
     ScenarioUpdateInputDto:
       type: object
       properties:
+        archived:
+          type: boolean
         description:
           type: string
         name:

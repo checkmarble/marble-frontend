@@ -99,6 +99,10 @@ export function adaptWebhookRegisterBodyDto(body: WebhookCreateBody): WebhookReg
   };
 }
 
+export interface WebhookCreateSecretBody {
+  expireExistingInDays?: number;
+}
+
 export interface WebhookUpdateBody {
   eventTypes?: string[];
   url?: string;
