@@ -130,6 +130,7 @@
   "case_detail.review_decision.warning_approve": "Attention ! Il reste des filtrages de listes à examiner pour cette décision.",
   "case_detail.rules_execution": "Exécution des règles ({{count}})",
   "case_detail.rules_execution.show_hit_only": "Afficher uniquement les règles déclenchées",
+  "case_detail.rules.no_rules": "Aucune règle n'est éligible pour être mise en veille dans cette investigation.",
   "case_detail.tab.ai_review": "Analyse IA",
   "case_detail.tab.principal": "Principal",
   "case_detail.trigger_object": "Objet déclencheur",
