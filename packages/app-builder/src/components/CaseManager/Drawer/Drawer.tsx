@@ -16,7 +16,7 @@ const drawerVariants = cva(
     variants: {
       expanded: {
         false: '',
-        true: 'translate-x-[calc(-80vw+519px)] shadow-2xl',
+        true: 'ltr:translate-x-[calc(-80vw+519px)] rtl:translate-x-[calc(80vw-519px)] shadow-2xl',
       },
     },
   },
