@@ -31,6 +31,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const rulesByPivot = R.pipe(
     decisionsDetails,
+    R.filter((decision) => !!decision.pivotValues[0]?.value),
     R.groupBy((decision) => decision.pivotValues[0]!.value!),
     R.mapValues((decisions, pivotValue) => {
       const snoozesForPivot = snoozes.filter((s) => s.pivotValue === pivotValue);
