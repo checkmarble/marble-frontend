@@ -47,7 +47,7 @@ export function adaptCustomList(dto: CustomListDto): CustomList {
     id: dto.id,
     name: dto.name,
     description: dto.description,
-    kind: dto.kind,
+    kind: dto.kind ?? 'text',
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
     ValuesCount: {
