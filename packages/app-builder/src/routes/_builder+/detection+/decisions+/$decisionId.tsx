@@ -191,7 +191,7 @@ export default function DecisionPage() {
   );
 
   const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
-  const fields = dataModel.find((table) => table.name == decision.triggerObjectType)?.fields;
+  const fields = dataModel.find((table) => table.name === decision.triggerObjectType)?.fields;
 
   return (
     <DecisionRightPanel.Root>
