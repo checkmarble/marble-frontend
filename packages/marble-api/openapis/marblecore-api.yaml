@@ -48,6 +48,8 @@ tags:
     description: Operations about testrun.
   - name: Workflows
     description: Scenario workflow management.
+  - name: OrgImport
+    description: Operations about organization import and archetypes.
 servers:
   - url: "http://localhost:8080"
     description: Local devlopment server
@@ -306,6 +308,13 @@ paths:
     $ref: ./marblecore-api/misc.yml#/~1analytics
   /config:
     $ref: ./marblecore-api/misc.yml#/~1config
+
+  # ORG IMPORT
+
+  /org-import/archetypes:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import~1archetypes
+  /org-import/archetypes/apply:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import~1archetypes~1apply
 
   # ADMINISTRATION
 

@@ -1399,6 +1399,25 @@ export type AppConfigDto = {
     };
     is_managed_marble: boolean;
 };
+export type ArchetypeDto = {
+    name: string;
+    label?: string;
+    description?: string;
+};
+export type CreateUser = {
+    email: string;
+    role: string;
+    organization_id: string;
+    first_name: string;
+    last_name: string;
+};
+export type ArchetypeApplyDto = {
+    name: string;
+} | {
+    name: string;
+    org_name: string;
+    admins: CreateUser[];
+};
 export type ApiKeyDto = {
     id: string;
     description: string;
@@ -1421,13 +1440,6 @@ export type UserDto = {
     last_name: string;
     role: string;
     organization_id: string;
-};
-export type CreateUser = {
-    email: string;
-    role: string;
-    organization_id: string;
-    first_name: string;
-    last_name: string;
 };
 export type UpdateUser = {
     email: string;
@@ -4642,6 +4654,53 @@ export function getAppConfig(opts?: Oazapfts.RequestOpts) {
     }>("/config", {
         ...opts
     }));
+}
+/**
+ * List available archetypes for org import
+ */
+export function listArchetypes(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            archetypes: ArchetypeDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/org-import/archetypes", {
+        ...opts
+    }));
+}
+/**
+ * Apply an archetype to create or seed an organization
+ */
+export function applyArchetype(archetypeApplyDto: ArchetypeApplyDto, { seed }: {
+    seed?: "true" | "false";
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            org_id: string;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/org-import/archetypes/apply${QS.query(QS.explode({
+        seed
+    }))}`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: archetypeApplyDto
+    })));
 }
 /**
  * List api keys associated with the current organization (present in the JWT)
