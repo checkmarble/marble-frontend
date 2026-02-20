@@ -117,6 +117,7 @@ export const CaseDetails = ({
                 <Icon icon="ai-review" className="size-4" />
               </div>
               {t('cases:case_detail.tab.ai_review')}
+              {!caseReview.review.ok ? <Icon icon="warning" className="size-4 text-red-primary" /> : null}
             </button>
           </div>
         ) : null}
@@ -241,6 +242,14 @@ export const CaseDetails = ({
                 </Button>
               </div>
             </div>
+            {caseReview && !caseReview.review.ok ? (
+              <div className="flex items-center gap-2 rounded-lg border border-red-primary bg-red-primary/10 p-3">
+                <Icon icon="warning" className="size-5 shrink-0 text-red-primary" />
+                <span className="text-s font-medium text-red-primary">
+                  {t('cases:case_detail.ai_review.consistency_warning')}
+                </span>
+              </div>
+            ) : null}
             <div className="border border-grey-border rounded-lg p-4 bg-surface-card">
               <Markdown>{caseReview?.review.output ?? ''}</Markdown>
             </div>
