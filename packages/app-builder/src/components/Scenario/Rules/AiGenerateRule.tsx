@@ -1,3 +1,4 @@
+import { adaptAstNode } from '@app-builder/models/astNode/ast-node';
 import { useGenerateRuleMutation } from '@app-builder/queries/scenarios/generate-rule';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,12 +21,14 @@ export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRulePro
 
       // Apply the generated formula regardless of validation status
       if (result.rule_ast) {
-        onFormulaGenerated(result.rule_ast);
+        // Convert backend NodeDto (snake_case) to frontend AstNode (camelCase)
+        const adaptedAst = adaptAstNode(result.rule_ast);
+        onFormulaGenerated(adaptedAst);
         setInstruction('');
       }
 
       // Show validation errors if any
-      if (!result.validation.is_valid && result.validation.errors.length > 0) {
+      if (!result.validation.is_valid && result.validation.errors && result.validation.errors.length > 0) {
         console.warn('Generated rule has validation errors:', result.validation.errors);
         // TODO: Show toast with errors for now
         alert(`Generated rule has errors:\n${result.validation.errors.join('\n')}`);
@@ -73,7 +76,7 @@ export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRulePro
             <div className="font-medium mb-2">
               {mutation.data.validation.is_valid ? '✓ Valid' : '⚠️ Validation Issues'}
             </div>
-            {mutation.data.validation.errors.length > 0 && (
+            {mutation.data.validation.errors && mutation.data.validation.errors.length > 0 && (
               <div className="text-red-600">
                 <div className="font-medium">Errors:</div>
                 <ul className="list-disc pl-4">
@@ -85,7 +88,7 @@ export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRulePro
                 </ul>
               </div>
             )}
-            {mutation.data.validation.warnings.length > 0 && (
+            {mutation.data.validation.warnings && mutation.data.validation.warnings.length > 0 && (
               <div className="text-yellow-600 mt-2">
                 <div className="font-medium">Warnings:</div>
                 <ul className="list-disc pl-4">

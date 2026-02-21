@@ -1,3 +1,4 @@
+import { initializeMarbleCoreAPIClient } from '@app-builder/infra/marblecore-api';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
@@ -18,22 +19,30 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { instruction } = await request.json();
 
   try {
-    const backendUrl = `${getServerEnv('MARBLE_API_URL')}/scenario-iteration-rules/${ruleId}/generate`;
-    const response = await fetch(backendUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ instruction }),
+    // Initialize API client with the authenticated session token
+    const { getMarbleCoreAPIClientWithAuth } = initializeMarbleCoreAPIClient({
+      request,
+      baseUrl: getServerEnv('MARBLE_API_URL'),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      return Response.json({ error: `Backend error: ${errorText}` }, { status: response.status });
+    // Create a token service that returns the session token
+    const apiClient = getMarbleCoreAPIClientWithAuth({
+      getToken: async () => token,
+      getUpdate: () => ({ status: false, marbleToken: null, refreshToken: null }),
+      refreshToken: async () => {
+        throw new Error('Token refresh not supported in server context');
+      },
+      tokenUpdated: false,
+    });
+
+    const result = await apiClient.generateScenarioIterationRule(ruleId || '', {
+      instruction,
+    });
+
+    if ('error' in result) {
+      return Response.json({ error: result.error }, { status: 500 });
     }
 
-    const result = await response.json();
     return Response.json(result);
   } catch (error) {
     console.error('Rule generation error:', error);

@@ -1,32 +1,17 @@
 import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 
-// API response types matching backend
+// API response types from generated client
 const ASTValidationDetailSchema = z.object({
   is_valid: z.boolean(),
-  errors: z.array(z.string()),
-  warnings: z.array(z.string()),
+  errors: z.array(z.string()).optional().nullable(),
+  warnings: z.array(z.string()).optional().nullable(),
 });
 
-const GenerateRuleResponseSchema = z.preprocess(
-  (data: unknown) => {
-    if (typeof data !== 'object' || !data) return data;
-    const obj = data as Record<string, unknown>;
-    const validation = obj['validation'] as Record<string, unknown> | undefined;
-    return {
-      ...obj,
-      validation: {
-        ...validation,
-        errors: Array.isArray(validation?.['errors']) ? validation['errors'] : [],
-        warnings: Array.isArray(validation?.['warnings']) ? validation['warnings'] : [],
-      },
-    };
-  },
-  z.object({
-    rule_ast: z.any(), // NodeDto from backend
-    validation: ASTValidationDetailSchema,
-  }),
-);
+const GenerateRuleResponseSchema = z.object({
+  rule_ast: z.any().nullable(), // NodeDto from backend or null
+  validation: ASTValidationDetailSchema,
+});
 
 export type GenerateRuleResponse = z.infer<typeof GenerateRuleResponseSchema>;
 export type ASTValidationDetail = z.infer<typeof ASTValidationDetailSchema>;
