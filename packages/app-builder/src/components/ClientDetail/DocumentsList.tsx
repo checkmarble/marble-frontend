@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, CtaV2ClassName, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PanelContainer, PanelRoot } from '../Panel';
+import { PanelContainer, PanelHeader, PanelRoot } from '../Panel';
 import { Spinner } from '../Spinner';
 
 type DocumentsListProps = {
@@ -168,6 +168,21 @@ const FileItem = ({
       {previewUrl ? (
         <PanelRoot open onOpenChange={() => setPreviewUrl(null)}>
           <PanelContainer size="xxl">
+            <PanelHeader>
+              <div className="flex items-baseline gap-v2-md">
+                <div>{file.filename}</div>
+                <span className="text-default text-grey-secondary font-normal flex gap-v2-sm">
+                  <span>
+                    {formatDistanceToNow(new Date(document.created_at), {
+                      locale: getDateFnsLocale(language),
+                      addSuffix: true,
+                    })}
+                  </span>
+                  <span>-</span>
+                  <span>by @{annotatedBy ? getFullName(annotatedBy) : 'Unknown'}</span>
+                </span>
+              </div>
+            </PanelHeader>
             <img src={previewUrl} />
           </PanelContainer>
         </PanelRoot>

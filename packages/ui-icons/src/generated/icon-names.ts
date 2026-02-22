@@ -30,6 +30,7 @@ export const iconNames = [
   'checked',
   'code',
   'column',
+  'comet',
   'comment',
   'commit',
   'copy',

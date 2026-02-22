@@ -11,14 +11,14 @@ const EMPTY_GROUPED_ANNOTATIONS: GroupedAnnotations = {
   comments: [],
   tags: [],
   files: [],
-  risk_topics: [],
+  risk_tags: [],
 };
 
 export const useGetAnnotationsQuery = (objectType: string, objectId: string, loadThumbnails: boolean = false) => {
   const navigate = useAgnosticNavigation();
 
   return useQuery({
-    queryKey: ['annotations', objectType, objectId],
+    queryKey: ['annotations', objectType, objectId, loadThumbnails],
     queryFn: async () => {
       const qs = QueryString.stringify({ load_thumbnails: loadThumbnails });
       const response = await fetch(endpoint(objectType, objectId, qs));

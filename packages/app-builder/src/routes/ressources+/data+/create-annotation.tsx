@@ -95,14 +95,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
         return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
       })
-      .with({ type: 'risk_topic' }, async ({ payload: { addedCategories = [], removedAnnotations = [] }, ...data }) => {
+      .with({ type: 'risk_tag' }, async ({ payload: { addedCategories = [], removedAnnotations = [] }, ...data }) => {
         const promises: Promise<Response | void>[] = [
           ...addedCategories.map((categoryAdded) =>
             dataModelRepository.createAnnotation(data.tableName, data.objectId, {
-              type: 'risk_topic',
+              type: 'risk_tag',
               caseId: data.caseId,
               payload: {
-                topic: categoryAdded,
+                tag: categoryAdded,
               },
             }),
           ),

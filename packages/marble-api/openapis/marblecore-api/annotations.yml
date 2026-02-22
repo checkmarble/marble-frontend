@@ -166,15 +166,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileEntityAnnotationDto'
-        risk_topics:
+        risk_tags:
           type: array
           items:
-            $ref: '#/components/schemas/RiskTopicEntityAnnotationDto'
+            $ref: '#/components/schemas/RiskTagEntityAnnotationDto'
       required:
         - comments
         - tags
         - files
-        - risk_topics
+        - risk_tags
     CommonEntityAnnotationDto:
       type: object
       required:
@@ -244,10 +244,10 @@ components:
       required:
         - id
         - filename
-    RiskTopicEntityAnnotationPayloadDto:
+    RiskTagEntityAnnotationPayloadDto:
       type: object
       properties:
-        topic:
+        tag:
           type: string
           enum: ['sanctions', 'peps', 'third-parties', 'adverse-media']
         continuous_screening_id:
@@ -255,7 +255,7 @@ components:
         opensanction_entity_id:
           type: string
       required:
-        - topic
+        - tag
     BareTagEntityAnnotationDto:
       type: object
       properties:
@@ -301,27 +301,27 @@ components:
       allOf:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
         - $ref: '#/components/schemas/BareFileEntityAnnotationDto'
-    BareRiskTopicEntityAnnotationDto:
+    BareRiskTagEntityAnnotationDto:
       type: object
       properties:
         type:
           type: string
-          enum: ['risk_topic']
+          enum: ['risk_tag']
         payload:
-          $ref: '#/components/schemas/RiskTopicEntityAnnotationPayloadDto'
+          $ref: '#/components/schemas/RiskTagEntityAnnotationPayloadDto'
       required:
         - type
         - payload
-    RiskTopicEntityAnnotationDto:
+    RiskTagEntityAnnotationDto:
       allOf:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
-        - $ref: '#/components/schemas/BareRiskTopicEntityAnnotationDto'
+        - $ref: '#/components/schemas/BareRiskTagEntityAnnotationDto'
     CreateAnnotationDto:
       allOf:
         - anyOf:
             - $ref: '#/components/schemas/BareTagEntityAnnotationDto'
             - $ref: '#/components/schemas/BareCommentEntityAnnotationDto'
-            - $ref: '#/components/schemas/BareRiskTopicEntityAnnotationDto'
+            - $ref: '#/components/schemas/BareRiskTagEntityAnnotationDto'
         - type: object
           required:
             - case_id

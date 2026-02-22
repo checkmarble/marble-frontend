@@ -92,14 +92,14 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
             </>
           ))
           .with({ isSuccess: true }, ({ data: { annotations } }) => {
-            const riskTopicsAnnotations = annotations.risk_topics;
+            const riskTopicsAnnotations = annotations.risk_tags;
 
             return (
               <>
                 {riskTopicsAnnotations.length > 0 ? (
                   <div className="flex items-center gap-v2-sm">
                     {riskTopicsAnnotations.map((annotation) => (
-                      <Tag color={SCREENING_CATEGORY_COLORS[annotation.payload.topic]}>{annotation.payload.topic}</Tag>
+                      <Tag color={SCREENING_CATEGORY_COLORS[annotation.payload.tag]}>{annotation.payload.tag}</Tag>
                     ))}
                   </div>
                 ) : (

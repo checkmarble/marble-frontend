@@ -52,7 +52,7 @@ export const createCommentAnnotationSchema = z.intersection(
 export const createRiskAnnotationSchema = z.intersection(
   baseCreateAnnotationSchema,
   z.object({
-    type: z.literal('risk_topic'),
+    type: z.literal('risk_tag'),
     payload: z.object({
       addedCategories: protectArray(z.array(z.enum(SCREENING_CATEGORIES))).optional(),
       removedAnnotations: protectArray(z.array(z.uuid())).optional(),
@@ -63,7 +63,7 @@ export const createRiskAnnotationSchema = z.intersection(
 export const riskAnnotationFormSchema = z.intersection(
   baseCreateAnnotationSchema,
   z.object({
-    type: z.literal('risk_topic'),
+    type: z.literal('risk_tag'),
     payload: z.object({
       categories: protectArray(z.array(z.enum(SCREENING_CATEGORIES))),
     }),

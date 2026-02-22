@@ -635,9 +635,9 @@ export type CreateAnnotationBody = { caseId?: string } & (
       };
     }
   | {
-      type: 'risk_topic';
+      type: 'risk_tag';
       payload: {
-        topic: ScreeningCategory;
+        tag: ScreeningCategory;
       };
     }
 );
@@ -665,13 +665,13 @@ export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnn
         }) as const,
     )
     .with(
-      { type: 'risk_topic' },
-      ({ payload: { topic }, caseId }) =>
+      { type: 'risk_tag' },
+      ({ payload: { tag }, caseId }) =>
         ({
           case_id: caseId,
-          type: 'risk_topic',
+          type: 'risk_tag',
           payload: {
-            topic,
+            tag,
           },
         }) as const,
     )

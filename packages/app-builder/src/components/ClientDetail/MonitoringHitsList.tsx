@@ -1,30 +1,32 @@
-import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
+import { Case } from '@app-builder/models/cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { UseQueryResult } from '@tanstack/react-query';
 import { Link } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, CtaV2ClassName } from 'ui-design-system';
 
+const MAX_ROWS = 3;
+
 type MonitoringHitsListProps = {
-  objectType: string;
-  objectId: string;
+  monitoringHitsQuery: UseQueryResult<{ cases: Case[] } | undefined>;
+  showAll?: boolean;
 };
 
-export const MonitoringHitsList = ({ objectType, objectId }: MonitoringHitsListProps) => {
+export const MonitoringHitsList = ({ monitoringHitsQuery, showAll = false }: MonitoringHitsListProps) => {
   const { t } = useTranslation(['common']);
-  const relatedCasesQuery = useRelatedCasesByObjectQuery(objectType, objectId);
   const formatDateTime = useFormatDateTime();
 
   return (
     <div>
-      {match(relatedCasesQuery)
+      {match(monitoringHitsQuery)
         .with({ isError: true }, () => {
           return (
             <div className="flex flex-col gap-v2-sm items-center justify-center h-full">
               <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
-              <Button variant="secondary" onClick={() => relatedCasesQuery.refetch()}>
+              <Button variant="secondary" onClick={() => monitoringHitsQuery.refetch()}>
                 {t('common:retry')}
               </Button>
             </div>
@@ -44,7 +46,7 @@ export const MonitoringHitsList = ({ objectType, objectId }: MonitoringHitsListP
 
           return (
             <div className="flex flex-col gap-v2-md">
-              {cases.map((caseItem) => (
+              {(showAll ? cases : cases.slice(0, MAX_ROWS)).map((caseItem) => (
                 <div key={caseItem.id} className="grid grid-cols-[auto_1fr_auto] gap-v2-sm items-center">
                   <span className="text-grey-secondary pr-4">{formatDateTime(caseItem.createdAt)}</span>
                   <span>{caseItem.name}</span>

@@ -16,7 +16,7 @@ type ClientRiskCategoriesEditSelectProps = {
   caseId?: string;
   tableName: string;
   objectId: string;
-  annotations: GroupedAnnotations['risk_topics'];
+  annotations: GroupedAnnotations['risk_tags'];
   onAnnotateSuccess?: () => void;
 };
 
@@ -29,7 +29,7 @@ export function ClientRiskCategoriesEditSelect({
 }: ClientRiskCategoriesEditSelectProps) {
   const { t } = useTranslation(['cases', 'common']);
   const createAnnotationMutation = useCreateAnnotationMutation();
-  const categories = annotations.map((annotation) => annotation.payload.topic);
+  const categories = annotations.map((annotation) => annotation.payload.tag);
   const revalidate = useLoaderRevalidator();
 
   const form = useForm({
@@ -37,7 +37,7 @@ export function ClientRiskCategoriesEditSelect({
       caseId,
       tableName,
       objectId,
-      type: 'risk_topic',
+      type: 'risk_tag',
       payload: {
         categories,
       },
@@ -50,7 +50,7 @@ export function ClientRiskCategoriesEditSelect({
     onSubmit({ value }) {
       const addedCategories = value.payload.categories.filter((t) => !categories.includes(t));
       const removedAnnotations = annotations.filter((annotation) => {
-        return !value.payload.categories.includes(annotation.payload.topic);
+        return !value.payload.categories.includes(annotation.payload.tag);
       });
 
       createAnnotationMutation
@@ -58,7 +58,7 @@ export function ClientRiskCategoriesEditSelect({
           tableName,
           objectId,
           caseId,
-          type: 'risk_topic',
+          type: 'risk_tag',
           payload: {
             addedCategories,
             removedAnnotations: removedAnnotations.map((annotation) => annotation.id),

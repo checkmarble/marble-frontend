@@ -143,10 +143,10 @@ export type FileEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAll
         }[];
     };
 };
-export type RiskTopicEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAllOf0 & {
-    "type": "risk_topic";
+export type RiskTagEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAllOf0 & {
+    "type": "risk_tag";
     payload: {
-        topic: "sanctions" | "peps" | "third-parties" | "adverse-media";
+        tag: "sanctions" | "peps" | "third-parties" | "adverse-media";
         continuous_screening_id?: string;
         opensanction_entity_id?: string;
     };
@@ -155,7 +155,7 @@ export type GroupedAnnotations = {
     comments: CommentEntityAnnotationDto[];
     tags: TagEntityAnnotationDto[];
     files: FileEntityAnnotationDto[];
-    risk_topics: RiskTopicEntityAnnotationDto[];
+    risk_tags: RiskTagEntityAnnotationDto[];
 };
 export type ComponentsSchemasTagEntityAnnotationDtoAllOf1 = {
     "type": "tag";
@@ -170,15 +170,15 @@ export type ComponentsSchemasCommentEntityAnnotationDtoAllOf1 = {
         text: string;
     };
 };
-export type ComponentsSchemasRiskTopicEntityAnnotationDtoAllOf1 = {
-    "type": "risk_topic";
+export type ComponentsSchemasRiskTagEntityAnnotationDtoAllOf1 = {
+    "type": "risk_tag";
     payload: {
-        topic: "sanctions" | "peps" | "third-parties" | "adverse-media";
+        tag: "sanctions" | "peps" | "third-parties" | "adverse-media";
         continuous_screening_id?: string;
         opensanction_entity_id?: string;
     };
 };
-export type CreateAnnotationDto = (ComponentsSchemasTagEntityAnnotationDtoAllOf1 | ComponentsSchemasCommentEntityAnnotationDtoAllOf1 | ComponentsSchemasRiskTopicEntityAnnotationDtoAllOf1) & {
+export type CreateAnnotationDto = (ComponentsSchemasTagEntityAnnotationDtoAllOf1 | ComponentsSchemasCommentEntityAnnotationDtoAllOf1 | ComponentsSchemasRiskTagEntityAnnotationDtoAllOf1) & {
     caseId?: string;
 };
 export type CreateCaseBodyDto = {
