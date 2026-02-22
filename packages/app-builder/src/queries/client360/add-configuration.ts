@@ -9,7 +9,7 @@ export const addConfigurationPayloadSchema = z.object({
   tableId: z.uuid(),
   semanticType: z.enum(semanticTypes),
   captionField: z.string().min(1),
-  alias: z.string(),
+  alias: z.string().optional(),
 });
 
 export type AddConfigurationPayload = z.infer<typeof addConfigurationPayloadSchema>;

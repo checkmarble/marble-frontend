@@ -8,7 +8,7 @@ import {
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { UseQueryResult } from '@tanstack/react-query';
-import { Client360Table } from 'marble-api/generated/marblecore-api';
+import { Client360Table } from 'marble-api';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -36,7 +36,7 @@ export const ObjectHierarchy = ({
   handleExplore: handleExploreProps,
   dataModelQuery,
 }: ObjectHierarchyProps) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'client360']);
   const hierarchyQuery = useHierarchyQuery(objectType, objectId, showAll);
   const [selectedParent, _setSelectedParent] = useState<HierarchyNode | null>(null);
   const dataModelExplorerContext = DataModelExplorerContext.useValue();
@@ -332,13 +332,14 @@ const TreeItemLabel = ({
   item: HierarchyLeaf | HierarchyNode;
   metadata: Client360Table | null;
 }) => {
+  const { t } = useTranslation(['client360']);
   return metadata && !Array.isArray(item.data) ? (
     <div className="flex items-center gap-10 shrink-0">
       <span>{metadata.alias ?? metadata.name}</span>
       <span>{item.data[metadata.caption_field] as string}</span>
     </div>
   ) : (
-    <span className="shrink-0">Related {item.objectType}</span>
+    <span className="shrink-0">{t('client360:client_detail.hierarchy.related', { objectType: item.objectType })}</span>
   );
 };
 

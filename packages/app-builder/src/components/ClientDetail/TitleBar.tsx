@@ -1,7 +1,7 @@
 import { DataModelObject } from '@app-builder/models';
 import { SCREENING_CATEGORY_COLORS } from '@app-builder/models/screening';
 import { UseQueryResult, useQueryClient } from '@tanstack/react-query';
-import { Client360Table, GroupedAnnotations } from 'marble-api/generated/marblecore-api';
+import { Client360Table, GroupedAnnotations } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -21,7 +21,7 @@ type TitleBarProps = {
 };
 
 export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery, metadata }: TitleBarProps) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'client360']);
   const [editTagsOpen, setEditTagsOpen] = useState(false);
   const [editRiskCateogoriesOpen, setEditRiskCategoriesOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -29,7 +29,11 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   return (
     <div className="flex gap-v2-md items-center">
       <div className="flex gap-v2-xs items-center">
-        <h1 className="text-h1 font-semibold">{objectDetails.data[metadata.caption_field] as string}'s informations</h1>
+        <h1 className="text-h1 font-semibold">
+          {t('client360:client_detail.title_bar.informations', {
+            name: objectDetails.data[metadata.caption_field] as string,
+          })}
+        </h1>
         <Tag color="grey">{metadata.alias ?? metadata.name}</Tag>
       </div>
       <div className="w-px self-stretch bg-grey-border" />
@@ -99,7 +103,9 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                 {riskTopicsAnnotations.length > 0 ? (
                   <div className="flex items-center gap-v2-sm">
                     {riskTopicsAnnotations.map((annotation) => (
-                      <Tag color={SCREENING_CATEGORY_COLORS[annotation.payload.tag]}>{annotation.payload.tag}</Tag>
+                      <Tag key={annotation.id} color={SCREENING_CATEGORY_COLORS[annotation.payload.tag]}>
+                        {annotation.payload.tag}
+                      </Tag>
                     ))}
                   </div>
                 ) : (
@@ -121,7 +127,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                       objectId={objectId}
                       annotations={riskTopicsAnnotations}
                       onAnnotateSuccess={() => {
-                        setEditTagsOpen(false);
+                        setEditRiskCategoriesOpen(false);
                         queryClient.invalidateQueries({ queryKey: ['annotations', objectType, objectId] });
                       }}
                     />

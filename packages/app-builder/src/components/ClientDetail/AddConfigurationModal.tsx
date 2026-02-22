@@ -22,7 +22,7 @@ export const AddConfigurationModal = ({
   dataModel: DataModel;
   disabled: boolean;
 }) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'client360']);
   const [open, setOpen] = useState(false);
   const addConfigurationMutation = useAddConfigurationMutation();
   const revalidate = useLoaderRevalidator();
@@ -68,11 +68,11 @@ export const AddConfigurationModal = ({
           disabled={disabled}
         >
           <Icon icon="plus" className="size-4" />
-          Add configuration
+          {t('client360:client_detail.add_configuration_modal.button')}
         </Button>
       </Modal.Trigger>
       <Modal.Content size="medium">
-        <Modal.Title>Configuration</Modal.Title>
+        <Modal.Title>{t('client360:client_detail.add_configuration_modal.title')}</Modal.Title>
         <div className="p-v2-md">
           <form
             id="add-configuration-form"
@@ -82,10 +82,10 @@ export const AddConfigurationModal = ({
             <form.Field name="tableId">
               {(field) => (
                 <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm">
-                  <span>Table:</span>
+                  <span>{t('client360:client_detail.add_configuration_modal.table_label')}</span>
                   <SelectV2
                     value={field.state.value}
-                    placeholder="Select a table"
+                    placeholder={t('client360:client_detail.add_configuration_modal.table_placeholder')}
                     onChange={field.handleChange}
                     options={availableTables.map((table) => ({ label: table.name, value: table.id }))}
                     className="w-full"
@@ -96,14 +96,14 @@ export const AddConfigurationModal = ({
             <form.Field name="semanticType">
               {(field) => (
                 <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm col-start-1">
-                  <span>Type:</span>
+                  <span>{t('client360:client_detail.add_configuration_modal.type_label')}</span>
                   <SelectV2
                     value={field.state.value}
-                    placeholder="Select a type"
+                    placeholder={t('client360:client_detail.add_configuration_modal.type_placeholder')}
                     onChange={field.handleChange}
                     options={[
-                      { label: 'Person', value: 'person' },
-                      { label: 'Company', value: 'company' },
+                      { label: t('client360:client_detail.add_configuration_modal.type_person'), value: 'person' },
+                      { label: t('client360:client_detail.add_configuration_modal.type_company'), value: 'company' },
                     ]}
                     className="w-full"
                   />
@@ -113,11 +113,11 @@ export const AddConfigurationModal = ({
             <form.Field name="captionField">
               {(field) => (
                 <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm">
-                  <span>Name:</span>
+                  <span>{t('client360:client_detail.add_configuration_modal.name_label')}</span>
                   <SelectV2
                     disabled={!selectedTable}
                     value={field.state.value}
-                    placeholder="Select a caption field"
+                    placeholder={t('client360:client_detail.add_configuration_modal.caption_field_placeholder')}
                     onChange={field.handleChange}
                     options={tableFields.map((field) => ({ label: field.name, value: field.name }))}
                     className="w-full"
@@ -128,12 +128,12 @@ export const AddConfigurationModal = ({
             <form.Field name="alias">
               {(field) => (
                 <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm col-start-2">
-                  <span>Alias:</span>
+                  <span>{t('client360:client_detail.add_configuration_modal.alias_label')}</span>
                   <span>
                     <Input
                       value={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
-                      placeholder="Enter an alias"
+                      placeholder={t('client360:client_detail.add_configuration_modal.alias_placeholder')}
                     />
                   </span>
                 </div>

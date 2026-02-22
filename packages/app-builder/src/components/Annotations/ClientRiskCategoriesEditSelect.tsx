@@ -103,7 +103,7 @@ export function ClientRiskCategoriesEditSelect({
                   </Button>
                 ) : (
                   <Button size="small" type="submit">
-                    Confirm
+                    {t('common:confirm')}
                   </Button>
                 )}
               </MenuCommand.HeadlessItem>

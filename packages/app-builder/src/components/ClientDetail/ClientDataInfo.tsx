@@ -1,6 +1,7 @@
 import { DataModelObject, TableModelWithOptions } from '@app-builder/models';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -12,6 +13,7 @@ export type ClientDataInfoProps = {
 };
 
 export const ClientDataInfo = ({ objectDetails, table }: ClientDataInfoProps) => {
+  const { t } = useTranslation(['common']);
   const parsedData = R.pipe(objectDetails.data, R.mapValues(parseUnknownData));
   const fieldCount = table.options.fieldOrder.length;
   const [isExpanded, setIsExpanded] = useState(false);
@@ -31,7 +33,7 @@ export const ClientDataInfo = ({ objectDetails, table }: ClientDataInfoProps) =>
           return (
             <div key={field.id} className="grid grid-cols-[160px_1fr] items-center">
               <div>{field.name}</div>
-              <FormatData data={parsedData[field.name]} className="no-wrap truncate" />
+              <FormatData data={parsedData[field.name]} className="whitespace-nowrap truncate" />
             </div>
           );
         })}
@@ -39,7 +41,7 @@ export const ClientDataInfo = ({ objectDetails, table }: ClientDataInfoProps) =>
       {fieldCount > 10 && !isExpanded ? (
         <div className="not-lg:hidden">
           <Button appearance="link" onClick={() => setIsExpanded(true)} className="-m-v2-sm">
-            See more
+            {t('common:show')}
             <Icon icon="arrow-down" className="size-3.5" />
           </Button>
         </div>

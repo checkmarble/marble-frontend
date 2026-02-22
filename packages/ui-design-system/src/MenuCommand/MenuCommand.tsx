@@ -261,7 +261,7 @@ const contentClassname = cva('flex z-50 text-s', {
 
 const commandClassname = cva(
   [
-    'flex flex-col z-50 w-full flex-1 overflow-hidden',
+    'flex flex-col z-50 w-full flex-1 overflow-y-auto',
     'bg-surface-card border-grey-border rounded-sm border shadow-md outline-hidden',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',

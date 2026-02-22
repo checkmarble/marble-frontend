@@ -2,8 +2,8 @@ import { Case } from '@app-builder/models/cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { UseQueryResult } from '@tanstack/react-query';
 import { Link } from '@remix-run/react';
+import { UseQueryResult } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, CtaV2ClassName } from 'ui-design-system';
@@ -33,7 +33,7 @@ export const MonitoringHitsList = ({ monitoringHitsQuery, showAll = false }: Mon
           );
         })
         .with({ isPending: true }, () => {
-          return <div>Loading...</div>;
+          return <div>{t('common:loading')}</div>;
         })
         .with({ isSuccess: true }, ({ data: { cases } = { cases: [] } }) => {
           if (cases.length === 0) {

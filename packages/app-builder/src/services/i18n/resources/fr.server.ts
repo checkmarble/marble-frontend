@@ -3,6 +3,7 @@ import analytics from '@app-builder/locales/fr/analytics.json';
 import api from '@app-builder/locales/fr/api.json';
 import auth from '@app-builder/locales/fr/auth.json';
 import cases from '@app-builder/locales/fr/cases.json';
+import client360 from '@app-builder/locales/fr/client360.json';
 import common from '@app-builder/locales/fr/common.json';
 import continuousScreening from '@app-builder/locales/fr/continuous-screening.json';
 import data from '@app-builder/locales/fr/data.json';
@@ -22,6 +23,7 @@ export const fr = {
   analytics,
   api,
   cases,
+  client360,
   common,
   continuousScreening,
   data,

@@ -29,7 +29,7 @@ type FileView = {
 };
 
 export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'client360']);
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const users = useOrganizationUsers();
   const [currentFileView, setCurrentFileView] = useState<FileView | null>(null);
@@ -64,7 +64,7 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
             const annotatedBy = users.getOrgUserById(document.annotated_by);
 
             return document.payload.files.map((file) => (
-              <FileItem document={document} file={file} annotatedBy={annotatedBy} />
+              <FileItem key={file.id} document={document} file={file} annotatedBy={annotatedBy} />
             ));
           })}
           {currentFileView ? (
@@ -89,6 +89,7 @@ const FileItem = ({
   file: FileEntityAnnotationDto['payload']['files'][number];
   annotatedBy: User | undefined;
 }) => {
+  const { t } = useTranslation(['client360']);
   const language = useFormatLanguage();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileEndpoint = getRoute('/ressources/annotations/download-file/:annotationId/:fileId', {
@@ -156,7 +157,11 @@ const FileItem = ({
         <div className="flex flex-col gap-v2-xs text-tiny text-grey-secondary truncate">
           <div className="font-medium text-default text-grey-primary truncate">{file.filename}</div>
           {document.case_id ? <CaseLink caseId={document.case_id} /> : null}
-          <span>by @{annotatedBy ? getFullName(annotatedBy) : 'Unknown'}</span>
+          <span>
+            {t('client360:client_detail.documents.annotated_by', {
+              name: annotatedBy ? getFullName(annotatedBy) : t('client360:client_detail.documents.unknown_user'),
+            })}
+          </span>
           <span>
             {formatDistanceToNow(new Date(document.created_at), {
               locale: getDateFnsLocale(language),
@@ -179,7 +184,13 @@ const FileItem = ({
                     })}
                   </span>
                   <span>-</span>
-                  <span>by @{annotatedBy ? getFullName(annotatedBy) : 'Unknown'}</span>
+                  <span>
+                    {t('client360:client_detail.documents.annotated_by', {
+                      name: annotatedBy
+                        ? getFullName(annotatedBy)
+                        : t('client360:client_detail.documents.unknown_user'),
+                    })}
+                  </span>
                 </span>
               </div>
             </PanelHeader>
@@ -192,12 +203,17 @@ const FileItem = ({
 };
 
 const CaseLink = ({ caseId }: { caseId: string }) => {
+  const { t } = useTranslation(['common', 'client360']);
   const link = getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseId) });
   const caseQuery = useGetCaseNameQuery(caseId);
 
   return (
     <Link to={link} className="text-purple-primary hover:text-purple-hover truncate">
-      {caseQuery.isPending ? <Spinner className="size-4" /> : caseQuery.isSuccess ? caseQuery.data.name : 'Unknown'}
+      {match(caseQuery)
+        .with({ isPending: true }, () => <Spinner className="size-4" />)
+        .with({ isError: true }, () => t('common:unknown'))
+        .with({ isSuccess: true }, ({ data }) => data.name)
+        .exhaustive()}
     </Link>
   );
 };

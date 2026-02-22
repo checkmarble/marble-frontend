@@ -2,7 +2,7 @@ import { createServerFn, data } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import invariant from 'tiny-invariant';
-import z from 'zod';
+import { z } from 'zod/v4';
 
 const queryParams = z.object({
   load_thumbnails: z.stringbool().optional(),

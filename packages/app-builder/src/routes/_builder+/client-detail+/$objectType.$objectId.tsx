@@ -9,18 +9,23 @@ import { Namespace } from 'i18next';
 import invariant from 'tiny-invariant';
 
 export const handle = {
-  i18n: ['common', 'cases'] satisfies Namespace,
+  i18n: ['common', 'cases', 'client360'] satisfies Namespace,
+  BreadCrumbs: [],
 };
 
 export const loader = createServerFn([authMiddleware], async ({ request, context, params }) => {
   const objectType = params['objectType'];
   const objectId = params['objectId'];
-  const { toastSessionService } = context.services;
+  const {
+    toastSessionService,
+    i18nextService: { getFixedT },
+  } = context.services;
 
   invariant(objectType, 'Object type is required');
   invariant(objectId, 'Object ID is required');
 
   const toastSession = await toastSessionService.getSession(request);
+  const t = await getFixedT(request, ['common']);
 
   try {
     const objectDetails = await context.authInfo.dataModelRepository.getIngestedObject(objectType, objectId);
@@ -37,7 +42,7 @@ export const loader = createServerFn([authMiddleware], async ({ request, context
     if (isNotFoundHttpError(error)) {
       setToastMessage(toastSession, {
         type: 'error',
-        message: 'No {objectType} found',
+        message: t('client360:client_detail.no_object_found', { objectType }),
       });
       throw redirect(getRoute('/client-detail'), {
         headers: {

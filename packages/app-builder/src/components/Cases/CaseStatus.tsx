@@ -148,7 +148,7 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
 
   if (variant === 'full' || variant === 'icon-only') {
     return (
-      <div className={cn(badgeTextVariants({ status }), 'flex items-center gap-v2-sm text-small no-wrap')}>
+      <div className={cn(badgeTextVariants({ status }), 'flex items-center gap-v2-sm text-small whitespace-nowrap')}>
         <div className="flex items-center gap-v2-xs shrink-0">
           <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
           {variant === 'full' ? (
@@ -156,7 +156,7 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
           ) : null}
         </div>
         {outcome !== 'unset' && variant !== 'icon-only' ? (
-          <div className={cn(outcomeVariants({ outcome }), 'shrink-0 no-wrap')}>
+          <div className={cn(outcomeVariants({ outcome }), 'shrink-0 whitespace-nowrap')}>
             {t(`cases:case.outcome.${outcome}`)}
           </div>
         ) : null}
@@ -171,20 +171,20 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
           className={cn(
             badgeTextVariants({ status }),
             badgeBorderVariants({ status }),
-            'flex items-center gap-v2-xs h-6 rounded-full px-v2-sm text-small no-wrap',
+            'flex items-center gap-v2-xs h-6 rounded-full px-v2-sm text-small whitespace-nowrap',
           )}
         >
           <Icon icon={statusIconMap[status]} className="size-4 shrink-0" />
-          <span className="shrink-0 no-wrap">{t(`cases:case.status.${status}`)}</span>
+          <span className="shrink-0 whitespace-nowrap">{t(`cases:case.status.${status}`)}</span>
         </div>
       );
     }
 
     return (
-      <div className="flex items-center gap-v2-xs text-small no-wrap">
+      <div className="flex items-center gap-v2-xs text-small whitespace-nowrap">
         <Icon icon={statusIconMap[status]} className={cn(badgeTextVariants({ status }), 'size-5 shrink-0')} />
         {outcome !== 'unset' ? (
-          <div className={cn(outcomeVariants({ outcome }), 'shrink-0 no-wrap')}>
+          <div className={cn(outcomeVariants({ outcome }), 'shrink-0 whitespace-nowrap')}>
             {t(`cases:case.outcome.${outcome}`)}
           </div>
         ) : null}
@@ -197,7 +197,7 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
       className={cn(
         badgeTextVariants({ status }),
         badgeBorderVariants({ status }),
-        'flex items-center gap-v2-sm h-10 rounded-v2-s px-v2-sm text-default font-medium no-wrap',
+        'flex items-center gap-v2-sm h-10 rounded-v2-s px-v2-sm text-default font-medium whitespace-nowrap',
       )}
     >
       <Icon icon={statusIconMap[status]} className="size-5" />

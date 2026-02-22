@@ -26,7 +26,7 @@ export const AlertHitsList = ({ alertHitsQuery, showAll = false }: AlertHitsList
         .with({ isError: true }, () => {
           return (
             <div className="flex flex-col gap-v2-sm items-center justify-center h-full">
-              <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
+              <span className="text-s text-grey-secondary text-center">{t('common:generic_fetch_data_error')}</span>
               <Button variant="secondary" onClick={() => alertHitsQuery.refetch()}>
                 {t('common:retry')}
               </Button>
@@ -34,7 +34,7 @@ export const AlertHitsList = ({ alertHitsQuery, showAll = false }: AlertHitsList
           );
         })
         .with({ isPending: true }, () => {
-          return <div>Loading...</div>;
+          return <div>{t('common:loading')}</div>;
         })
         .with({ isSuccess: true }, ({ data: { cases } }) => {
           if (cases.length === 0) {

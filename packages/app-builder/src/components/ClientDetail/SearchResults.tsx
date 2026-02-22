@@ -11,12 +11,12 @@ import { Highlight } from '../Highlight';
 import { Spinner } from '../Spinner';
 
 export const SearchResults = ({ payload, tables }: { payload: Client360SearchPayload; tables: Client360Table[] }) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'client360']);
   const searchQuery = useSearchClient360Query(payload);
   const metadata = tables.find((table) => table.name === payload.table);
 
   if (!metadata) {
-    return <div>Could not find metadata for table {payload.table}</div>;
+    return <div>{t('client360:client_detail.search_results.metadata_not_found', { table: payload.table })}</div>;
   }
 
   return match(searchQuery)
@@ -75,12 +75,13 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
 };
 
 const EntityTags = ({ objectType, objectId }: { objectType: string; objectId: string }) => {
+  const { t } = useTranslation(['common']);
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId);
   const { orgObjectTags } = useOrganizationObjectTags();
 
   return match(annotationsQuery)
-    .with({ isPending: true }, () => <div>Loading...</div>)
-    .with({ isError: true }, () => <div>Error</div>)
+    .with({ isPending: true }, () => <div>{t('common:loading')}</div>)
+    .with({ isError: true }, () => <div>{t('common:global_error')}</div>)
     .with({ isSuccess: true }, ({ data }) => {
       return (
         <div className="flex items-center gap-v2-sm ml-10">

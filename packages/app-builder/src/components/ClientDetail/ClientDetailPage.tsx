@@ -5,8 +5,9 @@ import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
+import { getRoute } from '@app-builder/utils/routes';
 import { useQueryClient } from '@tanstack/react-query';
-import { Client360Table } from 'marble-api/generated/marblecore-api';
+import { Client360Table } from 'marble-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -40,7 +41,7 @@ export const ClientDetailPage = ({
   metadata,
   allMetadata,
 }: ClientDetailPageProps) => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'client360']);
   const dataModelQuery = useDataModelWithOptionsQuery();
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const [showExplorer, setShowExplorer] = useState(false);
@@ -60,7 +61,7 @@ export const ClientDetailPage = ({
     <DataModelExplorerProvider>
       <Page.Main>
         <Page.Header>
-          <BreadCrumbs />
+          <BreadCrumbs back={getRoute('/client-detail')} />
         </Page.Header>
         <Page.Container ref={containerRef}>
           <Page.ContentV2 className="gap-v2-lg">
@@ -87,8 +88,8 @@ export const ClientDetailPage = ({
                 <div className="absolute flex flex-col items-center gap-v2-sm justify-center size-[180px] border border-grey-border/80 rounded-v2-md">
                   <Icon icon="comet" className="size-10 text-yellow-primary" />
                   <div className="flex flex-col items-center">
-                    <span className="font-semibold">Score</span>
-                    <span>Comming soon</span>
+                    <span className="font-semibold">{t('client360:client_detail.score_card.title')}</span>
+                    <span>{t('client360:client_detail.score_card.coming_soon')}</span>
                   </div>
                 </div>
               </div>
@@ -131,10 +132,10 @@ export const ClientDetailPage = ({
               <div className="flex flex-col gap-v2-md">
                 <Card className="flex flex-col gap-v2-sm">
                   <div className="flex justify-between items-center">
-                    <div className="font-medium">Monitoring hits</div>
+                    <div className="font-medium">{t('client360:client_detail.monitoring_hits.title')}</div>
                     {monitoringHitsCount > 3 ? (
                       <Button appearance="link" onClick={() => setShowMonitoringHitsPanel(true)}>
-                        <span>See all</span>
+                        <span>{t('common:show')}</span>
                         <Icon icon="eye" className="size-4" />
                       </Button>
                     ) : null}
@@ -143,10 +144,10 @@ export const ClientDetailPage = ({
                 </Card>
                 <Card className="flex flex-col gap-v2-sm">
                   <div className="flex justify-between items-center">
-                    <div className="font-medium">Alert hits</div>
+                    <div className="font-medium">{t('client360:client_detail.alert_hits.title')}</div>
                     {alertHitsCount > 3 ? (
                       <Button appearance="link" onClick={() => setShowAlertHitsPanel(true)}>
-                        <span>See all</span>
+                        <span>{t('common:show')}</span>
                         <Icon icon="eye" className="size-4" />
                       </Button>
                     ) : null}
@@ -156,9 +157,9 @@ export const ClientDetailPage = ({
               </div>
               <Card className="flex flex-col gap-v2-sm">
                 <div className="flex justify-between items-center">
-                  <div className="font-medium">Hierarchy</div>
+                  <div className="font-medium">{t('client360:client_detail.hierarchy.title')}</div>
                   <Button appearance="link" onClick={() => setShowHierarchyPanel(true)}>
-                    <span>See all</span>
+                    <span>{t('common:show')}</span>
                     <Icon icon="eye" className="size-4" />
                   </Button>
                 </div>
@@ -176,13 +177,13 @@ export const ClientDetailPage = ({
             {/* Client documents */}
             <div className="flex flex-col gap-v2-sm">
               <div className="flex justify-between items-center">
-                <div className="font-medium">Documents</div>
+                <div className="font-medium">{t('client360:client_detail.documents.title')}</div>
                 <div>
                   <Popover.Root open={isEditingDocuments} onOpenChange={setIsEditingDocuments}>
                     <Popover.Trigger asChild>
                       <Button variant="secondary">
                         <Icon icon="add-circle" className="size-4" />
-                        <span>Add document</span>
+                        <span>{t('client360:client_detail.documents.add_button')}</span>
                       </Button>
                     </Popover.Trigger>
                     <Popover.Content
@@ -211,7 +212,7 @@ export const ClientDetailPage = ({
 
             {/* Client comments */}
             <div className="flex flex-col gap-v2-sm">
-              <div className="font-medium">Comments</div>
+              <div className="font-medium">{t('client360:client_detail.comments.title')}</div>
               <ClientComments
                 objectType={objectType}
                 objectId={objectId}
@@ -224,7 +225,7 @@ export const ClientDetailPage = ({
       </Page.Main>
       <PanelRoot open={showAlertHitsPanel} onOpenChange={setShowAlertHitsPanel}>
         <PanelContainer size="xxl">
-          <PanelHeader>Alert Hits</PanelHeader>
+          <PanelHeader>{t('client360:client_detail.alert_hits.panel_title')}</PanelHeader>
           <div className="text-small">
             <AlertHitsList alertHitsQuery={alertHitsQuery} showAll />
           </div>
@@ -232,7 +233,7 @@ export const ClientDetailPage = ({
       </PanelRoot>
       <PanelRoot open={showMonitoringHitsPanel} onOpenChange={setShowMonitoringHitsPanel}>
         <PanelContainer size="xxl">
-          <PanelHeader>Monitoring Hits</PanelHeader>
+          <PanelHeader>{t('client360:client_detail.monitoring_hits.panel_title')}</PanelHeader>
           <div className="text-small">
             <MonitoringHitsList monitoringHitsQuery={monitoringHitsQuery} showAll />
           </div>
@@ -240,7 +241,7 @@ export const ClientDetailPage = ({
       </PanelRoot>
       <PanelRoot open={showHierarchyPanel} onOpenChange={setShowHierarchyPanel}>
         <PanelContainer size="xxl">
-          <PanelHeader>Customer graph relations</PanelHeader>
+          <PanelHeader>{t('client360:client_detail.hierarchy.customer_graph_relations')}</PanelHeader>
           <ObjectHierarchy
             showAll
             objectType={objectType}
@@ -254,7 +255,7 @@ export const ClientDetailPage = ({
       </PanelRoot>
       <PanelRoot open={showExplorer} onOpenChange={setShowExplorer}>
         <PanelContainer className="max-w-[90vw]">
-          <PanelHeader>Data Exploration</PanelHeader>
+          <PanelHeader>{t('client360:client_detail.data_exploration.panel_title')}</PanelHeader>
           <DataModelExplorer dataModel={dataModelQuery.data?.dataModel ?? []} />
         </PanelContainer>
       </PanelRoot>

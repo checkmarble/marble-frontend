@@ -3,6 +3,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { useForm } from '@tanstack/react-form';
 import { Client360Table } from 'marble-api';
+import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
@@ -16,6 +17,7 @@ const searchFormSchema = z.object({
 });
 
 export const SearchForm = ({ table }: SearchFormProps) => {
+  const { t } = useTranslation(['client360']);
   const navigate = useAgnosticNavigation();
 
   const form = useForm({
@@ -44,10 +46,13 @@ export const SearchForm = ({ table }: SearchFormProps) => {
   return (
     <form className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
       <label htmlFor={`search_${table.id}`} className="flex items-center gap-v2-sm">
-        <span className="font-medium capitalize">Search by {(table.alias ?? table.name).toLowerCase()}</span>
+        <span className="font-medium capitalize">
+          {t('client360:client_detail.search_form.search_by', { name: (table.alias ?? table.name).toLowerCase() })}
+        </span>
         {!table.ready ? (
           <span className="text-grey-text text-small flex items-center gap-v2-xs">
-            <Icon icon="warning" className="size-4 text-yellow-primary" /> This table is not ready for search yet
+            <Icon icon="warning" className="size-4 text-yellow-primary" />{' '}
+            {t('client360:client_detail.search_form.table_not_ready')}
           </span>
         ) : null}
       </label>
@@ -73,7 +78,7 @@ export const SearchForm = ({ table }: SearchFormProps) => {
               className="shrink-0"
               type="submit"
             >
-              Search
+              {t('client360:client_detail.search_form.search_button')}
             </Button>
           )}
         </form.Subscribe>

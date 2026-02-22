@@ -101,6 +101,7 @@
   "to": "To {{input}}",
   "true": "True",
   "understand": "I understand",
+  "unknown": "Unknown",
   "upgrade": "Upgrade now",
   "validate": "Validate",
   "validation_error_one": "{{count}} validation error",

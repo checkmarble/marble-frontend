@@ -235,12 +235,14 @@ export function SelectV2<T>({
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sameWidth sideOffset={4}>
-        {options.map((option, idx) => (
-          <MenuCommand.Item key={idx} onSelect={() => onChange(option.value)}>
-            {option.label}
-            {option.value === value && <Icon icon={selectedIcon ?? 'tick'} className="size-5 text-purple-primary" />}
-          </MenuCommand.Item>
-        ))}
+        <MenuCommand.List>
+          {options.map((option, idx) => (
+            <MenuCommand.Item key={idx} onSelect={() => onChange(option.value)}>
+              {option.label}
+              {option.value === value && <Icon icon={selectedIcon ?? 'tick'} className="size-5 text-purple-primary" />}
+            </MenuCommand.Item>
+          ))}
+        </MenuCommand.List>
       </MenuCommand.Content>
     </MenuCommand.Menu>
   );
