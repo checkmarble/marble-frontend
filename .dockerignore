@@ -15,7 +15,8 @@ node_modules
 
 # Build outputs
 packages/app-builder/build
-**/build
+packages/backoffice/.output
+packages/backoffice/.nitro
 **/dist
 
 # Caches and tooling

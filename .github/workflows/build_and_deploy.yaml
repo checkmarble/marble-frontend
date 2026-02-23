@@ -3,29 +3,34 @@ name: Reusable build and deploy job
 on:
   workflow_call:
     inputs:
+      app:
+        type: string
+        description: "Application to build and deploy (app-builder or backoffice)"
+        required: true
+        default: "app-builder"
       environment:
         type: string
-        description: 'Github environment to use'
+        description: "Github environment to use"
         required: true
       version:
         type: string
-        description: 'version to deploy'
+        description: "version to deploy"
         required: true
       SENTRY_RELEASE:
         type: string
         required: true
-        description: 'Sentry release name'
+        description: "Sentry release name"
     secrets:
       SENTRY_AUTH_TOKEN:
         required: true
-        description: 'Sentry Auth Token'
+        description: "Sentry Auth Token"
       SEGMENT_WRITE_KEY_OPENSOURCE:
         description: write key for segment (open source deployment). Can be overridden at runtime
 
 permissions:
   contents: read
   actions: read
-  id-token: 'write' # needed for using open id token to authenticate with GCP
+  id-token: "write" # needed for using open id token to authenticate with GCP
 
 jobs:
   main:
@@ -33,7 +38,7 @@ jobs:
     environment: ${{ inputs.environment }}
     env:
       VERSION: ${{ inputs.version }}
-      IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/marble-frontend:${{ inputs.version }}
+      IMAGE: europe-west1-docker.pkg.dev/marble-infra/marble/${{ inputs.app }}:${{ inputs.version }}
       SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
       - name: Checkout
@@ -71,9 +76,9 @@ jobs:
         with:
           context: .
           push: true
-          target: app-builder
+          target: ${{ inputs.app }}
           tags: ${{ env.IMAGE }}
-          file: ./Dockerfile
+          file: ${{ inputs.dockerfile }}
           build-args: |
             SENTRY_PROJECT=marble-frontend
             SENTRY_RELEASE=${{ inputs.SENTRY_RELEASE }}
@@ -82,14 +87,14 @@ jobs:
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
         with:
           install_components: beta
 
       - name: Deploy server
         run: |
-          gcloud run deploy marble-frontend \
+          gcloud run deploy ${{ inputs.app }} \
             --quiet \
             --region="europe-west1" \
             --image="${{ env.IMAGE }}"

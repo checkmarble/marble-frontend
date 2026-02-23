@@ -3,7 +3,7 @@ name: Push a tag (Check & Deploy)
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,15 +16,34 @@ jobs:
       actions: read
     uses: ./.github/workflows/check.yaml
 
-  build_and_deploy:
+  build_and_deploy_app_builder:
     needs: check
     permissions:
       contents: read
       actions: read
-      id-token: 'write' # needed for using open id token to authenticate with GCP
+      id-token: "write" # needed for using open id token to authenticate with GCP
     uses: ./.github/workflows/build_and_deploy.yaml
     with:
-      environment: 'production'
+      app: "app-builder"
+      dockerfile: ./Dockerfile
+      environment: "production"
+      version: ${{ github.ref_name }}
+      SENTRY_RELEASE: ${{ github.ref_name }}
+    secrets:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SEGMENT_WRITE_KEY_OPENSOURCE: ${{ secrets.SEGMENT_WRITE_KEY_OPENSOURCE }}
+
+  build_and_deploy_backoffice:
+    needs: check
+    permissions:
+      contents: read
+      actions: read
+      id-token: "write" # needed for using open id token to authenticate with GCP
+    uses: ./.github/workflows/build_and_deploy.yaml
+    with:
+      app: "backoffice"
+      dockerfile: ./Dockerfile.backoffice
+      environment: "production"
       version: ${{ github.ref_name }}
       SENTRY_RELEASE: ${{ github.ref_name }}
     secrets:

@@ -60,3 +60,6 @@ jobs:
 
       - name: Build app-builder
         run: bun run -F app-builder build
+
+      - name: Build backoffice
+        run: bun run -F backoffice build
