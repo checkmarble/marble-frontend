@@ -24,6 +24,7 @@ import { Button, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
+import { InboxEmptyState } from './Inbox/InboxEmptyState';
 import { SelectCaseById } from './Inbox/SelectCaseById';
 import { CasesNavigationTabs } from './Navigation/Tabs';
 
@@ -131,6 +132,19 @@ export const InboxPage = ({
       search: inboxId === MY_INBOX_ID ? undefined : `?fromInbox=${fromUUIDtoSUUID(inboxId)}`,
     });
   };
+
+  if (inboxes.length === 0 && inboxId === MY_INBOX_ID) {
+    return (
+      <Page.Main className="flex flex-col">
+        <Page.Container>
+          <Page.ContentV2 className="gap-v2-md">
+            {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
+            <InboxEmptyState canManageInboxes={canViewNavigationTabs} />
+          </Page.ContentV2>
+        </Page.Container>
+      </Page.Main>
+    );
+  }
 
   return (
     <Page.Main className="flex flex-col">

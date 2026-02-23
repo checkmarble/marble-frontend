@@ -60,7 +60,6 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
       continuousScreening: entitlements.continuousScreening,
       isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
     },
-    versions: context.appConfig.versions,
     authProvider: context.appConfig.auth.provider,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
     sentryReplayEnabled: organizationDetail.sentryReplayEnabled,

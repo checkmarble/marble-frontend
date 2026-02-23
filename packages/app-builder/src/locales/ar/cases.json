@@ -229,6 +229,7 @@
   "filters.date_range.title": "تاريخ الإنشاء:",
   "inbox.cases_count": "{{count}} حالات",
   "inbox.favorite": "المفضلة",
+  "inbox.go_to_inbox_settings": "الانتقال إلى إعدادات صناديق الوارد",
   "inbox.heading.assigned_and_contributors": "مُسند & داعمون",
   "inbox.heading.assignee": "مُسند",
   "inbox.heading.date": "التاريخ",

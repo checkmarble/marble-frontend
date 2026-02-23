@@ -11,7 +11,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData } from '@remix-run/react';
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
@@ -21,7 +21,6 @@ import { FormatData } from '../FormatData';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 
-const MAX_TRIGGER_FIELDS_DISPLAYED = 3;
 const MAX_RULES_DISPLAYED = 3;
 
 export const CaseAlerts = ({
@@ -148,28 +147,7 @@ export const AlertCard = ({
 
         {/* Row 2: Trigger objects */}
         {triggerObjectFields.length > 0 ? (
-          <span className="truncate text-xs">
-            <span className="text-grey-secondary">{t('cases:decisions.trigger_objects')}</span>
-            {pipe(
-              triggerObjectFields,
-              take(MAX_TRIGGER_FIELDS_DISPLAYED),
-              map((field, index) => (
-                <React.Fragment key={field.id}>
-                  {index > 0 ? <span className="text-grey-placeholder mx-1">&middot;</span> : ' '}
-                  <span className="font-medium">{field.name}:</span>{' '}
-                  <FormatData data={parseUnknownData(decision.triggerObject[field.name])} />
-                </React.Fragment>
-              )),
-            )}
-            {triggerObjectFields.length > MAX_TRIGGER_FIELDS_DISPLAYED ? (
-              <>
-                {' '}
-                <span className="border-grey-border inline-flex rounded-sm border px-1.5 py-0.5 text-xs font-medium">
-                  +{triggerObjectFields.length - MAX_TRIGGER_FIELDS_DISPLAYED}
-                </span>
-              </>
-            ) : null}
-          </span>
+          <TriggerFieldsRow fields={triggerObjectFields} triggerObject={decision.triggerObject} />
         ) : null}
 
         {/* Row 3: Rules hit */}
@@ -220,6 +198,115 @@ export const AlertCard = ({
               ))}
             </div>
           </div>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Renders trigger object fields responsively — shows as many fields as fit
+ * on one line, with a "+N" badge for overflow. Uses ResizeObserver to
+ * recalculate when the container width changes.
+ *
+ * Two layers:
+ *  - Measurement layer (invisible, absolute): renders ALL items so we can
+ *    measure their positions against the container width.
+ *  - Display layer: React-controlled, renders only `visibleCount` items + badge.
+ */
+const TriggerFieldsRow = ({
+  fields,
+  triggerObject,
+}: {
+  fields: { id: string; name: string }[];
+  triggerObject: Record<string, unknown>;
+}) => {
+  const { t } = useTranslation(casesI18n);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(fields.length);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    const measure = measureRef.current;
+    if (!wrapper || !measure) return;
+
+    const recalculate = () => {
+      const items = measure.querySelectorAll<HTMLElement>('[data-field-item]');
+      if (items.length === 0) return;
+
+      const availableWidth = wrapper.clientWidth;
+      const measureLeft = measure.getBoundingClientRect().left;
+
+      // How many items fit without a badge?
+      let fitCount = 0;
+      for (const item of items) {
+        const itemRight = item.getBoundingClientRect().right - measureLeft;
+        if (itemRight <= availableWidth + 1) {
+          fitCount++;
+        } else {
+          break;
+        }
+      }
+
+      if (fitCount >= items.length) {
+        setVisibleCount(items.length);
+        return;
+      }
+
+      // Not all fit — account for the "+N" badge width (~40px)
+      const badgeWidth = 40;
+      let adjusted = 0;
+      for (const item of items) {
+        const itemRight = item.getBoundingClientRect().right - measureLeft;
+        if (itemRight <= availableWidth - badgeWidth + 1) {
+          adjusted++;
+        } else {
+          break;
+        }
+      }
+
+      setVisibleCount(Math.max(1, adjusted));
+    };
+
+    recalculate();
+    const observer = new ResizeObserver(recalculate);
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, [fields.length]);
+
+  const hiddenCount = fields.length - visibleCount;
+
+  const renderField = (field: { id: string; name: string }, index: number) => (
+    <span key={field.id} data-field-item className="inline-flex shrink-0 items-baseline gap-0.5 ps-1">
+      {index > 0 ? <span className="text-grey-placeholder pe-1">&middot;</span> : null}
+      <span className="font-medium">{field.name}:</span>{' '}
+      <span className="max-w-[120px] truncate">
+        <FormatData data={parseUnknownData(triggerObject[field.name])} />
+      </span>
+    </span>
+  );
+
+  return (
+    <div ref={wrapperRef} className="relative text-xs">
+      {/* Measurement layer: all items, invisible, same width as wrapper */}
+      <div
+        ref={measureRef}
+        className="pointer-events-none invisible absolute inset-x-0 top-0 flex items-baseline"
+        aria-hidden="true"
+      >
+        <span className="shrink-0">{t('cases:decisions.trigger_objects')}</span>
+        {fields.map(renderField)}
+      </div>
+
+      {/* Display layer: only items that fit + overflow badge */}
+      <div className="flex items-baseline">
+        <span className="text-grey-secondary shrink-0">{t('cases:decisions.trigger_objects')}</span>
+        {fields.slice(0, visibleCount).map(renderField)}
+        {hiddenCount > 0 ? (
+          <span className="border-grey-border ms-1 inline-flex shrink-0 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+            +{hiddenCount}
+          </span>
         ) : null}
       </div>
     </div>

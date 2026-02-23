@@ -229,6 +229,7 @@
   "filters.date_range.title": "Date de création :",
   "inbox.cases_count": "{{count}} investigations",
   "inbox.favorite": "Favori",
+  "inbox.go_to_inbox_settings": "Accéder aux paramètres des boîtes de réception",
   "inbox.heading.assigned_and_contributors": "Assigné & Contributeurs",
   "inbox.heading.assignee": "Assigné",
   "inbox.heading.date": "Date",
