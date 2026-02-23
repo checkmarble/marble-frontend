@@ -26,6 +26,7 @@ import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
 import { ExternalScripts } from 'remix-utils/external-scripts';
 import { Tooltip } from 'ui-design-system';
 import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
+import { DevLanguageShortcut } from './components/DevLanguageShortcut';
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { TimezoneDetector } from './components/TimezoneDetector';
@@ -224,6 +225,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppConfigContext.Provider value={appConfig}>
+        <DevLanguageShortcut />
         <Outlet />
       </AppConfigContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
