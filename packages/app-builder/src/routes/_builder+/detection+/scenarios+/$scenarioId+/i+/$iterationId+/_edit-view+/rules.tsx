@@ -1,6 +1,5 @@
 import { OutcomeBadge } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
-import { filtersI18n } from '@app-builder/components/Filters/filters-i18n';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
 import { CreateRule } from '@app-builder/components/Scenario/Rules/Actions/CreateRule';
@@ -17,7 +16,13 @@ import { type ScreeningConfig } from '@app-builder/models/screening-config';
 import { CreateScreening } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
-import { findRuleValidation, hasRuleErrors, useGetScenarioErrorMessage } from '@app-builder/services/validation';
+import {
+  findRuleValidation,
+  findScreeningValidation,
+  hasRuleErrors,
+  hasScreeningErrors,
+  useGetScenarioErrorMessage,
+} from '@app-builder/services/validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -125,6 +130,18 @@ export default function Rules() {
     [items],
   );
 
+  // Create a mapping from screening config ID to validation array index
+  // The validation array is indexed by position, so we map each screening config ID to its position
+  const screeningIdToValidationIndex = useMemo(() => {
+    const map = new Map<string, string>();
+    screeningConfigs.forEach((config, index) => {
+      if (config.id) {
+        map.set(config.id, index.toString());
+      }
+    });
+    return map;
+  }, [screeningConfigs]);
+
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.name, {
@@ -137,7 +154,14 @@ export default function Rules() {
           const hasErrors =
             row.original.type === 'rule'
               ? hasRuleErrors(findRuleValidation(scenarioValidation, row.original.id))
-              : false;
+              : row.original.id
+                ? (() => {
+                    const validationIndex = screeningIdToValidationIndex.get(row.original.id);
+                    return validationIndex !== undefined
+                      ? hasScreeningErrors(findScreeningValidation(scenarioValidation, validationIndex))
+                      : false;
+                  })()
+                : false;
 
           return (
             <span className="flex items-center gap-2">
@@ -201,7 +225,7 @@ export default function Rules() {
         size: 120,
       }),
     ],
-    [language, scenarioValidation, t],
+    [language, scenarioValidation, screeningIdToValidationIndex, t],
   );
 
   const hasItems = items.length > 0;

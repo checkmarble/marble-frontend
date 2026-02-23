@@ -38,11 +38,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return Response.json({
-      redirectTo: getRoute('/detection/scenarios/:scenarioId/i/:iterationId/screenings/:screeningId', {
+      redirectTo: `${getRoute('/detection/scenarios/:scenarioId/i/:iterationId/screenings/:screeningId', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(iterationId),
         screeningId: fromUUIDtoSUUID(config.id as string),
-      }),
+      })}?isNew=true`,
     });
   } catch (error) {
     return Response.json({ success: false, error: error });
@@ -73,6 +73,7 @@ export function CreateScreening({
     <Button
       type="submit"
       variant="secondary"
+      appearance={'link'}
       disabled={disabled}
       className="w-full"
       onClick={handleCreateScreeningRule}
@@ -95,4 +96,12 @@ export function CreateScreening({
       ) : null}
     </Button>
   );
+}
+
+{
+  /* <Icon icon="plus" className="text-grey-primary size-5" />
+      <div className="flex w-full flex-col items-start">
+        <span className="text-grey-primary font-normal">{t('scenarios:create_rule.title')}</span>
+        <span className="text-s text-grey-secondary font-normal">{t('scenarios:create_rule.description')}</span>
+      </div> */
 }

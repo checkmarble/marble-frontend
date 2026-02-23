@@ -14,7 +14,12 @@ import {
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { isCreateDraftAvailable, isDeploymentActionsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
-import { hasDecisionErrors, hasRulesErrors, hasTriggerErrors } from '@app-builder/services/validation';
+import {
+  hasDecisionErrors,
+  hasRulesErrors,
+  hasScreeningsErrors,
+  hasTriggerErrors,
+} from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -113,6 +118,7 @@ export default function ScenarioEditLayout() {
                   isValid:
                     !hasTriggerErrors(scenarioValidation) &&
                     !hasRulesErrors(scenarioValidation) &&
+                    !hasScreeningsErrors(scenarioValidation) &&
                     !hasDecisionErrors(scenarioValidation),
                   status: loaderData.publicationPreparationStatus.status,
                 }}

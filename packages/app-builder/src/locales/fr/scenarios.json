@@ -261,6 +261,7 @@
   "edit_sanction.remove_terms_from_list": "Exclure les termes dans une liste",
   "edit_sanction.remove_terms_from_list.tooltip": "Exclut du filtrage tout terme présent dans la liste sélectionnée. Vous devez d'abord créer une liste, dans la section Listes",
   "edit_sanction.required_fields_disclaimer": "Pour un filtrage efficace, il est recommandé de remplir au moins le nom ou le numéro d'enregistrement pour une organisation/véhicule, et au moins le nom ou le numéro d'identité pour une personne.",
+  "edit_sanction.required_fields_error": "Aucun critère de filtrage sélectionné. Veuillez remplir au moins un champ pour activer le filtrage.",
   "edit_sanction.select_list": "Sélectionnez une liste",
   "edit_sanction.similarity_score": "Score de similitude minimum (%)",
   "edit_sanction.skip_entity_recognition": "Chercher des correspondances dans les listes tous types d'entités confondues",

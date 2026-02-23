@@ -261,6 +261,7 @@
   "edit_sanction.remove_terms_from_list": "استثناء المصطلحات المدرجة في قائمة مخصصة",
   "edit_sanction.remove_terms_from_list.tooltip": "سيُستثنى من الفحص أي مصطلحات موجودة في القائمة المحددة. يلزم إنشاء قائمة مخصصة أولًا في قسم القوائم.",
   "edit_sanction.required_fields_disclaimer": "لتحقيق فحص فعّال، يُنصح بإدخال الاسم أو رقم التسجيل للمنظمة/المركبة، أو الاسم أو رقم الهوية للشخص على الأقل.",
+  "edit_sanction.required_fields_error": "لم يتم تحديد أي معايير فحص. يرجى ملء حقل واحد على الأقل لتفعيل الفحص.",
   "edit_sanction.select_list": "حدد قائمة",
   "edit_sanction.similarity_score": "الحد الأدنى لدرجة التشابه (%)",
   "edit_sanction.skip_entity_recognition": "ابحث عن المرشحين في جميع أنواع الكيانات",

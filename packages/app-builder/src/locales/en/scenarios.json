@@ -261,6 +261,7 @@
   "edit_sanction.remove_terms_from_list": "Exclude terms listed in a custom list",
   "edit_sanction.remove_terms_from_list.tooltip": "Enabling this will exclude of the screening any terms from the selected list. You need to create a custom list first, in the Lists section.",
   "edit_sanction.required_fields_disclaimer": "For effective screening, it is recommended to fill in at least the name or registration number for an organization/vehicle, or the name or ID number for a person.",
+  "edit_sanction.required_fields_error": "No screening criteria selected. Please fill in at least one field to enable screening.",
   "edit_sanction.select_list": "Select a list",
   "edit_sanction.similarity_score": "Minimum similarity score (%)",
   "edit_sanction.skip_entity_recognition": "Skip entity type filters while searching",
