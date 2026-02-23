@@ -44,7 +44,9 @@ export function PivotsPanel(props: PivotsPanelProps) {
           'shadow-sticky-top': !intersection?.isIntersecting,
         })}
       >
-        <CaseManagerDrawerButtons expandable={!!dataModelExplorerContext.explorerState} />
+        {dataModelExplorerContext.explorerState ? (
+          <CaseManagerDrawerButtons expandable={!!dataModelExplorerContext.explorerState} />
+        ) : null}
         {drawerContext.isExpanded && dataModelExplorerContext.explorerState ? (
           <DrawerBreadcrumb
             items={[
