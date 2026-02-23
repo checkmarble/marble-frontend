@@ -170,20 +170,29 @@ export default function CaseManagerIndexPage() {
                                     {!mostRecentReview.review.ok ? (
                                       <button
                                         type="button"
-                                        className={tabClassName}
+                                        className={cn(tabClassName, 'gap-2')}
                                         data-status={activeReviewTab === 'sanityCheck' ? 'active' : undefined}
                                         onClick={() => setActiveReviewTab('sanityCheck')}
                                       >
                                         {t('cases:case.ai_assist.sanity_check')}
+                                        <Icon icon="warning" className="size-4 text-red-primary" />
                                       </button>
                                     ) : null}
                                   </Tabs>
+                                  {!mostRecentReview.review.ok ? (
+                                    <div className="flex items-center gap-2 rounded-md border border-red-primary bg-red-primary/10 p-2">
+                                      <Icon icon="warning" className="size-4 shrink-0 text-red-primary" />
+                                      <span className="text-xs font-medium text-red-primary">
+                                        {t('cases:case_detail.ai_review.consistency_warning')}
+                                      </span>
+                                    </div>
+                                  ) : null}
                                   {activeReviewTab === 'review' && (
                                     <div className="min-h-0 p-2 overflow-scroll">
                                       <Markdown>{mostRecentReview.review.output}</Markdown>
                                     </div>
                                   )}
-                                  {activeReviewTab === 'sanityCheck' && !mostRecentReview.ok && (
+                                  {activeReviewTab === 'sanityCheck' && !mostRecentReview.review.ok && (
                                     <div className="min-h-0 p-2 overflow-scroll">
                                       <Markdown>{mostRecentReview.review.sanityCheck}</Markdown>
                                     </div>
