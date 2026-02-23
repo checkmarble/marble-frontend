@@ -26,7 +26,7 @@ WORKDIR /usr/src/app
 
 # Copy full source AFTER deps to leverage layer caching
 COPY . .
-# Reuse cached node_modules from deps stage
+# Reuse cached node_modules from deps stage (root + workspace-local)
 COPY --from=deps-dev /usr/src/app/node_modules ./node_modules
 
 # Build-time configuration
@@ -37,18 +37,10 @@ ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ARG SENTRY_RELEASE
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 
-# Use BuildKit secret for SENTRY token if available
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
-    export VITE_CJS_IGNORE_WARNING=1; \
-    if [ -f /run/secrets/SENTRY_AUTH_TOKEN ]; then export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN); fi; \
-    bun run -F app-builder build
-
 RUN bun run -F backoffice build
 
 # Collect build artifacts and dependencies for runtime
-RUN mkdir -p /prod/app-builder && \
-    cp -R packages/app-builder/build /prod/app-builder/build && \
-    mkdir -p /prod/backoffice && \
+RUN mkdir -p /prod/backoffice && \
     cp -R packages/backoffice/.output /prod/backoffice/.output
 
 # ---- Production Dependencies stage ----
@@ -70,30 +62,6 @@ COPY packages/tests/package.json ./packages/tests/
 # Install ONLY production dependencies
 RUN --mount=type=cache,target=/root/.bun \
     bun install --production --frozen-lockfile
-
-# ---- Runtime stage ---- (uses prod deps)
-FROM ${RUNTIME_IMAGE} AS app-builder
-WORKDIR /prod/app-builder
-
-ENV NODE_ENV=production
-ARG PORT=8080
-ENV PORT=${PORT:-8080}
-
-ARG APP_VERSION
-ENV APP_VERSION=$APP_VERSION
-
-ARG SEGMENT_WRITE_KEY_OPENSOURCE=""
-ARG SEGMENT_WRITE_KEY=""
-ENV SEGMENT_WRITE_KEY=${SEGMENT_WRITE_KEY_OPENSOURCE:-""}
-
-# Copy build output
-COPY --from=build /usr/src/app/packages/app-builder/build ./build
-
-# Copy ONLY production dependencies
-COPY --from=deps-prod /usr/src/app/node_modules ./node_modules
-
-EXPOSE $PORT
-CMD ["./node_modules/@remix-run/serve/dist/cli.js", "./build/server/index.js"]
 
 # ---- Runtime stage (backoffice) ----
 FROM ${BUN_IMAGE} AS backoffice
