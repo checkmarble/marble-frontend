@@ -6,7 +6,6 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
@@ -75,21 +74,12 @@ export function CreateScreening({
       variant="secondary"
       appearance={'link'}
       disabled={disabled}
-      className="w-full"
+      className="w-full gap-2"
       onClick={handleCreateScreeningRule}
     >
       <div className="flex items-center gap-4">
         <Icon icon="plus" className="size-5" />
-        <div className="flex w-full flex-col items-start">
-          <span className="font-normal">{t('scenarios:create_sanction.title')}</span>
-          <span
-            className={clsx('text-s text-grey-secondary font-normal', {
-              'text-grey-disabled': disabled,
-            })}
-          >
-            {t('scenarios:create_sanction.description')}
-          </span>
-        </div>
+        <span className="font-normal">{t('scenarios:create_sanction.title')}</span>
       </div>
       {isSanctionAvailable !== 'allowed' ? (
         <Nudge kind={isSanctionAvailable} content={t('scenarios:sanction.nudge')} className="p-1" />

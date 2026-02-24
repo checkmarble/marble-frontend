@@ -24,11 +24,8 @@ export function CreateRule({ scenarioId, iterationId }: { scenarioId: string; it
       onClick={handleCreateRule}
     >
       <div className="flex items-center gap-4">
-        <Icon icon="plus" className="text-grey-primary size-5" />
-        <div className="flex w-full flex-col items-start">
-          <span className="text-grey-primary font-normal">{t('scenarios:create_rule.title')}</span>
-          <span className="text-s text-grey-secondary font-normal">{t('scenarios:create_rule.description')}</span>
-        </div>
+        <Icon icon="plus" className="size-5" />
+        <span className="font-normal">{t('scenarios:create_rule.title')}</span>
       </div>
     </Button>
   );
