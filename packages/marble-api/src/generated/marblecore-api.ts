@@ -14,6 +14,14 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevlopmentServer: "http://localhost:8080"
 };
+export type Client360Table = {
+    id: string;
+    name: string;
+    alias?: string;
+    description?: string;
+    caption_field: string;
+    ready: boolean;
+};
 export type Token = {
     access_token: string;
     token_type: string;
@@ -130,8 +138,48 @@ export type FileEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAll
         files: {
             id: string;
             filename: string;
+            thumbnail_url?: string;
+            content_type?: string;
         }[];
     };
+};
+export type RiskTagEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAllOf0 & {
+    "type": "risk_tag";
+    payload: {
+        tag: "sanctions" | "peps" | "third-parties" | "adverse-media";
+        continuous_screening_id?: string;
+        opensanction_entity_id?: string;
+    };
+};
+export type GroupedAnnotations = {
+    comments: CommentEntityAnnotationDto[];
+    tags: TagEntityAnnotationDto[];
+    files: FileEntityAnnotationDto[];
+    risk_tags: RiskTagEntityAnnotationDto[];
+};
+export type ComponentsSchemasTagEntityAnnotationDtoAllOf1 = {
+    "type": "tag";
+    payload: {
+        tag_id: string;
+    };
+};
+export type ComponentsSchemasCommentEntityAnnotationDtoAllOf1 = {
+    "type": "comment";
+    payload: {
+        /** body of the comment */
+        text: string;
+    };
+};
+export type ComponentsSchemasRiskTagEntityAnnotationDtoAllOf1 = {
+    "type": "risk_tag";
+    payload: {
+        tag: "sanctions" | "peps" | "third-parties" | "adverse-media";
+        continuous_screening_id?: string;
+        opensanction_entity_id?: string;
+    };
+};
+export type CreateAnnotationDto = (ComponentsSchemasTagEntityAnnotationDtoAllOf1 | ComponentsSchemasCommentEntityAnnotationDtoAllOf1 | ComponentsSchemasRiskTagEntityAnnotationDtoAllOf1) & {
+    caseId?: string;
 };
 export type CreateCaseBodyDto = {
     name: string;
@@ -470,11 +518,6 @@ export type DetailedCaseDecisionDto = CaseDecisionDto & {
         count: number;
     }[];
 };
-export type GroupedAnnotations = {
-    comments: CommentEntityAnnotationDto[];
-    tags: TagEntityAnnotationDto[];
-    files: FileEntityAnnotationDto[];
-};
 export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
     metadata: {
@@ -662,22 +705,6 @@ export type DataModelObjectDto = {
     metadata: {
         valid_from: string;
     };
-};
-export type ComponentsSchemasTagEntityAnnotationDtoAllOf1 = {
-    "type": "tag";
-    payload: {
-        tag_id: string;
-    };
-};
-export type ComponentsSchemasCommentEntityAnnotationDtoAllOf1 = {
-    "type": "comment";
-    payload: {
-        /** body of the comment */
-        text: string;
-    };
-};
-export type CreateAnnotationDto = (ComponentsSchemasTagEntityAnnotationDtoAllOf1 | ComponentsSchemasCommentEntityAnnotationDtoAllOf1) & {
-    caseId?: string;
 };
 export type ClientDataListRequestBody = {
     exploration_options: {
@@ -1201,8 +1228,11 @@ export type CreateTableBody = {
     description: string;
     ftm_entity?: FtmEntity;
 };
-export type UpdateTableBody = {
+export type UpdateTableBodyDto = {
     description?: string;
+    semantic_type?: "person" | "company";
+    caption_field?: string;
+    alias?: string;
     ftm_entity?: FtmEntity;
 };
 export type Items = {
@@ -1341,6 +1371,7 @@ export type AppConfigDto = {
     urls: {
         marble: string;
         metabase: string;
+        blobs: string[];
     };
     auth: {
         provider: "firebase" | "oidc";
@@ -1707,6 +1738,44 @@ export type AvailableFiltersResponseDto = {
     source: "trigger_object";
 }[];
 /**
+ * Get searchable tables
+ */
+export function getClient360Tables(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Client360Table[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/client360/tables", {
+        ...opts
+    }));
+}
+/**
+ * Get a list of object corresponding to a search query
+ */
+export function searchClient360(body?: {
+    table: string;
+    terms: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            items: {
+                [key: string]: any;
+            }[];
+            has_next_page: boolean;
+        };
+    }>("/client360/search", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * Get an access token
  */
 export function postToken({ xApiKey, authorization, xOidcAccessToken }: {
@@ -1801,6 +1870,52 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
     }));
 }
 /**
+ * Removes an annotation by ID
+ */
+export function deleteAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/annotations/${encodeURIComponent(annotationId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Download an annotation file
+ */
+export function downloadAnnotationFile(annotationId: string, fileId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            /** Signed url to download the case file's content */
+            url: string;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/annotations/file/${encodeURIComponent(annotationId)}/${encodeURIComponent(fileId)}`, {
+        ...opts
+    }));
+}
+/**
  * Get an annotation by ID
  */
 export function getAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts) {
@@ -1810,6 +1925,60 @@ export function getAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts)
     }>(`/client_data/annotations/${encodeURIComponent(annotationId)}`, {
         ...opts
     }));
+}
+/**
+ * Get annotations by table name and object ID
+ */
+export function getAnnotationsByTableNameAndObjectId(tableName: string, objectId: string, { loadThumbnails }: {
+    loadThumbnails?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: GroupedAnnotations;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}/annotations${QS.query(QS.explode({
+        load_thumbnails: loadThumbnails
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Create an annotation on client data
+ */
+export function createAnnotation(tableName: string, objectId: string, createAnnotationDto: CreateAnnotationDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}/annotations`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createAnnotationDto
+    })));
 }
 /**
  * List cases
@@ -2729,14 +2898,12 @@ export function getIngestedObject(tableName: string, objectId: string, opts?: Oa
     }));
 }
 /**
- * Create an annotation on client data
+ * Get cases for an object
  */
-export function createAnnotation(tableName: string, objectId: string, createAnnotationDto: CreateAnnotationDto, opts?: Oazapfts.RequestOpts) {
+export function getCasesForObject(objectType: string, objectId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-    } | {
-        status: 400;
-        data: string;
+        data: CaseDto[];
     } | {
         status: 401;
         data: string;
@@ -2749,11 +2916,9 @@ export function createAnnotation(tableName: string, objectId: string, createAnno
     } | {
         status: 422;
         data: object;
-    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}/annotations`, oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: createAnnotationDto
-    })));
+    }>(`/client_data/${encodeURIComponent(objectType)}/${encodeURIComponent(objectId)}/cases`, {
+        ...opts
+    }));
 }
 /**
  * Get a list of objects from a table, given a starting object, a set of filters & ordering field matching the exploration options available on the starting object, and optional cursor pagination.
@@ -2782,52 +2947,6 @@ export function listClientObjects(tableName: string, clientDataListRequestBody: 
         method: "POST",
         body: clientDataListRequestBody
     })));
-}
-/**
- * Removes an annotation by ID
- */
-export function deleteAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-    } | {
-        status: 400;
-        data: string;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    } | {
-        status: 422;
-        data: object;
-    }>(`/annotations/${encodeURIComponent(annotationId)}`, {
-        ...opts,
-        method: "DELETE"
-    }));
-}
-/**
- * Download an annotation file
- */
-export function downloadAnnotationFile(annotationId: string, fileId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            /** Signed url to download the case file's content */
-            url: string;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    }>(`/annotations/file/${encodeURIComponent(annotationId)}/${encodeURIComponent(fileId)}`, {
-        ...opts
-    }));
 }
 /**
  * List custom list
@@ -4081,7 +4200,7 @@ export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oaza
 /**
  * Update data model table
  */
-export function patchDataModelTable(tableId: string, updateTableBody: UpdateTableBody, opts?: Oazapfts.RequestOpts) {
+export function patchDataModelTable(tableId: string, updateTableBodyDto: UpdateTableBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -4096,7 +4215,7 @@ export function patchDataModelTable(tableId: string, updateTableBody: UpdateTabl
     }>(`/data-model/tables/${encodeURIComponent(tableId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateTableBody
+        body: updateTableBodyDto
     })));
 }
 /**

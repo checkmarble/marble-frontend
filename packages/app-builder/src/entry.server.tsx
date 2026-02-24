@@ -143,6 +143,9 @@ function handleBrowserRequest(
             // Invalid URL, ignore
           }
         }
+        for (const blobDomain of appConfig.urls.blobs) {
+          imgSrc.push(blobDomain);
+        }
 
         responseHeaders.set(
           'content-security-policy',

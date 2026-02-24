@@ -1,0 +1,83 @@
+/client360/tables:
+  get:
+    tags:
+      - Client 360
+    summary: Get searchable tables
+    operationId: getClient360Tables
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: The searchable tables
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Client360Table'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/client360/search:
+  post:
+    tags:
+      - Client 360
+    summary: Get a list of object corresponding to a search query
+    operationId: searchClient360
+    requestBody:
+      description: The search query
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - table
+              - terms
+            properties:
+              table:
+                type: string
+              terms:
+                type: string
+    responses:
+      '200':
+        description: The list of objects
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - items
+                - has_next_page
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                has_next_page:
+                  type: boolean
+
+components:
+  schemas:
+    Client360Table:
+      type: object
+      required:
+        - id
+        - name
+        - caption_field
+        - ready
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        alias:
+          type: string
+        description:
+          type: string
+        caption_field:
+          type: string
+        ready:
+          type: boolean

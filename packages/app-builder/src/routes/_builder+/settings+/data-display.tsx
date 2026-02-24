@@ -6,7 +6,6 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import {
   type DataModel,
-  type DataModelWithTableOptions,
   isAdmin,
   mergeDataModelWithTableOptions,
   type SetDataModelTableOptionsBody,

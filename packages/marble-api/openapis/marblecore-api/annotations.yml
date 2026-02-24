@@ -1,3 +1,86 @@
+/client_data/{tableName}/{objectId}/annotations:
+  get:
+    tags:
+      - Annotations
+    summary: Get annotations by table name and object ID
+    operationId: getAnnotationsByTableNameAndObjectId
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: tableName
+        description: Name of the table
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objectId
+        description: ID of the object
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: load_thumbnails
+        description: Whether to generate links to thumbnails
+        in: query
+        schema:
+          type: boolean
+    responses:
+      '200':
+        description: The annotations
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupedAnnotations'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        $ref: 'components.yml#/responses/422'
+  post:
+    tags:
+      - Annotations
+    summary: Create an annotation on client data
+    operationId: createAnnotation
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: tableName
+        description: The table on which the object to annotate is
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objectId
+        description: The ID of the object to annotate
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: Payload and type of the annotation to add
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateAnnotationDto'
+      required: true
+    responses:
+      '200':
+        description: Annotation created
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        $ref: 'components.yml#/responses/422'
+
 /client_data/annotations/{annotationId}:
   get:
     tags:
@@ -23,6 +106,7 @@
                 - $ref: '#/components/schemas/CommentEntityAnnotationDto'
                 - $ref: '#/components/schemas/TagEntityAnnotationDto'
                 - $ref: '#/components/schemas/FileEntityAnnotationDto'
+
 /annotations/file/{annotationId}/{fileId}:
   get:
     tags:
@@ -82,10 +166,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileEntityAnnotationDto'
+        risk_tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskTagEntityAnnotationDto'
       required:
         - comments
         - tags
         - files
+        - risk_tags
     CommonEntityAnnotationDto:
       type: object
       required:
@@ -148,9 +237,25 @@ components:
           format: uuid
         filename:
           type: string
+        thumbnail_url:
+          type: string
+        content_type:
+          type: string
       required:
         - id
         - filename
+    RiskTagEntityAnnotationPayloadDto:
+      type: object
+      properties:
+        tag:
+          type: string
+          enum: ['sanctions', 'peps', 'third-parties', 'adverse-media']
+        continuous_screening_id:
+          type: string
+        opensanction_entity_id:
+          type: string
+      required:
+        - tag
     BareTagEntityAnnotationDto:
       type: object
       properties:
@@ -196,11 +301,27 @@ components:
       allOf:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
         - $ref: '#/components/schemas/BareFileEntityAnnotationDto'
+    BareRiskTagEntityAnnotationDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ['risk_tag']
+        payload:
+          $ref: '#/components/schemas/RiskTagEntityAnnotationPayloadDto'
+      required:
+        - type
+        - payload
+    RiskTagEntityAnnotationDto:
+      allOf:
+        - $ref: '#/components/schemas/CommonEntityAnnotationDto'
+        - $ref: '#/components/schemas/BareRiskTagEntityAnnotationDto'
     CreateAnnotationDto:
       allOf:
         - anyOf:
             - $ref: '#/components/schemas/BareTagEntityAnnotationDto'
             - $ref: '#/components/schemas/BareCommentEntityAnnotationDto'
+            - $ref: '#/components/schemas/BareRiskTagEntityAnnotationDto'
         - type: object
           required:
             - case_id

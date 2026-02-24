@@ -14,7 +14,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 type ClientTagsEditSelectProps = {
-  caseId: string;
+  caseId?: string;
   tableName: string;
   objectId: string;
   annotations: GroupedAnnotations['tags'];

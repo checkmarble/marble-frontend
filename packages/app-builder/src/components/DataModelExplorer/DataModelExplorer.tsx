@@ -9,7 +9,7 @@ import { DataModelExplorerContext, type DataModelExplorerState } from './Provide
 import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerProps = {
-  caseId: string;
+  caseId?: string;
   dataModel: DataModelWithTableOptions;
 };
 

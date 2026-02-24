@@ -20,11 +20,13 @@ import {
   type PivotDto,
   type SetDataModelTableOptionsBodyDto,
   type TableDto,
+  UpdateTableBodyDto,
   type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
+import { ScreeningCategory } from './screening';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'DerivedData' | 'unknown';
@@ -619,7 +621,7 @@ export function getTriggerObjectFields(
   );
 }
 
-export type CreateAnnotationBody = { caseId: string } & (
+export type CreateAnnotationBody = { caseId?: string } & (
   | {
       type: 'comment';
       payload: {
@@ -630,6 +632,12 @@ export type CreateAnnotationBody = { caseId: string } & (
       type: 'tag';
       payload: {
         tagId: string;
+      };
+    }
+  | {
+      type: 'risk_tag';
+      payload: {
+        tag: ScreeningCategory;
       };
     }
 );
@@ -653,6 +661,17 @@ export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnn
           type: 'tag',
           payload: {
             tag_id: tagId,
+          },
+        }) as const,
+    )
+    .with(
+      { type: 'risk_tag' },
+      ({ payload: { tag }, caseId }) =>
+        ({
+          case_id: caseId,
+          type: 'risk_tag',
+          payload: {
+            tag,
           },
         }) as const,
     )
@@ -796,6 +815,24 @@ export function adaptDestroyDataModelReport(dto: DestroyDataModelReportDto): Des
     performed: dto.performed,
     conflicts: adaptDestroyDataModelReportConflicts(dto.conflicts),
     archivedIterations: dto.archived_iterations.map(adaptDestroyDataModelReportRef),
+  };
+}
+
+export type UpdateTableBody = {
+  description?: string;
+  ftmEntity?: FtmEntity;
+  semanticType?: 'person' | 'company';
+  captionField?: string;
+  alias?: string;
+};
+
+export function adaptUpdateTableBodyDto(model: UpdateTableBody): UpdateTableBodyDto {
+  return {
+    description: model.description,
+    ftm_entity: model.ftmEntity,
+    semantic_type: model.semanticType,
+    caption_field: model.captionField,
+    alias: model.alias,
   };
 }
 

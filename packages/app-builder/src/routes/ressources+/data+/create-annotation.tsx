@@ -56,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { data, success, error } = createAnnotationPayloadSchema.safeParse(
     decode(raw, {
-      arrays: ['payload.files', 'payload.addedTags', 'payload.removedAnnotations'],
+      arrays: ['payload.files', 'payload.addedTags', 'payload.removedAnnotations', 'payload.addedCategories'],
     }),
   );
 
@@ -95,13 +95,33 @@ export async function action({ request }: ActionFunctionArgs) {
 
         return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
       })
+      .with({ type: 'risk_tag' }, async ({ payload: { addedCategories = [], removedAnnotations = [] }, ...data }) => {
+        const promises: Promise<Response | void>[] = [
+          ...addedCategories.map((categoryAdded) =>
+            dataModelRepository.createAnnotation(data.tableName, data.objectId, {
+              type: 'risk_tag',
+              caseId: data.caseId,
+              payload: {
+                tag: categoryAdded,
+              },
+            }),
+          ),
+          ...removedAnnotations.map((annotationId) => dataModelRepository.deleteAnnotation(annotationId)),
+        ];
+
+        await Promise.all(promises);
+
+        return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
+      })
       .with({ type: 'file' }, async ({ payload: { files }, ...data }) => {
         const promises: Promise<Response>[] = [];
 
         if (files.length > 0) {
           const body = new FormData();
           body.append('caption', 'File annotation');
-          body.append('case_id', data.caseId);
+          if (data.caseId) {
+            body.append('case_id', data.caseId);
+          }
           files.forEach((file) => {
             body.append('files[]', file);
           });

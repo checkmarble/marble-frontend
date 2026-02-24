@@ -170,6 +170,14 @@ export default function Builder() {
                               />
                             </li>
                           ) : null}
+                          {/* Client detail */}
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:client_detail"
+                              to={getRoute('/client-detail')}
+                              Icon={(props) => <Icon icon="users" {...props} />}
+                            />
+                          </li>
                         </ul>
                       </nav>
                       {/* Secondary Navigation - Bottom */}
