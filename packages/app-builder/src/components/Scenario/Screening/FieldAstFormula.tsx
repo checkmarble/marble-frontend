@@ -11,14 +11,28 @@ import { Button } from 'ui-design-system';
 
 import { EvaluationErrors } from '../ScenarioValidationError';
 
-const EvaluationErrorsWrapper = ({ errors }: { errors: FlatAstValidation['errors'] }) => {
+const EvaluationErrorsWrapper = ({
+  errors,
+  hasBeenSaved,
+}: {
+  errors: FlatAstValidation['errors'];
+  hasBeenSaved?: boolean;
+}) => {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  return (
-    <EvaluationErrors
-      errors={errors.filter((error) => error != 'RULE_FORMULA_REQUIRED').map(getScenarioErrorMessage)}
-    />
-  );
+  // Filter out errors that should not be shown:
+  // - RULE_FORMULA_REQUIRED: always filter out
+  // - FORMULA_MUST_RETURN_BOOLEAN: filter out if there are other errors (they're more specific)
+  const filteredErrors = errors.filter((error) => {
+    if (error === 'RULE_FORMULA_REQUIRED') return false;
+    if (error === 'FORMULA_MUST_RETURN_BOOLEAN') {
+      // Hide if there are other errors that are more specific
+      return errors.length === 1;
+    }
+    return true;
+  });
+
+  return <EvaluationErrors errors={filteredErrors.map(getScenarioErrorMessage)} />;
 };
 
 export const FieldAstFormula = ({
@@ -29,6 +43,7 @@ export const FieldAstFormula = ({
   onChange,
   onBlur,
   defaultValue,
+  hasBeenSaved,
 }: {
   type: 'rule' | 'screening';
   astNode?: AstNode;
@@ -37,6 +52,7 @@ export const FieldAstFormula = ({
   scenarioId: string;
   options: BuilderOptionsResource;
   defaultValue: AstNode;
+  hasBeenSaved?: boolean;
 }) => {
   const { t } = useTranslation(['scenarios']);
   const editor = useEditorMode();
@@ -82,7 +98,7 @@ export const FieldAstFormula = ({
         </AstBuilder.Provider>
       )}
       {type === 'rule' ? (
-        <EvaluationErrorsWrapper errors={validationErrors} />
+        <EvaluationErrorsWrapper errors={validationErrors} hasBeenSaved={hasBeenSaved} />
       ) : editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (
