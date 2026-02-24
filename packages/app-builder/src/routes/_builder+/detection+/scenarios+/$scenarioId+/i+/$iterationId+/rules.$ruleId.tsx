@@ -22,7 +22,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
@@ -189,10 +189,6 @@ export default function RuleDetail() {
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
 
-  const [searchParams] = useSearchParams();
-  const isNewRule = searchParams.get('isNew') === 'true';
-  const [hasBeenSaved, setHasBeenSaved] = useState(!isNewRule);
-
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
   const editor = useEditorMode();
@@ -221,12 +217,6 @@ export default function RuleDetail() {
   const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
   const [ruleDescription, setRuleDescription] = useState<string | undefined>(undefined);
   const [isDebouncing, setIsDebouncing] = useState(false);
-
-  useEffect(() => {
-    if (fetcher.data && 'status' in fetcher.data && fetcher.data.status === 'success') {
-      setHasBeenSaved(true);
-    }
-  }, [fetcher.data]);
 
   useEffect(() => {
     if (!isAiRuleDescriptionEnabled) return;
@@ -427,7 +417,6 @@ export default function RuleDetail() {
                           }}
                           astNode={field.state.value}
                           defaultValue={NewEmptyRuleAstNode()}
-                          hasBeenSaved={hasBeenSaved}
                         />
                       )}
                     </form.Field>

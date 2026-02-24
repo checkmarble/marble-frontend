@@ -14,25 +14,17 @@ import { EvaluationErrors } from '../ScenarioValidationError';
 const EvaluationErrorsWrapper = ({
   errors,
   evaluation,
-  hasBeenSaved,
 }: {
   errors: FlatAstValidation['errors'];
   evaluation?: FlatAstValidation['evaluation'];
-  hasBeenSaved?: boolean;
 }) => {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   // Check if there are meaningful evaluation errors that should take precedence over return type errors
   // Only show return type error if there are NO other errors in the formula
-  const hasMeaningfulErrors =
-    evaluation?.some((node) =>
-      node.errors.some(
-        (err) =>
-          err.error === 'WRONG_NUMBER_OF_ARGUMENTS' ||
-          err.error === 'UNDEFINED_FUNCTION' ||
-          err.error === 'ARGUMENT_INVALID_TYPE',
-      ),
-    ) ?? false;
+  const hasMeaningfulErrors = evaluation
+    ? evaluation?.some((node) => node.errors.filter((err) => err.error != 'ARGUMENT_MUST_BE_BOOLEAN').length > 0)
+    : false;
 
   // Filter out errors that should not be shown:
   // - RULE_FORMULA_REQUIRED: always filter out
@@ -57,7 +49,6 @@ export const FieldAstFormula = ({
   onChange,
   onBlur,
   defaultValue,
-  hasBeenSaved,
 }: {
   type: 'rule' | 'screening';
   astNode?: AstNode;
@@ -66,7 +57,6 @@ export const FieldAstFormula = ({
   scenarioId: string;
   options: BuilderOptionsResource;
   defaultValue: AstNode;
-  hasBeenSaved?: boolean;
 }) => {
   const { t } = useTranslation(['scenarios']);
   const editor = useEditorMode();
@@ -114,11 +104,7 @@ export const FieldAstFormula = ({
         </AstBuilder.Provider>
       )}
       {type === 'rule' ? (
-        <EvaluationErrorsWrapper
-          errors={validationErrors}
-          evaluation={validationEvaluation}
-          hasBeenSaved={hasBeenSaved}
-        />
+        <EvaluationErrorsWrapper errors={validationErrors} evaluation={validationEvaluation} />
       ) : editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (
