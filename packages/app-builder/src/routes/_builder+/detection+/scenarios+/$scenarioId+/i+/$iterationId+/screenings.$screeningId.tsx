@@ -575,9 +575,7 @@ export default function ScreeningDetail() {
                                     placeholder={t('scenarios:screening.filter.name_placeholder')}
                                     limit={5}
                                   />
-                                  {hasBeenSaved ? (
-                                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                  ) : null}
+                                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                 </div>
                               </div>
                             );
@@ -679,9 +677,7 @@ export default function ScreeningDetail() {
                                         placeholder={t('scenarios:edit_sanction.birthdate_placeholder')}
                                         limit={5}
                                       />
-                                      {hasBeenSaved ? (
-                                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                      ) : null}
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -704,9 +700,7 @@ export default function ScreeningDetail() {
                                         placeholder={t('scenarios:edit_sanction.nationality_placeholder')}
                                         limit={5}
                                       />
-                                      {hasBeenSaved ? (
-                                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                      ) : null}
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -729,9 +723,7 @@ export default function ScreeningDetail() {
                                         placeholder={t('scenarios:edit_sanction.passport_number_placeholder')}
                                         limit={5}
                                       />
-                                      {hasBeenSaved ? (
-                                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                      ) : null}
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -754,9 +746,7 @@ export default function ScreeningDetail() {
                                         placeholder={t('scenarios:edit_sanction.address_placeholder')}
                                         limit={5}
                                       />
-                                      {hasBeenSaved ? (
-                                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                      ) : null}
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -783,9 +773,7 @@ export default function ScreeningDetail() {
                                         placeholder={t('scenarios:edit_sanction.country_placeholder')}
                                         limit={5}
                                       />
-                                      {hasBeenSaved ? (
-                                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                      ) : null}
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -808,9 +796,7 @@ export default function ScreeningDetail() {
                                         placeholder={t('scenarios:edit_sanction.registrationnumber_placeholder')}
                                         limit={5}
                                       />
-                                      {hasBeenSaved ? (
-                                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                      ) : null}
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -833,9 +819,7 @@ export default function ScreeningDetail() {
                                         placeholder={t('scenarios:edit_sanction.address_placeholder')}
                                         limit={5}
                                       />
-                                      {hasBeenSaved ? (
-                                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                      ) : null}
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -861,9 +845,7 @@ export default function ScreeningDetail() {
                                       placeholder={t('scenarios:edit_sanction.registrationnumber_placeholder')}
                                       limit={5}
                                     />
-                                    {hasBeenSaved ? (
-                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                                    ) : null}
+                                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                   </div>
                                 </div>
                               );

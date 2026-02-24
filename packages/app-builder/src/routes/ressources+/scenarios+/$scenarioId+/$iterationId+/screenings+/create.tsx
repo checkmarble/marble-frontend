@@ -97,11 +97,3 @@ export function CreateScreening({
     </Button>
   );
 }
-
-{
-  /* <Icon icon="plus" className="text-grey-primary size-5" />
-      <div className="flex w-full flex-col items-start">
-        <span className="text-grey-primary font-normal">{t('scenarios:create_rule.title')}</span>
-        <span className="text-s text-grey-secondary font-normal">{t('scenarios:create_rule.description')}</span>
-      </div> */
-}
