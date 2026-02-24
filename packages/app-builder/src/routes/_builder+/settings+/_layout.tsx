@@ -1,15 +1,27 @@
 import { Page } from '@app-builder/components';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { SettingsNavigationTabs } from '@app-builder/components/Settings/Navigation/Tabs';
 import { isAnalyst } from '@app-builder/models/user';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['settings']);
+      return (
+        <BreadCrumbLink to={getRoute('/settings/api-keys')} isLast={isLast}>
+          {t('settings:api')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -32,12 +44,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Settings() {
   const { sections } = useLoaderData<typeof loader>();
+  const matches = useMatches();
+  const hideTabs = matches.some((m) => (m.handle as { hideTabs?: boolean })?.hideTabs);
 
   return (
     <Page.Main>
-      <div className="p-v2-lg pb-0">
-        <SettingsNavigationTabs sections={sections} />
-      </div>
+      {hideTabs ? null : (
+        <div className="p-v2-lg pb-0">
+          <SettingsNavigationTabs sections={sections} />
+        </div>
+      )}
       <Outlet />
     </Page.Main>
   );
