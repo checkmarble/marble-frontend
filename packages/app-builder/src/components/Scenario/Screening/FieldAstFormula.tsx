@@ -22,17 +22,26 @@ const EvaluationErrorsWrapper = ({
 }) => {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  // Check if there are nested evaluation errors (more specific than return type errors)
-  const hasEvaluationErrors = evaluation?.some((node) => node.errors.length > 0) ?? false;
+  // Check if there are meaningful evaluation errors that should take precedence over return type errors
+  // Only show return type error if there are NO other errors in the formula
+  const hasMeaningfulErrors =
+    evaluation?.some((node) =>
+      node.errors.some(
+        (err) =>
+          err.error === 'WRONG_NUMBER_OF_ARGUMENTS' ||
+          err.error === 'UNDEFINED_FUNCTION' ||
+          err.error === 'ARGUMENT_INVALID_TYPE',
+      ),
+    ) ?? false;
 
   // Filter out errors that should not be shown:
   // - RULE_FORMULA_REQUIRED: always filter out
-  // - FORMULA_MUST_RETURN_BOOLEAN and FORMULA_INCORRECT_RETURN_TYPE: filter out if there are nested evaluation errors
+  // - FORMULA_MUST_RETURN_BOOLEAN and FORMULA_INCORRECT_RETURN_TYPE: filter out if there are more meaningful errors
   const filteredErrors = errors.filter((error) => {
     if (error === 'RULE_FORMULA_REQUIRED') return false;
     if (error === 'FORMULA_MUST_RETURN_BOOLEAN' || error.startsWith('FORMULA_INCORRECT_RETURN_TYPE')) {
-      // Hide these generic errors if there are more specific evaluation errors in the nodes
-      return !hasEvaluationErrors;
+      // Hide return type errors if there are more meaningful nested errors
+      return !hasMeaningfulErrors;
     }
     return true;
   });
