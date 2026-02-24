@@ -1,4 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { SecretValue } from '@app-builder/components/SecretValue';
 import { CreateWebhookSecret } from '@app-builder/components/Settings/Webhooks/CreateWebhookSecret';
 import { DeleteWebhook } from '@app-builder/components/Settings/Webhooks/DeleteWebhook';
@@ -16,7 +17,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
@@ -28,6 +29,12 @@ import { Icon } from 'ui-icons';
 export const handle = {
   i18n: ['common', 'settings'] satisfies Namespace,
   hideTabs: true,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['settings']);
+      return <span className="text-s font-bold">{t('settings:webhook_details')}</span>;
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -40,6 +47,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const webhookId = params['webhookId'];
   invariant(webhookId, `webhookId is required`);
+
   const webhook = await webhookRepository.getWebhook({ webhookId });
 
   return json({
@@ -57,18 +65,8 @@ export default function WebhookDetail() {
   const isWebhookSecretRotationAvailable = features.webhookSecretRotation && isEditWebhookAvailable;
   return (
     <>
-      <Page.Header className="justify-between">
-        <div className="flex items-center gap-4">
-          <Page.BackLink to={getRoute('/settings/api-keys')} />
-          <Link
-            to={getRoute('/settings/api-keys')}
-            className="text-s text-grey-secondary hover:text-grey-primary font-bold transition-colors"
-          >
-            {t('settings:api')}
-          </Link>
-          <span className="text-s text-grey-disabled font-bold">/</span>
-          <span className="text-s font-bold">{t('settings:webhook_details')}</span>
-        </div>
+      <Page.Header>
+        <BreadCrumbs />
       </Page.Header>
       <Page.Container>
         <Page.Content className="max-w-(--breakpoint-xl)">

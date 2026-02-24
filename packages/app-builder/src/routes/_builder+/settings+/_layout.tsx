@@ -1,4 +1,5 @@
 import { Page } from '@app-builder/components';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { SettingsNavigationTabs } from '@app-builder/components/Settings/Navigation/Tabs';
 import { isAnalyst } from '@app-builder/models/user';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -7,9 +8,20 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 export const handle = {
   i18n: ['navigation', 'settings'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['settings']);
+      return (
+        <BreadCrumbLink to={getRoute('/settings/api-keys')} isLast={isLast}>
+          {t('settings:api')}
+        </BreadCrumbLink>
+      );
+    },
+  ],
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
