@@ -13,21 +13,26 @@ import { EvaluationErrors } from '../ScenarioValidationError';
 
 const EvaluationErrorsWrapper = ({
   errors,
+  evaluation,
   hasBeenSaved,
 }: {
   errors: FlatAstValidation['errors'];
+  evaluation?: FlatAstValidation['evaluation'];
   hasBeenSaved?: boolean;
 }) => {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
+  // Check if there are nested evaluation errors (more specific than return type errors)
+  const hasEvaluationErrors = evaluation?.some((node) => node.errors.length > 0) ?? false;
+
   // Filter out errors that should not be shown:
   // - RULE_FORMULA_REQUIRED: always filter out
-  // - FORMULA_MUST_RETURN_BOOLEAN: filter out if there are other errors (they're more specific)
+  // - FORMULA_MUST_RETURN_BOOLEAN and FORMULA_INCORRECT_RETURN_TYPE: filter out if there are nested evaluation errors
   const filteredErrors = errors.filter((error) => {
     if (error === 'RULE_FORMULA_REQUIRED') return false;
-    if (error === 'FORMULA_MUST_RETURN_BOOLEAN') {
-      // Hide if there are other errors that are more specific
-      return errors.length === 1;
+    if (error === 'FORMULA_MUST_RETURN_BOOLEAN' || error.startsWith('FORMULA_INCORRECT_RETURN_TYPE')) {
+      // Hide these generic errors if there are more specific evaluation errors in the nodes
+      return !hasEvaluationErrors;
     }
     return true;
   });
@@ -61,6 +66,7 @@ export const FieldAstFormula = ({
   const isAstNull = isUndefinedAstNode(formula);
   const nodeStoreRef = useRef<AstBuilderNodeStore | null>(null);
   const [validationErrors, setValidationErrors] = useState<FlatAstValidation['errors']>([]);
+  const [validationEvaluation, setValidationEvaluation] = useState<FlatAstValidation['evaluation']>([]);
 
   const handleAddTrigger = () => {
     onChange?.(NewEmptyTriggerAstNode());
@@ -91,6 +97,7 @@ export const FieldAstFormula = ({
             }}
             onValidationUpdate={(validation) => {
               setValidationErrors(validation.errors);
+              setValidationEvaluation(validation.evaluation);
             }}
             onUpdate={onChange}
             returnType="bool"
@@ -98,7 +105,11 @@ export const FieldAstFormula = ({
         </AstBuilder.Provider>
       )}
       {type === 'rule' ? (
-        <EvaluationErrorsWrapper errors={validationErrors} hasBeenSaved={hasBeenSaved} />
+        <EvaluationErrorsWrapper
+          errors={validationErrors}
+          evaluation={validationEvaluation}
+          hasBeenSaved={hasBeenSaved}
+        />
       ) : editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (
