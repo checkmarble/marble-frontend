@@ -767,6 +767,11 @@ export const routes = [
         "file": "routes/ressources+/data+/cases.$objectType.$objectId.tsx"
       },
       {
+        "id": "routes/ressources+/data+/apply-archetype",
+        "path": "ressources/data/apply-archetype",
+        "file": "routes/ressources+/data+/apply-archetype.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/create-annotation",
         "path": "ressources/data/create-annotation",
         "file": "routes/ressources+/data+/create-annotation.tsx"
@@ -845,6 +850,11 @@ export const routes = [
         "id": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId",
         "path": "ressources/data/get-hierarchy/:objectType/:objectId",
         "file": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/list-archetypes",
+        "path": "ressources/data/list-archetypes",
+        "file": "routes/ressources+/data+/list-archetypes.tsx"
       },
       {
         "id": "routes/ressources+/data+/object.$objectType.$objectId",
