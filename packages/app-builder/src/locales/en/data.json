@@ -125,6 +125,7 @@
   "parent_field_name": "Parent table field name",
   "parent_table": "Related table",
   "select_archetype.button_accept": "Apply archetype",
+  "select_archetype.seed_data": "Include sample data",
   "select_archetype.title": "Select an archetype",
   "table_relationship": "Relationship",
   "unique.col_header": "Unique",

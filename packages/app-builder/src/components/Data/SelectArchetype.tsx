@@ -4,7 +4,7 @@ import { type Archetype, useListArchetypesQuery } from '@app-builder/queries/dat
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Checkbox, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SelectArchetype({ children }: { children: React.ReactNode }) {
@@ -13,19 +13,22 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
   const applyArchetypeMutation = useApplyArchetypeMutation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
+  const [seed, setSeed] = useState(true);
   const revalidate = useLoaderRevalidator();
 
   const handleApply = () => {
     if (!selectedArchetype) return;
 
-    applyArchetypeMutation.mutateAsync({ name: selectedArchetype.name }).then((result) => {
-      revalidate();
+    applyArchetypeMutation
+      .mutateAsync({ name: selectedArchetype.name, seed: seed ? 'true' : 'false' })
+      .then((result) => {
+        revalidate();
 
-      if (result.success) {
-        setIsOpen(false);
-        setSelectedArchetype(null);
-      }
-    });
+        if (result.success) {
+          setIsOpen(false);
+          setSelectedArchetype(null);
+        }
+      });
   };
 
   return (
@@ -58,15 +61,18 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           )}
+          <label className="flex items-center gap-2">
+            <Checkbox size="small" checked={seed} onCheckedChange={(checked) => setSeed(checked === true)} />
+            <span className="text-s text-grey-primary">{t('data:select_archetype.seed_data')}</span>
+          </label>
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
           <Button
-            className="flex-1"
             variant="primary"
             disabled={!selectedArchetype || applyArchetypeMutation.isPending}
             onClick={handleApply}
