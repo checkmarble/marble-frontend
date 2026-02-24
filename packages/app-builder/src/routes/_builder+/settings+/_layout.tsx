@@ -5,7 +5,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { Outlet, useLoaderData, useMatches } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 
 export const handle = {
@@ -32,12 +32,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Settings() {
   const { sections } = useLoaderData<typeof loader>();
+  const matches = useMatches();
+  const hideTabs = matches.some((m) => (m.handle as { hideTabs?: boolean })?.hideTabs);
 
   return (
     <Page.Main>
-      <div className="p-v2-lg pb-0">
-        <SettingsNavigationTabs sections={sections} />
-      </div>
+      {hideTabs ? null : (
+        <div className="p-v2-lg pb-0">
+          <SettingsNavigationTabs sections={sections} />
+        </div>
+      )}
       <Outlet />
     </Page.Main>
   );
