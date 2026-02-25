@@ -23,7 +23,7 @@ const EvaluationErrorsWrapper = ({
   // Check if there are meaningful evaluation errors that should take precedence over return type errors
   // Only show return type error if there are NO other errors in the formula
   const hasMeaningfulErrors = evaluation
-    ? evaluation?.some((node) => node.errors.filter((err) => err.error != 'ARGUMENT_MUST_BE_BOOLEAN').length > 0)
+    ? evaluation.some((node) => node.errors.filter((err) => err.error != 'ARGUMENT_MUST_BE_BOOLEAN').length > 0)
     : false;
 
   // Filter out errors that should not be shown:
