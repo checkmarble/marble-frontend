@@ -19,16 +19,14 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
   const handleApply = () => {
     if (!selectedArchetype) return;
 
-    applyArchetypeMutation
-      .mutateAsync({ name: selectedArchetype.name, seed: seed ? 'true' : 'false' })
-      .then((result) => {
-        revalidate();
+    applyArchetypeMutation.mutateAsync({ name: selectedArchetype.name, seed }).then((result) => {
+      revalidate();
 
-        if (result.success) {
-          setIsOpen(false);
-          setSelectedArchetype(null);
-        }
-      });
+      if (result.success) {
+        setIsOpen(false);
+        setSelectedArchetype(null);
+      }
+    });
   };
 
   return (
@@ -38,6 +36,7 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
         setIsOpen(open);
         if (!open) {
           setSelectedArchetype(null);
+          setSeed(true);
         }
       }}
     >
@@ -62,17 +61,23 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
             </div>
           )}
           <label className="flex items-center gap-2">
-            <Checkbox size="small" checked={seed} onCheckedChange={(checked) => setSeed(checked === true)} />
+            <Checkbox
+              name="seed"
+              size="small"
+              checked={seed}
+              onCheckedChange={(checked) => setSeed(checked === true)}
+            />
             <span className="text-s text-grey-primary">{t('data:select_archetype.seed_data')}</span>
           </label>
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">
+            <Button className="flex-1" variant="secondary" appearance="stroked">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
           <Button
+            className="flex-1"
             variant="primary"
             disabled={!selectedArchetype || applyArchetypeMutation.isPending}
             onClick={handleApply}
