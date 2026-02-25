@@ -136,8 +136,8 @@ const badgeBorderVariants = cva('border', {
 const outcomeVariants = cva('border rounded-full px-v2-sm h-6 flex items-center', {
   variants: {
     outcome: {
-      false_positive: 'text-grey-secondary border-grey-secondary',
-      valuable_alert: 'text-green-primary border-green-primary',
+      false_positive: 'text-green-secondary border-green-secondary',
+      valuable_alert: 'text-orange-primary border-orange-primary',
       confirmed_risk: 'text-red-primary border-red-primary',
     },
   },
