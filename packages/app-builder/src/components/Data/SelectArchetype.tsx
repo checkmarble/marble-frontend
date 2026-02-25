@@ -72,12 +72,11 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
           <Button
-            className="flex-1"
             variant="primary"
             disabled={!selectedArchetype || applyArchetypeMutation.isPending}
             onClick={handleApply}

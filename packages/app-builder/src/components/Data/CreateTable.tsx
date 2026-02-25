@@ -93,11 +93,11 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary" appearance="stroked">
+              <Button variant="secondary" appearance="stroked">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button className="flex-1" variant="primary" type="submit" name="create">
+            <Button variant="primary" type="submit" name="create">
               {t('data:create_table.button_accept')}
             </Button>
           </Modal.Footer>
