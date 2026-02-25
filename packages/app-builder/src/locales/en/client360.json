@@ -19,9 +19,8 @@
   "client_detail.documents.annotated_by": "by @{{name}}",
   "client_detail.documents.title": "Documents",
   "client_detail.documents.unknown_user": "Unknown",
-  "client_detail.hierarchy.customer_graph_relations": "Customer graph relations",
   "client_detail.hierarchy.related": "Related {{objectType}}",
-  "client_detail.hierarchy.title": "Hierarchy",
+  "client_detail.hierarchy.title": "Related data",
   "client_detail.monitoring_hits.panel_title": "Monitoring Hits",
   "client_detail.monitoring_hits.title": "Monitoring hits",
   "client_detail.no_object_found": "No {{objectType}} found",
@@ -33,5 +32,6 @@
   "client_detail.search_page.breadcrumb": "Client detail",
   "client_detail.search_page.no_configuration": "You don't have any active configuration yet. To perform a search, you must first configure the entity types on which you can search.",
   "client_detail.search_results.metadata_not_found": "Could not find metadata for table {{table}}",
-  "client_detail.title_bar.informations": "{{name}}'s informations"
+  "entity_tags.no_screening_tag_present": "No screening tags on this <Entity>{{objectType}}</Entity>",
+  "entity_tags.no_tag_present": "No tags on this <Entity>{{objectType}}</Entity>"
 }
