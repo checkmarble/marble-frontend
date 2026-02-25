@@ -1,22 +1,6 @@
 # File Organization
 
-Layered architecture for the Marble app-builder.
-
----
-
-## Monorepo Structure
-
-```
-packages/
-  app-builder/           # Main Remix application
-  ui-design-system/      # Reusable UI components
-  ui-icons/              # Icon components
-  shared/                # Shared utilities
-  marble-api/            # API client types
-  tailwind-preset/       # Tailwind configuration
-  typescript-utils/      # TS utilities
-  tests/                 # E2E tests
-```
+Layered architecture and naming conventions for the Marble app-builder.
 
 ---
 
@@ -24,152 +8,121 @@ packages/
 
 ```
 packages/app-builder/src/
-  components/        # App-specific UI components
-  queries/           # TanStack Query hooks
-  repositories/      # Data access layer
-  services/          # Business logic
-  models/            # Data models + adapters
-  routes/            # Remix routes
+  routes/            # Remix routes (flat structure with + folders)
+  components/        # App-specific UI components (by domain)
+  queries/           # TanStack Query hooks (one file per query)
+  repositories/      # Data access layer (interfaces + factory functions)
+  services/          # Business logic services
+  models/            # Data models + adapter functions
   hooks/             # Custom React hooks
   contexts/          # React contexts
   schemas/           # Zod schemas
   utils/             # Utilities
   types/             # TypeScript types
   constants/         # Constants
-  locales/           # i18n translations
-  infra/             # Infrastructure code
-  middlewares/       # Remix middlewares
+  locales/           # i18n translations (en/, fr/, ar/)
+  middlewares/       # Server middleware (auth, redirect)
+  core/              # Framework core (requests, middleware types)
 ```
 
 ---
 
 ## Layer Responsibilities
 
-### routes/
+| Layer | Purpose | Example |
+|-------|---------|---------|
+| **routes/** | Remix routes, loaders, actions | `_builder+/cases+/$caseId+/_index.tsx` |
+| **components/** | UI components grouped by domain | `Cases/CaseDetails.tsx`, `AstBuilder/Root.tsx` |
+| **queries/** | TanStack Query hooks (one per file) | `cases/get-cases.ts`, `cases/edit-name.ts` |
+| **repositories/** | API call abstraction + DTO transforms | `CaseRepository.ts` (interface + factory) |
+| **services/** | Business logic | `init.server.ts` (service initialization) |
+| **models/** | Types + adapters | `cases.ts` (Case interface + adaptCase) |
+| **middlewares/** | Server middleware | `auth-middleware.ts`, `handle-redirect-middleware.ts` |
 
-Remix file-based routes with loaders and actions.
+Data flows: `routes -> components -> queries -> fetch(resource routes) -> repositories -> API`
 
-```
-routes/
-  _app.cases._index.tsx      # /cases
-  _app.cases.$caseId.tsx     # /cases/:caseId
-  _auth+/                    # Auth routes
-  _builder+/                 # Builder routes
-  ressources+/               # Resource routes (API-like)
-```
+---
+
+## Directory Conventions
 
 ### components/
 
-App-specific UI components organized by domain.
+Organized by domain, each domain gets a folder:
 
 ```
 components/
   Cases/
     CaseDetails.tsx
     CaseEvents.tsx
-    CaseStatus.tsx
-    CreateCase.tsx
+    InboxPage.tsx
   Analytics/
-    DecisionsScoreDistribution.tsx
+    Decisions.tsx
+    RulesHit.tsx
   AstBuilder/
-    Operand.tsx
-    Root.tsx
-  Auth/
-    SignInWithGoogle.tsx
-  Page.tsx                   # Layout component
-  Breadcrumbs.tsx           # Navigation
-  Callout.tsx               # Alert component
+    edition/
+      EditionNode.tsx
+      EditionAndRoot.tsx
+  Form/
+    Tanstack/
+      FormInput.tsx
+      FormLabel.tsx
+      FormErrorOrDescription.tsx
+  Panel/
+    Panel.tsx
+  Breadcrumbs.tsx
+  MarbleToaster.tsx
+  Spinner.tsx
 ```
 
 ### queries/
 
-TanStack Query hooks, one file per query.
+One file per query, grouped by domain:
 
 ```
 queries/
   cases/
-    get-cases.ts
-    get-case.ts
-    create-case.ts
-    edit-assignee.ts
-    edit-name.ts
-  decisions/
-    list-decisions.ts
-  analytics/
-    get-stats.ts
+    get-cases.ts       # useGetCasesQuery
+    get-case.ts        # useGetCaseQuery
+    edit-name.ts       # useEditNameMutation + editNamePayloadSchema
+    add-comment.ts     # useAddCommentMutation
+  scenarios/
+    create-scenario.ts
+    scenario-iteration-rules.ts
+  lists/
+    create-list.ts
+  settings/
+    api-keys/
+      delete-api-key.ts
 ```
 
 ### repositories/
 
-Data access layer with interfaces.
+Interface + factory function per domain:
 
 ```
 repositories/
-  CaseRepository.ts
-  DecisionRepository.ts
-  AnalyticsRepository.ts
-  init.server.ts            # Server-side init
-  init.client.ts            # Client-side init
+  CaseRepository.ts       # Interface + makeGetCaseRepository()
+  ScenarioRepository.ts
+  init.server.ts           # Server-side repository initialization
+  init.client.ts           # Client-side repository initialization
 ```
 
 ### models/
 
-Data models with adapters for API transformations.
+Domain types + adapter functions:
 
 ```
 models/
-  cases.ts                  # Case type + adaptCase()
-  decision.ts               # Decision type + adaptDecision()
-  pagination.ts             # Pagination helpers
-```
-
-### services/
-
-Business logic services.
-
-```
-services/
-  CaseService.ts
-  DecisionService.ts
-```
-
-### hooks/
-
-Custom React hooks.
-
-```
-hooks/
-  useCurrentUser.ts
-  useOrganization.ts
-  usePendingState.ts
-```
-
-### contexts/
-
-React contexts.
-
-```
-contexts/
-  AgnosticNavigationContext.tsx
-  CurrentOrganizationContext.tsx
-```
-
----
-
-## Import Aliases
-
-```typescript
-// @app-builder/* resolves to packages/app-builder/src/*
-import { Case } from '@app-builder/models/cases';
-import { useGetCaseQuery } from '@app-builder/queries/cases/get-case';
-import { CaseRepository } from '@app-builder/repositories/CaseRepository';
+  cases.ts                 # Case, CaseDto, adaptCase()
+  decision.ts              # Decision, adaptDecision()
+  scenario/
+    iteration-rule.ts      # ScenarioIterationRule, adaptScenarioIterationRule()
+  pagination.ts            # Pagination helpers
 ```
 
 ---
 
 ## Naming Conventions
-
-### Files
 
 | Type | Pattern | Example |
 |------|---------|---------|
@@ -178,21 +131,29 @@ import { CaseRepository } from '@app-builder/repositories/CaseRepository';
 | Repositories | PascalCase.ts | `CaseRepository.ts` |
 | Models | kebab-case.ts | `cases.ts` |
 | Hooks | camelCase.ts | `useCurrentUser.ts` |
-| Routes | Remix convention | `_app.cases.$caseId.tsx` |
+| Routes | Remix convention | `_builder+/cases+/$caseId+/_index.tsx` |
+| Schemas | kebab-case.ts | `lists.ts` |
+| Server utils | `.server.ts` suffix | `update-rule.server.ts` |
 
-### Exports
+### Export Conventions
 
 ```typescript
-// Components - named + default
-export const CaseDetails: FunctionComponent<Props> = () => { };
-export default CaseDetails;
+// Components - named exports only
+export function CaseDetails({ caseData }: CaseDetailsProps) { }
+
+// Compound components - namespace object
+export const AiAssist = { Root, Trigger, Content };
 
 // Queries - named hook export
-export const useGetCaseQuery = () => { };
+export function useGetCaseQuery(caseId: string) { }
+
+// Mutations - named hook export + Zod schema
+export const editNamePayloadSchema = z.object({ ... });
+export function useEditNameMutation() { }
 
 // Models - named exports
 export interface Case { }
-export function adaptCase() { }
+export const adaptCase = (dto: CaseDto): Case => ({ ... });
 ```
 
 ---
@@ -202,21 +163,12 @@ export function adaptCase() { }
 | Need | Location |
 |------|----------|
 | Reusable UI component | `packages/ui-design-system/` |
-| App-specific component | `packages/app-builder/src/components/` |
-| New query hook | `queries/{domain}/` |
+| App-specific component | `packages/app-builder/src/components/{Domain}/` |
+| New query/mutation hook | `queries/{domain}/` |
 | API call abstraction | `repositories/` |
 | Business logic | `services/` |
 | Data types + adapters | `models/` |
 | Custom hook | `hooks/` |
 | Global state | `contexts/` |
 | Validation schema | `schemas/` |
-
----
-
-## Summary
-
-- Layered architecture: routes -> components -> queries -> repositories
-- One query per file
-- Models with adapters for API transformations
-- `ui-design-system` for reusable components
-- `@app-builder/` path alias for imports
+| i18n translations | `locales/{en,fr,ar}/{namespace}.json` |

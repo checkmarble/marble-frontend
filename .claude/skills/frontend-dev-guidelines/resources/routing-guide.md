@@ -1,116 +1,118 @@
 # Routing Guide
 
-Remix file-based routing patterns.
+Remix flat file routing patterns used in the Marble app.
 
 ---
 
-## Route File Naming
+## Route Structure
 
-Remix uses flat routes with special characters:
+```
+packages/app-builder/src/routes/
+├── _index.tsx                          # Root redirect
+├── _auth+/                             # Auth layout segment
+│   ├── _layout.tsx                     # Auth layout wrapper
+│   ├── sign-in.tsx                     # /sign-in
+│   └── create-password.tsx             # /create-password
+├── _builder+/                          # Main app layout segment
+│   ├── _layout.tsx                     # App layout (sidebar, nav)
+│   ├── cases+/                         # /cases
+│   │   ├── _layout.tsx
+│   │   ├── $caseId+/                   # /cases/:caseId
+│   │   │   ├── _index.tsx
+│   │   │   └── d+/$decisionId+/...    # Nested dynamic segments
+│   │   └── overview.tsx
+│   ├── detection+/                     # /detection
+│   │   └── lists+/
+│   │       ├── _index.tsx              # /detection/lists
+│   │       └── $listId.tsx             # /detection/lists/:listId
+│   └── settings+/                      # /settings
+└── ressources+/                        # Server-only resource routes
+    ├── cases+/
+    │   ├── edit-name.tsx               # POST /ressources/cases/edit-name
+    │   └── $caseId.next-unassigned.tsx
+    ├── lists+/
+    │   ├── create.tsx                  # POST /ressources/lists/create
+    │   └── delete.tsx
+    └── workflows+/
+        └── rule+/$ruleId+/
+            ├── rename.ts
+            └── update-rule.server.ts   # Pure server utility (not a route)
+```
 
-| Pattern | URL | Example File |
-|---------|-----|--------------|
-| `_app.cases._index.tsx` | `/cases` | Index route |
-| `_app.cases.$caseId.tsx` | `/cases/:caseId` | Dynamic param |
-| `_auth+/login.tsx` | `/login` | Auth layout |
-| `ressources+/cases.tsx` | Resource route (API) |
+## Naming Conventions
 
-### Special Characters
-
-- `_layout` - Layout route (wraps children)
-- `$param` - Dynamic parameter
-- `+/` - Route folder
-- `_index` - Index route
+| Pattern | Meaning | Example |
+|---------|---------|---------|
+| `+/` | Segment folder (layout nesting) | `cases+/` |
+| `_layout.tsx` | Layout component (wraps children with `<Outlet />`) | `_builder+/_layout.tsx` |
+| `_index.tsx` | Index route (default child) | `cases+/_index.tsx` |
+| `$param` | Dynamic segment | `$caseId+/` |
+| `_prefix` | Pathless layout (groups routes without URL segment) | `_builder+/`, `_auth+/` |
+| `.server.ts` | Pure server utility (not a route, no route exports) | `update-rule.server.ts` |
+| `ressources+/` | Resource routes (API-like, no UI) | `ressources+/cases+/edit-name.tsx` |
 
 ---
 
-## Basic Route Structure
+## Breadcrumbs
+
+Routes define breadcrumbs via the `handle` export:
 
 ```typescript
-// routes/_app.cases.$caseId.tsx
-import { useLoaderData } from '@remix-run/react';
-import type { LoaderFunctionArgs } from '@remix-run/node';
-import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
+import { type BreadCrumbProps, BreadCrumbLink } from '@app-builder/components/Breadcrumbs';
+import { getRoute } from '@app-builder/utils/routes';
+import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { Icon } from 'ui-icons';
 
-// Breadcrumb configuration
 export const handle = {
+  i18n: ['navigation'] satisfies Namespace,
   BreadCrumbs: [
-    ({ data }: { data: { case: Case } }) => (
-      <span>{data.case.name}</span>
-    ),
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+      return (
+        <BreadCrumbLink to={getRoute('/cases')} isLast={isLast}>
+          <Icon icon="case-manager" className="me-2 size-6" />
+          {t('navigation:case_manager')}
+        </BreadCrumbLink>
+      );
+    },
   ],
 };
-
-// Server-side data loading
-export async function loader({ params, request }: LoaderFunctionArgs) {
-  const caseId = params.caseId!;
-  // Load data...
-  return { case: caseData };
-}
-
-// Component
-export default function CasePage() {
-  const { case: caseData } = useLoaderData<typeof loader>();
-  return <CaseDetails caseData={caseData} />;
-}
 ```
 
----
-
-## Loaders
-
-Fetch data on the server:
-
-```typescript
-export async function loader({ params, request }: LoaderFunctionArgs) {
-  const caseId = params.caseId!;
-  const repository = getCaseRepository(request);
-
-  const [caseData, events] = await Promise.all([
-    repository.getCase({ caseId }),
-    repository.getCaseEvents({ caseId }),
-  ]);
-
-  return { case: caseData, events };
-}
-```
-
----
-
-## Actions
-
-Handle form submissions:
-
-```typescript
-export async function action({ params, request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const name = formData.get('name') as string;
-
-  const repository = getCaseRepository(request);
-  await repository.updateCase({
-    caseId: params.caseId!,
-    body: { name },
-  });
-
-  return redirect(`/cases/${params.caseId}`);
-}
-```
+Key points:
+- `handle.BreadCrumbs` is an array of React render functions
+- Each receives `{ isLast: boolean; data: any }` (data = loader data)
+- `handle.i18n` declares which namespaces the route needs
+- The `Breadcrumbs` component uses `useMatches()` to collect all breadcrumbs from parent routes
 
 ---
 
 ## Navigation
+
+### Type-safe Route Helper
+
+```typescript
+import { getRoute } from '@app-builder/utils/routes';
+
+// No params
+getRoute('/cases')
+
+// With params (TypeScript enforces required params)
+getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })
+getRoute('/detection/lists/:listId', { listId: fromUUIDtoSUUID(id) })
+
+// Resource routes
+getRoute('/ressources/lists/create')
+getRoute('/ressources/cases/:caseId/events', { caseId })
+```
 
 ### Link Component
 
 ```typescript
 import { Link } from '@remix-run/react';
 
-<Link to="/cases" className="text-purple-primary hover:underline">
-  View Cases
-</Link>
-
-// With params
-<Link to={`/cases/${caseId}`}>
+<Link to={getRoute('/cases/:caseId', { caseId: id })}>
   View Case
 </Link>
 ```
@@ -118,74 +120,71 @@ import { Link } from '@remix-run/react';
 ### Programmatic Navigation
 
 ```typescript
-import { useNavigate } from '@remix-run/react';
-
-const navigate = useNavigate();
-
-const handleClick = () => {
-  navigate('/cases');
-};
-
-// With search params
-navigate(`/cases?status=open`);
-```
-
-### Agnostic Navigation
-
-The project has a custom navigation context for SSR compatibility:
-
-```typescript
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 
 const navigate = useAgnosticNavigation();
-navigate('/cases');
+navigate(getRoute('/cases'));
+navigate(result.redirectTo); // from server response
 ```
+
+`useAgnosticNavigation` is preferred over Remix's `useNavigate` for SSR compatibility.
 
 ---
 
-## Breadcrumbs
-
-Configure breadcrumbs via `handle`:
+## Route Template
 
 ```typescript
-export const handle = {
-  BreadCrumbs: [
-    // Static breadcrumb
-    () => <span>Cases</span>,
+// routes/_builder+/cases+/_index.tsx
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { useLoaderData } from '@remix-run/react';
+import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
-    // Dynamic with data
-    ({ data }: { data: { case: Case } }) => (
-      <BreadCrumbLink to={`/cases/${data.case.id}`} isLast={false}>
-        {data.case.name}
-      </BreadCrumbLink>
-    ),
+export const handle = {
+  i18n: ['common', 'cases'] satisfies Namespace,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
+      return (
+        <BreadCrumbLink to={getRoute('/cases')} isLast={isLast}>
+          {t('navigation:cases')}
+        </BreadCrumbLink>
+      );
+    },
   ],
 };
+
+export const loader = createServerFn(
+  [authMiddleware],
+  async function casesLoader({ request, context }) {
+    const inboxes = await context.authInfo.inbox.listInboxes();
+    return { inboxes };
+  },
+);
+
+export default function CasesPage() {
+  const { inboxes } = useLoaderData<typeof loader>();
+  const { t } = useTranslation(['cases']);
+
+  return <CasesList inboxes={inboxes} />;
+}
 ```
 
 ---
 
 ## Resource Routes
 
-API-like routes that return JSON:
+Server-only routes that return data (no UI component):
 
 ```typescript
-// routes/ressources+/cases.$caseId.tsx
-export async function loader({ params, request }: LoaderFunctionArgs) {
-  const caseData = await getCaseRepository(request).getCase({
-    caseId: params.caseId!,
-  });
-  return Response.json({ data: caseData });
+// routes/ressources+/cases+/edit-name.tsx
+export async function action({ request }: ActionFunctionArgs) {
+  // ... validate and process
+  return { success: true, errors: [] };
 }
+
+// No default export - this is a resource route
 ```
 
----
-
-## Summary
-
-- Remix flat routes with `+/` folders
-- `$param` for dynamic routes
-- Loaders for SSR data fetching
-- Actions for form handling
-- `handle.BreadCrumbs` for navigation
-- Resource routes for client-side fetching
+Client queries fetch from these routes via `fetch(getRoute('/ressources/...'))`.
