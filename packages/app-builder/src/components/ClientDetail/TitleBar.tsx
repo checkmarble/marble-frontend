@@ -3,7 +3,7 @@ import { SCREENING_CATEGORY_COLORS } from '@app-builder/models/screening';
 import { UseQueryResult, useQueryClient } from '@tanstack/react-query';
 import { Client360Table, GroupedAnnotations } from 'marble-api';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -29,11 +29,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   return (
     <div className="flex gap-v2-md items-center">
       <div className="flex gap-v2-xs items-center">
-        <h1 className="text-h1 font-semibold">
-          {t('client360:client_detail.title_bar.informations', {
-            name: objectDetails.data[metadata.caption_field] as string,
-          })}
-        </h1>
+        <h1 className="text-h1 font-semibold capitalize">{objectDetails.data[metadata.caption_field] as string}</h1>
         <Tag color="grey">{metadata.alias ?? metadata.name}</Tag>
       </div>
       <div className="w-px self-stretch bg-grey-border" />
@@ -58,7 +54,16 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                     <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
                   </div>
                 ) : (
-                  <span className="text-grey-secondary text-small">{t('common:no_data_to_display')}</span>
+                  <Trans
+                    t={t}
+                    i18nKey="client360:entity_tags.no_tag_present"
+                    components={{
+                      Entity: <Tag color="grey" />,
+                    }}
+                    values={{
+                      objectType: metadata.alias ?? metadata.name,
+                    }}
+                  />
                 )}
                 <MenuCommand.Menu persistOnSelect open={editTagsOpen} onOpenChange={setEditTagsOpen}>
                   <MenuCommand.Trigger>
@@ -109,7 +114,16 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                     ))}
                   </div>
                 ) : (
-                  <span className="text-grey-secondary text-small">{t('common:no_data_to_display')}</span>
+                  <Trans
+                    t={t}
+                    i18nKey="client360:entity_tags.no_screening_tag_present"
+                    components={{
+                      Entity: <Tag color="grey" />,
+                    }}
+                    values={{
+                      objectType: metadata.alias ?? metadata.name,
+                    }}
+                  />
                 )}
                 <MenuCommand.Menu
                   persistOnSelect
