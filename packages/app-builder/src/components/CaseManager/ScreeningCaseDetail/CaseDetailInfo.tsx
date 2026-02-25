@@ -3,11 +3,11 @@ import { EditCaseInbox } from '@app-builder/components/Cases/EditCaseInbox';
 import { EditCaseName } from '@app-builder/components/Cases/EditCaseName';
 import { EditCaseTags } from '@app-builder/components/Cases/EditTags';
 import { EscalateCase } from '@app-builder/components/Cases/EscalateCase';
+import { ReviewStatusBadge } from '@app-builder/components/ContinuousScreening/ReviewStatusBadge';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type CaseDetail } from '@app-builder/models/cases';
 import {
   ContinuousScreening,
-  ContinuousScreeningBase,
   isDirectContinuousScreening,
   isIndirectContinuousScreening,
 } from '@app-builder/models/continuous-screening';
@@ -20,7 +20,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Tag, TagProps } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseDetailInfoProps = {
@@ -110,17 +110,6 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
     </div>
   );
 };
-
-const CONTINUOUS_SCREENING_STATUS_COLOR_MAP: Record<ContinuousScreeningBase['status'], TagProps['color']> = {
-  in_review: 'orange',
-  confirmed_hit: 'red',
-  no_hit: 'green',
-};
-
-function ReviewStatusBadge({ status }: { status: ContinuousScreeningBase['status'] }) {
-  const { t } = useTranslation(['screenings']);
-  return <Tag color={CONTINUOUS_SCREENING_STATUS_COLOR_MAP[status]}>{t(`screenings:status.${status}`)}</Tag>;
-}
 
 function ScreeningCaseSubtitle({ screening }: { screening: ContinuousScreening }) {
   const { t } = useTranslation(['continuousScreening', 'screeningTopics']);

@@ -9,7 +9,7 @@ import { Namespace } from 'i18next';
 import invariant from 'tiny-invariant';
 
 export const handle = {
-  i18n: ['common', 'cases', 'client360'] satisfies Namespace,
+  i18n: ['common', 'cases', 'screenings', 'client360'] satisfies Namespace,
   BreadCrumbs: [],
 };
 

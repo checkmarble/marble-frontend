@@ -531,6 +531,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/$caseId+/enrich-kyc.ts"
       },
       {
+        "id": "routes/ressources+/cases+/$caseId+/get-detail",
+        "path": "ressources/cases/:caseId/get-detail",
+        "file": "routes/ressources+/cases+/$caseId+/get-detail.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/$caseId+/get-name",
         "path": "ressources/cases/:caseId/get-name",
         "file": "routes/ressources+/cases+/$caseId+/get-name.tsx"
