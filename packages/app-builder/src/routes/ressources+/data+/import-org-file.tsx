@@ -4,11 +4,11 @@ import { createServerFn, data } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 
-type ImportOrgActionResult = ServerFnResult<{ success: boolean }>;
+type ImportOrgFileActionResult = ServerFnResult<{ success: boolean }>;
 
 export const action = createServerFn(
   [handleRedirectMiddleware, authMiddleware],
-  async function importOrgAction({ request, context }): ImportOrgActionResult {
+  async function importOrgFileAction({ request, context }): ImportOrgFileActionResult {
     const { toastSessionService, i18nextService } = context.services;
     const { organization } = context.authInfo;
     const [toastSession, t] = await Promise.all([
@@ -17,8 +17,19 @@ export const action = createServerFn(
     ]);
 
     try {
-      const body = await request.json();
-      await organization.importOrganization(body);
+      const formData = await request.formData();
+      const file = formData.get('file');
+
+      if (!(file instanceof Blob)) {
+        setToastMessage(toastSession, {
+          type: 'error',
+          message: t('common:errors.unknown'),
+        });
+
+        return data({ success: false }, [['Set-Cookie', await toastSessionService.commitSession(toastSession)]]);
+      }
+
+      await organization.importOrganizationFromFile(file);
 
       setToastMessage(toastSession, {
         type: 'success',
@@ -27,7 +38,7 @@ export const action = createServerFn(
 
       return data({ success: true }, [['Set-Cookie', await toastSessionService.commitSession(toastSession)]]);
     } catch (error) {
-      console.error('[import-org] Import failed:', error);
+      console.error('[import-org-file] Import failed:', error);
       setToastMessage(toastSession, {
         type: 'error',
         message: t('common:errors.unknown'),

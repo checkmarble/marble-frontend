@@ -762,14 +762,14 @@ export const routes = [
         "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
       },
       {
-        "id": "routes/ressources+/data+/cases.$objectType.$objectId",
-        "path": "ressources/data/cases/:objectType/:objectId",
-        "file": "routes/ressources+/data+/cases.$objectType.$objectId.tsx"
-      },
-      {
         "id": "routes/ressources+/data+/apply-archetype",
         "path": "ressources/data/apply-archetype",
         "file": "routes/ressources+/data+/apply-archetype.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/cases.$objectType.$objectId",
+        "path": "ressources/data/cases/:objectType/:objectId",
+        "file": "routes/ressources+/data+/cases.$objectType.$objectId.tsx"
       },
       {
         "id": "routes/ressources+/data+/create-annotation",
@@ -842,6 +842,11 @@ export const routes = [
         "file": "routes/ressources+/data+/editTable.tsx"
       },
       {
+        "id": "routes/ressources+/data+/export-org",
+        "path": "ressources/data/export-org",
+        "file": "routes/ressources+/data+/export-org.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/get-annotations.$objectType.$objectId",
         "path": "ressources/data/get-annotations/:objectType/:objectId",
         "file": "routes/ressources+/data+/get-annotations.$objectType.$objectId.tsx"
@@ -852,9 +857,9 @@ export const routes = [
         "file": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId.tsx"
       },
       {
-        "id": "routes/ressources+/data+/export-org",
-        "path": "ressources/data/export-org",
-        "file": "routes/ressources+/data+/export-org.tsx"
+        "id": "routes/ressources+/data+/import-org-file",
+        "path": "ressources/data/import-org-file",
+        "file": "routes/ressources+/data+/import-org-file.tsx"
       },
       {
         "id": "routes/ressources+/data+/import-org",
