@@ -852,6 +852,16 @@ export const routes = [
         "file": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId.tsx"
       },
       {
+        "id": "routes/ressources+/data+/export-org",
+        "path": "ressources/data/export-org",
+        "file": "routes/ressources+/data+/export-org.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/import-org",
+        "path": "ressources/data/import-org",
+        "file": "routes/ressources+/data+/import-org.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/list-archetypes",
         "path": "ressources/data/list-archetypes",
         "file": "routes/ressources+/data+/list-archetypes.tsx"
