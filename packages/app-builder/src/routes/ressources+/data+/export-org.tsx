@@ -1,20 +1,15 @@
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
+export const loader = createServerFn([authMiddleware], async function exportOrgLoader({ context }) {
+  const { organization } = context.authInfo;
 
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const exportData = await organization.exportOrganization();
 
-  const data = await apiClient.exportOrganization();
-
-  return new Response(JSON.stringify(data), {
+  return new Response(JSON.stringify(exportData), {
     headers: {
       'Content-Type': 'application/json',
       'Content-Disposition': 'attachment; filename="org-export.json"',
     },
   });
-}
+});

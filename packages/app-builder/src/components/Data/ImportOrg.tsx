@@ -1,6 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useImportOrgMutation } from '@app-builder/queries/data/import-org';
 import { useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -21,16 +22,22 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
   const handleImport = async () => {
     if (!selectedFile) return;
 
-    const text = await selectedFile.text();
-    const json = JSON.parse(text);
+    let fileContent: unknown;
+    try {
+      fileContent = JSON.parse(await selectedFile.text());
+    } catch {
+      toast.error(t('common:errors.unknown'));
+      return;
+    }
 
-    importOrgMutation.mutateAsync(json).then((result) => {
-      revalidate();
-
-      if (result.success) {
-        setIsOpen(false);
-        setSelectedFile(null);
-      }
+    importOrgMutation.mutate(fileContent, {
+      onSuccess: (result) => {
+        revalidate();
+        if (result.success) {
+          setIsOpen(false);
+          setSelectedFile(null);
+        }
+      },
     });
   };
 

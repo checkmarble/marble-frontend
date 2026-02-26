@@ -1,40 +1,37 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { type ServerFnResult } from '@app-builder/core/middleware-types';
+import { createServerFn, data } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    i18nextService: { getFixedT },
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
+type ImportOrgActionResult = ServerFnResult<{ success: boolean }>;
 
-  const [session, t] = await Promise.all([
-    getSession(request),
-    getFixedT(request, ['common', 'data']),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function importOrgAction({ request, context }): ImportOrgActionResult {
+    const { toastSessionService, i18nextService } = context.services;
+    const [toastSession, t] = await Promise.all([
+      toastSessionService.getSession(request),
+      i18nextService.getFixedT(request, ['common', 'data']),
+    ]);
 
-  try {
-    // Validate that the body is valid JSON
-    await request.json();
+    try {
+      await request.json();
 
-    // TODO: Wire up to backend POST /org-import when available
-    setToastMessage(session, {
-      type: 'error',
-      message: t('common:errors.unknown'),
-    });
+      // TODO: Wire up to backend POST /org-import when available
+      setToastMessage(toastSession, {
+        type: 'error',
+        message: t('common:errors.unknown'),
+      });
 
-    return json({ success: false }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  } catch {
-    setToastMessage(session, {
-      type: 'error',
-      message: t('common:errors.unknown'),
-    });
+      return data({ success: false }, [['Set-Cookie', await toastSessionService.commitSession(toastSession)]]);
+    } catch {
+      setToastMessage(toastSession, {
+        type: 'error',
+        message: t('common:errors.unknown'),
+      });
 
-    return json({ success: false }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  }
-}
+      return data({ success: false }, [['Set-Cookie', await toastSessionService.commitSession(toastSession)]]);
+    }
+  },
+);

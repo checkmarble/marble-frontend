@@ -13,6 +13,10 @@ export const useImportOrgMutation = () => {
         body: JSON.stringify(fileContent),
       });
 
+      if (!response.ok) {
+        throw new Error('Import failed');
+      }
+
       return response.json();
     },
   });

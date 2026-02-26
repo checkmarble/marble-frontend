@@ -9,6 +9,7 @@ import { type Tag } from 'marble-api';
 
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
+  exportOrganization(): Promise<unknown>;
   listUsers(): Promise<User[]>;
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
   updateOrganization(args: { organizationId: string; changes: OrganizationUpdateInput }): Promise<Organization>;
@@ -21,6 +22,9 @@ export function makeGetOrganizationRepository() {
       const { organization } = await marbleCoreApiClient.getOrganization(organizationId);
 
       return adaptOrganizationDto(organization);
+    },
+    exportOrganization: async () => {
+      return marbleCoreApiClient.exportOrganization();
     },
     listUsers: async () => {
       const { users } = await marbleCoreApiClient.listOrganizationUsers(organizationId);
