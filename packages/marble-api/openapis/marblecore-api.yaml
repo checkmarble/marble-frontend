@@ -424,6 +424,25 @@ paths:
   /analytics/available-filters:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 
+ # SCORING
+
+  /scoring/settings:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1settings
+  /scoring/rulesets:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets
+  /scoring/rulesets/{recordType}:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{recordType}
+  /scoring/rulesets/{recordType}/versions:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{recordType}~1versions
+  /scoring/rulesets/{recordType}/prepare:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{recordType}~1prepare
+  /scoring/rulesets/{recordType}/commit:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{recordType}~1commit
+  /scoring/risk-levels/{recordType}/{recordId}:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1risk-levels~1{recordType}~1{recordId}
+  /scoring/risk-levels/{recordType}/{recordId}/history:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1risk-levels~1{recordType}~1{recordId}~1history
+
 components:
   securitySchemes:
     $ref: marblecore-api/_common.yml#/securitySchemes

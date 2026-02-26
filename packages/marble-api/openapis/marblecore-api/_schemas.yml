@@ -555,3 +555,18 @@ ContinuousScreeningScreeningEntityToMarbleDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningScreeningEntityToMarbleDto
 ContinuousScreeningMatchPayloadDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchPayloadDto
+
+# SCORING
+
+ScoringSettings:
+  $ref: scoring.yml#/components/schemas/ScoringSettings
+UpdateScoringSettings:
+  $ref: scoring.yml#/components/schemas/UpdateScoringSettings
+ScoringRuleset:
+  $ref: scoring.yml#/components/schemas/ScoringRuleset
+ScoringRulesetWithRules:
+  $ref: scoring.yml#/components/schemas/ScoringRulesetWithRules
+UpdateScoringRuleset:
+  $ref: scoring.yml#/components/schemas/UpdateScoringRuleset
+ScoringScore:
+  $ref: scoring.yml#/components/schemas/ScoringScore
