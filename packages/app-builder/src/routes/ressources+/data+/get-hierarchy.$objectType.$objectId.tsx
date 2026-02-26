@@ -1,8 +1,15 @@
 import { createServerFn, data } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
-import { ClientDataListRequestBody, DataModelObject, LinkToSingle, NavigationOption } from '@app-builder/models';
+import {
+  ClientDataListRequestBody,
+  DataModelObject,
+  isNotFoundHttpError,
+  LinkToSingle,
+  NavigationOption,
+} from '@app-builder/models';
 import { DataModelRepository } from '@app-builder/repositories/DataModelRepository';
+import { captureRemixServerException } from '@sentry/remix';
 import invariant from 'tiny-invariant';
 import { z } from 'zod/v4';
 
@@ -85,29 +92,35 @@ export const loader = createServerFn(
         continue;
       }
 
-      const parentObject = await context.authInfo.dataModelRepository.getIngestedObject(
-        parentTableName,
-        baseObject.data[link.childFieldName] as string,
-      );
-
-      const parentObjectHierarchyNode = {
-        objectType: link.parentTableName,
-        objectId: parentObject.data['object_id'] as string,
-        data: parentObject.data,
-        children: [],
-      };
-
-      if (parsedSearchParams.showAll) {
-        await retrieveChildren(
-          link.parentTableName,
-          parentObject,
-          parentObjectTable.navigationOptions,
-          context.authInfo.dataModelRepository,
-          parentObjectHierarchyNode,
+      try {
+        const parentObject = await context.authInfo.dataModelRepository.getIngestedObject(
+          parentTableName,
+          baseObject.data[link.childFieldName] as string,
         );
-      }
 
-      baseObjectHierarchyNode.parents.push(parentObjectHierarchyNode);
+        const parentObjectHierarchyNode = {
+          objectType: link.parentTableName,
+          objectId: parentObject.data['object_id'] as string,
+          data: parentObject.data,
+          children: [],
+        };
+
+        if (parsedSearchParams.showAll) {
+          await retrieveChildren(
+            link.parentTableName,
+            parentObject,
+            parentObjectTable.navigationOptions,
+            context.authInfo.dataModelRepository,
+            parentObjectHierarchyNode,
+          );
+        }
+
+        baseObjectHierarchyNode.parents.push(parentObjectHierarchyNode);
+      } catch (error) {
+        if (!isNotFoundHttpError(error)) {
+          captureRemixServerException(error, 'remix.server', request, true);
+        }
+      }
     }
 
     return data({ hierarchy: baseObjectHierarchyNode });
