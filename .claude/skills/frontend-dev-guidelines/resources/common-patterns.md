@@ -1,200 +1,96 @@
 # Common Patterns
 
-Frequently used patterns in the Marble codebase.
+Frequently used patterns across the Marble codebase.
 
 ---
 
-## Forms with TanStack Form + Zod
+## ts-pattern (Pattern Matching)
 
-```typescript
-import { useForm } from '@tanstack/react-form';
-import { z } from 'zod';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { getFieldErrors } from '@app-builder/utils/form';
-import { Button } from 'ui-design-system';
+Use `match` from `ts-pattern` for query state handling and discriminated unions:
 
-const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
-});
-
-export function MyForm() {
-  const form = useForm({
-    defaultValues: {
-      name: '',
-      email: '',
-    },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        // Submit form
-      }
-    },
-    validators: {
-      onSubmit: schema,
-    },
-  });
-
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
-      <form.Field
-        name="name"
-        validators={{
-          onBlur: schema.shape.name,
-          onChange: schema.shape.name,
-        }}
-      >
-        {(field) => (
-          <div className="flex flex-col gap-2">
-            <FormLabel name={field.name}>Name</FormLabel>
-            <FormInput
-              type="text"
-              name={field.name}
-              defaultValue={field.state.value}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              valid={field.state.meta.errors.length === 0}
-            />
-            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-          </div>
-        )}
-      </form.Field>
-      <Button type="submit">Submit</Button>
-    </form>
-  );
-}
-```
-
----
-
-## Modals with ui-design-system
-
-```typescript
-import { useState } from 'react';
-import { Button, Modal } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger>
-        <Icon icon="delete" className="size-6" />
-      </Modal.Trigger>
-      <Modal.Content>
-        <Modal.Title>Delete Item</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <p className="text-center">Are you sure you want to delete this item?</p>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary">
-                Cancel
-              </Button>
-            </Modal.Close>
-            <Button
-              color="red"
-              className="flex-1"
-              variant="primary"
-              onClick={() => {
-                onDelete();
-                setOpen(false);
-              }}
-            >
-              <Icon icon="delete" className="size-6" />
-              Delete
-            </Button>
-          </div>
-        </div>
-      </Modal.Content>
-    </Modal.Root>
-  );
-}
-```
-
----
-
-## State Matching with ts-pattern
+### Query State Matching
 
 ```typescript
 import { match } from 'ts-pattern';
 
-type ViewMode = 'list' | 'grid' | 'calendar';
+{match(dataListQuery)
+  .with({ isError: true }, () => (
+    <div className="border-red-primary bg-red-background text-red-primary mt-3 rounded-sm border p-2">
+      {t('common:global_error')}
+    </div>
+  ))
+  .with({ isPending: true }, () => <LoadingSkeleton />)
+  .otherwise((query) => (
+    <DataTable data={query.data} />
+  ))}
+```
 
-const renderView = (mode: ViewMode, data: Item[]) =>
-  match(mode)
-    .with('list', () => <ListView items={data} />)
-    .with('grid', () => <GridView items={data} />)
-    .with('calendar', () => <CalendarView items={data} />)
+### Feature Access Matching
+
+```typescript
+import { match, P } from 'ts-pattern';
+
+{match(featuresAccess.continuousScreening)
+  .with(P.union('allowed', 'test'), () => (
+    <SidebarLink
+      labelTKey="navigation:continuous_screening"
+      to={getRoute('/continuous-screening')}
+      Icon={(props) => <Icon icon="scan-eye" {...props} />}
+    />
+  ))
+  .otherwise(() => null)}
+```
+
+### Exhaustive Matching
+
+```typescript
+const getStatusColor = (status: CaseStatus) =>
+  match(status)
+    .with('open', () => 'text-yellow-primary')
+    .with('investigating', () => 'text-purple-primary')
+    .with('closed', () => 'text-green-primary')
+    .with('discarded', () => 'text-grey-placeholder')
     .exhaustive();
 ```
 
 ---
 
-## Functional Utils with remeda
+## remeda (Functional Utils)
+
+Import as namespace `R`:
 
 ```typescript
 import * as R from 'remeda';
 
-// Or individual imports
-import { filter, isTruthy, join, pipe } from 'remeda';
+// Pipe-based data transformations
+const fieldOptions = R.pipe(
+  tableModel.fields,
+  R.filter((field) => field.dataType === 'String'),
+  R.filter((field) => field.name !== 'object_id'),
+  R.map((field) => adaptFieldOption({ baseTableId: tableModel.id, field })),
+);
 
-const processedItems = R.pipe(
-  items,
-  R.filter(item => item.active),
-  R.sortBy(item => item.name),
-  R.map(item => ({ ...item, label: item.name.toUpperCase() })),
+// Common functions: pipe, filter, map, flatMap, entries, keys, isNonNullish, prop
+const fulfilled = R.pipe(
+  results,
+  R.filter((r) => r.status === 'fulfilled'),
+  R.map((r) => r.value),
 );
 ```
 
 ---
 
-## Date Handling with date-fns
+## i18n (react-i18next)
 
-```typescript
-import { format, formatRelative, add, sub, differenceInDays } from 'date-fns';
+Three locale directories (en, fr, ar) with multiple namespaces. Missing keys cause TS errors.
 
-// Format date
-format(new Date(), 'MMM d, yyyy'); // "Nov 25, 2025"
-
-// Relative time
-formatRelative(date, new Date()); // "yesterday at 2:30 PM"
-
-// Add/subtract time
-add(new Date(), { days: 7 });
-sub(new Date(), { months: 1 });
-
-// Compare
-differenceInDays(endDate, startDate);
-```
-
----
-
-## Icons from ui-icons
-
-```typescript
-import { Icon } from 'ui-icons';
-
-<Icon icon="delete" className="size-6" />
-<Icon icon="plus" className="size-6" />
-<Icon icon="edit" className="size-6" />
-```
-
----
-
-## i18n with react-i18next
+### In Components
 
 ```typescript
 import { useTranslation } from 'react-i18next';
 
 export function MyComponent() {
-  const { t } = useTranslation(['cases', 'common']);
+  const { t } = useTranslation(['common', 'cases']);
 
   return (
     <div>
@@ -205,22 +101,125 @@ export function MyComponent() {
 }
 ```
 
+### In Route Handles
+
+Declare namespaces in `handle.i18n`:
+
+```typescript
+export const handle = {
+  i18n: ['common', 'cases', 'navigation'] satisfies Namespace,
+};
+```
+
+### Server-Side Translation
+
+```typescript
+const { i18nextService: { getFixedT } } = context.services;
+const t = await getFixedT(request, ['common', 'data']);
+
+setToastMessage(session, {
+  type: 'success',
+  message: t('data:apply_archetype.success'),
+});
+```
+
+### Adding i18n Keys
+
+Always update all three locale files:
+- `locales/en/{namespace}.json`
+- `locales/fr/{namespace}.json`
+- `locales/ar/{namespace}.json`
+
+---
+
+## Icons (ui-icons)
+
+SVG sprite-based icons with strongly-typed names:
+
+```typescript
+import { Icon } from 'ui-icons';
+
+<Icon icon="delete" className="size-6 shrink-0" />
+<Icon icon="plus" className="size-5" />
+<Icon icon="category" className="text-purple-primary size-10" />
+<Icon icon="case-manager" className="me-2 size-6" />
+<Icon icon="scan-eye" className="size-5" />
+```
+
+Size with `size-{n}`, color via `text-{color}`.
+
 ---
 
 ## Toast Notifications
 
+### Client-Side (react-hot-toast)
+
 ```typescript
 import toast from 'react-hot-toast';
 
-// Success
 toast.success('Case created successfully');
-
-// Error
 toast.error('Failed to create case');
-
-// With translation
 toast.error(t('common:errors.unknown'));
 ```
+
+### Server-Side (session flash)
+
+Used in actions to show toasts after redirect:
+
+```typescript
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
+
+// With i18n key (preferred)
+setToastMessage(toastSession, {
+  type: 'success',
+  messageKey: 'common:success.save',
+});
+
+// With direct message
+setToastMessage(toastSession, {
+  type: 'error',
+  message: t('common:errors.unknown'),
+});
+
+// Return with Set-Cookie header to persist toast
+return data({ success: false, errors: [] }, [
+  ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+]);
+```
+
+---
+
+## Date Formatting
+
+### useFormatDateTime Hook (preferred)
+
+```typescript
+import { useFormatDateTime } from '@app-builder/utils/format';
+
+const formatDateTime = useFormatDateTime();
+
+// Format with Intl options
+formatDateTime(timestamp, { dateStyle: 'short' })    // "2/24/26"
+formatDateTime(timestamp, { timeStyle: 'short' })    // "2:30 PM"
+formatDateTime(timestamp, { dateStyle: 'medium', timeStyle: 'short' })
+```
+
+### Direct date-fns (when needed)
+
+```typescript
+import { formatDate } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+formatDate(date, 'dd/MM/yyyy', { locale: fr })
+```
+
+### Other Format Utilities
+
+Available from `@app-builder/utils/format`:
+- `formatNumber(number, { language, style })`
+- `formatCurrency(amount, { language, currency })`
+- `formatPercentage(percentage, language)`
+- `formatDuration(duration, language)`
 
 ---
 
@@ -229,11 +228,10 @@ toast.error(t('common:errors.unknown'));
 ```typescript
 import { getRoute } from '@app-builder/utils/routes';
 
-// Generate typed routes
-const url = getRoute('/cases/:caseId', { caseId: '123' });
-// "/cases/123"
-
-const apiUrl = getRoute('/ressources/cases/:caseId/events', { caseId });
+// Type-safe route building (TypeScript enforces required params)
+getRoute('/cases')
+getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })
+getRoute('/ressources/lists/create')
 ```
 
 ---
@@ -245,20 +243,9 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const queryClient = useQueryClient();
 
-// After mutation success
+// Broad invalidation (invalidates all queries starting with prefix)
 queryClient.invalidateQueries({ queryKey: ['cases'] });
-queryClient.invalidateQueries({ queryKey: ['cases', 'get-cases', inboxId] });
+
+// Specific invalidation
+queryClient.invalidateQueries({ queryKey: ['cases', 'get-case', caseId] });
 ```
-
----
-
-## Summary
-
-- `@tanstack/react-form` + Zod for forms
-- `Modal` from `ui-design-system` for dialogs
-- `ts-pattern` for state matching
-- `remeda` (as `R`) for functional operations
-- `date-fns` for dates (individual imports)
-- `Icon` from `ui-icons`
-- `react-i18next` for translations
-- `react-hot-toast` for notifications

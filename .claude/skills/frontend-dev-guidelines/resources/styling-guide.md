@@ -1,168 +1,138 @@
 # Styling Guide
 
-Tailwind CSS styling patterns for the Marble app-builder.
+Tailwind CSS 4 styling with CSS variable-based theming.
 
 ---
 
-## Primary Method: Tailwind CSS
+## Color System
 
-Use utility classes directly in JSX:
+The project uses **semantic CSS variables** (oklch) defined in `packages/tailwind-preset/src/tailwind.css`. Colors automatically flip in dark mode.
 
-```typescript
-<div className="flex items-center gap-4 p-2 rounded-lg border border-grey-border">
-  Content
-</div>
+### Text Colors
+
+```
+text-grey-primary         # Main text
+text-grey-hover           # Hover state text
+text-grey-secondary       # Secondary text
+text-grey-placeholder     # Muted/placeholder text
+text-grey-disabled        # Disabled state
+text-purple-primary       # Purple accent (links, active items)
+text-purple-hover         # Purple hover state
+text-red-primary          # Error text
+text-green-primary        # Success text
+text-yellow-primary       # Warning text
+```
+
+### Background Colors
+
+```
+bg-grey-background        # Main page background
+bg-grey-background-light  # Lighter background (hover states)
+bg-grey-white             # White
+bg-purple-background      # Purple tinted background
+bg-purple-background-light # Light purple background
+bg-red-background         # Error background
+bg-green-background       # Success background
+```
+
+### Surface Tokens (auto-flip in dark mode)
+
+These semantic tokens are the preferred way to set backgrounds:
+
+```
+bg-surface-page           # Page background
+bg-surface-card           # Card/container background
+bg-surface-sidebar        # Sidebar background
+bg-surface-elevated       # Elevated elements (popovers, modals)
+bg-surface-row            # Table row background
+bg-surface-row-hover      # Table row hover
+```
+
+### Border Colors
+
+```
+border-grey-border        # Standard borders
+border-purple-primary     # Active/focused borders
+border-red-primary        # Error borders
 ```
 
 ---
 
-## Conditional Classes with clsx
+## Typography
 
-```typescript
-import clsx from 'clsx';
-
-<div
-  className={clsx(
-    'rounded-lg border p-4 transition-colors',
-    {
-      'border-purple-primary bg-purple-background': isActive,
-      'border-grey-border hover:bg-grey-background-light': !isActive,
-    },
-  )}
->
-  Content
-</div>
+```
+text-2xl    # 28px / 32px  (page titles)
+text-l      # 20px / 30px  (section headers)
+text-m      # 16px / 24px  (body text)
+text-s      # 14px / 21px  (default UI text)
+text-r      # 13px / 20px  (compact text)
+text-xs     # 12px / 18px  (small labels)
+text-2xs    # 10px / 12px  (tiny labels)
 ```
 
 ---
 
-## Common Patterns
+## Spacing (v2 scale)
 
-### Flexbox Layout
+```
+gap-v2-xs    # 0.25rem (4px)
+gap-v2-sm    # 0.5rem  (8px)
+gap-v2-md    # 1rem    (16px)
+gap-v2-lg    # 1.5rem  (24px)
+gap-v2-xl    # 2rem    (32px)
+gap-v2-xxl   # 2.5rem  (40px)
+gap-v2-xxxl  # 3rem    (48px)
+```
+
+Standard Tailwind spacing (`p-4`, `gap-2`, `m-6`) is also widely used.
+
+---
+
+## Common Layout Patterns
 
 ```typescript
-// Row with gap
+// Flexbox row with gap
 <div className="flex items-center gap-4">
 
-// Column
+// Flexbox column
 <div className="flex flex-col gap-2">
 
 // Space between
 <div className="flex justify-between items-center">
-```
 
-### Spacing
+// Card container
+<div className="bg-surface-card border-grey-border rounded-lg border p-4">
 
-```typescript
-// Padding
-className="p-4"      // all sides
-className="px-4"     // horizontal
-className="py-2"     // vertical
-className="pt-4"     // top only
-
-// Margin
-className="m-4"
-className="mt-2"
-className="mb-4"
-```
-
-### Typography
-
-```typescript
-// Text sizes (project uses custom scale)
-className="text-xs"   // extra small
-className="text-s"    // small
-className="text-m"    // medium
-className="text-l"    // large
-className="text-xl"   // extra large
-
-// Text colors (semantic - auto-adapt to dark mode)
-className="text-grey-primary"      // main text
-className="text-grey-placeholder"  // muted/placeholder text
-className="text-grey-disabled"     // disabled text
-className="text-purple-primary"    // purple accent
-className="text-purple-hover"      // purple hover state
-className="text-red-primary"       // error text
-className="text-green-primary"     // success text
-```
-
-### Backgrounds
-
-```typescript
-// Background colors (semantic - auto-adapt to dark mode)
-className="bg-grey-background"        // main background
-className="bg-grey-background-light"  // lighter background (hover states)
-className="bg-purple-background"      // purple background
-className="bg-purple-background-light" // light purple background
-```
-
-### Borders
-
-```typescript
-className="border border-grey-border rounded-lg"
-className="border-b border-grey-border"
+// Conditional classes — prefer cn over clsx (cn resolves Tailwind conflicts)
+import { cn } from 'ui-design-system';
+<div className={cn(
+  'rounded-lg border p-4 transition-colors',
+  isActive
+    ? 'border-purple-primary bg-purple-background'
+    : 'border-grey-border hover:bg-grey-background-light',
+)}>
 ```
 
 ---
 
-## Color Palette
+## Dark Mode
 
-The project uses **semantic color classes** that automatically adapt to dark mode:
+Colors are CSS variables that auto-flip via `.dark` class on the root element. Most of the time, you don't need to do anything special.
 
-### Text Colors
-```
-text-grey-primary       // Main text color
-text-grey-placeholder   // Muted/secondary text
-text-grey-disabled      // Disabled state text
-text-purple-primary     // Purple accent text
-text-purple-hover       // Purple hover state
-text-red-primary        // Error text
-text-green-primary      // Success text
+```css
+/* What happens under the hood */
+.dark {
+  --color-grey-primary: oklch(98.54% ...);     /* Becomes light text */
+  --color-surface-page: oklch(5% ...);          /* Becomes dark bg */
+  --color-purple-primary: oklch(63.77% ...);    /* Adjusted for contrast */
+}
 ```
 
-### Background Colors
-```
-bg-grey-background        // Main background
-bg-grey-background-light  // Lighter background (hover states, highlights)
-bg-purple-background      // Purple tinted background
-bg-purple-background-light // Light purple background
-```
+Use `dark:` prefix only when you need different behavior from the default:
 
-### Border Colors
-```
-border-grey-border   // Standard borders
-```
-
-### Dark Mode
-These semantic colors automatically switch values in dark mode. Use `dark:` prefix only when you need different behavior:
 ```typescript
-className="text-purple-primary dark:text-grey-primary"  // Override in dark mode
+className="text-purple-primary dark:text-grey-primary"
 className="hover:bg-grey-background-light dark:hover:bg-grey-background"
-```
-
----
-
-## Using ui-design-system
-
-For complex UI, use pre-built components:
-
-```typescript
-import { Button } from 'ui-design-system';
-import { Modal } from 'ui-design-system';
-import { Select } from 'ui-design-system';
-import { Input } from 'ui-design-system';
-import { Tag } from 'ui-design-system';
-```
-
----
-
-## Responsive Design
-
-```typescript
-<div className="flex flex-col md:flex-row gap-4">
-  <div className="w-full md:w-1/2">Left</div>
-  <div className="w-full md:w-1/2">Right</div>
-</div>
 ```
 
 ---
@@ -172,18 +142,20 @@ import { Tag } from 'ui-design-system';
 ```typescript
 // Transitions
 className="transition-colors duration-200"
-className="transition-opacity"
 
-// Pulse loading
+// Skeleton loading
 className="animate-pulse bg-grey-background-light h-4 rounded"
+
+// Slide-in (used by Panel)
+className="animate-slideRightAndFadeIn"
 ```
 
 ---
 
 ## Summary
 
-- Tailwind CSS utility classes
-- `clsx` for conditional classes
-- Use `ui-design-system` components when available
-- **Semantic color classes** that auto-adapt to dark mode (e.g., `text-grey-primary`, `bg-grey-background`)
-- Use `dark:` prefix only when overriding default dark mode behavior
+- **Semantic colors** auto-adapt to dark mode (e.g., `text-grey-primary`, `bg-surface-card`)
+- **Surface tokens** (`bg-surface-card`, `bg-surface-page`) for main backgrounds
+- **`cn`** (from ui-design-system) for conditional classes — resolves Tailwind conflicts
+- Use `dark:` only when overriding defaults
+- Use ui-design-system components when available instead of raw HTML + Tailwind

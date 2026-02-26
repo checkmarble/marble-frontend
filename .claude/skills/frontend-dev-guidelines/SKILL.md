@@ -5,206 +5,62 @@ description: Use when writing, editing, creating, planning, fixing, or refactori
 
 # Frontend Development Guidelines
 
-## Purpose
+Comprehensive guide for React development in the Marble monorepo. All patterns below are derived from the actual codebase.
 
-Comprehensive guide for modern React development in the Marble monorepo, emphasizing layered architecture, proper file organization, and performance optimization.
+## Tech Stack
+
+- **React 18** + **TypeScript** (strict mode)
+- **Remix** (flat file routes with `+` folders)
+- **Radix UI** (headless primitives)
+- **Tailwind CSS 4** (CSS variable-based theming)
+- **TanStack Query** (server state) + **TanStack Form** (form state)
+- **Zod v4** (`import { z } from 'zod/v4'`)
+- **ts-pattern** (pattern matching) + **remeda** (functional utils)
+- **cn** (class composition with Tailwind merge, from ui-design-system)
+
+---
 
 ## Monorepo Structure
 
 ```
 packages/
   app-builder/         # Main Remix application
-  ui-design-system/    # Reusable UI components (Button, Modal, Select, etc.)
-  ui-icons/            # Icon components
+  ui-design-system/    # Reusable UI (Button, Modal, Table, MenuCommand)
+  ui-icons/            # Icon components (SVG sprite)
   shared/              # Shared utilities
-  marble-api/          # API client
-  tailwind-preset/     # Tailwind configuration
+  marble-api/          # Generated API client
+  tailwind-preset/     # Tailwind config + CSS variables
   typescript-utils/    # TS utilities
 ```
-
-## Tech Stack
-
-- **React 18** - UI library
-- **Remix** - Full-stack web framework
-- **Radix UI** - Headless UI primitives
-- **Tailwind CSS 4** - Utility-first CSS
-- **TanStack Query** - Async state management
-- **TypeScript** - Type safety
-- **Zod** - Schema validation
-- **clsx** - Conditional class composition
-
----
 
 ## App-Builder Architecture
 
 ```
 packages/app-builder/src/
-  components/        # App-specific UI components
-  queries/           # TanStack Query hooks (one file per query)
-  repositories/      # Data access layer (interfaces + implementations)
-  services/          # Business logic services
-  models/            # Data models with adapters
-  routes/            # Remix routes (flat structure with + folders)
-  hooks/             # Custom React hooks
-  contexts/          # React contexts
-  schemas/           # Zod schemas
-  utils/             # Utility functions
-  types/             # TypeScript types
-  constants/         # Constants
-```
-
-### Layer Responsibilities
-
-| Layer | Purpose | Example |
-|-------|---------|---------|
-| **routes/** | Remix routes, loaders, actions | `_app.cases._index.tsx` |
-| **components/** | UI components | `Cases/CaseDetails.tsx` |
-| **queries/** | TanStack Query hooks | `cases/get-cases.ts` |
-| **repositories/** | API calls, data access | `CaseRepository.ts` |
-| **services/** | Business logic | `CaseService.ts` |
-| **models/** | Types + adapters | `cases.ts` |
-
----
-
-## Quick Start
-
-### New Component Checklist
-
-- [ ] Use `React.FC<Props>` pattern with TypeScript
-- [ ] Import from `ui-design-system` for reusable UI
-- [ ] Tailwind CSS for styling with `clsx` for conditionals
-- [ ] Use `useCallback` for event handlers passed to children
-- [ ] Default export at bottom
-
-### New Query Checklist
-
-- [ ] Create file in `queries/{domain}/` (e.g., `queries/cases/get-case.ts`)
-- [ ] Define query key following convention: `['domain', 'action', ...params]`
-- [ ] Export custom hook: `useGetCaseQuery`
-- [ ] Use repository methods for API calls
-
-### New Route Checklist
-
-- [ ] Create file in `routes/` following Remix flat routes
-- [ ] Define `handle` for breadcrumbs
-- [ ] Create loader for data fetching
-- [ ] Export default component
-
----
-
-## Import Patterns
-
-```typescript
-// Path aliases
-import { Case } from '@app-builder/models/cases';
-import { CaseRepository } from '@app-builder/repositories/CaseRepository';
-import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
-import { getRoute } from '@app-builder/utils/routes';
-
-// UI Design System
-import { Button } from 'ui-design-system';
-import { Modal } from 'ui-design-system';
-
-// Remix
-import { useLoaderData, useNavigate, Link } from '@remix-run/react';
-
-// TanStack Query
-import { useQuery, useInfiniteQuery, useMutation } from '@tanstack/react-query';
-
-// Styling
-import clsx from 'clsx';
-
-// Notifications
-import toast from 'react-hot-toast';
+  routes/           # Remix flat routes (_builder+, _auth+, ressources+)
+  components/       # Feature components (Cases/, Analytics/, AstBuilder/)
+  queries/          # TanStack Query hooks (one file per query)
+  repositories/     # Data access layer (interfaces + factory functions)
+  services/         # Business logic
+  models/           # Types + adapter functions (DTO <-> domain)
+  hooks/            # Custom React hooks
+  contexts/         # React contexts (AgnosticNavigation, etc.)
+  schemas/          # Zod schemas
+  utils/            # Utilities (routes/, form.ts, format.ts)
+  locales/          # i18n (en/, fr/, ar/ - all three required)
+  middlewares/      # Server middleware (auth, redirect)
 ```
 
 ---
 
-## Topic Guides
+## Core Conventions
 
-### Component Patterns
-
-**[Complete Guide: resources/component-patterns.md](resources/component-patterns.md)**
-
-- Use `ui-design-system` components (Button, Modal, Select)
-- Compose with Tailwind CSS
-- `clsx` for conditional classes
-
-### Data Fetching
-
-**[Complete Guide: resources/data-fetching.md](resources/data-fetching.md)**
-
-- Queries in `queries/{domain}/`
-- Repository pattern for API calls
-- Models with adapters for type safety
-
-### File Organization
-
-**[Complete Guide: resources/file-organization.md](resources/file-organization.md)**
-
-- Layered architecture
-- One query per file
-- Repository interfaces
-
-### Styling
-
-**[Complete Guide: resources/styling-guide.md](resources/styling-guide.md)**
-
-- Tailwind CSS utility classes
-- `clsx` for conditionals
-- `ui-design-system` components
-
-### Routing
-
-**[Complete Guide: resources/routing-guide.md](resources/routing-guide.md)**
-
-- Remix flat routes with `+` folders
-- Loaders for data fetching
-- `handle` for breadcrumbs
-
-### Loading & Error States
-
-**[Complete Guide: resources/loading-and-error-states.md](resources/loading-and-error-states.md)**
-
-- Avoid early returns
-- `react-hot-toast` for notifications
-
-### Performance
-
-**[Complete Guide: resources/performance.md](resources/performance.md)**
-
-- `useMemo`, `useCallback`, `React.memo`
-- Debounced search
-
-### TypeScript
-
-**[Complete Guide: resources/typescript-standards.md](resources/typescript-standards.md)**
-
-- Strict mode, no `any`
-- Model adapters for API responses
-
----
-
-## Core Principles
-
-1. **Layered Architecture**: routes -> components -> queries -> repositories
-2. **One Query Per File**: `queries/cases/get-case.ts`
-3. **Repository Pattern**: Abstract API calls behind interfaces
-4. **Model Adapters**: Transform API responses to typed models
-5. **ui-design-system**: Use shared components
-6. **Tailwind CSS**: Utility-first with clsx
-7. **react-hot-toast**: For notifications
-
----
-
-## Modern Component Template
+### Components
 
 ```typescript
-import { type FunctionComponent } from 'react';
-import { Button } from 'ui-design-system';
-import clsx from 'clsx';
-import toast from 'react-hot-toast';
-import type { Case } from '@app-builder/models/cases';
+// Plain function declarations - NOT React.FC or FunctionComponent
+// Named exports only - NO default exports
+// Props via interface (or type)
 
 interface CaseCardProps {
   caseData: Case;
@@ -212,89 +68,89 @@ interface CaseCardProps {
   className?: string;
 }
 
-export const CaseCard: FunctionComponent<CaseCardProps> = ({
-  caseData,
-  onSelect,
-  className,
-}) => {
-  const handleSelect = () => {
-    onSelect?.(caseData.id);
-    toast.success('Case selected');
-  };
-
+export function CaseCard({ caseData, onSelect, className }: CaseCardProps) {
   return (
-    <div
-      className={clsx(
-        'rounded-lg border border-grey-border p-4',
-        'hover:bg-grey-background-light transition-colors',
-        className,
-      )}
-    >
+    <div className={cn('rounded-lg border border-grey-border p-4', className)}>
       <h3 className="text-l font-semibold text-grey-primary">{caseData.name}</h3>
-      <p className="text-s text-grey-placeholder">{caseData.status}</p>
-      <Button onClick={handleSelect}>Select</Button>
+      <Button onClick={() => onSelect?.(caseData.id)}>Select</Button>
     </div>
   );
-};
-
-export default CaseCard;
+}
 ```
 
----
+### Imports
 
-## Query Template
+```typescript
+// Internal (path alias)
+import { Case } from '@app-builder/models/cases';
+import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
+import { getRoute } from '@app-builder/utils/routes';
+
+// UI packages
+import { Button, Modal, MenuCommand, Table, useVirtualTable, cn } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+
+// External
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from '@tanstack/react-form';
+import { z } from 'zod/v4';
+import { match, P } from 'ts-pattern';
+import * as R from 'remeda';
+import toast from 'react-hot-toast';
+// Note: prefer cn over clsx — cn resolves conflicting Tailwind classes
+```
+
+### Query Hook (one file per query)
 
 ```typescript
 // queries/cases/get-case.ts
-import { type Case } from '@app-builder/models/cases';
-import { getRoute } from '@app-builder/utils/routes';
 import { useQuery } from '@tanstack/react-query';
+import { getRoute } from '@app-builder/utils/routes';
 
-export const useGetCaseQuery = (caseId: string) => {
+export function useGetCaseQuery(caseId: string) {
   return useQuery({
     queryKey: ['cases', 'get-case', caseId],
     queryFn: async () => {
       const response = await fetch(
-        getRoute('/ressources/cases/:caseId', { caseId })
+        getRoute('/ressources/cases/:caseId', { caseId }),
       );
-      const data = await response.json();
-      return data as Case;
+      return response.json() as Promise<CaseDetail>;
     },
     enabled: !!caseId,
   });
-};
+}
 ```
 
----
-
-## Route Template
+### Loaders (server-side data)
 
 ```typescript
-// routes/_app.cases.$caseId.tsx
-import { useLoaderData } from '@remix-run/react';
-import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
-import type { LoaderFunctionArgs } from '@remix-run/node';
+// Using createServerFn with middleware (preferred for new code)
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 
-export const handle = {
-  BreadCrumbs: [
-    ({ data }: { data: { case: Case } }) => (
-      <span>{data.case.name}</span>
-    ),
-  ],
-};
-
-export async function loader({ params }: LoaderFunctionArgs) {
-  const caseId = params.caseId;
-  // Load case data
-  return { case: caseData };
-}
-
-export default function CasePage() {
-  const { case: caseData } = useLoaderData<typeof loader>();
-  return <CaseDetails caseData={caseData} />;
-}
+export const loader = createServerFn(
+  [authMiddleware],
+  async function casesLoader({ request, context }) {
+    const inboxes = await context.authInfo.inbox.listInboxes();
+    return { inboxes };
+  },
+);
 ```
 
 ---
 
-**Skill Status**: Adapted for Marble monorepo architecture
+## Topic Guides
+
+Read these when working on specific areas:
+
+| Topic | Resource | When to read |
+|-------|----------|-------------|
+| Component patterns | [component-patterns.md](resources/component-patterns.md) | Writing/editing components |
+| Data fetching | [data-fetching.md](resources/data-fetching.md) | Queries, mutations, loaders, actions |
+| Routing | [routing-guide.md](resources/routing-guide.md) | Routes, breadcrumbs, navigation |
+| Styling | [styling-guide.md](resources/styling-guide.md) | Colors, surface tokens, dark mode |
+| Tables & selects | [tables-and-selects.md](resources/tables-and-selects.md) | Virtual tables, MenuCommand dropdowns |
+| Forms & modals | [forms-and-modals.md](resources/forms-and-modals.md) | TanStack Form, Modal, Panel |
+| Common patterns | [common-patterns.md](resources/common-patterns.md) | ts-pattern, remeda, i18n, icons, toasts, dates |
+| File organization | [file-organization.md](resources/file-organization.md) | Architecture layers, naming |
+| TypeScript | [typescript-standards.md](resources/typescript-standards.md) | Types, Zod v4, model adapters |
