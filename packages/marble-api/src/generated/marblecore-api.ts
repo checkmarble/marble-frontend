@@ -1737,6 +1737,60 @@ export type AvailableFiltersResponseDto = {
     "type": string;
     source: "trigger_object";
 }[];
+export type ScoringSettings = {
+    max_score: number;
+    created_at: string;
+    updated_at: string;
+};
+export type UpdateScoringSettings = {
+    max_score: number;
+};
+export type ScoringRuleset = {
+    id: string;
+    org_id: string;
+    version: number;
+    status: "draft" | "committed";
+    name: string;
+    description: string;
+    entity_type: string;
+    thresholds: number[];
+    cooldown_seconds: number;
+    created_at: string;
+};
+export type ScoringRulesetWithRules = ScoringRuleset & {
+    /** An AST representation of the rule.
+    
+    The root node should be supported by the scoring facility, namely either `ScoringComputation`
+    and `Switch`.
+     */
+    rules: NodeDto[];
+};
+export type UpdateScoringRuleset = {
+    name: string;
+    description?: string;
+    thresholds: number[];
+    cooldown_seconds?: number;
+    rules: {
+        stable_id: string;
+        name: string;
+        description?: string;
+        /** An AST representation of the rule.
+        
+        The root node should be supported by the scoring facility, namely either `ScoringComputation`
+        and `Switch`.
+         */
+        ast: NodeDto[];
+    }[];
+};
+export type ScoringScore = {
+    id: string;
+    score: number;
+    source: "ruleset" | "override";
+    overriden_by?: string;
+    current: boolean;
+    created_at: string;
+    stale_at?: string;
+};
 /**
  * Get searchable tables
  */
@@ -6075,4 +6129,186 @@ export function getAvailableFilters(availableFiltersRequestDto: AvailableFilters
         method: "POST",
         body: availableFiltersRequestDto
     })));
+}
+/**
+ * Get scoring global settings
+ */
+export function getScoringSettings(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringSettings;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/scoring/settings", {
+        ...opts
+    }));
+}
+/**
+ * Update scoring global settings
+ */
+export function updateScoringSettings(updateScoringSettings?: UpdateScoringSettings, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringSettings;
+    }>("/scoring/settings", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: updateScoringSettings
+    })));
+}
+/**
+ * List all configured rulesets
+ */
+export function listScoringRulesets(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringRuleset[];
+    } | {
+        status: 401;
+        data: string;
+    }>("/scoring/rulesets", {
+        ...opts
+    }));
+}
+/**
+ * Get a ruleset definition
+ */
+export function getScoringRuleset(entityType: string, { status }: {
+    status?: "committed" | "draft";
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringRulesetWithRules;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}${QS.query(QS.explode({
+        status
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Create or update a scoring ruleset draft
+ */
+export function updateScoringRuleset(updateScoringRuleset?: UpdateScoringRuleset, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringRulesetWithRules;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: updateScoringRuleset
+    })));
+}
+/**
+ * Get a ruleset preparation status
+ */
+export function getScoringRulesetPreparationStatus(entityType: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioPublicationStatusDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}/prepare`, {
+        ...opts
+    }));
+}
+/**
+ * Trigger the preparation of a draft
+ */
+export function prepareScoringDraft(entityType: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}/prepare`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
+ * Commit a prepared draft
+ */
+export function commitScoringRuleset(entityType: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringRuleset[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}/commit`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
+ * Get an entity's latest score
+ */
+export function getScoreLatest(entityType: string, entityId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringScore;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Override an entity's score
+ */
+export function overrideScoringScore(body?: {
+    score: number;
+    stale_at?: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringScore;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Get an entity's score history
+ */
+export function getScoreHistory(entityType: string, entityId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScoringScore[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scoring/rulesets/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}/history`, {
+        ...opts
+    }));
 }
