@@ -16,6 +16,85 @@
         $ref: "components.yml#/responses/401"
       "403":
         $ref: "components.yml#/responses/403"
+/org-import:
+  post:
+    tags:
+      - Org import
+    summary: Import an organization from a JSON file
+    operationId: importOrganization
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: The organization data to import as a JSON file
+      content:
+        application/json:
+          schema: {}
+      required: true
+    responses:
+      "200":
+        description: The created organization ID
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - org_id
+              properties:
+                org_id:
+                  type: string
+                  format: uuid
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "409":
+        $ref: "components.yml#/responses/409"
+        description: Conflict - the organization is not empty
+/org-import/file:
+  post:
+    tags:
+      - Org import
+    summary: Import an organization from a JSON file upload
+    operationId: importOrganizationFromFile
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: The organization data to import as a JSON file upload
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - file
+            properties:
+              file:
+                type: string
+                format: binary
+      required: true
+    responses:
+      "200":
+        description: The created organization ID
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - org_id
+              properties:
+                org_id:
+                  type: string
+                  format: uuid
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "409":
+        $ref: "components.yml#/responses/409"
+        description: Conflict - the organization is not empty
 /org-import/archetypes:
   get:
     tags:
@@ -85,6 +164,9 @@
         $ref: "components.yml#/responses/401"
       "403":
         $ref: "components.yml#/responses/403"
+      "409":
+        $ref: "components.yml#/responses/409"
+        description: Conflict - the organization is not empty
 
 components:
   schemas:

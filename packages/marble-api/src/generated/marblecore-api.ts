@@ -4673,6 +4673,62 @@ export function exportOrganization(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Import an organization from a JSON file
+ */
+export function importOrganization(body: any, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            org_id: string;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>("/org-import", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Import an organization from a JSON file upload
+ */
+export function importOrganizationFromFile(body: {
+    file: Blob;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            org_id: string;
+        };
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>("/org-import/file", oazapfts.multipart({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List available archetypes for org import
  */
 export function listArchetypes(opts?: Oazapfts.RequestOpts) {
@@ -4710,6 +4766,9 @@ export function applyArchetype(archetypeApplyDto: ArchetypeApplyDto, { seed }: {
         data: string;
     } | {
         status: 403;
+        data: string;
+    } | {
+        status: 409;
         data: string;
     }>(`/org-import/archetypes/apply${QS.query(QS.explode({
         seed

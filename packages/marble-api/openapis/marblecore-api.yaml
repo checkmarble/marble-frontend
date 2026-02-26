@@ -313,6 +313,10 @@ paths:
 
   /org-export:
     $ref: ./marblecore-api/org-import.yml#/~1org-export
+  /org-import:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import
+  /org-import/file:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import~1file
   /org-import/archetypes:
     $ref: ./marblecore-api/org-import.yml#/~1org-import~1archetypes
   /org-import/archetypes/apply:
