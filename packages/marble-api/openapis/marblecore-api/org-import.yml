@@ -1,3 +1,21 @@
+/org-export:
+  get:
+    tags:
+      - Org import
+    summary: Export an organization's data as JSON file
+    operationId: exportOrganization
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: The exported organization data as a JSON file
+        content:
+          application/json:
+            schema: {}
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /org-import/archetypes:
   get:
     tags:

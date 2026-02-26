@@ -4656,6 +4656,23 @@ export function getAppConfig(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Export an organization's data as JSON file
+ */
+export function exportOrganization(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: any;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/org-export", {
+        ...opts
+    }));
+}
+/**
  * List available archetypes for org import
  */
 export function listArchetypes(opts?: Oazapfts.RequestOpts) {
