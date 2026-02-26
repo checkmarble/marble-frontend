@@ -17,6 +17,9 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
   const revalidate = useLoaderRevalidator();
 
   const isPending = importFileMutation.isPending || importBodyMutation.isPending;
+  const hasFile = selectedFile !== null;
+  const hasJson = jsonContent.trim().length > 0;
+  const canImport = (hasFile || hasJson) && !(hasFile && hasJson);
 
   const resetState = () => {
     setSelectedFile(null);
@@ -27,24 +30,9 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleFileImport = () => {
-    if (!selectedFile) return;
-    importFileMutation.mutate(selectedFile, {
-      onSuccess: (result) => {
-        revalidate();
-        if (result.success) {
-          setIsOpen(false);
-          resetState();
-        }
-      },
-    });
-  };
-
-  const handleBodyImport = () => {
-    try {
-      const parsed = JSON.parse(jsonContent);
-      setJsonError(null);
-      importBodyMutation.mutate(parsed, {
+  const handleImport = () => {
+    if (hasFile) {
+      importFileMutation.mutate(selectedFile, {
         onSuccess: (result) => {
           revalidate();
           if (result.success) {
@@ -53,8 +41,22 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
           }
         },
       });
-    } catch {
-      setJsonError(t('data:import_org.invalid_json'));
+    } else if (hasJson) {
+      try {
+        const parsed = JSON.parse(jsonContent);
+        setJsonError(null);
+        importBodyMutation.mutate(parsed, {
+          onSuccess: (result) => {
+            revalidate();
+            if (result.success) {
+              setIsOpen(false);
+              resetState();
+            }
+          },
+        });
+      } catch {
+        setJsonError(t('data:import_org.invalid_json'));
+      }
     }
   };
 
@@ -72,28 +74,23 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col gap-4 p-6">
           <div className="flex flex-col gap-2">
             <p className="text-s font-medium text-grey-primary">{t('data:import_org.method_file')}</p>
-            <div className="flex gap-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
-                className="hidden"
-              />
-              <Button
-                className="flex-1"
-                variant="secondary"
-                appearance="stroked"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Icon icon="upload" className="size-5" />
-                {selectedFile ? selectedFile.name : t('data:import_org.select_file')}
-              </Button>
-              <Button variant="primary" disabled={!selectedFile || isPending} onClick={handleFileImport}>
-                {importFileMutation.isPending ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
-                {t('data:import_org.button_accept')}
-              </Button>
-            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              disabled={hasJson}
+              onChange={(e) => setSelectedFile(e.target.files?.[0] ?? null)}
+              className="hidden"
+            />
+            <Button
+              variant="secondary"
+              appearance="stroked"
+              disabled={hasJson}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Icon icon="upload" className="size-5" />
+              {selectedFile ? selectedFile.name : t('data:import_org.select_file')}
+            </Button>
           </div>
 
           <div className="flex items-center gap-3">
@@ -105,8 +102,9 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-2">
             <p className="text-s font-medium text-grey-primary">{t('data:import_org.method_body')}</p>
             <textarea
-              className="border-grey-border focus:border-purple-primary text-s min-h-[120px] w-full rounded-lg border p-3 font-mono outline-none"
+              className="border-grey-border focus:border-purple-primary text-s min-h-[120px] w-full rounded-lg border p-3 font-mono outline-none disabled:opacity-50"
               placeholder={t('data:import_org.json_placeholder')}
+              disabled={hasFile}
               value={jsonContent}
               onChange={(e) => {
                 setJsonContent(e.target.value);
@@ -114,17 +112,19 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
               }}
             />
             {jsonError ? <p className="text-xs text-red-primary">{jsonError}</p> : null}
-            <Button
-              className="self-end"
-              variant="primary"
-              disabled={jsonContent.trim().length === 0 || isPending}
-              onClick={handleBodyImport}
-            >
-              {importBodyMutation.isPending ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
-              {t('data:import_org.button_accept')}
-            </Button>
           </div>
         </div>
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <Button variant="secondary" appearance="stroked">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <Button variant="primary" disabled={!canImport || isPending} onClick={handleImport}>
+            {isPending ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
+            {t('data:import_org.button_accept')}
+          </Button>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );
