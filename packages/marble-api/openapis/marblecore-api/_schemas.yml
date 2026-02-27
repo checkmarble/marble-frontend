@@ -144,6 +144,8 @@ CaseReviewOkDto:
   $ref: cases.yml#/components/schemas/CaseReviewOkDto
 CaseReviewNotOkDto:
   $ref: cases.yml#/components/schemas/CaseReviewNotOkDto
+AiCaseReviewListItemDto:
+  $ref: cases.yml#/components/schemas/AiCaseReviewListItemDto
 FieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/FieldStatisticsDto
 StringFieldStatisticsDto:

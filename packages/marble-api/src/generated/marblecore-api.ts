@@ -612,6 +612,15 @@ export type CaseReviewDto = {
     version: string;
     review: CaseReviewContentDto;
 };
+export type AiCaseReviewListItemDto = {
+    id: string;
+    case_id: string;
+    status: "pending" | "completed" | "failed" | "insufficient_funds";
+    created_at: string;
+    updated_at: string;
+    reaction?: CaseReviewFeedbackDto;
+    review?: CaseReviewContentDto;
+};
 export type CaseMassUpdateChangeStatusDto = {
     case_ids: string[];
     action: "close" | "reopen";
@@ -2497,6 +2506,26 @@ export function addOrUpdateCaseReviewFeedback(caseId: string, reviewId: string, 
         method: "PUT",
         body
     })));
+}
+/**
+ * List all AI generated reviews for a case
+ */
+export function listCaseReviews(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: AiCaseReviewListItemDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/reviews`, {
+        ...opts
+    }));
 }
 /**
  * Download a case data for investigation
