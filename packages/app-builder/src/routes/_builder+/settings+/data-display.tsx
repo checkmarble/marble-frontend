@@ -184,12 +184,14 @@ export default function DataDisplaySettings() {
                 )}
                 {t('data:export_org.button')}
               </Button>
-              <ImportOrg>
-                <Button type="button" variant="secondary" appearance="stroked">
-                  <Icon icon="upload" className="size-5" />
-                  {t('data:import_org.button')}
-                </Button>
-              </ImportOrg>
+              {dataModelWithTableOptions.length === 0 ? (
+                <ImportOrg>
+                  <Button type="button" variant="secondary" appearance="stroked">
+                    <Icon icon="upload" className="size-5" />
+                    {t('data:import_org.button')}
+                  </Button>
+                </ImportOrg>
+              ) : null}
               <Button type="submit" variant="primary">
                 {t('common:save')}
               </Button>
