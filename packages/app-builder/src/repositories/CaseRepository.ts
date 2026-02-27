@@ -1,5 +1,6 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
+  adaptAiCaseReviewListItem,
   adaptCase,
   adaptCaseCreateBody,
   adaptCaseDetail,
@@ -8,6 +9,7 @@ import {
   adaptPivotObject,
   adaptSuspiciousActivityReport,
   adaptUpdateCaseBodyDto,
+  type AiCaseReviewListItem,
   type Case,
   type CaseDetail,
   CaseMassUpdateBodyDto,
@@ -95,6 +97,7 @@ export interface CaseRepository {
   escalateCase(args: { caseId: string }): Promise<unknown>;
   enqueueReviewForCase(args: { caseId: string }): Promise<unknown>;
   getMostRecentCaseReview(args: { caseId: string }): Promise<CaseReview[]>;
+  listCaseReviews(args: { caseId: string }): Promise<AiCaseReviewListItem[]>;
   getCaseFileDownloadLink(fileId: string): Promise<{ url: string }>;
   addCaseReviewFeedback(args: { caseId: string; reviewId: string; reaction: 'ok' | 'ko' }): Promise<void>;
   enrichPivotObjectOfCaseWithKyc(args: { caseId: string }): Promise<KycCaseEnrichment[]>;
@@ -214,6 +217,10 @@ export function makeGetCaseRepository() {
     getMostRecentCaseReview: async ({ caseId }) => {
       const reviews = await marbleCoreApiClient.getMostRecentCaseReview(caseId);
       return reviews.map(adaptCaseReview);
+    },
+    listCaseReviews: async ({ caseId }) => {
+      const reviews = await marbleCoreApiClient.listCaseReviews(caseId);
+      return reviews.map(adaptAiCaseReviewListItem);
     },
     getCaseFileDownloadLink: async (fileId) => {
       return marbleCoreApiClient.downloadCaseFile(fileId);
