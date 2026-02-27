@@ -3,6 +3,7 @@ import analytics from '@app-builder/locales/ar/analytics.json';
 import api from '@app-builder/locales/ar/api.json';
 import auth from '@app-builder/locales/ar/auth.json';
 import cases from '@app-builder/locales/ar/cases.json';
+import client360 from '@app-builder/locales/ar/client360.json';
 import common from '@app-builder/locales/ar/common.json';
 import continuousScreening from '@app-builder/locales/ar/continuous-screening.json';
 import data from '@app-builder/locales/ar/data.json';
@@ -22,6 +23,7 @@ export const ar = {
   analytics,
   api,
   cases,
+  client360,
   common,
   continuousScreening,
   data,

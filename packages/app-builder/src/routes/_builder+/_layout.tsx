@@ -60,7 +60,6 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
       continuousScreening: entitlements.continuousScreening,
       isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
     },
-    versions: context.appConfig.versions,
     authProvider: context.appConfig.auth.provider,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
     sentryReplayEnabled: organizationDetail.sentryReplayEnabled,
@@ -171,6 +170,14 @@ export default function Builder() {
                               />
                             </li>
                           ) : null}
+                          {/* Client detail */}
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:client_detail"
+                              to={getRoute('/client-detail')}
+                              Icon={(props) => <Icon icon="users" {...props} />}
+                            />
+                          </li>
                         </ul>
                       </nav>
                       {/* Secondary Navigation - Bottom */}

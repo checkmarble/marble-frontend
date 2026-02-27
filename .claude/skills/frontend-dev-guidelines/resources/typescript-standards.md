@@ -6,13 +6,7 @@ TypeScript best practices for the Marble codebase.
 
 ## Strict Mode
 
-TypeScript strict mode is enabled. This means:
-- No implicit `any` types
-- Null/undefined must be handled explicitly
-
----
-
-## No `any` Type
+TypeScript strict mode is enabled. No implicit `any`, null/undefined must be handled explicitly.
 
 ```typescript
 // Never
@@ -33,10 +27,106 @@ function handleData(data: unknown) {
 
 ## Type Imports
 
+Use `type` keyword for type-only imports:
+
 ```typescript
-// Use 'type' keyword for type-only imports
 import type { Case, CaseStatus } from '@app-builder/models/cases';
-import type { FunctionComponent } from 'react';
+import type { Namespace } from 'i18next';
+```
+
+---
+
+## Zod v4
+
+Import from `zod/v4` (not `zod`):
+
+```typescript
+import { z } from 'zod/v4';
+
+const createListPayloadSchema = z.object({
+  name: z.string().nonempty(),
+  description: z.string(),
+});
+
+type CreateListPayload = z.infer<typeof createListPayloadSchema>;
+```
+
+### Validation in Actions
+
+```typescript
+const payload = createListPayloadSchema.safeParse(rawPayload);
+if (!payload.success) {
+  return { success: false, errors: z.treeifyError(payload.error) };
+}
+// payload.data is typed as CreateListPayload
+```
+
+### Validation in Forms
+
+```typescript
+const form = useForm({
+  validators: {
+    onSubmit: schema,
+  },
+});
+
+// Per-field validation
+<form.Field
+  name="name"
+  validators={{
+    onBlur: schema.shape.name,
+    onChange: schema.shape.name,
+  }}
+>
+```
+
+---
+
+## Model Adapters
+
+Transform API DTOs (snake_case) to domain models (camelCase):
+
+```typescript
+// models/cases.ts
+
+// Domain model
+export interface Case {
+  id: string;
+  name: string;
+  status: CaseStatus;
+  createdAt: string;
+  inboxId: string;
+  contributors: CaseContributor[];
+  tags: CaseTag[];
+}
+
+// DTO -> Domain
+export const adaptCase = (dto: CaseDto): Case => ({
+  id: dto.id,
+  name: dto.name,
+  status: dto.status,
+  createdAt: dto.created_at,
+  inboxId: dto.inbox_id,
+  contributors: dto.contributors.map(adaptCaseContributor),
+  tags: dto.tags.map(adaptCaseTag),
+});
+```
+
+### Bidirectional Adapters
+
+For mutations, also adapt domain -> DTO:
+
+```typescript
+// Domain -> DTO (for API requests)
+export function adaptCreateRuleBodyDto(input: CreateRuleInput): CreateRuleBodyDto {
+  return {
+    scenario_iteration_id: input.scenarioIterationId,
+    display_order: input.displayOrder,
+    name: input.name,
+    formula_ast_expression: input.formula ? adaptNodeDto(input.formula) : null,
+    score_modifier: input.scoreModifier,
+  };
+}
 ```
 
 ---
@@ -45,85 +135,14 @@ import type { FunctionComponent } from 'react';
 
 ```typescript
 interface CaseCardProps {
-  /** The case to display */
   caseData: Case;
-  /** Called when case is selected */
   onSelect?: (id: string) => void;
-  /** Additional CSS classes */
   className?: string;
 }
 
-export const CaseCard: FunctionComponent<CaseCardProps> = ({
-  caseData,
-  onSelect,
-  className,
-}) => {
+export function CaseCard({ caseData, onSelect, className }: CaseCardProps) {
   // ...
-};
-```
-
----
-
-## Zod Schemas
-
-Use Zod for runtime validation and type inference:
-
-```typescript
-import { z } from 'zod';
-
-const caseFilterSchema = z.object({
-  name: z.string().optional(),
-  status: z.enum(['open', 'closed']).optional(),
-  dateRange: z.object({
-    start: z.string(),
-    end: z.string(),
-  }).optional(),
-});
-
-type CaseFilter = z.infer<typeof caseFilterSchema>;
-```
-
----
-
-## Model Adapters
-
-Transform API responses to typed models:
-
-```typescript
-// models/cases.ts
-export interface Case {
-  id: string;
-  name: string;
-  status: CaseStatus;
-  createdAt: Date;
 }
-
-export function adaptCase(dto: CaseDto): Case {
-  return {
-    id: dto.id,
-    name: dto.name,
-    status: dto.status as CaseStatus,
-    createdAt: new Date(dto.created_at),
-  };
-}
-```
-
----
-
-## Utility Types
-
-```typescript
-// Partial - all properties optional
-type CaseUpdate = Partial<Case>;
-
-// Pick - select properties
-type CasePreview = Pick<Case, 'id' | 'name'>;
-
-// Omit - exclude properties
-type CaseWithoutId = Omit<Case, 'id'>;
-
-// Record - object map
-type StatusMap = Record<CaseStatus, string>;
 ```
 
 ---
@@ -135,22 +154,33 @@ type ApiResult<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
-// TypeScript narrows based on success
 const result: ApiResult<Case> = await fetchCase(id);
 if (result.success) {
-  console.log(result.data); // Case
+  console.log(result.data); // typed as Case
 } else {
-  console.log(result.error); // string
+  console.log(result.error); // typed as string
 }
+```
+
+---
+
+## Utility Types
+
+```typescript
+// Common patterns
+type CaseUpdate = Partial<Case>;
+type CasePreview = Pick<Case, 'id' | 'name'>;
+type CaseWithoutId = Omit<Case, 'id'>;
+type StatusMap = Record<CaseStatus, string>;
 ```
 
 ---
 
 ## Summary
 
-- Strict mode enabled
-- No `any` - use specific types or `unknown`
-- Use `import type` for type imports
-- JSDoc comments on props
-- Zod for runtime validation
-- Model adapters for API responses
+- Strict mode, no `any`
+- `import type` for type-only imports
+- `import { z } from 'zod/v4'` (not `zod`)
+- Model adapters for DTO <-> domain transforms
+- Bidirectional adapters when mutations need DTO format
+- `z.treeifyError()` for structured validation errors

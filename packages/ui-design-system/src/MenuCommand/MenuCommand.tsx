@@ -228,7 +228,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
         clsx([
           'flex h-10 min-w-[40px] items-center justify-between gap-2 rounded-sm border px-2 outline-hidden',
           'disabled:bg-grey-background disabled:text-grey-disabled data-[read-only]:pointer-events-none data-[read-only]:bg-grey-background-light data-[read-only]:border-transparent',
-          'border-grey-border focus:not-data-[read-only]:border-purple-primary',
+          'bg-surface-elevated border-grey-border focus:not-data-[read-only]:border-purple-primary',
           'dark:disabled:bg-transparent',
         ]),
         { 'border-red-primary': hasError },
@@ -261,7 +261,7 @@ const contentClassname = cva('flex z-50 text-s', {
 
 const commandClassname = cva(
   [
-    'flex flex-col z-50 w-full flex-1 overflow-hidden',
+    'flex flex-col z-50 w-full flex-1 overflow-y-auto',
     'bg-surface-card border-grey-border rounded-sm border shadow-md outline-hidden',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',

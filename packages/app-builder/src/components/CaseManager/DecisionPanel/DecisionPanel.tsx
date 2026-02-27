@@ -1,6 +1,7 @@
 import { DrawerContext } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { casesI18n } from '@app-builder/components/Cases';
 import { AlertOutcomeIcon, ScreeningStatusBadge } from '@app-builder/components/Cases/CaseAlerts';
+import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
 import { RuleExecutionDetail } from '@app-builder/components/Decisions';
 import {
@@ -74,22 +75,29 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
         >
           <Icon icon="cross" className="size-5" />
         </Button>
-        <div className="flex flex-1 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} showLabel={false} />
-            <span className="text-l text-grey-primary font-semibold">{decision.scenario.name}</span>
-            <ScoreModifier
-              score={decision.score}
-              className="border-grey-placeholder text-grey-placeholder border bg-transparent"
-            />
+        <div className="flex flex-1 flex-col gap-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} showLabel={false} />
+              <span className="text-l text-grey-primary font-semibold">{decision.scenario.name}</span>
+              <ScoreModifier
+                score={decision.score}
+                className="border-grey-placeholder text-grey-placeholder border bg-transparent"
+              />
+            </div>
+            {isPendingReview ? (
+              <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
+                <Button variant="primary" size="small">
+                  {t('cases:decisions.approve_or_decline')}
+                </Button>
+              </ReviewDecisionModal>
+            ) : null}
           </div>
-          {isPendingReview ? (
-            <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
-              <Button variant="primary" size="small">
-                {t('cases:decisions.approve_or_decline')}
-              </Button>
-            </ReviewDecisionModal>
-          ) : null}
+          <CopyToClipboardButton size="sm" toCopy={decision.id}>
+            <span className="text-xs font-normal">
+              <span className="font-medium">ID</span> {decision.id}
+            </span>
+          </CopyToClipboardButton>
         </div>
       </div>
 

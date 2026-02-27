@@ -6,6 +6,7 @@ import { makeGetApiKeyRepository } from './ApiKeyRepository';
 import { makeGetAppConfigRepository } from './AppConfigRepository';
 import { makeGetAuditEventsRepository } from './AuditEventsRepository';
 import { makeGetCaseRepository } from './CaseRepository';
+import { makeGetClient360TablesRepository } from './Client360Repository';
 import { makeGetContinuousScreeningRepository } from './ContinuousScreeningRepository';
 import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
@@ -75,6 +76,7 @@ export function makeServerRepositories({
     getFeatureAccessRepository: makeGetFeatureAccessRepository(),
     getPersonalSettingsRepository: makeGetPersonalSettingsRepository(),
     getAiAssistSettingsRepository: makeGetAiAssistSettingsRepository(),
+    getClient360TablesRepository: makeGetClient360TablesRepository(),
     getAuditEventsRepository: makeGetAuditEventsRepository(),
   };
 }

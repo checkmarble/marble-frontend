@@ -12,6 +12,7 @@ export const CopyToClipboardChip = ({
   iconClassName?: string;
 }) => {
   const copyToClipboardProps = useGetCopyToClipboard();
+  const { onClick, ...clipboardProps } = copyToClipboardProps(value);
 
   return (
     <button
@@ -19,7 +20,11 @@ export const CopyToClipboardChip = ({
         'cursor-pointer border border-grey-border rounded-full py-v2-xs px-v2-sm flex items-center gap-v2-xs font-semibold text-small',
         className,
       )}
-      {...copyToClipboardProps(value)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      {...clipboardProps}
     >
       <span className="truncate">{value}</span>
       <Icon icon="copy" className={cn('shrink-0 size-4', iconClassName)} />

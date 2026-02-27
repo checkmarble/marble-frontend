@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
+import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
 import { tKeyForUserRole } from '@app-builder/models/user';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -33,6 +34,7 @@ export default function AccountPage() {
   const { currentUser, org } = useOrganizationDetails();
 
   const { theme, setTheme } = useTheme();
+  const { versions } = AppConfigContext.useValue();
 
   const { firstName, lastName, email } = currentUser.actorIdentity;
   const fullName = getFullName({ firstName, lastName });
@@ -88,6 +90,17 @@ export default function AccountPage() {
                   </label>
                 </Radio.Root>
               </div>
+            </div>
+
+            <div className="text-grey-secondary flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1">
+                <Icon icon="monitor" className="size-4" />
+                <span>{versions.appVersion}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <Icon icon="dns" className="size-4" />
+                <span>{versions.apiVersion}</span>
+              </span>
             </div>
           </div>
         </Page.Content>

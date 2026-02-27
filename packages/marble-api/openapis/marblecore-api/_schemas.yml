@@ -18,6 +18,11 @@ Pagination:
     has_next_page:
       type: boolean
 
+# 360 CLIENT
+
+Client360Table:
+  $ref: client-360.yml#/components/schemas/Client360Table
+
 # ANNOTATIONS
 
 GroupedAnnotations:
@@ -28,6 +33,8 @@ CommentEntityAnnotationDto:
   $ref: annotations.yml#/components/schemas/CommentEntityAnnotationDto
 FileEntityAnnotationDto:
   $ref: annotations.yml#/components/schemas/FileEntityAnnotationDto
+RiskTagEntityAnnotationDto:
+  $ref: annotations.yml#/components/schemas/RiskTagEntityAnnotationDto
 CreateAnnotationDto:
   $ref: annotations.yml#/components/schemas/CreateAnnotationDto
 
@@ -330,8 +337,8 @@ DataModelDto:
   $ref: data-model.yml#/components/schemas/DataModelDto
 CreateTableBody:
   $ref: data-model.yml#/components/schemas/CreateTableBody
-UpdateTableBody:
-  $ref: data-model.yml#/components/schemas/UpdateTableBody
+UpdateTableBodyDto:
+  $ref: data-model.yml#/components/schemas/UpdateTableBodyDto
 CreateTableFieldDto:
   $ref: data-model.yml#/components/schemas/CreateTableFieldDto
 UpdateTableFieldDto:

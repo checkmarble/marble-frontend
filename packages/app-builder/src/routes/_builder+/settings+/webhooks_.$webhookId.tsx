@@ -1,4 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { SecretValue } from '@app-builder/components/SecretValue';
 import { CreateWebhookSecret } from '@app-builder/components/Settings/Webhooks/CreateWebhookSecret';
 import { DeleteWebhook } from '@app-builder/components/Settings/Webhooks/DeleteWebhook';
@@ -27,6 +28,13 @@ import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: ['common', 'settings'] satisfies Namespace,
+  hideTabs: true,
+  BreadCrumbs: [
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['settings']);
+      return <span className="text-s font-bold">{t('settings:webhook_details')}</span>;
+    },
+  ],
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -39,6 +47,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const webhookId = params['webhookId'];
   invariant(webhookId, `webhookId is required`);
+
   const webhook = await webhookRepository.getWebhook({ webhookId });
 
   return json({
@@ -55,78 +64,83 @@ export default function WebhookDetail() {
   const { features } = AppConfigContext.useValue();
   const isWebhookSecretRotationAvailable = features.webhookSecretRotation && isEditWebhookAvailable;
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:webhook_details')}</span>
-            {isEditWebhookAvailable ? (
-              // Necessary to prevent click events from propagating to the Collapsible
-              <span onClick={(e) => e.stopPropagation()}>
-                <UpdateWebhook defaultValue={webhook} webhookStatus={webhookStatus}>
-                  <Button variant="primary">
-                    <Icon icon="plus" className="size-5" />
-                    {t('settings:webhooks.update_webhook')}
-                  </Button>
-                </UpdateWebhook>
-              </span>
-            ) : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-2">
-              <WebhookLabel>{t('settings:webhooks.url')}</WebhookLabel>
-              <WebhookValue>{webhook.url}</WebhookValue>
+    <>
+      <Page.Header>
+        <BreadCrumbs />
+      </Page.Header>
+      <Page.Container>
+        <Page.Content className="max-w-(--breakpoint-xl)">
+          <CollapsiblePaper.Container>
+            <CollapsiblePaper.Title>
+              <span className="flex-1">{t('settings:webhook_details')}</span>
+              {isEditWebhookAvailable ? (
+                // Necessary to prevent click events from propagating to the Collapsible
+                <span onClick={(e) => e.stopPropagation()}>
+                  <UpdateWebhook defaultValue={webhook} webhookStatus={webhookStatus}>
+                    <Button variant="primary">
+                      <Icon icon="plus" className="size-5" />
+                      {t('settings:webhooks.update_webhook')}
+                    </Button>
+                  </UpdateWebhook>
+                </span>
+              ) : null}
+            </CollapsiblePaper.Title>
+            <CollapsiblePaper.Content>
+              <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-2">
+                <WebhookLabel>{t('settings:webhooks.url')}</WebhookLabel>
+                <WebhookValue>{webhook.url}</WebhookValue>
 
-              <WebhookLabel>{t('settings:webhooks.event_types')}</WebhookLabel>
-              {webhook.eventTypes.length > 0 ? (
-                <EventTypes eventTypes={webhook.eventTypes} />
-              ) : (
-                <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>
-              )}
+                <WebhookLabel>{t('settings:webhooks.event_types')}</WebhookLabel>
+                {webhook.eventTypes.length > 0 ? (
+                  <EventTypes eventTypes={webhook.eventTypes} />
+                ) : (
+                  <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>
+                )}
 
-              <WebhookLabel>{t('settings:webhooks.http_timeout')}</WebhookLabel>
-              <WebhookValue>{webhook.httpTimeout}</WebhookValue>
+                <WebhookLabel>{t('settings:webhooks.http_timeout')}</WebhookLabel>
+                <WebhookValue>{webhook.httpTimeout}</WebhookValue>
 
-              <WebhookLabel>{t('settings:webhooks.rate_limit')}</WebhookLabel>
-              <WebhookValue>{webhook.rateLimit}</WebhookValue>
+                <WebhookLabel>{t('settings:webhooks.rate_limit')}</WebhookLabel>
+                <WebhookValue>{webhook.rateLimit}</WebhookValue>
 
-              <WebhookLabel>{t('settings:webhooks.rate_limit_duration')}</WebhookLabel>
-              <WebhookValue>{webhook.rateLimitDuration}</WebhookValue>
-            </div>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:webhook_secrets')}</span>
-            {isWebhookSecretRotationAvailable ? (
-              <span onClick={(e) => e.stopPropagation()}>
-                <CreateWebhookSecret webhookId={webhook.id}>
-                  <Button variant="primary">
-                    <Icon icon="restart-alt" className="size-5" />
-                    {t('settings:webhooks.create_secret')}
-                  </Button>
-                </CreateWebhookSecret>
-              </span>
-            ) : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <WebhookSecrets
-              secrets={webhook.secrets}
-              webhookId={webhook.id}
-              isWebhookSecretRotationAvailable={isWebhookSecretRotationAvailable}
-            />
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-        {isDeleteWebhookAvailable ? (
-          <DeleteWebhook webhookId={webhook.id}>
-            <Button variant="destructive" className="w-fit">
-              <Icon icon="delete" className="size-5" />
-              {t('settings:webhooks.delete_webhook')}
-            </Button>
-          </DeleteWebhook>
-        ) : null}
-      </Page.Content>
-    </Page.Container>
+                <WebhookLabel>{t('settings:webhooks.rate_limit_duration')}</WebhookLabel>
+                <WebhookValue>{webhook.rateLimitDuration}</WebhookValue>
+              </div>
+            </CollapsiblePaper.Content>
+          </CollapsiblePaper.Container>
+          <CollapsiblePaper.Container>
+            <CollapsiblePaper.Title>
+              <span className="flex-1">{t('settings:webhook_secrets')}</span>
+              {isWebhookSecretRotationAvailable ? (
+                <span onClick={(e) => e.stopPropagation()}>
+                  <CreateWebhookSecret webhookId={webhook.id}>
+                    <Button variant="primary">
+                      <Icon icon="restart-alt" className="size-5" />
+                      {t('settings:webhooks.create_secret')}
+                    </Button>
+                  </CreateWebhookSecret>
+                </span>
+              ) : null}
+            </CollapsiblePaper.Title>
+            <CollapsiblePaper.Content>
+              <WebhookSecrets
+                secrets={webhook.secrets}
+                webhookId={webhook.id}
+                isWebhookSecretRotationAvailable={isWebhookSecretRotationAvailable}
+              />
+            </CollapsiblePaper.Content>
+          </CollapsiblePaper.Container>
+          {isDeleteWebhookAvailable ? (
+            <DeleteWebhook webhookId={webhook.id}>
+              <Button variant="destructive" className="w-fit">
+                <Icon icon="delete" className="size-5" />
+                {t('settings:webhooks.delete_webhook')}
+              </Button>
+            </DeleteWebhook>
+          ) : null}
+        </Page.Content>
+      </Page.Container>
+    </>
   );
 }
 

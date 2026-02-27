@@ -229,6 +229,7 @@
   "filters.date_range.title": "creation date is:",
   "inbox.cases_count": "{{count}} cases",
   "inbox.favorite": "Favorite",
+  "inbox.go_to_inbox_settings": "Go to inbox settings",
   "inbox.heading.assigned_and_contributors": "Assigned & Contributors",
   "inbox.heading.assignee": "Assignee",
   "inbox.heading.date": "Date",
