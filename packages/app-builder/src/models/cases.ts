@@ -1,6 +1,7 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { type UnionToArray } from '@app-builder/utils/types';
 import {
+  AiCaseReviewListItemDto,
   type CaseContributorDto,
   type CaseDetailDto,
   type CaseDto,
@@ -606,29 +607,47 @@ export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
   };
 }
 
+export function adaptCaseReviewContent(dto: Parameters<typeof adaptCaseReview>[0]['review']): CaseReviewContent {
+  const base = {
+    version: dto.version,
+    output: dto.output,
+    thought: dto.thought,
+    proofs: dto.proofs.map(adaptCaseReviewProof),
+  } as const;
+  if (!dto.ok) {
+    return { ...base, ok: false, sanityCheck: dto.sanity_check };
+  }
+  return { ...base, ok: true };
+}
+
 export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
-  const review: Omit<CaseReview, 'review'> = {
+  return {
     id: dto.id,
     reaction: dto.reaction,
     version: dto.version,
+    review: adaptCaseReviewContent(dto.review),
   };
-  const baseCaseContentReview = {
-    version: dto.review.version,
-    output: dto.review.output,
-    thought: dto.review.thought,
-    proofs: dto.review.proofs.map(adaptCaseReviewProof),
-  } as const;
+}
 
-  if (!dto.review.ok) {
-    return {
-      ...review,
-      review: { ...baseCaseContentReview, ok: false, sanityCheck: dto.review.sanity_check },
-    };
-  }
+export type AiCaseReviewStatus = 'pending' | 'completed' | 'failed' | 'insufficient_funds';
 
+export type AiCaseReviewListItem = {
+  id: string;
+  caseId: string;
+  status: AiCaseReviewStatus;
+  createdAt: string;
+  reaction: 'ok' | 'ko' | null;
+  review: CaseReviewContent | null;
+};
+
+export function adaptAiCaseReviewListItem(dto: AiCaseReviewListItemDto): AiCaseReviewListItem {
   return {
-    ...review,
-    review: { ...baseCaseContentReview, ok: true },
+    id: dto.id,
+    caseId: dto.case_id,
+    status: dto.status,
+    createdAt: dto.created_at,
+    reaction: dto.reaction ?? null,
+    review: dto.review ? adaptCaseReviewContent(dto.review) : null,
   };
 }
 

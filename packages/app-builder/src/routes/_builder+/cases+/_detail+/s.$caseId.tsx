@@ -6,6 +6,7 @@ import { CaseManagerDrawer } from '@app-builder/components/CaseManager/Drawer/Dr
 import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/PivotsPanel';
 import { SnoozePanel } from '@app-builder/components/CaseManager/SnoozePanel/SnoozePanel';
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
+import { CaseReviewsModal } from '@app-builder/components/Cases/CaseReviewsModal';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
@@ -18,7 +19,6 @@ import {
   type TableModelWithOptions,
 } from '@app-builder/models';
 import { DetailedCaseDecision } from '@app-builder/models/cases';
-import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
@@ -29,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, cn, Markdown, Tabs, tabClassName } from 'ui-design-system';
+import { Button, CtaV2ClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const loader = createServerFn(
@@ -115,9 +115,6 @@ export default function CaseManagerIndexPage() {
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [selectedDecision, selectDecision] = useState<DetailedCaseDecision | null>(null);
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>('pivot');
-  const enqueueReviewMutation = useEnqueueCaseReviewMutation();
-  const [hasRequestedReview, setHasRequestedReview] = useState(false);
-  const [activeReviewTab, setActiveReviewTab] = useState<'review' | 'sanityCheck'>('review');
 
   useEffect(() => {
     if (isMenuExpanded) {
@@ -144,91 +141,7 @@ export default function CaseManagerIndexPage() {
             <ClientOnly>
               {() => (
                 <AiAssist.Content>
-                  <div className="p-4 h-full flex flex-col gap-2 justify-between">
-                    <div className="border border-grey-border rounded-md p-2 grow min-h-0">
-                      {mostRecentReview
-                        ? (() => {
-                            return (
-                              <div className="flex flex-col gap-2 h-full text-default">
-                                <div className="flex flex-col h-full gap-2">
-                                  <Tabs>
-                                    <button
-                                      type="button"
-                                      className={cn(tabClassName, 'gap-2')}
-                                      data-status={activeReviewTab === 'review' ? 'active' : undefined}
-                                      onClick={() => setActiveReviewTab('review')}
-                                    >
-                                      {t('cases:case.ai_assist.review')}
-                                      <Icon
-                                        icon={mostRecentReview.review.ok ? 'tick' : 'cross'}
-                                        className={cn(
-                                          'size-5',
-                                          mostRecentReview.review.ok ? 'text-green-primary' : 'text-red-primary',
-                                        )}
-                                      />
-                                    </button>
-                                    {!mostRecentReview.review.ok ? (
-                                      <button
-                                        type="button"
-                                        className={cn(tabClassName, 'gap-2')}
-                                        data-status={activeReviewTab === 'sanityCheck' ? 'active' : undefined}
-                                        onClick={() => setActiveReviewTab('sanityCheck')}
-                                      >
-                                        {t('cases:case.ai_assist.sanity_check')}
-                                        <Icon icon="warning" className="size-4 text-red-primary" />
-                                      </button>
-                                    ) : null}
-                                  </Tabs>
-                                  {!mostRecentReview.review.ok ? (
-                                    <div className="flex items-center gap-2 rounded-md border border-red-primary bg-red-primary/10 p-2">
-                                      <Icon icon="warning" className="size-4 shrink-0 text-red-primary" />
-                                      <span className="text-xs font-medium text-red-primary">
-                                        {t('cases:case_detail.ai_review.consistency_warning')}
-                                      </span>
-                                    </div>
-                                  ) : null}
-                                  {activeReviewTab === 'review' && (
-                                    <div className="min-h-0 p-2 overflow-scroll">
-                                      <Markdown>{mostRecentReview.review.output}</Markdown>
-                                    </div>
-                                  )}
-                                  {activeReviewTab === 'sanityCheck' && !mostRecentReview.review.ok && (
-                                    <div className="min-h-0 p-2 overflow-scroll">
-                                      <Markdown>{mostRecentReview.review.sanityCheck}</Markdown>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })()
-                        : null}
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          enqueueReviewMutation.mutate(details.id);
-                          setHasRequestedReview(true);
-                        }}
-                        disabled={hasRequestedReview}
-                      >
-                        <Icon icon="case-manager" className="size-5" />
-                        {hasRequestedReview
-                          ? 'Review will be ready in a few minutes, refresh to see it'
-                          : 'Generate Review'}
-                      </Button>
-                      <Link
-                        className={CtaV2ClassName({ variant: 'secondary', mode: 'normal' })}
-                        reloadDocument
-                        to={getRoute('/ressources/cases/download-data/:caseId', {
-                          caseId: details.id,
-                        })}
-                      >
-                        <Icon icon="download" className="size-5" />
-                        {t('cases:case.file.download')}
-                      </Link>
-                    </div>
-                  </div>
+                  <CaseReviewsModal caseId={details.id} />
                 </AiAssist.Content>
               )}
             </ClientOnly>
