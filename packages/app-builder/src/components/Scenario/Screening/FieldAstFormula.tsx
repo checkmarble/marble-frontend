@@ -1,6 +1,6 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
-import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
+import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
@@ -11,14 +11,34 @@ import { Button } from 'ui-design-system';
 
 import { EvaluationErrors } from '../ScenarioValidationError';
 
-const EvaluationErrorsWrapper = ({ errors }: { errors: FlatAstValidation['errors'] }) => {
+const EvaluationErrorsWrapper = ({
+  errors,
+  evaluation,
+}: {
+  errors: FlatAstValidation['errors'];
+  evaluation?: FlatAstValidation['evaluation'];
+}) => {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  return (
-    <EvaluationErrors
-      errors={errors.filter((error) => error != 'RULE_FORMULA_REQUIRED').map(getScenarioErrorMessage)}
-    />
-  );
+  // Check if there are meaningful evaluation errors that should take precedence over return type errors
+  // Only show return type error if there are NO other errors in the formula
+  const hasMeaningfulErrors = evaluation
+    ? evaluation.some((node) => node.errors.filter((err) => err.error != 'ARGUMENT_MUST_BE_BOOLEAN').length > 0)
+    : false;
+
+  // Filter out errors that should not be shown:
+  // - RULE_FORMULA_REQUIRED: always filter out
+  // - FORMULA_MUST_RETURN_BOOLEAN and FORMULA_INCORRECT_RETURN_TYPE: filter out if there are more meaningful errors
+  const filteredErrors = errors.filter((error) => {
+    if (error === 'RULE_FORMULA_REQUIRED') return false;
+    if (error === 'FORMULA_MUST_RETURN_BOOLEAN' || error.startsWith('FORMULA_INCORRECT_RETURN_TYPE')) {
+      // Hide return type errors if there are more meaningful nested errors
+      return !hasMeaningfulErrors;
+    }
+    return true;
+  });
+
+  return <EvaluationErrors errors={filteredErrors.map(getScenarioErrorMessage)} />;
 };
 
 export const FieldAstFormula = ({
@@ -45,13 +65,14 @@ export const FieldAstFormula = ({
   const isAstNull = isUndefinedAstNode(formula);
   const nodeStoreRef = useRef<AstBuilderNodeStore | null>(null);
   const [validationErrors, setValidationErrors] = useState<FlatAstValidation['errors']>([]);
+  const [validationEvaluation, setValidationEvaluation] = useState<FlatAstValidation['evaluation']>([]);
 
   const handleAddTrigger = () => {
     onChange?.(NewEmptyTriggerAstNode());
   };
 
   const handleDeleteTrigger = () => {
-    onChange?.(undefined);
+    onChange?.(NewUndefinedAstNode());
   };
 
   return (
@@ -75,6 +96,7 @@ export const FieldAstFormula = ({
             }}
             onValidationUpdate={(validation) => {
               setValidationErrors(validation.errors);
+              setValidationEvaluation(validation.evaluation);
             }}
             onUpdate={onChange}
             returnType="bool"
@@ -82,7 +104,7 @@ export const FieldAstFormula = ({
         </AstBuilder.Provider>
       )}
       {type === 'rule' ? (
-        <EvaluationErrorsWrapper errors={validationErrors} />
+        <EvaluationErrorsWrapper errors={validationErrors} evaluation={validationEvaluation} />
       ) : editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (

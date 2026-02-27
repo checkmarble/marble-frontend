@@ -954,6 +954,26 @@ export type ScenarioValidationDto = {
             };
         };
     };
+    screening_configs?: {
+        trigger: {
+            errors: ScenarioValidationErrorDto[];
+            trigger_evaluation: NodeEvaluationDto;
+        };
+        query: {
+            errors: ScenarioValidationErrorDto[];
+            rule_evaluation: NodeEvaluationDto;
+        };
+        query_fields: {
+            [key: string]: {
+                errors: ScenarioValidationErrorDto[];
+                rule_evaluation: NodeEvaluationDto;
+            };
+        };
+        counterparty_id_expression: {
+            errors: ScenarioValidationErrorDto[];
+            rule_evaluation: NodeEvaluationDto;
+        };
+    }[];
     decision: {
         errors: ScenarioValidationErrorDto[];
     };

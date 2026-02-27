@@ -39,7 +39,7 @@ test('Create a simple scenario', async ({ page }) => {
   await page.getByRole('button', { name: 'Save' }).click();
   await page.getByRole('link', { name: 'Rules' }).click();
   await page.getByRole('button', { name: 'Add' }).click();
-  await page.getByRole('button', { name: 'Add a Rule Add a rule to the' }).click();
+  await page.getByRole('button', { name: 'Add a Rule' }).click();
   await page.getByRole('button', { name: 'Group', exact: true }).click();
   await page.getByRole('button', { name: 'Select an operand...' }).first().click();
   await page.getByRole('option', { name: 'transactions' }).hover();
