@@ -68,23 +68,26 @@ export function CaseDetailTriggerObject({
         className,
       )}
     >
-      {parsedTriggerObject.map(([property, data]) => (
-        <Fragment key={property}>
-          <span className="font-semibold">{property}</span>
-          <div className="inline-flex items-center gap-2">
-            {links[property] && !!data.value ? (
-              <button
-                className="text-purple-primary group flex items-center gap-1 text-left"
-                onClick={() => onLinkClicked(links[property] as string, data.value as string)}
-              >
-                <FormatData data={data} />
-              </button>
-            ) : (
-              <FormatData data={data} />
-            )}
-          </div>
-        </Fragment>
-      ))}
+      {parsedTriggerObject.map(([property, data]) => {
+        const fieldType = dataModelTable?.fields.find((f) => f.name === property)?.dataType;
+        return (
+          <Fragment key={property}>
+            <span className="font-semibold">{property}</span>
+            <div className="inline-flex items-center gap-2">
+              {links[property] && !!data.value ? (
+                <button
+                  className="text-purple-primary group flex items-center gap-1 text-left"
+                  onClick={() => onLinkClicked(links[property] as string, data.value as string)}
+                >
+                  <FormatData type={fieldType} data={data} />
+                </button>
+              ) : (
+                <FormatData type={fieldType} data={data} />
+              )}
+            </div>
+          </Fragment>
+        );
+      })}
     </div>
   );
 }
