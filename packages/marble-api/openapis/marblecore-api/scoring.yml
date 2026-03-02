@@ -1,0 +1,422 @@
+/scoring/settings:
+  get:
+    tags: [Scoring]
+    summary: Get scoring global settings
+    operationId: getScoringSettings
+    responses:
+      '200':
+        description: Scoring settings for the organization
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringSettings'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+  post:
+    tags: [Scoring]
+    summary: Update scoring global settings
+    operationId: updateScoringSettings
+    requestBody:
+      description: New scoring settings
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateScoringSettings'
+    responses:
+      '200':
+        description: Scoring settings for the organization
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringSettings'
+
+/scoring/rulesets:
+  get:
+    tags: [Scoring]
+    summary: List all configured rulesets
+    operationId: listScoringRulesets
+    responses:
+      '200':
+        description: List of rulesets configured for the organization
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScoringRuleset'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+/scoring/rulesets/{entityType}:
+  get:
+    tags: [Scoring]
+    summary: Get a ruleset definition
+    operationId: getScoringRuleset
+    parameters:
+      - name: entityType
+        description: Data model type for which to retrieve the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: status
+        description: Whether to retrieve the current draft or committed version
+        in: query
+        required: false
+        default: committed
+        schema:
+          type: string
+          enum: [committed, draft]
+    responses:
+      '200':
+        description: Get a ruleset details and rules
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringRulesetWithRules'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+  post:
+    tags: [Scoring]
+    summary: Create or update a scoring ruleset draft
+    operationId: updateScoringRuleset
+    requestBody:
+      description: New ruleset details and rules
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateScoringRuleset'
+    responses:
+      '200':
+        description: Ruleset details and rules
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringRulesetWithRules'
+
+/scoring/rulesets/{entityType}/prepare:
+  get:
+    tags: [Scoring]
+    summary: Get a ruleset preparation status
+    operationId: getScoringRulesetPreparationStatus
+    parameters:
+      - name: entityType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Get a ruleset details and rules
+        content:
+          application/json:
+            schema:
+              $ref: 'scenario-publications.yml#/components/schemas/ScenarioPublicationStatusDto'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+  post:
+    tags: [Scoring]
+    summary: Trigger the preparation of a draft
+    operationId: prepareScoringDraft
+    parameters:
+      - name: entityType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '204':
+        description: Ruleset committed successfully.
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+/scoring/rulesets/{entityType}/commit:
+  post:
+    tags: [Scoring]
+    summary: Commit a prepared draft
+    operationId: commitScoringRuleset
+    parameters:
+      - name: entityType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Ruleset that was committed
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScoringRuleset'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        description: Ruleset cannot be committed. Usually, it means it it not prepared.
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+/scoring/scores/{entityType}/{entityId}:
+  get:
+    tags: [Scoring]
+    summary: Get an entity's latest score
+    operationId: getScoreLatest
+    parameters:
+      - name: entityType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: entityId
+        description: Object ID for the entity to get the score for
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Get a ruleset details and rules
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringScore'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+  post:
+    tags: [Scoring]
+    summary: Override an entity's score
+    operationId: overrideScoringScore
+    requestBody:
+      description: Score to override the entity with
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateScoringScoreOverride'
+    responses:
+      '200':
+        description: Entity's latest score
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringScore'
+
+/scoring/scores/{entityType}/{entityId}/history:
+  get:
+    tags: [Scoring]
+    summary: Get an entity's score history
+    operationId: getScoreHistory
+    parameters:
+      - name: entityType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: entityId
+        description: Object ID for the entity to get the score for
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Get a ruleset details and rules
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScoringScore'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
+components:
+  schemas:
+    ScoringSettings:
+      type: object
+      required: [max_score, created_at, updated_at]
+      properties:
+        max_score:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UpdateScoringSettings:
+      type: object
+      required: [max_score]
+      properties:
+        max_score:
+          type: integer
+
+    ScoringRuleset:
+      type: object
+      required:
+        - id
+        - org_id
+        - version
+        - status
+        - name
+        - description
+        - entity_type
+        - thresholds
+        - cooldown_seconds
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          example: 1
+        status:
+          type: string
+          enum: [draft, committed]
+        name:
+          type: string
+        description:
+          type: string
+        entity_type:
+          type: string
+        thresholds:
+          type: array
+          items:
+            type: integer
+          example: [10, 40, 50, 150]
+        cooldown_seconds:
+          type: integer
+          example: 3600
+        created_at:
+          type: string
+          format: date-time
+
+    UpdateScoringRuleset:
+      type: object
+      required:
+        - name
+        - thresholds
+        - rules
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        thresholds:
+          type: array
+          items:
+            type: integer
+          example: [10, 40, 50, 150]
+        cooldown_seconds:
+          type: integer
+          default: 0
+          example: 3600
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/UpdateScoringRule'
+
+    UpdateScoringRule:
+      type: object
+      required:
+        - stable_id
+        - name
+        - ast
+      properties:
+        stable_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        ast:
+          description: |
+            An AST representation of the rule.
+
+            The root node should be supported by the scoring facility, namely either `ScoringComputation`
+            and `Switch`.
+          type: array
+          items:
+            $ref: 'ast.yml#/components/schemas/NodeDto'
+
+    ScoringRulesetWithRules:
+      allOf:
+        - $ref: '#/components/schemas/ScoringRuleset'
+        - type: object
+          required: [rules]
+          properties:
+            rules:
+              description: |
+                An AST representation of the rule.
+
+                The root node should be supported by the scoring facility, namely either `ScoringComputation`
+                and `Switch`.
+              type: array
+              items:
+                $ref: 'ast.yml#/components/schemas/NodeDto'
+
+    ScoringScore:
+      type: object
+      required:
+        - id
+        - score
+        - source
+        - current
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        score:
+          type: integer
+        source:
+          type: string
+          enum: [ruleset, override]
+        overriden_by:
+          type: string
+          format: uuid
+        current:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        stale_at:
+          type: string
+          format: date-time
+
+    CreateScoringScoreOverride:
+      type: object
+      required: [score]
+      properties:
+        score:
+          type: integer
+        stale_at:
+           type: string
+           format: date-time

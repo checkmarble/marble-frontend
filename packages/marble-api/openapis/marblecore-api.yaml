@@ -424,6 +424,23 @@ paths:
   /analytics/available-filters:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 
+ # SCORING
+
+  /scoring/settings:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1settings
+  /scoring/rulesets:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets
+  /scoring/rulesets/{entityType}:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{entityType}
+  /scoring/rulesets/{entityType}/prepare:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{entityType}~1prepare
+  /scoring/rulesets/{entityType}/commit:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1rulesets~1{entityType}~1commit
+  /scoring/rulesets/{entityType}/{entityId}:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1scores~1{entityType}~1{entityId}
+  /scoring/rulesets/{entityType}/{entityId}/history:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1scores~1{entityType}~1{entityId}~1history
+
 components:
   securitySchemes:
     $ref: marblecore-api/_common.yml#/securitySchemes
