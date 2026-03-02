@@ -47,12 +47,15 @@ export function ClientObjectDataList({
         const data = parsedData[field.name];
         const hasNoValue = data?.type === 'unknown' && !data.value;
 
-        return data && ((field.displayed && !hasNoValue) || isExpanded) ? (
+        if (!data || !((field.displayed && !hasNoValue) || isExpanded)) return null;
+
+        const isMultiLine = field.dataType === 'Coords' || field.dataType === 'IpAddress';
+        return (
           <Fragment key={field.id}>
             <div className="text-grey-secondary truncate">{field.name}</div>
-            <FormatData data={data} className="truncate" />
+            <FormatData type={field.dataType} data={data} className={isMultiLine ? undefined : 'truncate'} />
           </Fragment>
-        ) : null;
+        );
       })}
 
       {shouldShowButton && !isIncompleteObject ? (
