@@ -74,33 +74,10 @@ export const ObjectHierarchy = ({
         <span className="text-center">{t('common:generic_fetch_data_error')}</span>
       </div>
     ))
-    .with({ isSuccess: true }, ({ data: { hierarchy: _hierarchy } = { hierarchy: null } }) => {
-      if (!_hierarchy) {
+    .with({ isSuccess: true }, ({ data: { hierarchy } = { hierarchy: null } }) => {
+      if (!hierarchy) {
         return null;
       }
-
-      // TODO: remove fake data - for development only
-      // Fake parent with a type NOT in allMetadata to test IngestedObjectPopover
-      const hierarchy = {
-        ..._hierarchy,
-        parents: [
-          {
-            objectType: 'companies',
-            objectId: 'fake-company-1',
-            data: {
-              object_id: 'fake-company-1',
-              name: 'Acme Corporation',
-              country: 'FR',
-              industry: 'Technology',
-              registration_number: 'SIREN-123456789',
-              revenue: '2500000',
-              created_at: '2020-01-15T10:00:00Z',
-            },
-            children: [],
-          },
-          ..._hierarchy.parents,
-        ],
-      };
 
       const currentParent = selectedParent ?? hierarchy.parents[0];
       const currentParentMetadata = currentParent
@@ -295,7 +272,14 @@ const TreeItemData = ({
 
   if (!metadata) {
     return (
-      <button type="button" onClick={() => handleExplore?.()} className="cursor-pointer">
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleExplore?.();
+        }}
+        className="cursor-pointer"
+      >
         <Icon icon="eye" className="size-5" />
       </button>
     );
