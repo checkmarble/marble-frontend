@@ -1,4 +1,4 @@
-import { DataModelWithTableOptions } from '@app-builder/models';
+import { DataModelWithTableOptions, type TableModel } from '@app-builder/models';
 import { useHierarchyQuery } from '@app-builder/queries/data/get-hierarchy';
 import {
   HierarchyLeaf,
@@ -12,8 +12,9 @@ import { Client360Table } from 'marble-api';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn, Popover } from 'ui-design-system';
+import { cn, Modal, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { IngestedObjectDetail } from '../Data/IngestedObjectDetail';
 import { DataModelExplorerContext } from '../DataModelExplorer/Provider';
 import { Spinner } from '../Spinner';
 
@@ -79,6 +80,7 @@ export const ObjectHierarchy = ({
         return null;
       }
 
+      const dataModel = dataModelQuery.isSuccess ? dataModelQuery.data.dataModel : [];
       const currentParent = selectedParent ?? hierarchy.parents[0];
       const currentParentMetadata = currentParent
         ? (allMetadata.find((m) => m.name === currentParent.objectType) ?? null)
@@ -91,6 +93,7 @@ export const ObjectHierarchy = ({
           tree={hierarchy}
           metadata={metadata}
           allMetadata={allMetadata}
+          dataModel={dataModel}
           handleExplore={handleExplore}
         />
       ) : (
@@ -98,6 +101,7 @@ export const ObjectHierarchy = ({
           tree={hierarchy}
           metadata={metadata}
           allMetadata={allMetadata}
+          dataModel={dataModel}
           handleExplore={handleExplore}
         />
       );
@@ -127,6 +131,7 @@ type TreeProps = {
   tree: HierarchyTreeBase;
   metadata: Client360Table;
   allMetadata: Client360Table[];
+  dataModel: TableModel[];
   handleExplore: (parent: HierarchyNode, child: HierarchyLeaf) => void;
 };
 
@@ -142,11 +147,12 @@ const TreeWithParent = ({
   tree,
   metadata,
   allMetadata,
+  dataModel,
   handleExplore,
 }: TreeWithParentProps) => {
   return (
     <div className="grid grid-cols-[60px_60px_1fr]">
-      <TreeItem item={parent} metadata={parentMetadata} className="col-span-full" />
+      <TreeItem item={parent} metadata={parentMetadata} dataModel={dataModel} className="col-span-full" />
       <div className="grid grid-cols-subgrid col-span-full group/tree-line h-12">
         <TreeSeparator className={cn({ 'last-child': parent.children.length === 0 })} />
         <TreeItem
@@ -220,42 +226,84 @@ const isHierarchyLeaf = (item: HierarchyLeaf | HierarchyNode): item is Hierarchy
 const TreeItem = ({
   item,
   metadata,
+  dataModel,
   className,
   hideAction = false,
   handleExplore,
 }: {
   item: HierarchyLeaf | HierarchyNode;
   metadata: Client360Table | null;
+  dataModel?: TableModel[];
   className?: string;
   hideAction?: boolean;
   handleExplore?: () => void;
 }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const showModal = !hideAction && !isHierarchyLeaf(item) && !metadata && !!dataModel;
+  const isClickable = !!handleExplore || showModal;
+
   return (
-    <div
-      className={cn(
-        'border border-purple-border-light rounded-md p-v2-sm h-10 flex items-center justify-between gap-v2-md',
-        'dark:border-purple-border',
-        handleExplore &&
-          'cursor-pointer hover:bg-purple-background-light dark:hover:bg-purple-primary/10 transition-colors',
-        className,
-      )}
-      onClick={handleExplore}
-    >
-      <TreeItemLabel item={item} metadata={metadata} />
-      {!hideAction ? (
-        <>
-          {isHierarchyLeaf(item) ? (
-            <TreeItemData item={item} metadata={metadata} handleExplore={handleExplore} />
-          ) : null}
-          {!isHierarchyLeaf(item) && metadata ? (
-            <Link to={getRoute('/client-detail/:objectType/:objectId', item)}>
-              <Icon icon="arrow-up-right" className="size-5" />
-            </Link>
-          ) : null}
-          {!isHierarchyLeaf(item) && !metadata ? <IngestedObjectPopover /> : null}
-        </>
+    <>
+      <div
+        className={cn(
+          'border border-purple-border-light rounded-md p-v2-sm h-10 flex items-center justify-between gap-v2-md',
+          'dark:border-purple-border',
+          isClickable &&
+            'cursor-pointer hover:bg-purple-background-light dark:hover:bg-purple-primary/10 transition-colors',
+          className,
+        )}
+        onClick={handleExplore ?? (showModal ? () => setModalOpen(true) : undefined)}
+      >
+        <TreeItemLabel item={item} metadata={metadata} />
+        {!hideAction ? (
+          <>
+            {isHierarchyLeaf(item) ? (
+              <TreeItemData item={item} metadata={metadata} handleExplore={handleExplore} />
+            ) : null}
+            {!isHierarchyLeaf(item) && metadata ? (
+              <Link to={getRoute('/client-detail/:objectType/:objectId', item)}>
+                <Icon icon="arrow-up-right" className="size-5" />
+              </Link>
+            ) : null}
+            {showModal ? (
+              <button
+                type="button"
+                className="cursor-pointer shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setModalOpen(true);
+                }}
+              >
+                <Icon icon="eye" className="size-5" />
+              </button>
+            ) : null}
+          </>
+        ) : null}
+      </div>
+      {showModal && modalOpen ? (
+        <Modal.Root
+          open
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setModalOpen(false);
+          }}
+        >
+          <Modal.Content size="large">
+            <Modal.Title>{item.objectType}</Modal.Title>
+            <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
+              <IngestedObjectDetail
+                light
+                bordered={false}
+                withLinks={false}
+                dataModel={dataModel}
+                tableName={item.objectType}
+                objectId={item.objectId}
+                object={{ data: item.data, metadata: { validFrom: (item.data['updated_at'] as string) ?? '' } }}
+              />
+            </div>
+          </Modal.Content>
+        </Modal.Root>
       ) : null}
-    </div>
+    </>
   );
 };
 
@@ -351,8 +399,4 @@ const TreeItemLabel = ({
   ) : (
     <span className="shrink-0">{t('client360:client_detail.hierarchy.related', { objectType: item.objectType })}</span>
   );
-};
-
-const IngestedObjectPopover = () => {
-  return null;
 };
