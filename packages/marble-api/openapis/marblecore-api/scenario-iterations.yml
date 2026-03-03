@@ -576,6 +576,66 @@ components:
                       $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
                   rule_evaluation:
                     $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+        screening_configs:
+          type: array
+          items:
+            type: object
+            required:
+              - trigger
+              - query
+              - query_fields
+              - counterparty_id_expression
+            properties:
+              trigger:
+                type: object
+                required:
+                  - errors
+                  - trigger_evaluation
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
+                  trigger_evaluation:
+                    $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+              query:
+                type: object
+                required:
+                  - errors
+                  - rule_evaluation
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
+                  rule_evaluation:
+                    $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+              query_fields:
+                type: object
+                additionalProperties:
+                  type: object
+                  required:
+                    - errors
+                    - rule_evaluation
+                  properties:
+                    errors:
+                      type: array
+                      items:
+                        $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
+                    rule_evaluation:
+                      $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+              counterparty_id_expression:
+                type: object
+                required:
+                  - errors
+                  - rule_evaluation
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
+                  rule_evaluation:
+                    $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
         decision:
           type: object
           required:

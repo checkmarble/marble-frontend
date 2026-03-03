@@ -241,7 +241,7 @@ export const ClientDetailPage = ({
       </PanelRoot>
       <PanelRoot open={showHierarchyPanel} onOpenChange={setShowHierarchyPanel}>
         <PanelContainer size="xxl">
-          <PanelHeader>{t('client360:client_detail.hierarchy.customer_graph_relations')}</PanelHeader>
+          <PanelHeader>{t('client360:client_detail.hierarchy.title')}</PanelHeader>
           <ObjectHierarchy
             showAll
             objectType={objectType}
