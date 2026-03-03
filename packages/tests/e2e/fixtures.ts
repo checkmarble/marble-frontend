@@ -37,7 +37,7 @@ export const setupFixtures = async (dsn: string, apiUrl: string) => {
   apiUrl = `http://localhost:${apiUrl}`;
 
   for (const spec of TABLES) {
-    createTable(apiUrl, apiKey, spec);
+    await createTable(apiUrl, apiKey, spec);
   }
 };
 
@@ -45,6 +45,7 @@ const createTable = async (apiUrl: string, apiKey: string, table: Table) => {
   const tableResponse = await fetch(`${apiUrl}/data-model/tables`, {
     method: 'POST',
     headers: {
+      'Content-Type': 'application/json',
       'x-api-key': apiKey,
     },
     body: JSON.stringify({ name: table.table, description: 'Lorem ipsum.' }),
@@ -58,6 +59,7 @@ const createTable = async (apiUrl: string, apiKey: string, table: Table) => {
     const fieldResponse = await fetch(`${apiUrl}/data-model/tables/${tableId}/fields`, {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'x-api-key': apiKey,
       },
       body: JSON.stringify({
