@@ -4,7 +4,12 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type CustomListKind } from '@app-builder/models/custom-list';
 import { useAddListValueMutation } from '@app-builder/queries/lists/add-value';
-import { type AddValuePayload, addCidrValuePayloadSchema, addValuePayloadSchema } from '@app-builder/schemas/lists';
+import {
+  type AddValuePayload,
+  addCidrValuePayloadSchema,
+  addValuePayloadSchema,
+  normalizeCidr,
+} from '@app-builder/schemas/lists';
 import { useForm } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +35,8 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
     } as AddValuePayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        addListValueMutation.mutateAsync(value).then((result) => {
+        const payload = kind === 'cidrs' ? { ...value, value: normalizeCidr(value.value) } : value;
+        addListValueMutation.mutateAsync(payload).then((result) => {
           revalidate();
           if (result.success) {
             setIsOpen(false);

@@ -3,7 +3,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
@@ -53,7 +53,7 @@ export function ClientObjectDataList({
         return (
           <Fragment key={field.id}>
             <div className="text-grey-secondary truncate">{field.name}</div>
-            <FormatData type={field.dataType} data={data} className={isMultiLine ? undefined : 'truncate'} />
+            <FormatData type={field.dataType} data={data} className={cn({ truncate: !isMultiLine })} />
           </Fragment>
         );
       })}
