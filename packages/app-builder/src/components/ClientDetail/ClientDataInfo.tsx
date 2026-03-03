@@ -31,8 +31,10 @@ export const ClientDataInfo = ({ objectDetails, table }: ClientDataInfoProps) =>
           if (!field) return null;
 
           return (
-            <div key={field.id} className="grid grid-cols-[160px_1fr] items-center">
-              <div>{field.name}</div>
+            <div key={field.id} className="grid grid-cols-[220px_1fr] items-center min-w-0">
+              <div className="truncate" title={field.name}>
+                {field.name}
+              </div>
               <FormatData data={parsedData[field.name]} className="whitespace-nowrap truncate" />
             </div>
           );

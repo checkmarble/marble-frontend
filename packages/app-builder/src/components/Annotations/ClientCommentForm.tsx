@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createCommentAnnotationSchema } from '@app-builder/schemas/annotations';
-import { handleSubmit } from '@app-builder/utils/form';
+import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
@@ -72,6 +72,7 @@ export function ClientCommentForm({
             <textarea
               value={field.state.value}
               onChange={(e) => field.handleChange(e.currentTarget.value)}
+              onKeyDown={submitOnCtrlEnter}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
               className="form-textarea text-small max-h-40 w-full grow resize-none overflow-y-scroll border-none bg-transparent outline-hidden"

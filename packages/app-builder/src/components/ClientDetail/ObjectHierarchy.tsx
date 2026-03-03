@@ -74,10 +74,33 @@ export const ObjectHierarchy = ({
         <span className="text-center">{t('common:generic_fetch_data_error')}</span>
       </div>
     ))
-    .with({ isSuccess: true }, ({ data: { hierarchy } = { hierarchy: null } }) => {
-      if (!hierarchy) {
+    .with({ isSuccess: true }, ({ data: { hierarchy: _hierarchy } = { hierarchy: null } }) => {
+      if (!_hierarchy) {
         return null;
       }
+
+      // TODO: remove fake data - for development only
+      // Fake parent with a type NOT in allMetadata to test IngestedObjectPopover
+      const hierarchy = {
+        ..._hierarchy,
+        parents: [
+          {
+            objectType: 'companies',
+            objectId: 'fake-company-1',
+            data: {
+              object_id: 'fake-company-1',
+              name: 'Acme Corporation',
+              country: 'FR',
+              industry: 'Technology',
+              registration_number: 'SIREN-123456789',
+              revenue: '2500000',
+              created_at: '2020-01-15T10:00:00Z',
+            },
+            children: [],
+          },
+          ..._hierarchy.parents,
+        ],
+      };
 
       const currentParent = selectedParent ?? hierarchy.parents[0];
       const currentParentMetadata = currentParent
@@ -235,8 +258,11 @@ const TreeItem = ({
       className={cn(
         'border border-purple-border-light rounded-md p-v2-sm h-10 flex items-center justify-between gap-v2-md',
         'dark:border-purple-border',
+        handleExplore &&
+          'cursor-pointer hover:bg-purple-background-light dark:hover:bg-purple-primary/10 transition-colors',
         className,
       )}
+      onClick={handleExplore}
     >
       <TreeItemLabel item={item} metadata={metadata} />
       {!hideAction ? (

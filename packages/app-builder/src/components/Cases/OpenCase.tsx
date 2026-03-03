@@ -4,7 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { OpenCasePayload, openCasePayloadSchema, useOpenCaseMutation } from '@app-builder/queries/cases/open-case';
-import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -61,6 +61,7 @@ export const OpenCase = ({ id }: { id: string }) => {
                     placeholder="Input your comment here"
                     valid={field.state.meta.errors.length === 0}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onKeyDown={submitOnCtrlEnter}
                   />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>

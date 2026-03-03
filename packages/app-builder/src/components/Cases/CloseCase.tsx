@@ -5,7 +5,7 @@ import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type FinalOutcome, finalOutcomes } from '@app-builder/models/cases';
 import { CloseCasePayload, closeCasePayloadSchema, useCloseCaseMutation } from '@app-builder/queries/cases/close-case';
-import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
@@ -120,6 +120,7 @@ export const CloseCase = ({
                     placeholder={t('cases:case.close.add_comment_placeholder')}
                     valid={field.state.meta.errors.length === 0}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onKeyDown={submitOnCtrlEnter}
                   />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>

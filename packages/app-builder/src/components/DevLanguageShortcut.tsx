@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Keyboard shortcut (Ctrl+L) to cycle through supported languages.
- * Intended for QA/dev testing, mirroring the Ctrl+D theme toggle in ThemeProvider.
+ * Keyboard shortcut (Ctrl+Shift+L) to cycle through supported languages.
+ * Intended for QA/dev testing, mirroring the Ctrl+Shift+D theme toggle in ThemeProvider.
  */
 export function DevLanguageShortcut() {
   const {
@@ -17,7 +17,7 @@ export function DevLanguageShortcut() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'l') {
+      if (e.ctrlKey && e.shiftKey && e.key === 'L') {
         e.preventDefault();
         const currentIndex = supportedLngs.indexOf(language as (typeof supportedLngs)[number]);
         const nextIndex = (currentIndex + 1) % supportedLngs.length;

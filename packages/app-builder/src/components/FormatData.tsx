@@ -105,7 +105,7 @@ function CoordsMap({ value }: { value: string }) {
         </span>
       </CopyToClipboardButton>
 
-      <div className="overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+      <div className="col-start-2 isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
         <MapLibre initialViewState={opts} style={{ width: '100%', height: 400 }} mapStyle={CARTO_BASEMAP[theme]}>
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
             <MapPin />
