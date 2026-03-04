@@ -50,8 +50,22 @@ export function FormatData({
     return <span className={className}>-</span>;
   }
 
-  if (type === 'Coords' && typeof data.value === 'string') {
-    return <CoordsMap value={data.value} height={mapHeight} />;
+  if (type === 'Coords') {
+    if (typeof data.value === 'string' && data.value) {
+      return <CoordsMap value={data.value} height={mapHeight} />;
+    }
+    // Handle Coords stored as object (e.g., {latitude, longitude} or {lat, lng})
+    if (typeof data.value === 'object' && data.value !== null) {
+      const obj = data.value as Record<string, unknown>;
+      const lat = obj['latitude'] ?? obj['lat'];
+      const lng = obj['longitude'] ?? obj['lng'] ?? obj['lon'];
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        return <CoordsMap value={`${lat},${lng}`} height={mapHeight} />;
+      }
+    }
+    // No valid coordinates found — show dash instead of falling through
+    // to DerivedData rendering (which would show an empty invisible card)
+    return <span className={className}>-</span>;
   }
 
   if (type === 'IpAddress' && typeof data.value === 'string') {

@@ -13,6 +13,25 @@ import { FormatData } from '../FormatData';
 
 const METADATA_FIELDS = ['object_id', 'valid_from'] as const;
 
+function isMetadataKey(key: string): { match: true; parentKey: string } | { match: false } {
+  const suffix = '.metadata';
+  if (key.endsWith(suffix)) {
+    return { match: true, parentKey: key.slice(0, -suffix.length) };
+  }
+  // Handle keys with surrounding quotes (some API formats)
+  const trimmed = key.replace(/^["']|["']$/g, '');
+  if (trimmed !== key && trimmed.endsWith(suffix)) {
+    return { match: true, parentKey: trimmed.slice(0, -suffix.length) };
+  }
+  return { match: false };
+}
+
+function hasMetadataContent(data: ReturnType<typeof parseUnknownData> | undefined): boolean {
+  if (!data) return false;
+  if (data.type === 'DerivedData') return Object.keys(data.value).length > 0;
+  return false;
+}
+
 function useParsedTriggerObject(triggerObject: Record<string, unknown> | null) {
   return useMemo(() => {
     if (!triggerObject) return null;
@@ -22,11 +41,11 @@ function useParsedTriggerObject(triggerObject: Record<string, unknown> | null) {
     const entries: [string, ReturnType<typeof parseUnknownData>][] = [];
 
     for (const [key, value] of R.entries(allParsed)) {
-      if (key.endsWith('.metadata')) {
-        const parentKey = key.slice(0, -'.metadata'.length);
-        if (value.type === 'DerivedData' && Object.keys(value.value).length > 0) {
-          metadataByField[parentKey] = value;
-        }
+      const meta = isMetadataKey(key);
+      if (meta.match) {
+        // Always capture metadata regardless of type/content to prevent
+        // them from appearing as separate entries in the field list
+        metadataByField[meta.parentKey] = value;
       } else {
         entries.push([key, value]);
       }
@@ -112,7 +131,7 @@ export const IngestedObjectDetail = ({
                   <FormatData type={fieldType} data={data} mapHeight={200} />
                 )}
               </div>
-              {metadataByField[property] ? <FormatData data={metadataByField[property]} /> : null}
+              {hasMetadataContent(metadataByField[property]) ? <FormatData data={metadataByField[property]} /> : null}
             </Fragment>
           );
         })}
