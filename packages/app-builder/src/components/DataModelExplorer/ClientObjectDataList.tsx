@@ -27,6 +27,8 @@ export function ClientObjectDataList({
 }: ClientObjectDataListProps) {
   const { t } = useTranslation(['common', 'cases']);
   const parsedData = R.pipe(data, R.mapValues(parseUnknownData));
+  const effectiveFieldOrder =
+    tableModel.options.fieldOrder.length > 0 ? tableModel.options.fieldOrder : tableModel.fields.map((f) => f.id);
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
 
@@ -40,7 +42,7 @@ export function ClientObjectDataList({
           </div>
         </Fragment>
       ) : null}
-      {tableModel.options.fieldOrder.map((fieldId) => {
+      {effectiveFieldOrder.map((fieldId) => {
         const field = tableModel.fields.find((f) => f.id === fieldId);
         if (!field) return null;
 
@@ -53,7 +55,7 @@ export function ClientObjectDataList({
         return (
           <Fragment key={field.id}>
             <div className="text-grey-secondary truncate">{field.name}</div>
-            <FormatData type={field.dataType} data={data} className={cn({ truncate: !isMultiLine })} />
+            <FormatData type={field.dataType} data={data} className={cn({ truncate: !isMultiLine })} mapHeight={200} />
           </Fragment>
         );
       })}

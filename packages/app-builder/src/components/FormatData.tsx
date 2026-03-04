@@ -32,7 +32,17 @@ type Data =
       value: unknown;
     };
 
-export function FormatData({ type, data, className }: { type?: DataType; data?: Data; className?: string }) {
+export function FormatData({
+  type,
+  data,
+  className,
+  mapHeight,
+}: {
+  type?: DataType;
+  data?: Data;
+  className?: string;
+  mapHeight?: number;
+}) {
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
 
@@ -41,7 +51,12 @@ export function FormatData({ type, data, className }: { type?: DataType; data?: 
   }
 
   if (type === 'Coords' && typeof data.value === 'string') {
-    return <CoordsMap value={data.value} />;
+    return <CoordsMap value={data.value} height={mapHeight} />;
+  }
+
+  if (type === 'IpAddress' && typeof data.value === 'string') {
+    const display = data.value.replace(/\/(32|128)$/, '');
+    return <span className={className}>{display}</span>;
   }
 
   switch (data.type) {
@@ -93,7 +108,7 @@ function parseCoords(s: string) {
   };
 }
 
-function CoordsMap({ value }: { value: string }) {
+function CoordsMap({ value, height = 400 }: { value: string; height?: number }) {
   const opts = parseCoords(value);
   const { theme } = useTheme();
 
@@ -105,8 +120,8 @@ function CoordsMap({ value }: { value: string }) {
         </span>
       </CopyToClipboardButton>
 
-      <div className="col-start-2 isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
-        <MapLibre initialViewState={opts} style={{ width: '100%', height: 400 }} mapStyle={CARTO_BASEMAP[theme]}>
+      <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+        <MapLibre initialViewState={opts} style={{ width: '100%', height }} mapStyle={CARTO_BASEMAP[theme]}>
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
             <MapPin />
           </Marker>
