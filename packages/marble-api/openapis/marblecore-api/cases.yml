@@ -765,8 +765,18 @@
           type: string
           format: uuid
     responses:
-      "204":
+      "202":
         description: The review was enqueued
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - review_id
+              properties:
+                review_id:
+                  type: string
+                  format: uuid
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -801,6 +811,42 @@
               maxItems: 1
               items:
                 $ref: "#/components/schemas/CaseReviewDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+/cases/{caseId}/review/{reviewId}:
+  get:
+    tags:
+      - Cases
+    summary: Get a specific AI generated review by ID
+    operationId: getCaseReviewById
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: reviewId
+        description: ID of the review to fetch
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: The requested review
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CaseReviewDto"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -1655,6 +1701,9 @@ components:
       type: object
       required:
         - id
+        - status
+        - created_at
+        - updated_at
         - reaction
         - version
         - review
@@ -1662,6 +1711,15 @@ components:
         id:
           type: string
           format: uuid
+        status:
+          type: string
+          enum: ["pending", "completed", "failed", "insufficient_funds"]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
         reaction:
           $ref: "#/components/schemas/CaseReviewFeedbackDto"
         version:

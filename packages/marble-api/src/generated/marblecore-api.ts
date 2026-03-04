@@ -608,6 +608,9 @@ export type CaseReviewContentDto = {
 } & (CaseReviewOkDto | CaseReviewNotOkDto);
 export type CaseReviewDto = {
     id: string;
+    status: "pending" | "completed" | "failed" | "insufficient_funds";
+    created_at: string;
+    updated_at: string;
     reaction: CaseReviewFeedbackDto;
     version: string;
     review: CaseReviewContentDto;
@@ -2500,7 +2503,10 @@ export function getMostRecentCaseReview(caseId: string, opts?: Oazapfts.RequestO
  */
 export function enqueueReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 204;
+        status: 202;
+        data: {
+            review_id: string;
+        };
     } | {
         status: 401;
         data: string;
@@ -2513,6 +2519,26 @@ export function enqueueReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts
     }>(`/cases/${encodeURIComponent(caseId)}/review/enqueue`, {
         ...opts,
         method: "POST"
+    }));
+}
+/**
+ * Get a specific AI generated review by ID
+ */
+export function getCaseReviewById(caseId: string, reviewId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseReviewDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/review/${encodeURIComponent(reviewId)}`, {
+        ...opts
     }));
 }
 /**

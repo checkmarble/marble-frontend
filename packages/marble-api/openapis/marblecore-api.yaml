@@ -115,6 +115,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review
   /cases/{caseId}/review/enqueue:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1enqueue
+  /cases/{caseId}/review/{reviewId}:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1{reviewId}
   /cases/{caseId}/review/{reviewId}/feedback:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1{reviewId}~1feedback
   /cases/{caseId}/reviews:
