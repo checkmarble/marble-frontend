@@ -1804,12 +1804,12 @@ export type ScoringRuleset = {
     created_at: string;
 };
 export type ScoringRulesetWithRules = ScoringRuleset & {
-    /** An AST representation of the rule.
-    
-    The root node should be supported by the scoring facility, namely either `ScoringComputation`
-    and `Switch`.
-     */
-    rules: NodeDto[];
+    rules: {
+        stable_id: string;
+        name: string;
+        description?: string;
+        ast: NodeDto;
+    }[];
 };
 export type UpdateScoringRuleset = {
     name: string;
@@ -1825,7 +1825,7 @@ export type UpdateScoringRuleset = {
         The root node should be supported by the scoring facility, namely either `ScoringComputation`
         and `Switch`.
          */
-        ast: NodeDto[];
+        ast: NodeDto;
     }[];
 };
 export type ScoringScore = {
@@ -6389,8 +6389,8 @@ export function listScoringRulesets(opts?: Oazapfts.RequestOpts) {
 /**
  * Get a ruleset definition
  */
-export function getScoringRuleset(recordType: string, { status }: {
-    status?: "committed" | "draft";
+export function getScoringRuleset(recordType: string, { version }: {
+    version?: string | number;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -6402,7 +6402,7 @@ export function getScoringRuleset(recordType: string, { status }: {
         status: 404;
         data: string;
     }>(`/scoring/rulesets/${encodeURIComponent(recordType)}${QS.query(QS.explode({
-        status
+        version
     }))}`, {
         ...opts
     }));

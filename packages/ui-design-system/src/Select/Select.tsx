@@ -19,9 +19,11 @@ import {
 } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef, useState } from 'react';
+import { forwardRef, ReactNode, useState } from 'react';
 import { Icon, IconName } from 'ui-icons';
 import { MenuCommand } from '../MenuCommand/MenuCommand';
+import Tag from '../Tag/Tag';
+import { cn } from '../utils';
 
 function SelectContent({ children, className, ...props }: React.PropsWithChildren<SelectContentProps>) {
   return (
@@ -193,12 +195,13 @@ export const Select = {
   Value: SelectValue,
 };
 
-type Option<T> = {
-  label: string;
+export type SelectOption<T> = {
+  label: ReactNode | (() => ReactNode);
   value: T;
+  rowValue?: string;
 };
 
-export type SelectV2Props<T, O extends Option<T> = Option<T>> = {
+export type SelectV2Props<T, O extends SelectOption<T> = SelectOption<T>> = {
   value: T;
   placeholder: string;
   onChange: (value: T) => void;
@@ -207,6 +210,8 @@ export type SelectV2Props<T, O extends Option<T> = Option<T>> = {
   className?: string;
   displayedValue?: (option: O) => string;
   selectedIcon?: IconName;
+  variant?: 'tag' | 'default';
+  menuClassName?: string;
 };
 
 export function SelectV2<T>({
@@ -218,6 +223,8 @@ export function SelectV2<T>({
   className,
   displayedValue,
   selectedIcon,
+  variant = 'default',
+  menuClassName,
 }: SelectV2Props<T>) {
   const [open, setOpen] = useState(false);
   const currentOption = options.find((option) => option.value === value);
@@ -230,18 +237,46 @@ export function SelectV2<T>({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton disabled={disabled} className={className}>
-          {valueLabel}
-        </MenuCommand.SelectButton>
+        {variant === 'default' ? (
+          <MenuCommand.SelectButton disabled={disabled} className={className}>
+            <span>{typeof valueLabel === 'function' ? valueLabel() : valueLabel}</span>
+          </MenuCommand.SelectButton>
+        ) : (
+          <button disabled={disabled} className={cn('flex gap-v2-xxs items-center', className)}>
+            <Tag color="purple">
+              <span>{typeof valueLabel === 'function' ? valueLabel() : valueLabel}</span>
+              <Icon icon="caret-down" className="size-4" />
+            </Tag>
+          </button>
+        )}
       </MenuCommand.Trigger>
-      <MenuCommand.Content align="start" sameWidth sideOffset={4}>
+      <MenuCommand.Content
+        align="start"
+        sameWidth
+        sideOffset={4}
+        size={variant === 'tag' ? 'small' : undefined}
+        className={menuClassName}
+      >
         <MenuCommand.List>
-          {options.map((option, idx) => (
-            <MenuCommand.Item key={idx} onSelect={() => onChange(option.value)}>
-              {option.label}
-              {option.value === value && <Icon icon={selectedIcon ?? 'tick'} className="size-5 text-purple-primary" />}
-            </MenuCommand.Item>
-          ))}
+          {options.map((option, idx) => {
+            const isPrimitiveValue = ['number', 'string', 'bool'].includes(typeof option.value);
+            const itemValue =
+              option.rowValue !== undefined ? option.rowValue : isPrimitiveValue ? String(option.value) : undefined;
+
+            return (
+              <MenuCommand.Item
+                key={idx}
+                onSelect={() => onChange(option.value)}
+                className="group-[[data-size='small']]/menu-command-content:h-6"
+                value={itemValue}
+              >
+                <span>{typeof option.label === 'function' ? option.label() : option.label}</span>
+                {option.value === value && (
+                  <Icon icon={selectedIcon ?? 'tick'} className="size-5 text-purple-primary" />
+                )}
+              </MenuCommand.Item>
+            );
+          })}
         </MenuCommand.List>
       </MenuCommand.Content>
     </MenuCommand.Menu>

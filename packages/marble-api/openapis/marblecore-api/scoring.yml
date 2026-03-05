@@ -62,14 +62,15 @@
         required: true
         schema:
           type: string
-      - name: status
+      - name: version
         description: Whether to retrieve the current draft or committed version
         in: query
         required: false
         default: committed
         schema:
-          type: string
-          enum: [committed, draft]
+          oneOf:
+            - type: string
+            - type: number
     responses:
       '200':
         description: Get a ruleset details and rules
@@ -420,9 +421,24 @@ components:
 
             The root node should be supported by the scoring facility, namely either `ScoringComputation`
             and `Switch`.
-          type: array
-          items:
-            $ref: 'ast.yml#/components/schemas/NodeDto'
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+
+    ScoringRule:
+      type: object
+      required:
+        - stable_id
+        - name
+        - ast
+      properties:
+        stable_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        ast:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
 
     ScoringRulesetWithRules:
       allOf:
@@ -431,14 +447,9 @@ components:
           required: [rules]
           properties:
             rules:
-              description: |
-                An AST representation of the rule.
-
-                The root node should be supported by the scoring facility, namely either `ScoringComputation`
-                and `Switch`.
               type: array
               items:
-                $ref: 'ast.yml#/components/schemas/NodeDto'
+                $ref: '#/components/schemas/ScoringRule'
 
     ScoringScore:
       type: object
