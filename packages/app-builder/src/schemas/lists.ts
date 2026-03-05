@@ -30,7 +30,16 @@ export type EditListPayload = z.infer<typeof editListPayloadSchema>;
 
 // Add value
 
-export const cidrValueSchema = z.union([z.cidrv4(), z.cidrv6()]);
+export const cidrValueSchema = z.union([z.cidrv4(), z.cidrv6(), z.ipv4(), z.ipv6()]);
+
+/** Normalize bare IPs to CIDR notation: IPv4 → /32, IPv6 → /128 */
+export function normalizeCidr(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.includes('/')) return trimmed;
+  if (z.ipv4().safeParse(trimmed).success) return `${trimmed}/32`;
+  if (z.ipv6().safeParse(trimmed).success) return `${trimmed}/128`;
+  return trimmed;
+}
 
 export const addValuePayloadSchema = z.object({
   listId: z.uuid(),

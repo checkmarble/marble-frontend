@@ -13,7 +13,7 @@ import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstac
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useVirtualTable } from 'ui-design-system';
+import { Table, Tag, useVirtualTable } from 'ui-design-system';
 
 export const loader = createServerFn([authMiddleware], async ({ context }) => {
   const { user, customListsRepository, entitlements } = context.authInfo;
@@ -49,7 +49,16 @@ export default function DetectionListsPage() {
       columnHelper.accessor('description', {
         id: 'description',
         header: t('lists:description'),
-        size: 500,
+        size: 400,
+      }),
+      columnHelper.accessor('kind', {
+        id: 'kind',
+        header: t('lists:kind'),
+        size: 180,
+        cell: ({ getValue }) => {
+          const kind = getValue();
+          return <Tag color="purple">{t(`lists:kind.${kind}`)}</Tag>;
+        },
       }),
       columnHelper.accessor('ValuesCount', {
         id: 'valuesCount',
