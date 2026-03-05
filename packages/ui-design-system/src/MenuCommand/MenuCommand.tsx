@@ -247,7 +247,7 @@ function MenuArrow() {
   return <Icon icon="caret-down" className="size-4 shrink-0" />;
 }
 
-const contentClassname = cva('flex z-50 text-s', {
+const contentClassname = cva('flex z-50 text-s group/menu-command-content', {
   variants: {
     hover: {
       true: 'max-h-[min(var(--radix-hover-card-content-available-height),500px)]',
@@ -282,9 +282,9 @@ const commandClassname = cva(
 );
 type ContentProps = React.ComponentProps<typeof Popover.Content> &
   VariantProps<typeof commandClassname> & {
-    bottom?: React.ReactNode;
+    size?: 'small' | 'default';
   };
-function Content({ children, className, sameWidth, bottom, collisionPadding, ...props }: ContentProps) {
+function Content({ children, className, sameWidth, collisionPadding, size = 'default', ...props }: ContentProps) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
   const Portal = internalSharp.value.hover ? HoverCard.Portal : Popover.Portal;
   const ContentEl = internalSharp.value.hover ? HoverCard.Content : Popover.Content;
@@ -297,6 +297,7 @@ function Content({ children, className, sameWidth, bottom, collisionPadding, ...
         onWheel={(e) => {
           e.stopPropagation();
         }}
+        data-size={size}
         {...props}
       >
         <Command className={cn(commandClassname({ sameWidth }))}>
@@ -393,7 +394,7 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       className={cn(
         [
           'aria-selected:bg-purple-background-light data-[state=open]:bg-purple-background-light aria-disabled:text-grey-disabled outline-hidden',
-          'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-xs p-2',
+          'flex h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-xs p-2',
         ],
         { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
         className,
@@ -413,7 +414,15 @@ Separator.displayName = Command.Separator.displayName;
 
 type ListProps = Omit<React.ComponentProps<typeof Command.List>, 'asChild'> & {};
 function List({ className, ...props }: ListProps) {
-  return <Command.List className={cn('flex-1 overflow-y-auto overflow-x-hidden p-2', className)} {...props} />;
+  return (
+    <Command.List
+      className={cn(
+        'flex-1 overflow-y-auto overflow-x-hidden p-v2-sm group-[[data-size="small"]]/menu-command-content:p-v2-xs',
+        className,
+      )}
+      {...props}
+    />
+  );
 }
 
 export const MenuCommand = {
