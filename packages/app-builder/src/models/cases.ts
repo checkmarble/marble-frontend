@@ -593,6 +593,9 @@ export type CaseReviewContent = {
 
 export type CaseReview = {
   id: string;
+  status: AiCaseReviewStatus;
+  createdAt: string;
+  updatedAt: string;
   reaction: 'ok' | 'ko' | null;
   version: string;
   review: CaseReviewContent;
@@ -623,6 +626,9 @@ export function adaptCaseReviewContent(dto: Parameters<typeof adaptCaseReview>[0
 export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
   return {
     id: dto.id,
+    status: dto.status,
+    createdAt: dto.created_at,
+    updatedAt: dto.updated_at,
     reaction: dto.reaction,
     version: dto.version,
     review: adaptCaseReviewContent(dto.review),
