@@ -10,25 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn, Markdown, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-function InsufficientFundsIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v10M10 9.5c0-.83.67-1.5 2-1.5s2 .67 2 1.5-.67 1.5-2 1.5-2 .67-2 1.5.67 1.5 2 1.5 2-.67 2-1.5" />
-      <line x1="5.5" y1="5.5" x2="18.5" y2="18.5" />
-    </svg>
-  );
-}
-
 function ReviewStatusIcon({ status }: { status: AiCaseReviewStatus }) {
   switch (status) {
     case 'completed':
@@ -38,7 +19,7 @@ function ReviewStatusIcon({ status }: { status: AiCaseReviewStatus }) {
     case 'failed':
       return <Icon icon="cross" className="size-4 text-red-primary" />;
     case 'insufficient_funds':
-      return <InsufficientFundsIcon className="size-4 text-orange-primary" />;
+      return <Icon icon="warning" className="size-4 text-orange-primary" />;
   }
 }
 
