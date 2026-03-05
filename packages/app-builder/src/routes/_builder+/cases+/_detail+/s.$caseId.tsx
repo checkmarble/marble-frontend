@@ -18,7 +18,8 @@ import {
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { DetailedCaseDecision } from '@app-builder/models/cases';
+import { type CaseReview, DetailedCaseDecision } from '@app-builder/models/cases';
+import { type DataModelObject } from '@app-builder/models/data-model';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
@@ -56,7 +57,7 @@ export const loader = createServerFn(
       ),
     );
 
-    let review: any = null;
+    let review: (CaseReview & { proofs: { type: string; object: DataModelObject }[] }) | null = null;
     if (mostRecentReviews.length > 0 && mostRecentReviews[0]) {
       const mostRecentReview = mostRecentReviews[0];
 
@@ -141,7 +142,7 @@ export default function CaseManagerIndexPage() {
             <ClientOnly>
               {() => (
                 <Modal.Content size="large" className="max-h-[80vh]">
-                  <Modal.Title className="sr-only">AI assist</Modal.Title>
+                  <Modal.Title className="sr-only">{t('cases:case.ai_reviews.title')}</Modal.Title>
                   <CaseReviewsModal caseId={details.id} />
                 </Modal.Content>
               )}

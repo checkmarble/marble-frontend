@@ -1,23 +1,18 @@
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type CaseReview } from '@app-builder/models/cases';
-import { initServerServices } from '@app-builder/services/init.server';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 
 export type CaseReviewResource = {
   review: CaseReview;
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { cases } = await authService.isAuthenticated(request, {
-    failureRedirect: '/sign-in',
-  });
-
+export const loader = createServerFn([authMiddleware], async ({ params, context }) => {
   const caseId = params['caseId'];
   invariant(caseId, 'caseId is required');
   const reviewId = params['reviewId'];
   invariant(reviewId, 'reviewId is required');
 
-  const review = await cases.getCaseReviewById({ caseId, reviewId });
+  const review = await context.authInfo.cases.getCaseReviewById({ caseId, reviewId });
   return Response.json({ review } satisfies CaseReviewResource);
-}
+});

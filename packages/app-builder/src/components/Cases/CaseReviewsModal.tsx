@@ -5,7 +5,7 @@ import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-
 import { useCaseReviewQuery } from '@app-builder/queries/get-case-review';
 import { useCaseReviewsQuery } from '@app-builder/queries/get-case-reviews';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Markdown, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -165,6 +165,13 @@ export function CaseReviewsModal({ caseId }: { caseId: string }) {
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();
   const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
   const [isGenerateCoolingDown, setIsGenerateCoolingDown] = useState(false);
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(cooldownTimerRef.current);
+    };
+  }, []);
 
   const reviews = reviewsQuery.data ?? [];
   const hasPendingReview = reviews.some((r) => r.status === 'pending');
@@ -195,12 +202,15 @@ export function CaseReviewsModal({ caseId }: { caseId: string }) {
             variant="secondary"
             size="small"
             onClick={() => {
-              enqueueReviewMutation.mutate(caseId);
               setIsGenerateCoolingDown(true);
-              setTimeout(() => {
-                setIsGenerateCoolingDown(false);
-                reviewsQuery.refetch();
-              }, 2000);
+              enqueueReviewMutation.mutate(caseId, {
+                onSettled: () => {
+                  cooldownTimerRef.current = setTimeout(() => {
+                    setIsGenerateCoolingDown(false);
+                    reviewsQuery.refetch();
+                  }, 2000);
+                },
+              });
             }}
             disabled={isGenerateCoolingDown || enqueueReviewMutation.isPending || hasPendingReview}
           >
@@ -224,6 +234,10 @@ export function CaseReviewsModal({ caseId }: { caseId: string }) {
         {reviewsQuery.isLoading ? (
           <div className="flex h-full items-center justify-center">
             <Icon icon="spinner" className="size-6 animate-spin text-grey-secondary" />
+          </div>
+        ) : reviewsQuery.isError ? (
+          <div className="flex h-full items-center justify-center text-s text-red-primary">
+            {t('cases:case.ai_reviews.error_loading')}
           </div>
         ) : reviews.length === 0 ? (
           <div className="flex h-full items-center justify-center text-s text-grey-secondary">

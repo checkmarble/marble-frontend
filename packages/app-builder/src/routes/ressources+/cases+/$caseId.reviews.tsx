@@ -1,22 +1,18 @@
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type AiCaseReviewListItem } from '@app-builder/models/cases';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 
 export type CaseReviewsResource = {
   reviews: AiCaseReviewListItem[];
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { cases } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function listCaseReviewsLoader({ context, params }) {
+  const { cases } = context.authInfo;
 
   const caseId = params['caseId'];
   invariant(caseId, 'caseId is required');
 
   const reviews = await cases.listCaseReviews({ caseId });
-  return Response.json({ reviews } satisfies CaseReviewsResource);
-}
+  return { reviews } satisfies CaseReviewsResource;
+});

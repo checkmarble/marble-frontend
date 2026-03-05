@@ -1,3 +1,4 @@
+import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
 
 export function useAddReviewToCaseCommentsMutation(caseId: string, reviewId: string | undefined) {
@@ -7,9 +8,13 @@ export function useAddReviewToCaseCommentsMutation(caseId: string, reviewId: str
         throw new Error('Review ID is required');
       }
 
-      await fetch(`/ressources/cases/${caseId}/review/${reviewId}/add-to-case-comments`, {
-        method: 'POST',
-      });
+      await fetch(
+        getRoute('/ressources/cases/:caseId/review/:reviewId/add-to-case-comments', {
+          caseId,
+          reviewId,
+        }),
+        { method: 'POST' },
+      );
     },
   });
 }

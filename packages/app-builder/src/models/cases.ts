@@ -1,14 +1,14 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { type UnionToArray } from '@app-builder/utils/types';
 import {
-  AiCaseReviewListItemDto,
+  type AiCaseReviewListItemDto,
   type CaseContributorDto,
   type CaseDetailDto,
   type CaseDto,
   type CaseEventDto,
   type CaseFileDto,
-  CaseReviewDto,
-  CaseReviewProofDto,
+  type CaseReviewDto,
+  type CaseReviewProofDto,
   type CaseStatusDto,
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
