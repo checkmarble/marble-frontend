@@ -259,6 +259,10 @@ paths:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1{id}~1dismiss
   /continuous-screenings/{id}/load-more:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1{id}~1load-more
+  /continuous-screenings/debug/update-jobs:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1debug~1update-jobs
+  /continuous-screenings/debug/delta-tracks:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1debug~1delta-tracks
 
   # SCENARIO PUBLICATIONS
 

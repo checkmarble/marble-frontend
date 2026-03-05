@@ -5,6 +5,12 @@ import {
   ContinuousScreeningConfig,
   CreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
+import {
+  adaptDebugDeltaTrack,
+  adaptDebugUpdateJob,
+  type DebugDeltaTrack,
+  type DebugUpdateJob,
+} from '@app-builder/models/continuous-screening-debug';
 
 export interface ContinuousScreeningRepository {
   listConfigurations(): Promise<ContinuousScreeningConfig[]>;
@@ -17,6 +23,18 @@ export interface ContinuousScreeningRepository {
   updateMatchStatus(payload: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }): Promise<any>;
   dismiss(id: string): Promise<void>;
   loadMoreMatches(id: string): Promise<void>;
+  listDebugUpdateJobs(params: {
+    offsetId?: string;
+    sorting?: string;
+    order?: 'ASC' | 'DESC';
+    limit?: number;
+  }): Promise<{ hasNextPage: boolean; items: DebugUpdateJob[] }>;
+  listDebugDeltaTracks(params: {
+    offsetId?: string;
+    sorting?: string;
+    order?: 'ASC' | 'DESC';
+    limit?: number;
+  }): Promise<{ hasNextPage: boolean; items: DebugDeltaTrack[] }>;
 }
 
 export function makeGetContinuousScreeningRepository() {
@@ -53,6 +71,30 @@ export function makeGetContinuousScreeningRepository() {
     },
     loadMoreMatches: async (id: string) => {
       await marbleCoreApiClient.loadMoreContinuousScreeningMatches(id);
+    },
+    listDebugUpdateJobs: async ({ offsetId, sorting, order, limit }) => {
+      const response = await marbleCoreApiClient.listContinuousScreeningDebugUpdateJobs({
+        offsetId,
+        sorting,
+        order,
+        limit,
+      });
+      return {
+        hasNextPage: response.has_next_page,
+        items: response.items.map(adaptDebugUpdateJob),
+      };
+    },
+    listDebugDeltaTracks: async ({ offsetId, sorting, order, limit }) => {
+      const response = await marbleCoreApiClient.listContinuousScreeningDebugDeltaTracks({
+        offsetId,
+        sorting,
+        order,
+        limit,
+      });
+      return {
+        hasNextPage: response.has_next_page,
+        items: response.items.map(adaptDebugDeltaTrack),
+      };
     },
   });
 }

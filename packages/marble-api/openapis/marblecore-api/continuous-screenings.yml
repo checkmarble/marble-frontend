@@ -254,8 +254,197 @@
             schema:
               $ref: '#/components/schemas/ContinuousScreeningDto'
 
+/continuous-screenings/debug/update-jobs:
+  get:
+    summary: List debug update jobs for continuous screening
+    operationId: listContinuousScreeningDebugUpdateJobs
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of debug update jobs
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningDebugUpdateJobsResponseDto'
+
+/continuous-screenings/debug/delta-tracks:
+  get:
+    summary: List debug delta tracks for continuous screening
+    operationId: listContinuousScreeningDebugDeltaTracks
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of debug delta tracks
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningDebugDeltaTracksResponseDto'
+
 components:
   schemas:
+    ContinuousScreeningDebugUpdateJobsResponseDto:
+      type: object
+      required:
+        - has_next_page
+        - items
+      properties:
+        has_next_page:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningDebugUpdateJobDto'
+
+    ContinuousScreeningDebugUpdateJobDto:
+      type: object
+      required:
+        - id
+        - dataset_update_id
+        - config_id
+        - org_id
+        - status
+        - dataset_name
+        - dataset_version
+        - total_items
+        - items_processed
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        dataset_update_id:
+          type: string
+          format: uuid
+        config_id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - completed
+            - failed
+        dataset_name:
+          type: string
+        dataset_version:
+          type: string
+        total_items:
+          type: integer
+        items_processed:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ContinuousScreeningDebugDeltaTracksResponseDto:
+      type: object
+      required:
+        - has_next_page
+        - items
+      properties:
+        has_next_page:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningDebugDeltaTrackDto'
+
+    ContinuousScreeningDebugDeltaTrackDto:
+      type: object
+      required:
+        - id
+        - org_id
+        - object_type
+        - object_id
+        - entity_id
+        - operation
+        - processed
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        object_type:
+          type: string
+        object_id:
+          type: string
+        object_internal_id:
+          type: string
+          format: uuid
+          nullable: true
+        entity_id:
+          type: string
+        operation:
+          type: string
+          enum:
+            - add
+            - update
+            - delete
+        processed:
+          type: boolean
+        dataset_file:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/ContinuousScreeningDebugDatasetFileDto'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ContinuousScreeningDebugDatasetFileDto:
+      type: object
+      required:
+        - id
+        - file_type
+        - version
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        file_type:
+          type: string
+          enum:
+            - full
+            - delta
+        version:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
     ContinuousScreeningConfigDto:
       type: object
       required:
