@@ -111,7 +111,7 @@
   "empty_description": "Aucune description",
   "empty_state.create_table.description": "Partez de zéro et définissez votre propre modèle de données",
   "empty_state.create_table.title": "Créer une nouvelle table",
-  "empty_state.import_org.description": "Téléversez un fichier d'organisation précédemment exporté",
+  "empty_state.import_org.description": "Chargez un fichier d'organisation précédemment exporté",
   "empty_state.import_org.title": "Importer un fichier",
   "empty_state.select_archetype.description": "Choisissez un modèle de données prédéfini pour démarrer rapidement",
   "empty_state.select_archetype.title": "Sélectionner un archétype",
