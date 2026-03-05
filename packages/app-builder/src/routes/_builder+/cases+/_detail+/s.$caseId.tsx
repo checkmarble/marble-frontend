@@ -1,5 +1,5 @@
 import { casesI18n, ErrorComponent, Page } from '@app-builder/components';
-import { AiAssist } from '@app-builder/components/AiAssist';
+
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DecisionPanel } from '@app-builder/components/CaseManager/DecisionPanel/DecisionPanel';
 import { CaseManagerDrawer } from '@app-builder/components/CaseManager/Drawer/Drawer';
@@ -29,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName } from 'ui-design-system';
+import { Button, CtaV2ClassName, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const loader = createServerFn(
@@ -128,24 +128,24 @@ export default function CaseManagerIndexPage() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
         <div className="flex items-center gap-2">
-          <AiAssist.Root>
+          <Modal.Root>
             {aiAssistEnabled === 'allowed' ? (
-              <AiAssist.Trigger>
+              <Modal.Trigger asChild>
                 <Button variant="secondary">
                   <Icon icon="case-manager" className="size-3.5" />
                   AI assist
                 </Button>
-              </AiAssist.Trigger>
+              </Modal.Trigger>
             ) : null}
 
             <ClientOnly>
               {() => (
-                <AiAssist.Content>
+                <Modal.Content size="large" className="max-h-[80vh]">
                   <CaseReviewsModal caseId={details.id} />
-                </AiAssist.Content>
+                </Modal.Content>
               )}
             </ClientOnly>
-          </AiAssist.Root>
+          </Modal.Root>
           <Link
             className={CtaV2ClassName({ variant: 'secondary', mode: 'normal' })}
             to={getRoute('/ressources/cases/:caseId/next-unassigned', { caseId: details.id })}
