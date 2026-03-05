@@ -17,7 +17,7 @@ import { Icon } from 'ui-icons';
 import { CaseFileButton } from '../CaseManager/shared/CaseDocuments/CaseFileButton';
 import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
-import { CaseStatusBadge } from './CaseStatus';
+import { CaseStatusBadgeV2 } from './CaseStatus';
 import { EditCaseAssignee } from './EditAssignee';
 import { EditCaseInbox } from './EditCaseInbox';
 import { EditCaseName } from './EditCaseName';
@@ -131,7 +131,7 @@ export const CaseDetails = ({
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-secondary font-normal">{t('cases:case.status')}</span>
                 <span className="flex items-center gap-2">
-                  <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
+                  <CaseStatusBadgeV2 status={detail.status} outcome={detail.outcome} variant="semi-full" />
                   {detail.snoozedUntil ? (
                     <span className="font-medium text-grey-primary">
                       {t('cases:case.snoozed_until', {

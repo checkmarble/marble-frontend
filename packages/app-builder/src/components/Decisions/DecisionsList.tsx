@@ -1,4 +1,4 @@
-import { CaseStatusBadge, decisionsI18n, OutcomeBadge } from '@app-builder/components';
+import { CaseStatusBadgeV2, decisionsI18n, OutcomeBadge } from '@app-builder/components';
 import { SelectionProps } from '@app-builder/hooks/useTanstackTableListSelection';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
@@ -123,7 +123,7 @@ export function DecisionsList({
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
-              <CaseStatusBadge status={row.original.case.status} size="large" showText={false} />
+              <CaseStatusBadgeV2 status={row.original.case.status} variant="icon-only" />
               <Tooltip.Default content={getValue()}>
                 <div className="bg-grey-background-light flex h-8 items-center justify-center rounded-sm px-2">
                   <span className="text-grey-primary text-s line-clamp-1 font-normal">{getValue()}</span>

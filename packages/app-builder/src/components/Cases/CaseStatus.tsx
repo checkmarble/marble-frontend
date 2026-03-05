@@ -105,8 +105,8 @@ const statusIconMap: Record<CaseStatus, IconProps['icon']> = {
 
 export type CaseStatusBadgeV2Props = {
   status: CaseStatus;
-  outcome: CaseOutcome;
-  variant: 'full' | 'semi-full' | 'big' | 'icon-only';
+  outcome?: CaseOutcome;
+  variant: 'full' | 'semi-full' | 'big' | 'icon-only' | 'text-only';
 };
 
 const badgeTextVariants = cva('', {
@@ -145,19 +145,26 @@ const outcomeVariants = cva('border rounded-full px-v2-sm h-6 flex items-center'
 
 export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV2Props) => {
   const { t } = useTranslation(['cases']);
+  const resolvedOutcome = outcome ?? 'unset';
+
+  if (variant === 'text-only') {
+    return (
+      <span className={cn(badgeTextVariants({ status }), 'text-small font-medium whitespace-nowrap')}>
+        {t(`cases:case.status.${status}`)}
+      </span>
+    );
+  }
 
   if (variant === 'full' || variant === 'icon-only') {
     return (
       <div className={cn(badgeTextVariants({ status }), 'flex items-center gap-v2-sm text-small whitespace-nowrap')}>
         <div className="flex items-center gap-v2-xs shrink-0">
           <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
-          {variant === 'full' ? (
-            <span className="text-grey-primary font-medium">{t(`cases:case.status.${status}`)}</span>
-          ) : null}
+          {variant === 'full' ? <span className="font-medium">{t(`cases:case.status.${status}`)}</span> : null}
         </div>
-        {outcome !== 'unset' && variant !== 'icon-only' ? (
-          <div className={cn(outcomeVariants({ outcome }), 'shrink-0 whitespace-nowrap')}>
-            {t(`cases:case.outcome.${outcome}`)}
+        {resolvedOutcome !== 'unset' && variant !== 'icon-only' ? (
+          <div className={cn(outcomeVariants({ outcome: resolvedOutcome }), 'shrink-0 whitespace-nowrap')}>
+            {t(`cases:case.outcome.${resolvedOutcome}`)}
           </div>
         ) : null}
       </div>
@@ -183,9 +190,9 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
     return (
       <div className="flex items-center gap-v2-xs text-small whitespace-nowrap">
         <Icon icon={statusIconMap[status]} className={cn(badgeTextVariants({ status }), 'size-5 shrink-0')} />
-        {outcome !== 'unset' ? (
-          <div className={cn(outcomeVariants({ outcome }), 'shrink-0 whitespace-nowrap')}>
-            {t(`cases:case.outcome.${outcome}`)}
+        {resolvedOutcome !== 'unset' ? (
+          <div className={cn(outcomeVariants({ outcome: resolvedOutcome }), 'shrink-0 whitespace-nowrap')}>
+            {t(`cases:case.outcome.${resolvedOutcome}`)}
           </div>
         ) : null}
       </div>

@@ -9,7 +9,7 @@ import { MouseEventHandler, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { CaseStatusBadge } from '../CaseStatus';
+import { CaseStatusBadgeV2 } from '../CaseStatus';
 import { AssignedContributors } from './AssignedContributors';
 import { PaginationRow, SuccessCasesQuery } from './PaginationRow';
 
@@ -96,7 +96,7 @@ export function CasesList({
               <MultiSelect.Item index={index} id={caseItem.id} item={caseItem}>
                 {(isSelected, onSelect) => <SelectionCheckbox selectionState={isSelected} onSelect={onSelect} />}
               </MultiSelect.Item>
-              <CaseStatusBadge status={caseItem.status} size="large" showText={false} />
+              <CaseStatusBadgeV2 status={caseItem.status} variant="icon-only" />
             </div>
             <div className="p-v2-md group-hover/table-row:text-purple-primary group-hover/table-row:underline">
               {caseItem.name}
