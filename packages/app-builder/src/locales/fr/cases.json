@@ -327,7 +327,7 @@
   "overview.validate_config": "Valider la configuration",
   "overview.workflow.case_created": "Nouvelle investigation créée",
   "overview.workflow.case_escalated": "Investigation escaladée vers cette boîte de réception",
-  "overview.workflow.manual_request": "Demande manuelle",
+  "overview.workflow.manual_request": "Revue manuelle",
   "pick_file_cta": "Sélectionner un fichier",
   "required_actions.decide_final_status": "Définir le statut final",
   "required_actions.review_screening_hits": "Examiner les filtrages de listes ({{count}})",

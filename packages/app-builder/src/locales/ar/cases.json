@@ -327,7 +327,7 @@
   "overview.validate_config": "تأكيد الإعدادات",
   "overview.workflow.case_created": "حالة جديدة أُنشئت في صندوق الوارد هذا",
   "overview.workflow.case_escalated": "حالة مُصعّدة إلى صندوق الوارد هذا",
-  "overview.workflow.manual_request": "طلب يدوي",
+  "overview.workflow.manual_request": "مراجعة يدوية",
   "pick_file_cta": "اختر ملفًا",
   "required_actions.decide_final_status": "حدّد الحالة النهائية",
   "required_actions.review_screening_hits": "مراجعة مطابقات الفحص ({{count}})",

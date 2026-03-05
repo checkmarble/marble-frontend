@@ -107,6 +107,7 @@ export default function CaseManagerIndexPage() {
     dataModelWithTableOptions,
     pivotObjects,
     currentUser,
+    currentInbox,
     entitlements: { AiAssist: aiAssistEnabled },
     isMenuExpanded,
     mostRecentReview,
@@ -143,7 +144,7 @@ export default function CaseManagerIndexPage() {
               {() => (
                 <Modal.Content size="large" className="max-h-[80vh]">
                   <Modal.Title className="sr-only">{t('cases:case.ai_reviews.title')}</Modal.Title>
-                  <CaseReviewsModal caseId={details.id} />
+                  <CaseReviewsModal caseId={details.id} canManuallyReview={currentInbox.caseReviewManual} />
                 </Modal.Content>
               )}
             </ClientOnly>

@@ -140,7 +140,7 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
   );
 }
 
-export function CaseReviewsModal({ caseId }: { caseId: string }) {
+export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string; canManuallyReview: boolean }) {
   const { t } = useTranslation(['cases', 'common']);
   const formatDateTime = useFormatDateTime();
   const reviewsQuery = useCaseReviewsQuery(caseId);
@@ -180,25 +180,29 @@ export function CaseReviewsModal({ caseId }: { caseId: string }) {
           ) : null}
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="small"
-            onClick={() => {
-              setIsGenerateCoolingDown(true);
-              enqueueReviewMutation.mutate(caseId, {
-                onSettled: () => {
-                  cooldownTimerRef.current = setTimeout(() => {
-                    setIsGenerateCoolingDown(false);
-                    reviewsQuery.refetch();
-                  }, 2000);
-                },
-              });
-            }}
-            disabled={isGenerateCoolingDown || enqueueReviewMutation.isPending || hasPendingReview}
-          >
-            <Icon icon="ai-review" className="size-4" />
-            {isGenerateCoolingDown ? t('cases:case.ai_reviews.review_requested') : t('cases:case.ai_reviews.generate')}
-          </Button>
+          {canManuallyReview ? (
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => {
+                setIsGenerateCoolingDown(true);
+                enqueueReviewMutation.mutate(caseId, {
+                  onSettled: () => {
+                    cooldownTimerRef.current = setTimeout(() => {
+                      setIsGenerateCoolingDown(false);
+                      reviewsQuery.refetch();
+                    }, 2000);
+                  },
+                });
+              }}
+              disabled={isGenerateCoolingDown || enqueueReviewMutation.isPending || hasPendingReview}
+            >
+              <Icon icon="ai-review" className="size-4" />
+              {isGenerateCoolingDown
+                ? t('cases:case.ai_reviews.review_requested')
+                : t('cases:case.ai_reviews.generate')}
+            </Button>
+          ) : null}
           <Button
             variant="secondary"
             size="small"
