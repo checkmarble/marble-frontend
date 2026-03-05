@@ -167,6 +167,7 @@ export function CaseReviewsModal({ caseId }: { caseId: string }) {
   const [isGenerateCoolingDown, setIsGenerateCoolingDown] = useState(false);
 
   const reviews = reviewsQuery.data ?? [];
+  const hasPendingReview = reviews.some((r) => r.status === 'pending');
 
   if (selectedReviewId) {
     return (
@@ -201,7 +202,7 @@ export function CaseReviewsModal({ caseId }: { caseId: string }) {
                 reviewsQuery.refetch();
               }, 2000);
             }}
-            disabled={isGenerateCoolingDown || enqueueReviewMutation.isPending}
+            disabled={isGenerateCoolingDown || enqueueReviewMutation.isPending || hasPendingReview}
           >
             <Icon icon="ai-review" className="size-4" />
             {isGenerateCoolingDown ? t('cases:case.ai_reviews.review_requested') : t('cases:case.ai_reviews.generate')}

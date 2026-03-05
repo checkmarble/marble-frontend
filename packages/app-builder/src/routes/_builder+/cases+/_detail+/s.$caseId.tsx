@@ -141,6 +141,7 @@ export default function CaseManagerIndexPage() {
             <ClientOnly>
               {() => (
                 <Modal.Content size="large" className="max-h-[80vh]">
+                  <Modal.Title className="sr-only">AI assist</Modal.Title>
                   <CaseReviewsModal caseId={details.id} />
                 </Modal.Content>
               )}
