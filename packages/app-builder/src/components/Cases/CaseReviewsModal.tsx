@@ -7,6 +7,7 @@ import { useCaseReviewsQuery } from '@app-builder/queries/get-case-reviews';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, cn, Markdown, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -212,48 +213,55 @@ export function CaseReviewsModal({ caseId }: { caseId: string }) {
 
       {/* Reviews list */}
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {reviewsQuery.isLoading ? (
-          <div className="flex h-full items-center justify-center">
-            <Icon icon="spinner" className="size-6 animate-spin text-grey-secondary" />
-          </div>
-        ) : reviewsQuery.isError ? (
-          <div className="flex h-full items-center justify-center text-s text-red-primary">
-            {t('cases:case.ai_reviews.error_loading')}
-          </div>
-        ) : reviews.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-s text-grey-secondary">
-            {t('cases:case.ai_reviews.empty')}
-          </div>
-        ) : (
-          <ul className="divide-y divide-grey-border">
-            {reviews.map((review) => (
-              <li key={review.id}>
-                <button
-                  type="button"
-                  className={cn(
-                    'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors',
-                    review.status === 'completed' ? 'cursor-pointer hover:bg-grey-background-light' : 'cursor-default',
-                  )}
-                  onClick={review.status === 'completed' ? () => setSelectedReviewId(review.id) : undefined}
-                  disabled={review.status !== 'completed'}
-                >
-                  <ReviewStatusIcon status={review.status} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <ReviewStatusBadge status={review.status} />
-                      <time className="text-xs text-grey-secondary" dateTime={review.createdAt}>
-                        {formatDateTime(review.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
-                      </time>
-                    </div>
-                  </div>
-                  {review.status === 'completed' ? (
-                    <Icon icon="arrow-forward" className="size-4 shrink-0 text-grey-secondary" />
-                  ) : null}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        {match(reviewsQuery)
+          .with({ isLoading: true }, () => (
+            <div className="flex h-full items-center justify-center">
+              <Icon icon="spinner" className="size-6 animate-spin text-grey-secondary" />
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="flex h-full items-center justify-center text-s text-red-primary">
+              {t('cases:case.ai_reviews.error_loading')}
+            </div>
+          ))
+          .otherwise(() =>
+            reviews.length === 0 ? (
+              <div className="flex h-full items-center justify-center text-s text-grey-secondary">
+                {t('cases:case.ai_reviews.empty')}
+              </div>
+            ) : (
+              <ul className="divide-y divide-grey-border">
+                {reviews.map((review) => (
+                  <li key={review.id}>
+                    <button
+                      type="button"
+                      className={cn(
+                        'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors',
+                        review.status === 'completed'
+                          ? 'cursor-pointer hover:bg-grey-background-light'
+                          : 'cursor-default',
+                      )}
+                      onClick={review.status === 'completed' ? () => setSelectedReviewId(review.id) : undefined}
+                      disabled={review.status !== 'completed'}
+                    >
+                      <ReviewStatusIcon status={review.status} />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <ReviewStatusBadge status={review.status} />
+                          <time className="text-xs text-grey-secondary" dateTime={review.createdAt}>
+                            {formatDateTime(review.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
+                          </time>
+                        </div>
+                      </div>
+                      {review.status === 'completed' ? (
+                        <Icon icon="arrow-forward" className="size-4 shrink-0 text-grey-secondary" />
+                      ) : null}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ),
+          )}
       </div>
 
       <Modal.Footer>
