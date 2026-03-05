@@ -397,6 +397,13 @@ CreatedApiKeyDto:
 AuditEventDto:
   $ref: admin.yml#/components/schemas/AuditEventDto
 
+# ORG IMPORT
+
+ArchetypeDto:
+  $ref: org-import.yml#/components/schemas/ArchetypeDto
+ArchetypeApplyDto:
+  $ref: org-import.yml#/components/schemas/ArchetypeApplyDto
+
 # INBOXES
 
 InboxDto:

@@ -1,4 +1,5 @@
 import { CalloutV2, CollapsiblePaper, Page } from '@app-builder/components';
+import { ImportOrg } from '@app-builder/components/Data/ImportOrg';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type ServerFnResult } from '@app-builder/core/middleware-types';
 import { createServerFn, data } from '@app-builder/core/requests';
@@ -12,6 +13,7 @@ import {
   type TableModel,
   type TableModelWithOptions,
 } from '@app-builder/models';
+import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
 import { handleSubmit } from '@app-builder/utils/form';
 import { reorder } from '@app-builder/utils/list';
 import { getRoute } from '@app-builder/utils/routes';
@@ -31,7 +33,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 export const handle = {
-  i18n: ['settings', 'common'] satisfies Namespace,
+  i18n: ['settings', 'common', 'data'] satisfies Namespace,
 };
 
 function createTableOptionSchema(dataModel: DataModel) {
@@ -124,9 +126,10 @@ export const action = createServerFn(
 );
 
 export default function DataDisplaySettings() {
-  const { t } = useTranslation(['common', 'settings']);
+  const { t } = useTranslation(['common', 'settings', 'data']);
   const { dataModelWithTableOptions } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
+  const exportOrgMutation = useExportOrgMutation();
 
   const form = useForm({
     defaultValues: R.pipe(
@@ -166,9 +169,33 @@ export default function DataDisplaySettings() {
         <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8">
           <div className="flex items-center justify-between gap-4">
             <CalloutV2>{t('settings:data_display.global_explanation')}</CalloutV2>
-            <Button type="submit" variant="primary">
-              {t('common:save')}
-            </Button>
+            <div className="flex shrink-0 gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                appearance="stroked"
+                onClick={() => exportOrgMutation.mutate()}
+                disabled={exportOrgMutation.isPending}
+              >
+                {exportOrgMutation.isPending ? (
+                  <Icon icon="spinner" className="size-5 animate-spin" />
+                ) : (
+                  <Icon icon="download" className="size-5" />
+                )}
+                {t('data:export_org.button')}
+              </Button>
+              {dataModelWithTableOptions.length === 0 ? (
+                <ImportOrg>
+                  <Button type="button" variant="secondary" appearance="stroked">
+                    <Icon icon="upload" className="size-5" />
+                    {t('data:import_org.button')}
+                  </Button>
+                </ImportOrg>
+              ) : null}
+              <Button type="submit" variant="primary">
+                {t('common:save')}
+              </Button>
+            </div>
           </div>
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>

@@ -38,7 +38,7 @@
   "case_manager": "Investigations",
   "current_state_available": "Available",
   "current_state_unavailable": "Unavailable",
-  "data_display": "Data display",
+  "data_display": "Data",
   "data_display.global_explanation": "Drag and drop the fields to set the display order, and use the toggle to hide those not needed by default in the case manager.",
   "filters-settings": "Filters settings",
   "filters.associated-object.row.header.label": "Associated object",

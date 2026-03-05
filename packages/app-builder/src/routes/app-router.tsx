@@ -17,8 +17,16 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function appRouterLoader({ context }) {
-  const route = isAnalyst(context.authInfo.user) ? getRoute('/cases') : getRoute('/detection');
-  return redirect(route);
+  if (isAnalyst(context.authInfo.user)) {
+    return redirect(getRoute('/cases'));
+  }
+
+  const dataModel = await context.authInfo.dataModelRepository.getDataModel();
+  if (dataModel.length === 0) {
+    return redirect(getRoute('/data/list'));
+  }
+
+  return redirect(getRoute('/detection'));
 });
 
 export function ErrorBoundary() {
