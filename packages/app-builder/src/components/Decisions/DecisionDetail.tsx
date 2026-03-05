@@ -1,4 +1,4 @@
-import { CaseStatusBadge, decisionsI18n } from '@app-builder/components';
+import { CaseStatusBadgeV2, decisionsI18n } from '@app-builder/components';
 import { type DecisionDetails } from '@app-builder/models/decision';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -53,7 +53,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
-              <CaseStatusBadge status={caseDetail.status} />
+              <CaseStatusBadgeV2 status={caseDetail.status} variant="semi-full" />
               <Link
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUIDtoSUUID(caseDetail.id),

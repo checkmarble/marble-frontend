@@ -98,21 +98,21 @@ function CoordsMap({ value }: { value: string }) {
   const { theme } = useTheme();
 
   return (
-    <>
+    <div className="col-start-2 flex w-full min-w-0 flex-col gap-2">
       <CopyToClipboardButton toCopy={`${opts.latitude},${opts.longitude}`}>
         <span className="text-s line-clamp-1 font-semibold">
           {opts.latitude}, {opts.longitude}
         </span>
       </CopyToClipboardButton>
 
-      <div className="col-start-2 overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+      <div className="overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
         <MapLibre initialViewState={opts} style={{ width: '100%', height: 400 }} mapStyle={CARTO_BASEMAP[theme]}>
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
             <MapPin />
           </Marker>
         </MapLibre>
       </div>
-    </>
+    </div>
   );
 }
 

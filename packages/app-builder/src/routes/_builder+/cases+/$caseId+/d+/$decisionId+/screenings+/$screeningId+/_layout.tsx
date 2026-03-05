@@ -1,6 +1,6 @@
 import { Page, TabLink } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
-import { CaseStatusBadge, casesI18n } from '@app-builder/components/Cases';
+import { CaseStatusBadgeV2, casesI18n } from '@app-builder/components/Cases';
 import { UploadFile } from '@app-builder/components/Files/UploadFile';
 import { ScreeningStatusTag } from '@app-builder/components/Screenings/ScreeningStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
@@ -55,7 +55,7 @@ export const handle = {
             <span className="font-medium">ID</span>
             <span className="text-rtl max-w-20 truncate">{caseDetail.id}</span>
           </span>
-          <CaseStatusBadge status={caseDetail.status} outcome={caseDetail.outcome} />
+          <CaseStatusBadgeV2 status={caseDetail.status} outcome={caseDetail.outcome} variant="semi-full" />
         </div>
       );
     },
