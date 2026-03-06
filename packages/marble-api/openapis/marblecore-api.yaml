@@ -48,6 +48,8 @@ tags:
     description: Operations about testrun.
   - name: Workflows
     description: Scenario workflow management.
+  - name: OrgImport
+    description: Operations about organization import and archetypes.
 servers:
   - url: "http://localhost:8080"
     description: Local devlopment server
@@ -113,8 +115,12 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review
   /cases/{caseId}/review/enqueue:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1enqueue
+  /cases/{caseId}/review/{reviewId}:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1{reviewId}
   /cases/{caseId}/review/{reviewId}/feedback:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1{reviewId}~1feedback
+  /cases/{caseId}/reviews:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1reviews
   /cases/{caseId}/data_for_investigation:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1data_for_investigation
   /cases/{caseId}/enrich_kyc:
@@ -306,6 +312,19 @@ paths:
     $ref: ./marblecore-api/misc.yml#/~1analytics
   /config:
     $ref: ./marblecore-api/misc.yml#/~1config
+
+  # ORG IMPORT
+
+  /org-export:
+    $ref: ./marblecore-api/org-import.yml#/~1org-export
+  /org-import:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import
+  /org-import/file:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import~1file
+  /org-import/archetypes:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import~1archetypes
+  /org-import/archetypes/apply:
+    $ref: ./marblecore-api/org-import.yml#/~1org-import~1archetypes~1apply
 
   # ADMINISTRATION
 

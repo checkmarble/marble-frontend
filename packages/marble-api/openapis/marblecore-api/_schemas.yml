@@ -144,6 +144,8 @@ CaseReviewOkDto:
   $ref: cases.yml#/components/schemas/CaseReviewOkDto
 CaseReviewNotOkDto:
   $ref: cases.yml#/components/schemas/CaseReviewNotOkDto
+AiCaseReviewListItemDto:
+  $ref: cases.yml#/components/schemas/AiCaseReviewListItemDto
 FieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/FieldStatisticsDto
 StringFieldStatisticsDto:
@@ -396,6 +398,13 @@ CreatedApiKeyDto:
   $ref: admin.yml#/components/schemas/CreatedApiKeyDto
 AuditEventDto:
   $ref: admin.yml#/components/schemas/AuditEventDto
+
+# ORG IMPORT
+
+ArchetypeDto:
+  $ref: org-import.yml#/components/schemas/ArchetypeDto
+ArchetypeApplyDto:
+  $ref: org-import.yml#/components/schemas/ArchetypeApplyDto
 
 # INBOXES
 

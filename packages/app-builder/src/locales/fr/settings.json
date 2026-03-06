@@ -38,7 +38,7 @@
   "case_manager": "Investigations",
   "current_state_available": "Disponible",
   "current_state_unavailable": "Indisponible",
-  "data_display": "Affichage des données",
+  "data_display": "Données",
   "data_display.global_explanation": "Glissez-déposez les champs pour définir l'ordre d'affichage et utilisez le bouton pour masquer ceux qui ne sont pas nécessaires par défaut dans la page d'investigations.",
   "filters-settings": "Paramètres des filtres",
   "filters.associated-object.row.header.label": "Objet associé",

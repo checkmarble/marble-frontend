@@ -541,14 +541,21 @@ export const routes = [
         "file": "routes/ressources+/cases+/$caseId+/get-name.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments",
-        "path": "ressources/cases/:caseId/review/:reviewId/add-to-case-comments",
-        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments.tsx"
-      },
-      {
-        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback",
-        "path": "ressources/cases/:caseId/review/:reviewId/feedback",
-        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback.tsx"
+        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId",
+        "path": "ressources/cases/:caseId/review/:reviewId",
+        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.tsx",
+        "children": [
+          {
+            "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments",
+            "path": "add-to-case-comments",
+            "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments.tsx"
+          },
+          {
+            "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback",
+            "path": "feedback",
+            "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback.tsx"
+          }
+        ]
       },
       {
         "id": "routes/ressources+/cases+/$caseId.enqueue-review",
@@ -559,6 +566,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/$caseId.next-unassigned",
         "path": "ressources/cases/:caseId/next-unassigned",
         "file": "routes/ressources+/cases+/$caseId.next-unassigned.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/$caseId.reviews",
+        "path": "ressources/cases/:caseId/reviews",
+        "file": "routes/ressources+/cases+/$caseId.reviews.tsx"
       },
       {
         "id": "routes/ressources+/cases+/$caseId.rules-by-pivot",
@@ -762,6 +774,11 @@ export const routes = [
         "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
       },
       {
+        "id": "routes/ressources+/data+/apply-archetype",
+        "path": "ressources/data/apply-archetype",
+        "file": "routes/ressources+/data+/apply-archetype.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/cases.$objectType.$objectId",
         "path": "ressources/data/cases/:objectType/:objectId",
         "file": "routes/ressources+/data+/cases.$objectType.$objectId.tsx"
@@ -837,6 +854,11 @@ export const routes = [
         "file": "routes/ressources+/data+/editTable.tsx"
       },
       {
+        "id": "routes/ressources+/data+/export-org",
+        "path": "ressources/data/export-org",
+        "file": "routes/ressources+/data+/export-org.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/get-annotations.$objectType.$objectId",
         "path": "ressources/data/get-annotations/:objectType/:objectId",
         "file": "routes/ressources+/data+/get-annotations.$objectType.$objectId.tsx"
@@ -845,6 +867,21 @@ export const routes = [
         "id": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId",
         "path": "ressources/data/get-hierarchy/:objectType/:objectId",
         "file": "routes/ressources+/data+/get-hierarchy.$objectType.$objectId.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/import-org-file",
+        "path": "ressources/data/import-org-file",
+        "file": "routes/ressources+/data+/import-org-file.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/import-org",
+        "path": "ressources/data/import-org",
+        "file": "routes/ressources+/data+/import-org.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/list-archetypes",
+        "path": "ressources/data/list-archetypes",
+        "file": "routes/ressources+/data+/list-archetypes.tsx"
       },
       {
         "id": "routes/ressources+/data+/object.$objectType.$objectId",

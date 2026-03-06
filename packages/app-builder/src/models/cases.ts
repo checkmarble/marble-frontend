@@ -1,13 +1,14 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { type UnionToArray } from '@app-builder/utils/types';
 import {
+  type AiCaseReviewListItemDto,
   type CaseContributorDto,
   type CaseDetailDto,
   type CaseDto,
   type CaseEventDto,
   type CaseFileDto,
-  CaseReviewDto,
-  CaseReviewProofDto,
+  type CaseReviewDto,
+  type CaseReviewProofDto,
   type CaseStatusDto,
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
@@ -592,6 +593,9 @@ export type CaseReviewContent = {
 
 export type CaseReview = {
   id: string;
+  status: AiCaseReviewStatus;
+  createdAt: string;
+  updatedAt: string;
   reaction: 'ok' | 'ko' | null;
   version: string;
   review: CaseReviewContent;
@@ -606,29 +610,50 @@ export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
   };
 }
 
+export function adaptCaseReviewContent(dto: Parameters<typeof adaptCaseReview>[0]['review']): CaseReviewContent {
+  const base = {
+    version: dto.version,
+    output: dto.output,
+    thought: dto.thought,
+    proofs: dto.proofs.map(adaptCaseReviewProof),
+  } as const;
+  if (!dto.ok) {
+    return { ...base, ok: false, sanityCheck: dto.sanity_check };
+  }
+  return { ...base, ok: true };
+}
+
 export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
-  const review: Omit<CaseReview, 'review'> = {
+  return {
     id: dto.id,
+    status: dto.status,
+    createdAt: dto.created_at,
+    updatedAt: dto.updated_at,
     reaction: dto.reaction,
     version: dto.version,
+    review: adaptCaseReviewContent(dto.review),
   };
-  const baseCaseContentReview = {
-    version: dto.review.version,
-    output: dto.review.output,
-    thought: dto.review.thought,
-    proofs: dto.review.proofs.map(adaptCaseReviewProof),
-  } as const;
+}
 
-  if (!dto.review.ok) {
-    return {
-      ...review,
-      review: { ...baseCaseContentReview, ok: false, sanityCheck: dto.review.sanity_check },
-    };
-  }
+export type AiCaseReviewStatus = 'pending' | 'completed' | 'failed' | 'insufficient_funds';
 
+export type AiCaseReviewListItem = {
+  id: string;
+  caseId: string;
+  status: AiCaseReviewStatus;
+  createdAt: string;
+  reaction: 'ok' | 'ko' | null;
+  review: CaseReviewContent | null;
+};
+
+export function adaptAiCaseReviewListItem(dto: AiCaseReviewListItemDto): AiCaseReviewListItem {
   return {
-    ...review,
-    review: { ...baseCaseContentReview, ok: true },
+    id: dto.id,
+    caseId: dto.case_id,
+    status: dto.status,
+    createdAt: dto.created_at,
+    reaction: dto.reaction ?? null,
+    review: dto.review ? adaptCaseReviewContent(dto.review) : null,
   };
 }
 

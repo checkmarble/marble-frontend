@@ -30,6 +30,7 @@ cd packages/app-builder && bun run generate-routes
 ```
 packages/
   app-builder/         # Main Remix application (routes, components, queries)
+  backoffice/          # Backoffice application
   ui-design-system/    # Reusable UI components (Button, Modal, Select, etc.)
   ui-icons/            # Icon components
   marble-api/          # Generated API client
@@ -133,6 +134,17 @@ import toast from 'react-hot-toast';
 - Flat routes with `+` folders: `_builder+/cases+/$caseId.tsx`
 - Use `handle` for breadcrumbs
 - Loaders for data fetching
+
+### Resource Routes (Server)
+- Use `createServerFn` + `authMiddleware` from `core/requests.ts` — NOT legacy `initServerServices`/`ActionFunctionArgs`/`json()`
+- Access auth context via `context.authInfo` (repositories, user) and services via `context.services`
+- Use `data()` from `core/requests.ts` instead of Remix's `json()` for responses with headers
+- `apiClient` on `context.authInfo` is deprecated — add repository methods instead
+- Reference: `routes/ressources+/data+/deleteTable.tsx` (action), `routes/_builder+/settings+/data-display.tsx` (loader + action)
+
+### i18n
+- Three locale files: `locales/en/`, `locales/fr/`, `locales/ar/`
+- All three must have matching keys — missing keys cause TS errors in `resources.server.ts`
 
 ## Troubleshooting
 
