@@ -219,7 +219,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                 'text-right': parsedData.type === 'number' || parsedData.value === null,
               })}
             >
-              <FormatData data={parsedData} />
+              <FormatData type={table.fields.find((f) => f.name === colName)?.dataType} data={parsedData} />
             </span>
           );
         },

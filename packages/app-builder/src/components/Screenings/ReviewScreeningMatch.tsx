@@ -7,7 +7,7 @@ import {
   reviewScreeningMatchPayloadSchema,
   useReviewScreeningMatchMutation,
 } from '@app-builder/queries/screening/review-screening-match';
-import { handleSubmit } from '@app-builder/utils/form';
+import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
@@ -89,6 +89,7 @@ export const ReviewScreeningMatch = ({
                     name={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
+                    onKeyDown={submitOnCtrlEnter}
                   />
                 </div>
               );
