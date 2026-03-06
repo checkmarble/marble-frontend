@@ -541,14 +541,21 @@ export const routes = [
         "file": "routes/ressources+/cases+/$caseId+/get-name.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments",
-        "path": "ressources/cases/:caseId/review/:reviewId/add-to-case-comments",
-        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments.tsx"
-      },
-      {
-        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback",
-        "path": "ressources/cases/:caseId/review/:reviewId/feedback",
-        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback.tsx"
+        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId",
+        "path": "ressources/cases/:caseId/review/:reviewId",
+        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.tsx",
+        "children": [
+          {
+            "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments",
+            "path": "add-to-case-comments",
+            "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments.tsx"
+          },
+          {
+            "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback",
+            "path": "feedback",
+            "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback.tsx"
+          }
+        ]
       },
       {
         "id": "routes/ressources+/cases+/$caseId.enqueue-review",
@@ -559,6 +566,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/$caseId.next-unassigned",
         "path": "ressources/cases/:caseId/next-unassigned",
         "file": "routes/ressources+/cases+/$caseId.next-unassigned.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/$caseId.reviews",
+        "path": "ressources/cases/:caseId/reviews",
+        "file": "routes/ressources+/cases+/$caseId.reviews.tsx"
       },
       {
         "id": "routes/ressources+/cases+/$caseId.rules-by-pivot",

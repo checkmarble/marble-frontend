@@ -608,9 +608,21 @@ export type CaseReviewContentDto = {
 } & (CaseReviewOkDto | CaseReviewNotOkDto);
 export type CaseReviewDto = {
     id: string;
+    status: "pending" | "completed" | "failed" | "insufficient_funds";
+    created_at: string;
+    updated_at: string;
     reaction: CaseReviewFeedbackDto;
     version: string;
     review: CaseReviewContentDto;
+};
+export type AiCaseReviewListItemDto = {
+    id: string;
+    case_id: string;
+    status: "pending" | "completed" | "failed" | "insufficient_funds";
+    created_at: string;
+    updated_at: string;
+    reaction?: CaseReviewFeedbackDto;
+    review?: CaseReviewContentDto;
 };
 export type CaseMassUpdateChangeStatusDto = {
     case_ids: string[];
@@ -2491,7 +2503,10 @@ export function getMostRecentCaseReview(caseId: string, opts?: Oazapfts.RequestO
  */
 export function enqueueReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 204;
+        status: 202;
+        data: {
+            review_id: string;
+        };
     } | {
         status: 401;
         data: string;
@@ -2504,6 +2519,26 @@ export function enqueueReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts
     }>(`/cases/${encodeURIComponent(caseId)}/review/enqueue`, {
         ...opts,
         method: "POST"
+    }));
+}
+/**
+ * Get a specific AI generated review by ID
+ */
+export function getCaseReviewById(caseId: string, reviewId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseReviewDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/review/${encodeURIComponent(reviewId)}`, {
+        ...opts
     }));
 }
 /**
@@ -2529,6 +2564,26 @@ export function addOrUpdateCaseReviewFeedback(caseId: string, reviewId: string, 
         method: "PUT",
         body
     })));
+}
+/**
+ * List all AI generated reviews for a case
+ */
+export function listCaseReviews(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: AiCaseReviewListItemDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/reviews`, {
+        ...opts
+    }));
 }
 /**
  * Download a case data for investigation

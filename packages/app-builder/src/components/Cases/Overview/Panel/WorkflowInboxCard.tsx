@@ -62,15 +62,14 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
               />
               <span className="text-s">{t('cases:overview.workflow.case_escalated')}</span>
             </div>
-            {/* TODO: re-enable this once we have actually shipped the button to (re)generate a case review */}
-            {/* <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-v2-sm">
               <Switch
                 checked={settings.caseReviewManual}
                 onCheckedChange={(checked) => onToggle('caseReviewManual', checked)}
                 disabled={disabled}
               />
               <span className="text-s">{t('cases:overview.workflow.manual_request')}</span>
-            </div> */}
+            </div>
           </div>
         </Collapsible.Content>
       </div>
