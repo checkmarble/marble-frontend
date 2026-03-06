@@ -52,10 +52,14 @@ export function ClientObjectDataList({
         if (!data || !((field.displayed && !hasNoValue) || isExpanded)) return null;
 
         const isMultiLine = field.dataType === 'Coords' || field.dataType === 'IpAddress';
+        // Backend sends quoted keys like `"ip.metadata"`, mock/other sources use unquoted `ip.metadata`
+        const metadata = parsedData[`"${field.name}.metadata"`] ?? parsedData[`${field.name}.metadata`];
+        const hasMetadata = metadata?.type === 'DerivedData' && Object.keys(metadata.value).length > 0;
         return (
           <Fragment key={field.id}>
             <div className="text-grey-secondary truncate">{field.name}</div>
             <FormatData type={field.dataType} data={data} className={cn({ truncate: !isMultiLine })} mapHeight={200} />
+            {hasMetadata ? <FormatData data={metadata} /> : null}
           </Fragment>
         );
       })}
