@@ -1701,6 +1701,8 @@ export type CaseReviewSettingDto = {
     language: string;
     /** Instruction for the AI to follow when generating the report */
     structure: string | null;
+    /** Additional instruction for the AI case review during the case review step generation */
+    additional_case_review_instruction?: string | null;
 };
 export type AiSettingsDto = {
     kyc_enrichment_setting: KycEnrichmentSettingDto;
