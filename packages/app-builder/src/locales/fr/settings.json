@@ -1,4 +1,10 @@
 {
+  "ai": "IA",
+  "ai_case_review": "Revue IA des cas",
+  "ai_case_review_instruction.label": "Instruction supplémentaire",
+  "ai_case_review_instruction.placeholder": "Saisissez des instructions supplémentaires pour la revue IA des cas...",
+  "ai_case_review_instruction.title": "Instruction de revue IA des cas",
+  "ai_case_review_instruction.tooltip": "Fournissez des instructions supplémentaires qui seront utilisées par l'IA lors de la revue des cas. Cela permet de personnaliser le comportement de la revue.",
   "api": "API",
   "api_keys": "Clés d'API",
   "api_keys.copy_api_key": "Assurez-vous de la copier maintenant et de la stocker dans un endroit sécurisé car vous ne pourrez plus la consulter.",

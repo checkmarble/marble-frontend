@@ -30,6 +30,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
         language: settings.caseReviewSetting.language || 'en',
         structure: settings.caseReviewSetting.structure || '',
         orgDescription: settings.caseReviewSetting.orgDescription || '',
+        additionalCaseReviewInstruction: settings.caseReviewSetting.additionalCaseReviewInstruction || '',
       },
       kycEnrichmentSetting: {
         enabled: settings.kycEnrichmentSetting.enabled,

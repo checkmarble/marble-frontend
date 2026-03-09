@@ -25,6 +25,7 @@ export type Sections = {
   users: Section;
   scenarios: Section;
   case_manager: Section;
+  ai: Section;
   data_display: Section;
   audit: Section;
   ip_whitelisting: Section;
@@ -58,6 +59,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
           ? [{ title: 'case_manager', to: getRoute('/settings/inboxes') }]
           : []),
       ],
+    },
+    ai: {
+      icon: 'wand',
+      settings: [...(isAdmin(user) ? [{ title: 'ai_case_review', to: getRoute('/settings/ai-case-review') }] : [])],
     },
     data_display: {
       icon: 'world',
