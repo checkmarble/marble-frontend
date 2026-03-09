@@ -32,7 +32,17 @@ type Data =
       value: unknown;
     };
 
-export function FormatData({ type, data, className }: { type?: DataType; data?: Data; className?: string }) {
+export function FormatData({
+  type,
+  data,
+  className,
+  mapHeight,
+}: {
+  type?: DataType;
+  data?: Data;
+  className?: string;
+  mapHeight?: number;
+}) {
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
 
@@ -40,8 +50,27 @@ export function FormatData({ type, data, className }: { type?: DataType; data?: 
     return <span className={className}>-</span>;
   }
 
-  if (type === 'Coords' && typeof data.value === 'string') {
-    return <CoordsMap value={data.value} />;
+  if (type === 'Coords') {
+    if (typeof data.value === 'string' && data.value) {
+      return <CoordsMap value={data.value} height={mapHeight} />;
+    }
+    // Handle Coords stored as object (e.g., {latitude, longitude} or {lat, lng})
+    if (typeof data.value === 'object' && data.value !== null) {
+      const obj = data.value as Record<string, unknown>;
+      const lat = obj['latitude'] ?? obj['lat'];
+      const lng = obj['longitude'] ?? obj['lng'] ?? obj['lon'];
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        return <CoordsMap value={`${lat},${lng}`} height={mapHeight} />;
+      }
+    }
+    // No valid coordinates found — show dash instead of falling through
+    // to DerivedData rendering (which would show an empty invisible card)
+    return <span className={className}>-</span>;
+  }
+
+  if (type === 'IpAddress' && typeof data.value === 'string') {
+    const display = data.value.replace(/\/(32|128)$/, '');
+    return <span className={className}>{display}</span>;
   }
 
   switch (data.type) {
@@ -93,7 +122,7 @@ function parseCoords(s: string) {
   };
 }
 
-function CoordsMap({ value }: { value: string }) {
+function CoordsMap({ value, height = 400 }: { value: string; height?: number }) {
   const opts = parseCoords(value);
   const { theme } = useTheme();
 
@@ -105,8 +134,8 @@ function CoordsMap({ value }: { value: string }) {
         </span>
       </CopyToClipboardButton>
 
-      <div className="overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
-        <MapLibre initialViewState={opts} style={{ width: '100%', height: 400 }} mapStyle={CARTO_BASEMAP[theme]}>
+      <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+        <MapLibre initialViewState={opts} style={{ width: '100%', height }} mapStyle={CARTO_BASEMAP[theme]}>
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
             <MapPin />
           </Marker>

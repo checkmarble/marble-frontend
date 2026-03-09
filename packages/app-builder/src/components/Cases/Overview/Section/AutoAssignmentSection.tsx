@@ -95,7 +95,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
 
                     return (
                       <div key={inbox.id} className="flex flex-col gap-v2-sm">
-                        <div className="flex items-center gap-v2-sm h-6">
+                        <div className="flex items-center gap-v2-sm">
                           <Icon
                             icon="arrow-down"
                             className={cn('size-5 text-purple-primary', {
@@ -105,8 +105,8 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
                             })}
                             onClick={hasUsers ? () => toggleInbox(inbox.id) : undefined}
                           />
-                          <div className="flex-1 flex items-center gap-v2-xs">
-                            <span className="text-s">{inbox.name}</span>
+                          <div className="flex-1 flex items-center gap-v2-xs min-w-0">
+                            <span className="text-s line-clamp-2">{inbox.name}</span>
                             <Tag color="purple" size="small" border="rounded-sm">
                               {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
                             </Tag>

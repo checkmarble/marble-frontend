@@ -6,7 +6,7 @@ import {
   addCommentPayloadSchema,
   useAddCommentMutation,
 } from '@app-builder/queries/cases/add-comment';
-import { handleSubmit } from '@app-builder/utils/form';
+import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { toggle } from 'radash';
 import { useTranslation } from 'react-i18next';
@@ -53,6 +53,7 @@ export function AddComment({ caseId }: { caseId: string }) {
               value={field.state.value}
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
+              onKeyDown={submitOnCtrlEnter}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
               className="form-textarea text-s w-full resize-none border-none bg-transparent outline-hidden"
