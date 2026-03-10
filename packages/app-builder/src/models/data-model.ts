@@ -326,9 +326,9 @@ export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
     case 'String[]':
       return 'string';
     case 'IpAddress':
-      return 'world';
+      return 'dns';
     case 'Coords':
-      return 'tip';
+      return 'world';
     case 'Int':
     case 'Int[]':
     case 'Float':
