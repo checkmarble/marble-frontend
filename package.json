@@ -13,7 +13,8 @@
   "license": "MIT",
   "overrides": {
     "cookie": "^0.7.2",
-    "cross-spawn": "^7.0.5"
+    "cross-spawn": "^7.0.5",
+    "minimatch": "9.0.6"
   },
   "packageManager": "bun@1.2.21",
   "private": true,
