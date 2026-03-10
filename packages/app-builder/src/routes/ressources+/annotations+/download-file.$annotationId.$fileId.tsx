@@ -1,9 +1,10 @@
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import invariant from 'tiny-invariant';
 
 export const loader = createServerFn(
-  [authMiddleware],
+  [handleRedirectMiddleware, authMiddleware],
   async function downloadAnnotationFileLoader({ params, context }) {
     const { apiClient } = context.authInfo;
 
