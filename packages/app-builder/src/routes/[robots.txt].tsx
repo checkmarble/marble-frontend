@@ -1,5 +1,7 @@
-export const loader = () => {
-  let content = ['User-agent: *', 'Disallow: /'];
+import { createServerFn } from '@app-builder/core/requests';
+
+export const loader = createServerFn([], async function robotsTxtLoader() {
+  const content = ['User-agent: *', 'Disallow: /'];
 
   return new Response(content.join('\n'), {
     status: 200,
@@ -7,4 +9,4 @@ export const loader = () => {
       'content-type': 'text/plain',
     },
   });
-};
+});
