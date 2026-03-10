@@ -1,10 +1,4 @@
 {
-  "ai": "الذكاء الاصطناعي",
-  "ai_case_review": "مراجعة الحالات بالذكاء الاصطناعي",
-  "ai_case_review_instruction.label": "تعليمات إضافية",
-  "ai_case_review_instruction.placeholder": "أدخل تعليمات إضافية لمراجعة الحالات بالذكاء الاصطناعي...",
-  "ai_case_review_instruction.title": "تعليمات مراجعة الحالات بالذكاء الاصطناعي",
-  "ai_case_review_instruction.tooltip": "قدم تعليمات إضافية سيستخدمها الذكاء الاصطناعي عند مراجعة الحالات. هذا يسمح لك بتخصيص سلوك المراجعة.",
   "api": "API",
   "api_keys": "مفاتيح API",
   "api_keys.copy_api_key": "تأكد من نسخه الآن وتخزينه في مكان آمن، حيث لن تتمكن من رؤيته مرة أخرى.",

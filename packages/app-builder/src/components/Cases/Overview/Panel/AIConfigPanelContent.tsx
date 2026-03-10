@@ -154,6 +154,38 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                 </div>
               )}
             </form.Field>
+
+            <form.Field name="caseReviewSetting.additionalCaseReviewInstruction">
+              {(field) => (
+                <div className="flex flex-col gap-v2-xs">
+                  <FormLabel name={field.name} className="text-xs flex items-center gap-2">
+                    {t('cases:ai_settings.general.additional_instruction.field.label')}
+                    <Tooltip.Default
+                      delayDuration={300}
+                      className="max-w-96"
+                      content={
+                        <span className="font-normal text-pretty">
+                          {t('cases:ai_settings.general.additional_instruction.field.tooltip')}
+                        </span>
+                      }
+                    >
+                      <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-primary" />
+                    </Tooltip.Default>
+                  </FormLabel>
+                  <FormTextArea
+                    name={field.name}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onBlur={field.handleBlur}
+                    defaultValue={field.state.value}
+                    valid={field.state.meta.errors.length === 0}
+                    resize="vertical"
+                    className="min-h-[140px] disabled:cursor-not-allowed"
+                    placeholder={t('cases:ai_settings.general.additional_instruction.field.placeholder')}
+                    disabled={readOnly}
+                  />
+                </div>
+              )}
+            </form.Field>
           </div>
 
           {/* Section: IA (KYC Enrichment) */}

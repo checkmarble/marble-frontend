@@ -1,10 +1,4 @@
 {
-  "ai": "AI",
-  "ai_case_review": "AI Case Review",
-  "ai_case_review_instruction.label": "Additional instruction",
-  "ai_case_review_instruction.placeholder": "Enter additional instructions for the AI case review...",
-  "ai_case_review_instruction.title": "AI case review instruction",
-  "ai_case_review_instruction.tooltip": "Provide additional instructions that will be used by the AI when reviewing cases. This allows you to customize the review behavior.",
   "api": "API",
   "api_keys": "API Keys",
   "api_keys.copy_api_key": "Make sure to copy it now and store it in a secure place as you will not be able to see this again.",

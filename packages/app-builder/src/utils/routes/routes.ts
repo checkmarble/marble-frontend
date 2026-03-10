@@ -385,11 +385,6 @@ export const routes = [
                 "file": "routes/_builder+/settings+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/settings+/ai-case-review",
-                "path": "ai-case-review",
-                "file": "routes/_builder+/settings+/ai-case-review.tsx"
-              },
-              {
                 "id": "routes/_builder+/settings+/analytics+/filters",
                 "path": "analytics/filters",
                 "file": "routes/_builder+/settings+/analytics+/filters.tsx"
