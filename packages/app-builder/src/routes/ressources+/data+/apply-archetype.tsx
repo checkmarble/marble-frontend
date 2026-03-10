@@ -1,45 +1,45 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { type ServerFnResult } from '@app-builder/core/middleware-types';
+import { createServerFn, data } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { applyArchetypePayloadSchema } from '@app-builder/queries/data/apply-archetype';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    i18nextService: { getFixedT },
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
+type ApplyArchetypeActionResult = ServerFnResult<{ success: boolean }>;
 
-  const [session, t, raw, { apiClient }] = await Promise.all([
-    getSession(request),
-    getFixedT(request, ['common', 'data']),
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function applyArchetypeAction({ request, context }): ApplyArchetypeActionResult {
+    const { toastSessionService, i18nextService } = context.services;
+    const { apiClient } = context.authInfo;
 
-  const { success, data } = applyArchetypePayloadSchema.safeParse(raw);
+    const [session, t, raw] = await Promise.all([
+      toastSessionService.getSession(request),
+      i18nextService.getFixedT(request, ['common', 'data']),
+      request.json(),
+    ]);
 
-  if (!success) return json({ success: false });
+    const parsed = applyArchetypePayloadSchema.safeParse(raw);
 
-  try {
-    // User can't seed data from archetypes, that's why we pass {} as second argument
-    await apiClient.applyArchetype({ name: data.name }, {});
+    if (!parsed.success) return { success: false };
 
-    setToastMessage(session, {
-      type: 'success',
-      message: t('data:apply_archetype.success'),
-    });
+    try {
+      // User can't seed data from archetypes, that's why we pass {} as second argument
+      await apiClient.applyArchetype({ name: parsed.data.name }, {});
 
-    return json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  } catch {
-    setToastMessage(session, {
-      type: 'error',
-      message: t('common:errors.unknown'),
-    });
+      setToastMessage(session, {
+        type: 'success',
+        message: t('data:apply_archetype.success'),
+      });
 
-    return json({ success: false }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  }
-}
+      return data({ success: true }, [['Set-Cookie', await toastSessionService.commitSession(session)]]);
+    } catch {
+      setToastMessage(session, {
+        type: 'error',
+        message: t('common:errors.unknown'),
+      });
+
+      return data({ success: false }, [['Set-Cookie', await toastSessionService.commitSession(session)]]);
+    }
+  },
+);

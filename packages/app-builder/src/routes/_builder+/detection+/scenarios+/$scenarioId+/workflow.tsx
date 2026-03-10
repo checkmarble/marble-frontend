@@ -3,12 +3,13 @@ import { BreadCrumbLink, BreadCrumbProps, BreadCrumbs } from '@app-builder/compo
 import { WorkflowList } from '@app-builder/components/Workflows/WorkflowList';
 import { useWorkflow, WorkflowProvider } from '@app-builder/components/Workflows/WorkflowProvider';
 import { WorkflowScrollHandler } from '@app-builder/components/Workflows/WorkflowScrollHandler.client';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
 import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { Namespace } from 'i18next';
@@ -40,11 +41,8 @@ export const handle = {
   ],
 };
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { authService } = initServerServices(request);
-  const { dataModelRepository, entitlements, user } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function workflowLoader({ params, context }) {
+  const { dataModelRepository, entitlements, user } = context.authInfo;
 
   if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
@@ -63,7 +61,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       isCreateInboxAvailable: isCreateInboxAvailable(user),
     },
   };
-};
+});
 
 function WorkflowContent() {
   const { t } = useTranslation(['common', 'workflows']);

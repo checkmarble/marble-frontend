@@ -1,18 +1,17 @@
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import invariant from 'tiny-invariant';
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { authService } = initServerServices(request);
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn(
+  [authMiddleware],
+  async function downloadAnnotationFileLoader({ params, context }) {
+    const { apiClient } = context.authInfo;
 
-  const annotationId = params['annotationId'];
-  invariant(annotationId, 'annotationId is required');
-  const fileId = params['fileId'];
-  invariant(fileId, 'fileId is required');
+    const annotationId = params['annotationId'];
+    invariant(annotationId, 'annotationId is required');
+    const fileId = params['fileId'];
+    invariant(fileId, 'fileId is required');
 
-  return Response.json(await apiClient.downloadAnnotationFile(annotationId, fileId));
-};
+    return Response.json(await apiClient.downloadAnnotationFile(annotationId, fileId));
+  },
+);
