@@ -75,7 +75,7 @@ function DataListEmptyState() {
         <SelectArchetype>
           <button
             type="button"
-            className="border-grey-border hover:border-purple-primary hover:bg-purple-background flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
+            className="border-grey-border hover:border-purple-primary hover:bg-purple-background dark:hover:bg-purple-border flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
           >
             <Icon icon="category" className="text-purple-primary size-10" />
             <span className="text-l font-semibold text-grey-primary">
@@ -87,7 +87,7 @@ function DataListEmptyState() {
         <CreateTable>
           <button
             type="button"
-            className="border-grey-border hover:border-purple-primary hover:bg-purple-background flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
+            className="border-grey-border hover:border-purple-primary hover:bg-purple-background dark:hover:bg-purple-border flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
           >
             <Icon icon="plus" className="text-purple-primary size-10" />
             <span className="text-l font-semibold text-grey-primary">{t('data:empty_state.create_table.title')}</span>
@@ -97,7 +97,7 @@ function DataListEmptyState() {
         <ImportOrg>
           <button
             type="button"
-            className="border-grey-border hover:border-purple-primary hover:bg-purple-background flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
+            className="border-grey-border hover:border-purple-primary hover:bg-purple-background dark:hover:bg-purple-border flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
           >
             <Icon icon="upload" className="text-purple-primary size-10" />
             <span className="text-l font-semibold text-grey-primary">{t('data:empty_state.import_org.title')}</span>
