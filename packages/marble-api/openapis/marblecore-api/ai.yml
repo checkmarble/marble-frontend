@@ -96,6 +96,10 @@ components:
           type: string
           nullable: true
           description: Instruction for the AI to follow when generating the report
+        additional_case_review_instruction:
+          type: string
+          nullable: true
+          description: Additional instruction for the AI case review during the case review step generation
 
     AISettingsDto:
       type: object

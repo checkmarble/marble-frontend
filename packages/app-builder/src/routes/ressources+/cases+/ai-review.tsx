@@ -1,38 +1,36 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-
-import { ActionFunctionArgs } from '@remix-run/node';
+import { createServerFn, data } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import * as Sentry from '@sentry/remix';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const { authService, toastSessionService } = initServerServices(request);
-  const { aiAssistSettings } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function aiReviewAction({ request, context }) {
+    const { toastSessionService } = context.services;
+    const toastSession = await toastSessionService.getSession(request);
+    const { aiAssistSettings } = context.authInfo;
 
-  const [rawData, toastSession] = await Promise.all([request.json(), toastSessionService.getSession(request)]);
+    const rawData = await request.json();
 
-  try {
-    await aiAssistSettings.updateAiAssistSettings(rawData);
-    setToastMessage(toastSession, {
-      type: 'success',
-      messageKey: 'common:success.save',
-    });
-  } catch (error) {
-    setToastMessage(toastSession, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
-    Sentry.captureException(error);
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) } },
-    );
-  }
+    try {
+      await aiAssistSettings.updateAiAssistSettings(rawData);
+      setToastMessage(toastSession, {
+        type: 'success',
+        messageKey: 'common:success.save',
+      });
 
-  return Response.json(
-    { success: true },
-    { headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) } },
-  );
-}
+      return data({ success: true }, [['Set-Cookie', await toastSessionService.commitSession(toastSession)]]);
+    } catch (error) {
+      setToastMessage(toastSession, {
+        type: 'error',
+        messageKey: 'common:errors.unknown',
+      });
+      Sentry.captureException(error);
+
+      return data({ success: false, errors: [] }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    }
+  },
+);
