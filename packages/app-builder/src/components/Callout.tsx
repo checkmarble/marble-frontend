@@ -67,3 +67,13 @@ export function CalloutV2({ children, className, ...otherProps }: React.Componen
     </aside>
   );
 }
+
+export function CalloutV3({ children, className, ...otherProps }: React.ComponentPropsWithoutRef<'aside'>) {
+  if (!children) return null;
+
+  return (
+    <aside className={cn('font-normal dark:text-grey-primary', className)} {...otherProps}>
+      {children}
+    </aside>
+  );
+}

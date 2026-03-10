@@ -1,9 +1,15 @@
 import { Callout, ErrorComponent, Page } from '@app-builder/components';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
+import { ArchiveScenario } from '@app-builder/components/Scenario/Actions/ArchiveScenario';
+import { CopyScenario } from '@app-builder/components/Scenario/Actions/CopyScenario';
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
+import { UnarchiveScenarioButton } from '@app-builder/components/Scenario/Actions/UnarchiveScenario';
+import { UpdateScenario } from '@app-builder/components/Scenario/Actions/UpdateScenario';
 import { createServerFn } from '@app-builder/core/requests';
+import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Scenario } from '@app-builder/models/scenario';
+import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -14,7 +20,8 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Table, Tag, useVirtualTable } from 'ui-design-system';
+import { useHydrated } from 'remix-utils/use-hydrated';
+import { Button, Pill, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -23,6 +30,7 @@ export const handle = {
 
 export const loader = createServerFn([authMiddleware], async function scenariosLoader({ context }) {
   return {
+    isEditScenarioAvailable: isEditScenarioAvailable(context.authInfo.user),
     scenarios: await context.authInfo.scenario.listScenarios(),
   };
 });
@@ -31,8 +39,12 @@ const columnHelper = createColumnHelper<Scenario>();
 
 export default function DetectionScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const { scenarios } = useLoaderData<typeof loader>();
+  const { scenarios, isEditScenarioAvailable } = useLoaderData<typeof loader>();
+  const hydrated = useHydrated();
   const formatDateTime = useFormatDateTime();
+  const isLargeScreen = useMediaQuery('xl');
+
+  console.log('scenarios', scenarios);
 
   const columns = useMemo(
     () => [
@@ -44,16 +56,20 @@ export default function DetectionScenariosPage() {
           const { liveVersionId, archived } = getValue();
           if (archived) {
             return (
-              <Tag color="grey" size="small" className="capitalize">
+              <Pill size="small" className="capitalize">
                 {t('scenarios:archived')}
-              </Tag>
+              </Pill>
             );
           }
           return liveVersionId ? (
-            <Tag color="purple" size="small" className="capitalize">
+            <Pill size="small" className="capitalize">
               {t('scenarios:live')}
-            </Tag>
-          ) : null;
+            </Pill>
+          ) : (
+            <Pill size="small" className="capitalize">
+              {t('scenarios:draft')}
+            </Pill>
+          );
         },
       }),
       columnHelper.accessor('name', {
@@ -66,7 +82,7 @@ export default function DetectionScenariosPage() {
       columnHelper.accessor('description', {
         id: 'description',
         header: t('scenarios:list.column.description'),
-        size: 300,
+        size: 250,
       }),
       columnHelper.accessor('triggerObjectType', {
         id: 'triggerObjectType',
@@ -75,9 +91,9 @@ export default function DetectionScenariosPage() {
         cell: ({ getValue }) => {
           const triggerObjectType = getValue();
           return (
-            <Tag color="purple" size="small" border="rounded-sm">
+            <Pill color="grey" size="small" className="font-normal" border="square">
               {triggerObjectType}
-            </Tag>
+            </Pill>
           );
         },
       }),
@@ -93,13 +109,99 @@ export default function DetectionScenariosPage() {
           });
         },
       }),
+      columnHelper.display({
+        id: 'actions',
+        header: '',
+        size: 144,
+        cell: ({ row }) => {
+          if (!isEditScenarioAvailable) return null;
+
+          if (row.original.archived) {
+            return (
+              <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+                <UpdateScenario
+                  defaultValue={{
+                    name: row.original.name,
+                    scenarioId: row.original.id,
+                    description: row.original.description,
+                  }}
+                >
+                  <Button
+                    variant="secondary"
+                    mode="icon"
+                    disabled={!hydrated}
+                    aria-label={t('scenarios:update_scenario.title')}
+                    title={t('scenarios:update_scenario.title')}
+                  >
+                    <Icon icon="edit-square" className="size-3.5" />
+                  </Button>
+                </UpdateScenario>
+                <UnarchiveScenarioButton scenarioId={row.original.id} disabled={!hydrated} iconOnly />
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+              <UpdateScenario
+                defaultValue={{
+                  name: row.original.name,
+                  scenarioId: row.original.id,
+                  description: row.original.description,
+                }}
+              >
+                <Button
+                  variant="secondary"
+                  mode="icon"
+                  disabled={!hydrated}
+                  aria-label={t('scenarios:update_scenario.title')}
+                  title={t('scenarios:update_scenario.title')}
+                >
+                  <Icon icon="edit-square" className="size-3.5" />
+                </Button>
+              </UpdateScenario>
+              <CopyScenario scenarioId={row.original.id} scenarioName={row.original.name}>
+                <Button
+                  variant="secondary"
+                  mode="icon"
+                  disabled={!hydrated}
+                  aria-label={t('scenarios:copy_scenario.title')}
+                  title={t('scenarios:copy_scenario.title')}
+                >
+                  <Icon icon="copy" className="size-3.5" />
+                </Button>
+              </CopyScenario>
+              {!row.original.liveVersionId ? (
+                <ArchiveScenario scenarioId={row.original.id} scenarioName={row.original.name}>
+                  <Button
+                    variant="secondary"
+                    mode="icon"
+                    disabled={!hydrated}
+                    aria-label={t('scenarios:archive_scenario.title')}
+                    className="border-red-primary text-red-primary hover:bg-red-background"
+                    title={t('scenarios:archive_scenario.title')}
+                  >
+                    <Icon icon="inbox" className="size-3.5" />
+                  </Button>
+                </ArchiveScenario>
+              ) : null}
+            </div>
+          );
+        },
+      }),
     ],
-    [t, formatDateTime],
+    [t, formatDateTime, hydrated, isEditScenarioAvailable],
   );
 
   const { table, isEmpty, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: scenarios,
     columns,
+    state: {
+      columnVisibility: {
+        createdAt: isLargeScreen,
+        description: isLargeScreen,
+      },
+    },
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
