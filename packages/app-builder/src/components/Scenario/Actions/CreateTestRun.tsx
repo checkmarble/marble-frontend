@@ -50,7 +50,7 @@ export function CreateTestRun({
 
   return (
     <Tooltip.Default content={t('scenarios:testrun.not_allowed')}>
-      <Button disabled variant="primary" className="isolate cursor-not-allowed" appearance="outlined">
+      <Button disabled variant="primary" className="isolate cursor-not-allowed" appearance="stroked">
         <Icon icon="plus" className="size-4" aria-hidden />
         {t('scenarios:create_testrun.title')}
       </Button>
