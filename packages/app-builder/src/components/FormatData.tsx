@@ -115,16 +115,21 @@ function DerivedDataDetails({ value }: { value: object }) {
 
 function parseCoords(s: string) {
   const [lat, lng] = s.split(',');
-  return {
-    latitude: parseFloat(lat ?? '0.0'),
-    longitude: parseFloat(lng ?? '0.0'),
-    zoom: 5,
-  };
+  const latitude = parseFloat(lat ?? '');
+  const longitude = parseFloat(lng ?? '');
+  if (isNaN(latitude) || isNaN(longitude)) return null;
+  if (latitude < -90 || latitude > 90) return null;
+  if (longitude < -180 || longitude > 180) return null;
+  return { latitude, longitude, zoom: 5 };
 }
 
 function CoordsMap({ value, height = 400 }: { value: string; height?: number }) {
   const opts = parseCoords(value);
   const { theme } = useTheme();
+
+  if (!opts) {
+    return <span>-</span>;
+  }
 
   return (
     <div className="col-start-2 flex w-full min-w-0 flex-col gap-2">

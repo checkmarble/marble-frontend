@@ -105,7 +105,9 @@ function ArchetypeCard({
       onClick={onSelect}
       className={clsx(
         'flex flex-col gap-1 rounded-lg border-2 p-4 text-left transition-colors',
-        isSelected ? 'border-purple-primary bg-purple-background' : 'border-grey-border hover:border-grey-placeholder',
+        isSelected
+          ? 'border-purple-primary bg-purple-background dark:bg-purple-border'
+          : 'border-grey-border hover:border-grey-placeholder',
       )}
     >
       <span className="text-s font-semibold text-grey-primary">{archetype.label ?? archetype.name}</span>
