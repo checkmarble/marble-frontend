@@ -25,7 +25,8 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!success) return json({ success: false });
 
   try {
-    await apiClient.applyArchetype({ name: data.name }, { seed: data.seed ? 'true' : 'false' });
+    // User can't seed data from archetypes, that's why we pass {} as second argument
+    await apiClient.applyArchetype({ name: data.name }, {});
 
     setToastMessage(session, {
       type: 'success',
