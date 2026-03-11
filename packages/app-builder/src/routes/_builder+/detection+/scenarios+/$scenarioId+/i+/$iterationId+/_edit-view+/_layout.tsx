@@ -34,7 +34,7 @@ import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { cn, Tabs, Tag, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
+import { useCurrentScenarioIteration, useCurrentScenarioValidation, VersionSelect } from '../_layout';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -96,7 +96,7 @@ export default function ScenarioEditLayout() {
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
           <ScenarioHeader isEditScenarioAvailable={isEditScenarioAvailable} />
-
+          <VersionSelect currentIteration={currentIteration} scenarioIterations={scenarioIterations} />
           {withEditTag ? (
             <Tag size="big" border="square">
               {t('common:edit')}
@@ -141,7 +141,7 @@ export default function ScenarioEditLayout() {
             {t('scenarios:iteration.archived_message')}
           </aside>
         ) : currentScenario.description ? (
-          <Page.Description>{currentScenario.description}</Page.Description>
+          <Page.Description withIcon={false}>{currentScenario.description}</Page.Description>
         ) : null}
         <Page.Content>
           {archived ? (

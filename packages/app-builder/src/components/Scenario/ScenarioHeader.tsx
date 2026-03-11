@@ -49,6 +49,29 @@ export function ScenarioHeader({ isEditScenarioAvailable }: { isEditScenarioAvai
   );
 }
 
+export function ScenarioDescriptionEditable({ isEditScenarioAvailable }: { isEditScenarioAvailable: boolean }) {
+  const currentScenario = useCurrentScenario();
+  const hydrated = useHydrated();
+  const { t } = useTranslation(handle.i18n);
+
+  return (
+    <EditableScenarioField
+      scenarioId={currentScenario.id}
+      name={currentScenario.name}
+      description={currentScenario.description ?? ''}
+      fieldName="description"
+      placeholder={t('scenarios:create_scenario.description_placeholder')}
+      editLabel={t('scenarios:update_scenario.title')}
+      disabled={!isEditScenarioAvailable || !hydrated}
+      formClassName="w-full"
+      containerClassName="w-full items-center gap-3"
+      displayValueClassName="min-w-0"
+      emptyValueClassName="text-grey-placeholder"
+      inputClassName="text-s text-grey-secondary min-w-0 flex-1 border-none bg-transparent font-normal outline-hidden"
+    />
+  );
+}
+
 export function EditableScenarioField({
   scenarioId,
   name,

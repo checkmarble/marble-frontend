@@ -5,7 +5,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { Page } from '@app-builder/components/Page';
 import { CreateTestRun } from '@app-builder/components/Scenario/Actions/CreateTestRun';
-import { EditableScenarioField, ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
+import { ScenarioDescriptionEditable, ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
 import { Spinner } from '@app-builder/components/Spinner';
 import { WorkflowNudge } from '@app-builder/components/Workflows/Nudge';
@@ -28,7 +28,6 @@ import { type Namespace, type ParseKeys } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useHydrated } from 'remix-utils/use-hydrated';
 import { match } from 'ts-pattern';
 import { Button, CtaV2ClassName, HiddenInputs } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -140,7 +139,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ScenarioHome() {
   const { t } = useTranslation(handle.i18n);
-  const hydrated = useHydrated();
   const { featureAccess, scheduledExecutions, liveIterationSchedule } = useLoaderData<typeof loader>();
 
   const currentScenario = useCurrentScenario();
@@ -216,20 +214,7 @@ export default function ScenarioHome() {
         ) : null}
         {currentScenario.description || featureAccess.isEditScenarioAvailable ? (
           <Page.Description withIcon={false}>
-            <EditableScenarioField
-              scenarioId={currentScenario.id}
-              name={currentScenario.name}
-              description={currentScenario.description ?? ''}
-              fieldName="description"
-              placeholder={t('scenarios:create_scenario.description_placeholder')}
-              editLabel={t('scenarios:update_scenario.title')}
-              disabled={!featureAccess.isEditScenarioAvailable || !hydrated}
-              formClassName="w-full"
-              containerClassName="w-full items-center gap-3"
-              displayValueClassName="min-w-0"
-              emptyValueClassName="text-grey-placeholder"
-              inputClassName="text-s text-grey-secondary min-w-0 flex-1 border-none bg-transparent font-normal outline-hidden"
-            />
+            <ScenarioDescriptionEditable isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} />
           </Page.Description>
         ) : null}
         <Page.ContentV2 centered className="flex flex-col gap-v2-lg">
@@ -264,32 +249,6 @@ export default function ScenarioHome() {
     </Page.Main>
   );
 }
-
-// function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: ScenarioIterationSummaryWithType }) {
-//   const { t } = useTranslation(['scenarios']);
-
-//   const currentFormattedVersion = getFormattedVersion(scenarioIteration, t);
-//   const currentFormattedLive = getFormattedLive(scenarioIteration, t);
-//   const currentFormattedArchived = getFormattedArchived(scenarioIteration, t);
-
-//   return (
-//     <Link
-//       to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
-//         scenarioId: fromUUIDtoSUUID(scenarioIteration.scenarioId),
-//         iterationId: fromUUIDtoSUUID(scenarioIteration.id),
-//       })}
-//       className={CtaV2ClassName({ variant: 'secondary' })}
-//     >
-//       <span className="text-grey-primary text-s font-semibold capitalize">{currentFormattedVersion}</span>
-//       {currentFormattedLive ? (
-//         <span className="text-s text-purple-primary font-semibold capitalize">{currentFormattedLive}</span>
-//       ) : null}
-//       {currentFormattedArchived ? (
-//         <span className="text-s text-grey-secondary font-semibold capitalize">{currentFormattedArchived}</span>
-//       ) : null}
-//     </Link>
-//   );
-// }
 
 function TestRunSection({ scenarioId, access }: { scenarioId: string; access: FeatureAccessLevelDto }) {
   const { t } = useTranslation();

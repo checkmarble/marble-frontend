@@ -312,6 +312,7 @@
   "home.resources.scenario_guide": "Scenario guide",
   "home.testrun": "Version comparison",
   "home.versions": "Versions ({{count}})",
+  "home.versions_label": "Versions:",
   "home.workflow": "Workflow",
   "home.workflow_description": "Workflows are a series of actions that are automatically performed based on a trigger. They help you automate your work and save time.",
   "home.workflow_type.add_to_case_if_possible": "add to case",

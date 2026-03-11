@@ -312,6 +312,7 @@
   "home.resources.scenario_guide": "Guide de scénario",
   "home.testrun": "Tests comparatifs",
   "home.versions": "Versions ({{count}})",
+  "home.versions_label": "Versions :",
   "home.workflow": "Automatisation",
   "home.workflow_description": "Les automatisations sont une série d'actions exécutées automatiquement en fonction d'un déclencheur. \nIls vous aident à automatiser votre travail et à gagner du temps.",
   "home.workflow_type.add_to_case_if_possible": "ajouter à l'investigation",

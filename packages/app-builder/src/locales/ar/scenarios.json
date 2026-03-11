@@ -312,6 +312,7 @@
   "home.resources.scenario_guide": "دليل السيناريو",
   "home.testrun": "اختبار",
   "home.versions": "الإصدارات ({{count}})",
+  "home.versions_label": "الإصدارات:",
   "home.workflow": "سير العمل",
   "home.workflow_description": "سير العمل سلسلة من الإجراءات تُنفّذ تلقائيًا بناءً على مُشغِّل.\nتساعدك على أتمتة عملك وتوفير الوقت.",
   "home.workflow_type.add_to_case_if_possible": "أضف إلى الحالة",
