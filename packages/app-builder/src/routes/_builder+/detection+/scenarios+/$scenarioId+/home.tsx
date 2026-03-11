@@ -26,7 +26,7 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import * as React from 'react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, CtaV2ClassName, HiddenInputs } from 'ui-design-system';
@@ -144,12 +144,12 @@ export default function ScenarioHome() {
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterationsSummary();
 
-  const liveScenarioIteration = React.useMemo(
+  const liveScenarioIteration = useMemo(
     () => scenarioIterations.find(({ type }) => type === 'live version'),
     [scenarioIterations],
   );
 
-  const lastScenarioIteration = React.useMemo(
+  const lastScenarioIteration = useMemo(
     () =>
       scenarioIterations
         .filter(({ type }) => type === 'version')
@@ -157,10 +157,7 @@ export default function ScenarioHome() {
     [scenarioIterations],
   );
 
-  const draftScenario = React.useMemo(
-    () => scenarioIterations.find(({ type }) => type === 'draft'),
-    [scenarioIterations],
-  );
+  const draftScenario = useMemo(() => scenarioIterations.find(({ type }) => type === 'draft'), [scenarioIterations]);
 
   const scenarioToWatch = liveScenarioIteration ?? lastScenarioIteration;
   const scenarioToEdit = lastScenarioIteration ?? draftScenario;
@@ -256,9 +253,9 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
   const scenarioIterations = useScenarioIterationsSummary();
   const { testRuns } = useLoaderData<typeof loader>();
 
-  const currentTestRun = React.useMemo(() => testRuns.filter((r) => r.status === 'up'), [testRuns]);
+  const currentTestRun = useMemo(() => testRuns.filter((r) => r.status === 'up'), [testRuns]);
 
-  const isExecutionOngoing = React.useMemo(() => currentTestRun.length > 0, [currentTestRun]);
+  const isExecutionOngoing = useMemo(() => currentTestRun.length > 0, [currentTestRun]);
 
   return (
     <article className="flex flex-col">
@@ -397,7 +394,7 @@ function BatchSection({
   const isLive = !!liveIterationId;
   const schedule = liveIterationSchedule;
 
-  const formattedSchedule = React.useMemo(() => {
+  const formattedSchedule = useMemo(() => {
     try {
       if (!schedule) return undefined;
       return formatSchedule(schedule, {

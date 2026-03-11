@@ -182,9 +182,9 @@ export function EditableScenarioField({
                     aria-label={editLabel}
                     title={editLabel}
                     onClick={() => setIsEditing(true)}
-                    className="p-0 border-none text-grey-secondary"
+                    className="text-grey-secondary"
                   >
-                    <Icon icon="edit" className="size-5" />
+                    <Icon icon="edit" className="size-4" />
                   </Button>
                 </>
               )}

@@ -10,17 +10,8 @@ function getBreakpointValue(breakpoint: TailwindBreakpoint) {
   return value || null;
 }
 
-function getMatches(breakpoint: TailwindBreakpoint) {
-  if (typeof window === 'undefined') return false;
-
-  const breakpointValue = getBreakpointValue(breakpoint);
-  if (!breakpointValue) return false;
-
-  return window.matchMedia(`(min-width: ${breakpointValue})`).matches;
-}
-
 export function useMediaQuery(breakpoint: TailwindBreakpoint) {
-  const [matches, setMatches] = useState(() => getMatches(breakpoint));
+  const [matches, setMatches] = useState(false);
 
   useEffect(() => {
     const breakpointValue = getBreakpointValue(breakpoint);

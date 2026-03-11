@@ -17,7 +17,7 @@ export const Pill = React.forwardRef<HTMLSpanElement, PillProps>(function Pill(
     <span
       ref={ref}
       className={clsx(
-        'inline-flex items-center gap-1 justify-center border  text-nowrap rounded-full ',
+        'inline-flex items-center gap-1 justify-center border text-nowrap ',
         {
           'rounded-full': border === 'rounded',
           'rounded-sm': border === 'square',
