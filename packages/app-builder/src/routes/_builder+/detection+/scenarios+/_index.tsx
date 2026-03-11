@@ -44,8 +44,6 @@ export default function DetectionScenariosPage() {
   const formatDateTime = useFormatDateTime();
   const isLargeScreen = useMediaQuery('xl');
 
-  console.log('scenarios', scenarios);
-
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => ({ liveVersionId: row.liveVersionId, archived: row.archived }), {

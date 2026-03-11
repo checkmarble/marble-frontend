@@ -1,9 +1,9 @@
 import { useArchiveScenarioMutation } from '@app-builder/queries/scenarios/archive-scenario';
-import { Icon } from 'packages/ui-icons/src/Icon';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export function ArchiveScenario({
   children,

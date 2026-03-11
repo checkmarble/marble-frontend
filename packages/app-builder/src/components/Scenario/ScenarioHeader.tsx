@@ -11,7 +11,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Pill } from 'ui-design-system';
@@ -99,7 +99,7 @@ export function EditableScenarioField({
   emptyValueClassName?: string;
   inputClassName?: string;
 }) {
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const updateScenarioMutation = useUpdateScenarioMutation();
   const revalidate = useLoaderRevalidator();
   const fieldSchema =
@@ -126,7 +126,7 @@ export function EditableScenarioField({
     },
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     form.reset({
       scenarioId,
       name,
