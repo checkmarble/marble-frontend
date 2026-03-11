@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
+import { UserAvailabilityStatus } from '@app-builder/components/Settings/UserAvailabilityStatus';
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
 import { tKeyForUserRole } from '@app-builder/models/user';
@@ -8,11 +9,13 @@ import { useOrganizationDetails } from '@app-builder/services/organization/organ
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
 import { getRoute } from '@app-builder/utils/routes';
-import { Form } from '@remix-run/react';
+import { Form, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Radio, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+import { type loader as builderLayoutLoader } from './_layout';
 
 export const handle = {
   i18n: ['navigation', 'account', 'common', 'settings'] satisfies Namespace,
@@ -35,6 +38,8 @@ export default function AccountPage() {
 
   const { theme, setTheme } = useTheme();
   const { versions } = AppConfigContext.useValue();
+  const layoutData = useRouteLoaderData<typeof builderLayoutLoader>('routes/_builder+/_layout');
+  const isAutoAssignmentAvailable = layoutData?.featuresAccess.isAutoAssignmentAvailable ?? false;
 
   const { firstName, lastName, email } = currentUser.actorIdentity;
   const fullName = getFullName({ firstName, lastName });
@@ -90,6 +95,7 @@ export default function AccountPage() {
                   </label>
                 </Radio.Root>
               </div>
+              <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
             </div>
 
             <div className="text-grey-secondary flex items-center gap-4 text-xs">
