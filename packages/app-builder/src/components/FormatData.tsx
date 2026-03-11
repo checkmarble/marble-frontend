@@ -138,7 +138,7 @@ function CompactDerivedDataField({ value }: { value: object }) {
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <button type="button" className="text-grey-secondary hover:text-grey-primary shrink-0">
+        <button type="button" className="text-purple-primary hover:text-purple-hover shrink-0">
           <Icon icon="eye" className="size-4" />
         </button>
       </Modal.Trigger>
@@ -185,7 +185,7 @@ function CompactCoordsField({
       </span>
       <Modal.Root>
         <Modal.Trigger asChild>
-          <button type="button" className="text-grey-secondary hover:text-grey-primary shrink-0">
+          <button type="button" className="text-purple-primary hover:text-purple-hover shrink-0">
             <Icon icon="world" className="size-4" />
           </button>
         </Modal.Trigger>
