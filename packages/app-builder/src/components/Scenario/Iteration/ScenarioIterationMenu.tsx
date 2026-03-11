@@ -65,7 +65,7 @@ export function ScenarioIterationMenu({
   return (
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       {children}
-      <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col min-w-48 rounded-xl py-4">
+      <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col min-w-48 rounded-xl py-2">
         <ScenarioIterationContent searchValue={deferredSearchValue} labelledScenarioIteration={scenarioIterations} />
       </MenuPopover>
     </MenuRoot>
