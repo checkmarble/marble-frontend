@@ -4,7 +4,7 @@ import { type Archetype, useListArchetypesQuery } from '@app-builder/queries/dat
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SelectArchetype({ children }: { children: React.ReactNode }) {
@@ -13,13 +13,12 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
   const applyArchetypeMutation = useApplyArchetypeMutation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype | null>(null);
-  const [seed, setSeed] = useState(true);
   const revalidate = useLoaderRevalidator();
 
   const handleApply = () => {
     if (!selectedArchetype) return;
 
-    applyArchetypeMutation.mutateAsync({ name: selectedArchetype.name, seed }).then((result) => {
+    applyArchetypeMutation.mutateAsync({ name: selectedArchetype.name }).then((result) => {
       revalidate();
 
       if (result.success) {
@@ -36,7 +35,6 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
         setIsOpen(open);
         if (!open) {
           setSelectedArchetype(null);
-          setSeed(true);
         }
       }}
     >
@@ -60,15 +58,6 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           )}
-          <label className="flex items-center gap-2">
-            <Checkbox
-              name="seed"
-              size="small"
-              checked={seed}
-              onCheckedChange={(checked) => setSeed(checked === true)}
-            />
-            <span className="text-s text-grey-primary">{t('data:select_archetype.seed_data')}</span>
-          </label>
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
