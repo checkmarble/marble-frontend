@@ -290,6 +290,7 @@
   "enriched_metadata.cloud_provider": "Fournisseur cloud",
   "enriched_metadata.country": "Pays",
   "enriched_metadata.country_code": "Pays",
+  "enriched_metadata.title": "Métadonnées",
   "enriched_metadata.tor_exit_node": "Nœud de sortie Tor",
   "enriched_metadata.vpn": "Point d'accès VPN",
   "enum_options": "Possibilités :",

@@ -14,19 +14,63 @@ export type ClientDataInfoProps = {
 
 export const ClientDataInfo = ({ objectDetails, table }: ClientDataInfoProps) => {
   const { t } = useTranslation(['common']);
+
+  // TODO: revert — fake Coords/IpAddress data for testing compact modals
+  const fakeData: Record<string, unknown> = {
+    ...objectDetails.data,
+    fake_ip: '192.168.1.42/32',
+    'fake_ip.metadata': { country: 'France', city: 'Paris', isp: 'Orange SA', risk_score: '72' },
+    fake_location: '48.8566,2.3522',
+    'fake_location.metadata': { region: 'Île-de-France', timezone: 'Europe/Paris' },
+  };
+  const fakeFields: typeof table.fields = [
+    ...table.fields,
+    {
+      id: 'fake_ip',
+      name: 'fake_ip',
+      dataType: 'IpAddress',
+      description: '',
+      isEnum: false,
+      nullable: true,
+      tableId: '',
+      unicityConstraint: 'no_unicity_constraint',
+      displayed: true,
+    },
+    {
+      id: 'fake_location',
+      name: 'fake_location',
+      dataType: 'Coords',
+      description: '',
+      isEnum: false,
+      nullable: true,
+      tableId: '',
+      unicityConstraint: 'no_unicity_constraint',
+      displayed: true,
+    },
+  ];
+  const fakeTable = {
+    ...table,
+    fields: fakeFields,
+    options: { ...table.options, fieldOrder: [...table.options.fieldOrder, 'fake_ip', 'fake_location'] },
+  };
+  // eslint-disable-next-line no-param-reassign
+  objectDetails = { ...objectDetails, data: fakeData };
+  // eslint-disable-next-line no-param-reassign
+  table = fakeTable;
+  // END TODO
+
   const parsedData = R.pipe(objectDetails.data, R.mapValues(parseUnknownData));
   const effectiveFieldOrder =
     table.options.fieldOrder.length > 0 ? table.options.fieldOrder : table.fields.map((f) => f.id);
   const fieldCount = effectiveFieldOrder.length;
   const [isExpanded, setIsExpanded] = useState(false);
-  const hasAnyMetadata = Object.keys(objectDetails.data).some((key) => key.endsWith('.metadata'));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-v2-md grow">
       <div
         className={cn(
           'grid grid-cols-subgrid gap-y-v2-sm col-span-full overflow-hidden',
-          isExpanded || hasAnyMetadata ? 'max-h-[none]' : 'lg:max-h-[140px]',
+          isExpanded ? 'max-h-[none]' : 'lg:max-h-[140px]',
         )}
       >
         {effectiveFieldOrder.map((fieldId) => {
@@ -40,14 +84,14 @@ export const ClientDataInfo = ({ objectDetails, table }: ClientDataInfoProps) =>
               <div className="truncate" title={field.name}>
                 {field.name}
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1 min-w-0">
                 <FormatData
                   type={field.dataType}
                   data={parsedData[field.name]}
                   className="whitespace-nowrap truncate"
-                  mapHeight={200}
+                  compact
                 />
-                {hasMetadata ? <FormatData data={metadata} /> : null}
+                {hasMetadata ? <FormatData data={metadata} compact /> : null}
               </div>
             </div>
           );
