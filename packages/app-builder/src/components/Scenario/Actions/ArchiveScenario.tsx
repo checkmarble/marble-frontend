@@ -1,6 +1,8 @@
 import { useArchiveScenarioMutation } from '@app-builder/queries/scenarios/archive-scenario';
+import { Icon } from 'packages/ui-icons/src/Icon';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
 
 export function ArchiveScenario({
@@ -52,5 +54,23 @@ function ArchiveScenarioContent({ scenarioId, scenarioName }: { scenarioId: stri
         </Button>
       </Modal.Footer>
     </>
+  );
+}
+
+export function ArchiveScenarioButton({ scenarioId, scenarioName }: { scenarioId: string; scenarioName: string }) {
+  const { t } = useTranslation(['scenarios']);
+  const hydrated = useHydrated();
+  return (
+    <ArchiveScenario scenarioId={scenarioId} scenarioName={scenarioName}>
+      <Button
+        variant="destructive"
+        mode="icon"
+        disabled={!hydrated}
+        aria-label={t('scenarios:archive_scenario.title')}
+        title={t('scenarios:archive_scenario.title')}
+      >
+        <Icon icon="inbox" className="size-6" />
+      </Button>
+    </ArchiveScenario>
   );
 }

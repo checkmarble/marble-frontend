@@ -11,7 +11,9 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export function UpdateScenario({
   children,
@@ -122,5 +124,24 @@ function UpdateScenarioContent({
         </Button>
       </Modal.Footer>
     </form>
+  );
+}
+
+export function UpdateScenarioButton({ defaultValue }: { defaultValue: UpdateScenarioPayload }) {
+  const { t } = useTranslation(['scenarios']);
+  const hydrated = useHydrated();
+
+  return (
+    <UpdateScenario defaultValue={defaultValue}>
+      <Button
+        variant="secondary"
+        mode="icon"
+        disabled={!hydrated}
+        aria-label={t('scenarios:update_scenario.title')}
+        title={t('scenarios:update_scenario.title')}
+      >
+        <Icon icon="edit-square" className="size-6" />
+      </Button>
+    </UpdateScenario>
   );
 }

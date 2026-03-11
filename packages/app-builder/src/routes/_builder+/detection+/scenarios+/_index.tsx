@@ -1,10 +1,10 @@
 import { Callout, ErrorComponent, Page } from '@app-builder/components';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
-import { ArchiveScenario } from '@app-builder/components/Scenario/Actions/ArchiveScenario';
-import { CopyScenario } from '@app-builder/components/Scenario/Actions/CopyScenario';
+import { ArchiveScenarioButton } from '@app-builder/components/Scenario/Actions/ArchiveScenario';
+import { CopyScenarioButton } from '@app-builder/components/Scenario/Actions/CopyScenario';
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
 import { UnarchiveScenarioButton } from '@app-builder/components/Scenario/Actions/UnarchiveScenario';
-import { UpdateScenario } from '@app-builder/components/Scenario/Actions/UpdateScenario';
+import { UpdateScenarioButton } from '@app-builder/components/Scenario/Actions/UpdateScenario';
 import { createServerFn } from '@app-builder/core/requests';
 import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -119,23 +119,13 @@ export default function DetectionScenariosPage() {
           if (row.original.archived) {
             return (
               <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
-                <UpdateScenario
+                <UpdateScenarioButton
                   defaultValue={{
                     name: row.original.name,
                     scenarioId: row.original.id,
                     description: row.original.description,
                   }}
-                >
-                  <Button
-                    variant="secondary"
-                    mode="icon"
-                    disabled={!hydrated}
-                    aria-label={t('scenarios:update_scenario.title')}
-                    title={t('scenarios:update_scenario.title')}
-                  >
-                    <Icon icon="edit-square" className="size-3.5" />
-                  </Button>
-                </UpdateScenario>
+                />
                 <UnarchiveScenarioButton scenarioId={row.original.id} disabled={!hydrated} iconOnly />
               </div>
             );
@@ -143,47 +133,16 @@ export default function DetectionScenariosPage() {
 
           return (
             <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
-              <UpdateScenario
+              <UpdateScenarioButton
                 defaultValue={{
                   name: row.original.name,
                   scenarioId: row.original.id,
                   description: row.original.description,
                 }}
-              >
-                <Button
-                  variant="secondary"
-                  mode="icon"
-                  disabled={!hydrated}
-                  aria-label={t('scenarios:update_scenario.title')}
-                  title={t('scenarios:update_scenario.title')}
-                >
-                  <Icon icon="edit-square" className="size-3.5" />
-                </Button>
-              </UpdateScenario>
-              <CopyScenario scenarioId={row.original.id} scenarioName={row.original.name}>
-                <Button
-                  variant="secondary"
-                  mode="icon"
-                  disabled={!hydrated}
-                  aria-label={t('scenarios:copy_scenario.title')}
-                  title={t('scenarios:copy_scenario.title')}
-                >
-                  <Icon icon="copy" className="size-3.5" />
-                </Button>
-              </CopyScenario>
+              />
+              <CopyScenarioButton scenarioId={row.original.id} scenarioName={row.original.name} />
               {!row.original.liveVersionId ? (
-                <ArchiveScenario scenarioId={row.original.id} scenarioName={row.original.name}>
-                  <Button
-                    variant="secondary"
-                    mode="icon"
-                    disabled={!hydrated}
-                    aria-label={t('scenarios:archive_scenario.title')}
-                    className="border-red-primary text-red-primary hover:bg-red-background"
-                    title={t('scenarios:archive_scenario.title')}
-                  >
-                    <Icon icon="inbox" className="size-3.5" />
-                  </Button>
-                </ArchiveScenario>
+                <ArchiveScenarioButton scenarioId={row.original.id} scenarioName={row.original.name} />
               ) : null}
             </div>
           );

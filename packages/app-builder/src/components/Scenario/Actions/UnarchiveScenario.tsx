@@ -26,7 +26,7 @@ export function UnarchiveScenarioButton({
         unarchiveScenarioMutation.mutate({ scenarioId });
       }}
     >
-      <Icon icon="restart-alt" className="size-3.5" />
+      <Icon icon="restart-alt" className="size-6" />
       {!iconOnly ? <p>{t('scenarios:unarchive_scenario.button')}</p> : null}
     </Button>
   );
