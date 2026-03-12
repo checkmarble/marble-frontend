@@ -21,7 +21,7 @@ import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, Pill, Table, useVirtualTable } from 'ui-design-system';
+import { Button, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -54,19 +54,19 @@ export default function DetectionScenariosPage() {
           const { liveVersionId, archived } = getValue();
           if (archived) {
             return (
-              <Pill size="small" className="capitalize">
+              <Tag size="small" color="grey" className="capitalize">
                 {t('scenarios:archived')}
-              </Pill>
+              </Tag>
             );
           }
           return liveVersionId ? (
-            <Pill size="small" className="capitalize">
+            <Tag size="small" color="grey" className="capitalize">
               {t('scenarios:live')}
-            </Pill>
+            </Tag>
           ) : (
-            <Pill size="small" className="capitalize">
+            <Tag size="small" color="grey" className="capitalize">
               {t('scenarios:draft')}
-            </Pill>
+            </Tag>
           );
         },
       }),
@@ -91,7 +91,7 @@ export default function DetectionScenariosPage() {
           return (
             <Tag color="purple" size="small">
               {triggerObjectType}
-            </Pill>
+            </Tag>
           );
         },
       }),

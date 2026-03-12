@@ -14,7 +14,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, Pill } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -41,10 +41,10 @@ export function ScenarioHeader({ isEditScenarioAvailable }: { isEditScenarioAvai
         displayValueClassName="text-h2 truncate"
         inputClassName="text-h2 min-w-0 flex-1 border-none bg-transparent font-normal outline-hidden"
       />
-      <Pill size="medium" color="grey">
+      <Tag size="small" color="grey">
         {currentScenario.triggerObjectType}
         <Icon icon="tip" className="size-4" />
-      </Pill>
+      </Tag>
     </div>
   );
 }
