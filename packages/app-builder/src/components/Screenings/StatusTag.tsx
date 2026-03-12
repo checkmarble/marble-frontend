@@ -25,7 +25,6 @@ export function StatusTag({ status, disabled, onClick }: StatusTagProps) {
   return (
     <Tag
       color={statusTagColors[status]}
-      border="square"
       onClick={() => !disabled && onClick?.()}
       className={clsx('inline-flex h-8 gap-1', {
         'cursor-pointer': !!onClick && !disabled,

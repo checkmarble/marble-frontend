@@ -27,7 +27,6 @@ export function CasePivotValues({
           <React.Fragment key={pivot.id}>
             <Tag
               size="big"
-              border="square"
               color={pivot.type === 'field' ? 'grey' : 'purple'}
               className="col-start-1 flex flex-row gap-2"
             >

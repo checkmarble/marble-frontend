@@ -91,11 +91,7 @@ export default function ScenarioEditLayout() {
         <div className="flex flex-row items-center gap-4">
           <BreadCrumbs />
 
-          {withEditTag ? (
-            <Tag size="big" border="square">
-              {t('common:edit')}
-            </Tag>
-          ) : null}
+          {withEditTag ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
         {!archived ? (
           <div className="flex flex-row items-center gap-4">
