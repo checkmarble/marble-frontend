@@ -1,6 +1,6 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { type AppConfig, adaptAppConfig } from '@app-builder/models/app-config';
-import { adaptReleaseNotes, ReleaseNotes } from '@app-builder/models/release-notes';
+import { adaptReleaseNotes, type ReleaseNotes } from '@app-builder/models/release-notes';
 import { getServerEnv } from '@app-builder/utils/environment';
 
 export interface AppConfigRepository {
