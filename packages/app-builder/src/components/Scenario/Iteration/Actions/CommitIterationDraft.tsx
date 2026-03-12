@@ -25,7 +25,7 @@ export function CommitIterationDraft({
   const [open, setOpen] = React.useState(false);
 
   const button = (
-    <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
+    <Button className="flex-1" variant="primary" disabled={!iteration.isValid} size="default">
       <Icon icon="commit" className="size-5" />
       {t('scenarios:deployment_modal.commit.button')}
     </Button>

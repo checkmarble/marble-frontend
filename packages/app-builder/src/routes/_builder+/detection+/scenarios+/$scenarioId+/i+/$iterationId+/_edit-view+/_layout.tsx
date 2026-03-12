@@ -99,47 +99,53 @@ export default function ScenarioEditLayout() {
           <VersionSelect currentIteration={currentIteration} scenarioIterations={scenarioIterations} />
           {withEditTag ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
-        {!archived ? (
-          <div className="flex flex-row items-center gap-4">
-            {withCreateDraftIteration ? (
-              <CreateDraftIteration
-                iterationId={currentIteration.id}
-                scenarioId={currentScenario.id}
-                draftId={draftIteration?.id}
-              />
-            ) : null}
-            {loaderData.isDeploymentActionsAvailable ? (
-              <DeploymentActions
-                scenario={{
-                  id: currentScenario.id,
-                  isLive: !!currentScenario.liveVersionId,
-                }}
-                iteration={{
-                  id: currentIteration.id,
-                  type: currentIteration.type,
-                  isValid:
-                    !hasTriggerErrors(scenarioValidation) &&
-                    !hasRulesErrors(scenarioValidation) &&
-                    !hasScreeningsErrors(scenarioValidation) &&
-                    !hasDecisionErrors(scenarioValidation),
-                  status: loaderData.publicationPreparationStatus.status,
-                }}
-                isPreparationServiceOccupied={loaderData.publicationPreparationStatus.serviceStatus === 'occupied'}
-              />
-            ) : null}
-          </div>
-        ) : null}
       </Page.Header>
-      <Page.Container className="px-v2-xxxxl py-v2-lg">
+      <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
         {archived ? (
           <aside className="bg-grey-background text-s text-grey-primary flex flex-row items-center gap-2 p-4 font-normal lg:px-8 lg:py-4">
             <Icon icon="tip" className="size-5 shrink-0" />
             {t('scenarios:iteration.archived_message')}
           </aside>
-        ) : currentScenario.description ? (
-          <Page.Description withIcon={false}>{currentScenario.description}</Page.Description>
-        ) : null}
-        <Page.Content>
+        ) : (
+          <section className="flex flex-row gap-6 items-center">
+            {currentScenario.description ? (
+              <Page.Description withIcon={false} className="flex-1">
+                {currentScenario.description}
+              </Page.Description>
+            ) : null}
+
+            <div className="flex flex-row items-center gap-4">
+              {withCreateDraftIteration ? (
+                <CreateDraftIteration
+                  iterationId={currentIteration.id}
+                  scenarioId={currentScenario.id}
+                  draftId={draftIteration?.id}
+                />
+              ) : null}
+              {loaderData.isDeploymentActionsAvailable ? (
+                <DeploymentActions
+                  scenario={{
+                    id: currentScenario.id,
+                    isLive: !!currentScenario.liveVersionId,
+                  }}
+                  iteration={{
+                    id: currentIteration.id,
+                    type: currentIteration.type,
+                    isValid:
+                      !hasTriggerErrors(scenarioValidation) &&
+                      !hasRulesErrors(scenarioValidation) &&
+                      !hasScreeningsErrors(scenarioValidation) &&
+                      !hasDecisionErrors(scenarioValidation),
+                    status: loaderData.publicationPreparationStatus.status,
+                  }}
+                  isPreparationServiceOccupied={loaderData.publicationPreparationStatus.serviceStatus === 'occupied'}
+                />
+              ) : null}
+            </div>
+          </section>
+        )}
+
+        <Page.ContentV2 paddingLess className="flex flex-col gap-v2-lg my-v2-xxl">
           {archived ? (
             <ArchivedIterationView />
           ) : (
@@ -181,7 +187,7 @@ export default function ScenarioEditLayout() {
               <Outlet />
             </>
           )}
-        </Page.Content>
+        </Page.ContentV2>
       </Page.Container>
     </Page.Main>
   );

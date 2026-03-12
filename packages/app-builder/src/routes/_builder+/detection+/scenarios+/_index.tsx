@@ -178,7 +178,7 @@ export default function DetectionScenariosPage() {
           <DetectionNavigationTabs
             actions={
               <CreateScenario>
-                <Button>
+                <Button size="default">
                   <Icon icon="plus" className="size-6" aria-hidden />
                   {t('scenarios:create_scenario.title')}
                 </Button>

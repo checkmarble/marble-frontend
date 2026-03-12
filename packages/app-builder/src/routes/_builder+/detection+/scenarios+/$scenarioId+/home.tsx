@@ -168,53 +168,55 @@ export default function ScenarioHome() {
         <div className="flex flex-row items-center gap-v2-xs">
           <ScenarioHeader isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} />
         </div>
-        <div className="flex flex-row gap-4">
-          {
-            /**
-             * Action buttons
-             * - if live scenario exist: "See live version"
-             * - if draft exist: "edit scenario" only
-             * - if commited scenario exist: "See last version"
-             */
-            scenarioToWatch ? (
-              <Link
-                to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
-                  scenarioId: fromUUIDtoSUUID(scenarioToWatch.scenarioId),
-                  iterationId: fromUUIDtoSUUID(scenarioToWatch.id),
-                })}
-                className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}
-              >
-                <Icon icon="eye" className="size-4" />
-                {liveScenarioIteration ? t('scenarios:home.live_version') : t('scenarios:home.last_version')}
-              </Link>
-            ) : null
-          }
-          {scenarioToEdit ? (
-            <Link
-              to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
-                scenarioId: fromUUIDtoSUUID(scenarioToEdit.scenarioId),
-                iterationId: fromUUIDtoSUUID(scenarioToEdit.id),
-              })}
-              className={CtaV2ClassName({ variant: 'primary', appearance: 'filled' })}
-            >
-              <Icon icon="edit" className="size-4" />
-              {t('scenarios:update_scenario.title')}
-            </Link>
-          ) : null}
-        </div>
       </Page.Header>
-      <Page.Container className="px-v2-xxxxl py-v2-lg">
+      <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
         {currentScenario.archived ? (
           <Callout color="red" icon="warning">
             {t('scenarios:archived_scenario_banner')}
           </Callout>
         ) : null}
-        {currentScenario.description || featureAccess.isEditScenarioAvailable ? (
-          <Page.Description withIcon={false}>
-            <ScenarioDescriptionEditable isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} />
-          </Page.Description>
-        ) : null}
-        <Page.ContentV2 centered className="flex flex-col gap-v2-lg">
+        <section className="flex flex-row gap-6 items-center">
+          {currentScenario.description || featureAccess.isEditScenarioAvailable ? (
+            <Page.Description withIcon={false} className="flex-1">
+              <ScenarioDescriptionEditable isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} />
+            </Page.Description>
+          ) : null}
+          <div className="flex flex-row gap-4">
+            {
+              /**
+               * Action buttons
+               * - if live scenario exist: "See live version"
+               * - if draft exist: "edit scenario" only
+               * - if commited scenario exist: "See last version"
+               */
+              scenarioToWatch ? (
+                <Link
+                  to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
+                    scenarioId: fromUUIDtoSUUID(scenarioToWatch.scenarioId),
+                    iterationId: fromUUIDtoSUUID(scenarioToWatch.id),
+                  })}
+                  className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked', size: 'default' })}
+                >
+                  <Icon icon="eye" className="size-4" />
+                  {liveScenarioIteration ? t('scenarios:home.live_version') : t('scenarios:home.last_version')}
+                </Link>
+              ) : null
+            }
+            {scenarioToEdit ? (
+              <Link
+                to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
+                  scenarioId: fromUUIDtoSUUID(scenarioToEdit.scenarioId),
+                  iterationId: fromUUIDtoSUUID(scenarioToEdit.id),
+                })}
+                className={CtaV2ClassName({ variant: 'primary', appearance: 'filled', size: 'default' })}
+              >
+                <Icon icon="edit" className="size-4" />
+                {t('scenarios:update_scenario.title')}
+              </Link>
+            ) : null}
+          </div>
+        </section>
+        <Page.ContentV2 centered paddingLess className="flex flex-col gap-v2-lg my-v2-xxl">
           <section className="flex flex-col gap-v2-sm">
             <h2 className="text-grey-primary text-m font-semibold">{t('scenarios:home.execution')}</h2>
             <div className="grid grid-cols-2 gap-v2-sm">
