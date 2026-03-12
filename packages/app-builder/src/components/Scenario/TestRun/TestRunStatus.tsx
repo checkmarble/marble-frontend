@@ -9,23 +9,23 @@ export const TestRunStatus = ({ status }: { status: TestRStatus }) => {
 
   return match(status)
     .with('up', () => (
-      <Tag border="square" size="big" color="purple" className="bg-purple-primary gap-2">
+      <Tag size="big" color="purple" className="bg-purple-primary gap-2">
         <Spinner className="text-grey-white size-3" />
         <span className="text-s text-grey-white font-semibold">{t('scenarios:testrun.status.up')}</span>
       </Tag>
     ))
     .with('down', () => (
-      <Tag border="square" size="big" color="red">
+      <Tag size="big" color="red">
         <span className="text-s font-semibold">{t('scenarios:testrun.status.down')}</span>
       </Tag>
     ))
     .with('unknown', () => (
-      <Tag border="square" size="big" color="orange">
+      <Tag size="big" color="orange">
         <span className="text-s font-semibold">{t('scenarios:testrun.status.unknown')}</span>
       </Tag>
     ))
     .with('pending', () => (
-      <Tag border="square" size="big" color="yellow">
+      <Tag size="big" color="yellow">
         <span className="text-s font-semibold">{t('scenarios:testrun.status.pending')}</span>
       </Tag>
     ))

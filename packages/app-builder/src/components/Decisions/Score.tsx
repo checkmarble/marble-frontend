@@ -7,7 +7,7 @@ import { decisionsI18n } from './decisions-i18n';
 export const Score = ({ score }: { score: number }) => {
   const language = useFormatLanguage();
   return (
-    <Tag color="purple" border="square" size="big" className="w-16">
+    <Tag color="purple" size="big" className="w-16">
       {formatNumber(score, { language, signDisplay: 'exceptZero' })}
     </Tag>
   );

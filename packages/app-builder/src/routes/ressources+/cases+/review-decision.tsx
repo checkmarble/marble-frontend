@@ -190,7 +190,7 @@ function ReviewDecisionContent({
                   return (
                     <Select.DefaultItem key={reviewStatus} value={reviewStatus}>
                       <div className="flex flex-col gap-2">
-                        <ReviewStatusTag border="square" size="big" className="w-fit" reviewStatus={reviewStatus} />
+                        <ReviewStatusTag size="big" className="w-fit" reviewStatus={reviewStatus} />
                         {disabled && reviewStatus === 'approve' ? (
                           <span className="text-red-hover text-xs">
                             {t('cases:case_detail.review_decision.warning_approve')}

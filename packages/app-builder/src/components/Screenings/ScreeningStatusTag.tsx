@@ -18,20 +18,12 @@ const screeningStatusMapping = {
   }
 >;
 
-export function ScreeningStatusTag({
-  status,
-  border,
-  className,
-}: {
-  status: ScreeningStatus;
-  border?: 'rounded-sm' | 'square';
-  className?: string;
-}) {
+export function ScreeningStatusTag({ status, className }: { status: ScreeningStatus; className?: string }) {
   const { t } = useTranslation(screeningsI18n);
   const screeningStatus = screeningStatusMapping[status];
 
   return (
-    <Tag border={border} color={screeningStatus.color} className={className}>
+    <Tag color={screeningStatus.color} className={className}>
       {t(screeningStatus.tKey)}
     </Tag>
   );

@@ -107,11 +107,11 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
                           />
                           <div className="flex-1 flex items-center gap-v2-xs min-w-0">
                             <span className="text-s line-clamp-2">{inbox.name}</span>
-                            <Tag color="purple" size="small" border="rounded-sm">
+                            <Tag color="purple" size="small">
                               {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
                             </Tag>
                           </div>
-                          <Tag color={inbox.autoAssignEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
+                          <Tag color={inbox.autoAssignEnabled ? 'green' : 'grey'} size="small">
                             {inbox.autoAssignEnabled
                               ? t('cases:overview.config.active')
                               : t('cases:overview.config.inactive')}

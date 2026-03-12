@@ -38,7 +38,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
               className={cn('size-5 text-grey-secondary transition-transform', { '-rotate-90': !isOpen })}
             />
             <span className="flex-1 text-m font-semibold">{inbox.name}</span>
-            <Tag color={isConfigured ? 'green' : 'grey'} size="small" border="rounded-sm">
+            <Tag color={isConfigured ? 'green' : 'grey'} size="small">
               {isConfigured ? t('cases:overview.config.configured') : t('cases:overview.config.inactive')}
             </Tag>
           </button>

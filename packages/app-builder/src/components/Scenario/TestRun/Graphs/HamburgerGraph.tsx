@@ -53,7 +53,7 @@ export function Hamburger<T extends string>({
 
   return (
     <div className="flex size-full flex-col items-center gap-4">
-      <Tag size="big" color="grey-light" className="border-grey-border gap-1 border px-4 py-2">
+      <Tag size="big" color="grey" className="border-grey-border gap-1 border px-4 py-2">
         <span className="text-grey-primary font-semibold">{`V${version.value}`}</span>
         {version.type === 'live version' ? (
           <span className="text-purple-primary font-semibold">{t('common:live')}</span>
