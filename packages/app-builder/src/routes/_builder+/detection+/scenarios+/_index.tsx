@@ -89,7 +89,7 @@ export default function DetectionScenariosPage() {
         cell: ({ getValue }) => {
           const triggerObjectType = getValue();
           return (
-            <Pill color="grey" size="small" className="font-normal" border="square">
+            <Tag color="purple" size="small">
               {triggerObjectType}
             </Pill>
           );

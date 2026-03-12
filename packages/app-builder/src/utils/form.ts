@@ -8,6 +8,13 @@ export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAr
   }
 };
 
+export const submitOnCtrlEnter: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    e.currentTarget.closest('form')?.requestSubmit();
+  }
+};
+
 export function adaptToStringArray(value: string | (string | undefined)[] | undefined): string[] {
   if (value === undefined) {
     return [];

@@ -69,7 +69,7 @@ export function CaseDetailTriggerObject({
       )}
     >
       {parsedTriggerObject.map(([property, data]) => {
-        const fieldType = dataModelTable?.fields.find((f) => f.name === property)?.dataType;
+        const fieldType = dataModelTable?.fields?.find((f) => f.name === property)?.dataType;
         return (
           <Fragment key={property}>
             <span className="font-semibold">{property}</span>
@@ -79,10 +79,10 @@ export function CaseDetailTriggerObject({
                   className="text-purple-primary group flex items-center gap-1 text-left"
                   onClick={() => onLinkClicked(links[property] as string, data.value as string)}
                 >
-                  <FormatData type={fieldType} data={data} />
+                  <FormatData type={fieldType} data={data} mapHeight={200} />
                 </button>
               ) : (
-                <FormatData type={fieldType} data={data} />
+                <FormatData type={fieldType} data={data} mapHeight={200} />
               )}
             </div>
           </Fragment>

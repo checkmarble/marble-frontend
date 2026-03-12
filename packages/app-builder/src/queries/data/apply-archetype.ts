@@ -4,7 +4,6 @@ import z from 'zod/v4';
 
 export const applyArchetypePayloadSchema = z.object({
   name: z.string().min(1),
-  seed: z.boolean().optional(),
 });
 
 export type ApplyArchetypePayload = z.infer<typeof applyArchetypePayloadSchema>;

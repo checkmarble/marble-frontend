@@ -66,9 +66,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
             ) : null}
             <div className="inline-flex h-8 text-nowrap">
               {unreviewable ? (
-                <Tag border="square" color="grey">
-                  {t('screenings:match.not_reviewable')}
-                </Tag>
+                <Tag color="grey">{t('screenings:match.not_reviewable')}</Tag>
               ) : (
                 <StatusTag
                   status={match.status}

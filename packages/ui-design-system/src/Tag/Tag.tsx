@@ -1,51 +1,34 @@
-import clsx from 'clsx';
-import * as React from 'react';
+import { cva, VariantProps } from 'class-variance-authority';
+import { ComponentProps, forwardRef } from 'react';
+import { cn } from '../utils';
 
-import { type tagBorder, type tagColors, type tagSize } from './Tag.constants';
+export const tagClassName = cva('inline-flex items-center justify-center border text-nowrap', {
+  variants: {
+    size: {
+      small: 'h-6 px-v2-sm rounded-full text-small',
+      medium: 'h-8 px-v2-sm rounded-v2-s text-default font-medium',
+      big: 'h-10 px-v2-sm rounded-v2-s text-default font-medium',
+    },
+    color: {
+      purple: 'text-purple-primary border-purple-primary',
+      blue: 'text-blue-58 border-blue-58',
+      green: 'text-green-primary border-green-primary',
+      yellow: 'text-yellow-primary border-yellow-primary',
+      orange: 'text-orange-primary border-orange-primary',
+      red: 'text-red-primary border-red-primary',
+      grey: 'text-grey-placeholder border-grey-placeholder',
+    },
+  },
+  defaultVariants: {
+    color: 'purple',
+    size: 'small',
+  },
+});
 
-export interface TagProps extends React.ComponentProps<'span'> {
-  border?: (typeof tagBorder)[number];
-  color?: (typeof tagColors)[number];
-  size?: (typeof tagSize)[number];
-}
+export type TagProps = ComponentProps<'span'> & VariantProps<typeof tagClassName>;
 
-export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
-  { size = 'small', border = 'rounded-sm', color = 'purple', className, ...props },
-  ref,
-) {
-  return (
-    <span
-      ref={ref}
-      className={clsx(
-        'inline-flex items-center justify-center border border-transparent dark:bg-transparent text-nowrap',
-        {
-          'bg-purple-background text-purple-primary dark:border-purple-primary dark:text-purple-primary':
-            color === 'purple',
-          'bg-blue-96 text-blue-58 dark:border-blue-58 dark:text-blue-58': color === 'blue',
-          'bg-green-background-light text-green-primary dark:border-green-primary dark:text-green-primary':
-            color === 'green',
-          'bg-yellow-background text-yellow-primary dark:border-yellow-primary dark:text-yellow-primary':
-            color === 'yellow',
-          'bg-orange-background-light text-orange-primary dark:border-orange-primary dark:text-orange-primary':
-            color === 'orange',
-          'bg-red-background text-red-primary dark:border-red-primary dark:text-red-primary': color === 'red',
-          'bg-grey-background text-grey-secondary dark:border-grey-secondary dark:text-grey-secondary':
-            color === 'grey',
-          'bg-surface-card text-grey-primary dark:border-grey-primary dark:text-grey-primary': color === 'grey-light',
-        },
-        {
-          'rounded-full': border === 'rounded-sm',
-          rounded: border === 'square',
-        },
-        {
-          'min-h-6 px-2 text-xs font-medium': size === 'small',
-          'text-s min-h-8 px-2 font-semibold': size === 'big',
-        },
-        className,
-      )}
-      {...props}
-    />
-  );
+export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag({ size, color, className, ...props }, ref) {
+  return <span ref={ref} className={cn(tagClassName({ size, color }), className)} {...props} />;
 });
 
 export default Tag;

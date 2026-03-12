@@ -13,7 +13,7 @@ import {
   useAddRuleSnoozeMutation,
 } from '@app-builder/queries/cases/add-rule-snooze';
 import { ruleSnoozesDocHref } from '@app-builder/services/documentation-href';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { getFieldErrors, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -125,6 +125,7 @@ function AddRuleSnoozeContent({
                 className="w-full"
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
+                onKeyDown={submitOnCtrlEnter}
                 name={field.name}
                 onBlur={field.handleBlur}
                 borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}

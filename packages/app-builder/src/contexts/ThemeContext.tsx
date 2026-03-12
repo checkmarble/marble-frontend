@@ -90,10 +90,10 @@ export function ThemeProvider({ children, defaultTheme }: ThemeProviderProps) {
     setPreferencesCookie('theme', theme);
   }, [theme]);
 
-  // Keyboard shortcut (Ctrl+D) to toggle theme for QA testing
+  // Keyboard shortcut (Ctrl+Shift+D) to toggle theme for QA testing
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key === 'd') {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         e.preventDefault();
         setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
       }

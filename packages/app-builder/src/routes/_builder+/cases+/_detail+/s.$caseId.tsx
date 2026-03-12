@@ -108,7 +108,7 @@ export default function CaseManagerIndexPage() {
     pivotObjects,
     currentUser,
     currentInbox,
-    entitlements: { AiAssist: aiAssistEnabled },
+    entitlements: { caseAiAssist: aiAssistEnabled },
     isMenuExpanded,
     mostRecentReview,
     isKycEnrichmentEnabled,

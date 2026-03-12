@@ -104,7 +104,7 @@ function ViewingRootOrWithAndLine({ isFirst, path, node, validation }: ViewingRo
 
         rightComponent = (
           <div className="flex h-10 items-center justify-center">
-            <Tag border="square" className="w-full" color={color}>
+            <Tag className="w-full" color={color}>
               {t(`common:${directEvaluation.skipped ? 'skipped' : tKey}`)}
             </Tag>
           </div>

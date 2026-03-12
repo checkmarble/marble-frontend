@@ -79,7 +79,7 @@ export const WorkflowConfigSection = ({
                 canEdit={isGlobalAdmin}
                 label={t('cases:overview.config.escalation_conditions')}
                 statusTag={
-                  <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
+                  <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small">
                     {hasEscalationConfig
                       ? t('cases:overview.config.x_of_y_configured', {
                           configured: escalationConfigured,
@@ -99,7 +99,7 @@ export const WorkflowConfigSection = ({
                   canEdit={canEditAiReview}
                   label={t('cases:overview.config.ai_review_trigger')}
                   statusTag={
-                    <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
+                    <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small">
                       {hasWorkflowConfig
                         ? t('cases:overview.config.x_of_y_configured', {
                             configured: workflowConfigured,

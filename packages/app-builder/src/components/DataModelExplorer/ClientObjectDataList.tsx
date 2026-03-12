@@ -3,7 +3,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, cn } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
@@ -27,6 +27,8 @@ export function ClientObjectDataList({
 }: ClientObjectDataListProps) {
   const { t } = useTranslation(['common', 'cases']);
   const parsedData = R.pipe(data, R.mapValues(parseUnknownData));
+  const effectiveFieldOrder =
+    tableModel.options.fieldOrder.length > 0 ? tableModel.options.fieldOrder : tableModel.fields.map((f) => f.id);
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
 
@@ -40,7 +42,7 @@ export function ClientObjectDataList({
           </div>
         </Fragment>
       ) : null}
-      {tableModel.options.fieldOrder.map((fieldId) => {
+      {effectiveFieldOrder.map((fieldId) => {
         const field = tableModel.fields.find((f) => f.id === fieldId);
         if (!field) return null;
 
@@ -49,11 +51,16 @@ export function ClientObjectDataList({
 
         if (!data || !((field.displayed && !hasNoValue) || isExpanded)) return null;
 
-        const isMultiLine = field.dataType === 'Coords' || field.dataType === 'IpAddress';
+        // Backend sends quoted keys like `"ip.metadata"`, mock/other sources use unquoted `ip.metadata`
+        const metadata = parsedData[`"${field.name}.metadata"`] ?? parsedData[`${field.name}.metadata`];
+        const hasMetadata = metadata?.type === 'DerivedData' && Object.keys(metadata.value).length > 0;
         return (
           <Fragment key={field.id}>
             <div className="text-grey-secondary truncate">{field.name}</div>
-            <FormatData type={field.dataType} data={data} className={cn({ truncate: !isMultiLine })} />
+            <div className="flex items-center gap-1 min-w-0 truncate">
+              <FormatData type={field.dataType} data={data} className="truncate" compact />
+              {hasMetadata ? <FormatData data={metadata} compact /> : null}
+            </div>
           </Fragment>
         );
       })}

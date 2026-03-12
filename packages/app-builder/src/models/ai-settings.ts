@@ -60,12 +60,14 @@ export const caseReviewSettingDtoSchema = z.object({
   language: languageCodeSchema,
   structure: z.string().nullable(),
   org_description: z.string().nullable(),
+  additional_case_review_instruction: z.string().optional().nullable(),
 });
 
 export const caseReviewSettingSchema = z.object({
   language: languageCodeSchema,
   structure: z.string(),
   orgDescription: z.string(),
+  additionalCaseReviewInstruction: z.string(),
 });
 
 export const kycEnrichmentSettingDtoSchema = z.object({
@@ -96,6 +98,7 @@ export const transformCaseReviewSetting = z.codec(aiSettingDtoSchema, aiSettingS
       language: caseReviewSetting.language,
       structure: caseReviewSetting.structure,
       org_description: caseReviewSetting.orgDescription,
+      additional_case_review_instruction: caseReviewSetting.additionalCaseReviewInstruction || null,
     },
     kyc_enrichment_setting: {
       enabled: kycEnrichmentSetting.enabled,
@@ -108,6 +111,7 @@ export const transformCaseReviewSetting = z.codec(aiSettingDtoSchema, aiSettingS
       language: case_review_setting.language,
       structure: case_review_setting.structure ?? '',
       orgDescription: case_review_setting.org_description ?? '',
+      additionalCaseReviewInstruction: case_review_setting.additional_case_review_instruction ?? '',
     },
     kycEnrichmentSetting: {
       enabled: kyc_enrichment_setting.enabled,
