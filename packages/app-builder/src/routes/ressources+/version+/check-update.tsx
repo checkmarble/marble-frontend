@@ -12,7 +12,7 @@ export type VersionUpdateResource = {
 export const loader = createServerFn(
   [handleRedirectMiddleware, servicesMiddleware],
   async function checkUpdate({ context }) {
-    const { outdated, versions } = context.appConfig;
+    const { outdated, versions } = context.releaseNotes;
 
     return {
       needsUpdate: outdated.isOutdated,
