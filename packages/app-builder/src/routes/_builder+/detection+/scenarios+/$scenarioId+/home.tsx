@@ -1,5 +1,5 @@
 import { CopyToClipboardButton } from '@app-builder/components';
-import { Callout, CalloutV3 } from '@app-builder/components/Callout';
+import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
@@ -270,7 +270,7 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
           <Nudge className="absolute -right-3 -top-3 size-6" content={t('scenarios:testrun.nudge')} kind="test" />
         ) : null}
 
-        <CalloutV3>{t('scenarios:testrun.description')}</CalloutV3>
+        <p>{t('scenarios:testrun.description')}</p>
 
         <div className="flex flex-row gap-4 mt-auto">
           <CreateTestRun
@@ -325,40 +325,38 @@ function RealTimeSection({
     <article className="flex flex-col">
       <TabHeader title={t('scenarios:home.execution.real_time')} spinner={false} />
       <div className="bg-surface-card border-grey-border flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md rounded-tl-none">
-        <CalloutV3>
-          <div className="flex flex-col gap-4">
-            <span>
+        <p className="flex flex-col gap-4">
+          <span>
+            <Trans
+              t={t}
+              i18nKey="scenarios:home.execution.real_time.callout"
+              components={{
+                DocLink: <ExternalLink href={createDecisionDocHref} />,
+              }}
+            />
+          </span>
+          <span
+            className={clsx('text-grey-primary text-s inline-flex items-center font-semibold', {
+              'whitespace-pre': isLive,
+            })}
+          >
+            {isLive ? (
               <Trans
                 t={t}
-                i18nKey="scenarios:home.execution.real_time.callout"
+                i18nKey="scenarios:home.execution.real_time.callout.scenario_id"
                 components={{
-                  DocLink: <ExternalLink href={createDecisionDocHref} />,
+                  CopyScenarioId: (
+                    <CopyToClipboardButton toCopy={scenarioId} className="ml-1">
+                      <code>{`ID ${scenarioId.slice(0, 15)}...`}</code>
+                    </CopyToClipboardButton>
+                  ),
                 }}
               />
-            </span>
-            <span
-              className={clsx('text-grey-primary text-s inline-flex items-center font-semibold', {
-                'whitespace-pre': isLive,
-              })}
-            >
-              {isLive ? (
-                <Trans
-                  t={t}
-                  i18nKey="scenarios:home.execution.real_time.callout.scenario_id"
-                  components={{
-                    CopyScenarioId: (
-                      <CopyToClipboardButton toCopy={scenarioId} className="ml-1">
-                        <code>{`ID ${scenarioId.slice(0, 15)}...`}</code>
-                      </CopyToClipboardButton>
-                    ),
-                  }}
-                />
-              ) : (
-                t('scenarios:home.execution.real_time.callout.no_live_version')
-              )}
-            </span>
-          </div>
-        </CalloutV3>
+            ) : (
+              t('scenarios:home.execution.real_time.callout.no_live_version')
+            )}
+          </span>
+        </p>
       </div>
     </article>
   );
@@ -419,25 +417,23 @@ function BatchSection({
           isExecutionOngoing && 'border-purple-primary',
         )}
       >
-        <CalloutV3>
-          <div className="flex flex-col gap-4">
-            <span>{t('scenarios:home.execution.batch.callout')}</span>
-            {formattedSchedule ? (
-              <span className="text-grey-primary text-s text-balance font-semibold">
-                <Trans
-                  t={t}
-                  i18nKey="scenarios:scheduled"
-                  components={{
-                    ScheduleLocale: <span className="text-purple-primary" />,
-                  }}
-                  values={{
-                    schedule: formattedSchedule,
-                  }}
-                />
-              </span>
-            ) : null}
-          </div>
-        </CalloutV3>
+        <p className="flex flex-col gap-4">
+          <span>{t('scenarios:home.execution.batch.callout')}</span>
+          {formattedSchedule ? (
+            <span className="text-grey-primary text-s text-balance font-semibold">
+              <Trans
+                t={t}
+                i18nKey="scenarios:scheduled"
+                components={{
+                  ScheduleLocale: <span className="text-purple-primary" />,
+                }}
+                values={{
+                  schedule: formattedSchedule,
+                }}
+              />
+            </span>
+          ) : null}
+        </p>
 
         <div className="flex flex-row gap-v2-md mt-auto">
           {isManualTriggerScenarioAvailable && isLive && liveIterationId ? (
@@ -515,7 +511,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
           />
         ) : null}
 
-        <CalloutV3>{t('scenarios:home.workflow_description')}</CalloutV3>
+        <p>{t('scenarios:home.workflow_description')}</p>
 
         <div className="flex flex-row gap-4">
           {tag ? (
