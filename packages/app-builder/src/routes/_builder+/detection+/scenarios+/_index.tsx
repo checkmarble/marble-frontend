@@ -1,9 +1,16 @@
 import { Callout, ErrorComponent, Page } from '@app-builder/components';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
+import { ArchiveScenarioButton } from '@app-builder/components/Scenario/Actions/ArchiveScenario';
+import { CopyScenarioButton } from '@app-builder/components/Scenario/Actions/CopyScenario';
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
+import { UnarchiveScenarioButton } from '@app-builder/components/Scenario/Actions/UnarchiveScenario';
+import { UpdateScenarioButton } from '@app-builder/components/Scenario/Actions/UpdateScenario';
+import { getFormattedVersion } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { createServerFn } from '@app-builder/core/requests';
+import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Scenario } from '@app-builder/models/scenario';
+import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -11,9 +18,10 @@ import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import { type Namespace, type TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -22,8 +30,24 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function scenariosLoader({ context }) {
+  const scenarios = await context.authInfo.scenario.listScenarios();
+
+  const iterationsMetadata = await Promise.all(
+    scenarios.map((s) => context.authInfo.scenario.listScenarioIterationsMetadata({ scenarioId: s.id })),
+  );
+
+  const scenarioMetadataMap = Object.fromEntries(
+    scenarios.map((s, i) => {
+      const iterations = iterationsMetadata[i] ?? [];
+      const versions = iterations.map((it) => it.version);
+      return [s.id, { versions }];
+    }),
+  );
+
   return {
-    scenarios: await context.authInfo.scenario.listScenarios(),
+    isEditScenarioAvailable: isEditScenarioAvailable(context.authInfo.user),
+    scenarios,
+    scenarioMetadataMap,
   };
 });
 
@@ -31,29 +55,39 @@ const columnHelper = createColumnHelper<Scenario>();
 
 export default function DetectionScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const { scenarios } = useLoaderData<typeof loader>();
+  const { scenarios, isEditScenarioAvailable, scenarioMetadataMap } = useLoaderData<typeof loader>();
+  const hydrated = useHydrated();
   const formatDateTime = useFormatDateTime();
+  const isLargeScreen = useMediaQuery('xl');
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor((row) => ({ liveVersionId: row.liveVersionId, archived: row.archived }), {
+      columnHelper.accessor((row) => ({ liveVersionId: row.liveVersionId, archived: row.archived, id: row.id }), {
         id: 'status',
         header: t('scenarios:list.column.status'),
         size: 100,
         cell: ({ getValue }) => {
-          const { liveVersionId, archived } = getValue();
+          const { liveVersionId, archived, id } = getValue();
           if (archived) {
             return (
-              <Tag color="grey" size="small" className="capitalize">
+              <Tag size="small" color="grey" className="capitalize">
                 {t('scenarios:archived')}
               </Tag>
             );
           }
-          return liveVersionId ? (
-            <Tag color="purple" size="small" className="capitalize">
-              {t('scenarios:live')}
+          if (liveVersionId) {
+            return (
+              <Tag size="small" color="purple" className="capitalize">
+                {t('scenarios:live')}
+              </Tag>
+            );
+          }
+          const latestVersion = getLatestVersion(scenarioMetadataMap[id]?.versions);
+          return (
+            <Tag size="small" color="grey" className="capitalize">
+              {getFormattedVersion({ version: latestVersion }, t as TFunction<['scenarios']>)}
             </Tag>
-          ) : null;
+          );
         },
       }),
       columnHelper.accessor('name', {
@@ -66,7 +100,7 @@ export default function DetectionScenariosPage() {
       columnHelper.accessor('description', {
         id: 'description',
         header: t('scenarios:list.column.description'),
-        size: 300,
+        size: 250,
       }),
       columnHelper.accessor('triggerObjectType', {
         id: 'triggerObjectType',
@@ -93,13 +127,61 @@ export default function DetectionScenariosPage() {
           });
         },
       }),
+      columnHelper.display({
+        id: 'actions',
+        header: '',
+        size: 144,
+        cell: ({ row }) => {
+          if (!isEditScenarioAvailable) return null;
+
+          if (row.original.archived) {
+            return (
+              <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+                <UpdateScenarioButton
+                  defaultValue={{
+                    name: row.original.name,
+                    scenarioId: row.original.id,
+                    description: row.original.description,
+                  }}
+                />
+                <UnarchiveScenarioButton scenarioId={row.original.id} disabled={!hydrated} iconOnly />
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+              <UpdateScenarioButton
+                defaultValue={{
+                  name: row.original.name,
+                  scenarioId: row.original.id,
+                  description: row.original.description,
+                }}
+              />
+              <CopyScenarioButton scenarioId={row.original.id} scenarioName={row.original.name} />
+
+              <ArchiveScenarioButton
+                scenarioId={row.original.id}
+                scenarioName={row.original.name}
+                disabled={!!row.original.liveVersionId}
+              />
+            </div>
+          );
+        },
+      }),
     ],
-    [t, formatDateTime],
+    [t, formatDateTime, hydrated, isEditScenarioAvailable],
   );
 
   const { table, isEmpty, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: scenarios,
     columns,
+    state: {
+      columnVisibility: {
+        createdAt: isLargeScreen,
+        description: isLargeScreen,
+      },
+    },
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -119,7 +201,7 @@ export default function DetectionScenariosPage() {
           <DetectionNavigationTabs
             actions={
               <CreateScenario>
-                <Button>
+                <Button size="default">
                   <Icon icon="plus" className="size-6" aria-hidden />
                   {t('scenarios:create_scenario.title')}
                 </Button>
@@ -153,4 +235,13 @@ export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
   return <ErrorComponent error={error} />;
+}
+
+function getLatestVersion(versions: (number | null)[] = []) {
+  if (versions.length === 0) return null;
+  const latestVersion = versions.reduce<number | null>(
+    (max, v) => (v !== null && (max === null || v > max) ? v : max),
+    null,
+  );
+  return latestVersion;
 }

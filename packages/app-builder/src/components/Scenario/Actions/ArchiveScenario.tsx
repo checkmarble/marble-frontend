@@ -1,7 +1,9 @@
 import { useArchiveScenarioMutation } from '@app-builder/queries/scenarios/archive-scenario';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export function ArchiveScenario({
   children,
@@ -52,5 +54,26 @@ function ArchiveScenarioContent({ scenarioId, scenarioName }: { scenarioId: stri
         </Button>
       </Modal.Footer>
     </>
+  );
+}
+
+export function ArchiveScenarioButton({
+  scenarioId,
+  scenarioName,
+  disabled,
+}: {
+  scenarioId: string;
+  scenarioName: string;
+  disabled: boolean;
+}) {
+  const { t } = useTranslation(['scenarios']);
+  const hydrated = useHydrated();
+  const title = disabled ? t('scenarios:archive_scenario.cannot_archive') : t('scenarios:archive_scenario.title');
+  return (
+    <ArchiveScenario scenarioId={scenarioId} scenarioName={scenarioName}>
+      <Button variant="secondary" mode="icon" disabled={!hydrated || disabled} aria-label={title} title={title}>
+        <Icon icon="inbox" className="size-6" />
+      </Button>
+    </ArchiveScenario>
   );
 }

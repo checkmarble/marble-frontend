@@ -201,15 +201,17 @@ export function VersionSelect({
 
   return (
     <ScenarioIterationMenu labelledScenarioIteration={labelledScenarioIteration}>
-      <MenuButton className="text-s text-grey-primary border-grey-border focus:border-purple-primary flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-hidden">
-        <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
-          <span className="text-grey-primary capitalize">{currentFormattedVersion}</span>
-          {currentFormattedLive ? <span className="text-purple-primary capitalize">{currentFormattedLive}</span> : null}
+      <MenuButton className="text-s text-purple-primary border-purple-border focus:border-purple-primary flex items-center rounded-full border py-v2-xs px-v2-sm gap-v2-xs outline-hidden font-normal">
+        <p className="flex gap-1">
+          <span className="capitalize">{currentFormattedVersion}</span>
+          {currentFormattedLive ? (
+            <span className="text-purple-primary capitalize font-bold">{currentFormattedLive}</span>
+          ) : null}
           {currentFormattedArchived ? (
             <span className="text-grey-secondary capitalize">{currentFormattedArchived}</span>
           ) : null}
         </p>
-        <Icon aria-hidden icon="arrow-2-down" className="text-grey-primary size-6 shrink-0" />
+        <Icon aria-hidden icon="caret-down" className="size-6 shrink-0" />
       </MenuButton>
     </ScenarioIterationMenu>
   );
