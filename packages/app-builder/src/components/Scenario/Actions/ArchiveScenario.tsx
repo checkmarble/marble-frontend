@@ -57,18 +57,21 @@ function ArchiveScenarioContent({ scenarioId, scenarioName }: { scenarioId: stri
   );
 }
 
-export function ArchiveScenarioButton({ scenarioId, scenarioName }: { scenarioId: string; scenarioName: string }) {
+export function ArchiveScenarioButton({
+  scenarioId,
+  scenarioName,
+  disabled,
+}: {
+  scenarioId: string;
+  scenarioName: string;
+  disabled: boolean;
+}) {
   const { t } = useTranslation(['scenarios']);
   const hydrated = useHydrated();
+  const title = disabled ? t('scenarios:archive_scenario.cannot_archive') : t('scenarios:archive_scenario.title');
   return (
     <ArchiveScenario scenarioId={scenarioId} scenarioName={scenarioName}>
-      <Button
-        variant="destructive"
-        mode="icon"
-        disabled={!hydrated}
-        aria-label={t('scenarios:archive_scenario.title')}
-        title={t('scenarios:archive_scenario.title')}
-      >
+      <Button variant="secondary" mode="icon" disabled={!hydrated || disabled} aria-label={title} title={title}>
         <Icon icon="inbox" className="size-6" />
       </Button>
     </ArchiveScenario>

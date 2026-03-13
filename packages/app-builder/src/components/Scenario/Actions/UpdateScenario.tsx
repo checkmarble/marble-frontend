@@ -137,8 +137,8 @@ export function UpdateScenarioButton({ defaultValue }: { defaultValue: UpdateSce
         variant="secondary"
         mode="icon"
         disabled={!hydrated}
-        aria-label={t('scenarios:update_scenario.title')}
-        title={t('scenarios:update_scenario.title')}
+        aria-label={t('scenarios:update_scenario.edit_name_description')}
+        title={t('scenarios:update_scenario.edit_name_description')}
       >
         <Icon icon="edit-square" className="size-6" />
       </Button>

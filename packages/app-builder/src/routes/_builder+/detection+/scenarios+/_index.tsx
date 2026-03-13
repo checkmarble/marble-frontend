@@ -5,6 +5,7 @@ import { CopyScenarioButton } from '@app-builder/components/Scenario/Actions/Cop
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
 import { UnarchiveScenarioButton } from '@app-builder/components/Scenario/Actions/UnarchiveScenario';
 import { UpdateScenarioButton } from '@app-builder/components/Scenario/Actions/UpdateScenario';
+import { getFormattedVersion } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { createServerFn } from '@app-builder/core/requests';
 import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -17,7 +18,7 @@ import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import { type Namespace, type TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
@@ -29,9 +30,24 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function scenariosLoader({ context }) {
+  const scenarios = await context.authInfo.scenario.listScenarios();
+
+  const iterationsMetadata = await Promise.all(
+    scenarios.map((s) => context.authInfo.scenario.listScenarioIterationsMetadata({ scenarioId: s.id })),
+  );
+
+  const scenarioMetadataMap = Object.fromEntries(
+    scenarios.map((s, i) => {
+      const iterations = iterationsMetadata[i] ?? [];
+      const versions = iterations.map((it) => it.version);
+      return [s.id, { versions }];
+    }),
+  );
+
   return {
     isEditScenarioAvailable: isEditScenarioAvailable(context.authInfo.user),
-    scenarios: await context.authInfo.scenario.listScenarios(),
+    scenarios,
+    scenarioMetadataMap,
   };
 });
 
@@ -39,19 +55,19 @@ const columnHelper = createColumnHelper<Scenario>();
 
 export default function DetectionScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const { scenarios, isEditScenarioAvailable } = useLoaderData<typeof loader>();
+  const { scenarios, isEditScenarioAvailable, scenarioMetadataMap } = useLoaderData<typeof loader>();
   const hydrated = useHydrated();
   const formatDateTime = useFormatDateTime();
   const isLargeScreen = useMediaQuery('xl');
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor((row) => ({ liveVersionId: row.liveVersionId, archived: row.archived }), {
+      columnHelper.accessor((row) => ({ liveVersionId: row.liveVersionId, archived: row.archived, id: row.id }), {
         id: 'status',
         header: t('scenarios:list.column.status'),
         size: 100,
         cell: ({ getValue }) => {
-          const { liveVersionId, archived } = getValue();
+          const { liveVersionId, archived, id } = getValue();
           if (archived) {
             return (
               <Tag size="small" color="grey" className="capitalize">
@@ -59,13 +75,17 @@ export default function DetectionScenariosPage() {
               </Tag>
             );
           }
-          return liveVersionId ? (
+          if (liveVersionId) {
+            return (
+              <Tag size="small" color="purple" className="capitalize">
+                {t('scenarios:live')}
+              </Tag>
+            );
+          }
+          const latestVersion = getLatestVersion(scenarioMetadataMap[id]?.versions);
+          return (
             <Tag size="small" color="grey" className="capitalize">
-              {t('scenarios:live')}
-            </Tag>
-          ) : (
-            <Tag size="small" color="grey" className="capitalize">
-              {t('scenarios:draft')}
+              {getFormattedVersion({ version: latestVersion }, t as TFunction<['scenarios']>)}
             </Tag>
           );
         },
@@ -139,9 +159,12 @@ export default function DetectionScenariosPage() {
                 }}
               />
               <CopyScenarioButton scenarioId={row.original.id} scenarioName={row.original.name} />
-              {!row.original.liveVersionId ? (
-                <ArchiveScenarioButton scenarioId={row.original.id} scenarioName={row.original.name} />
-              ) : null}
+
+              <ArchiveScenarioButton
+                scenarioId={row.original.id}
+                scenarioName={row.original.name}
+                disabled={!!row.original.liveVersionId}
+              />
             </div>
           );
         },
@@ -212,4 +235,13 @@ export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
   return <ErrorComponent error={error} />;
+}
+
+function getLatestVersion(versions: (number | null)[] = []) {
+  if (versions.length === 0) return null;
+  const latestVersion = versions.reduce<number | null>(
+    (max, v) => (v !== null && (max === null || v > max) ? v : max),
+    null,
+  );
+  return latestVersion;
 }
