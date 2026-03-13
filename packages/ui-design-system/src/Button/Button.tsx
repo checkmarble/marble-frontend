@@ -41,17 +41,17 @@ export const CtaClassName = cva(
 );
 
 export const CtaV2ClassName = cva(
-  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
+  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer transition-colors border border-solid disabled:cursor-default focus:outline-1 focus:outline-offset-2',
   {
     variants: {
       variant: {
-        primary: '',
+        primary: 'outline-purple-primary',
         destructive:
-          'bg-red-primary border-red-primary text-white enabled:hover:bg-red-hover enabled:hover:border-red-hover disabled:bg-red-disabled disabled:border-red-disabled dark:text-grey-primary dark:disabled:text-grey-secondary',
+          'bg-red-primary border-red-primary text-white enabled:hover:bg-red-hover enabled:hover:border-red-hover disabled:bg-red-disabled disabled:border-red-disabled dark:text-grey-primary dark:disabled:text-grey-secondary outline-red-primary',
         secondary:
-          'bg-surface-card border-grey-border text-grey-primary enabled:hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-disabled dark:enabled:hover:bg-grey-background-light dark:disabled:bg-grey-background-light',
-        warning: '',
-        success: '',
+          'bg-surface-card border-grey-border text-grey-primary enabled:hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-disabled dark:enabled:hover:bg-grey-background-light dark:disabled:bg-grey-background-light outline-grey-primary',
+        warning: 'outline-orange-primary',
+        success: 'outline-green-primary',
       },
       appearance: {
         filled: '',
