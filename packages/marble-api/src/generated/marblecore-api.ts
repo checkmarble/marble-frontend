@@ -3975,6 +3975,41 @@ export function getScenarioIterationRuleAiDescription(ruleId: string, opts?: Oaz
     }));
 }
 /**
+ * Generate a rule formula using AI
+ */
+export function generateScenarioIterationRule(ruleId: string, body: {
+    /** Natural language description of the rule to generate */
+    instruction: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            rule_ast: (NodeDto) | null;
+            validation: {
+                /** Whether the generated AST is valid */
+                is_valid: boolean;
+                /** List of validation errors, if any */
+                errors?: string[] | null;
+                /** List of validation warnings, if any */
+                warnings?: string[] | null;
+            };
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}/generate`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List continuous screening configurations
  */
 export function listContinuousScreeningConfigs(opts?: Oazapfts.RequestOpts) {

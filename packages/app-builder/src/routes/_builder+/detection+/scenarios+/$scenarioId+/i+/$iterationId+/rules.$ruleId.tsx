@@ -6,6 +6,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { DeleteRule } from '@app-builder/components/Scenario/Rules/Actions/DeleteRule';
 import { DuplicateRule } from '@app-builder/components/Scenario/Rules/Actions/DuplicateRule';
 import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescription';
+import { AiGenerateRule } from '@app-builder/components/Scenario/Rules/AiGenerateRule';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
 import { type ServerFnResult } from '@app-builder/core/middleware-types';
@@ -392,7 +393,12 @@ export default function RuleDetail() {
               </div>
               <div className="flex flex-col gap-2">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
-                <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-v2-lg">
+                <div
+                  className={cn('gap-v2-lg', {
+                    'grid grid-cols-[var(--container-3xl)_1fr]': editor === 'edit',
+                    'grid grid-cols-1': editor === 'view',
+                  })}
+                >
                   <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
                     <form.Field
                       name="formula"
@@ -425,6 +431,15 @@ export default function RuleDetail() {
                       className="self-start max-w-2xl"
                     />
                   ) : null}
+
+                  {editor === 'edit' && (
+                    <AiGenerateRule
+                      ruleId={rule.id}
+                      onFormulaGenerated={(generatedAst) => {
+                        form.setFieldValue('formula', generatedAst);
+                      }}
+                    />
+                  )}
                 </div>
                 <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
                   <div className="flex items-center gap-2">

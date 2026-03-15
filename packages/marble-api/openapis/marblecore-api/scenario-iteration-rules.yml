@@ -224,6 +224,60 @@
       '404':
         $ref: 'components.yml#/responses/404'
 
+/scenario-iteration-rules/{ruleId}/generate:
+  post:
+    tags:
+      - Scenario Iteration Rules
+    summary: Generate a rule formula using AI
+    description: Generate a rule formula from a natural language instruction using AI
+    operationId: generateScenarioIterationRule
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: ID of the rule to generate formula for
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Natural language instruction for generating the rule formula
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - instruction
+            properties:
+              instruction:
+                type: string
+                description: Natural language description of the rule to generate
+      required: true
+    responses:
+      '200':
+        description: Generated rule formula with validation details
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rule_ast
+                - validation
+              properties:
+                rule_ast:
+                  nullable: true
+                  oneOf:
+                    - $ref: 'ast.yml#/components/schemas/NodeDto'
+                validation:
+                  $ref: '#/components/schemas/ASTValidationDetailDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
 components:
   schemas:
     ScenarioIterationRuleMetadataDto:
@@ -321,3 +375,23 @@ components:
           type: string
       required:
         - description
+    ASTValidationDetailDto:
+      type: object
+      properties:
+        is_valid:
+          type: boolean
+          description: Whether the generated AST is valid
+        errors:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: List of validation errors, if any
+        warnings:
+          type: array
+          items:
+            type: string
+          nullable: true
+          description: List of validation warnings, if any
+      required:
+        - is_valid

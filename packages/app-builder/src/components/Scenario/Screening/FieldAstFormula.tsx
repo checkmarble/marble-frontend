@@ -90,6 +90,7 @@ export const FieldAstFormula = ({
       ) : (
         <AstBuilder.Provider scenarioId={scenarioId} initialData={options} mode={editor}>
           <AstBuilder.Root
+            key={formula.id}
             node={formula}
             onStoreChange={(nodeStore) => {
               nodeStoreRef.current = nodeStore;
