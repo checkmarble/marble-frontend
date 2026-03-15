@@ -13,7 +13,9 @@
   "license": "MIT",
   "overrides": {
     "cookie": "^0.7.2",
-    "cross-spawn": "^7.0.5"
+    "cross-spawn": "^7.0.5",
+    "minimatch": "9.0.7",
+    "glob": "10.5.0"
   },
   "packageManager": "bun@1.2.21",
   "private": true,
@@ -27,5 +29,12 @@
   "type": "module",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@remix-run/dev": "^2.17.4",
+    "@remix-run/node": "^2.17.4",
+    "@remix-run/react": "^2.17.4",
+    "@remix-run/serve": "^2.17.4",
+    "@remix-run/server-runtime": "^2.17.4"
+  }
 }
