@@ -17,15 +17,17 @@ import * as Ariakit from '@ariakit/react';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
+  const hydrated = useHydrated();
   const dataModelQuery = useDataModelQuery();
 
   return (
     <Modal.Root>
-      <Modal.Trigger asChild disabled={!dataModelQuery.isSuccess}>
+      <Modal.Trigger asChild disabled={hydrated && !dataModelQuery.isSuccess}>
         {children}
       </Modal.Trigger>
       <Modal.Content>

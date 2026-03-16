@@ -107,6 +107,7 @@
   --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
   --color-orange-background-light: oklch(0.9456 0.0322 55.36); /* #FFE8D9 */
 
+  --spacing-v2-xxxxl: 5rem;
   --spacing-v2-xxxl: 3rem;
   --spacing-v2-xxl: 2.5rem;
   --spacing-v2-xl: 2rem;

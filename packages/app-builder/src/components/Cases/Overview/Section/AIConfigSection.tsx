@@ -37,7 +37,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
       <div className="flex items-center gap-v2-sm h-7">
         <span className="flex-1 text-s font-medium">{t('cases:overview.config.ai_title')}</span>
         {/* @TODO: Add credit usage when ready */}
-        {/* <Tag color="purple" size="small" border="rounded-sm">
+        {/* <Tag color="purple" size="small">
           5/10 crédit IA utilisés
         </Tag> */}
       </div>
@@ -71,7 +71,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                 canEdit={canEdit}
                 label={t('cases:overview.config.ai_review')}
                 statusTag={
-                  <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small" border="rounded-sm">
+                  <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small">
                     {isGeneralConfigured
                       ? t('cases:overview.config.configured')
                       : t('cases:overview.config.not_configured')}
@@ -89,11 +89,11 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                 showWand
                 statusTag={
                   <>
-                    <Tag color={isKycEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
+                    <Tag color={isKycEnabled ? 'green' : 'grey'} size="small">
                       {isKycEnabled ? t('cases:overview.config.active') : t('cases:overview.config.inactive')}
                     </Tag>
                     {isKycEnabled && !isKycConfigured && (
-                      <Tag color="orange" size="small" border="rounded-sm" className="whitespace-nowrap">
+                      <Tag color="orange" size="small" className="whitespace-nowrap">
                         {t('cases:overview.config.not_configured')}
                       </Tag>
                     )}

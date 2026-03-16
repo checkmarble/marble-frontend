@@ -31,7 +31,7 @@ export const InboxCard = ({
       <div className="flex items-center justify-between">
         <div className="flex-1 flex items-center gap-v2-sm">
           <span className="text-s font-medium">{inbox.name}</span>
-          <Tag color="purple" size="small" border="rounded-sm">
+          <Tag color="purple" size="small">
             {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
           </Tag>
         </div>

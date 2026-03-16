@@ -54,16 +54,20 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(fu
   );
 });
 
-function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
+function PageDescription({
+  className,
+  withIcon = true,
+  ...props
+}: React.ComponentProps<'aside'> & { withIcon?: boolean }) {
   return (
     <aside
       className={cn(
-        'bg-purple-background-light text-s text-purple-primary dark:text-grey-primary flex flex-row gap-2 p-4 font-normal lg:px-8 lg:py-4 dark:bg-grey-background-light',
+        'bg-grey-white text-s text-grey-secondary flex flex-row gap-2 p-v2-md font-normal border border-grey-border rounded-v2-md dark:bg-grey-background',
         className,
       )}
       {...props}
     >
-      <Icon icon="tip" className="size-5 shrink-0" />
+      {withIcon ? <Icon icon="tip" className="size-5 shrink-0" /> : null}
       {props.children}
     </aside>
   );

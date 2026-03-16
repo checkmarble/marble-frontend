@@ -85,11 +85,7 @@ export const handle = {
           >
             {iteration.screeningConfigs.find((c) => c.id === configId)?.name ?? t('common:no_name')}
           </BreadCrumbLink>
-          {editorMode === 'edit' ? (
-            <Tag size="big" border="square">
-              {t('common:edit')}
-            </Tag>
-          ) : null}
+          {editorMode === 'edit' ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
       );
     },

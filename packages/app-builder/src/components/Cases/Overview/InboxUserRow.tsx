@@ -35,12 +35,12 @@ export const InboxUserRow = ({
     <div className={cn('flex items-center gap-v2-sm', { 'pl-12': variant === INBOX_USER_ROW_VARIANTS.default })}>
       <div className="flex-1 flex items-center gap-v2-xs">
         <span className="text-xs">{userName}</span>
-        <Tag color="purple" size="small" border="rounded-sm">
+        <Tag color="purple" size="small">
           {roleLabel}
         </Tag>
       </div>
       {variant === INBOX_USER_ROW_VARIANTS.default && (
-        <Tag color={isChecked ? 'green' : 'grey'} size="small" border="rounded-sm">
+        <Tag color={isChecked ? 'green' : 'grey'} size="small">
           {isChecked ? t('cases:overview.config.active') : t('cases:overview.config.inactive')}
         </Tag>
       )}

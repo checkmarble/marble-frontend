@@ -30,7 +30,6 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
           <Tag
             color="yellow"
             size="small"
-            border="rounded-sm"
             className="border border-[#fde9af] bg-[#fef6df] text-[#eea200] rounded-full flex items-center gap-1"
           >
             {t('cases:overview.upsale.discover')}
@@ -46,7 +45,6 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
             <Tag
               color="yellow"
               size="small"
-              border="rounded-sm"
               className="border border-[#fde9af] bg-[#fef6df] text-[#eea200] rounded-full flex items-center gap-1"
             >
               {t('cases:overview.upsale.discover')}

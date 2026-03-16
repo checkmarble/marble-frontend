@@ -38,7 +38,6 @@ export const BreadCrumbLink = ({
 
 export const BreadCrumbs = ({ back }: { back?: string }) => {
   const matches = useMatches();
-
   const links = useMemo(
     () =>
       select(
@@ -74,6 +73,28 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
             })
           : null;
       })}
+    </div>
+  );
+};
+
+export const BackButton = ({ back }: { back?: string }) => {
+  const matches = useMatches();
+  const links = useMemo(
+    () =>
+      select(
+        matches,
+        ({ pathname, handle, data }) => ({
+          Elements: (handle as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(Boolean),
+          pathname,
+          data,
+        }),
+        ({ handle }) => Boolean((handle as HandleWithBreadCrumbs)?.BreadCrumbs),
+      ),
+    [matches],
+  );
+  return (
+    <div className="flex flex-row items-center gap-4">
+      {back ? <Page.BackLink to={back} /> : links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
     </div>
   );
 };
