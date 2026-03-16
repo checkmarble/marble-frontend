@@ -1,4 +1,7 @@
+import { createServerFn } from '@app-builder/core/requests';
 import { getRoute } from '@app-builder/utils/routes';
 import { redirect } from '@remix-run/node';
 
-export const loader = () => redirect(getRoute('/detection/scenarios'));
+export const loader = createServerFn([], async function detectionIndexLoader() {
+  return redirect(getRoute('/detection/scenarios'));
+});

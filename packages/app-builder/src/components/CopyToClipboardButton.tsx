@@ -5,7 +5,7 @@ import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const variances = cva(
-  'border-grey-border text-grey-primary hover:bg-grey-background active:bg-grey-border flex w-fit shrink-0 cursor-pointer select-none items-center break-all border font-normal transition-colors',
+  'border-grey-border text-grey-primary bg-purple-background-light hover:bg-grey-background active:bg-grey-border flex w-fit shrink-0 cursor-pointer select-none items-center break-all border font-normal transition-colors',
   {
     variants: {
       size: {

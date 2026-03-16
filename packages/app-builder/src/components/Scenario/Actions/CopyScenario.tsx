@@ -6,7 +6,9 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 const copyScenarioFormSchema = z.object({
@@ -85,5 +87,23 @@ function CopyScenarioContent({ scenarioId, scenarioName }: { scenarioId: string;
         </Button>
       </Modal.Footer>
     </form>
+  );
+}
+
+export function CopyScenarioButton({ scenarioId, scenarioName }: { scenarioId: string; scenarioName: string }) {
+  const { t } = useTranslation(['scenarios']);
+  const hydrated = useHydrated();
+  return (
+    <CopyScenario scenarioId={scenarioId} scenarioName={scenarioName}>
+      <Button
+        variant="secondary"
+        mode="icon"
+        disabled={!hydrated}
+        aria-label={t('scenarios:copy_scenario.title')}
+        title={t('scenarios:copy_scenario.title')}
+      >
+        <Icon icon="copy" className="size-6" />
+      </Button>
+    </CopyScenario>
   );
 }
