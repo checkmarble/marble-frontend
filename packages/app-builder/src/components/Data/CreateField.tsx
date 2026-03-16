@@ -85,7 +85,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             return response.errors.forEach(
               ({ field, code }: { field: string; code: CreateFieldValidationErrorCode }) => {
                 const message = getCreateFieldErrorMessage(code);
-                formApi.getFieldMeta(field as keyof CreateFieldValue)?.errors.push({ message });
+                formApi.setFieldMeta(field as keyof CreateFieldValue, (prev) => ({
+                  ...prev,
+                  errorMap: {
+                    ...prev.errorMap,
+                    onSubmit: { message },
+                  },
+                }));
               },
             );
           }

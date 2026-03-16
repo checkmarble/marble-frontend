@@ -69,9 +69,13 @@ export function SignInWithEmailAndPassword({
         if (error instanceof EmailUnverified) {
           navigate(getRoute('/email-verification'));
         } else if (error instanceof WrongPasswordError || error instanceof InvalidLoginCredentials) {
-          formApi
-            .getFieldMeta('credentials.password')
-            ?.errors.push({ message: t('auth:sign_in.errors.invalid_login_credentials') });
+          formApi.setFieldMeta('credentials.password', (prev) => ({
+            ...prev,
+            errorMap: {
+              ...prev.errorMap,
+              onSubmit: { message: t('auth:sign_in.errors.invalid_login_credentials') },
+            },
+          }));
         } else if (error instanceof NetworkRequestFailed) {
           toast.error(t('common:errors.firebase_network_error'));
         } else {
