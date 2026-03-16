@@ -6,6 +6,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { DeleteRule } from '@app-builder/components/Scenario/Rules/Actions/DeleteRule';
 import { DuplicateRule } from '@app-builder/components/Scenario/Rules/Actions/DuplicateRule';
 import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescription';
+import { AiGenerateRule } from '@app-builder/components/Scenario/Rules/AiGenerateRule';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
 import { type ServerFnResult } from '@app-builder/core/middleware-types';
@@ -22,7 +23,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { useFetcher, useLoaderData, useRevalidator } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
@@ -186,6 +187,7 @@ export default function RuleDetail() {
   const scenarioId = useParam('scenarioId');
 
   const fetcher = useFetcher<typeof action>();
+  const revalidator = useRevalidator();
   const scenario = useCurrentScenario();
   const editor = useEditorMode();
   const ruleGroups = useRuleGroups();
@@ -209,6 +211,18 @@ export default function RuleDetail() {
     },
     defaultValues: rule as EditRuleForm,
   });
+
+  // Track AI generation: after revalidation completes, reset form + re-mount AST builder
+  const [formulaKey, setFormulaKey] = useState(0);
+  const pendingGenerationRef = useRef(false);
+
+  useEffect(() => {
+    if (pendingGenerationRef.current && revalidator.state === 'idle') {
+      pendingGenerationRef.current = false;
+      form.reset(rule as EditRuleForm);
+      setFormulaKey((k) => k + 1);
+    }
+  }, [revalidator.state, rule]);
 
   const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
   const [ruleDescription, setRuleDescription] = useState<string | undefined>(undefined);
@@ -403,6 +417,7 @@ export default function RuleDetail() {
                     >
                       {(field) => (
                         <FieldAstFormula
+                          key={formulaKey}
                           type="rule"
                           scenarioId={scenario.id}
                           options={options}
@@ -423,6 +438,16 @@ export default function RuleDetail() {
                       isPending={isDebouncing || ruleDescriptionMutation.isPending}
                       description={ruleDescription}
                       className="self-start max-w-2xl"
+                    />
+                  ) : null}
+
+                  {isAiRuleDescriptionEnabled && editor === 'edit' ? (
+                    <AiGenerateRule
+                      ruleId={rule.id}
+                      onFormulaGenerated={() => {
+                        pendingGenerationRef.current = true;
+                        revalidator.revalidate();
+                      }}
                     />
                   ) : null}
                 </div>

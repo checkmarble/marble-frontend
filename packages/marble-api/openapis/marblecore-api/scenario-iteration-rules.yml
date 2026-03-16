@@ -224,6 +224,46 @@
       '404':
         $ref: 'components.yml#/responses/404'
 
+/scenario-iteration-rules/{ruleId}/generate-ast:
+  post:
+    tags:
+      - Scenario Iteration Rules
+    summary: Generate a rule formula using AI
+    description: Generate a rule formula from a natural language instruction using AI. The rule is updated in-place on the server.
+    operationId: generateScenarioIterationRuleAst
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: ID of the rule to generate formula for
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Natural language instruction for generating the rule formula
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - instruction
+            properties:
+              instruction:
+                type: string
+                description: Natural language description of the rule to generate
+      required: true
+    responses:
+      '204':
+        description: Rule formula generated and saved successfully
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
 components:
   schemas:
     ScenarioIterationRuleMetadataDto:
