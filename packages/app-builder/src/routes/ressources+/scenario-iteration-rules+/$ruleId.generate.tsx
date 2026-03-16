@@ -37,11 +37,11 @@ export const action = createServerFn(
     }
 
     try {
-      await scenarioIterationRuleRepository.generateRuleAst({
+      const result = await scenarioIterationRuleRepository.generateRuleAst({
         ruleId,
         instruction: parsed.data.instruction,
       });
-      return data({ success: true });
+      return data({ success: true, ...result });
     } catch {
       setToastMessage(toastSession, {
         type: 'error',

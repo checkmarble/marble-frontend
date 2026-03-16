@@ -1,3 +1,4 @@
+import { type AstNode } from '@app-builder/models';
 import { useGenerateRuleMutation } from '@app-builder/queries/scenarios/generate-rule';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,7 @@ import { Icon } from 'ui-icons';
 
 interface AiGenerateRuleProps {
   ruleId: string;
-  onFormulaGenerated: () => void;
+  onFormulaGenerated: (ruleAst: AstNode) => void;
 }
 
 export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRuleProps) {
@@ -16,9 +17,9 @@ export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRulePro
 
   const handleGenerate = async () => {
     const result = await mutation.mutateAsync({ instruction }).catch(() => null);
-    if (result?.success) {
+    if (result?.success && result.ruleAst) {
       setInstruction('');
-      onFormulaGenerated();
+      onFormulaGenerated(result.ruleAst);
     }
   };
 

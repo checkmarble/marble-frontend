@@ -27,7 +27,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { useFetcher, useLoaderData, useRevalidator } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
@@ -191,7 +191,6 @@ export default function RuleDetail() {
   const scenarioId = useParam('scenarioId');
 
   const fetcher = useFetcher<typeof action>();
-  const revalidator = useRevalidator();
   const scenario = useCurrentScenario();
   const editor = useEditorMode();
   const ruleGroups = useRuleGroups();
@@ -216,17 +215,8 @@ export default function RuleDetail() {
     defaultValues: rule as EditRuleForm,
   });
 
-  // Track AI generation: after revalidation completes, reset form + re-mount AST builder
+  // Track AI generation: update form directly with returned AST + re-mount AST builder
   const [formulaKey, setFormulaKey] = useState(0);
-  const pendingGenerationRef = useRef(false);
-
-  useEffect(() => {
-    if (pendingGenerationRef.current && revalidator.state === 'idle') {
-      pendingGenerationRef.current = false;
-      form.reset(rule as EditRuleForm);
-      setFormulaKey((k) => k + 1);
-    }
-  }, [revalidator.state, rule]);
 
   const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
   const [ruleDescription, setRuleDescription] = useState<string | undefined>(undefined);
@@ -448,9 +438,9 @@ export default function RuleDetail() {
                   {isAiRuleDescriptionEnabled && editor === 'edit' ? (
                     <AiGenerateRule
                       ruleId={rule.id}
-                      onFormulaGenerated={() => {
-                        pendingGenerationRef.current = true;
-                        revalidator.revalidate();
+                      onFormulaGenerated={(ruleAst) => {
+                        form.setFieldValue('formula', ruleAst);
+                        setFormulaKey((k) => k + 1);
                       }}
                     />
                   ) : null}
