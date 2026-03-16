@@ -5,7 +5,7 @@ import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-b
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
-import { MouseEventHandler, useEffect, useRef } from 'react';
+import { KeyboardEventHandler, MouseEventHandler, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -24,11 +24,24 @@ export type CasesListProps = {
   setCurrentPage: (page: number) => void;
 };
 
+const getRowLink = (currentTarget: EventTarget | null) => {
+  if (!(currentTarget instanceof HTMLElement)) return null;
+  const rowLink = currentTarget.querySelector('[data-row-link]');
+  return rowLink instanceof HTMLAnchorElement ? rowLink : null;
+};
+
 const handleRowClick: MouseEventHandler = (e) => {
-  const rowLink = e.currentTarget.querySelector('[data-row-link]');
-  if (rowLink && rowLink !== e.target && rowLink instanceof HTMLAnchorElement) {
+  const rowLink = getRowLink(e.currentTarget);
+  if (rowLink && rowLink !== e.target) {
     rowLink.dispatchEvent(new MouseEvent(e.type, e.nativeEvent));
   }
+};
+
+const handleRowKeyDown: KeyboardEventHandler<HTMLDivElement> = (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+
+  e.preventDefault();
+  getRowLink(e.currentTarget)?.click();
 };
 
 export function CasesList({
@@ -85,9 +98,12 @@ export function CasesList({
         </div>
         {cases.map((caseItem, index) => (
           <div
-            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-background-light cursor-pointer h-18"
+            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-background-light cursor-pointer h-18 focus:outline-2 focus:-outline-offset-2"
             key={caseItem.id}
+            role="link"
+            tabIndex={0}
             onClick={handleRowClick}
+            onKeyDown={handleRowKeyDown}
           >
             <div className="invisible">
               <Link data-row-link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseItem.id) })} />

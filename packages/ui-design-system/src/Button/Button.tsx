@@ -41,7 +41,7 @@ export const CtaClassName = cva(
 );
 
 export const CtaV2ClassName = cva(
-  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer transition-colors border border-solid disabled:cursor-default focus:outline-1 focus:outline-offset-2',
+  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer transition-colors border border-solid disabled:cursor-default focus:outline-2 focus:outline-offset-1',
   {
     variants: {
       variant: {
