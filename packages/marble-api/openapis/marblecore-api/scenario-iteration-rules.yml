@@ -255,8 +255,12 @@
                 description: Natural language description of the rule to generate
       required: true
     responses:
-      '204':
+      '200':
         description: Rule formula generated and saved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRuleResponseDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
@@ -266,6 +270,31 @@
 
 components:
   schemas:
+    GenerateRuleResponseDto:
+      type: object
+      properties:
+        rule_ast:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+        validation:
+          type: object
+          properties:
+            is_valid:
+              type: boolean
+            errors:
+              type: array
+              items:
+                type: string
+            warnings:
+              type: array
+              items:
+                type: string
+          required:
+            - is_valid
+            - errors
+            - warnings
+      required:
+        - rule_ast
+        - validation
     ScenarioIterationRuleMetadataDto:
       type: object
       properties:

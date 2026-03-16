@@ -1,5 +1,12 @@
+import { type AstNode } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
+
+export interface GenerateRuleResult {
+  success: boolean;
+  ruleAst?: AstNode;
+  validation?: { isValid: boolean; errors: string[]; warnings: string[] };
+}
 
 const endpoint = (ruleId: string) =>
   getRoute('/ressources/scenario-iteration-rules/:ruleId/generate', {
@@ -20,7 +27,7 @@ export function useGenerateRuleMutation(ruleId: string) {
         throw new Error('Failed to generate rule');
       }
 
-      return (await response.json()) as { success: boolean };
+      return (await response.json()) as GenerateRuleResult;
     },
   });
 }
