@@ -1,6 +1,5 @@
 import { useGenerateRuleMutation } from '@app-builder/queries/scenarios/generate-rule';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -16,12 +15,10 @@ export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRulePro
   const mutation = useGenerateRuleMutation(ruleId);
 
   const handleGenerate = async () => {
-    try {
-      await mutation.mutateAsync({ instruction });
+    const result = await mutation.mutateAsync({ instruction }).catch(() => null);
+    if (result?.success) {
       setInstruction('');
       onFormulaGenerated();
-    } catch {
-      toast.error(t('scenarios:rules.ai_generate.error_generating'));
     }
   };
 
@@ -57,12 +54,6 @@ export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRulePro
             </>
           )}
         </Button>
-
-        {mutation.isPending ? (
-          <div className="bg-grey-background text-grey-secondary animate-pulse rounded p-3 text-xs">
-            {t('scenarios:rules.ai_generate.generating')}
-          </div>
-        ) : null}
       </div>
     </div>
   );
