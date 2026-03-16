@@ -47,14 +47,16 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
 ) {
   return (
     <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
-      <button type="button" className="focus:outline-2 focus:-outline-offset-2 focus:outline-purple-primary">
+      <div className="focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-primary">
         {children}
-        <Icon
-          icon="smallarrow-up"
-          aria-hidden
-          className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
-        />
-      </button>
+        <button>
+          <Icon
+            icon="smallarrow-up"
+            aria-hidden
+            className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
+          />
+        </button>
+      </div>
     </Trigger>
   );
 });
