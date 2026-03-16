@@ -248,6 +248,8 @@ paths:
     $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules~1{ruleId}
   /scenario-iteration-rules/{ruleId}/ai-description:
     $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules~1{ruleId}~1ai-description
+  /scenario-iteration-rules/{ruleId}/generate-ast:
+    $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules~1{ruleId}~1generate-ast
 
   # CONTINUOUS SCREENINGS
 
