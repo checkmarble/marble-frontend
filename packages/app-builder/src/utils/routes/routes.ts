@@ -981,6 +981,11 @@ export const routes = [
         "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
       },
       {
+        "id": "routes/ressources+/scenario-iteration-rules+/$ruleId.generate",
+        "path": "ressources/scenario-iteration-rules/:ruleId/generate",
+        "file": "routes/ressources+/scenario-iteration-rules+/$ruleId.generate.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",
         "path": "ressources/scenarios/:scenarioId/:iterationId/activate",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate.tsx"
