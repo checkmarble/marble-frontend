@@ -17,7 +17,11 @@ import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
+import {
+  hasAnyEntitlement,
+  isAiRuleBuildingAvailable,
+  isContinuousScreeningAvailable,
+} from '@app-builder/services/feature-access';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -104,7 +108,7 @@ export const loader = createServerFn([authMiddleware], async function ruleLoader
     payloadAccessors,
     dataModel,
     customLists,
-    isAiRuleDescriptionEnabled: context.appConfig.isManagedMarble,
+    isAiRuleDescriptionEnabled: isAiRuleBuildingAvailable(entitlements),
     rule,
     hasValidLicense: hasAnyEntitlement(entitlements),
     hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
