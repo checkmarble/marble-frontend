@@ -63,6 +63,8 @@ components:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
         continuous_screening:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
+        ai_rule_building:
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
       required:
         - workflows
         - analytics
@@ -76,6 +78,7 @@ components:
         - case_auto_assign
         - case_ai_assist
         - continuous_screening
+        - ai_rule_building
   responses:
     "401":
       description: Unauthorized
