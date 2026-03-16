@@ -140,7 +140,7 @@ export interface AggregationAstNode {
       children: AggregationFilterAstNode[];
       namedChildren: Record<string, never>;
     };
-    percentile?: ConstantAstNode<number>; // Value between 0-100, only for PCTILE operator
+    percentile?: ConstantAstNode<number>; // Value between 0-1, only for PCTILE operator
   };
 }
 
@@ -161,7 +161,7 @@ export function NewAggregatorAstNode(aggregatorName: AggregatorOperator): Aggreg
 
   // Only add percentile for PCTILE operator
   if (aggregatorName === 'PCTILE') {
-    namedChildren.percentile = NewConstantAstNode({ constant: 50 });
+    namedChildren.percentile = NewConstantAstNode({ constant: 0.5 });
   }
 
   return {
