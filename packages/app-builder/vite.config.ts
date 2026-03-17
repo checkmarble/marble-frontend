@@ -71,6 +71,9 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  ssr: {
+    noExternal: ['country-flag-emojis'],
+  },
   plugins,
   test: {
     globals: true,

@@ -10,6 +10,7 @@ import * as R from 'remeda';
 import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
+import { DataFields } from './DataVisualisation/DataFields';
 
 const METADATA_FIELDS = ['object_id', 'valid_from'] as const;
 
@@ -135,6 +136,9 @@ export const IngestedObjectDetail = ({
             </Fragment>
           );
         })}
+      </div>
+      <div>
+        <DataFields table={tableName} object={object} preset="full" className="w-fit" />
       </div>
     </div>
   );
