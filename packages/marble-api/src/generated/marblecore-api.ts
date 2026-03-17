@@ -1082,6 +1082,20 @@ export type ScreeningFileDto = {
     filename: string;
     created_at: string;
 };
+export type ScreeningAiSuggestionDto = {
+    /** ID of the screening match this suggestion applies to */
+    match_id: string;
+    /** ID of the sanctioned entity proposed as a match */
+    entity_id: string;
+    /** AI assessment of the match */
+    confidence: "probable_false_positive" | "inconclusive" | "investigate";
+    /** Concise AI explanation for the suggestion (1–3 sentences) */
+    reason: string;
+    /** Schema version of the suggestion object */
+    version: string;
+    /** When the suggestion was generated */
+    created_at: string;
+};
 export type UpdateScreeningMatchDto = {
     status: "confirmed_hit" | "no_hit";
     comment?: string;
@@ -3796,6 +3810,46 @@ export function downloadScreeningFile(screeningId: string, fileId: string, opts?
         data: string;
     }>(`/screenings/${encodeURIComponent(screeningId)}/files/${encodeURIComponent(fileId)}`, {
         ...opts
+    }));
+}
+/**
+ * Retrieve AI-generated suggestions for all hits in a screening
+ */
+export function getScreeningAiSuggestions(screeningId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningAiSuggestionDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/screenings/${encodeURIComponent(screeningId)}/ai-suggestions`, {
+        ...opts
+    }));
+}
+/**
+ * Enqueue an async job to generate AI suggestions for a screening's hits
+ */
+export function enqueueScreeningAiSuggestions(screeningId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 202;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/screenings/${encodeURIComponent(screeningId)}/ai-suggestions/enqueue`, {
+        ...opts,
+        method: "POST"
     }));
 }
 /**
