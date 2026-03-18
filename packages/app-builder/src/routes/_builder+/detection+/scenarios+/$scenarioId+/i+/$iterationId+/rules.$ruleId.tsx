@@ -71,11 +71,7 @@ export const handle = {
           >
             {rule.name ?? fromUUIDtoSUUID(rule.id)}
           </BreadCrumbLink>
-          {editorMode === 'edit' ? (
-            <Tag size="big" border="square">
-              {t('common:edit')}
-            </Tag>
-          ) : null}
+          {editorMode === 'edit' ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
       );
     },

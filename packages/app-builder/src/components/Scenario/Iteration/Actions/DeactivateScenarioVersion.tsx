@@ -17,7 +17,7 @@ export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenari
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button className="flex-1" variant="destructive">
+        <Button className="flex-1" variant="destructive" size="default">
           <Icon icon="stop" className="size-5" />
           {t('scenarios:deployment_modal.deactivate.button')}
         </Button>

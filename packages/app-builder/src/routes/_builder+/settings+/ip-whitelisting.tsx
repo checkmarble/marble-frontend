@@ -1,16 +1,14 @@
 import { IpWhitelistingSettingsPage } from '@app-builder/components/Settings/IpWhitelisting/IpWhitelistingSettingsPage';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import { redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { LoaderFunctionArgs, redirect } from '@remix-run/server-runtime';
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { authService, appConfigRepository } = initServerServices(request);
-  const { organization: orgRepo, user } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const appConfig = await appConfigRepository.getAppConfig();
+export const loader = createServerFn([authMiddleware], async function ipWhitelistingLoader({ context }) {
+  const { organization: orgRepo, user } = context.authInfo;
+  const { appConfig } = context;
 
   if (!isAdmin(user) || !appConfig.isManagedMarble) {
     return redirect(getRoute('/'));
@@ -22,7 +20,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     allowedNetworks: organization.allowedNetworks,
     organizationId: organization.id,
   };
-};
+});
 
 export default function IpWhitelistingSettings() {
   const { allowedNetworks, organizationId } = useLoaderData<typeof loader>();

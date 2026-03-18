@@ -56,7 +56,7 @@ test('Create a simple scenario', async ({ page }) => {
   await expect(page.getByRole('cell', { name: scenarioName })).toBeVisible();
 
   await page.getByRole('cell', { name: scenarioName }).click();
-  await page.getByRole('link', { name: 'draft' }).click();
+  await page.getByRole('link', { name: 'Edit scenario' }).click();
 
   await expect(page.getByRole('button', { name: 'edit_operand.operator_type.' })).toHaveText('amount');
   await expect(page.getByRole('button', { name: '>' })).toHaveText('>');

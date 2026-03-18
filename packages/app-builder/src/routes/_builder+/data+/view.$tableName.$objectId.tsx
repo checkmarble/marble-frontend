@@ -1,10 +1,10 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { IngestedObjectDetail } from '@app-builder/components/Data/IngestedObjectDetail';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { HttpError } from '@oazapfts/runtime';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,11 +26,8 @@ export const handle = {
   ],
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function viewObjectLoader({ params, context }) {
+  const { dataModelRepository } = context.authInfo;
 
   const tableName = params['tableName'] ?? '';
   const objectId = params['objectId'] ?? '';
@@ -49,7 +46,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }
     throw err;
   }
-}
+});
 
 export default function DataSearchObjectPage() {
   const { t } = useTranslation(['data']);

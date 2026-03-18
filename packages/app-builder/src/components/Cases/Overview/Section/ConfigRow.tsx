@@ -50,7 +50,7 @@ export function ConfigRow({
             .with({ isRestricted: true }, () => null)
             .with({ canEdit: true }, () => statusTag)
             .otherwise(() => (
-              <Tag color="purple" size="small" border="rounded-sm">
+              <Tag color="purple" size="small">
                 {t('cases:overview.config.view_only')}
               </Tag>
             ))}

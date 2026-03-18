@@ -1,7 +1,7 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Tag, type TagProps } from './Tag';
-import { tagBorder, tagColors, tagSize } from './Tag.constants';
+import { tagColors, tagSize } from './Tag.constants';
 
 type StoryProps = TagProps;
 
@@ -11,7 +11,6 @@ const Story: Meta<StoryProps> = {
   args: {
     children: 'Tag',
     color: tagColors[0],
-    border: tagBorder[0],
     size: tagSize[0],
   },
   argTypes: {
@@ -21,10 +20,6 @@ const Story: Meta<StoryProps> = {
     color: {
       control: { type: 'select' },
       options: tagColors.slice(),
-    },
-    border: {
-      control: { type: 'select' },
-      options: tagBorder.slice(),
     },
     size: {
       control: { type: 'select' },

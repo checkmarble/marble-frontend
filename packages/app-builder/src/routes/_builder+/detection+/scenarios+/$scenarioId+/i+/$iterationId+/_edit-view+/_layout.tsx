@@ -1,5 +1,4 @@
 import { navigationI18n, Page } from '@app-builder/components';
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CornerPing } from '@app-builder/components/Ping';
 import { ActivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/ActivateScenarioVersion';
 import { CommitIterationDraft } from '@app-builder/components/Scenario/Iteration/Actions/CommitIterationDraft';
@@ -7,12 +6,17 @@ import { CreateDraftIteration } from '@app-builder/components/Scenario/Iteration
 import { DeactivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/DeactivateScenarioVersion';
 import { PrepareScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/PrepareScenarioVersion';
 import { ArchivedIterationView } from '@app-builder/components/Scenario/Iteration/ArchivedIterationView';
+import { ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
 import {
   useCurrentScenario,
   useScenarioIterationsSummary,
 } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { isCreateDraftAvailable, isDeploymentActionsAvailable } from '@app-builder/services/feature-access';
+import {
+  isCreateDraftAvailable,
+  isDeploymentActionsAvailable,
+  isEditScenarioAvailable,
+} from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import {
   hasDecisionErrors,
@@ -30,7 +34,7 @@ import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { cn, Tabs, Tag, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
+import { useCurrentScenarioIteration, useCurrentScenarioValidation, VersionSelect } from '../_layout';
 
 export const handle = {
   i18n: [...navigationI18n, 'scenarios', 'common'] satisfies Namespace,
@@ -46,6 +50,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!isDeploymentActionsAvailable(user)) {
     return json({
+      isEditScenarioAvailable: isEditScenarioAvailable(user),
       isDeploymentActionsAvailable: false as const,
       isCreateDraftAvailable: isCreateDraftAvailable(user),
     });
@@ -56,6 +61,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   return json({
+    isEditScenarioAvailable: isEditScenarioAvailable(user),
     isDeploymentActionsAvailable: true as const,
     isCreateDraftAvailable: isCreateDraftAvailable(user),
     publicationPreparationStatus,
@@ -66,7 +72,7 @@ export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
   const scenarioValidation = useCurrentScenarioValidation();
-  const { isCreateDraftAvailable, ...loaderData } = useLoaderData<typeof loader>();
+  const { isEditScenarioAvailable, isCreateDraftAvailable, ...loaderData } = useLoaderData<typeof loader>();
   const { archived } = useCurrentScenarioIteration();
 
   const scenarioIterations = useScenarioIterationsSummary();
@@ -89,55 +95,57 @@ export default function ScenarioEditLayout() {
     <Page.Main>
       <Page.Header className="justify-between gap-4">
         <div className="flex flex-row items-center gap-4">
-          <BreadCrumbs />
-
-          {withEditTag ? (
-            <Tag size="big" border="square">
-              {t('common:edit')}
-            </Tag>
-          ) : null}
+          <ScenarioHeader isEditScenarioAvailable={isEditScenarioAvailable} />
+          <VersionSelect currentIteration={currentIteration} scenarioIterations={scenarioIterations} />
+          {withEditTag ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
-        {!archived ? (
-          <div className="flex flex-row items-center gap-4">
-            {withCreateDraftIteration ? (
-              <CreateDraftIteration
-                iterationId={currentIteration.id}
-                scenarioId={currentScenario.id}
-                draftId={draftIteration?.id}
-              />
-            ) : null}
-            {loaderData.isDeploymentActionsAvailable ? (
-              <DeploymentActions
-                scenario={{
-                  id: currentScenario.id,
-                  isLive: !!currentScenario.liveVersionId,
-                }}
-                iteration={{
-                  id: currentIteration.id,
-                  type: currentIteration.type,
-                  isValid:
-                    !hasTriggerErrors(scenarioValidation) &&
-                    !hasRulesErrors(scenarioValidation) &&
-                    !hasScreeningsErrors(scenarioValidation) &&
-                    !hasDecisionErrors(scenarioValidation),
-                  status: loaderData.publicationPreparationStatus.status,
-                }}
-                isPreparationServiceOccupied={loaderData.publicationPreparationStatus.serviceStatus === 'occupied'}
-              />
-            ) : null}
-          </div>
-        ) : null}
       </Page.Header>
-      <Page.Container>
+      <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
         {archived ? (
           <aside className="bg-grey-background text-s text-grey-primary flex flex-row items-center gap-2 p-4 font-normal lg:px-8 lg:py-4">
             <Icon icon="tip" className="size-5 shrink-0" />
             {t('scenarios:iteration.archived_message')}
           </aside>
-        ) : currentScenario.description ? (
-          <Page.Description>{currentScenario.description}</Page.Description>
-        ) : null}
-        <Page.Content>
+        ) : (
+          <section className="flex flex-row gap-6 items-center">
+            {currentScenario.description ? (
+              <Page.Description withIcon={false} className="flex-1">
+                {currentScenario.description}
+              </Page.Description>
+            ) : null}
+
+            <div className="flex flex-row items-center gap-4">
+              {withCreateDraftIteration ? (
+                <CreateDraftIteration
+                  iterationId={currentIteration.id}
+                  scenarioId={currentScenario.id}
+                  draftId={draftIteration?.id}
+                />
+              ) : null}
+              {loaderData.isDeploymentActionsAvailable ? (
+                <DeploymentActions
+                  scenario={{
+                    id: currentScenario.id,
+                    isLive: !!currentScenario.liveVersionId,
+                  }}
+                  iteration={{
+                    id: currentIteration.id,
+                    type: currentIteration.type,
+                    isValid:
+                      !hasTriggerErrors(scenarioValidation) &&
+                      !hasRulesErrors(scenarioValidation) &&
+                      !hasScreeningsErrors(scenarioValidation) &&
+                      !hasDecisionErrors(scenarioValidation),
+                    status: loaderData.publicationPreparationStatus.status,
+                  }}
+                  isPreparationServiceOccupied={loaderData.publicationPreparationStatus.serviceStatus === 'occupied'}
+                />
+              ) : null}
+            </div>
+          </section>
+        )}
+
+        <Page.ContentV2 paddingLess className="flex flex-col gap-v2-lg my-v2-xxl">
           {archived ? (
             <ArchivedIterationView />
           ) : (
@@ -179,7 +187,7 @@ export default function ScenarioEditLayout() {
               <Outlet />
             </>
           )}
-        </Page.Content>
+        </Page.ContentV2>
       </Page.Container>
     </Page.Main>
   );

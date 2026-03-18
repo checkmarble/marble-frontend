@@ -1,16 +1,16 @@
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import invariant from 'tiny-invariant';
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const { authService } = initServerServices(request);
-  const { cases: caseRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function downloadCaseFileLoader({ params, context }) {
+    const { cases: caseRepository } = context.authInfo;
 
-  const fileId = params['fileId'];
-  invariant(fileId, 'fileId is required');
+    const fileId = params['fileId'];
+    invariant(fileId, 'fileId is required');
 
-  return Response.json(await caseRepository.getCaseFileDownloadLink(fileId));
-};
+    return Response.json(await caseRepository.getCaseFileDownloadLink(fileId));
+  },
+);
