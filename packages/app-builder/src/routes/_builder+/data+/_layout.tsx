@@ -1,7 +1,8 @@
 import { Page } from '@app-builder/components';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAnalyst } from '@app-builder/models';
+import { CurrentUser, isAnalyst } from '@app-builder/models';
+import { FeatureAccesses } from '@app-builder/models/feature-access';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import {
   hasAnyEntitlement,
@@ -31,26 +32,27 @@ export const loader = createServerFn([authMiddleware], async function dataLayout
   if (isAnalyst(user)) {
     return redirect(getRoute('/cases'));
   }
-
   const dataModel = await dataModelRepository.getDataModel();
-  return {
-    dataModel,
-    dataModelFeatureAccess: {
-      isCreateDataModelTableAvailable: isCreateDataModelTableAvailable(user),
-      isEditDataModelInfoAvailable: isEditDataModelInfoAvailable(user),
-      isCreateDataModelFieldAvailable: isCreateDataModelFieldAvailable(user),
-      isEditDataModelFieldAvailable: isEditDataModelFieldAvailable(user),
-      isCreateDataModelLinkAvailable: isCreateDataModelLinkAvailable(user),
-      isCreateDataModelPivotAvailable: isCreateDataModelPivotAvailable(user),
-      isIngestDataAvailable: isIngestDataAvailable(user),
-      isDeleteDataModelTableAvailable: isDeleteDataModelTableAvailable(user),
-      isDeleteDataModelFieldAvailable: isDeleteDataModelFieldAvailable(user),
-      isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),
-      isDeleteDataModelPivotAvailable: isDeleteDataModelPivotAvailable(user),
-      isIpGpsAvailable: hasAnyEntitlement(entitlements),
-    },
-  };
+
+  return { dataModel, dataModelFeatureAccess: dataModelFeatureAccessLoader(user, entitlements) };
 });
+
+export function dataModelFeatureAccessLoader(user: CurrentUser, entitlements: FeatureAccesses) {
+  return {
+    isCreateDataModelTableAvailable: isCreateDataModelTableAvailable(user),
+    isEditDataModelInfoAvailable: isEditDataModelInfoAvailable(user),
+    isCreateDataModelFieldAvailable: isCreateDataModelFieldAvailable(user),
+    isEditDataModelFieldAvailable: isEditDataModelFieldAvailable(user),
+    isCreateDataModelLinkAvailable: isCreateDataModelLinkAvailable(user),
+    isCreateDataModelPivotAvailable: isCreateDataModelPivotAvailable(user),
+    isIngestDataAvailable: isIngestDataAvailable(user),
+    isDeleteDataModelTableAvailable: isDeleteDataModelTableAvailable(user),
+    isDeleteDataModelFieldAvailable: isDeleteDataModelFieldAvailable(user),
+    isDeleteDataModelLinkAvailable: isDeleteDataModelLinkAvailable(user),
+    isDeleteDataModelPivotAvailable: isDeleteDataModelPivotAvailable(user),
+    isIpGpsAvailable: hasAnyEntitlement(entitlements),
+  };
+}
 
 export default function Data() {
   const { dataModel, dataModelFeatureAccess } = useLoaderData<typeof loader>();

@@ -174,7 +174,7 @@ export const loader = createServerFn([authMiddleware], async function decisionLo
 });
 
 export default function DecisionPage() {
-  const { dataModel, decision, pivots, scenarioRules, screening, isIterationArchived } = useLoaderData<typeof loader>();
+  const { decision, pivots, scenarioRules, screening, isIterationArchived } = useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -191,7 +191,6 @@ export default function DecisionPage() {
   );
 
   const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
-  const fields = dataModel.find((table) => table.name === decision.triggerObjectType)?.fields;
 
   return (
     <DecisionRightPanel.Root>
@@ -221,7 +220,10 @@ export default function DecisionPage() {
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />
                 </div>
-                <DecisionDetailTriggerObject fields={fields} triggerObject={decision.triggerObject} />
+                <DecisionDetailTriggerObject
+                  table={decision.triggerObjectType}
+                  triggerObject={decision.triggerObject}
+                />
               </div>
             </div>
           </Page.Content>

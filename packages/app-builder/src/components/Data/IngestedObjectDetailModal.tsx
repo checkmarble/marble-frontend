@@ -4,8 +4,7 @@ import { useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
-
-import { IngestedObjectDetail } from '../Data/IngestedObjectDetail';
+import { DataFields } from './DataVisualisation/DataFields';
 
 export function IngestedObjectDetailModal({
   dataModel,
@@ -45,15 +44,7 @@ export function IngestedObjectDetailModal({
         <Modal.Title>{tableName}</Modal.Title>
         <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
           {data.object ? (
-            <IngestedObjectDetail
-              light
-              bordered={false}
-              withLinks={false}
-              dataModel={dataModel}
-              tableName={tableName}
-              objectId={objectId}
-              object={data.object}
-            />
+            <DataFields table={tableName} object={data.object} preset="full" options={{ hideLinks: true }} />
           ) : (
             <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
           )}

@@ -10,8 +10,8 @@ import { Map as MapLibre, type MapRef, Marker } from '@vis.gl/react-maplibre';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
-import { type ComponentType, useEffect, useRef, useState } from 'react';
-import { cn } from 'ui-design-system';
+import { type ComponentType, Fragment, useEffect, useRef, useState } from 'react';
+import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type VALID_DATA_TYPE } from './data-type';
 import { CARTO_BASEMAP, hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
@@ -23,12 +23,15 @@ import { useTranslation } from 'react-i18next';
 import { DataFields, DataFieldsHeader } from './DataFields';
 
 const codeClassName = 'font-mono border border-grey-border rounded-sm p-1';
+const subClassName = 'grid gap-1 p-2 border border-grey-border bg-grey-background-light rounded-lg';
+
+type MetadataType = ReturnType<typeof parseUnknownData>;
 
 type DataFieldProps = {
   field?: DataModelField;
   value?: string | number | boolean;
   linkedTo?: string;
-  metaData?: ReturnType<typeof parseUnknownData>;
+  metaData?: MetadataType;
 };
 
 const FIELD_TYPE_COMPONENTS = {
@@ -60,43 +63,32 @@ const FIELD_TYPE_COMPONENTS = {
   'enum-values': EnumValues,
   'boolean-checkbox': BooleanCheckbox,
   'boolean-yes_no': BooleanYesNo,
-} satisfies Record<VALID_DATA_TYPE, ComponentType<{ value?: string }>>;
+} satisfies Record<VALID_DATA_TYPE, ComponentType<{ value?: string; metaData?: MetadataType }>>;
 
 export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) {
+  const options = useOptions();
   const fieldType = adaptFieldType(field);
   const Component = FIELD_TYPE_COMPONENTS[fieldType];
 
-  let MetaDataComponent: ComponentType<{ value?: string }> | null = null;
-  const hasMetadata = hasMetadataContent(metaData);
-
-  if (hasMetadata) {
-    let fieldType: VALID_DATA_TYPE = 'string-free';
-    if (metaData?.type === 'number') {
-      fieldType = 'number-integer';
-    } else if (metaData?.type === 'url') {
-      fieldType = 'string-link';
-    } else if (metaData?.type === 'datetime') {
-      fieldType = 'date-datetime';
-    }
-    MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
-  }
   return (
-    <>
+    <div className="col-span-2 grid grid-cols-subgrid">
       <label htmlFor={field?.id} className="text-grey-secondary">
         {field?.name}
       </label>
       <div id={field?.id}>
         {value ? (
           <>
-            {linkedTo ? <LinkToValue value={`${value}`} linkedTo={linkedTo} /> : <Component value={`${value}`} />}
-
-            {MetaDataComponent && metaData?.value && <MetaDataComponent value={`${metaData?.value}`} />}
+            {linkedTo ? (
+              <LinkToValue value={`${value}`} linkedTo={linkedTo} />
+            ) : (
+              <Component value={`${value}`} metaData={options?.hideMetadata ? undefined : metaData} />
+            )}
           </>
         ) : (
           <span>{'-'}</span>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -225,10 +217,6 @@ function StringId({ value }: { value?: string }) {
   );
 }
 
-function StringIpAddress({ value }: { value?: string }) {
-  return <span className={codeClassName}>{value ?? '-'}</span>;
-}
-
 function StringFree({ value }: { value?: string }) {
   return <span>{value ?? '-'}</span>;
 }
@@ -337,7 +325,7 @@ function NumberPercentile({ value }: { value?: string }) {
 }
 
 function BooleanCheckbox({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  return <Switch checked={value === 'true'} disabled />;
 }
 
 function BooleanYesNo({ value }: { value?: string }) {
@@ -346,6 +334,70 @@ function BooleanYesNo({ value }: { value?: string }) {
 
 function EnumValues({ value }: { value?: string }) {
   return <span className={codeClassName}>{value ?? '-'}</span>;
+}
+
+function StringIpAddress({ value, metaData }: { value?: string; metaData?: MetadataType }) {
+  const [isOpen, setIsOpen] = useState(false);
+  if (!metaData) return <span className={codeClassName}>{value ?? '-'}</span>;
+
+  return (
+    <div className="grid gap-1">
+      <button
+        className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span>{value}</span>
+        <Icon icon="caret-down" className={cn('size-4 transition-transform duration-200', isOpen && 'rotate-180')} />
+      </button>
+      {isOpen && <MetaData metaData={metaData} />}
+    </div>
+  );
+}
+
+function MetaData({ metaData }: { metaData?: MetadataType }) {
+  if (!metaData) return null;
+  let MetaDataComponent: ComponentType<{ value?: string }> = FIELD_TYPE_COMPONENTS['string-free'];
+  const hasMetadata = hasMetadataContent(metaData);
+  let metadataValue: string = '';
+
+  if (hasMetadata) {
+    let fieldType: VALID_DATA_TYPE = 'string-free';
+    if (metaData?.type === 'number') {
+      fieldType = 'number-integer';
+      metadataValue = (metaData?.value as number).toString();
+    } else if (metaData?.type === 'url') {
+      fieldType = 'string-link';
+      metadataValue = metaData?.value as string;
+    } else if (metaData?.type === 'datetime') {
+      fieldType = 'date-datetime';
+      metadataValue = new Date(metaData?.value).toISOString();
+    } else if (metaData?.type === 'DerivedData') {
+      return <DataDerivedData metaData={metaData.value} />;
+    }
+    MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
+  }
+  return <MetaDataComponent value={metadataValue} />;
+}
+
+function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
+  if (!metaData) return null;
+
+  return (
+    <div className={cn(subClassName, 'grid-cols-2')}>
+      {Object.entries(metaData).map(([key, value]) => {
+        let MetaDataComponent = FIELD_TYPE_COMPONENTS['string-free'];
+        if (typeof value === 'number') MetaDataComponent = FIELD_TYPE_COMPONENTS['number-integer'];
+        if (typeof value === 'boolean') MetaDataComponent = FIELD_TYPE_COMPONENTS['boolean-checkbox'];
+        if (/country/i.test(key)) MetaDataComponent = FIELD_TYPE_COMPONENTS['string-country'];
+        return (
+          <Fragment key={key}>
+            <label className="font-semibold">{key}</label>
+            <MetaDataComponent value={value as string} />
+          </Fragment>
+        );
+      })}
+    </div>
+  );
 }
 
 function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string }) {
@@ -368,12 +420,12 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
 
   return (
     <div className="grid gap-1">
-      <button className={cn(codeClassName, 'w-fit flex gap-2 items-center')} onClick={handleToggle}>
+      <button className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')} onClick={handleToggle}>
         <span>{value}</span>
         <Icon icon="caret-down" className={cn('size-4 transition-transform duration-200', isOpen && 'rotate-180')} />
       </button>
       {isOpen && (
-        <div>
+        <div className={subClassName}>
           {fetcher.state === 'loading' ? (
             <Spinner className="size-4" />
           ) : fetcher.data?.objectDetails ? (

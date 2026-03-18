@@ -12,6 +12,10 @@ export type ClientDataInfoProps = {
   table: TableModelWithOptions;
 };
 
+/**
+ * @deprecated
+ * Use DataFields instead
+ */
 export const ClientDataInfo = ({ objectDetails, table }: ClientDataInfoProps) => {
   const { t } = useTranslation(['common']);
   const parsedData = R.pipe(objectDetails.data, R.mapValues(parseUnknownData));

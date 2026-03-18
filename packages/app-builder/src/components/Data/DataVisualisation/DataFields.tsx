@@ -12,9 +12,9 @@ import { cn } from 'ui-design-system';
 import { DataField } from './DataField';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
 import { getLinkksFromDatamodel, hasMetadataContent, isMetadataKey, METADATA_FIELDS } from './dataFieldsUtils';
-import { DataVisualisationProvider } from './datafield-context';
+import { DataVisualisationProvider, useOptions } from './datafield-context';
 
-type DataFieldsProps = (
+export type DataFieldsProps = (
   | {
       preset?: TYPE_DATA_TABLE_VISUALISATION_PRESET;
       customFields?: never;
@@ -29,6 +29,9 @@ type DataFieldsProps = (
   className?: string;
   options?: {
     mapHeight?: number;
+    hideLinks?: boolean;
+    hideMetadata?: boolean;
+    hideHeader?: boolean;
   };
 };
 
@@ -36,7 +39,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
   const dataModel = useDataModel();
   const tableModel = dataModel.find((tbl) => tbl.name === table);
 
-  const links = getLinkksFromDatamodel(dataModel, table);
+  const links = options?.hideLinks ? undefined : getLinkksFromDatamodel(dataModel, table);
 
   const fields = useMemo(() => {
     if (preset === 'custom') {
@@ -139,6 +142,8 @@ export function DataFieldsHeader({ object }: { object: DataModelObject }) {
   const { t } = useTranslation(['data']);
   const formatDateTime = useFormatDateTime();
   const objectId = object.data?.['object_id'] as string;
+  const options = useOptions();
+  if (options?.hideHeader) return null;
 
   return (
     <div className="text-m col-span-full flex items-center gap-2">

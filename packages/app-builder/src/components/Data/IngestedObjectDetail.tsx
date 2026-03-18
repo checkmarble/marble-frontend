@@ -49,6 +49,10 @@ export type IngestedObjectDetailProps = {
   withLinks?: boolean;
 };
 
+/**
+ * @deprecated
+ * Use DataFields instead
+ */
 export const IngestedObjectDetail = ({
   tableName,
   object,

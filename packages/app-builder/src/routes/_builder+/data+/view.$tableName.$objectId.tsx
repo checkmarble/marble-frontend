@@ -64,7 +64,7 @@ export default function DataSearchObjectPage() {
     <>
       <div className="flex flex-col gap-4 p-4 border-grey-border rounded-md border bg-grey-background-light overflow-y-auto max-h-[calc(100vh-140px)] max-w-3xl">
         <DataFieldsHeader object={object} />
-        <DataFields table={tableName} object={object} preset="full" options={{ mapHeight: 200 }} className="max-w-xl" />
+        <DataFields table={tableName} object={object} preset="full" options={{ mapHeight: 200 }} />
       </div>
     </>
   );

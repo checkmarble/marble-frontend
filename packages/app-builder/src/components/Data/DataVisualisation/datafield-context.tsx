@@ -1,15 +1,16 @@
 import { type Currency } from 'dinero.js';
 import { createContext, useContext } from 'react';
+import { DataFieldsProps } from './DataFields';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
 
-export type DataVisualisationOptions = {
-  mapHeight?: number;
-};
+export type DataVisualisationOptions = DataFieldsProps['options'];
+
+type POSSIBLE_PRESET = TYPE_DATA_TABLE_VISUALISATION_PRESET | 'custom' | undefined;
 
 type DataVisualisationContext = {
   currency: Currency<number> | undefined;
   country: string | undefined;
-  preset: TYPE_DATA_TABLE_VISUALISATION_PRESET | 'custom' | undefined;
+  preset: POSSIBLE_PRESET;
   options: DataVisualisationOptions | undefined;
 };
 
@@ -31,7 +32,7 @@ export function useDetectedCountry(): string | undefined {
   return useContext(DataVisualisationContext).country;
 }
 
-export function usePreset(): TYPE_DATA_TABLE_VISUALISATION_PRESET | 'custom' | undefined {
+export function usePreset(): POSSIBLE_PRESET {
   return useContext(DataVisualisationContext).preset;
 }
 
