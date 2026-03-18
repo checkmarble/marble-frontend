@@ -360,9 +360,9 @@ export const AlertOutcomeIcon = ({
 
 const screeningStatusConfig: Record<
   ScreeningStatus,
-  { variant: 'warning' | 'success' | 'destructive' | 'secondary'; appearance?: 'stroked' }
+  { variant: 'primary' | 'success' | 'destructive' | 'secondary'; appearance?: 'stroked' }
 > = {
-  in_review: { variant: 'warning' },
+  in_review: { variant: 'primary' },
   no_hit: { variant: 'success', appearance: 'stroked' },
   confirmed_hit: { variant: 'destructive', appearance: 'stroked' },
   error: { variant: 'secondary' },

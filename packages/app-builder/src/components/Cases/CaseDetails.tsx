@@ -8,8 +8,8 @@ import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-rev
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
 import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { useFormatDateTime } from '@app-builder/utils/format';
+import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
-import { cva } from 'class-variance-authority';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Markdown } from 'ui-design-system';
@@ -25,18 +25,6 @@ import { EditCaseSuspicion } from './EditCaseSuspicion';
 import { EditCaseTags } from './EditTags';
 import { EscalateCase } from './EscalateCase';
 import { SnoozeCase } from './SnoozeCase';
-
-const tabCva = cva('px-4 py-2 border-b -mb-px flex items-center gap-2 transition-colors', {
-  variants: {
-    selected: {
-      true: ' border-purple-primary text-purple-primary cursor-default',
-      false: 'border-transparent cursor-pointer',
-    },
-  },
-  defaultVariants: {
-    selected: false,
-  },
-});
 
 export const CaseDetails = ({
   currentUser,
@@ -54,6 +42,7 @@ export const CaseDetails = ({
   const { case: detail, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(['common', 'cases']);
   const formatDateTime = useFormatDateTime();
+  const getCopyToClipboardProps = useGetCopyToClipboard();
   const sentinelRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const intersection = useIntersection(sentinelRef, {
@@ -83,8 +72,40 @@ export const CaseDetails = ({
           'border-b-grey-border border-b': !intersection?.isIntersecting,
         })}
       >
-        <div className={cn('flex shrink-0 justify-between gap-v2-xs', { 'pb-v2-lg': !caseReview })}>
-          <EditCaseName name={detail.name} id={detail.id} />
+        <div className={cn('flex shrink-0 items-center justify-between gap-2', { 'pb-v2-lg': !caseReview })}>
+          {caseReview ? (
+            <div className="bg-purple-background-light flex rounded-lg p-1">
+              <button
+                className={cn('flex items-center gap-2 rounded px-4 py-2 text-s font-medium transition-colors', {
+                  'bg-purple-primary text-white': selectedTab === 'caseDetails',
+                  'text-purple-primary': selectedTab !== 'caseDetails',
+                })}
+                onClick={() => setSelectedTab('caseDetails')}
+              >
+                {t('cases:case_detail.tab.principal')}
+              </button>
+              <button
+                className={cn('flex items-center gap-2 rounded px-4 py-2 text-s font-medium transition-colors', {
+                  'bg-purple-primary text-white': selectedTab === 'review',
+                  'text-purple-primary': selectedTab !== 'review',
+                })}
+                onClick={() => setSelectedTab('review')}
+              >
+                <div
+                  className={cn('size-5 rounded-md p-0.5', {
+                    'text-white': selectedTab === 'review',
+                    'text-purple-primary': selectedTab !== 'review',
+                  })}
+                >
+                  <Icon icon="ai-review" className="size-4" />
+                </div>
+                {t('cases:case_detail.tab.ai_review')}
+                {!caseReview.review.ok ? <Icon icon="warning" className="size-4 text-red-primary" /> : null}
+              </button>
+            </div>
+          ) : (
+            <div />
+          )}
           <div className="flex shrink-0 items-center gap-2">
             {detail.status !== 'closed' ? (
               <>
@@ -95,78 +116,93 @@ export const CaseDetails = ({
             {detail.status !== 'closed' ? <CloseCase id={detail.id} /> : <OpenCase id={detail.id} />}
           </div>
         </div>
-
-        {caseReview ? (
-          <div
-            className={cn('flex border-b border-grey-border', {
-              'border-transparent': !intersection?.isIntersecting,
-            })}
-          >
-            <button
-              className={tabCva({ selected: selectedTab === 'caseDetails' })}
-              onClick={() => setSelectedTab('caseDetails')}
-            >
-              {t('cases:case_detail.tab.principal')}
-            </button>
-            <button className={tabCva({ selected: selectedTab === 'review' })} onClick={() => setSelectedTab('review')}>
-              <div
-                className={cn('size-5 rounded-md text-grey-0 p-0.5', {
-                  'bg-purple-primary text-grey-white': selectedTab === 'review',
-                })}
-              >
-                <Icon icon="ai-review" className="size-4" />
-              </div>
-              {t('cases:case_detail.tab.ai_review')}
-              {!caseReview.review.ok ? <Icon icon="warning" className="size-4 text-red-primary" /> : null}
-            </button>
-          </div>
-        ) : null}
       </div>
 
       <div className="px-v2-lg flex flex-col gap-v2-lg">
         {selectedTab === 'caseDetails' ? (
           <>
             {/* Case details */}
-            <div className="border-grey-border text-small flex flex-col gap-2 border p-v2-md bg-surface-card rounded-v2-lg">
-              <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-secondary font-normal">{t('cases:case.status')}</span>
-                <span className="flex items-center gap-2">
-                  <CaseStatusBadgeV2 status={detail.status} outcome={detail.outcome} variant="semi-full" />
-                  {detail.snoozedUntil ? (
-                    <span className="font-medium text-grey-primary">
-                      {t('cases:case.snoozed_until', {
-                        date: formatDateTime(detail.snoozedUntil, { dateStyle: 'short' }),
-                      })}
+            <div className="flex flex-col justify-start gap-1.5">
+              <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:case.information')}</span>
+              <div className="border-grey-border text-small flex flex-col gap-6 border p-v2-md bg-surface-card rounded-v2-lg lg:flex-row">
+                {/* Left column */}
+                <div className="flex flex-1 flex-col gap-3">
+                  <div className="flex gap-2 items-start">
+                    <span className="text-grey-secondary w-[90px] shrink-0 pt-px font-normal leading-[18px]">
+                      {t('cases:case.name_of_case')}
                     </span>
-                  ) : null}
-                </span>
-              </div>
-              <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-secondary font-normal">{t('cases:creation_date')}</span>
-                <time className="font-medium" dateTime={detail.createdAt}>
-                  {formatDateTime(detail.createdAt, { dateStyle: 'short' })}
-                </time>
-              </div>
-              <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-secondary font-normal">{t('cases:case.inbox')}</span>
-                <EditCaseInbox id={detail.id} inboxId={detail.inboxId} />
-              </div>
-              <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-secondary font-normal">{t('cases:case.tags')}</span>
-                <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
-              </div>
-              <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-secondary font-normal">{t('cases:assigned_to')}</span>
-                <EditCaseAssignee
-                  disabled={detail.status === 'closed'}
-                  assigneeId={detail.assignedTo}
-                  currentUser={currentUser}
-                  id={detail.id}
-                />
-              </div>
-              <div className="grid grid-cols-[170px_1fr] items-center">
-                <span className="text-grey-secondary font-normal">{t('cases:sar.title')}</span>
-                <EditCaseSuspicion id={detail.id} reports={reports} />
+                    <EditCaseName name={detail.name} id={detail.id} />
+                  </div>
+                  <div className="flex h-6 items-center gap-2">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
+                      {t('cases:case.id')}
+                    </span>
+                    <button
+                      className="border-grey-border flex h-6 w-fit shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded border bg-white py-1 pl-2 pr-1"
+                      {...getCopyToClipboardProps(detail.id)}
+                    >
+                      <code className="font-['Menlo',monospace] text-[10px] whitespace-nowrap overflow-hidden text-ellipsis">
+                        {detail.id}
+                      </code>
+                      <Icon icon="copy" className="size-4 shrink-0 text-grey-primary" />
+                    </button>
+                  </div>
+                  <div className="flex h-6 items-center gap-2">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
+                      {t('cases:case.status')}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <CaseStatusBadgeV2 status={detail.status} outcome={detail.outcome} variant="semi-full" />
+                      {detail.snoozedUntil ? (
+                        <span className="font-medium text-grey-primary">
+                          {t('cases:case.snoozed_until', {
+                            date: formatDateTime(detail.snoozedUntil, { dateStyle: 'short' }),
+                          })}
+                        </span>
+                      ) : null}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
+                      {t('cases:creation_date')}
+                    </span>
+                    <time className="font-medium" dateTime={detail.createdAt}>
+                      {formatDateTime(detail.createdAt, { dateStyle: 'short' })}
+                    </time>
+                  </div>
+                </div>
+                {/* Right column */}
+                <div className="flex flex-1 flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
+                      {t('cases:case.inbox')}
+                    </span>
+                    <EditCaseInbox id={detail.id} inboxId={detail.inboxId} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
+                      {t('cases:case.tags')}
+                    </span>
+                    <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
+                      {t('cases:assigned_to')}
+                    </span>
+                    <EditCaseAssignee
+                      disabled={detail.status === 'closed'}
+                      assigneeId={detail.assignedTo}
+                      currentUser={currentUser}
+                      id={detail.id}
+                    />
+                  </div>
+                  <div className="flex h-6 items-center gap-2">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
+                      {t('cases:sar.title')}
+                    </span>
+                    <EditCaseSuspicion id={detail.id} reports={reports} />
+                  </div>
+                </div>
               </div>
             </div>
 
