@@ -58,12 +58,12 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   };
 
   return (
-    <div className="grid grid-cols-[168px_1fr] gap-2">
+    <div className="grid grid-cols-[146px_1fr] gap-3 text-xs">
       {before}
       {entityPropertyList.map(({ property, values, restItemsCount }) => {
         return (
           <Fragment key={property}>
-            <span className="font-bold">
+            <span className="opacity-50">
               {t(`screenings:entity.property.${property}`, {
                 defaultValue: property,
               })}

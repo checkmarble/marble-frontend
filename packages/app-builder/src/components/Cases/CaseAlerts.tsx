@@ -1,5 +1,5 @@
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
-import { getTriggerObjectFields } from '@app-builder/models/data-model';
+import { type DataModelWithTableOptions, getTriggerObjectFields, type Pivot } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { type ScreeningStatus } from '@app-builder/models/screening';
@@ -8,9 +8,7 @@ import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$ca
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
@@ -18,6 +16,7 @@ import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormatData } from '../FormatData';
+import { ScreeningHitsPanel } from '../Screenings/ScreeningHitsPanel';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 
@@ -33,7 +32,7 @@ export const CaseAlerts = ({
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
 }) => {
   const { t } = useTranslation(casesI18n);
-  const { case: caseDetail, dataModelWithTableOptions } = useLoaderData<typeof loader>();
+  const { case: caseDetail, dataModelWithTableOptions, pivots } = useLoaderData<typeof loader>();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
 
@@ -62,6 +61,8 @@ export const CaseAlerts = ({
                   decision={decision}
                   caseId={caseDetail.id}
                   triggerObjectFields={triggerObjectFields}
+                  dataModel={dataModelWithTableOptions}
+                  pivots={pivots}
                   isActive={isActive}
                   onSelect={() => {
                     selectDecision(decision);
@@ -86,121 +87,144 @@ export const AlertCard = ({
   decision,
   caseId,
   triggerObjectFields,
+  dataModel,
+  pivots,
   isActive,
   onSelect,
 }: {
   decision: DetailedCaseDecision;
   caseId: string;
   triggerObjectFields: { id: string; name: string }[];
+  dataModel: DataModelWithTableOptions;
+  pivots: Pivot[];
   isActive: boolean;
   onSelect: () => void;
 }) => {
   const { t } = useTranslation(casesI18n);
   const formatDateTime = useFormatDateTime();
+  const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
 
   const hitRules = decision.rules.filter((r) => r.outcome === 'hit');
   const isPendingReview = decision.outcome === 'block_and_review' && decision.reviewStatus === 'pending';
 
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      className={cn(
-        'border-grey-border bg-surface-card grid cursor-pointer grid-cols-[80px_1fr] gap-2 rounded-lg border p-4 transition-colors',
-        { 'bg-purple-background-light': isActive },
-      )}
-      onClick={onSelect}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelect();
-        }
-      }}
-    >
-      {/* Left column: Date */}
-      <div className="flex h-6 items-center">
-        <span className="text-grey-secondary text-xs font-normal">
-          {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
-        </span>
-      </div>
+  const openScreening = decision.screenings.find((s) => s.id === panelScreeningId);
 
-      {/* Right column: Vertical content */}
-      <div className="flex flex-col gap-1">
-        {/* Row 1: Header — outcome, scenario, score, actions */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
-            <span className="truncate text-xs font-normal">{decision.scenario.name}</span>
-            <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-normal">
-              {decision.score >= 0 ? '+' : ''}
-              {decision.score}
-            </span>
-          </div>
-          {isPendingReview ? (
-            <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
-              <Button variant="primary" size="small" onClick={(e) => e.stopPropagation()}>
-                {t('cases:decisions.approve_or_decline')}
-              </Button>
-            </ReviewDecisionModal>
-          ) : null}
+  return (
+    <>
+      <div
+        role="button"
+        tabIndex={0}
+        className={cn(
+          'border-grey-border bg-surface-card grid cursor-pointer grid-cols-[80px_1fr] gap-2 rounded-lg border p-4 transition-colors',
+          { 'bg-purple-background-light': isActive },
+        )}
+        onClick={onSelect}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSelect();
+          }
+        }}
+      >
+        {/* Left column: Date */}
+        <div className="flex h-6 items-center">
+          <span className="text-grey-secondary text-xs font-normal">
+            {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
+          </span>
         </div>
 
-        {/* Row 2: Trigger objects */}
-        {triggerObjectFields.length > 0 ? (
-          <TriggerFieldsRow fields={triggerObjectFields} triggerObject={decision.triggerObject} />
-        ) : null}
-
-        {/* Row 3: Rules hit */}
-        {hitRules.length > 0 ? (
-          <div className="flex flex-wrap items-center gap-1 text-xs">
-            <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}</span>
-            {pipe(
-              hitRules,
-              take(MAX_RULES_DISPLAYED),
-              map((r) => (
-                <span
-                  key={r.ruleId || r.name}
-                  className="border-grey-border truncate rounded-sm border px-1.5 py-0.5 text-xs font-normal"
-                >
-                  {r.scoreModifier > 0 ? '+' : ''}
-                  {r.scoreModifier} {r.name}
-                </span>
-              )),
-            )}
-            {hitRules.length > MAX_RULES_DISPLAYED ? (
-              <span className="border-grey-border rounded-sm border px-1.5 py-0.5 text-xs font-medium">
-                +{hitRules.length - MAX_RULES_DISPLAYED}
+        {/* Right column: Vertical content */}
+        <div className="flex flex-col gap-1">
+          {/* Row 1: Header — outcome, scenario, score, actions */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
+              <span className="truncate text-xs font-normal">{decision.scenario.name}</span>
+              <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-normal">
+                {decision.score >= 0 ? '+' : ''}
+                {decision.score}
               </span>
+            </div>
+            {isPendingReview ? (
+              <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
+                <Button variant="primary" size="small" onClick={(e) => e.stopPropagation()}>
+                  {t('cases:decisions.approve_or_decline')}
+                </Button>
+              </ReviewDecisionModal>
             ) : null}
           </div>
-        ) : null}
 
-        {/* Row 4: Status on hits (screenings) */}
-        {decision.screenings.length > 0 ? (
-          <div className="flex flex-col gap-1">
-            <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
-            <div className="flex flex-col gap-2">
-              {decision.screenings.map((screening) => (
-                <div key={screening.id} className="flex items-center gap-2">
-                  <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
-                  <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
-                  <Link
-                    to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
-                      caseId: fromUUIDtoSUUID(caseId),
-                      decisionId: fromUUIDtoSUUID(decision.id),
-                      screeningId: fromUUIDtoSUUID(screening.id),
-                    })}
-                    onClick={(e) => e.stopPropagation()}
+          {/* Row 2: Trigger objects */}
+          {triggerObjectFields.length > 0 ? (
+            <TriggerFieldsRow fields={triggerObjectFields} triggerObject={decision.triggerObject} />
+          ) : null}
+
+          {/* Row 3: Rules hit */}
+          {hitRules.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-1 text-xs">
+              <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}</span>
+              {pipe(
+                hitRules,
+                take(MAX_RULES_DISPLAYED),
+                map((r) => (
+                  <span
+                    key={r.ruleId || r.name}
+                    className="border-grey-border truncate rounded-sm border px-1.5 py-0.5 text-xs font-normal"
                   >
-                    <ScreeningStatusBadge status={screening.status} count={screening.count} />
-                  </Link>
-                </div>
-              ))}
+                    {r.scoreModifier > 0 ? '+' : ''}
+                    {r.scoreModifier} {r.name}
+                  </span>
+                )),
+              )}
+              {hitRules.length > MAX_RULES_DISPLAYED ? (
+                <span className="border-grey-border rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                  +{hitRules.length - MAX_RULES_DISPLAYED}
+                </span>
+              ) : null}
             </div>
-          </div>
-        ) : null}
+          ) : null}
+
+          {/* Row 4: Status on hits (screenings) */}
+          {decision.screenings.length > 0 ? (
+            <div className="flex flex-col gap-1">
+              <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
+              <div className="flex flex-col gap-2">
+                {decision.screenings.map((screening) => (
+                  <div key={screening.id} className="flex items-center gap-2">
+                    <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
+                    <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPanelScreeningId(screening.id);
+                      }}
+                    >
+                      <ScreeningStatusBadge status={screening.status} count={screening.count} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </div>
       </div>
-    </div>
+      {openScreening ? (
+        <ScreeningHitsPanel
+          open={!!panelScreeningId}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setPanelScreeningId(null);
+          }}
+          decisionId={decision.id}
+          screeningId={openScreening.id}
+          screeningName={openScreening.name}
+          screeningStatus={openScreening.status}
+          decision={decision}
+          dataModel={dataModel}
+          pivots={pivots}
+        />
+      ) : null}
+    </>
   );
 };
 
