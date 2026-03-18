@@ -247,7 +247,13 @@ function PanelSearchDetails({
       ) : null}
 
       {isRefinable ? (
-        <Button variant="secondary" size="small" className="w-fit" onClick={() => setIsRefining(true)}>
+        <Button
+          variant="primary"
+          appearance="stroked"
+          size="small"
+          className="w-fit"
+          onClick={() => setIsRefining(true)}
+        >
           {t('screenings:refine_search')}
         </Button>
       ) : null}
