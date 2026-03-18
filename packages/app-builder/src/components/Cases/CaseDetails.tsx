@@ -64,7 +64,7 @@ export const CaseDetails = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-surface-page pb-v2-lg"
+      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-auto overflow-x-hidden bg-surface-page pb-v2-lg"
     >
       <div ref={sentinelRef} className="absolute left-0 top-0" />
       <div
