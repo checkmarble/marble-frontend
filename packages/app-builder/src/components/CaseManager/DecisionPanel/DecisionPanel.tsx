@@ -13,15 +13,14 @@ import {
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
+import { ScreeningHitsPanel } from '@app-builder/components/Screenings/ScreeningHitsPanel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { useDetailDecisionQuery } from '@app-builder/queries/decisions/detail-decision';
 import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenario-iteration-rules';
 import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -35,11 +34,12 @@ type DecisionPanelProps = {
 
 export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelProps) {
   const { t } = useTranslation(casesI18n);
-  const { dataModelWithTableOptions, case: caseDetail } = useLoaderData<typeof loader>();
+  const { dataModelWithTableOptions, pivots } = useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
   const detailDecisionQuery = useDetailDecisionQuery(decision.id);
 
   const [showHitOnly, setShowHitOnly] = useState(true);
+  const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
   const [objectLink, setObjectLink] = useState<{
     tableName: string;
     objectId: string;
@@ -110,15 +110,15 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
               <div key={screening.id} className="flex items-center gap-2">
                 <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
                 <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
-                <Link
-                  to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
-                    caseId: fromUUIDtoSUUID(caseDetail.id),
-                    decisionId: fromUUIDtoSUUID(decision.id),
-                    screeningId: fromUUIDtoSUUID(screening.id),
-                  })}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPanelScreeningId(screening.id);
+                  }}
                 >
                   <ScreeningStatusBadge status={screening.status} count={screening.count} />
-                </Link>
+                </button>
               </div>
             ))}
           </div>
@@ -190,6 +190,26 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
           ) : null}
         </div>
       ) : null}
+
+      {/* Screening Hits Panel */}
+      {(() => {
+        const openScreening = decision.screenings.find((s) => s.id === panelScreeningId);
+        return openScreening ? (
+          <ScreeningHitsPanel
+            open={!!panelScreeningId}
+            onOpenChange={(isOpen) => {
+              if (!isOpen) setPanelScreeningId(null);
+            }}
+            decisionId={decision.id}
+            screeningId={openScreening.id}
+            screeningName={openScreening.name}
+            screeningStatus={openScreening.status}
+            decision={decision}
+            dataModel={dataModelWithTableOptions}
+            pivots={pivots}
+          />
+        ) : null;
+      })()}
     </div>
   );
 }

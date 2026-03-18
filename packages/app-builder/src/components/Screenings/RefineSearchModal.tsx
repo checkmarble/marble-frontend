@@ -198,13 +198,13 @@ export function RefineSearchModal({
             </div>
             <Modal.Footer>
               <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+                <Button variant="secondary" appearance="stroked" name="cancel">
                   {t('common:cancel')}
                 </Button>
               </Modal.Close>
               <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
                 {([isPristine, canSubmit, isSubmitting]) => (
-                  <Button type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
+                  <Button type="submit" disabled={isPristine || !canSubmit} variant="primary">
                     {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
                   </Button>
                 )}
