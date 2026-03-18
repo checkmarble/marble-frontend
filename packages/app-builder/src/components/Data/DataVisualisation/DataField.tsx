@@ -1,19 +1,34 @@
-import { type DataModelField } from '@app-builder/models';
+import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
+import { Spinner } from '@app-builder/components/Spinner';
+import { useTheme } from '@app-builder/contexts/ThemeContext';
+import { type DataModelField, type DataModelObject } from '@app-builder/models';
 import { formatAge, formatCurrency, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { getRoute } from '@app-builder/utils/routes';
 import { EUR } from '@dinero.js/currencies';
+import { useFetcher } from '@remix-run/react';
+import { Map as MapLibre, type MapRef, Marker } from '@vis.gl/react-maplibre';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
-import { type ComponentType } from 'react';
+import { type ComponentType, useEffect, useRef, useState } from 'react';
 import { cn } from 'ui-design-system';
-import { useCurrency } from './currency-context';
+import { Icon } from 'ui-icons';
 import { type VALID_DATA_TYPE } from './data-type';
+import { CARTO_BASEMAP, hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
+import { useCurrency, useOptions } from './datafield-context';
+
+import 'maplibre-gl/dist/maplibre-gl.css';
+import { parseUnknownData } from '@app-builder/utils/parse';
+import { useTranslation } from 'react-i18next';
+import { DataFields, DataFieldsHeader } from './DataFields';
 
 const codeClassName = 'font-mono border border-grey-border rounded-sm p-1';
 
 type DataFieldProps = {
   field?: DataModelField;
   value?: string | number | boolean;
+  linkedTo?: string;
+  metaData?: ReturnType<typeof parseUnknownData>;
 };
 
 const FIELD_TYPE_COMPONENTS = {
@@ -28,6 +43,8 @@ const FIELD_TYPE_COMPONENTS = {
   'string-free': StringFree,
   'string-iban': StringIban,
   'string-currency': StringCurrency,
+  'string-id': StringId,
+  'string-ip_address': StringIpAddress,
   'date-birthdate': DateBirthdate,
   'date-datetime': DateDatetime,
   'date-date': DateDatetime,
@@ -40,18 +57,45 @@ const FIELD_TYPE_COMPONENTS = {
   'number-percentile': NumberPercentile,
   'enum-key_value': StringFree,
   'enum-colors': StringFree,
-  'enum-values': StringFree,
+  'enum-values': EnumValues,
   'boolean-checkbox': BooleanCheckbox,
   'boolean-yes_no': BooleanYesNo,
 } satisfies Record<VALID_DATA_TYPE, ComponentType<{ value?: string }>>;
 
-export function DataField({ field, value }: DataFieldProps) {
+export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) {
   const fieldType = adaptFieldType(field);
   const Component = FIELD_TYPE_COMPONENTS[fieldType];
+
+  let MetaDataComponent: ComponentType<{ value?: string }> | null = null;
+  const hasMetadata = hasMetadataContent(metaData);
+
+  if (hasMetadata) {
+    let fieldType: VALID_DATA_TYPE = 'string-free';
+    if (metaData?.type === 'number') {
+      fieldType = 'number-integer';
+    } else if (metaData?.type === 'url') {
+      fieldType = 'string-link';
+    } else if (metaData?.type === 'datetime') {
+      fieldType = 'date-datetime';
+    }
+    MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
+  }
   return (
     <>
-      <label htmlFor={field?.id}>{field?.name}</label>
-      <div id={field?.id}>{value ? <Component value={value as string} /> : <span>{'-'}</span>}</div>
+      <label htmlFor={field?.id} className="text-grey-secondary">
+        {field?.name}
+      </label>
+      <div id={field?.id}>
+        {value ? (
+          <>
+            {linkedTo ? <LinkToValue value={`${value}`} linkedTo={linkedTo} /> : <Component value={`${value}`} />}
+
+            {MetaDataComponent && metaData?.value && <MetaDataComponent value={`${metaData?.value}`} />}
+          </>
+        ) : (
+          <span>{'-'}</span>
+        )}
+      </div>
     </>
   );
 }
@@ -68,8 +112,6 @@ function adaptFieldType(field?: DataModelField): VALID_DATA_TYPE {
   switch (dataType) {
     case 'String':
     case 'String[]':
-    case 'IpAddress':
-    case 'IpAddress[]':
     case 'DerivedData':
     case 'unknown':
       if (field?.name && /name/i.test(field.name)) return 'string-main';
@@ -77,13 +119,17 @@ function adaptFieldType(field?: DataModelField): VALID_DATA_TYPE {
       if (field?.name && /phone/i.test(field.name)) return 'string-phone';
       if (field?.name && /city/i.test(field.name)) return 'string-city';
       if (field?.name && /country/i.test(field.name)) return 'string-country';
-      if (field?.name && /_id/i.test(field.name)) return 'string-code';
+      if (field?.name && /_id/i.test(field.name)) return 'string-id';
       if (field?.name && /iban/i.test(field.name)) return 'string-iban';
       if (field?.name && /currency/i.test(field.name)) return 'string-currency';
       if (field?.name && /url/i.test(field.name)) return 'string-link';
       if (field?.name && /code/i.test(field.name)) return 'string-code';
       if (field?.name && /vpn/i.test(field.name)) return 'string-vpn';
+      if (field?.name && /status/i.test(field.name)) return 'enum-values';
       return 'string-free';
+    case 'IpAddress':
+    case 'IpAddress[]':
+      return 'string-ip_address';
     case 'Timestamp':
     case 'Timestamp[]':
       if (field?.name && /birthdate/i.test(field.name)) return 'date-birthdate';
@@ -97,7 +143,6 @@ function adaptFieldType(field?: DataModelField): VALID_DATA_TYPE {
     case 'Float':
     case 'Float[]':
       if (field?.name && /amount/i.test(field.name)) return 'number-currency';
-
       return 'number-float';
     case 'Bool':
     case 'Bool[]':
@@ -160,7 +205,28 @@ function StringLink({ value }: { value?: string }) {
 }
 
 function StringVpn({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  const { t } = useTranslation(['data']);
+  if (!value) return <span>{t('data:no_vpn')}</span>;
+  return (
+    <span className={cn(codeClassName, 'flex gap-2 items-center')}>
+      <span>{t('data:vpn')}</span>
+      <span>{'-'}</span>
+      <span>{value}</span>
+    </span>
+  );
+}
+
+function StringId({ value }: { value?: string }) {
+  if (!value) return <span className={codeClassName}>{'-'}</span>;
+  return (
+    <CopyToClipboardButton toCopy={value}>
+      <span>{value}</span>
+    </CopyToClipboardButton>
+  );
+}
+
+function StringIpAddress({ value }: { value?: string }) {
+  return <span className={codeClassName}>{value ?? '-'}</span>;
 }
 
 function StringFree({ value }: { value?: string }) {
@@ -212,7 +278,41 @@ function DateDatetime({ value }: { value?: string }) {
 }
 
 function DataGpsCoords({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  const { theme } = useTheme();
+  const mapRef = useRef<MapRef>(null);
+  const opts = value ? parseCoords(value) : null;
+  const options = useOptions();
+  const mapHeight = options?.mapHeight ?? MAP_HEIGHT;
+
+  useEffect(() => {
+    if (!opts || !mapRef.current) return;
+    mapRef.current.flyTo({ center: [opts.longitude, opts.latitude], duration: 1000 });
+  }, [opts?.latitude, opts?.longitude]);
+
+  if (!value || !opts) return <span className={codeClassName}>-</span>;
+
+  return (
+    <div className="grid gap-2">
+      <CopyToClipboardButton toCopy={`${opts.latitude},${opts.longitude}`} className="w-fit">
+        <span className="text-s line-clamp-1 font-semibold">
+          {opts.latitude}, {opts.longitude}
+        </span>
+      </CopyToClipboardButton>
+
+      <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+        <MapLibre
+          ref={mapRef}
+          initialViewState={opts}
+          style={{ width: '100%', height: mapHeight }}
+          mapStyle={CARTO_BASEMAP[theme]}
+        >
+          <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
+            <Icon icon="map-pin" className="size-4" />
+          </Marker>
+        </MapLibre>
+      </div>
+    </div>
+  );
 }
 
 function NumberInteger({ value }: { value?: string }) {
@@ -242,4 +342,56 @@ function BooleanCheckbox({ value }: { value?: string }) {
 
 function BooleanYesNo({ value }: { value?: string }) {
   return <span>{value ?? '-'}</span>;
+}
+
+function EnumValues({ value }: { value?: string }) {
+  return <span className={codeClassName}>{value ?? '-'}</span>;
+}
+
+function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const fetcher = useFetcher<{ objectDetails: DataModelObject | null }>();
+
+  if (!linkedTo || !value) return <span className={codeClassName}>{'-'}</span>;
+
+  const handleToggle = () => {
+    if (!isOpen && !fetcher.data) {
+      fetcher.load(
+        getRoute('/ressources/data/object/:objectType/:objectId', {
+          objectType: linkedTo,
+          objectId: value,
+        }),
+      );
+    }
+    setIsOpen((prev) => !prev);
+  };
+
+  return (
+    <div className="grid gap-1">
+      <button className={cn(codeClassName, 'w-fit flex gap-2 items-center')} onClick={handleToggle}>
+        <span>{value}</span>
+        <Icon icon="caret-down" className={cn('size-4 transition-transform duration-200', isOpen && 'rotate-180')} />
+      </button>
+      {isOpen && (
+        <div>
+          {fetcher.state === 'loading' ? (
+            <Spinner className="size-4" />
+          ) : fetcher.data?.objectDetails ? (
+            <>
+              <DataFieldsHeader object={fetcher.data.objectDetails} />
+              <DataFields
+                table={linkedTo}
+                object={fetcher.data.objectDetails}
+                preset="full"
+                options={{ mapHeight: 200 }}
+                className="max-w-3xl"
+              />
+            </>
+          ) : (
+            <span>{'-'}</span>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

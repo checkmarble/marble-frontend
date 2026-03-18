@@ -136,6 +136,7 @@
   "link_name": "Name",
   "links_from_table": "Links from to other entities from <TableLocale>{{tableName}}</TableLocale>",
   "menu.create_pivot.label": "Group decisions by...",
+  "no_vpn": "No VPN",
   "parent_field_name": "Parent table field name",
   "parent_table": "Related table",
   "select_archetype.button_accept": "Apply archetype",
@@ -153,5 +154,6 @@
   "view_pivot.type": "Type",
   "viewer.no_object_found": "No object found for id \"{{objectId}}\" in {{tableName}}",
   "viewer.object_id": "Object ID",
-  "viewer.object_type": "Object type"
+  "viewer.object_type": "Object type",
+  "vpn": "Yes"
 }

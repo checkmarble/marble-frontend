@@ -1,8 +1,7 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { IngestedObjectDetail } from '@app-builder/components/Data/IngestedObjectDetail';
+import { DataFields, DataFieldsHeader } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { useDataModel } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { HttpError } from '@oazapfts/runtime';
 import { useLoaderData } from '@remix-run/react';
@@ -51,7 +50,7 @@ export const loader = createServerFn([authMiddleware], async function viewObject
 export default function DataSearchObjectPage() {
   const { t } = useTranslation(['data']);
   const { tableName, objectId, object } = useLoaderData<typeof loader>();
-  const dataModel = useDataModel();
+  // const dataModel = useDataModel();
 
   if (!object) {
     return (
@@ -61,5 +60,12 @@ export default function DataSearchObjectPage() {
     );
   }
 
-  return <IngestedObjectDetail light object={object} objectId={objectId} tableName={tableName} dataModel={dataModel} />;
+  return (
+    <>
+      <div className="flex flex-col gap-4 p-4 border-grey-border rounded-md border bg-grey-background-light overflow-y-auto max-h-[calc(100vh-140px)] max-w-3xl">
+        <DataFieldsHeader object={object} />
+        <DataFields table={tableName} object={object} preset="full" options={{ mapHeight: 200 }} className="max-w-xl" />
+      </div>
+    </>
+  );
 }

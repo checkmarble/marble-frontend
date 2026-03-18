@@ -8,30 +8,13 @@ import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Icon } from 'ui-icons';
-
 import { FormatData } from '../FormatData';
-import { DataFields } from './DataVisualisation/DataFields';
-
-const METADATA_FIELDS = ['object_id', 'valid_from'] as const;
-
-function isMetadataKey(key: string): { match: true; parentKey: string } | { match: false } {
-  const suffix = '.metadata';
-  if (key.endsWith(suffix)) {
-    return { match: true, parentKey: key.slice(0, -suffix.length) };
-  }
-  // Handle keys with surrounding quotes (some API formats)
-  const trimmed = key.replace(/^["']|["']$/g, '');
-  if (trimmed !== key && trimmed.endsWith(suffix)) {
-    return { match: true, parentKey: trimmed.slice(0, -suffix.length) };
-  }
-  return { match: false };
-}
-
-function hasMetadataContent(data: ReturnType<typeof parseUnknownData> | undefined): boolean {
-  if (!data) return false;
-  if (data.type === 'DerivedData') return Object.keys(data.value).length > 0;
-  return false;
-}
+import {
+  getLinkksFromDatamodel,
+  hasMetadataContent,
+  isMetadataKey,
+  METADATA_FIELDS,
+} from './DataVisualisation/dataFieldsUtils';
 
 function useParsedTriggerObject(triggerObject: Record<string, unknown> | null) {
   return useMemo(() => {
@@ -82,12 +65,7 @@ export const IngestedObjectDetail = ({
   const formatDateTime = useFormatDateTime();
 
   const dataModelTable = dataModel.find((table) => table.name === tableName);
-  const links = R.pipe(
-    dataModelTable?.linksToSingle ?? [],
-    R.mapToObj((link) => {
-      return [link.childFieldName, link.parentTableName];
-    }),
-  );
+  const links = getLinkksFromDatamodel(dataModel, tableName);
 
   return (
     <div
@@ -136,9 +114,6 @@ export const IngestedObjectDetail = ({
             </Fragment>
           );
         })}
-      </div>
-      <div>
-        <DataFields table={tableName} object={object} preset="full" className="w-fit" />
       </div>
     </div>
   );
