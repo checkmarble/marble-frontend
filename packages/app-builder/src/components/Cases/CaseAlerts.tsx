@@ -209,7 +209,7 @@ export const AlertCard = ({
       </div>
       {openScreening ? (
         <ScreeningHitsPanel
-          open={!!panelScreeningId}
+          open
           onOpenChange={(isOpen) => {
             if (!isOpen) setPanelScreeningId(null);
           }}

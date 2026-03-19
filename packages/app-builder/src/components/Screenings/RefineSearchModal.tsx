@@ -283,7 +283,7 @@ export function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   );
 }
 
-export function SearchInput({ request }: { request: NonNullable<Screening['request']> }) {
+function SearchInput({ request }: { request: NonNullable<Screening['request']> }) {
   const { t } = useTranslation(['screenings']);
   const searchInputs = R.pipe(
     R.values(request.queries),

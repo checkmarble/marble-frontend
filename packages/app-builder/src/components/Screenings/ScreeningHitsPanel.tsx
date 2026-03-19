@@ -1,4 +1,4 @@
-import { casesI18n, scenarioI18n } from '@app-builder/components';
+import { scenarioI18n } from '@app-builder/components';
 import { Callout } from '@app-builder/components/Callout';
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
@@ -199,7 +199,7 @@ function PanelSearchDetails({
   screening: Screening;
   onRefineSuccess: (screeningId: string) => void;
 }) {
-  const { t } = useTranslation([...screeningsI18n, ...casesI18n]);
+  const { t } = useTranslation(screeningsI18n);
   const [isRefining, setIsRefining] = useState(false);
   const isRefinable = !isScreeningReviewCompleted(screening);
 

@@ -1,4 +1,4 @@
-import { createServerFn } from '@app-builder/core/requests';
+import { createServerFn, data } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -16,6 +16,6 @@ export const loader = createServerFn(
       throw new Response(null, { status: 404, statusText: 'Not Found' });
     }
 
-    return { screening };
+    return data({ screening });
   },
 );

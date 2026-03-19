@@ -40,6 +40,7 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
 
   const [showHitOnly, setShowHitOnly] = useState(true);
   const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
+  const panelScreening = decision.screenings.find((s) => s.id === panelScreeningId) ?? null;
   const [objectLink, setObjectLink] = useState<{
     tableName: string;
     objectId: string;
@@ -199,21 +200,18 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
       ) : null}
 
       {/* Screening Hits Panel */}
-      {(() => {
-        const openScreening = decision.screenings.find((s) => s.id === panelScreeningId);
-        return openScreening ? (
-          <ScreeningHitsPanel
-            open={!!panelScreeningId}
-            onOpenChange={(isOpen) => {
-              if (!isOpen) setPanelScreeningId(null);
-            }}
-            decisionId={decision.id}
-            screeningId={openScreening.id}
-            screeningName={openScreening.name}
-            screeningStatus={openScreening.status}
-          />
-        ) : null;
-      })()}
+      {panelScreening ? (
+        <ScreeningHitsPanel
+          open
+          onOpenChange={(isOpen) => {
+            if (!isOpen) setPanelScreeningId(null);
+          }}
+          decisionId={decision.id}
+          screeningId={panelScreening.id}
+          screeningName={panelScreening.name}
+          screeningStatus={panelScreening.status}
+        />
+      ) : null}
     </div>
   );
 }
