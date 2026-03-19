@@ -7,8 +7,8 @@ import { Spinner } from '../Spinner';
 import { CreateRulesetPanelContext } from './ScoringSectionLayout';
 import { ScoringSettings } from './ScoringSettings';
 
-export const ScoringOverviewPage = ({ settings }: { settings: ScoringSettingsModel | null }) => {
-  const { t } = useTranslation(['common']);
+export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsModel | null }) {
+  const { t } = useTranslation(['common', 'user-scoring']);
   const { setOpen } = CreateRulesetPanelContext.useValue();
   const rulesetsQuery = useListScoringRulesetsQuery();
 
@@ -43,11 +43,9 @@ export const ScoringOverviewPage = ({ settings }: { settings: ScoringSettingsMod
               }
               return (
                 <div className="bg-surface-card border border-grey-border p-v2-md rounded-v2-md flex flex-col gap-v2-md">
-                  <span>
-                    You don't have any ruleset configured yet. Choose an entity on which to create a ruleset to start.
-                  </span>
+                  <span>{t('user-scoring:overview.no_ruleset')}</span>
                   <Button appearance="stroked" onClick={() => setOpen(true)}>
-                    Configure a score
+                    {t('user-scoring:overview.configure_score')}
                   </Button>
                 </div>
               );
@@ -56,10 +54,12 @@ export const ScoringOverviewPage = ({ settings }: { settings: ScoringSettingsMod
         : null}
     </div>
   );
-};
+}
 
-const ScoringRulesetCard = ({ ruleset }: { ruleset: ScoringRuleset }) => (
-  <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md h-[400px]">
-    <p className="text-s font-medium">{ruleset.name}</p>
-  </div>
-);
+function ScoringRulesetCard({ ruleset }: { ruleset: ScoringRuleset }) {
+  return (
+    <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md h-[400px]">
+      <p className="text-s font-medium">{ruleset.name}</p>
+    </div>
+  );
+}

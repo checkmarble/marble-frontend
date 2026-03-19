@@ -39,6 +39,8 @@ const PublicEnvVarsSchema = z.object({
 
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
+
+  USER_SCORING_ENABLED: z.string().optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -91,6 +93,7 @@ interface ServerEnvVars {
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
+  USER_SCORING_ENABLED?: string;
 }
 
 /**
@@ -120,6 +123,16 @@ export function getClientEnvVars(): ClientEnvVars {
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
   };
+}
+
+export function isUserScoringEnabled(organizationId: string): boolean {
+  const value = getServerEnv('USER_SCORING_ENABLED');
+  if (!value) return false;
+  if (value === 'all') return true;
+  return value
+    .split(',')
+    .map((s) => s.trim())
+    .includes(organizationId);
 }
 
 /**

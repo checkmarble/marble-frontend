@@ -20,6 +20,7 @@ export const updateScoringRulesetPayloadSchema = z.object({
       stableId: z.string().optional(),
       name: z.string(),
       description: z.string().optional(),
+      riskType: z.string(),
       ast: z.any(),
     }),
   ),

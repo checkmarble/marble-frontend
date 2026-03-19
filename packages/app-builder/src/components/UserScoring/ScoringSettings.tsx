@@ -6,25 +6,28 @@ import {
 } from '@app-builder/models/scoring';
 import { useUpdateScoringSettingsMutation } from '@app-builder/queries/scoring/update-settings';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 
-export const ScoringSettings = ({ settings }: { settings: ScoringSettingsModel | null }) => {
+export function ScoringSettings({ settings }: { settings: ScoringSettingsModel | null }) {
   return settings ? <ScoringSettingsDisplay settings={settings} /> : <ScoringSettingsForm />;
-};
+}
 
-const ScoringSettingsDisplay = ({ settings }: { settings: ScoringSettingsModel }) => {
+function ScoringSettingsDisplay({ settings }: { settings: ScoringSettingsModel }) {
+  const { t } = useTranslation(['user-scoring']);
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex gap-v2-md items-center">
-      <span>Echelle de risque utilisée:</span>
+      <span>{t('user-scoring:settings.scale_used')}</span>
       <div className="flex gap-v2-md items-center py-v2-sm px-v2-md bg-grey-background-light border border-grey-border rounded-full">
-        <span>{settings.maxRiskLevel} niveaux de risque:</span>
+        <span>{t('user-scoring:settings.risk_levels_count', { count: settings.maxRiskLevel })}</span>
         <ScoringLevels maxLevel={settings.maxRiskLevel} className="flex items-center gap-v2-md" />
       </div>
     </div>
   );
-};
+}
 
-const ScoringSettingsForm = () => {
+function ScoringSettingsForm() {
+  const { t } = useTranslation(['user-scoring']);
   const [maxRiskLevel, setMaxRiskLevel] = useState(3);
   const updateScoringSettingsMutation = useUpdateScoringSettingsMutation();
   const revalidate = useLoaderRevalidator();
@@ -38,9 +41,9 @@ const ScoringSettingsForm = () => {
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md">
       <div className="flex justify-between items-center">
-        <span>Define a risk scale, then choose the entity on which you want to create the ruleset.</span>
+        <span>{t('user-scoring:settings.define_scale')}</span>
         <Button appearance="stroked" onClick={handleValidateScale} disabled={updateScoringSettingsMutation.isPending}>
-          Valider l'échelle de risques
+          {t('user-scoring:settings.validate_scale')}
         </Button>
       </div>
       <div className="grid grid-cols-4 gap-v2-md">
@@ -50,7 +53,7 @@ const ScoringSettingsForm = () => {
       </div>
     </div>
   );
-};
+}
 
 type ScoringScaleCardProps = {
   maxLevel: number;
@@ -58,24 +61,26 @@ type ScoringScaleCardProps = {
   onSelect: () => void;
 };
 
-const ScoringScaleCard = ({ maxLevel, selected, onSelect }: ScoringScaleCardProps) => {
+function ScoringScaleCard({ maxLevel, selected, onSelect }: ScoringScaleCardProps) {
+  const { t } = useTranslation(['user-scoring']);
   return (
-    <div
+    <button
+      type="button"
       className={cn(
-        'bg-grey-background-light border border-grey-border p-v2-md rounded-v2-md flex flex-col gap-v2-md',
+        'bg-grey-background-light border border-grey-border p-v2-md rounded-v2-md flex flex-col gap-v2-md text-left',
         {
           'bg-purple-background-light border-purple-primary': selected,
         },
       )}
-      onClick={() => onSelect()}
+      onClick={onSelect}
     >
-      <div>{maxLevel} levels of risk</div>
+      <div>{t('user-scoring:settings.levels', { count: maxLevel })}</div>
       <ScoringLevels maxLevel={maxLevel} className="flex flex-col gap-v2-md" />
-    </div>
+    </button>
   );
-};
+}
 
-const ScoringLevels = ({ maxLevel, className }: { maxLevel: number; className?: string }) => {
+function ScoringLevels({ maxLevel, className }: { maxLevel: number; className?: string }) {
   if (!(maxLevel in SCORING_LEVELS_COLORS) || !(maxLevel in SCORING_LEVELS_LABELS)) {
     return null;
   }
@@ -84,7 +89,7 @@ const ScoringLevels = ({ maxLevel, className }: { maxLevel: number; className?: 
   const scoringLabels = SCORING_LEVELS_LABELS[maxLevel as keyof typeof SCORING_LEVELS_LABELS];
 
   return (
-    <div className={cn('', className)}>
+    <div className={cn(className)}>
       {scoringColors.map((color, i) => (
         <div key={color} className="flex gap-v2-sm items-center">
           <div className="size-4 rounded-full" style={{ backgroundColor: color }} />
@@ -93,4 +98,4 @@ const ScoringLevels = ({ maxLevel, className }: { maxLevel: number; className?: 
       ))}
     </div>
   );
-};
+}

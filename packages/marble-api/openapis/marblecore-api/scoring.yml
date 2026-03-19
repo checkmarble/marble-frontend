@@ -407,6 +407,7 @@ components:
         - stable_id
         - name
         - ast
+        - risk_type
       properties:
         stable_id:
           type: string
@@ -414,6 +415,8 @@ components:
         name:
           type: string
         description:
+          type: string
+        risk_type:
           type: string
         ast:
           description: |
@@ -429,6 +432,7 @@ components:
         - stable_id
         - name
         - ast
+        - risk_type
       properties:
         stable_id:
           type: string
@@ -436,6 +440,8 @@ components:
         name:
           type: string
         description:
+          type: string
+        risk_type:
           type: string
         ast:
           $ref: 'ast.yml#/components/schemas/NodeDto'

@@ -16,6 +16,7 @@ import screeningTopics from '@app-builder/locales/fr/screening-topics.json';
 import screenings from '@app-builder/locales/fr/screenings.json';
 import settings from '@app-builder/locales/fr/settings.json';
 import upload from '@app-builder/locales/fr/upload.json';
+import userScoring from '@app-builder/locales/fr/user-scoring.json';
 import workflows from '@app-builder/locales/fr/workflows.json';
 
 export const fr = {
@@ -37,5 +38,6 @@ export const fr = {
   screeningTopics,
   settings,
   upload,
+  'user-scoring': userScoring,
   workflows,
 };

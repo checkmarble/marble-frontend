@@ -3,6 +3,7 @@ import {
   ScoringRulesetWithRules as ScoringRulesetWithRulesDto,
   ScoringSettings as ScoringSettingsDto,
 } from 'marble-api';
+import { match } from 'ts-pattern';
 import { v7 as uuidv7 } from 'uuid';
 import { AstNode, adaptAstNode, DataModel } from '.';
 import { AggregationAstNode, isAggregation } from './astNode/aggregation';
@@ -15,12 +16,23 @@ import {
   scoreComputationAstNodeName,
   switchAstNodeName,
 } from './astNode/control-flow';
+import { isCustomListAccess, NewCustomListAstNode } from './astNode/custom-list';
 import { isPayload, PayloadAstNode } from './astNode/data-accessor';
+
+export const RISK_TYPES = [
+  'customer_features',
+  'service_provided',
+  'distribution_channels',
+  'transaction_execution',
+  'geo_risks',
+] as const;
+export type RiskType = (typeof RISK_TYPES)[number];
 
 export type ScoringRule = {
   stableId: string;
   name: string;
   description: string;
+  riskType: string;
   ast: AstNode;
 };
 
@@ -28,6 +40,7 @@ export const adaptScoringRule = (dto: ScoringRulesetWithRulesDto['rules'][number
   stableId: dto.stable_id,
   name: dto.name,
   description: dto.description ?? '',
+  riskType: dto.risk_type,
   ast: adaptAstNode(dto.ast),
 });
 
@@ -67,7 +80,7 @@ export type UpdateScoringRuleset = {
   description?: string;
   thresholds: number[];
   cooldownSeconds?: number;
-  rules: { stableId?: string; name: string; description?: string; ast: AstNode }[];
+  rules: { stableId?: string; name: string; description?: string; riskType: string; ast: AstNode }[];
 };
 
 export const adaptScoringRuleset = (dto: ScoringRulesetDto): ScoringRuleset => ({
@@ -153,15 +166,19 @@ export type NumberSwitch = {
   default: ScoreImpact;
 };
 
-export type StringOperation =
-  | {
-      op: 'equal';
-      value: string;
-    }
-  | {
-      op: 'is_in';
-      value: string[];
-    };
+export type StringSingleValueOp =
+  | '='
+  | '≠'
+  | 'StringContains'
+  | 'StringNotContain'
+  | 'StringStartsWith'
+  | 'StringEndsWith';
+
+export type StringListOp = 'IsInList' | 'IsNotInList';
+
+export type StringListValue = { type: 'customList'; listId: string } | { type: 'stringList'; values: string[] };
+
+export type StringOperation = { op: StringSingleValueOp; value: string } | { op: StringListOp; value: StringListValue };
 
 export type StringSwitch = {
   type: 'string';
@@ -277,8 +294,11 @@ export function transformSwitchAstNodeToModel(
 
   const fieldType = entityType && dataModel ? getOperationType(entityType, dataModel, node) : null;
 
-  const conditions =
-    fieldType === 'Bool' ? parseBoolBranches(scoreComputationNodes) : parseNumberBranches(scoreComputationNodes);
+  const conditions = match(fieldType)
+    .with('Bool', () => parseBoolBranches(scoreComputationNodes))
+    .with('String', () => parseStringBranches(scoreComputationNodes))
+    .with('Int', 'Float', () => parseNumberBranches(scoreComputationNodes))
+    .otherwise(() => null);
   if (!conditions) return null;
 
   if (type === 'user_attribute') {
@@ -315,7 +335,7 @@ function buildConditionChildren(field: AstNode, conditions: NumberSwitch | Strin
     case 'bool':
       return buildBoolSwitchChildren(field, conditions);
     case 'string':
-      return [];
+      return buildStringSwitchChildren(field, conditions);
   }
 }
 
@@ -353,6 +373,102 @@ function buildEqualNode(field: AstNode, value: boolean): AstNode {
     children: [{ ...field, id: uuidv7() }, NewConstantAstNode({ constant: value })],
     namedChildren: {},
   };
+}
+
+function buildStringSwitchChildren(field: AstNode, conditions: StringSwitch): AstNode[] {
+  return [
+    ...conditions.branches.map((branch) =>
+      buildScoreComputationAstNode(buildStringOperatorNode(field, branch.value), branch.impact),
+    ),
+    buildScoreComputationAstNode(NewConstantAstNode({ constant: true }), conditions.default),
+  ];
+}
+
+function buildStringOperatorNode(field: AstNode, operation: StringOperation): AstNode {
+  const lhs = { ...field, id: uuidv7() };
+  if (operation.op === 'IsInList' || operation.op === 'IsNotInList') {
+    const rhs =
+      operation.value.type === 'customList'
+        ? NewCustomListAstNode(operation.value.listId)
+        : NewConstantAstNode({ constant: operation.value.values });
+    return { id: uuidv7(), name: operation.op, constant: undefined, children: [lhs, rhs], namedChildren: {} };
+  }
+  return {
+    id: uuidv7(),
+    name: operation.op,
+    constant: undefined,
+    children: [lhs, NewConstantAstNode({ constant: operation.value })],
+    namedChildren: {},
+  };
+}
+
+const stringOps = new Set<string>([
+  '=',
+  '≠',
+  'StringContains',
+  'StringNotContain',
+  'StringStartsWith',
+  'StringEndsWith',
+  'IsInList',
+  'IsNotInList',
+]);
+
+function parseStringBranches(nodes: ScoreComputationAstNode[]): StringSwitch | null {
+  if (nodes.length === 0) return null;
+  const lastNode = nodes[nodes.length - 1]!;
+  const lastCondition = lastNode.children[0];
+  if (!lastCondition || !isConstant(lastCondition) || lastCondition.constant !== true) return null;
+
+  const nonDefaultNodes = nodes.slice(0, -1);
+  const branches: StringSwitch['branches'] = [];
+  for (const n of nonDefaultNodes) {
+    const condition = n.children[0];
+    if (!condition || !isMainAstBinaryNode(condition) || !stringOps.has(condition.name)) return null;
+    const rhs = condition.children[1];
+    const impact: ScoreImpact = { modifier: n.namedChildren.modifier.constant };
+    if (n.namedChildren.floor) impact.floor = n.namedChildren.floor.constant;
+    const isListOp = condition.name === 'IsInList' || condition.name === 'IsNotInList';
+    if (isListOp) {
+      if (isCustomListAccess(rhs)) {
+        branches.push({
+          value: {
+            op: condition.name as StringListOp,
+            value: { type: 'customList', listId: rhs.namedChildren.customListId.constant },
+          },
+          impact,
+        });
+      } else if (isConstant(rhs) && Array.isArray(rhs.constant) && rhs.constant.every((s) => typeof s === 'string')) {
+        branches.push({
+          value: {
+            op: condition.name as StringListOp,
+            value: { type: 'stringList', values: rhs.constant as string[] },
+          },
+          impact,
+        });
+      } else {
+        return null;
+      }
+    } else {
+      if (!isConstant(rhs) || typeof rhs.constant !== 'string') return null;
+      branches.push({ value: { op: condition.name as StringSingleValueOp, value: rhs.constant }, impact });
+    }
+  }
+
+  const defaultImpact: ScoreImpact = { modifier: lastNode.namedChildren.modifier.constant };
+  if (lastNode.namedChildren.floor) defaultImpact.floor = lastNode.namedChildren.floor.constant;
+  return { type: 'string', branches, default: defaultImpact };
+}
+
+export function formatCooldown(seconds: number): string | null {
+  if (!seconds) return null;
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  if (days > 0 && hours > 0) return `${days}j ${hours}h`;
+  if (days > 0) return `${days}j`;
+  if (hours > 0) return `${hours}h`;
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (minutes > 0) return `${minutes}min`;
+  return `${seconds}s`;
 }
 
 function buildScoreComputationAstNode(conditionNode: AstNode, impact: ScoreImpact): ScoreComputationAstNode {

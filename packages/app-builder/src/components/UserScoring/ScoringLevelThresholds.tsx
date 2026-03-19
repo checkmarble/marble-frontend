@@ -22,7 +22,7 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-v2-sm">
       <span className="text-s font-medium text-grey-primary">Paramètres des scores</span>
       <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md">
         <span className="text-s text-grey-primary">Niveaux de risque :</span>
@@ -33,9 +33,9 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
           const lowerBound = i > 0 ? (thresholds[i - 1] ?? 0) + 1 : undefined;
 
           return (
-            <div key={color} className="flex items-center gap-2">
+            <div key={color} className="flex items-center gap-v2-sm">
               {/* Level name display */}
-              <div className="flex items-center gap-2 h-10 w-[195px] shrink-0 border border-grey-border rounded-sm px-2">
+              <div className="flex items-center gap-v2-xs h-10 w-[195px] shrink-0 border border-grey-border rounded-sm px-2">
                 <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: color }} />
                 <span className="text-s font-medium flex-1 min-w-0 truncate">{labels[i]}</span>
               </div>

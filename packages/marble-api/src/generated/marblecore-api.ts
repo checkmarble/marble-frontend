@@ -1808,6 +1808,7 @@ export type ScoringRulesetWithRules = ScoringRuleset & {
         stable_id: string;
         name: string;
         description?: string;
+        risk_type: string;
         ast: NodeDto;
     }[];
 };
@@ -1820,6 +1821,7 @@ export type UpdateScoringRuleset = {
         stable_id: string;
         name: string;
         description?: string;
+        risk_type: string;
         /** An AST representation of the rule.
         
         The root node should be supported by the scoring facility, namely either `ScoringComputation`

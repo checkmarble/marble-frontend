@@ -10,18 +10,21 @@ export const loader = createServerFn([authMiddleware], async function scoringRul
   const recordType = params['recordType']!;
   const version = params['version']!;
 
-  const ruleset = await context.authInfo.userScoring.getRulesetWithRules(recordType, version);
+  const [ruleset, customLists] = await Promise.all([
+    context.authInfo.userScoring.getRulesetWithRules(recordType, version),
+    context.authInfo.customListsRepository.listCustomLists(),
+  ]);
 
-  return { ruleset };
+  return { ruleset, customLists };
 });
 
 export default function UserScoringRulesetRoute() {
-  const { ruleset } = useLoaderData<typeof loader>();
+  const { ruleset, customLists } = useLoaderData<typeof loader>();
   const { settings } = useRouteLoaderData('routes/_builder+/user-scoring+/_layout' satisfies RouteID) as SerializeFrom<
     typeof layoutLoader
   >;
 
   if (!settings) return <Navigate to={getRoute('/user-scoring/overview')} replace />;
 
-  return <ScoringRulesetPage ruleset={ruleset} settings={settings} />;
+  return <ScoringRulesetPage ruleset={ruleset} settings={settings} customLists={customLists} />;
 }

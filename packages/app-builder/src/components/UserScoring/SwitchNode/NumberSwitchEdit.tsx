@@ -1,17 +1,18 @@
 import { type NumberSwitch, type ScoreImpact } from '@app-builder/models/scoring';
+import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { RiskLevelSelect } from './shared';
 
-export function NumberSwitchEdit({
-  conditions,
-  maxRiskLevel,
-  onChange,
-}: {
+interface NumberSwitchEditProps {
   conditions: NumberSwitch;
   maxRiskLevel: number;
   onChange: (next: NumberSwitch) => void;
-}) {
+}
+
+export function NumberSwitchEdit({ conditions, maxRiskLevel, onChange }: NumberSwitchEditProps) {
+  const { t } = useTranslation(['user-scoring']);
   const { branches, default: defaultImpact } = conditions;
 
   const setThreshold = (idx: number, value: number) => {
@@ -87,7 +88,7 @@ export function NumberSwitchEdit({
         onImpactChange={(imp) => setImpact('default', imp)}
       />
       <Button onClick={addBranch} className="self-start shadow-sm" appearance="stroked">
-        Ajouter une condition
+        {t('user-scoring:switch.add_condition')}
       </Button>
     </div>
   );
@@ -118,8 +119,13 @@ function BranchRow({
   onMoveDown,
   onDelete,
 }: BranchRowProps) {
+  const { t } = useTranslation(['user-scoring']);
   const label =
-    variant === 'first' ? 'si la valeur est ≤ à' : variant === 'middle' ? 'si la valeur est entre' : 'si non, > à';
+    variant === 'first'
+      ? t('user-scoring:switch.number.first')
+      : variant === 'middle'
+        ? t('user-scoring:switch.number.middle')
+        : t('user-scoring:switch.number.default');
 
   const reorderButtons = (
     <>
@@ -132,43 +138,40 @@ function BranchRow({
     </>
   );
 
+  let conditionRow: ReactNode;
   if (variant === 'middle') {
-    return (
-      <div className="grid grid-cols-[24px_164px_70px_minmax(auto,_40px)_70px_minmax(auto,_40px)_70px_auto_24px] items-center gap-2">
+    conditionRow = (
+      <div className="grid grid-cols-[24px_164px_70px_minmax(auto,_40px)_70px_1fr_24px] items-center gap-2">
         <div className="flex flex-col">{reorderButtons}</div>
         <span className="text-right text-purple-primary">{label}</span>
         <Input type="number" readOnly value={rangeStart ?? ''} />
-        <span className="text-center text-grey-secondary">et</span>
+        <span className="text-center text-grey-secondary">{t('user-scoring:switch.number.and')}</span>
         <Input type="number" value={threshold ?? ''} onChange={(e) => onThresholdChange?.(e.target.valueAsNumber)} />
-        <span className="text-center text-grey-secondary">alors</span>
-        <Input
-          type="number"
-          value={impact.modifier}
-          onChange={(e) => onImpactChange({ ...impact, modifier: e.target.valueAsNumber })}
-        />
-        <RiskLevelSelect
-          floor={impact.floor}
-          maxRiskLevel={maxRiskLevel}
-          onChange={(floor) => onImpactChange({ ...impact, floor })}
-        />
+        <div />
         <button type="button" onClick={onDelete} className="text-grey-secondary hover:text-red-primary">
           <Icon icon="delete" className="size-5" />
         </button>
       </div>
     );
+  } else {
+    conditionRow = (
+      <div className="grid grid-cols-[24px_164px_70px] items-center gap-2">
+        <div className="invisible flex flex-col">{reorderButtons}</div>
+        <span className="text-right text-purple-primary">{label}</span>
+        {variant === 'first' ? (
+          <Input type="number" value={threshold ?? ''} onChange={(e) => onThresholdChange?.(e.target.valueAsNumber)} />
+        ) : (
+          <Input type="number" readOnly value={rangeStart ?? ''} />
+        )}
+      </div>
+    );
   }
 
-  // first and default — same 6-column template
-  return (
-    <div className="grid grid-cols-[24px_164px_70px_minmax(auto,_40px)_70px_auto] items-center gap-2">
-      <div className="invisible flex flex-col">{reorderButtons}</div>
-      <span className="text-right text-purple-primary">{label}</span>
-      {variant === 'first' ? (
-        <Input type="number" value={threshold ?? ''} onChange={(e) => onThresholdChange?.(e.target.valueAsNumber)} />
-      ) : (
-        <Input type="number" readOnly value={rangeStart ?? ''} />
-      )}
-      <span className="text-center text-grey-secondary">alors</span>
+  const impactRow = (
+    <div className="grid grid-cols-[24px_164px_minmax(auto,_40px)_70px_auto] items-center gap-2">
+      <div />
+      <div />
+      <span className="text-center text-grey-secondary">{t('user-scoring:switch.number.then')}</span>
       <Input
         type="number"
         value={impact.modifier}
@@ -179,6 +182,13 @@ function BranchRow({
         maxRiskLevel={maxRiskLevel}
         onChange={(floor) => onImpactChange({ ...impact, floor })}
       />
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-2">
+      {conditionRow}
+      {impactRow}
     </div>
   );
 }

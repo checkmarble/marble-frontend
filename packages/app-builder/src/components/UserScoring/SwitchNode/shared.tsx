@@ -8,6 +8,7 @@ import {
   type ScoreImpact,
 } from '@app-builder/models/scoring';
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type SelectOption, SelectV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -20,12 +21,10 @@ export function FieldPill({ field, fieldType }: FieldPillProps) {
   const typeIcon = isAllowedScoringRuleType(fieldType) ? getDataTypeIcon(fieldType) : null;
 
   return (
-    <div className="flex h-6 shrink-0 items-center gap-1 rounded-full border border-grey-border bg-white px-2">
-      <span className="whitespace-nowrap text-xs text-grey-placeholder flex items-center gap-v2-xs">
-        {getFieldLabel(field)}
-        {typeIcon ? <Icon icon={typeIcon} className="size-4" /> : null}
-      </span>
-    </div>
+    <Tag color="grey" className="gap-v2-sm">
+      {getFieldLabel(field)}
+      {typeIcon ? <Icon icon={typeIcon} className="size-4" /> : null}
+    </Tag>
   );
 }
 
@@ -35,28 +34,29 @@ export function getFieldLabel(field: PayloadAstNode | AggregationAstNode): strin
   return '…';
 }
 
-export function SwitchCaseRow({
-  impact,
-  children,
-  maxRiskLevel,
-}: {
+interface SwitchCaseRowProps {
   impact: ScoreImpact;
   children: ReactNode;
   maxRiskLevel: number;
-}) {
+}
+
+export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowProps) {
+  const { t } = useTranslation(['user-scoring']);
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel as keyof typeof SCORING_LEVELS_COLORS];
 
   return (
     <li className="flex items-center gap-v2-sm">
       <div className="ml-v2-md list-item list-disc whitespace-nowrap">
         <div className="flex items-center gap-v2-sm">
-          <span>{children}:</span>
+          <span className="inline-flex items-center gap-v2-sm">
+            {children} {t('user-scoring:switch.then')}
+          </span>
           <Tag color="grey">score +{impact.modifier}</Tag>
           {impact.floor !== undefined ? (
             <>
-              <span>and</span>
+              <span>{t('user-scoring:switch.and')}</span>
               <Tag color="grey" className="gap-v2-xs">
-                <span>seuil =</span>
+                <span>{t('user-scoring:switch.floor_label')}</span>
                 <div className="rounded-full size-3" style={{ backgroundColor: colors?.[impact.floor] }} />
               </Tag>
             </>
@@ -79,22 +79,21 @@ export function FieldPlaceholder() {
   );
 }
 
-export function RiskLevelSelect({
-  floor,
-  maxRiskLevel,
-  onChange,
-}: {
+interface RiskLevelSelectProps {
   floor: number | undefined;
   maxRiskLevel: number;
   onChange: (floor: number | undefined) => void;
-}) {
+}
+
+export function RiskLevelSelect({ floor, maxRiskLevel, onChange }: RiskLevelSelectProps) {
+  const { t } = useTranslation(['user-scoring']);
   const levels = SCORING_LEVELS_COLORS[maxRiskLevel as keyof typeof SCORING_LEVELS_COLORS] ?? [];
   const options: SelectOption<number | null>[] = [
-    { label: '+ seuil', value: null },
+    { label: t('user-scoring:switch.add_floor'), value: null },
     ...levels.map((color, i) => ({
       label: (
         <span className="flex gap-v2-xs items-center">
-          <span>Seuil = </span>
+          <span>{t('user-scoring:switch.floor_label')} </span>
           <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: color }}></div>
         </span>
       ),
@@ -105,7 +104,7 @@ export function RiskLevelSelect({
   return (
     <SelectV2
       value={floor ?? null}
-      placeholder="+ seuil"
+      placeholder={t('user-scoring:switch.add_floor')}
       options={options}
       onChange={(v) => onChange(v ?? undefined)}
       className="w-30"

@@ -52,10 +52,11 @@ export function makeGetUserScoringRepository() {
           description,
           thresholds,
           cooldown_seconds: cooldownSeconds,
-          rules: rules.map(({ stableId, name, description, ast }) => ({
+          rules: rules.map(({ stableId, name, description, riskType, ast }) => ({
             stable_id: stableId ?? '',
             name,
             description,
+            risk_type: riskType,
             ast: adaptNodeDto(ast),
           })),
         }),

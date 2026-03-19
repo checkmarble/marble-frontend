@@ -12,6 +12,7 @@ import { createSimpleContext } from '@marble/shared';
 import { NavLink, Outlet, useMatches } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Input, SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
@@ -24,7 +25,8 @@ export const CreateRulesetPanelContext = createSimpleContext<{ open: boolean; se
   'CreateRulesetPanel',
 );
 
-export const ScoringSectionLayout = ({ maxRiskLevel }: { maxRiskLevel: number | null | undefined }) => {
+export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | null | undefined }) {
+  const { t } = useTranslation(['user-scoring']);
   const [panelOpen, setPanelOpen] = useState(false);
   const { data, isPending } = useListScoringRulesetsQuery();
   const matches = useMatches();
@@ -39,16 +41,16 @@ export const ScoringSectionLayout = ({ maxRiskLevel }: { maxRiskLevel: number | 
         <Page.Container>
           <Page.ContentV2 className="flex flex-col gap-v2-md container mx-auto">
             <div className="flex items-center justify-between">
-              <h1 className="text-h1 font-bold">Score Configuration</h1>
+              <h1 className="text-h1 font-bold">{t('user-scoring:section.title')}</h1>
               {showCreateButton ? (
                 <Button variant="secondary" onClick={() => setPanelOpen(true)}>
-                  Configure a score
+                  {t('user-scoring:section.configure_button')}
                 </Button>
               ) : null}
             </div>
             <Tabs>
               <NavLink to={getRoute('/user-scoring/overview')} className={tabClassName}>
-                Overview
+                {t('user-scoring:section.tab_overview')}
               </NavLink>
               {isPending ? (
                 <div className="h-full flex items-center px-v2-sm">
@@ -80,9 +82,10 @@ export const ScoringSectionLayout = ({ maxRiskLevel }: { maxRiskLevel: number | 
       </Page.Main>
     </CreateRulesetPanelContext.Provider>
   );
-};
+}
 
-const ScoringRulesetCreationPanel = ({ maxRiskLevel }: { maxRiskLevel: number }) => {
+function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number }) {
+  const { t } = useTranslation(['user-scoring']);
   const revalidate = useLoaderRevalidator();
   const updateScoringRulesetMutation = useUpdateScoringRulesetMutation();
   const dataModelQuery = useDataModelQuery();
@@ -118,13 +121,13 @@ const ScoringRulesetCreationPanel = ({ maxRiskLevel }: { maxRiskLevel: number })
       <form className="contents" onSubmit={handleSubmit(form)}>
         <div className="flex items-center gap-v2-md">
           <Icon icon="x" className="size-6" />
-          <h2 className="text-h2 font-semibold">Configure new score</h2>
+          <h2 className="text-h2 font-semibold">{t('user-scoring:section.create_panel.title')}</h2>
         </div>
         <div>
           <form.Field name="recordType">
             {(field) => (
               <SelectV2
-                placeholder="Select an entity"
+                placeholder={t('user-scoring:section.create_panel.entity_placeholder')}
                 value={field.state.value}
                 options={entityOptions}
                 onChange={field.handleChange}
@@ -134,16 +137,16 @@ const ScoringRulesetCreationPanel = ({ maxRiskLevel }: { maxRiskLevel: number })
           </form.Field>
         </div>
         <div className="flex flex-col gap-v2-sm">
-          General settings
+          {t('user-scoring:section.create_panel.general_settings')}
           <div className="border border-grey-border rounded-v2-md p-v2-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-v2-sm gap-y-v2-md">
             <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">Maximum duration before recalculation:</span>
+              <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
               <Input className="max-w-15" />
               <SelectV2 placeholder="unit" options={[]} value={undefined} onChange={() => undefined} />
               <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
             </div>
             <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">Maximum duration to lower a score:</span>
+              <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <Input className="max-w-15" />
               <SelectV2 placeholder="unit" options={[]} value={undefined} onChange={() => undefined} />
               <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
@@ -166,12 +169,12 @@ const ScoringRulesetCreationPanel = ({ maxRiskLevel }: { maxRiskLevel: number })
               panelSharp.actions.close();
             }}
           >
-            Cancel
+            {t('user-scoring:section.create_panel.cancel')}
           </Button>
           <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
             {([canSubmit, isSubmitting]) => (
               <Button disabled={!canSubmit || isSubmitting} type="submit">
-                Validate
+                {t('user-scoring:section.create_panel.validate')}
               </Button>
             )}
           </form.Subscribe>
@@ -179,4 +182,4 @@ const ScoringRulesetCreationPanel = ({ maxRiskLevel }: { maxRiskLevel: number })
       </form>
     </PanelContainer>
   );
-};
+}

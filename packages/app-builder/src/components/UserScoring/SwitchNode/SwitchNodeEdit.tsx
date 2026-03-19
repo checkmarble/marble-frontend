@@ -1,5 +1,6 @@
 import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
+import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
 import {
   type AllowedScoringRuleSourceType,
@@ -11,10 +12,12 @@ import {
   transformSwitchAstNodeToModel,
 } from '@app-builder/models/scoring';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { type SelectOption, SelectV2 } from 'ui-design-system';
 import { BoolSwitchEdit } from './BoolSwitchEdit';
 import { NumberSwitchEdit } from './NumberSwitchEdit';
+import { StringSwitchEdit } from './StringSwitchEdit';
 import { FieldPlaceholder } from './shared';
 
 function createDefaultConditions(fieldType: AllowedScoringRuleSourceType): NumberSwitch | StringSwitch | BoolSwitch {
@@ -27,10 +30,23 @@ function createDefaultConditions(fieldType: AllowedScoringRuleSourceType): Numbe
         default: { modifier: 0 },
       };
     case 'String':
-      return { type: 'string', branches: [], default: { modifier: 0 } };
+      return {
+        type: 'string',
+        branches: [{ value: { op: '=', value: '' }, impact: { modifier: 0 } }],
+        default: { modifier: 0 },
+      };
     case 'Bool':
       return { type: 'bool', ifTrue: { modifier: 0 }, ifFalse: { modifier: 0 } };
   }
+}
+
+interface SwitchNodeEditProps {
+  node: SwitchAstNode;
+  maxRiskLevel: number;
+  dataModel: DataModel;
+  entityType: string;
+  customLists?: CustomList[];
+  onModelChange?: (model: RuleModel) => void;
 }
 
 export function SwitchNodeEdit({
@@ -38,14 +54,10 @@ export function SwitchNodeEdit({
   maxRiskLevel,
   dataModel,
   entityType,
+  customLists,
   onModelChange,
-}: {
-  node: SwitchAstNode;
-  maxRiskLevel: number;
-  dataModel: DataModel;
-  entityType: string;
-  onModelChange?: (model: RuleModel) => void;
-}) {
+}: SwitchNodeEditProps) {
+  const { t } = useTranslation(['user-scoring']);
   const model = transformSwitchAstNodeToModel(node, entityType, dataModel);
   const [conditions, setConditions] = useState<NumberSwitch | StringSwitch | BoolSwitch | null>(
     model ? model.conditions : null,
@@ -96,7 +108,7 @@ export function SwitchNodeEdit({
   return (
     <div className="flex flex-col gap-v2-sm text-s text-grey-secondary">
       <div className="flex flex-wrap items-center gap-v2-sm">
-        <span>En fonction de la valeur de</span>
+        <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
         {isAttributeType ? (
           <SelectV2
             value={selectedField}
@@ -111,7 +123,7 @@ export function SwitchNodeEdit({
       </div>
       {conditions ? (
         <>
-          <span>appliquer les conditions suivantes :</span>
+          <span className="font-medium">{t('user-scoring:switch.apply_conditions')}</span>
           {match(conditions)
             .with({ type: 'number' }, (c) => (
               <NumberSwitchEdit conditions={c} maxRiskLevel={maxRiskLevel} onChange={handleConditionsChange} />
@@ -119,7 +131,14 @@ export function SwitchNodeEdit({
             .with({ type: 'bool' }, (c) => (
               <BoolSwitchEdit conditions={c} maxRiskLevel={maxRiskLevel} onChange={handleConditionsChange} />
             ))
-            .with({ type: 'string' }, () => null)
+            .with({ type: 'string' }, (c) => (
+              <StringSwitchEdit
+                conditions={c}
+                maxRiskLevel={maxRiskLevel}
+                customLists={customLists}
+                onChange={handleConditionsChange}
+              />
+            ))
             .exhaustive()}
         </>
       ) : null}
