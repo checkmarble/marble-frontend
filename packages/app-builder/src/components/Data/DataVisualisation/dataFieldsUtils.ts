@@ -41,7 +41,7 @@ export function parseCoords(s: string) {
 export function hasMetadataContent(data: ReturnType<typeof parseUnknownData> | undefined): boolean {
   if (!data) return false;
   if (data.type === 'DerivedData') return Object.keys(data.value).length > 0;
-  return false;
+  return R.isNonNullish(data.value);
 }
 
 export function isMetadataKey(key: string): { match: true; parentKey: string } | { match: false } {
@@ -59,7 +59,7 @@ export function isMetadataKey(key: string): { match: true; parentKey: string } |
 
 export const METADATA_FIELDS = ['object_id', 'valid_from'] as const;
 
-export function getLinkksFromDatamodel(dataModel: TableModel[], tableName: string) {
+export function getLinksFromDatamodel(dataModel: TableModel[], tableName: string) {
   const dataModelTable = dataModel.find((table) => table.name === tableName);
   const links = R.pipe(
     dataModelTable?.linksToSingle ?? [],

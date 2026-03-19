@@ -1,4 +1,4 @@
-const SEMENTIC_DATA_TYPE = {
+const SEMANTIC_DATA_TYPE = {
   string: [
     'main',
     'country',
@@ -21,9 +21,9 @@ const SEMENTIC_DATA_TYPE = {
   boolean: ['checkbox', 'yes_no'],
 } as const;
 
-export type MAIN_DATA_TYPE = keyof typeof SEMENTIC_DATA_TYPE;
+export type MAIN_DATA_TYPE = keyof typeof SEMANTIC_DATA_TYPE;
 export type VALID_DATA_TYPE = {
-  [Key in MAIN_DATA_TYPE]: `${Key}-${(typeof SEMENTIC_DATA_TYPE)[Key][number]}`;
+  [Key in MAIN_DATA_TYPE]: `${Key}-${(typeof SEMANTIC_DATA_TYPE)[Key][number]}`;
 }[MAIN_DATA_TYPE];
 
 export const DATA_TABLE_VISUALISATION_PRESET = ['essentials', 'advanced', 'full'] as const;

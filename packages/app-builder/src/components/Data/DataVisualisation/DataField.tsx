@@ -1,26 +1,32 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { Spinner } from '@app-builder/components/Spinner';
-import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModelField, type DataModelObject, DataType } from '@app-builder/models';
-import { formatAge, formatCurrency, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatAge,
+  formatCurrency,
+  formatNumber,
+  useFormatDateTime,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
+import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
+import { tryCatch } from '@app-builder/utils/tryCatch';
 import { EUR } from '@dinero.js/currencies';
 import { useFetcher } from '@remix-run/react';
-import { Map as MapLibre, type MapRef, Marker } from '@vis.gl/react-maplibre';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
-import { type ComponentType, Fragment, useEffect, useRef, useState } from 'react';
+import { type ComponentType, Fragment, lazy, Suspense, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { isNonNullish } from 'remeda';
 import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { DataFields, DataFieldsHeader } from './DataFields';
 import { type VALID_DATA_TYPE } from './data-type';
-import { CARTO_BASEMAP, hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
+import { hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
 import { useCurrency, useOptions } from './datafield-context';
 
-import 'maplibre-gl/dist/maplibre-gl.css';
-import { parseUnknownData } from '@app-builder/utils/parse';
-import { useTranslation } from 'react-i18next';
-import { DataFields, DataFieldsHeader } from './DataFields';
+const MapView = lazy(() => import('./MapView').then((m) => ({ default: m.MapView })));
 
 const codeClassName = 'font-mono border border-grey-border rounded-sm p-1 bg-surface-card';
 const subClassName = 'grid gap-1 p-2 border border-grey-border bg-grey-background-light rounded-lg';
@@ -77,7 +83,7 @@ export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) 
         {field?.name}
       </label>
       <div id={field?.id}>
-        {value ? (
+        {isNonNullish(value) ? (
           <>
             {linkedTo ? (
               <LinkToValue value={`${value}`} linkedTo={linkedTo} />
@@ -145,12 +151,18 @@ function adaptFieldType(dataType?: DataType | null, name?: string): VALID_DATA_T
   }
 }
 
+function EmptyValue() {
+  return <span>{'-'}</span>;
+}
+
 function StringMain({ value }: { value?: string }) {
-  return <span className="font-semibold">{value ?? '-'}</span>;
+  if (!value) return <EmptyValue />;
+  return <span className="font-semibold">{value}</span>;
 }
 
 function StringCode({ value }: { value?: string }) {
-  return <span className={codeClassName}>{value ?? '-'}</span>;
+  if (!value) return <EmptyValue />;
+  return <span className={codeClassName}>{value}</span>;
 }
 
 function StringEmail({ value }: { value?: string }) {
@@ -162,7 +174,7 @@ function StringEmail({ value }: { value?: string }) {
 }
 
 function StringPhone({ value }: { value?: string }) {
-  if (!value) return <span>{'-'}</span>;
+  if (!value) return <EmptyValue />;
   const phone = parsePhoneNumber(value);
   const strPhone = phone ? phone.formatInternational() : value;
   const phoneUri = phone ? phone.getURI() : value;
@@ -174,12 +186,15 @@ function StringPhone({ value }: { value?: string }) {
 }
 
 function StringCity({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  if (!value) return <EmptyValue />;
+  return <span>{value}</span>;
 }
 
 function StringCountry({ value }: { value?: string }) {
-  if (!value) return <span>{'-'}</span>;
-  const country = CountryFlag.byCountryCode(value.toUpperCase());
+  if (!value) return <EmptyValue />;
+  const result = tryCatch(() => CountryFlag.byCountryCode(value.toUpperCase()));
+  if (!result.ok) return <EmptyValue />;
+  const country = result.value;
   return (
     <span className="inline-flex items-center gap-1">
       <span>{country.flag}</span>
@@ -189,8 +204,14 @@ function StringCountry({ value }: { value?: string }) {
 }
 
 function StringLink({ value }: { value?: string }) {
+  if (!value) return <EmptyValue />;
+  const result = tryCatch(() => {
+    const url = new URL(value);
+    return url;
+  });
+  if (!result.ok) return <EmptyValue />;
   return (
-    <a className="text-purple-primary" href={value}>
+    <a className="text-purple-primary" href={result.value.href}>
       {value ?? '-'}
     </a>
   );
@@ -218,7 +239,8 @@ function StringId({ value }: { value?: string }) {
 }
 
 function StringFree({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  if (!value) return <EmptyValue />;
+  return <span>{value}</span>;
 }
 
 function DateBirthdate({ value }: { value?: string }) {
@@ -234,18 +256,18 @@ function DateBirthdate({ value }: { value?: string }) {
       </span>
     );
   }
-  return <span>{'-'}</span>;
+  return <EmptyValue />;
 }
 
 function StringIban({ value }: { value?: string }) {
-  if (!value) return <span>{'-'}</span>;
+  if (!value) return <EmptyValue />;
   // Format the IBAN in groups of 4 characters separated by a space
   const strIban = value.replace(/(.{4})/g, '$1 ').trim();
   return <span className={codeClassName}>{strIban}</span>;
 }
 
 function StringCurrency({ value }: { value?: string }) {
-  if (!value) return <span>{'-'}</span>;
+  if (!value) return <EmptyValue />;
   const currency = cc.code(value);
   return (
     <span className={cn('inline-flex items-center gap-1', codeClassName)}>
@@ -262,20 +284,13 @@ function DateDatetime({ value }: { value?: string }) {
     const date = new Date(value);
     return <span>{formatDateTime(date, { dateStyle: 'short', timeStyle: 'short' })}</span>;
   }
-  return <span>{value ?? '-'}</span>;
+  return <EmptyValue />;
 }
 
 function DataGpsCoords({ value, metaData }: { value?: string; metaData?: MetadataType }) {
-  const { theme } = useTheme();
-  const mapRef = useRef<MapRef>(null);
   const opts = value ? parseCoords(value) : null;
   const options = useOptions();
   const mapHeight = options?.mapHeight ?? MAP_HEIGHT;
-
-  useEffect(() => {
-    if (!opts || !mapRef.current) return;
-    mapRef.current.flyTo({ center: [opts.longitude, opts.latitude], duration: 1000 });
-  }, [opts?.latitude, opts?.longitude]);
 
   if (!value || !opts) return <span className={codeClassName}>-</span>;
 
@@ -287,18 +302,18 @@ function DataGpsCoords({ value, metaData }: { value?: string; metaData?: Metadat
         </span>
       </CopyToClipboardButton>
 
-      <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
-        <MapLibre
-          ref={mapRef}
-          initialViewState={opts}
-          style={{ width: '100%', height: mapHeight }}
-          mapStyle={CARTO_BASEMAP[theme]}
-        >
-          <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
-            <Icon icon="map-pin" className="size-4 text-red-primary" />
-          </Marker>
-        </MapLibre>
-      </div>
+      <Suspense
+        fallback={
+          <div
+            className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card flex items-center justify-center"
+            style={{ height: mapHeight }}
+          >
+            <Spinner className="size-4" />
+          </div>
+        }
+      >
+        <MapView latitude={opts.latitude} longitude={opts.longitude} mapHeight={mapHeight} />
+      </Suspense>
       {metaData ? (
         <div className="w-fit">
           <MetaData metaData={metaData} />
@@ -309,24 +324,36 @@ function DataGpsCoords({ value, metaData }: { value?: string; metaData?: Metadat
 }
 
 function NumberInteger({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  const language = useFormatLanguage();
+  if (!value) return <EmptyValue />;
+  const valueAsNumber = parseInt(value, 10);
+  if (isNaN(valueAsNumber)) return <EmptyValue />;
+  return <span>{formatNumber(valueAsNumber, { language })}</span>;
 }
 
 function NumberFloat({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  const language = useFormatLanguage();
+  if (!value) return <EmptyValue />;
+  const valueAsNumber = parseFloat(value);
+  if (isNaN(valueAsNumber)) return <EmptyValue />;
+  return <span>{formatNumber(valueAsNumber, { language })}</span>;
 }
 
 function NumberCurrency({ value }: { value?: string }) {
   const language = useFormatLanguage();
   const currency = useCurrency() ?? EUR;
-  if (!value) return <span>{'-'}</span>;
+  if (!value) return <EmptyValue />;
   const valueAsNumber = Number(value);
   const formatNumber = formatCurrency(valueAsNumber, { language, currency });
   return <span>{formatNumber}</span>;
 }
 
 function NumberPercentile({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  const language = useFormatLanguage();
+  if (!value) return <EmptyValue />;
+  const valueAsNumber = parseFloat(value);
+  if (isNaN(valueAsNumber)) return <EmptyValue />;
+  return <span>{formatNumber(valueAsNumber / 100, { language, style: 'percent' })}</span>;
 }
 
 function BooleanCheckbox({ value }: { value?: string }) {
@@ -334,7 +361,8 @@ function BooleanCheckbox({ value }: { value?: string }) {
 }
 
 function BooleanYesNo({ value }: { value?: string }) {
-  return <span>{value ?? '-'}</span>;
+  if (!value) return <EmptyValue />;
+  return <span>{value}</span>;
 }
 
 function EnumValues({ value }: { value?: string }) {
@@ -392,9 +420,11 @@ function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
       {Object.entries(metaData).map(([key, value]) => {
         let MetaDataComponent = FIELD_TYPE_COMPONENTS['string-free'];
         if (typeof value === 'number') MetaDataComponent = FIELD_TYPE_COMPONENTS['number-integer'];
-        if (typeof value === 'boolean') MetaDataComponent = FIELD_TYPE_COMPONENTS['boolean-checkbox'];
-        const fieldType = adaptFieldType('String', key);
-        MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
+        else if (typeof value === 'boolean') MetaDataComponent = FIELD_TYPE_COMPONENTS['boolean-checkbox'];
+        else {
+          const fieldType = adaptFieldType('String', key);
+          MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
+        }
         return (
           <Fragment key={key}>
             <label className="font-semibold">{key}</label>
@@ -445,7 +475,7 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
               />
             </>
           ) : (
-            <span>{'-'}</span>
+            <EmptyValue />
           )}
         </div>
       )}

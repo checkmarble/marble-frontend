@@ -13,7 +13,7 @@ import * as R from 'remeda';
 import { cn } from 'ui-design-system';
 import { DataField } from './DataField';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
-import { getLinkksFromDatamodel, hasMetadataContent, isMetadataKey, METADATA_FIELDS } from './dataFieldsUtils';
+import { getLinksFromDatamodel, hasMetadataContent, isMetadataKey, METADATA_FIELDS } from './dataFieldsUtils';
 import { DataVisualisationProvider, useOptions } from './datafield-context';
 
 export type DataFieldsProps = (
@@ -46,7 +46,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
   const { data: tableOptionsData, isPending: isTableOptionsPending } = useTableOptionsQuery(tableModel?.id);
   const tableOptions = tableOptionsData?.tableOptions;
 
-  const links = options?.hideLinks ? undefined : getLinkksFromDatamodel(dataModel, table);
+  const links = options?.hideLinks ? undefined : getLinksFromDatamodel(dataModel, table);
 
   const fields = useMemo(() => {
     if (preset === 'custom') {
@@ -91,7 +91,18 @@ export function DataFields({ table, object, preset, customFields, className, opt
     }
 
     return { currency: undefined, country, preset, options, table: tableModel, tableOptions };
-  }, [tableModel, object.data, preset, options, tableOptions]);
+  }, [
+    tableModel,
+    object.data,
+    preset,
+    tableOptions,
+    options?.mapHeight,
+    options?.hideLinks,
+    options?.hideMetadata,
+    options?.hideHeader,
+    options?.withId,
+    options?.layout,
+  ]);
 
   const metaData = useMemo(() => {
     const allParsed = R.pipe(object.data, R.omit(METADATA_FIELDS), R.mapValues(parseUnknownData));
@@ -159,6 +170,7 @@ function filterFieldsByPreset(
         return fields.filter((field) => field.nullable === false || (withId && field.name === 'object_id'));
       }
       case 'advanced':
+      // tbd
       case 'full':
         return fields;
     }
