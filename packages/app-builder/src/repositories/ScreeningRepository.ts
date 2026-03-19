@@ -12,6 +12,7 @@ import {
   type ScreeningMatchPayload,
   type ScreeningMatchStatus,
 } from '@app-builder/models/screening';
+import { adaptScreeningAiSuggestion, type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import {
   adaptOpenSanctionsDatasetFreshness,
   type OpenSanctionsDatasetFreshness,
@@ -48,6 +49,7 @@ export interface ScreeningRepository {
     threshold?: number;
     limit?: number;
   }): Promise<ScreeningMatchPayload[]>;
+  getAiSuggestions(args: { screeningId: string }): Promise<ScreeningAiSuggestion[]>;
 }
 
 export function makeGetScreeningRepository() {
@@ -117,6 +119,9 @@ export function makeGetScreeningRepository() {
       };
       const results = await marbleCoreApiClient.freeformSearch(dto, { limit });
       return R.map(results, (result) => adaptScreeningMatchPayload(result.payload));
+    },
+    getAiSuggestions: async ({ screeningId }) => {
+      return R.map(await marbleCoreApiClient.getScreeningAiSuggestions(screeningId), adaptScreeningAiSuggestion);
     },
   });
 }
