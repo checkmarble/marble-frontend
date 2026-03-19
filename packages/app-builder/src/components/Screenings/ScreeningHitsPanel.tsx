@@ -56,6 +56,9 @@ export function ScreeningHitsPanel({
 }: ScreeningHitsPanelProps) {
   const { t } = useTranslation(screeningsI18n);
   const [currentScreeningId, setCurrentScreeningId] = useState(initialScreeningId);
+  useEffect(() => {
+    setCurrentScreeningId(initialScreeningId);
+  }, [initialScreeningId]);
   const invalidateScreeningDetail = useInvalidateScreeningDetail();
 
   const screeningQuery = useScreeningDetailQuery(decisionId, currentScreeningId, open);
@@ -72,6 +75,7 @@ export function ScreeningHitsPanel({
     [invalidateScreeningDetail, decisionId],
   );
 
+  const currentName = screeningQuery.data?.config.name ?? screeningName;
   const currentStatus = screeningQuery.data?.status ?? screeningStatus;
   // @TODO: Uncomment this when the matches to review count is implemented
   // const matchesToReviewCount = screeningQuery.data
@@ -90,7 +94,7 @@ export function ScreeningHitsPanel({
             aria-label="Close panel"
           />
           <div className="flex flex-1 items-center gap-1">
-            <h2 className="text-xl font-semibold text-grey-primary tracking-[-0.8px]">{screeningName}</h2>
+            <h2 className="text-xl font-semibold text-grey-primary tracking-[-0.8px]">{currentName}</h2>
             <ScreeningStatusTag status={currentStatus} />
           </div>
           {/* @TODO: Uncomment this when the matches to review count is implemented */}
@@ -115,7 +119,9 @@ export function ScreeningHitsPanel({
             ))
             .otherwise((query) => {
               const screening = query.data;
-              if (!screening) return null;
+              if (!screening) {
+                return <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>;
+              }
 
               return (
                 <LoaderRevalidatorContext.Provider value={revalidate}>

@@ -35,12 +35,11 @@ export function ReviewMatchPopover({
       whitelist: false,
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
-      reviewScreeningMatchMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
-          onOpenChange(false);
-        }
-        revalidate();
-      });
+      const res = await reviewScreeningMatchMutation.mutateAsync(value);
+      if (res.success) {
+        onOpenChange(false);
+      }
+      revalidate();
     },
     validators: {
       onSubmit: reviewScreeningMatchPayloadSchema,
