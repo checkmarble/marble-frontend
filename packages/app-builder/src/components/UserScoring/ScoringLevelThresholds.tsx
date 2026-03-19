@@ -1,4 +1,5 @@
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABELS } from '@app-builder/models/scoring';
+import { useTranslation } from 'react-i18next';
 import { Input } from 'ui-design-system';
 
 interface ScoringLevelThresholdsProps {
@@ -8,6 +9,7 @@ interface ScoringLevelThresholdsProps {
 }
 
 export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsChange }: ScoringLevelThresholdsProps) {
+  const { t } = useTranslation(['user-scoring']);
   if (!(maxRiskLevel in SCORING_LEVELS_COLORS) || !(maxRiskLevel in SCORING_LEVELS_LABELS)) {
     return null;
   }
@@ -23,9 +25,9 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
 
   return (
     <div className="flex flex-col gap-v2-sm">
-      <span className="text-s font-medium text-grey-primary">Paramètres des scores</span>
+      <span className="text-s font-medium text-grey-primary">{t('user-scoring:thresholds.title')}</span>
       <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md">
-        <span className="text-s text-grey-primary">Niveaux de risque :</span>
+        <span className="text-s text-grey-primary">{t('user-scoring:thresholds.risk_levels')}</span>
         {colors.map((color, i) => {
           const isFirst = i === 0;
           const isLast = i === maxRiskLevel - 1;
@@ -57,9 +59,13 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
                 </>
               ) : (
                 <>
-                  <span className="text-s text-grey-primary whitespace-nowrap shrink-0">entre</span>
+                  <span className="text-s text-grey-primary whitespace-nowrap shrink-0">
+                    {t('user-scoring:thresholds.between')}
+                  </span>
                   <Input type="number" className="flex-1" value={lowerBound ?? ''} readOnly />
-                  <span className="text-s text-grey-primary whitespace-nowrap shrink-0">et</span>
+                  <span className="text-s text-grey-primary whitespace-nowrap shrink-0">
+                    {t('user-scoring:thresholds.and')}
+                  </span>
                   <Input
                     type="number"
                     className="flex-1"

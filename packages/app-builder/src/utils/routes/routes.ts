@@ -1086,6 +1086,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/update.tsx"
       },
       {
+        "id": "routes/ressources+/scoring+/commit-ruleset",
+        "path": "ressources/scoring/commit-ruleset",
+        "file": "routes/ressources+/scoring+/commit-ruleset.tsx"
+      },
+      {
         "id": "routes/ressources+/scoring+/list-ruleset-versions",
         "path": "ressources/scoring/list-ruleset-versions",
         "file": "routes/ressources+/scoring+/list-ruleset-versions.tsx"
@@ -1094,6 +1099,11 @@ export const routes = [
         "id": "routes/ressources+/scoring+/list-rulesets",
         "path": "ressources/scoring/list-rulesets",
         "file": "routes/ressources+/scoring+/list-rulesets.tsx"
+      },
+      {
+        "id": "routes/ressources+/scoring+/prepare-ruleset",
+        "path": "ressources/scoring/prepare-ruleset",
+        "file": "routes/ressources+/scoring+/prepare-ruleset.tsx"
       },
       {
         "id": "routes/ressources+/scoring+/update-ruleset",

@@ -7,7 +7,6 @@ import {
   type StringSingleValueOp,
   type StringSwitch,
 } from '@app-builder/models/scoring';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, type SelectOption, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';

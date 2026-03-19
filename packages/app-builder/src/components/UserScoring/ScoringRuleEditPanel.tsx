@@ -44,7 +44,10 @@ export function ScoringRuleEditPanel({
     isSwitchAstNode(rule.ast) ? transformSwitchAstNodeToModel(rule.ast, entityType, dataModel) : null,
   );
 
-  const RISK_TYPE_OPTIONS: SelectOption<string>[] = RISK_TYPES.map((v) => ({ value: v, label: v }));
+  const RISK_TYPE_OPTIONS: SelectOption<string>[] = RISK_TYPES.map((v) => ({
+    value: v,
+    label: t(`user-scoring:risk_type.${v}`),
+  }));
 
   const isValid = !!name.trim() && !!riskType && !!currentModel && isCompleteRuleModel(currentModel);
 
@@ -68,7 +71,7 @@ export function ScoringRuleEditPanel({
           className="flex-1 text-l font-semibold outline-none"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Rule name..."
+          placeholder={t('user-scoring:rule_edit.name_placeholder')}
         />
         {onDelete ? (
           <button
@@ -83,14 +86,18 @@ export function ScoringRuleEditPanel({
       <div className="flex flex-wrap items-center gap-2 pb-v2-md">
         <Tag color="grey">{entityType}</Tag>
         {currentModel ? (
-          <Tag color="grey">{currentModel.type === 'user_attribute' ? 'User attributes' : 'Aggregate'}</Tag>
+          <Tag color="grey">
+            {currentModel.type === 'user_attribute'
+              ? t('user-scoring:rule_edit.model_type.user_attribute')
+              : t('user-scoring:rule_edit.model_type.aggregate')}
+          </Tag>
         ) : null}
         <SelectV2
           variant="tag"
           options={RISK_TYPE_OPTIONS}
           value={riskType}
           onChange={setRiskType}
-          placeholder="Risk type *"
+          placeholder={t('user-scoring:rule_edit.risk_type_placeholder')}
           menuClassName="min-w-40"
         />
       </div>

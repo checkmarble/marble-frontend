@@ -104,7 +104,10 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
     },
     onSubmit: async ({ formApi, value }) => {
       if (formApi.state.isValid) {
-        await updateScoringRulesetMutation.mutateAsync(value).then(() => {
+        await updateScoringRulesetMutation.mutateAsync(value).then((res) => {
+          if (res.success) {
+            panelSharp.actions.close();
+          }
           revalidate();
         });
       }
@@ -142,13 +145,23 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
               <Input className="max-w-15" />
-              <SelectV2 placeholder="unit" options={[]} value={undefined} onChange={() => undefined} />
+              <SelectV2
+                placeholder={t('user-scoring:section.create_panel.unit_placeholder')}
+                options={[]}
+                value={undefined}
+                onChange={() => undefined}
+              />
               <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
             </div>
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <Input className="max-w-15" />
-              <SelectV2 placeholder="unit" options={[]} value={undefined} onChange={() => undefined} />
+              <SelectV2
+                placeholder={t('user-scoring:section.create_panel.unit_placeholder')}
+                options={[]}
+                value={undefined}
+                onChange={() => undefined}
+              />
               <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
             </div>
           </div>

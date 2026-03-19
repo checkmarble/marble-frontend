@@ -201,9 +201,7 @@
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ScoringRuleset'
+              $ref: '#/components/schemas/ScoringRuleset'
       '404':
         $ref: 'components.yml#/responses/404'
       '422':

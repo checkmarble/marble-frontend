@@ -103,6 +103,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
   const handleRuleChange = (stableId: string, newRule: ScoringRule) => {
     mutation
       .mutateAsync({
+        id: ruleset.id,
         recordType: ruleset.recordType,
         name: ruleset.name,
         thresholds: ruleset.thresholds,
@@ -127,6 +128,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
   const handleRuleAdd = (newRule: ScoringRule) => {
     mutation
       .mutateAsync({
+        id: ruleset.id,
         recordType: ruleset.recordType,
         name: ruleset.name,
         thresholds: ruleset.thresholds,
@@ -151,6 +153,29 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
       .then(() => {
         revalidate();
         setPanelRule(null);
+      });
+  };
+
+  const handleRuleDelete = (stableId: string) => {
+    mutation
+      .mutateAsync({
+        id: ruleset.id,
+        recordType: ruleset.recordType,
+        name: ruleset.name,
+        thresholds: ruleset.thresholds,
+        cooldownSeconds: ruleset.cooldownSeconds,
+        rules: ruleset.rules
+          .filter((r) => r.stableId !== stableId)
+          .map((r) => ({
+            stableId: r.stableId,
+            name: r.name,
+            description: r.description,
+            riskType: r.riskType,
+            ast: r.ast,
+          })),
+      })
+      .then(() => {
+        revalidate();
       });
   };
 
@@ -198,6 +223,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
                   maxRiskLevel={maxRiskLevel}
                   customLists={customLists}
                   onRuleChange={(newRule) => handleRuleChange(rule.stableId, newRule)}
+                  onRuleDelete={() => handleRuleDelete(rule.stableId)}
                 />
               )),
             )
@@ -232,16 +258,18 @@ interface RuleRowProps {
   maxRiskLevel: number;
   customLists: CustomList[];
   onRuleChange?: (rule: ScoringRule) => void;
+  onRuleDelete?: () => void;
 }
 
-function RuleRow({ rule, dataModel, entityType, maxRiskLevel, customLists, onRuleChange }: RuleRowProps) {
+function RuleRow({ rule, dataModel, entityType, maxRiskLevel, customLists, onRuleChange, onRuleDelete }: RuleRowProps) {
+  const { t } = useTranslation(['user-scoring']);
   const switchNode = rule.ast && isSwitchAstNode(rule.ast) ? rule.ast : null;
   const [isEditing, setIsEditing] = useState(false);
 
   return (
     <div className="border-grey-border flex border-b last:border-b-0">
       <div className="flex w-[150px] shrink-0 items-center px-v2-md py-v2-sm">
-        {rule.riskType ? <Tag color="grey">{rule.riskType}</Tag> : null}
+        {rule.riskType ? <Tag color="grey">{t(`user-scoring:risk_type.${rule.riskType}`)}</Tag> : null}
       </div>
       <div className="flex flex-1 flex-col gap-v2-sm px-v2-md py-v2-sm">
         <span className="text-grey-primary text-s font-medium">{rule.name}</span>
@@ -274,6 +302,14 @@ function RuleRow({ rule, dataModel, entityType, maxRiskLevel, customLists, onRul
               maxRiskLevel={maxRiskLevel}
               customLists={customLists}
               onChange={onRuleChange}
+              onDelete={
+                onRuleDelete
+                  ? () => {
+                      onRuleDelete();
+                      setIsEditing(false);
+                    }
+                  : undefined
+              }
             />
           </PanelRoot>
         </div>

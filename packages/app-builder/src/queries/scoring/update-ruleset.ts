@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const updateScoringRulesetPayloadSchema = z.object({
+  id: z.string().optional(),
   recordType: z.string(),
   name: z.string(),
   description: z.string().optional(),
@@ -44,7 +45,7 @@ export const useUpdateScoringRulesetMutation = () => {
       const result = await response.json();
       if (result.redirectTo) {
         navigate(result.redirectTo);
-        return;
+        return { success: true };
       }
       return result;
     },

@@ -6479,7 +6479,7 @@ export function prepareScoringDraft(recordType: string, opts?: Oazapfts.RequestO
 export function commitScoringRuleset(recordType: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScoringRuleset[];
+        data: ScoringRuleset;
     } | {
         status: 401;
         data: string;

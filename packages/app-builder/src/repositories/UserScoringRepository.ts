@@ -1,5 +1,6 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptNodeDto, isNotFoundHttpError } from '@app-builder/models';
+import { adaptScenarioPublicationStatus, ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
   adaptScoringRuleset,
   adaptScoringRulesetWithRules,
@@ -17,6 +18,9 @@ export interface UserScoringRepository {
   getRulesetWithRules(recordType: string, version: string | number): Promise<ScoringRulesetWithRules>;
   updateScoringSettings(args: { maxRiskLevel: number }): Promise<ScoringSettings>;
   updateScoringRuleset(recordType: string, payload: UpdateScoringRuleset): Promise<ScoringRulesetWithRules>;
+  getRulesetPreparationStatus(recordType: string): Promise<ScenarioPublicationStatus>;
+  prepareScoringRuleset(recordType: string): Promise<void>;
+  commitScoringRuleset(recordType: string): Promise<ScoringRuleset>;
 }
 
 export function makeGetUserScoringRepository() {
@@ -61,6 +65,15 @@ export function makeGetUserScoringRepository() {
           })),
         }),
       );
+    },
+    async getRulesetPreparationStatus(recordType) {
+      return adaptScenarioPublicationStatus(await marbleCoreApiClient.getScoringRulesetPreparationStatus(recordType));
+    },
+    async prepareScoringRuleset(recordType) {
+      await marbleCoreApiClient.prepareScoringDraft(recordType);
+    },
+    async commitScoringRuleset(recordType) {
+      return adaptScoringRuleset(await marbleCoreApiClient.commitScoringRuleset(recordType));
     },
   });
 }

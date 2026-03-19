@@ -1,7 +1,7 @@
 import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { type DataModel } from '@app-builder/models/data-model';
+import { type DataModel, getDataTypeIcon } from '@app-builder/models/data-model';
 import {
   type AllowedScoringRuleSourceType,
   type BoolSwitch,
@@ -15,6 +15,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { type SelectOption, SelectV2 } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { BoolSwitchEdit } from './BoolSwitchEdit';
 import { NumberSwitchEdit } from './NumberSwitchEdit';
 import { StringSwitchEdit } from './StringSwitchEdit';
@@ -100,7 +101,17 @@ export function SwitchNodeEdit({
     if (!entityTable) return [];
     return entityTable.fields
       .filter((f) => isAllowedScoringRuleType(f.dataType))
-      .map((f) => ({ label: f.name, value: f.name }));
+      .map((f) => ({
+        label: (
+          <span className="flex items-center gap-v2-xs">
+            {getDataTypeIcon(f.dataType) ? (
+              <Icon icon={getDataTypeIcon(f.dataType)!} className="size-4 shrink-0" />
+            ) : null}
+            <span>{f.name}</span>
+          </span>
+        ),
+        value: f.name,
+      }));
   }, [dataModel, entityType]);
 
   if (!model) return null;

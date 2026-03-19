@@ -113,7 +113,7 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
             <button
               key={list.id}
               type="button"
-              className="w-full px-3 py-2 text-left text-s text-grey-primary hover:bg-grey-bg"
+              className="w-full px-3 py-2 text-left text-s text-grey-primary hover:bg-grey-bg flex items-center gap-v2-sm"
               onMouseDown={(e) => {
                 e.preventDefault();
                 onChange({ type: 'customList', listId: list.id });
@@ -121,6 +121,7 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
                 setIsDropdownOpen(false);
               }}
             >
+              <Icon icon="list" className="size-4" />
               {list.name}
             </button>
           ))}

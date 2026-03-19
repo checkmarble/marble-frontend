@@ -7,6 +7,7 @@ import {
 } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { SwitchCaseRow } from './shared';
 
 interface StringSwitchDescriptionProps {
@@ -20,7 +21,12 @@ function StringOperationValue({ operation, customLists }: { operation: StringOpe
     const listValue = operation.value;
     if (listValue.type === 'customList') {
       const list = customLists.find((l) => l.id === listValue.listId);
-      return <Tag color="grey">{list?.name ?? listValue.listId}</Tag>;
+      return (
+        <Tag color="grey" className="flex items-center gap-1">
+          <Icon icon="list" className="size-3" />
+          {list?.name ?? listValue.listId}
+        </Tag>
+      );
     }
     const MAX_VISIBLE = 3;
     const visible = listValue.values.slice(0, MAX_VISIBLE);

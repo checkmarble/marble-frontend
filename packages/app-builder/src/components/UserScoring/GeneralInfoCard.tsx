@@ -1,4 +1,5 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import { ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
   formatCooldown,
   SCORING_LEVELS_COLORS,
@@ -6,23 +7,27 @@ import {
   type ScoringRulesetWithRules,
   type ScoringSettings,
 } from '@app-builder/models/scoring';
+import { useCommitScoringRulesetMutation } from '@app-builder/queries/scoring/commit-ruleset';
 import { useListScoringRulesetVersionsQuery } from '@app-builder/queries/scoring/list-ruleset-versions';
+import { usePrepareScoringRulesetMutation } from '@app-builder/queries/scoring/prepare-ruleset';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type SelectOption, SelectV2 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Button, type SelectOption, SelectV2 } from 'ui-design-system';
 
 interface GeneralInfoCardProps {
   ruleset: ScoringRulesetWithRules;
   settings: ScoringSettings;
+  preparationStatus: ScenarioPublicationStatus | null;
 }
 
-export function GeneralInfoCard({ ruleset, settings }: GeneralInfoCardProps) {
+export function GeneralInfoCard({ ruleset, settings, preparationStatus }: GeneralInfoCardProps) {
   const { t } = useTranslation(['user-scoring']);
   const navigate = useAgnosticNavigation();
   const formatDateTime = useFormatDateTime();
+  const prepareMutation = usePrepareScoringRulesetMutation();
+  const commitMutation = useCommitScoringRulesetMutation();
   const cooldownLabel = formatCooldown(ruleset.cooldownSeconds);
   const versionsQuery = useListScoringRulesetVersionsQuery(ruleset.recordType);
   const versionOptions: SelectOption<string>[] = (versionsQuery.data?.versions ?? []).map((v) => ({
@@ -43,19 +48,40 @@ export function GeneralInfoCard({ ruleset, settings }: GeneralInfoCardProps) {
         <div className="flex items-center gap-v2-sm">
           <SelectV2
             options={versionOptions}
-            placeholder="Version"
+            placeholder={t('user-scoring:ruleset.version_placeholder')}
             value={ruleset.status === 'draft' ? 'draft' : ruleset.version.toString()}
             onChange={handleVersionChange}
             variant="tag"
             menuClassName="min-w-30"
           />
-          <button
+          {preparationStatus ? (
+            preparationStatus.status === 'required' ? (
+              <Button
+                disabled={
+                  preparationStatus.serviceStatus === 'occupied' ||
+                  prepareMutation.isPending ||
+                  ruleset.rules.length === 0
+                }
+                onClick={() => prepareMutation.mutate(ruleset.recordType)}
+              >
+                {t('user-scoring:ruleset.prepare')}
+              </Button>
+            ) : (
+              <Button
+                disabled={commitMutation.isPending || ruleset.rules.length === 0}
+                onClick={() => commitMutation.mutate(ruleset.recordType)}
+              >
+                {t('user-scoring:ruleset.commit')}
+              </Button>
+            )
+          ) : null}
+          {/*<button
             type="button"
             className="text-grey-secondary hover:text-grey-primary transition-colors"
             aria-label="Edit"
           >
             <Icon icon="edit" className="size-5" />
-          </button>
+          </button>*/}
         </div>
       </div>
 
