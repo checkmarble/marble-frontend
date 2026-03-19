@@ -27,7 +27,7 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(functi
   );
 });
 
-const collapsibleTitle = cva('group flex cursor-pointer items-center justify-between gap-4 font-semibold ', {
+const collapsibleTitle = cva('group flex cursor-pointer items-center justify-between gap-4 font-semibold', {
   variants: {
     size: {
       default: 'p-4 lg:p-6',
@@ -47,13 +47,15 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
 ) {
   return (
     <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
-      <div>
+      <div className="focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-primary">
         {children}
-        <Icon
-          icon="smallarrow-up"
-          aria-hidden
-          className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
-        />
+        <button>
+          <Icon
+            icon="smallarrow-up"
+            aria-hidden
+            className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
+          />
+        </button>
       </div>
     </Trigger>
   );

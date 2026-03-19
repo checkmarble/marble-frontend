@@ -1,4 +1,3 @@
-import { CopyToClipboardButton } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { createServerFn, data } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -49,17 +48,9 @@ export const handle = {
       const caseDetail = data.caseDetail; // Safely access caseDetail from the loader data
 
       return (
-        <div className="flex items-center gap-4">
-          <BreadCrumbLink to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })} isLast={isLast}>
-            <span className="line-clamp-2 text-start">{caseDetail.name}</span>
-          </BreadCrumbLink>
-          <CopyToClipboardButton toCopy={caseDetail.id}>
-            <span className="text-small flex max-w-40 gap-1 font-normal">
-              <span className="shrink-0 font-medium">ID</span>{' '}
-              <span className="text-rtl truncate">{caseDetail.id}</span>
-            </span>
-          </CopyToClipboardButton>
-        </div>
+        <BreadCrumbLink to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })} isLast={isLast}>
+          <span className="line-clamp-2 text-start">{caseDetail.name}</span>
+        </BreadCrumbLink>
       );
     },
   ],

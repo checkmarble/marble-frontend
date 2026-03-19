@@ -21,7 +21,7 @@ import { MatchResult } from './MatchResult';
 import { ScreeningStatusTag } from './ScreeningStatusTag';
 import { screeningsI18n } from './screenings-i18n';
 
-function setAdditionalFields(fields: string[], prev: Record<string, string>) {
+export function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   const additionalFields = {} as Record<string, string>;
   for (const field of fields) {
     additionalFields[field] = prev[field] ?? '';
@@ -198,13 +198,13 @@ export function RefineSearchModal({
             </div>
             <Modal.Footer>
               <Modal.Close asChild>
-                <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+                <Button variant="secondary" appearance="stroked" name="cancel">
                   {t('common:cancel')}
                 </Button>
               </Modal.Close>
               <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
                 {([isPristine, canSubmit, isSubmitting]) => (
-                  <Button type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
+                  <Button type="submit" disabled={isPristine || !canSubmit} variant="primary">
                     {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
                   </Button>
                 )}
@@ -231,13 +231,13 @@ function Field({ label, children }: FieldProps) {
   );
 }
 
-type EntitySelectProps = {
+export type EntitySelectProps = {
   name: string;
   value: SearchableSchema | '';
   onChange: (value: SearchableSchema) => void;
 };
 
-function EntitySelect({ name, value, onChange }: EntitySelectProps) {
+export function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   const { t } = useTranslation(screeningsI18n);
   const schemas = R.keys(SEARCH_ENTITIES);
   const lowerCasedSchema = value?.toLowerCase() as Lowercase<typeof value>;

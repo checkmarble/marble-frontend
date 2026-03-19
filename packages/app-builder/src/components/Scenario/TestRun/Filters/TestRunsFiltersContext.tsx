@@ -2,8 +2,8 @@ import { testRunStatuses } from '@app-builder/models/testrun';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
-import { useCallback, useMemo } from 'react';
-import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
+import { useForm, useStore } from '@tanstack/react-form';
+import { useCallback, useEffect, useMemo } from 'react';
 import * as R from 'remeda';
 import * as z from 'zod/v4';
 
@@ -19,14 +19,6 @@ export const testRunsFiltersSchema = z.object({
 
 export type TestRunsFilters = z.infer<typeof testRunsFiltersSchema>;
 
-interface TestRunsFiltersContextValue {
-  filterValues: TestRunsFilters;
-  submitTestRunsFilters: () => void;
-  onTestRunsFilterClose: () => void;
-}
-
-const TestRunsFiltersContext = createSimpleContext<TestRunsFiltersContextValue>('TestRunsFiltersContext');
-
 export type TestRunsFiltersForm = TestRunsFilters;
 
 export const emptyTestRunsFilters: TestRunsFiltersForm = {
@@ -35,6 +27,21 @@ export const emptyTestRunsFilters: TestRunsFiltersForm = {
   ref_versions: [],
   test_versions: [],
 };
+
+// Helper to capture the inferred form type without partial generic application
+function _useTestRunsFiltersForm() {
+  return useForm({ defaultValues: emptyTestRunsFilters });
+}
+type TestRunsFiltersFormApi = ReturnType<typeof _useTestRunsFiltersForm>;
+
+interface TestRunsFiltersContextValue {
+  filterValues: TestRunsFilters;
+  submitTestRunsFilters: () => void;
+  onTestRunsFilterClose: () => void;
+  form: TestRunsFiltersFormApi;
+}
+
+const TestRunsFiltersContext = createSimpleContext<TestRunsFiltersContextValue>('TestRunsFiltersContext');
 
 function adaptFilterValues({ ...otherFilters }: TestRunsFilters): TestRunsFiltersForm {
   return {
@@ -52,19 +59,20 @@ export function TestRunsFiltersProvider({
   submitTestRunsFilters: (filterValues: TestRunsFilters) => void;
   children: React.ReactNode;
 }) {
-  const formMethods = useForm<TestRunsFiltersForm>({
-    defaultValues: emptyTestRunsFilters,
-    values: adaptFilterValues(filterValues),
+  const form = useForm({
+    defaultValues: adaptFilterValues(filterValues),
   });
 
-  const { isDirty } = formMethods.formState;
+  useEffect(() => {
+    form.reset(adaptFilterValues(filterValues));
+  }, [filterValues]);
 
   const submitTestRunsFilters = useCallbackRef(() => {
-    _submitTestRunsFilters(formMethods.getValues());
+    _submitTestRunsFilters(form.state.values);
   });
 
   const onTestRunsFilterClose = useCallbackRef(() => {
-    if (isDirty) {
+    if (form.state.isDirty) {
       submitTestRunsFilters();
     }
   });
@@ -74,61 +82,48 @@ export function TestRunsFiltersProvider({
       submitTestRunsFilters,
       onTestRunsFilterClose,
       filterValues,
+      form,
     }),
-    [filterValues, onTestRunsFilterClose, submitTestRunsFilters],
+    [filterValues, onTestRunsFilterClose, submitTestRunsFilters, form],
   );
 
-  return (
-    <FormProvider {...formMethods}>
-      <TestRunsFiltersContext.Provider value={value}>{children}</TestRunsFiltersContext.Provider>
-    </FormProvider>
-  );
+  return <TestRunsFiltersContext.Provider value={value}>{children}</TestRunsFiltersContext.Provider>;
 }
 
 export const useTestRunsFiltersContext = TestRunsFiltersContext.useValue;
 
 export function useStatusesFilter() {
-  const { field } = useController<TestRunsFiltersForm, 'statuses'>({
-    name: 'statuses',
-  });
-  const selectedStatuses = field.value;
-  const setSelectedStatuses = field.onChange;
+  const { form } = useTestRunsFiltersContext();
+  const selectedStatuses = useStore(form.store, (state) => state.values.statuses);
+  const setSelectedStatuses = (value: TestRunsFiltersForm['statuses']) => form.setFieldValue('statuses', value);
   return { selectedStatuses, setSelectedStatuses };
 }
 
 export function useStartedAfterFilter() {
-  const { field } = useController<TestRunsFiltersForm, 'startedAfter'>({
-    name: 'startedAfter',
-  });
-  const startedAfter = field.value;
-  const setStartedAfter = field.onChange;
+  const { form } = useTestRunsFiltersContext();
+  const startedAfter = useStore(form.store, (state) => state.values.startedAfter);
+  const setStartedAfter = (value: Date | undefined) => form.setFieldValue('startedAfter', value);
   return { startedAfter, setStartedAfter };
 }
 
 export const useCreatorFilter = () => {
-  const { field } = useController<TestRunsFiltersForm, 'creators'>({
-    name: 'creators',
-  });
-  const creator = field.value;
-  const setCreator = field.onChange;
+  const { form } = useTestRunsFiltersContext();
+  const creator = useStore(form.store, (state) => state.values.creators);
+  const setCreator = (value: TestRunsFiltersForm['creators']) => form.setFieldValue('creators', value);
   return { creator, setCreator };
 };
 
 export const useRefVersionFilter = () => {
-  const { field } = useController<TestRunsFiltersForm, 'ref_versions'>({
-    name: 'ref_versions',
-  });
-  const refVersion = field.value;
-  const setRefVersion = field.onChange;
+  const { form } = useTestRunsFiltersContext();
+  const refVersion = useStore(form.store, (state) => state.values.ref_versions);
+  const setRefVersion = (value: TestRunsFiltersForm['ref_versions']) => form.setFieldValue('ref_versions', value);
   return { refVersion, setRefVersion };
 };
 
 export const useTestVersionFilter = () => {
-  const { field } = useController<TestRunsFiltersForm, 'test_versions'>({
-    name: 'test_versions',
-  });
-  const testVersion = field.value;
-  const setTestVersion = field.onChange;
+  const { form } = useTestRunsFiltersContext();
+  const testVersion = useStore(form.store, (state) => state.values.test_versions);
+  const setTestVersion = (value: TestRunsFiltersForm['test_versions']) => form.setFieldValue('test_versions', value);
   return { testVersion, setTestVersion };
 };
 
@@ -156,23 +151,21 @@ export function useTestRunsFiltersPartition() {
 }
 
 export function useClearFilter() {
-  const { submitTestRunsFilters } = useTestRunsFiltersContext();
-  const { setValue } = useFormContext<TestRunsFiltersForm>();
+  const { submitTestRunsFilters, form } = useTestRunsFiltersContext();
 
   return useCallback(
     (filterName: TestRunFilterName) => {
-      setValue(filterName, emptyTestRunsFilters[filterName]);
+      form.setFieldValue(filterName, emptyTestRunsFilters[filterName]);
       submitTestRunsFilters();
     },
-    [setValue, submitTestRunsFilters],
+    [form, submitTestRunsFilters],
   );
 }
 
 export const useClearAllFilters = () => {
-  const { submitTestRunsFilters } = useTestRunsFiltersContext();
-  const { reset } = useFormContext<TestRunsFiltersForm>();
+  const { submitTestRunsFilters, form } = useTestRunsFiltersContext();
   return useCallback(() => {
-    reset(emptyTestRunsFilters);
+    form.reset(emptyTestRunsFilters);
     submitTestRunsFilters();
-  }, [reset, submitTestRunsFilters]);
+  }, [form, submitTestRunsFilters]);
 };

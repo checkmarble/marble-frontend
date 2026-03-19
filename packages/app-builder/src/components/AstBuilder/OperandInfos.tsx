@@ -154,7 +154,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
       {percentileValue !== undefined && aggregator.constant === 'PCTILE' ? (
         <>
           <span className="text-grey-50 text-xs">{t('scenarios:edit_aggregation.percentile_value')}</span>
-          <span className="text-grey-00 text-xs font-medium">{percentileValue}%</span>
+          <span className="text-grey-00 text-xs font-medium">{percentileValue * 100}%</span>
         </>
       ) : null}
       {filters.children.map((filter, index) => {

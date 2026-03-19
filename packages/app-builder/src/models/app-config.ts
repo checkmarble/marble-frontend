@@ -50,7 +50,6 @@ export type AppConfig = {
     isOutdated: boolean;
     latestVersion?: string;
     latestUrl?: string;
-    releaseNotes?: string[];
   };
 };
 
@@ -101,7 +100,6 @@ export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig
       isOutdated: dto.outdated.outdated,
       latestVersion: dto.outdated.latest_version,
       latestUrl: dto.outdated.latest_url,
-      releaseNotes: dto.outdated.release_notes,
     },
   };
 }
