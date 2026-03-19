@@ -1,5 +1,5 @@
 import { CaseStatusBadge } from '@app-builder/components/Cases';
-import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
+import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import {
   type CurrentUser,
@@ -165,7 +165,13 @@ export function PivotsPanelContent({
                   {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}
                 </div>
                 <div className="p-4 flex flex-col gap-v2-md">
-                  <ClientObjectDataList tableModel={tableModel} data={proof.object.data} />
+                  <DataFields
+                    table={tableModel.name}
+                    object={{
+                      data: proof.object.data,
+                      metadata: { validFrom: (proof.object.data['updated_at'] as string) ?? '' },
+                    }}
+                  />
                   {navigationOptions ? (
                     <>
                       <div className="h-px bg-grey-border" />
@@ -320,7 +326,12 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
   return (
     <>
       <div className="flex flex-col gap-8">
-        <ClientObjectDataList tableModel={tableModel} data={data} isIncompleteObject={!pivotObject.isIngested} />
+        <DataFields
+          table={tableModel.name}
+          object={{ data, metadata: { validFrom: (data['updated_at'] as string) ?? '' } }}
+        />
+
+        {/* <ClientObjectDataList tableModel={tableModel} data={data} isIncompleteObject={!pivotObject.isIngested} /> */}
         {filteredRelatedObjects.length > 0 ? (
           <div className="">
             {filteredRelatedObjects.map((relatedObject) => {
@@ -329,15 +340,23 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
               const relatedObjectType = relatedObject.relatedObjectDetail.metadata.objectType;
               const relatedObjectTable = dataModel.find((tm) => tm.name === relatedObjectType);
               if (!relatedObjectTable) return null;
+              const tableName = relatedObject.linkName ?? relatedObjectType;
 
               return (
                 <Fragment key={relatedObjectType}>
                   <h4 className="border-grey-border mb-3 border-b text-right text-xs font-semibold">
                     {t('cases:case_detail.pivot_panel.related_object', {
-                      tableName: relatedObject.linkName ?? relatedObjectType,
+                      tableName,
                     })}
                   </h4>
-                  <ClientObjectDataList tableModel={relatedObjectTable} data={relatedObject.relatedObjectDetail.data} />
+                  {/* <ClientObjectDataList tableModel={relatedObjectTable} data={relatedObject.relatedObjectDetail.data} /> */}
+                  <DataFields
+                    table={tableName}
+                    object={{
+                      data: relatedObject.relatedObjectDetail.data,
+                      metadata: { validFrom: (relatedObject.relatedObjectDetail.data['updated_at'] as string) ?? '' },
+                    }}
+                  />
                 </Fragment>
               );
             })}

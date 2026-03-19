@@ -32,6 +32,7 @@ export type DataFieldsProps = (
     hideLinks?: boolean;
     hideMetadata?: boolean;
     hideHeader?: boolean;
+    layout?: '1-column' | '2-columns' | '3-columns';
   };
 };
 
@@ -45,7 +46,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
     if (preset === 'custom') {
       return customFields.map((field) => tableModel?.fields.find((fld) => fld.name === field));
     }
-    return filterFieldsByPreset(tableModel?.fields ?? [], preset ?? 'essentials');
+    return filterFieldsByPreset(tableModel?.fields ?? [], preset ?? 'full');
   }, [tableModel, preset, customFields]);
 
   const contextValue = useMemo(() => {
@@ -98,7 +99,15 @@ export function DataFields({ table, object, preset, customFields, className, opt
 
   return (
     <DataVisualisationProvider value={contextValue}>
-      <div className={cn('grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 break-all', className)}>
+      <div
+        className={cn(
+          'grid gap-x-4 gap-y-2 break-all',
+          options?.layout === '2-columns' && 'grid-cols-[max-content_1fr_max-content_1fr]',
+          options?.layout === '3-columns' && 'grid-cols-[max-content_1fr_max-content_1fr_max-content_1fr]',
+          (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_1fr]',
+          className,
+        )}
+      >
         {Array.isArray(fields)
           ? fields.map((field) => {
               const linkedTo = field ? links?.[field.name] : undefined;

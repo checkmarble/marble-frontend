@@ -17,7 +17,9 @@ type ClientObjectDataListProps = {
   className?: string;
   isIncompleteObject?: boolean;
 };
-
+/**
+ * @deprecated Use DataFields instead
+ */
 export function ClientObjectDataList({
   tableModel,
   displayObjectType = false,

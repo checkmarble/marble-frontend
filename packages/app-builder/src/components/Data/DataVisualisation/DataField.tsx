@@ -1,7 +1,7 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
-import { type DataModelField, type DataModelObject } from '@app-builder/models';
+import { type DataModelField, type DataModelObject, DataType } from '@app-builder/models';
 import { formatAge, formatCurrency, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { EUR } from '@dinero.js/currencies';
@@ -22,7 +22,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { useTranslation } from 'react-i18next';
 import { DataFields, DataFieldsHeader } from './DataFields';
 
-const codeClassName = 'font-mono border border-grey-border rounded-sm p-1';
+const codeClassName = 'font-mono border border-grey-border rounded-sm p-1 bg-surface-card';
 const subClassName = 'grid gap-1 p-2 border border-grey-border bg-grey-background-light rounded-lg';
 
 type MetadataType = ReturnType<typeof parseUnknownData>;
@@ -67,7 +67,8 @@ const FIELD_TYPE_COMPONENTS = {
 
 export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) {
   const options = useOptions();
-  const fieldType = adaptFieldType(field);
+  const fieldType = adaptFieldType(field?.dataType, field?.name);
+
   const Component = FIELD_TYPE_COMPONENTS[fieldType];
 
   return (
@@ -97,34 +98,33 @@ export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) 
  * @param field field definition
  * @returns new data type
  */
-function adaptFieldType(field?: DataModelField): VALID_DATA_TYPE {
-  const dataType = field?.dataType;
-  if (dataType == null) return 'string-free';
+function adaptFieldType(dataType?: DataType | null, name?: string): VALID_DATA_TYPE {
+  if (!dataType || !name) return 'string-free';
 
   switch (dataType) {
     case 'String':
     case 'String[]':
     case 'DerivedData':
     case 'unknown':
-      if (field?.name && /name/i.test(field.name)) return 'string-main';
-      if (field?.name && /email/i.test(field.name)) return 'string-email';
-      if (field?.name && /phone/i.test(field.name)) return 'string-phone';
-      if (field?.name && /city/i.test(field.name)) return 'string-city';
-      if (field?.name && /country/i.test(field.name)) return 'string-country';
-      if (field?.name && /_id/i.test(field.name)) return 'string-id';
-      if (field?.name && /iban/i.test(field.name)) return 'string-iban';
-      if (field?.name && /currency/i.test(field.name)) return 'string-currency';
-      if (field?.name && /url/i.test(field.name)) return 'string-link';
-      if (field?.name && /code/i.test(field.name)) return 'string-code';
-      if (field?.name && /vpn/i.test(field.name)) return 'string-vpn';
-      if (field?.name && /status/i.test(field.name)) return 'enum-values';
+      if (/name/i.test(name)) return 'string-main';
+      if (/email/i.test(name)) return 'string-email';
+      if (/phone/i.test(name)) return 'string-phone';
+      if (/city/i.test(name)) return 'string-city';
+      if (/country/i.test(name)) return 'string-country';
+      if (/_id/i.test(name)) return 'string-id';
+      if (/iban/i.test(name)) return 'string-iban';
+      if (/currency/i.test(name)) return 'string-currency';
+      if (/url/i.test(name)) return 'string-link';
+      if (/code/i.test(name)) return 'string-code';
+      if (/vpn/i.test(name)) return 'string-vpn';
+      if (/status/i.test(name)) return 'enum-values';
       return 'string-free';
     case 'IpAddress':
     case 'IpAddress[]':
       return 'string-ip_address';
     case 'Timestamp':
     case 'Timestamp[]':
-      if (field?.name && /birthdate/i.test(field.name)) return 'date-birthdate';
+      if (/birthdate/i.test(name)) return 'date-birthdate';
       return 'date-datetime';
     case 'Coords':
     case 'Coords[]':
@@ -134,11 +134,11 @@ function adaptFieldType(field?: DataModelField): VALID_DATA_TYPE {
       return 'number-integer';
     case 'Float':
     case 'Float[]':
-      if (field?.name && /amount/i.test(field.name)) return 'number-currency';
+      if (/amount/i.test(name)) return 'number-currency';
       return 'number-float';
     case 'Bool':
     case 'Bool[]':
-      if (field?.name && /vpn/i.test(field.name)) return 'boolean-yes_no';
+      if (/vpn/i.test(name)) return 'boolean-yes_no';
       return 'boolean-checkbox';
     default:
       throw new Error(`Unhandled data type: ${dataType satisfies never}`);
@@ -265,7 +265,7 @@ function DateDatetime({ value }: { value?: string }) {
   return <span>{value ?? '-'}</span>;
 }
 
-function DataGpsCoords({ value }: { value?: string }) {
+function DataGpsCoords({ value, metaData }: { value?: string; metaData?: MetadataType }) {
   const { theme } = useTheme();
   const mapRef = useRef<MapRef>(null);
   const opts = value ? parseCoords(value) : null;
@@ -295,10 +295,15 @@ function DataGpsCoords({ value }: { value?: string }) {
           mapStyle={CARTO_BASEMAP[theme]}
         >
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
-            <Icon icon="map-pin" className="size-4" />
+            <Icon icon="map-pin" className="size-4 text-red-primary" />
           </Marker>
         </MapLibre>
       </div>
+      {metaData ? (
+        <div className="w-fit">
+          <MetaData metaData={metaData} />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -388,11 +393,12 @@ function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
         let MetaDataComponent = FIELD_TYPE_COMPONENTS['string-free'];
         if (typeof value === 'number') MetaDataComponent = FIELD_TYPE_COMPONENTS['number-integer'];
         if (typeof value === 'boolean') MetaDataComponent = FIELD_TYPE_COMPONENTS['boolean-checkbox'];
-        if (/country/i.test(key)) MetaDataComponent = FIELD_TYPE_COMPONENTS['string-country'];
+        const fieldType = adaptFieldType('String', key);
+        MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
         return (
           <Fragment key={key}>
             <label className="font-semibold">{key}</label>
-            <MetaDataComponent value={value as string} />
+            <MetaDataComponent value={(value ?? '-') as string} />
           </Fragment>
         );
       })}
@@ -434,7 +440,6 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
               <DataFields
                 table={linkedTo}
                 object={fetcher.data.objectDetails}
-                preset="full"
                 options={{ mapHeight: 200 }}
                 className="max-w-3xl"
               />

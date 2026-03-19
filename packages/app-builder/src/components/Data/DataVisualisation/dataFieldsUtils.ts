@@ -7,7 +7,7 @@ export const CARTO_BASEMAP = {
   dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
 } as const;
 
-export const MAP_HEIGHT = 400;
+export const MAP_HEIGHT = 200;
 
 export function isValidCoords(latitude: number, longitude: number) {
   return latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;

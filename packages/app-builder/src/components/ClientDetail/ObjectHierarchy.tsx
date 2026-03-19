@@ -291,7 +291,7 @@ const TreeItem = ({
             <Modal.Title>{item.objectType}</Modal.Title>
             <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
               <DataFields
-                className="border-none"
+                className="p-4"
                 table={item.objectType}
                 object={{ data: item.data, metadata: { validFrom: (item.data['updated_at'] as string) ?? '' } }}
                 options={{ hideLinks: true }}

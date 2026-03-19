@@ -30,7 +30,6 @@ export function DecisionDetailTriggerObject({
         <DataFields
           table={table}
           object={{ data: triggerObject, metadata: { validFrom: (triggerObject['updated_at'] as string) ?? '' } }}
-          preset="full"
           options={{ mapHeight: 200 }}
         />
 

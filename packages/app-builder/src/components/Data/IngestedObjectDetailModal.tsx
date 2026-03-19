@@ -44,7 +44,7 @@ export function IngestedObjectDetailModal({
         <Modal.Title>{tableName}</Modal.Title>
         <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
           {data.object ? (
-            <DataFields table={tableName} object={data.object} preset="full" options={{ hideLinks: true }} />
+            <DataFields table={tableName} object={data.object} options={{ hideLinks: true }} />
           ) : (
             <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
           )}

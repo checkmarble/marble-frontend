@@ -114,10 +114,9 @@ export const ClientDetailPage = ({
                         <DataFields
                           table={objectType}
                           object={objectDetails}
-                          preset="full"
-                          className="grid-cols-[max-content_1fr_max-content_1fr]"
                           options={{
                             hideHeader: true,
+                            layout: '2-columns',
                           }}
                         />
                       );
