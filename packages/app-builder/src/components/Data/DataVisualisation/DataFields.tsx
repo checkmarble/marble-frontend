@@ -1,8 +1,10 @@
 import { type DataModelField, DataModelObject } from '@app-builder/models';
+import { useTableOptionsQuery } from '@app-builder/queries/data/get-table-options';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { adaptCurrency } from '@app-builder/utils/currencies';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
+import { tryCatch } from '@app-builder/utils/tryCatch';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import { useMemo } from 'react';
@@ -40,17 +42,26 @@ export function DataFields({ table, object, preset, customFields, className, opt
   const dataModel = useDataModel();
   const tableModel = dataModel.find((tbl) => tbl.name === table);
 
+  const { data: tableOptionsData, isPending: isTableOptionsPending } = useTableOptionsQuery(tableModel?.id);
+  const tableOptions = tableOptionsData?.tableOptions;
+
   const links = options?.hideLinks ? undefined : getLinkksFromDatamodel(dataModel, table);
 
   const fields = useMemo(() => {
     if (preset === 'custom') {
       return customFields.map((field) => tableModel?.fields.find((fld) => fld.name === field));
     }
-    return filterFieldsByPreset(tableModel?.fields ?? [], preset ?? 'full');
-  }, [tableModel, preset, customFields]);
+    return filterFieldsByPreset(
+      tableModel?.fields ?? [],
+      preset ?? 'full',
+      tableOptions?.fieldOrder,
+      tableOptions?.displayedFields,
+    );
+  }, [tableModel, preset, customFields, tableOptions?.fieldOrder, tableOptions?.displayedFields]);
 
   const contextValue = useMemo(() => {
-    if (!tableModel) return { currency: undefined, country: undefined, preset, options };
+    if (!tableModel)
+      return { currency: undefined, country: undefined, preset, options, table: undefined, tableOptions };
 
     // Detect country
     const countryField = tableModel.fields.find((f) => /country/i.test(f.name));
@@ -62,24 +73,23 @@ export function DataFields({ table, object, preset, customFields, className, opt
     const rawCurrency = currencyField ? object.data?.[currencyField.name] : undefined;
     if (typeof rawCurrency === 'string' && rawCurrency.length > 0) {
       const currency = adaptCurrency(rawCurrency, false);
-      if (currency) return { currency, country, preset, options };
+      if (currency) return { currency, country, preset, options, table: tableModel, tableOptions };
     }
 
     // Priority 2: derive from country
     if (country) {
-      try {
+      const result = tryCatch(() => {
         const countryInfo = CountryFlag.byCountryCode(country);
         const currencyRecords = cc.country(countryInfo.nameEnglish);
         const code = currencyRecords[0]?.code;
         const currency = code ? adaptCurrency(code, false) : undefined;
-        return { currency, country, preset, options };
-      } catch {
-        // byCountryCode throws on invalid code
-      }
+        return { currency, country, preset, options, table: tableModel, tableOptions };
+      });
+      if (result.ok) return result.value;
     }
 
-    return { currency: undefined, country, preset, options };
-  }, [tableModel, object.data, preset, options]);
+    return { currency: undefined, country, preset, options, table: tableModel, tableOptions };
+  }, [tableModel, object.data, preset, options, tableOptions]);
 
   const metaData = useMemo(() => {
     const allParsed = R.pipe(object.data, R.omit(METADATA_FIELDS), R.mapValues(parseUnknownData));
@@ -96,6 +106,8 @@ export function DataFields({ table, object, preset, customFields, className, opt
 
     return metadataByField;
   }, [object.data]);
+
+  if (isTableOptionsPending) return null;
 
   return (
     <DataVisualisationProvider value={contextValue}>
@@ -129,14 +141,36 @@ export function DataFields({ table, object, preset, customFields, className, opt
   );
 }
 
-function filterFieldsByPreset(fields: DataModelField[], preset: TYPE_DATA_TABLE_VISUALISATION_PRESET) {
-  switch (preset) {
-    case 'essentials':
-      return fields.filter((field) => field.nullable === false && field.name !== 'object_id');
-    case 'advanced':
-    case 'full':
-      return fields;
-  }
+function filterFieldsByPreset(
+  fields: DataModelField[],
+  preset: TYPE_DATA_TABLE_VISUALISATION_PRESET,
+  fieldOrder?: string[],
+  displayedFields?: string[],
+) {
+  const filtered = (() => {
+    switch (preset) {
+      case 'essentials':
+        return fields.filter((field) => field.nullable === false && field.name !== 'object_id');
+      case 'advanced':
+      case 'full':
+        return fields;
+    }
+  })();
+
+  const visible = displayedFields
+    ? filtered.filter((field) => field.name === 'object_id' || displayedFields.includes(field.id))
+    : filtered;
+
+  if (!fieldOrder || fieldOrder.length === 0) return visible;
+
+  return [...visible].sort((a, b) => {
+    const ai = fieldOrder.indexOf(a.id);
+    const bi = fieldOrder.indexOf(b.id);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
 }
 
 function formatValue(value: unknown): string | number | boolean | undefined {

@@ -1,3 +1,4 @@
+import { type DataModelTableOptions, type TableModel } from '@app-builder/models';
 import { type Currency } from 'dinero.js';
 import { createContext, useContext } from 'react';
 import { DataFieldsProps } from './DataFields';
@@ -12,6 +13,8 @@ type DataVisualisationContext = {
   country: string | undefined;
   preset: POSSIBLE_PRESET;
   options: DataVisualisationOptions | undefined;
+  table: TableModel | undefined;
+  tableOptions: DataModelTableOptions | undefined;
 };
 
 const DataVisualisationContext = createContext<DataVisualisationContext>({
@@ -19,6 +22,8 @@ const DataVisualisationContext = createContext<DataVisualisationContext>({
   country: undefined,
   preset: undefined,
   options: undefined,
+  table: undefined,
+  tableOptions: undefined,
 });
 DataVisualisationContext.displayName = 'DataVisualisationContext';
 
@@ -38,4 +43,12 @@ export function usePreset(): POSSIBLE_PRESET {
 
 export function useOptions(): DataVisualisationOptions | undefined {
   return useContext(DataVisualisationContext).options;
+}
+
+export function useTable(): TableModel | undefined {
+  return useContext(DataVisualisationContext).table;
+}
+
+export function useTableOptions(): DataModelTableOptions | undefined {
+  return useContext(DataVisualisationContext).tableOptions;
 }

@@ -17,9 +17,9 @@ import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
 import { Button, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { FormatData } from '../FormatData';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
-import { ClientObjectDataList } from './ClientObjectDataList';
 import { type DataModelExplorerNavigationTab } from './types';
 
 const CHARACTER_WIDTH = 8;
@@ -66,7 +66,14 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
           <div className="flex flex-col gap-2">
             <span className="text-s font-semibold">{item.sourceTableName}</span>
             <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-v2-sm">
-              <ClientObjectDataList tableModel={sourceTableModel} data={item.sourceObject} />
+              <DataFields
+                table={sourceTableModel.name}
+                object={{
+                  data: item.sourceObject,
+                  metadata: { validFrom: (item.sourceObject['updated_at'] as string) ?? '' },
+                }}
+                options={{ hideMetadata: true, hideLinks: true }}
+              />
             </div>
           </div>
         ) : null}
@@ -74,10 +81,13 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
           <div className="col-start-2 flex flex-col gap-2">
             <span className="text-s font-semibold">{item.pivotObject.pivotObjectName}</span>
             <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-v2-sm">
-              <ClientObjectDataList
-                tableModel={pivotTableModel}
-                data={item.sourceObject}
-                isIncompleteObject={!item.pivotObject.isIngested}
+              <DataFields
+                table={pivotTableModel.name}
+                object={{
+                  data: item.sourceObject,
+                  metadata: { validFrom: (item.sourceObject['updated_at'] as string) ?? '' },
+                }}
+                options={{ hideMetadata: true, hideLinks: true }}
               />
             </div>
           </div>

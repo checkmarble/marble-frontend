@@ -769,6 +769,11 @@ export const routes = [
         "file": "routes/ressources+/data+/$tableId.createNavigationOption.tsx"
       },
       {
+        "id": "routes/ressources+/data+/$tableId.table-options",
+        "path": "ressources/data/:tableId/table-options",
+        "file": "routes/ressources+/data+/$tableId.table-options.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/$tableName.list-objects",
         "path": "ressources/data/:tableName/list-objects",
         "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
