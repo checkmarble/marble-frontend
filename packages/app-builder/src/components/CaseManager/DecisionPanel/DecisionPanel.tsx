@@ -34,7 +34,7 @@ type DecisionPanelProps = {
 
 export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelProps) {
   const { t } = useTranslation(casesI18n);
-  const { dataModelWithTableOptions, pivots } = useLoaderData<typeof loader>();
+  const { dataModelWithTableOptions } = useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
   const detailDecisionQuery = useDetailDecisionQuery(decision.id);
 
@@ -110,15 +110,22 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
               <div key={screening.id} className="flex items-center gap-2">
                 <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
                 <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
                     setPanelScreeningId(screening.id);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.stopPropagation();
+                      setPanelScreeningId(screening.id);
+                    }
+                  }}
                 >
                   <ScreeningStatusBadge status={screening.status} count={screening.count} />
-                </button>
+                </div>
               </div>
             ))}
           </div>
@@ -204,9 +211,6 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
             screeningId={openScreening.id}
             screeningName={openScreening.name}
             screeningStatus={openScreening.status}
-            decision={decision}
-            dataModel={dataModelWithTableOptions}
-            pivots={pivots}
           />
         ) : null;
       })()}

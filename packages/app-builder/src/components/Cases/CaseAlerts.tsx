@@ -1,5 +1,5 @@
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
-import { type DataModelWithTableOptions, getTriggerObjectFields, type Pivot } from '@app-builder/models/data-model';
+import { getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { type ScreeningStatus } from '@app-builder/models/screening';
@@ -32,7 +32,7 @@ export const CaseAlerts = ({
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
 }) => {
   const { t } = useTranslation(casesI18n);
-  const { case: caseDetail, dataModelWithTableOptions, pivots } = useLoaderData<typeof loader>();
+  const { case: caseDetail, dataModelWithTableOptions } = useLoaderData<typeof loader>();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
 
@@ -59,10 +59,7 @@ export const CaseAlerts = ({
                 <AlertCard
                   key={decision.id}
                   decision={decision}
-                  caseId={caseDetail.id}
                   triggerObjectFields={triggerObjectFields}
-                  dataModel={dataModelWithTableOptions}
-                  pivots={pivots}
                   isActive={isActive}
                   onSelect={() => {
                     selectDecision(decision);
@@ -85,18 +82,12 @@ export const CaseAlerts = ({
 
 export const AlertCard = ({
   decision,
-  caseId,
   triggerObjectFields,
-  dataModel,
-  pivots,
   isActive,
   onSelect,
 }: {
   decision: DetailedCaseDecision;
-  caseId: string;
   triggerObjectFields: { id: string; name: string }[];
-  dataModel: DataModelWithTableOptions;
-  pivots: Pivot[];
   isActive: boolean;
   onSelect: () => void;
 }) => {
@@ -193,15 +184,22 @@ export const AlertCard = ({
                   <div key={screening.id} className="flex items-center gap-2">
                     <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
                     <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
-                    <button
-                      type="button"
+                    <div
+                      role="button"
+                      tabIndex={0}
                       onClick={(e) => {
                         e.stopPropagation();
                         setPanelScreeningId(screening.id);
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.stopPropagation();
+                          setPanelScreeningId(screening.id);
+                        }
+                      }}
                     >
                       <ScreeningStatusBadge status={screening.status} count={screening.count} />
-                    </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -219,9 +217,6 @@ export const AlertCard = ({
           screeningId={openScreening.id}
           screeningName={openScreening.name}
           screeningStatus={openScreening.status}
-          decision={decision}
-          dataModel={dataModel}
-          pivots={pivots}
         />
       ) : null}
     </>

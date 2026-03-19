@@ -124,7 +124,7 @@ export const CaseDetails = ({
             {/* Case details */}
             <div className="flex flex-col justify-start gap-1.5">
               <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:case.information')}</span>
-              <div className="border-grey-border text-small flex flex-col gap-6 border p-v2-md bg-surface-card rounded-v2-lg lg:flex-row">
+              <div className="border-grey-border text-small flex flex-col gap-6 border p-v2-md bg-surface-card rounded-v2-lg xl:flex-row">
                 {/* Left column */}
                 <div className="flex flex-1 flex-col gap-3">
                   <div className="flex gap-2 items-start">

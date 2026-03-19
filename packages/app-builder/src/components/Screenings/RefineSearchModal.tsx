@@ -21,7 +21,7 @@ import { MatchResult } from './MatchResult';
 import { ScreeningStatusTag } from './ScreeningStatusTag';
 import { screeningsI18n } from './screenings-i18n';
 
-function setAdditionalFields(fields: string[], prev: Record<string, string>) {
+export function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   const additionalFields = {} as Record<string, string>;
   for (const field of fields) {
     additionalFields[field] = prev[field] ?? '';
@@ -231,13 +231,13 @@ function Field({ label, children }: FieldProps) {
   );
 }
 
-type EntitySelectProps = {
+export type EntitySelectProps = {
   name: string;
   value: SearchableSchema | '';
   onChange: (value: SearchableSchema) => void;
 };
 
-function EntitySelect({ name, value, onChange }: EntitySelectProps) {
+export function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   const { t } = useTranslation(screeningsI18n);
   const schemas = R.keys(SEARCH_ENTITIES);
   const lowerCasedSchema = value?.toLowerCase() as Lowercase<typeof value>;
@@ -283,7 +283,7 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   );
 }
 
-function SearchInput({ request }: { request: NonNullable<Screening['request']> }) {
+export function SearchInput({ request }: { request: NonNullable<Screening['request']> }) {
   const { t } = useTranslation(['screenings']);
   const searchInputs = R.pipe(
     R.values(request.queries),
