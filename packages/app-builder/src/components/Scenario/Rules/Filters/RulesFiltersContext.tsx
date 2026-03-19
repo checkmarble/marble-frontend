@@ -1,8 +1,8 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
-import { useCallback, useMemo } from 'react';
-import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
+import { useForm, useStore } from '@tanstack/react-form';
+import { useCallback, useEffect, useMemo } from 'react';
 import * as R from 'remeda';
 import * as z from 'zod/v4';
 
@@ -14,21 +14,28 @@ export const rulesFiltersSchema = z.object({
 
 export type RulesFilters = z.infer<typeof rulesFiltersSchema>;
 
-interface RulesFiltersContextValue {
-  filterValues: RulesFilters;
-  ruleGroups: string[];
-  submitRulesFilters: () => void;
-  onRulesFilterClose: () => void;
-}
-
-const RulesFiltersContext = createSimpleContext<RulesFiltersContextValue>('RulesFiltersContext');
-
 export type RulesFiltersForm = {
   ruleGroup: string[];
 };
 const emptyRulesFilters: RulesFiltersForm = {
   ruleGroup: [],
 };
+
+// Helper to capture the inferred form type without partial generic application
+function _useRulesFiltersForm() {
+  return useForm({ defaultValues: emptyRulesFilters });
+}
+type RulesFiltersFormApi = ReturnType<typeof _useRulesFiltersForm>;
+
+interface RulesFiltersContextValue {
+  filterValues: RulesFilters;
+  ruleGroups: string[];
+  submitRulesFilters: () => void;
+  onRulesFilterClose: () => void;
+  form: RulesFiltersFormApi;
+}
+
+const RulesFiltersContext = createSimpleContext<RulesFiltersContextValue>('RulesFiltersContext');
 
 function adaptRulesFiltersForm(filters: RulesFilters): RulesFiltersForm {
   const adaptedFilterValues: RulesFiltersForm = {
@@ -56,17 +63,19 @@ export function RulesFiltersProvider({
   submitRulesFilters: (filterValues: RulesFilters) => void;
   children: React.ReactNode;
 }) {
-  const formMethods = useForm<RulesFiltersForm>({
-    defaultValues: emptyRulesFilters,
-    values: adaptRulesFiltersForm(filterValues),
+  const form = useForm({
+    defaultValues: adaptRulesFiltersForm(filterValues),
   });
-  const { isDirty } = formMethods.formState;
+
+  useEffect(() => {
+    form.reset(adaptRulesFiltersForm(filterValues));
+  }, [filterValues]);
+
   const submitRulesFilters = useCallbackRef(() => {
-    const formValues = formMethods.getValues();
-    _submitRulesFilters(adaptRulesFilters(formValues));
+    _submitRulesFilters(adaptRulesFilters(form.state.values));
   });
   const onRulesFilterClose = useCallbackRef(() => {
-    if (isDirty) {
+    if (form.state.isDirty) {
       submitRulesFilters();
     }
   });
@@ -77,25 +86,19 @@ export function RulesFiltersProvider({
       onRulesFilterClose,
       filterValues,
       ruleGroups,
+      form,
     }),
-    [filterValues, onRulesFilterClose, ruleGroups, submitRulesFilters],
+    [filterValues, onRulesFilterClose, ruleGroups, submitRulesFilters, form],
   );
-  return (
-    <FormProvider {...formMethods}>
-      <RulesFiltersContext.Provider value={value}>{children}</RulesFiltersContext.Provider>
-    </FormProvider>
-  );
+  return <RulesFiltersContext.Provider value={value}>{children}</RulesFiltersContext.Provider>;
 }
 
 export const useRulesFiltersContext = RulesFiltersContext.useValue;
 
 export function useRuleGroupFilter() {
-  const { ruleGroups } = useRulesFiltersContext();
-  const { field } = useController<RulesFiltersForm, 'ruleGroup'>({
-    name: 'ruleGroup',
-  });
-  const selectedRuleGroups = field.value;
-  const setSelectedRuleGroups = field.onChange;
+  const { ruleGroups, form } = useRulesFiltersContext();
+  const selectedRuleGroups = useStore(form.store, (state) => state.values.ruleGroup);
+  const setSelectedRuleGroups = (value: string[]) => form.setFieldValue('ruleGroup', value);
   return { ruleGroups, selectedRuleGroups, setSelectedRuleGroups };
 }
 
@@ -123,24 +126,22 @@ export function useRulesFiltersPartition() {
 }
 
 export function useClearFilter() {
-  const { submitRulesFilters } = useRulesFiltersContext();
-  const { setValue } = useFormContext<RulesFiltersForm>();
+  const { submitRulesFilters, form } = useRulesFiltersContext();
 
   return useCallback(
     (filterName: RulesFilterName) => {
-      setValue(filterName, emptyRulesFilters[filterName]);
+      form.setFieldValue(filterName, emptyRulesFilters[filterName]);
       submitRulesFilters();
     },
-    [setValue, submitRulesFilters],
+    [form, submitRulesFilters],
   );
 }
 
 export function useClearAllFilters() {
-  const { submitRulesFilters } = useRulesFiltersContext();
-  const { reset } = useFormContext<RulesFiltersForm>();
+  const { submitRulesFilters, form } = useRulesFiltersContext();
 
   return useCallback(() => {
-    reset(emptyRulesFilters);
+    form.reset(emptyRulesFilters);
     submitRulesFilters();
-  }, [reset, submitRulesFilters]);
+  }, [form, submitRulesFilters]);
 }

@@ -6,8 +6,8 @@ import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { useForm, useStore } from '@tanstack/react-form';
 import * as React from 'react';
-import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import * as z from 'zod/v4';
 
@@ -35,6 +35,12 @@ export const decisionFiltersSchema = z.object({
 
 export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
 
+// Helper to capture the inferred form type without partial generic application
+function _useDecisionFiltersForm() {
+  return useForm({ defaultValues: emptyDecisionFilters });
+}
+type DecisionFiltersFormApi = ReturnType<typeof _useDecisionFiltersForm>;
+
 interface DecisionFiltersContextValue {
   hasPivots: boolean;
   filterValues: DecisionFilters;
@@ -42,6 +48,7 @@ interface DecisionFiltersContextValue {
   inboxes: Inbox[];
   submitDecisionFilters: () => void;
   onDecisionFilterClose: () => void;
+  form: DecisionFiltersFormApi;
 }
 
 const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>('DecisionFiltersContext');
@@ -108,13 +115,16 @@ export function DecisionFiltersProvider({
   submitDecisionFilters: (filterValues: DecisionFilters) => void;
   children: React.ReactNode;
 }) {
-  const formMethods = useForm<DecisionFiltersForm>({
-    defaultValues: emptyDecisionFilters,
-    values: adaptFilterValues(filterValues),
+  const form = useForm({
+    defaultValues: adaptFilterValues(filterValues),
   });
-  const { isDirty } = formMethods.formState;
+
+  React.useEffect(() => {
+    form.reset(adaptFilterValues(filterValues));
+  }, [filterValues]);
+
   const submitDecisionFilters = useCallbackRef(() => {
-    const formValues = formMethods.getValues();
+    const formValues = form.state.values;
     _submitDecisionFilters({
       ...formValues,
       outcomeAndReviewStatus: formValues.outcomeAndReviewStatus ?? undefined,
@@ -125,7 +135,7 @@ export function DecisionFiltersProvider({
     });
   });
   const onDecisionFilterClose = useCallbackRef(() => {
-    if (isDirty) {
+    if (form.state.isDirty) {
       submitDecisionFilters();
     }
   });
@@ -138,71 +148,55 @@ export function DecisionFiltersProvider({
       scenarios,
       hasPivots,
       inboxes,
+      form,
     }),
-    [filterValues, hasPivots, onDecisionFilterClose, scenarios, inboxes, submitDecisionFilters],
+    [filterValues, hasPivots, onDecisionFilterClose, scenarios, inboxes, submitDecisionFilters, form],
   );
-  return (
-    <FormProvider {...formMethods}>
-      <DecisionFiltersContext.Provider value={value}>{children}</DecisionFiltersContext.Provider>
-    </FormProvider>
-  );
+  return <DecisionFiltersContext.Provider value={value}>{children}</DecisionFiltersContext.Provider>;
 }
 
 export const useDecisionFiltersContext = DecisionFiltersContext.useValue;
 
 export function useDateRangeFilter() {
-  const { field } = useController<DecisionFiltersForm, 'dateRange'>({
-    name: 'dateRange',
-  });
-  const dateRange = field.value;
-  const setDateRange = field.onChange;
+  const { form } = useDecisionFiltersContext();
+  const dateRange = useStore(form.store, (state) => state.values.dateRange);
+  const setDateRange = (value: DateRangeFilterForm | undefined) => form.setFieldValue('dateRange', value ?? null);
   return { dateRange, setDateRange };
 }
 
 export function useHasCaseFilter() {
-  const { field } = useController<DecisionFiltersForm, 'hasCase'>({
-    name: 'hasCase',
-  });
-  const selectedHasCase = field.value;
-  const setSelectedHasCase = field.onChange;
+  const { form } = useDecisionFiltersContext();
+  const selectedHasCase = useStore(form.store, (state) => state.values.hasCase);
+  const setSelectedHasCase = (value: boolean | null) => form.setFieldValue('hasCase', value);
   return { selectedHasCase, setSelectedHasCase };
 }
 
 export function useOutcomeAndReviewStatusFilter() {
-  const { field } = useController<DecisionFiltersForm, 'outcomeAndReviewStatus'>({
-    name: 'outcomeAndReviewStatus',
-  });
-  const selectedOutcomeAndReviewStatus = field.value;
-  const setOutcomeAndReviewStatus = field.onChange;
+  const { form } = useDecisionFiltersContext();
+  const selectedOutcomeAndReviewStatus = useStore(form.store, (state) => state.values.outcomeAndReviewStatus);
+  const setOutcomeAndReviewStatus = (value: DecisionFiltersForm['outcomeAndReviewStatus']) =>
+    form.setFieldValue('outcomeAndReviewStatus', value);
   return { selectedOutcomeAndReviewStatus, setOutcomeAndReviewStatus };
 }
 
 export function usePivotValueFilter() {
-  const { hasPivots } = useDecisionFiltersContext();
-  const { field } = useController<DecisionFiltersForm, 'pivotValue'>({
-    name: 'pivotValue',
-  });
-  const selectedPivotValue = field.value;
-  const setSelectedPivotValue = field.onChange;
+  const { hasPivots, form } = useDecisionFiltersContext();
+  const selectedPivotValue = useStore(form.store, (state) => state.values.pivotValue);
+  const setSelectedPivotValue = (value: string | null) => form.setFieldValue('pivotValue', value);
   return { hasPivots, selectedPivotValue, setSelectedPivotValue };
 }
 
 export function useScenarioFilter() {
-  const { scenarios } = useDecisionFiltersContext();
-  const { field } = useController<DecisionFiltersForm, 'scenarioId'>({
-    name: 'scenarioId',
-  });
-  const selectedScenarioIds = field.value;
-  const setSelectedScenarioIds = field.onChange;
+  const { scenarios, form } = useDecisionFiltersContext();
+  const selectedScenarioIds = useStore(form.store, (state) => state.values.scenarioId);
+  const setSelectedScenarioIds = (value: string[]) => form.setFieldValue('scenarioId', value);
   return { scenarios, selectedScenarioIds, setSelectedScenarioIds };
 }
 
 export function useScheduledExecutionFilter() {
-  const { field } = useController<DecisionFiltersForm, 'scheduledExecutionId'>({
-    name: 'scheduledExecutionId',
-  });
-  const selectedScheduledExecutionIds = field.value;
-  const setSelectedScheduledExecutionIds = field.onChange;
+  const { form } = useDecisionFiltersContext();
+  const selectedScheduledExecutionIds = useStore(form.store, (state) => state.values.scheduledExecutionId);
+  const setSelectedScheduledExecutionIds = (value: string[]) => form.setFieldValue('scheduledExecutionId', value);
   return {
     selectedScheduledExecutionIds,
     setSelectedScheduledExecutionIds,
@@ -210,12 +204,9 @@ export function useScheduledExecutionFilter() {
 }
 
 export function useCaseInboxFilter() {
-  const { inboxes } = useDecisionFiltersContext();
-  const { field } = useController<DecisionFiltersForm, 'caseInboxId'>({
-    name: 'caseInboxId',
-  });
-  const selectedCaseInboxIds = field.value;
-  const setSelectedCaseInboxIds = field.onChange;
+  const { inboxes, form } = useDecisionFiltersContext();
+  const selectedCaseInboxIds = useStore(form.store, (state) => state.values.caseInboxId);
+  const setSelectedCaseInboxIds = (value: string[]) => form.setFieldValue('caseInboxId', value);
   return {
     inboxes,
     selectedCaseInboxIds,
@@ -224,10 +215,7 @@ export function useCaseInboxFilter() {
 }
 
 export function useTriggerObjectFilter() {
-  const { scenarios } = useDecisionFiltersContext();
-  const { field } = useController<DecisionFiltersForm, 'triggerObject'>({
-    name: 'triggerObject',
-  });
+  const { scenarios, form } = useDecisionFiltersContext();
   const triggerObjects = React.useMemo(
     () =>
       R.pipe(
@@ -237,17 +225,15 @@ export function useTriggerObjectFilter() {
       ),
     [scenarios],
   );
-  const selectedTriggerObjects = field.value;
-  const setSelectedTriggerObjects = field.onChange;
+  const selectedTriggerObjects = useStore(form.store, (state) => state.values.triggerObject);
+  const setSelectedTriggerObjects = (value: string[]) => form.setFieldValue('triggerObject', value);
   return { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects };
 }
 
 export function useTriggerObjectIdFilter() {
-  const { field } = useController<DecisionFiltersForm, 'triggerObjectId'>({
-    name: 'triggerObjectId',
-  });
-  const selectedTriggerObjectId = field.value;
-  const setSelectedTriggerObjectId = field.onChange;
+  const { form } = useDecisionFiltersContext();
+  const selectedTriggerObjectId = useStore(form.store, (state) => state.values.triggerObjectId);
+  const setSelectedTriggerObjectId = (value: string | null) => form.setFieldValue('triggerObjectId', value);
   return { selectedTriggerObjectId, setSelectedTriggerObjectId };
 }
 
@@ -275,14 +261,13 @@ export function useDecisionFiltersPartition() {
 }
 
 export function useClearFilter() {
-  const { submitDecisionFilters } = useDecisionFiltersContext();
-  const { setValue } = useFormContext<DecisionFiltersForm>();
+  const { submitDecisionFilters, form } = useDecisionFiltersContext();
 
   return React.useCallback(
     (filterName: DecisionFilterName) => {
-      setValue(filterName, emptyDecisionFilters[filterName]);
+      form.setFieldValue(filterName, emptyDecisionFilters[filterName] as never);
       submitDecisionFilters();
     },
-    [setValue, submitDecisionFilters],
+    [form, submitDecisionFilters],
   );
 }

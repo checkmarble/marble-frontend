@@ -137,7 +137,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
                 if (aggregatorHasParams(aggregator)) {
                   // Add percentile field if it doesn't exist
                   if (!node.namedChildren.percentile) {
-                    node.namedChildren.percentile = NewConstantAstNode({ constant: 50 });
+                    node.namedChildren.percentile = NewConstantAstNode({ constant: 0.5 });
                   }
                 } else {
                   // Remove percentile field for non-PCTILE aggregators
@@ -160,13 +160,13 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             <Input
               type="text"
               id="aggregation.percentile_value"
-              defaultValue={String(node.namedChildren.percentile?.constant ?? 50)}
+              defaultValue={String((node.namedChildren.percentile?.constant ?? 0.5) * 100)}
               onBlur={(e) => {
                 const normalizedValue = e.target.value.replace(',', '.');
                 const value = parseFloat(normalizedValue);
                 if (!isNaN(value)) {
                   const clamped = Math.max(0, Math.min(100, value));
-                  node.namedChildren.percentile = NewConstantAstNode({ constant: clamped });
+                  node.namedChildren.percentile = NewConstantAstNode({ constant: clamped / 100 });
                   e.target.value = String(clamped);
                 }
               }}
