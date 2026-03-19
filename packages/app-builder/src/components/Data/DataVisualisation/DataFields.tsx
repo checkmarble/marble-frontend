@@ -200,12 +200,18 @@ function formatValue(value: unknown): string | number | boolean | undefined {
   return undefined;
 }
 
-export function DataFieldsHeader({ object }: { object: DataModelObject }) {
+export function DataFieldsHeader({
+  object,
+  hideHeader: hideHeaderProp,
+}: {
+  object: DataModelObject;
+  hideHeader?: boolean;
+}) {
   const { t } = useTranslation(['data']);
   const formatDateTime = useFormatDateTime();
   const objectId = object.data?.['object_id'] as string;
   const options = useOptions();
-  if (options?.hideHeader) return null;
+  if (hideHeaderProp ?? options?.hideHeader) return null;
 
   return (
     <div className="text-m col-span-full flex items-center gap-2">

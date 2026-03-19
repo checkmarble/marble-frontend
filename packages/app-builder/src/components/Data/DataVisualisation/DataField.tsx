@@ -205,14 +205,11 @@ function StringCountry({ value }: { value?: string }) {
 
 function StringLink({ value }: { value?: string }) {
   if (!value) return <EmptyValue />;
-  const result = tryCatch(() => {
-    const url = new URL(value);
-    return url;
-  });
-  if (!result.ok) return <EmptyValue />;
+  const result = tryCatch(() => new URL(value));
+  if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <EmptyValue />;
   return (
     <a className="text-purple-primary" href={result.value.href}>
-      {value ?? '-'}
+      {value}
     </a>
   );
 }
