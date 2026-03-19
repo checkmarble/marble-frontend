@@ -122,12 +122,11 @@ import { Case } from '@app-builder/models/cases';
 import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 
 // UI Design System
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal, Select, cn } from 'ui-design-system';
 
 // External
 import { useQuery } from '@tanstack/react-query';
-import clsx from 'clsx';
-import toast from 'react-hot-toast';
+import { match } from 'ts-pattern';
 ```
 
 ### Routes
@@ -147,6 +146,10 @@ import toast from 'react-hot-toast';
 ### i18n
 - Three locale files: `locales/en/`, `locales/fr/`, `locales/ar/`
 - All three must have matching keys — missing keys cause TS errors in `resources.server.ts`
+
+### Styling
+- Use `cn` from `ui-design-system` instead of `clsx` for class merging
+- Prefer `CalloutV2` over `Callout` for new callout/banner components
 
 ## Troubleshooting
 
