@@ -16,7 +16,7 @@ import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormatData } from '../FormatData';
-import { ScreeningHitsPanel } from '../Screenings/ScreeningHitsPanel';
+import { ScreeningHitsPanel } from '../Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 

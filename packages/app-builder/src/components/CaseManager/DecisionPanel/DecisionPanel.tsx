@@ -13,7 +13,7 @@ import {
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
-import { ScreeningHitsPanel } from '@app-builder/components/Screenings/ScreeningHitsPanel';
+import { ScreeningHitsPanel } from '@app-builder/components/Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { useDetailDecisionQuery } from '@app-builder/queries/decisions/detail-decision';
