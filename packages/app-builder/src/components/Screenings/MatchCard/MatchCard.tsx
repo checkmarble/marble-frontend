@@ -16,9 +16,11 @@ type MatchCardProps = {
   readonly?: boolean;
   unreviewable?: boolean;
   defaultOpen?: boolean;
+  hideEnrich?: boolean;
+  hideReview?: boolean;
 };
 
-export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchCardProps) => {
+export const MatchCard = ({ match, readonly, unreviewable, defaultOpen, hideEnrich, hideReview }: MatchCardProps) => {
   const { t } = useTranslation(screeningsI18n);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -45,16 +47,18 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                   })}
                 </Tag>
               </CollapsibleV2.Title>
-              {!match.enriched ? <EnrichMatchButton matchId={match.id} /> : null}
-              <div className="inline-flex h-8 shrink-0 text-nowrap">
-                {unreviewable ? (
-                  <Tag color="grey">{t('screenings:match.not_reviewable')}</Tag>
-                ) : canReview ? (
-                  <ReviewMatchPopover screeningMatch={match} open={isPopoverOpen} onOpenChange={setIsPopoverOpen} />
-                ) : (
-                  <StatusTag status={match.status} disabled />
-                )}
-              </div>
+              {!hideEnrich && !match.enriched ? <EnrichMatchButton matchId={match.id} /> : null}
+              {!hideReview ? (
+                <div className="inline-flex h-8 shrink-0 text-nowrap">
+                  {unreviewable ? (
+                    <Tag color="grey">{t('screenings:match.not_reviewable')}</Tag>
+                  ) : canReview ? (
+                    <ReviewMatchPopover screeningMatch={match} open={isPopoverOpen} onOpenChange={setIsPopoverOpen} />
+                  ) : (
+                    <StatusTag status={match.status} disabled />
+                  )}
+                </div>
+              ) : null}
             </div>
             {entity.properties['topics']?.length ? (
               <div className="flex flex-wrap gap-1 ps-6">

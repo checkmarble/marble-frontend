@@ -32,7 +32,7 @@ export function useScreeningDetailQuery(decisionId: string, screeningId: string,
 
       if ('redirectTo' in result) {
         navigate(result.redirectTo);
-        throw new Error('Session expired');
+        return;
       }
 
       return result.screening;

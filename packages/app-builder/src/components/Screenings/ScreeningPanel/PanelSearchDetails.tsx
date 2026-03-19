@@ -1,5 +1,10 @@
 import { scenarioI18n } from '@app-builder/components';
-import { isScreeningReviewCompleted, type Screening, type ScreeningQuery } from '@app-builder/models/screening';
+import {
+  isScreeningReviewCompleted,
+  type Screening,
+  type ScreeningMatchPayload,
+  type ScreeningQuery,
+} from '@app-builder/models/screening';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -10,9 +15,11 @@ import { InlineRefineSearch } from './InlineRefineSearch';
 export function PanelSearchDetails({
   screening,
   onRefineSuccess,
+  onSearchComplete,
 }: {
   screening: Screening;
   onRefineSuccess: (screeningId: string) => void;
+  onSearchComplete: (results: ScreeningMatchPayload[], formData: FormData) => void;
 }) {
   const { t } = useTranslation(screeningsI18n);
   const [isRefining, setIsRefining] = useState(false);
@@ -26,10 +33,7 @@ export function PanelSearchDetails({
       <InlineRefineSearch
         screening={screening}
         onBack={() => setIsRefining(false)}
-        onRefineSuccess={(newId) => {
-          setIsRefining(false);
-          onRefineSuccess(newId);
-        }}
+        onSearchComplete={onSearchComplete}
       />
     );
   }
