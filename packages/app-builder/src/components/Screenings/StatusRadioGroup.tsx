@@ -42,7 +42,7 @@ const radio = cva('transition-colors flex items-center gap-2 rounded-sm', {
   },
 });
 
-function RadioItem({ value, children, checked, onCheck }: RadioItemProps) {
+export function RadioItem({ value, children, checked, onCheck }: RadioItemProps) {
   return (
     <label className={clsx(radio({ checked }), '')}>
       <Radio name="status" className="hidden" value={value} checked={checked} onChange={onCheck} />

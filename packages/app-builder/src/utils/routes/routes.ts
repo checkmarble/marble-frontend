@@ -1064,6 +1064,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/update.tsx"
       },
       {
+        "id": "routes/ressources+/screenings+/detail.$decisionId.$screeningId",
+        "path": "ressources/screenings/detail/:decisionId/:screeningId",
+        "file": "routes/ressources+/screenings+/detail.$decisionId.$screeningId.tsx"
+      },
+      {
         "id": "routes/ressources+/screenings+/download.$screeningId.$fileId",
         "path": "ressources/screenings/download/:screeningId/:fileId",
         "file": "routes/ressources+/screenings+/download.$screeningId.$fileId.tsx"

@@ -43,7 +43,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
             <div className="flex items-center gap-2">
               {!isEditing ? (
                 <>
-                  <span className="text-grey-primary text-h1 border-none bg-transparent font-normal outline-hidden">
+                  <span className="text-grey-primary text-s border-none bg-transparent font-medium outline-hidden">
                     {field.state.value || t('cases:case.name')}
                   </span>
                   <Button
@@ -82,7 +82,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
-                    className="text-grey-primary text-h1 w-full border-none bg-transparent font-normal outline-hidden"
+                    className="text-grey-primary text-s w-full border-none bg-transparent font-medium outline-hidden"
                     placeholder={t('cases:case.name')}
                   />
                 </>

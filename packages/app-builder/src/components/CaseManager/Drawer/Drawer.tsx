@@ -11,7 +11,7 @@ export const DrawerContext = createSimpleContext<{
 }>('Drawer');
 
 const drawerVariants = cva(
-  ['w-[520px] h-full border-grey-border sticky z-10 top-0 border-l', 'transition-all duration-500'],
+  ['w-[360px] lg:w-[520px] h-full border-grey-border sticky z-10 top-0 border-l', 'transition-all duration-500'],
   {
     variants: {
       expanded: {
@@ -24,7 +24,7 @@ const drawerVariants = cva(
 const drawerContainerVariants = cva(['bg-surface-card h-full overflow-y-auto', 'transition-all duration-500'], {
   variants: {
     expanded: {
-      false: 'w-[519px]',
+      false: 'w-[359px] lg:w-[519px]',
       true: 'w-[80vw]',
     },
   },
