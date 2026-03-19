@@ -98,7 +98,7 @@ export function CasesList({
         </div>
         {cases.map((caseItem, index) => (
           <div
-            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-background-light cursor-pointer h-18 focus:outline-2 focus:-outline-offset-2"
+            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-background-light cursor-pointer h-18 focus-visible:outline-2 -outline-offset-2 outline-purple-primary"
             key={caseItem.id}
             role="link"
             tabIndex={0}
