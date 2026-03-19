@@ -34,6 +34,7 @@ export type DataFieldsProps = (
     hideLinks?: boolean;
     hideMetadata?: boolean;
     hideHeader?: boolean;
+    withId?: boolean;
     layout?: '1-column' | '2-columns' | '3-columns';
   };
 };
@@ -56,6 +57,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
       preset ?? 'full',
       tableOptions?.fieldOrder,
       tableOptions?.displayedFields,
+      options,
     );
   }, [tableModel, preset, customFields, tableOptions?.fieldOrder, tableOptions?.displayedFields]);
 
@@ -146,11 +148,16 @@ function filterFieldsByPreset(
   preset: TYPE_DATA_TABLE_VISUALISATION_PRESET,
   fieldOrder?: string[],
   displayedFields?: string[],
+  options?: {
+    withId?: boolean;
+  },
 ) {
   const filtered = (() => {
     switch (preset) {
-      case 'essentials':
-        return fields.filter((field) => field.nullable === false && field.name !== 'object_id');
+      case 'essentials': {
+        const withId = options?.withId !== false; // default to true
+        return fields.filter((field) => field.nullable === false || (withId && field.name === 'object_id'));
+      }
       case 'advanced':
       case 'full':
         return fields;

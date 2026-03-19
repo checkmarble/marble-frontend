@@ -2,10 +2,12 @@ import { BreadCrumbLink, BreadCrumbProps } from '@app-builder/components/Breadcr
 import { ClientDetailSearchPage as ClientDetailSearchPageComponent } from '@app-builder/components/ClientDetail/SearchPage';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { useLoaderData } from '@remix-run/react';
 import { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod/v4';
+import { dataModelFeatureAccessLoader } from '../data+/_layout';
 
 const queryParams = z.object({
   table: z.string().optional(),
@@ -27,7 +29,10 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function clientDetailIndexLoader({ request, context }) {
-  const { client360 } = context.authInfo;
+  const { client360, user, dataModelRepository, entitlements } = context.authInfo;
+
+  const dataModel = await dataModelRepository.getDataModel();
+  const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
 
   const tables = await client360.getClient360Tables();
 
@@ -40,11 +45,15 @@ export const loader = createServerFn([authMiddleware], async function clientDeta
       ? { table: parsedSearchParams.table, terms: parsedSearchParams.terms }
       : null;
 
-  return { tables, payload };
+  return { tables, payload, dataModel, dataModelFeatureAccess };
 });
 
 export default function ClientDetailSearchPage() {
-  const { tables, payload } = useLoaderData<typeof loader>();
+  const { tables, payload, dataModel, dataModelFeatureAccess } = useLoaderData<typeof loader>();
 
-  return <ClientDetailSearchPageComponent tables={tables} payload={payload} />;
+  return (
+    <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
+      <ClientDetailSearchPageComponent tables={tables} payload={payload} />;
+    </DataModelContextProvider>
+  );
 }
