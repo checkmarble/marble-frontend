@@ -125,10 +125,10 @@ export function DataFields({ table, object, preset, customFields, className, opt
   }, [object.data]);
 
   return match(tableOptionsQuery)
-    .with({ isPending: true }, () => <Spinner className="size-4" />)
-    .with({ isError: true }, { isSuccess: true }, () => (
+    .with(null, { isPending: true }, () => <Spinner className="size-4" />)
+    .with({ isError: true }, { isSuccess: true }, (query) => (
       <DataVisualisationProvider value={contextValue}>
-        {tableOptionsQuery.isError ? (
+        {query.isError ? (
           <CalloutV2 className="col-span-full mb-2">{t('common:generic_fetch_data_error')}</CalloutV2>
         ) : null}
         {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
