@@ -10,12 +10,11 @@ import {
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import clsx from 'clsx';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
-import { Button, MenuCommand, Popover } from 'ui-design-system';
+import { Button, cn, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { FormatData } from '../FormatData';
@@ -225,7 +224,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
           const parsedData = parseUnknownData(info.getValue());
           return (
             <span
-              className={clsx('relative line-clamp-1 px-4', {
+              className={cn('relative line-clamp-1 px-4', {
                 'text-right': parsedData.type === 'number' || parsedData.value === null,
               })}
             >
@@ -295,7 +294,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                   className="text-grey-secondary border-grey-border bg-surface-card sticky top-0 z-20 h-10 text-left"
                 >
                   <th
-                    className={clsx(
+                    className={cn(
                       'border-grey-border bg-surface-card sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
                       {
                         'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
@@ -329,7 +328,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                 return (
                   <tr key={row.id} className="border-grey-border group z-0 h-10">
                     <td
-                      className={clsx(
+                      className={cn(
                         'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky left-0 z-10 h-full border-b border-r p-2',
                         {
                           'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
@@ -433,7 +432,7 @@ function DataTableActionsButton({
               <Button
                 variant="secondary"
                 mode={showCommentAction ? 'normal' : 'icon'}
-                className={clsx(
+                className={cn(
                   'hover:border-purple-primary data-[state=open]:border-purple-primary hover:z-10 data-[state=open]:z-10',
                   {
                     '-ml-px rounded-l-none': showCommentAction,

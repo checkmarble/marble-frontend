@@ -3,11 +3,11 @@ import { ClientDetailSearchPage as ClientDetailSearchPageComponent } from '@app-
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
+import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { useLoaderData } from '@remix-run/react';
 import { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod/v4';
-import { dataModelFeatureAccessLoader } from '../data+/_layout';
 
 const queryParams = z.object({
   table: z.string().optional(),

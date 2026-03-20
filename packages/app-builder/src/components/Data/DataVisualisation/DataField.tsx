@@ -10,7 +10,6 @@ import {
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
-import { EUR } from '@dinero.js/currencies';
 import { useQuery } from '@tanstack/react-query';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
@@ -362,8 +361,9 @@ function NumberFloat({ value }: { value?: number }) {
 
 function NumberCurrency({ value }: { value?: number }) {
   const language = useFormatLanguage();
-  const currency = useCurrency() ?? EUR;
+  const currency = useCurrency();
   if (value === undefined) return <EmptyValue />;
+  if (!currency) return <span>{formatNumber(value, { language })}</span>;
   return <span>{formatCurrency(value, { language, currency })}</span>;
 }
 

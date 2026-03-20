@@ -1,8 +1,8 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { dataModelFeatureAccessLoader } from '@app-builder/routes/_builder+/data+/_layout';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
+import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';

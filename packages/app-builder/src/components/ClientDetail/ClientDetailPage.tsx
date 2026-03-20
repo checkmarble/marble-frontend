@@ -108,8 +108,6 @@ export const ClientDetailPage = ({
                       return <div>{t('common:generic_fetch_data_error')}</div>;
                     })
                     .with({ isSuccess: true }, (dmQuery) => {
-                      const tableModel = dmQuery.data.dataModel.find((t) => t.name === objectType);
-                      if (!tableModel) return null;
                       return (
                         <DataFields
                           table={objectType}

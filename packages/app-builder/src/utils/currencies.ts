@@ -343,9 +343,9 @@ export const currencies = {
 
 export type CurrencyCode = keyof typeof currencies;
 
-export function adaptCurrency(currencyCode: string, ThrowOnError: boolean = true) {
+export function adaptCurrency(currencyCode: string, throwOnError: boolean = true) {
   const currency = currencies[currencyCode as CurrencyCode];
-  if (!currency && ThrowOnError) {
+  if (!currency && throwOnError) {
     throw new Error(`Currency ${currencyCode} is not supported`);
   }
   return currency;
