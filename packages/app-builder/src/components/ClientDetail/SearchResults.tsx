@@ -55,9 +55,6 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                     markClassName="bg-yellow-background dark:bg-yellow-primary/30 text-grey-primary"
                     className="min-w-100"
                   />
-                  {/* <span className="py-v2-xs px-v2-sm font-mono text-tiny border border-grey-border rounded-v2-md">
-                    {item['object_id'] as string}
-                  </span>*/}
                   <DataFields
                     table={payload.table}
                     object={{ data: item, metadata: { validFrom: (item['updated_at'] as string) ?? '' } }}
