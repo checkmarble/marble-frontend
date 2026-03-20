@@ -981,11 +981,6 @@ export const routes = [
         "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
       },
       {
-        "id": "routes/ressources+/scenario-iteration-rules+/$ruleId.generate",
-        "path": "ressources/scenario-iteration-rules/:ruleId/generate",
-        "file": "routes/ressources+/scenario-iteration-rules+/$ruleId.generate.tsx"
-      },
-      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",
         "path": "ressources/scenarios/:scenarioId/:iterationId/activate",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate.tsx"
@@ -1059,6 +1054,11 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/$scenarioId+/validate-ast",
         "path": "ressources/scenarios/:scenarioId/validate-ast",
         "file": "routes/ressources+/scenarios+/$scenarioId+/validate-ast.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId.generate-ast",
+        "path": "ressources/scenarios/:scenarioId/generate-ast",
+        "file": "routes/ressources+/scenarios+/$scenarioId.generate-ast.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/archive",

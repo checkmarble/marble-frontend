@@ -8,19 +8,19 @@ export interface GenerateRuleResult {
   validation?: { isValid: boolean; errors: string[]; warnings: string[] };
 }
 
-const endpoint = (ruleId: string) =>
-  getRoute('/ressources/scenario-iteration-rules/:ruleId/generate', {
-    ruleId,
+const endpoint = (scenarioId: string) =>
+  getRoute('/ressources/scenarios/:scenarioId/generate-ast', {
+    scenarioId,
   });
 
-export function useGenerateRuleMutation(ruleId: string) {
+export function useGenerateRuleMutation(scenarioId: string) {
   return useMutation({
-    mutationKey: ['scenario-iteration-rule', 'generate-ast', ruleId],
-    mutationFn: async ({ instruction }: { instruction: string }) => {
-      const response = await fetch(endpoint(ruleId), {
+    mutationKey: ['scenario', 'generate-ast', scenarioId],
+    mutationFn: async ({ ruleId, instruction }: { ruleId: string; instruction: string }) => {
+      const response = await fetch(endpoint(scenarioId), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instruction }),
+        body: JSON.stringify({ rule_id: ruleId, instruction }),
       });
 
       if (!response.ok) {
