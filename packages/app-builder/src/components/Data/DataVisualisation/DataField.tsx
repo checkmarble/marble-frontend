@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { isNonNullish } from 'remeda';
 import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { DataFields, DataFieldsHeader } from './DataFields';
+import { DataFields } from './DataFields';
 import { type VALID_DATA_TYPE } from './data-type';
 import { hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
 import { useCurrency, useOptions } from './datafield-context';
@@ -436,6 +436,7 @@ function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
 function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const fetcher = useFetcher<{ objectDetails: DataModelObject | null }>();
+  const options = useOptions();
 
   if (!linkedTo || !value) return <span className={codeClassName}>{'-'}</span>;
 
@@ -463,11 +464,10 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
             <Spinner className="size-4" />
           ) : fetcher.data?.objectDetails ? (
             <>
-              <DataFieldsHeader object={fetcher.data.objectDetails} />
               <DataFields
                 table={linkedTo}
                 object={fetcher.data.objectDetails}
-                options={{ mapHeight: 200 }}
+                options={{ mapHeight: 200, showHeader: options?.showHeader }}
                 className="max-w-3xl"
               />
             </>

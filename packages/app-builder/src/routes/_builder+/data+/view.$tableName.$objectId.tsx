@@ -1,5 +1,5 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { DataFields, DataFieldsHeader } from '@app-builder/components/Data/DataVisualisation/DataFields';
+import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { getRoute } from '@app-builder/utils/routes';
@@ -63,8 +63,7 @@ export default function DataSearchObjectPage() {
   return (
     <>
       <div className="flex flex-col gap-4 p-4 border-grey-border rounded-md border bg-grey-background-light overflow-y-auto max-h-[calc(100vh-140px)] max-w-3xl">
-        <DataFieldsHeader object={object} />
-        <DataFields table={tableName} object={object} options={{ mapHeight: 200 }} />
+        <DataFields table={tableName} object={object} options={{ mapHeight: 200, showHeader: true }} />
       </div>
     </>
   );

@@ -14,7 +14,7 @@ import { cn } from 'ui-design-system';
 import { DataField } from './DataField';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
 import { getLinksFromDatamodel, hasMetadataContent, isMetadataKey, METADATA_FIELDS } from './dataFieldsUtils';
-import { DataVisualisationProvider, useOptions } from './datafield-context';
+import { DataVisualisationProvider } from './datafield-context';
 
 export type DataFieldsProps = (
   | {
@@ -33,7 +33,7 @@ export type DataFieldsProps = (
     mapHeight?: number;
     hideLinks?: boolean;
     hideMetadata?: boolean;
-    hideHeader?: boolean;
+    showHeader?: boolean;
     withId?: boolean;
     layout?: '1-column' | '2-columns' | '3-columns';
   };
@@ -99,7 +99,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
     options?.mapHeight,
     options?.hideLinks,
     options?.hideMetadata,
-    options?.hideHeader,
+    options?.showHeader,
     options?.withId,
     options?.layout,
   ]);
@@ -124,6 +124,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
 
   return (
     <DataVisualisationProvider value={contextValue}>
+      {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
       <div
         className={cn(
           'grid gap-x-4 gap-y-2 break-all',
@@ -200,21 +201,12 @@ function formatValue(value: unknown): string | number | boolean | undefined {
   return undefined;
 }
 
-export function DataFieldsHeader({
-  object,
-  hideHeader: hideHeaderProp,
-}: {
-  object: DataModelObject;
-  hideHeader?: boolean;
-}) {
+function DataFieldsHeader({ object }: { object: DataModelObject }) {
   const { t } = useTranslation(['data']);
   const formatDateTime = useFormatDateTime();
   const objectId = object.data?.['object_id'] as string;
-  const options = useOptions();
-  if (hideHeaderProp ?? options?.hideHeader) return null;
-
   return (
-    <div className="text-m col-span-full flex items-center gap-2">
+    <div className="text-m col-span-full flex items-center gap-2 mb-2">
       <span className="bg-surface-card border-blue-58 text-blue-58 rounded-sm border px-2 py-1">ID: {objectId}</span>
       <span className="bg-surface-card border-grey-placeholder text-grey-secondary rounded-sm border px-2 py-1">
         {t('data:last_ingestion_at', {

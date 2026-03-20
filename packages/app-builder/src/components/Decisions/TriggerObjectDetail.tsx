@@ -32,15 +32,6 @@ export function DecisionDetailTriggerObject({
           object={{ data: triggerObject, metadata: { validFrom: (triggerObject['updated_at'] as string) ?? '' } }}
           options={{ mapHeight: 200 }}
         />
-
-        {/* <div className="grid grid-cols-[max-content_1fr] gap-y-2 break-all">
-          {parsedTriggerObject.map(([property, data]) => (
-            <Fragment key={property}>
-              <span className="font-semibold">{!property.endsWith('.metadata') ? property : null}</span>
-              <FormatData type={fields?.find((f) => f.name === property)?.dataType ?? undefined} data={data} />
-            </Fragment>
-          ))}
-        </div> */}
       </Collapsible.Content>
     </Collapsible.Container>
   );

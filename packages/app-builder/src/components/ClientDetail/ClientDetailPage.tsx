@@ -115,7 +115,6 @@ export const ClientDetailPage = ({
                           table={objectType}
                           object={objectDetails}
                           options={{
-                            hideHeader: true,
                             layout: '2-columns',
                           }}
                         />
