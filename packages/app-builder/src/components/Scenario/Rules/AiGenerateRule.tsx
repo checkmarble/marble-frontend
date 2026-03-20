@@ -6,17 +6,18 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface AiGenerateRuleProps {
+  scenarioId: string;
   ruleId: string;
   onFormulaGenerated: (ruleAst: AstNode) => void;
 }
 
-export function AiGenerateRule({ ruleId, onFormulaGenerated }: AiGenerateRuleProps) {
+export function AiGenerateRule({ scenarioId, ruleId, onFormulaGenerated }: AiGenerateRuleProps) {
   const { t } = useTranslation(['scenarios']);
   const [instruction, setInstruction] = useState('');
-  const mutation = useGenerateRuleMutation(ruleId);
+  const mutation = useGenerateRuleMutation(scenarioId);
 
   const handleGenerate = async () => {
-    const result = await mutation.mutateAsync({ instruction }).catch(() => null);
+    const result = await mutation.mutateAsync({ ruleId, instruction }).catch(() => null);
     if (result?.success && result.ruleAst) {
       setInstruction('');
       onFormulaGenerated(result.ruleAst);

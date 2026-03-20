@@ -437,9 +437,11 @@ export default function RuleDetail() {
 
                   {isAiRuleDescriptionEnabled && editor === 'edit' ? (
                     <AiGenerateRule
+                      scenarioId={scenario.id}
                       ruleId={rule.id}
                       onFormulaGenerated={(ruleAst) => {
                         form.setFieldValue('formula', ruleAst);
+                        handleFormulaChange(ruleAst);
                         setFormulaKey((k) => k + 1);
                       }}
                     />

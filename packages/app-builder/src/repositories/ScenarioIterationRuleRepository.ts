@@ -23,6 +23,7 @@ export interface ScenarioIterationRuleRepository {
     astNode: AstNode;
   }): Promise<{ description: string; isRuleValid: boolean }>;
   generateRuleAst(args: {
+    scenarioId: string;
     ruleId: string;
     instruction: string;
   }): Promise<{ ruleAst: AstNode; validation: { isValid: boolean; errors: string[]; warnings: string[] } }>;
@@ -67,8 +68,9 @@ export function makeGetScenarioIterationRuleRepository() {
       );
       return { description, isRuleValid: is_rule_valid };
     },
-    generateRuleAst: async ({ ruleId, instruction }) => {
-      const { rule_ast, validation } = await marbleCoreApiClient.generateScenarioIterationRuleAst(ruleId, {
+    generateRuleAst: async ({ scenarioId, ruleId, instruction }) => {
+      const { rule_ast, validation } = await marbleCoreApiClient.generateRuleAst(scenarioId, {
+        rule_id: ruleId,
         instruction,
       });
       return {
