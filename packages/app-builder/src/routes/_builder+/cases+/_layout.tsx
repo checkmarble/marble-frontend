@@ -25,11 +25,14 @@ export const handle = {
   ],
 };
 
-export const loader = createServerFn([authMiddleware], async function dataLayout({ context }) {
+export const loader = createServerFn([authMiddleware], async function dataLayout({ context, request }) {
   const { user, dataModelRepository, entitlements } = context.authInfo;
 
   if (isAnalyst(user)) {
-    return redirect(getRoute('/cases'));
+    const url = new URL(request.url);
+    if (url.pathname !== getRoute('/cases')) {
+      return redirect(getRoute('/cases'));
+    }
   }
   const dataModel = await dataModelRepository.getDataModel();
 
@@ -42,7 +45,7 @@ export default function CasesLayout() {
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
-      <Outlet />;
+      <Outlet />
     </DataModelContextProvider>
   );
 }

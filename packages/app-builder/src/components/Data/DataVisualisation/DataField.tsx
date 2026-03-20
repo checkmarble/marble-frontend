@@ -1,6 +1,7 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { Spinner } from '@app-builder/components/Spinner';
-import { type DataModelField, type DataModelObject, DataType } from '@app-builder/models';
+import { type DataModelField, DataType } from '@app-builder/models';
+import { objectDetailsQueryOptions } from '@app-builder/queries/data/get-object-details';
 import {
   formatAge,
   formatCurrency,
@@ -8,18 +9,19 @@ import {
   useFormatDateTime,
   useFormatLanguage,
 } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { EUR } from '@dinero.js/currencies';
-import { useFetcher } from '@remix-run/react';
+import { useQuery } from '@tanstack/react-query';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
 import { Fragment, lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isNonNullish } from 'remeda';
+import { match, P } from 'ts-pattern';
 import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import z from 'zod';
 import { DataFields } from './DataFields';
 import type {
   BooleanKey,
@@ -111,7 +113,7 @@ export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) 
             )}
           </>
         ) : (
-          <span>{'-'}</span>
+          <EmptyValue />
         )}
       </div>
     </div>
@@ -170,8 +172,8 @@ function adaptFieldType(dataType?: DataType | null, name?: string): VALID_DATA_T
   }
 }
 
-function EmptyValue() {
-  return <span>{'-'}</span>;
+function EmptyValue({ className }: { className?: string }) {
+  return <span className={className}>{'-'}</span>;
 }
 
 function StringMain({ value }: { value?: string }) {
@@ -185,9 +187,12 @@ function StringCode({ value }: { value?: string }) {
 }
 
 function StringEmail({ value }: { value?: string }) {
+  if (!value) return <EmptyValue />;
+  const isValid = z.email().safeParse(value).success;
+  if (!isValid) return <span>{value}</span>;
   return (
     <a className="text-purple-primary" href={`mailto:${value}`}>
-      {value ?? '-'}
+      {value}
     </a>
   );
 }
@@ -212,7 +217,7 @@ function StringCity({ value }: { value?: string }) {
 function StringCountry({ value }: { value?: string }) {
   if (!value) return <EmptyValue />;
   const result = tryCatch(() => CountryFlag.byCountryCode(value.toUpperCase()));
-  if (!result.ok) return <EmptyValue />;
+  if (!result.ok) return <span>{value}</span>;
   const country = result.value;
   return (
     <span className="inline-flex items-center gap-1">
@@ -225,7 +230,7 @@ function StringCountry({ value }: { value?: string }) {
 function StringLink({ value }: { value?: string }) {
   if (!value) return <EmptyValue />;
   const result = tryCatch(() => new URL(value));
-  if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <EmptyValue />;
+  if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <span>{value}</span>;
   return (
     <a className="text-purple-primary" href={result.value.href}>
       {value}
@@ -246,7 +251,7 @@ function StringVpn({ value }: { value?: string }) {
 }
 
 function StringId({ value }: { value?: string }) {
-  if (!value) return <span className={codeClassName}>{'-'}</span>;
+  if (!value) return <EmptyValue className={codeClassName} />;
   return (
     <CopyToClipboardButton toCopy={value}>
       <span>{value}</span>
@@ -285,6 +290,7 @@ function StringIban({ value }: { value?: string }) {
 function StringCurrency({ value }: { value?: string }) {
   if (!value) return <EmptyValue />;
   const currency = cc.code(value);
+  if (!currency) return <span>{value}</span>;
   return (
     <span className={cn('inline-flex items-center gap-1', codeClassName)}>
       <span>{currency?.code}</span>
@@ -369,17 +375,18 @@ function BooleanCheckbox({ value }: { value?: boolean }) {
 }
 
 function BooleanYesNo({ value }: { value?: boolean }) {
+  const { t } = useTranslation(['data']);
   if (value === undefined) return <EmptyValue />;
-  return <span>{String(value)}</span>;
+  return <span>{t(`data:${value ? 'yes' : 'no'}`)}</span>;
 }
 
 function EnumValues({ value }: { value?: string }) {
-  return <span className={codeClassName}>{value ?? '-'}</span>;
+  return <EmptyValue className={codeClassName} />;
 }
 
 function DataIpAddress({ value, metaData }: { value?: string; metaData?: MetadataType }) {
   const [isOpen, setIsOpen] = useState(false);
-  if (!metaData) return <span className={codeClassName}>{value ?? '-'}</span>;
+  if (!metaData) return <EmptyValue className={codeClassName} />;
 
   return (
     <div className="grid gap-1">
@@ -433,45 +440,38 @@ function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
 
 function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const fetcher = useFetcher<{ objectDetails: DataModelObject | null }>();
   const options = useOptions();
+  const DetailsQueryOptions = useQuery({
+    ...objectDetailsQueryOptions(linkedTo ?? '', value ?? ''),
+    enabled: isOpen && !!linkedTo && !!value,
+  });
 
-  if (!linkedTo || !value) return <span className={codeClassName}>{'-'}</span>;
-
-  const handleToggle = () => {
-    if (!isOpen && !fetcher.data) {
-      fetcher.load(
-        getRoute('/ressources/data/object/:objectType/:objectId', {
-          objectType: linkedTo,
-          objectId: value,
-        }),
-      );
-    }
-    setIsOpen((prev) => !prev);
-  };
+  if (!linkedTo || !value) return <EmptyValue className={codeClassName} />;
 
   return (
     <div className="grid gap-1">
-      <button className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')} onClick={handleToggle}>
+      <button
+        className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')}
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
         <span>{value}</span>
         <Icon icon="caret-down" className={cn('size-4 transition-transform duration-200', isOpen && 'rotate-180')} />
       </button>
       {isOpen && (
         <div className={subClassName}>
-          {fetcher.state === 'loading' ? (
-            <Spinner className="size-4" />
-          ) : fetcher.data?.objectDetails ? (
-            <>
+          {match(DetailsQueryOptions)
+            .with({ isFetching: true }, () => <Spinner className="size-4" />)
+            .with({ data: P.not(undefined) }, ({ data }) => (
               <DataFields
                 table={linkedTo}
-                object={fetcher.data.objectDetails}
+                object={data}
                 options={{ mapHeight: 200, showHeader: options?.showHeader }}
                 className="max-w-3xl"
               />
-            </>
-          ) : (
-            <EmptyValue />
-          )}
+            ))
+            .otherwise(() => (
+              <EmptyValue />
+            ))}
         </div>
       )}
     </div>

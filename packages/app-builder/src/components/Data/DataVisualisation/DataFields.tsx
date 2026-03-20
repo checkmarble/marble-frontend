@@ -10,6 +10,7 @@ import cc from 'currency-codes';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { match, P } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { DataField } from './DataField';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
@@ -43,8 +44,8 @@ export function DataFields({ table, object, preset, customFields, className, opt
   const dataModel = useDataModel();
   const tableModel = dataModel.find((tbl) => tbl.name === table);
 
-  const { data: tableOptionsData, isPending: isTableOptionsPending } = useTableOptionsQuery(tableModel?.id);
-  const tableOptions = tableOptionsData?.tableOptions;
+  const tableOptionsQuery = useTableOptionsQuery(tableModel?.id);
+  const tableOptions = tableOptionsQuery?.data?.tableOptions;
 
   const links = options?.hideLinks ? undefined : getLinksFromDatamodel(dataModel, table);
 
@@ -120,39 +121,40 @@ export function DataFields({ table, object, preset, customFields, className, opt
     return metadataByField;
   }, [object.data]);
 
-  if (isTableOptionsPending) return null;
-
-  return (
-    <DataVisualisationProvider value={contextValue}>
-      {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
-      <div
-        className={cn(
-          'grid gap-x-4 gap-y-2 break-all',
-          options?.layout === '2-columns' && 'grid-cols-[max-content_1fr_max-content_1fr]',
-          options?.layout === '3-columns' && 'grid-cols-[max-content_1fr_max-content_1fr_max-content_1fr]',
-          (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_1fr]',
-          className,
-        )}
-      >
-        {Array.isArray(fields)
-          ? fields.map((field) => {
-              const linkedTo = field ? links?.[field.name] : undefined;
-              const metaDataValue =
-                field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
-              return field ? (
-                <DataField
-                  key={field?.id}
-                  field={field}
-                  value={formatValue(object.data?.[field.name])}
-                  linkedTo={linkedTo}
-                  metaData={metaDataValue}
-                />
-              ) : null;
-            })
-          : null}
-      </div>
-    </DataVisualisationProvider>
-  );
+  return match(tableOptionsQuery)
+    .with(P.union(P.nullish, { isPending: true }, { isError: true }), () => null)
+    .with({ data: P.not(undefined) }, () => (
+      <DataVisualisationProvider value={contextValue}>
+        {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
+        <div
+          className={cn(
+            'grid gap-x-4 gap-y-2 break-all',
+            options?.layout === '2-columns' && 'grid-cols-[max-content_1fr_max-content_1fr]',
+            options?.layout === '3-columns' && 'grid-cols-[max-content_1fr_max-content_1fr_max-content_1fr]',
+            (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_1fr]',
+            className,
+          )}
+        >
+          {Array.isArray(fields)
+            ? fields.map((field) => {
+                const linkedTo = field ? links?.[field.name] : undefined;
+                const metaDataValue =
+                  field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
+                return field ? (
+                  <DataField
+                    key={field?.id}
+                    field={field}
+                    value={formatValue(object.data?.[field.name])}
+                    linkedTo={linkedTo}
+                    metaData={metaDataValue}
+                  />
+                ) : null;
+              })
+            : null}
+        </div>
+      </DataVisualisationProvider>
+    ))
+    .otherwise(() => null);
 }
 
 function filterFieldsByPreset(
