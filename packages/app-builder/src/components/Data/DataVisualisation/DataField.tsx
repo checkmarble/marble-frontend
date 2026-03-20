@@ -8,7 +8,6 @@ import {
   useFormatDateTime,
   useFormatLanguage,
 } from '@app-builder/utils/format';
-import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { EUR } from '@dinero.js/currencies';
@@ -16,13 +15,21 @@ import { useFetcher } from '@remix-run/react';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
-import { type ComponentType, Fragment, lazy, Suspense, useState } from 'react';
+import { Fragment, lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isNonNullish } from 'remeda';
 import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataFields } from './DataFields';
-import { type VALID_DATA_TYPE } from './data-type';
+import type {
+  BooleanKey,
+  DataKey,
+  FieldTypeComponentMap,
+  MetadataType,
+  NumberKey,
+  StringKey,
+  VALID_DATA_TYPE,
+} from './data-type';
 import { hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
 import { useCurrency, useOptions } from './datafield-context';
 
@@ -30,8 +37,6 @@ const MapView = lazy(() => import('./MapView').then((m) => ({ default: m.MapView
 
 const codeClassName = 'font-mono border border-grey-border rounded-sm p-1 bg-surface-card';
 const subClassName = 'grid gap-1 p-2 border border-grey-border bg-grey-background-light rounded-lg';
-
-type MetadataType = ReturnType<typeof parseUnknownData>;
 
 type DataFieldProps = {
   field?: DataModelField;
@@ -53,13 +58,12 @@ const FIELD_TYPE_COMPONENTS = {
   'string-iban': StringIban,
   'string-currency': StringCurrency,
   'string-id': StringId,
-  'string-ip_address': StringIpAddress,
   'date-birthdate': DateBirthdate,
   'date-datetime': DateDatetime,
   'date-date': DateDatetime,
   'date-time': DateDatetime,
   'data-gps_coords': DataGpsCoords,
-  'data-map': DataGpsCoords,
+  'data-ip_address': DataIpAddress,
   'number-integer': NumberInteger,
   'number-float': NumberFloat,
   'number-currency': NumberCurrency,
@@ -69,13 +73,28 @@ const FIELD_TYPE_COMPONENTS = {
   'enum-values': EnumValues,
   'boolean-checkbox': BooleanCheckbox,
   'boolean-yes_no': BooleanYesNo,
-} satisfies Record<VALID_DATA_TYPE, ComponentType<{ value?: string; metaData?: MetadataType }>>;
+} satisfies FieldTypeComponentMap;
+
+function renderFieldComponent(fieldType: VALID_DATA_TYPE, value: string | number | boolean, metaData?: MetadataType) {
+  if (fieldType.startsWith('number-')) {
+    const Comp = FIELD_TYPE_COMPONENTS[fieldType as NumberKey];
+    return <Comp value={typeof value === 'number' ? value : Number(value)} />;
+  }
+  if (fieldType.startsWith('boolean-')) {
+    const Comp = FIELD_TYPE_COMPONENTS[fieldType as BooleanKey];
+    return <Comp value={typeof value === 'boolean' ? value : value === 'true'} />;
+  }
+  if (fieldType.startsWith('data-')) {
+    const Comp = FIELD_TYPE_COMPONENTS[fieldType as DataKey];
+    return <Comp value={String(value)} metaData={metaData} />;
+  }
+  const Comp = FIELD_TYPE_COMPONENTS[fieldType as StringKey];
+  return <Comp value={String(value)} />;
+}
 
 export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) {
   const options = useOptions();
   const fieldType = adaptFieldType(field?.dataType, field?.name);
-
-  const Component = FIELD_TYPE_COMPONENTS[fieldType];
 
   return (
     <div className="col-span-2 grid grid-cols-subgrid">
@@ -88,7 +107,7 @@ export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) 
             {linkedTo ? (
               <LinkToValue value={`${value}`} linkedTo={linkedTo} />
             ) : (
-              <Component value={`${value}`} metaData={options?.hideMetadata ? undefined : metaData} />
+              renderFieldComponent(fieldType, value, options?.hideMetadata ? undefined : metaData)
             )}
           </>
         ) : (
@@ -127,7 +146,7 @@ function adaptFieldType(dataType?: DataType | null, name?: string): VALID_DATA_T
       return 'string-free';
     case 'IpAddress':
     case 'IpAddress[]':
-      return 'string-ip_address';
+      return 'data-ip_address';
     case 'Timestamp':
     case 'Timestamp[]':
       if (/birthdate/i.test(name)) return 'date-birthdate';
@@ -320,53 +339,45 @@ function DataGpsCoords({ value, metaData }: { value?: string; metaData?: Metadat
   );
 }
 
-function NumberInteger({ value }: { value?: string }) {
+function NumberInteger({ value }: { value?: number }) {
   const language = useFormatLanguage();
-  if (!value) return <EmptyValue />;
-  const valueAsNumber = parseInt(value, 10);
-  if (isNaN(valueAsNumber)) return <EmptyValue />;
-  return <span>{formatNumber(valueAsNumber, { language })}</span>;
+  if (value === undefined || isNaN(value)) return <EmptyValue />;
+  return <span>{formatNumber(value, { language })}</span>;
 }
 
-function NumberFloat({ value }: { value?: string }) {
+function NumberFloat({ value }: { value?: number }) {
   const language = useFormatLanguage();
-  if (!value) return <EmptyValue />;
-  const valueAsNumber = parseFloat(value);
-  if (isNaN(valueAsNumber)) return <EmptyValue />;
-  return <span>{formatNumber(valueAsNumber, { language })}</span>;
+  if (value === undefined || isNaN(value)) return <EmptyValue />;
+  return <span>{formatNumber(value, { language })}</span>;
 }
 
-function NumberCurrency({ value }: { value?: string }) {
+function NumberCurrency({ value }: { value?: number }) {
   const language = useFormatLanguage();
   const currency = useCurrency() ?? EUR;
-  if (!value) return <EmptyValue />;
-  const valueAsNumber = Number(value);
-  const formatNumber = formatCurrency(valueAsNumber, { language, currency });
-  return <span>{formatNumber}</span>;
+  if (value === undefined) return <EmptyValue />;
+  return <span>{formatCurrency(value, { language, currency })}</span>;
 }
 
-function NumberPercentile({ value }: { value?: string }) {
+function NumberPercentile({ value }: { value?: number }) {
   const language = useFormatLanguage();
-  if (!value) return <EmptyValue />;
-  const valueAsNumber = parseFloat(value);
-  if (isNaN(valueAsNumber)) return <EmptyValue />;
-  return <span>{formatNumber(valueAsNumber / 100, { language, style: 'percent' })}</span>;
+  if (value === undefined || isNaN(value)) return <EmptyValue />;
+  return <span>{formatNumber(value / 100, { language, style: 'percent' })}</span>;
 }
 
-function BooleanCheckbox({ value }: { value?: string }) {
-  return <Switch checked={value === 'true'} disabled />;
+function BooleanCheckbox({ value }: { value?: boolean }) {
+  return <Switch checked={value === true} disabled />;
 }
 
-function BooleanYesNo({ value }: { value?: string }) {
-  if (!value) return <EmptyValue />;
-  return <span>{value}</span>;
+function BooleanYesNo({ value }: { value?: boolean }) {
+  if (value === undefined) return <EmptyValue />;
+  return <span>{String(value)}</span>;
 }
 
 function EnumValues({ value }: { value?: string }) {
   return <span className={codeClassName}>{value ?? '-'}</span>;
 }
 
-function StringIpAddress({ value, metaData }: { value?: string; metaData?: MetadataType }) {
+function DataIpAddress({ value, metaData }: { value?: string; metaData?: MetadataType }) {
   const [isOpen, setIsOpen] = useState(false);
   if (!metaData) return <span className={codeClassName}>{value ?? '-'}</span>;
 
@@ -385,47 +396,34 @@ function StringIpAddress({ value, metaData }: { value?: string; metaData?: Metad
 }
 
 function MetaData({ metaData }: { metaData?: MetadataType }) {
-  if (!metaData) return null;
-  let MetaDataComponent: ComponentType<{ value?: string }> = FIELD_TYPE_COMPONENTS['string-free'];
-  const hasMetadata = hasMetadataContent(metaData);
-  let metadataValue: string = '';
-
-  if (hasMetadata) {
-    let fieldType: VALID_DATA_TYPE = 'string-free';
-    if (metaData?.type === 'number') {
-      fieldType = 'number-integer';
-      metadataValue = (metaData?.value as number).toString();
-    } else if (metaData?.type === 'url') {
-      fieldType = 'string-link';
-      metadataValue = metaData?.value as string;
-    } else if (metaData?.type === 'datetime') {
-      fieldType = 'date-datetime';
-      metadataValue = new Date(metaData?.value).toISOString();
-    } else if (metaData?.type === 'DerivedData') {
-      return <DataDerivedData metaData={metaData.value} />;
-    }
-    MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
-  }
-  return <MetaDataComponent value={metadataValue} />;
+  if (!metaData || !hasMetadataContent(metaData)) return <StringFree />;
+  if (metaData.type === 'number') return renderFieldComponent('number-integer', metaData.value as number);
+  if (metaData.type === 'url') return renderFieldComponent('string-link', metaData.value as string);
+  if (metaData.type === 'datetime')
+    return renderFieldComponent('date-datetime', new Date(metaData.value as string).toISOString());
+  if (metaData.type === 'DerivedData') return <DataDerivedData metaData={metaData.value as Record<string, unknown>} />;
+  return <StringFree />;
 }
 
 function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
   if (!metaData) return null;
 
   return (
-    <div className={cn(subClassName, 'grid-cols-2')}>
+    <div className={cn(subClassName, 'grid-cols-[max-content_1fr] gap-2')}>
       {Object.entries(metaData).map(([key, value]) => {
-        let MetaDataComponent = FIELD_TYPE_COMPONENTS['string-free'];
-        if (typeof value === 'number') MetaDataComponent = FIELD_TYPE_COMPONENTS['number-integer'];
-        else if (typeof value === 'boolean') MetaDataComponent = FIELD_TYPE_COMPONENTS['boolean-checkbox'];
-        else {
+        let node: React.ReactNode;
+        if (typeof value === 'number') {
+          node = renderFieldComponent('number-integer', value);
+        } else if (typeof value === 'boolean') {
+          node = renderFieldComponent('boolean-checkbox', value);
+        } else {
           const fieldType = adaptFieldType('String', key);
-          MetaDataComponent = FIELD_TYPE_COMPONENTS[fieldType];
+          node = renderFieldComponent(fieldType, (value ?? '-') as string);
         }
         return (
           <Fragment key={key}>
             <label className="font-semibold">{key}</label>
-            <MetaDataComponent value={(value ?? '-') as string} />
+            {node}
           </Fragment>
         );
       })}
