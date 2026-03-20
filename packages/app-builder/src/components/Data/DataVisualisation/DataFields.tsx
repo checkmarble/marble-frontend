@@ -1,3 +1,4 @@
+import { Spinner } from '@app-builder/components/Spinner';
 import { type DataModelField, DataModelObject } from '@app-builder/models';
 import { useTableOptionsQuery } from '@app-builder/queries/data/get-table-options';
 import { useDataModel } from '@app-builder/services/data/data-model';
@@ -10,7 +11,7 @@ import cc from 'currency-codes';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { match, P } from 'ts-pattern';
+import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { DataField } from './DataField';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
@@ -42,6 +43,7 @@ export type DataFieldsProps = (
 
 export function DataFields({ table, object, preset, customFields, className, options }: DataFieldsProps) {
   const dataModel = useDataModel();
+  const { t } = useTranslation(['common']);
   const tableModel = dataModel.find((tbl) => tbl.name === table);
 
   const tableOptionsQuery = useTableOptionsQuery(tableModel?.id);
@@ -122,8 +124,9 @@ export function DataFields({ table, object, preset, customFields, className, opt
   }, [object.data]);
 
   return match(tableOptionsQuery)
-    .with(P.union(P.nullish, { isPending: true }, { isError: true }), () => null)
-    .with({ data: P.not(undefined) }, () => (
+    .with({ isPending: true }, () => <Spinner className="size-4" />)
+    .with({ isError: true }, () => <div>{t('common:generic_fetch_data_error')}</div>)
+    .with({ isSuccess: true }, () => (
       <DataVisualisationProvider value={contextValue}>
         {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
         <div
@@ -154,7 +157,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
         </div>
       </DataVisualisationProvider>
     ))
-    .otherwise(() => null);
+    .exhaustive();
 }
 
 function filterFieldsByPreset(
