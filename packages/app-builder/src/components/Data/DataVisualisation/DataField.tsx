@@ -38,7 +38,7 @@ import { useCurrency, useOptions } from './datafield-context';
 const MapView = lazy(() => import('./MapView').then((m) => ({ default: m.MapView })));
 
 const codeClassName = 'font-mono border border-grey-border rounded-sm p-1 bg-surface-card';
-const subClassName = 'grid gap-1 p-2 border border-grey-border bg-grey-background-light rounded-lg';
+const subClassName = 'grid gap-1 px-2 py-1 border border-grey-border bg-grey-background-light rounded-lg';
 
 type DataFieldProps = {
   field?: DataModelField;
@@ -99,7 +99,7 @@ export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) 
   const fieldType = adaptFieldType(field?.dataType, field?.name);
 
   return (
-    <div className="col-span-2 grid grid-cols-subgrid">
+    <div className="col-span-2 grid grid-cols-subgrid items-start">
       <label htmlFor={field?.id} className="text-grey-secondary">
         {field?.name}
       </label>
@@ -201,12 +201,15 @@ function StringPhone({ value }: { value?: string }) {
   if (!value) return <EmptyValue />;
   const phone = parsePhoneNumber(value);
   const strPhone = phone ? phone.formatInternational() : value;
-  const phoneUri = phone ? phone.getURI() : value;
-  return (
-    <a className="text-purple-primary" href={phoneUri}>
-      {strPhone}
-    </a>
-  );
+  if (phone) {
+    const phoneUri = phone.getURI();
+    return (
+      <a className="text-purple-primary" href={phoneUri}>
+        {strPhone}
+      </a>
+    );
+  }
+  return <span>{value}</span>;
 }
 
 function StringCity({ value }: { value?: string }) {
@@ -381,12 +384,14 @@ function BooleanYesNo({ value }: { value?: boolean }) {
 }
 
 function EnumValues({ value }: { value?: string }) {
-  return <EmptyValue className={codeClassName} />;
+  if (!value) return <EmptyValue className={codeClassName} />;
+  return <span className={codeClassName}>{value}</span>;
 }
 
 function DataIpAddress({ value, metaData }: { value?: string; metaData?: MetadataType }) {
   const [isOpen, setIsOpen] = useState(false);
-  if (!metaData) return <EmptyValue className={codeClassName} />;
+  if (!value) return <EmptyValue className={codeClassName} />;
+  if (!metaData) return <span className={codeClassName}>{value}</span>;
 
   return (
     <div className="grid gap-1">

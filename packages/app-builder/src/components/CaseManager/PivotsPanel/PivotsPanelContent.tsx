@@ -331,7 +331,6 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
           object={{ data, metadata: { validFrom: (data['updated_at'] as string) ?? '' } }}
         />
 
-        {/* <ClientObjectDataList tableModel={tableModel} data={data} isIncompleteObject={!pivotObject.isIngested} /> */}
         {filteredRelatedObjects.length > 0 ? (
           <div className="">
             {filteredRelatedObjects.map((relatedObject) => {
@@ -349,9 +348,8 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
                       tableName,
                     })}
                   </h4>
-                  {/* <ClientObjectDataList tableModel={relatedObjectTable} data={relatedObject.relatedObjectDetail.data} /> */}
                   <DataFields
-                    table={tableName}
+                    table={relatedObjectType}
                     object={{
                       data: relatedObject.relatedObjectDetail.data,
                       metadata: { validFrom: (relatedObject.relatedObjectDetail.data['updated_at'] as string) ?? '' },

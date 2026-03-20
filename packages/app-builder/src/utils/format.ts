@@ -116,7 +116,7 @@ export function formatDuration(duration: string, language: string) {
 }
 
 export function formatAge(birthdate: Date, language: string) {
-  const years = differenceInYears(new Date(), birthdate);
+  const years = Math.max(0, differenceInYears(new Date(), birthdate));
   return dateFnsFormatDuration({ years }, { locale: getDateFnsLocale(language) });
 }
 

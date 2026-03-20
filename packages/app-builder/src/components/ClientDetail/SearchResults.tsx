@@ -59,7 +59,7 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                     table={payload.table}
                     object={{ data: item, metadata: { validFrom: (item['updated_at'] as string) ?? '' } }}
                     preset="essentials"
-                    options={{ withId: true }}
+                    options={{ withId: true, hideLinks: true }}
                   />
                   <EntityTags objectType={payload.table} objectId={item['object_id'] as string} />
                 </Link>

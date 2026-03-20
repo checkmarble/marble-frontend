@@ -1,3 +1,4 @@
+import { CalloutV2 } from '@app-builder/components/Callout';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type DataModelField, DataModelObject } from '@app-builder/models';
 import { useTableOptionsQuery } from '@app-builder/queries/data/get-table-options';
@@ -125,13 +126,15 @@ export function DataFields({ table, object, preset, customFields, className, opt
 
   return match(tableOptionsQuery)
     .with({ isPending: true }, () => <Spinner className="size-4" />)
-    .with({ isError: true }, () => <div>{t('common:generic_fetch_data_error')}</div>)
-    .with({ isSuccess: true }, () => (
+    .with({ isError: true }, { isSuccess: true }, () => (
       <DataVisualisationProvider value={contextValue}>
+        {tableOptionsQuery.isError ? (
+          <CalloutV2 className="col-span-full mb-2">{t('common:generic_fetch_data_error')}</CalloutV2>
+        ) : null}
         {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
         <div
           className={cn(
-            'grid gap-x-4 gap-y-2 break-all',
+            'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
             options?.layout === '2-columns' && 'grid-cols-[max-content_1fr_max-content_1fr]',
             options?.layout === '3-columns' && 'grid-cols-[max-content_1fr_max-content_1fr_max-content_1fr]',
             (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_1fr]',

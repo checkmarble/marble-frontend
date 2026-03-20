@@ -169,10 +169,9 @@ export const loader = createServerFn([authMiddleware], async function decisionLo
     currentDecision.pivotValues.map(async ({ id, value }) => {
       if (!id || !value) return null;
       const pivot = pivots.find((p) => p.id === id);
-      if (!pivot) return null;
-      const object = await dataModelRepository
-        .getIngestedObject(pivot.type === 'field' ? pivot.baseTable : pivot.pivotTable, value)
-        .catch(() => null);
+      // For field-type pivots, value is a field value (not an object_id) — no object to fetch
+      if (!pivot || pivot.type === 'field') return null;
+      const object = await dataModelRepository.getIngestedObject(pivot.pivotTable, value).catch(() => null);
       if (!object) return null;
       return { pivotId: id, value, object };
     }),

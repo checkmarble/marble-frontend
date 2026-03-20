@@ -53,7 +53,7 @@ export default function ClientDetailSearchPage() {
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
-      <ClientDetailSearchPageComponent tables={tables} payload={payload} />;
+      <ClientDetailSearchPageComponent tables={tables} payload={payload} />
     </DataModelContextProvider>
   );
 }
