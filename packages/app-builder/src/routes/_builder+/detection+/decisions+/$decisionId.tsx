@@ -18,6 +18,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModel, isNotFoundHttpError, Pivot } from '@app-builder/models';
+import { type DataModelObject } from '@app-builder/models/data-model';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { Screening } from '@app-builder/models/screening';
@@ -42,6 +43,7 @@ export type LoaderData = {
   decision: DecisionDetails;
   scenarioRules: ScenarioIterationRule[];
   pivots: Pivot[];
+  pivotObjects: { pivotId: string; value: string; object: DataModelObject }[];
   screening: Screening[];
   isIterationArchived: boolean;
 };
@@ -163,18 +165,32 @@ export const loader = createServerFn([authMiddleware], async function decisionLo
 
   const [dataModel, pivots, screeningResult] = await independentOperations;
 
+  const pivotObjects = await Promise.all(
+    currentDecision.pivotValues.map(async ({ id, value }) => {
+      if (!id || !value) return null;
+      const pivot = pivots.find((p) => p.id === id);
+      // For field-type pivots, value is a field value (not an object_id) — no object to fetch
+      if (!pivot || pivot.type === 'field') return null;
+      const object = await dataModelRepository.getIngestedObject(pivot.pivotTable, value).catch(() => null);
+      if (!object) return null;
+      return { pivotId: id, value, object };
+    }),
+  ).then((results) => R.filter(results, R.isNonNullish));
+
   return {
     decision: currentDecision,
     scenarioRules,
     dataModel,
     pivots,
+    pivotObjects,
     screening: await handleScreenings(screeningResult, screening),
     isIterationArchived: scenarioIteration.archived,
   };
 });
 
 export default function DecisionPage() {
-  const { dataModel, decision, pivots, scenarioRules, screening, isIterationArchived } = useLoaderData<typeof loader>();
+  const { decision, pivots, pivotObjects, scenarioRules, screening, isIterationArchived } =
+    useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -182,16 +198,17 @@ export default function DecisionPage() {
       if (!id || !value) return null;
       const pivot = pivots.find((p) => p.id === id);
       if (!pivot) return null;
+      const pivotObject = pivotObjects.find((o) => o.pivotId === id && o.value === value);
       return {
         pivot,
         value,
+        object: pivotObject?.object ?? null,
       };
     }),
     R.filter(R.isNonNullish),
   );
 
   const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
-  const fields = dataModel.find((table) => table.name === decision.triggerObjectType)?.fields;
 
   return (
     <DecisionRightPanel.Root>
@@ -221,7 +238,10 @@ export default function DecisionPage() {
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />
                 </div>
-                <DecisionDetailTriggerObject fields={fields} triggerObject={decision.triggerObject} />
+                <DecisionDetailTriggerObject
+                  table={decision.triggerObjectType}
+                  triggerObject={decision.triggerObject}
+                />
               </div>
             </div>
           </Page.Content>

@@ -1,10 +1,11 @@
-import { type DataModelField, type TableModel } from '@app-builder/models';
+import { type TableModel } from '@app-builder/models';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import clsx from 'clsx';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
+import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { FormatData } from '../FormatData';
 import { decisionsI18n } from './decisions-i18n';
 
@@ -13,27 +14,24 @@ function useParsedTriggerObject(triggerObject: Record<string, unknown>) {
 }
 
 export function DecisionDetailTriggerObject({
-  fields,
+  table,
   triggerObject,
 }: {
-  fields: DataModelField[] | undefined;
+  table: string;
   triggerObject: Record<string, unknown>;
 }) {
   const { t } = useTranslation(decisionsI18n);
-  const parsedTriggerObject = useParsedTriggerObject(triggerObject);
+  // const parsedTriggerObject = useParsedTriggerObject(triggerObject);
 
   return (
     <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:trigger_object.type')}</Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-[max-content_1fr] gap-y-2 break-all">
-          {parsedTriggerObject.map(([property, data]) => (
-            <Fragment key={property}>
-              <span className="font-semibold">{!property.endsWith('.metadata') ? property : null}</span>
-              <FormatData type={fields?.find((f) => f.name === property)?.dataType ?? undefined} data={data} />
-            </Fragment>
-          ))}
-        </div>
+        <DataFields
+          table={table}
+          object={{ data: triggerObject, metadata: { validFrom: (triggerObject['updated_at'] as string) ?? '' } }}
+          options={{ mapHeight: 200 }}
+        />
       </Collapsible.Content>
     </Collapsible.Container>
   );

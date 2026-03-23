@@ -7,6 +7,7 @@ import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Tag } from 'ui-design-system';
+import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { Highlight } from '../Highlight';
 import { Spinner } from '../Spinner';
 
@@ -54,9 +55,12 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                     markClassName="bg-yellow-background dark:bg-yellow-primary/30 text-grey-primary"
                     className="min-w-100"
                   />
-                  <span className="py-v2-xs px-v2-sm font-mono text-tiny border border-grey-border rounded-v2-md">
-                    {item['object_id'] as string}
-                  </span>
+                  <DataFields
+                    table={payload.table}
+                    object={{ data: item, metadata: { validFrom: (item['updated_at'] as string) ?? '' } }}
+                    preset="essentials"
+                    options={{ withId: true, hideLinks: true }}
+                  />
                   <EntityTags objectType={payload.table} objectId={item['object_id'] as string} />
                 </Link>
               );

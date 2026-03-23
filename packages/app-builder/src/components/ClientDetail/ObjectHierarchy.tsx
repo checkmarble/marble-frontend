@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { cn, Modal, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { IngestedObjectDetail } from '../Data/IngestedObjectDetail';
+import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerContext } from '../DataModelExplorer/Provider';
 import { Spinner } from '../Spinner';
 
@@ -290,14 +290,11 @@ const TreeItem = ({
           <Modal.Content size="large">
             <Modal.Title>{item.objectType}</Modal.Title>
             <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
-              <IngestedObjectDetail
-                light
-                bordered={false}
-                withLinks={false}
-                dataModel={dataModel}
-                tableName={item.objectType}
-                objectId={item.objectId}
+              <DataFields
+                className="p-4"
+                table={item.objectType}
                 object={{ data: item.data, metadata: { validFrom: (item.data['updated_at'] as string) ?? '' } }}
+                options={{ hideLinks: true }}
               />
             </div>
           </Modal.Content>
