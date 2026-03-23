@@ -1,4 +1,4 @@
-import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
+import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
@@ -37,7 +37,15 @@ export const ScreeningObjectDetails = ({ objectType, objectId, className }: Scre
           const tableModel = dmQuery.data.dataModel.find((t) => t.name === objectType);
           if (!tableModel) return null;
 
-          return <ClientObjectDataList displayObjectType tableModel={tableModel} data={objQuery.data.data} />;
+          return (
+            <DataFields
+              table={tableModel.name}
+              object={{
+                data: objQuery.data.data,
+                metadata: { validFrom: (objQuery.data.data['updated_at'] as string) ?? '' },
+              }}
+            />
+          );
         })
         .exhaustive()}
     </div>

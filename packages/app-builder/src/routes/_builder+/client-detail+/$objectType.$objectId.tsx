@@ -3,6 +3,8 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isNotFoundHttpError } from '@app-builder/models';
+import { DataModelContextProvider } from '@app-builder/services/data/data-model';
+import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { getRoute } from '@app-builder/utils/routes';
 import { redirect, useLoaderData } from '@remix-run/react';
 import { Namespace } from 'i18next';
@@ -31,13 +33,26 @@ export const loader = createServerFn([authMiddleware], async ({ request, context
     const objectDetails = await context.authInfo.dataModelRepository.getIngestedObject(objectType, objectId);
 
     const tables = await context.authInfo.client360.getClient360Tables();
+    const { user, dataModelRepository, entitlements } = context.authInfo;
+
     const tableMetadata = tables.find((table) => table.name === objectType);
 
     if (!tableMetadata) {
       throw redirect(getRoute('/client-detail'));
     }
+    const dataModel = await dataModelRepository.getDataModel();
 
-    return { objectType, objectId, objectDetails, metadata: tableMetadata, allMetadata: tables };
+    const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
+
+    return {
+      objectType,
+      objectId,
+      objectDetails,
+      metadata: tableMetadata,
+      allMetadata: tables,
+      dataModel,
+      dataModelFeatureAccess,
+    };
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       setToastMessage(toastSession, {
@@ -56,16 +71,19 @@ export const loader = createServerFn([authMiddleware], async ({ request, context
 });
 
 export default function ClientDetailPage() {
-  const { objectType, objectId, objectDetails, metadata, allMetadata } = useLoaderData<typeof loader>();
+  const { objectType, objectId, objectDetails, metadata, allMetadata, dataModel, dataModelFeatureAccess } =
+    useLoaderData<typeof loader>();
 
   return (
-    <ClientDetailPageComponent
-      key={`${objectType}_${objectId}`}
-      objectType={objectType}
-      objectId={objectId}
-      objectDetails={objectDetails}
-      metadata={metadata}
-      allMetadata={allMetadata}
-    />
+    <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
+      <ClientDetailPageComponent
+        key={`${objectType}_${objectId}`}
+        objectType={objectType}
+        objectId={objectId}
+        objectDetails={objectDetails}
+        metadata={metadata}
+        allMetadata={allMetadata}
+      />
+    </DataModelContextProvider>
   );
 }

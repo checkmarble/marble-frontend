@@ -1,5 +1,6 @@
 import { Callout, type DecisionFilters, decisionsI18n } from '@app-builder/components';
 import { type Pivot } from '@app-builder/models';
+import { type DataModelObject } from '@app-builder/models/data-model';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
@@ -8,7 +9,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Table, Tooltip, useVirtualTable } from 'ui-design-system';
-
+import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { PivotType } from '../Data/PivotType';
 import { ExternalLink, linkClasses } from '../ExternalLink';
 
@@ -16,6 +17,7 @@ interface PivotDetailProps {
   pivotValues: {
     pivot: Pivot;
     value: string;
+    object: DataModelObject | null;
   }[];
   existingPivotDefinition: boolean;
 }
@@ -83,7 +85,10 @@ export function PivotDetail({ pivotValues, existingPivotDefinition }: PivotDetai
 function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
   const { t } = useTranslation(decisionsI18n);
 
-  const columnHelper = useMemo(() => createColumnHelper<{ pivot: Pivot; value: string }>(), []);
+  const columnHelper = useMemo(
+    () => createColumnHelper<{ pivot: Pivot; value: string; object: DataModelObject | null }>(),
+    [],
+  );
 
   const columns = useMemo(
     () => [
@@ -105,21 +110,25 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
           return <span>{definition}</span>;
         },
       }),
-      columnHelper.accessor((row) => row.value, {
-        id: 'filter_decisions',
-        header: t('decisions:pivot_detail.pivot_value'),
-        size: 200,
-        cell: ({ getValue }) => (
-          <Tooltip.Default content={t('decisions:pivot_detail.pivot_value.tooltip')}>
-            <Link
-              to={getDecisionRoute({ pivotValue: getValue() })}
-              className="hover:text-purple-hover focus:text-purple-hover text-purple-primary relative font-semibold hover:underline focus:underline"
-            >
-              {getValue()}
-            </Link>
-          </Tooltip.Default>
-        ),
-      }),
+      columnHelper.accessor(
+        (row) => ({
+          value: row.value,
+          table: row.pivot.type === 'field' ? row.pivot.baseTable : row.pivot.pivotTable,
+          object: row.object,
+        }),
+        {
+          id: 'filter_decisions',
+          header: t('decisions:pivot_detail.pivot_value'),
+          size: 200,
+          cell: ({ getValue }) => (
+            <Tooltip.Default content={t('decisions:pivot_detail.pivot_value.tooltip')}>
+              <Link to={getDecisionRoute({ pivotValue: getValue().value })}>
+                <PivotDetails value={getValue().value} table={getValue().table} object={getValue().object} />
+              </Link>
+            </Tooltip.Default>
+          ),
+        },
+      ),
     ],
     [t, columnHelper],
   );
@@ -147,4 +156,24 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
 function getDecisionRoute(decisionFilters: Pick<DecisionFilters, 'pivotValue'>) {
   const searchParams = new URLSearchParams(decisionFilters);
   return `${getRoute('/detection/decisions')}?${searchParams.toString()}`;
+}
+
+function PivotDetails({ value, table, object }: { value: string; table: string; object: DataModelObject | null }) {
+  if (!object) {
+    return (
+      <span className="hover:text-purple-hover focus:text-purple-hover text-purple-primary relative font-semibold hover:underline focus:underline">
+        {value}
+      </span>
+    );
+  }
+
+  return (
+    <DataFields
+      table={table}
+      object={object}
+      preset="essentials"
+      options={{ withId: true }}
+      className="p-2 my-2 bg-surface-card rounded-v2-lg border-grey-border border cursor-pointer"
+    />
+  );
 }

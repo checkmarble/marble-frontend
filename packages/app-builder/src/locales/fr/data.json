@@ -136,6 +136,8 @@
   "link_name": "Nom",
   "links_from_table": "Liens vers d'autres entités depuis <TableLocale>{{tableName}}</TableLocale>",
   "menu.create_pivot.label": "Regrouper les décisions par...",
+  "no": "Non",
+  "no_vpn": "Pas de VPN",
   "parent_field_name": "Nom du champ de la table parente",
   "parent_table": "Table associée",
   "select_archetype.button_accept": "Appliquer l'archétype",
@@ -153,5 +155,7 @@
   "view_pivot.type": "Type",
   "viewer.no_object_found": "Aucun objet trouvé avec l'ID \"{{objectId}}\" dans {{tableName}}",
   "viewer.object_id": "ID de l'objet",
-  "viewer.object_type": "Type d'objet"
+  "viewer.object_type": "Type d'objet",
+  "vpn": "Oui",
+  "yes": "Oui"
 }

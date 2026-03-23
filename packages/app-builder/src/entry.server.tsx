@@ -229,7 +229,7 @@ Sentry.init({
 
   beforeSend(event, hint) {
     const error = hint?.originalException;
-    console.log(error);
+    console.error(error);
 
     // By default, remix will report a sentry error if a POST action is called on an endpoint that does not allow it (no action configured).
     // Those are noise, as we have no control on who calls out frontend remix server.

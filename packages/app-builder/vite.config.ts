@@ -1,7 +1,4 @@
-import { vitePlugin as remix } from '@remix-run/dev';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
-import { remixDevTools } from 'remix-development-tools';
-import { flatRoutes } from 'remix-flat-routes';
 import { defineConfig, type PluginOption } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 
@@ -13,6 +10,10 @@ const isVitest = !!process.env['VITEST'];
 const plugins: PluginOption[] = [];
 
 if (!isVitest) {
+  const { vitePlugin: remix } = await import('@remix-run/dev');
+  const { remixDevTools } = await import('remix-development-tools');
+  const { flatRoutes } = await import('remix-flat-routes');
+
   plugins.push(
     remixDevTools({
       client: {
@@ -49,6 +50,7 @@ if (!isVitest) {
     }),
   );
 }
+
 if (isSentryConfigured) {
   plugins.push(
     sentryVitePlugin({
@@ -70,6 +72,9 @@ plugins.push(viteTsConfigPaths());
 export default defineConfig({
   server: {
     port: 3000,
+  },
+  ssr: {
+    noExternal: ['country-flag-emojis'],
   },
   plugins,
   test: {
