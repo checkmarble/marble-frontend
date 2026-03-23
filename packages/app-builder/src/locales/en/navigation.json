@@ -36,5 +36,6 @@
   "settings.case_manager": "Case Manager",
   "settings.inboxes": "Inboxes",
   "settings.tags": "Tags",
-  "settings.users": "Users"
+  "settings.users": "Users",
+  "user_scoring": "Customer Scoring"
 }

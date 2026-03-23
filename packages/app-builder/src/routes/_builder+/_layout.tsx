@@ -21,6 +21,7 @@ import { OrganizationUsersContextProvider } from '@app-builder/services/organiza
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { useSentryIdentification, useSentryReplay } from '@app-builder/services/sentry';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
+import { isUserScoringEnabled } from '@app-builder/utils/environment';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet, useLoaderData } from '@remix-run/react';
@@ -59,6 +60,7 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
       isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
       continuousScreening: entitlements.continuousScreening,
       isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
+      isUserScoringAvailable: !isAnalyst(user) && isUserScoringEnabled(organizationDetail.id),
     },
     authProvider: context.appConfig.auth.provider,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
@@ -118,6 +120,16 @@ export default function Builder() {
                                 labelTKey="navigation:detection"
                                 to={getRoute('/detection')}
                                 Icon={(props) => <Icon icon="scenarios" {...props} />}
+                              />
+                            </li>
+                          )}
+                          {/* User Scoring */}
+                          {featuresAccess.isUserScoringAvailable && (
+                            <li>
+                              <SidebarLink
+                                labelTKey="navigation:user_scoring"
+                                to={getRoute('/user-scoring')}
+                                Icon={(props) => <Icon icon="123" {...props} />}
                               />
                             </li>
                           )}

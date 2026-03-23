@@ -36,5 +36,6 @@
   "settings.case_manager": "إدارة القضايا",
   "settings.inboxes": "صناديق الوارد",
   "settings.tags": "الوسوم",
-  "settings.users": "المستخدمون"
+  "settings.users": "المستخدمون",
+  "user_scoring": "تسجيل نقاط المستخدم"
 }

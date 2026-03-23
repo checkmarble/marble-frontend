@@ -452,6 +452,28 @@ export const routes = [
             "id": "routes/_builder+/upload+/$objectType",
             "path": "upload/:objectType",
             "file": "routes/_builder+/upload+/$objectType.tsx"
+          },
+          {
+            "id": "routes/_builder+/user-scoring+/_layout",
+            "path": "user-scoring",
+            "file": "routes/_builder+/user-scoring+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/user-scoring+/$recordType.$version",
+                "path": ":recordType/:version",
+                "file": "routes/_builder+/user-scoring+/$recordType.$version.tsx"
+              },
+              {
+                "id": "routes/_builder+/user-scoring+/index",
+                "index": true,
+                "file": "routes/_builder+/user-scoring+/index.tsx"
+              },
+              {
+                "id": "routes/_builder+/user-scoring+/overview",
+                "path": "overview",
+                "file": "routes/_builder+/user-scoring+/overview.tsx"
+              }
+            ]
           }
         ]
       },
@@ -1062,6 +1084,36 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/update",
         "path": "ressources/scenarios/update",
         "file": "routes/ressources+/scenarios+/update.tsx"
+      },
+      {
+        "id": "routes/ressources+/scoring+/commit-ruleset",
+        "path": "ressources/scoring/commit-ruleset",
+        "file": "routes/ressources+/scoring+/commit-ruleset.tsx"
+      },
+      {
+        "id": "routes/ressources+/scoring+/list-ruleset-versions",
+        "path": "ressources/scoring/list-ruleset-versions",
+        "file": "routes/ressources+/scoring+/list-ruleset-versions.tsx"
+      },
+      {
+        "id": "routes/ressources+/scoring+/list-rulesets",
+        "path": "ressources/scoring/list-rulesets",
+        "file": "routes/ressources+/scoring+/list-rulesets.tsx"
+      },
+      {
+        "id": "routes/ressources+/scoring+/prepare-ruleset",
+        "path": "ressources/scoring/prepare-ruleset",
+        "file": "routes/ressources+/scoring+/prepare-ruleset.tsx"
+      },
+      {
+        "id": "routes/ressources+/scoring+/update-ruleset",
+        "path": "ressources/scoring/update-ruleset",
+        "file": "routes/ressources+/scoring+/update-ruleset.tsx"
+      },
+      {
+        "id": "routes/ressources+/scoring+/update-settings",
+        "path": "ressources/scoring/update-settings",
+        "file": "routes/ressources+/scoring+/update-settings.tsx"
       },
       {
         "id": "routes/ressources+/screenings+/detail.$decisionId.$screeningId",

@@ -1,4 +1,5 @@
 export const iconNames = [
+  '123',
   'accepted',
   'account-circle-off',
   'account-circle',
@@ -149,5 +150,6 @@ export const iconNames = [
   'wand',
   'warning',
   'world',
+  'x',
 ] as const;
 export type IconName = (typeof iconNames)[number];
