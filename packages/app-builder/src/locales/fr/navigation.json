@@ -36,5 +36,6 @@
   "settings.case_manager": "Investigations",
   "settings.inboxes": "Boîtes de réception",
   "settings.tags": "Tags",
-  "settings.users": "Utilisateurs"
+  "settings.users": "Utilisateurs",
+  "user_scoring": "Scoring utilisateur"
 }

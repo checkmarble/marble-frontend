@@ -16,7 +16,7 @@ export const tagClassName = cva('inline-flex items-center justify-center border 
       yellow: 'text-yellow-primary border-yellow-primary',
       orange: 'text-orange-primary border-orange-primary',
       red: 'text-red-primary border-red-primary',
-      grey: 'text-grey-placeholder border-grey-placeholder',
+      grey: 'text-grey-placeholder border-grey-border',
     },
   },
   defaultVariants: {

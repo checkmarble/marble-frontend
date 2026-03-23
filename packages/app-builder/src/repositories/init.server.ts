@@ -30,6 +30,7 @@ import {
 } from './SessionStorageRepositories';
 import { makeGetTestRunRepository } from './TestRunRepository';
 import { makeGetUserRepository } from './UserRepository';
+import { makeGetUserScoringRepository } from './UserScoringRepository';
 import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
@@ -78,6 +79,7 @@ export function makeServerRepositories({
     getAiAssistSettingsRepository: makeGetAiAssistSettingsRepository(),
     getClient360TablesRepository: makeGetClient360TablesRepository(),
     getAuditEventsRepository: makeGetAuditEventsRepository(),
+    getUserScoringRepository: makeGetUserScoringRepository(),
   };
 }
 

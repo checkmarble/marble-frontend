@@ -28,6 +28,7 @@ import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepos
 import { type ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
+import { type UserScoringRepository } from '@app-builder/repositories/UserScoringRepository';
 import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
 import { Tokens } from '@app-builder/routes/oidc+/auth';
 import { getServerEnv } from '@app-builder/utils/environment';
@@ -71,6 +72,7 @@ interface AuthenticatedInfo {
   aiAssistSettings: AiAssistRepository;
   client360: Client360Repository;
   auditEvents: AuditEventsRepository;
+  userScoring: UserScoringRepository;
 }
 
 export interface AuthenticationServerService {
@@ -136,6 +138,7 @@ interface MakeAuthenticationServerServiceArgs {
   getAiAssistSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => AiAssistRepository;
   getClient360TablesRepository: (marbleCoreApiClient: MarbleCoreApi) => Client360Repository;
   getAuditEventsRepository: (marbleCoreApiClient: MarbleCoreApi) => AuditEventsRepository;
+  getUserScoringRepository: (marbleCoreApiClient: MarbleCoreApi) => UserScoringRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   toastSessionService: SessionService<void, ToastFlashData>;
   csrfService: CSRF;
@@ -176,6 +179,7 @@ export function makeAuthenticationServerService({
   getAiAssistSettingsRepository,
   getClient360TablesRepository,
   getAuditEventsRepository,
+  getUserScoringRepository,
   makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
   function getTokenService(marbleAccessToken: string, request: Request | undefined = undefined): TokenService<string> {
@@ -459,6 +463,7 @@ export function makeAuthenticationServerService({
       aiAssistSettings: getAiAssistSettingsRepository(marbleCoreApiClient),
       client360: getClient360TablesRepository(marbleCoreApiClient),
       auditEvents: getAuditEventsRepository(marbleCoreApiClient),
+      userScoring: getUserScoringRepository(marbleCoreApiClient),
     };
   }
 
