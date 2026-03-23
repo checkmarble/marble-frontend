@@ -1,5 +1,8 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
+  isMaxRiskLevelInRange,
+  MAX_RISK_LEVELS,
+  MaxRiskLevel,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABELS,
   type ScoringSettings as ScoringSettingsModel,
@@ -47,7 +50,7 @@ function ScoringSettingsForm() {
         </Button>
       </div>
       <div className="grid grid-cols-4 gap-v2-md">
-        {[3, 4, 5, 6].map((v) => (
+        {MAX_RISK_LEVELS.map((v) => (
           <ScoringScaleCard key={v} maxLevel={v} selected={maxRiskLevel === v} onSelect={() => setMaxRiskLevel(v)} />
         ))}
       </div>
@@ -56,7 +59,7 @@ function ScoringSettingsForm() {
 }
 
 type ScoringScaleCardProps = {
-  maxLevel: number;
+  maxLevel: MaxRiskLevel;
   selected: boolean;
   onSelect: () => void;
 };
@@ -81,12 +84,12 @@ function ScoringScaleCard({ maxLevel, selected, onSelect }: ScoringScaleCardProp
 }
 
 function ScoringLevels({ maxLevel, className }: { maxLevel: number; className?: string }) {
-  if (!(maxLevel in SCORING_LEVELS_COLORS) || !(maxLevel in SCORING_LEVELS_LABELS)) {
+  if (!isMaxRiskLevelInRange(maxLevel)) {
     return null;
   }
 
-  const scoringColors = SCORING_LEVELS_COLORS[maxLevel as keyof typeof SCORING_LEVELS_COLORS];
-  const scoringLabels = SCORING_LEVELS_LABELS[maxLevel as keyof typeof SCORING_LEVELS_LABELS];
+  const scoringColors = SCORING_LEVELS_COLORS[maxLevel];
+  const scoringLabels = SCORING_LEVELS_LABELS[maxLevel];
 
   return (
     <div className={cn(className)}>

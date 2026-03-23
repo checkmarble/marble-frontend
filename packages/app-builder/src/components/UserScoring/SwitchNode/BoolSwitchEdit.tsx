@@ -18,7 +18,7 @@ export function BoolSwitchEdit({ conditions, maxRiskLevel, onChange }: BoolSwitc
     <div className="flex flex-col gap-v2-sm">
       <BoolRow
         label={t('user-scoring:switch.bool.if_true')}
-        showAlors
+        showThen
         impact={conditions.ifTrue}
         maxRiskLevel={maxRiskLevel}
         onImpactChange={setIfTrue}
@@ -35,18 +35,18 @@ export function BoolSwitchEdit({ conditions, maxRiskLevel, onChange }: BoolSwitc
 
 interface BoolRowProps {
   label: string;
-  showAlors?: boolean;
+  showThen?: boolean;
   impact: ScoreImpact;
   maxRiskLevel: number;
   onImpactChange: (imp: ScoreImpact) => void;
 }
 
-function BoolRow({ label, showAlors = false, impact, maxRiskLevel, onImpactChange }: BoolRowProps) {
+function BoolRow({ label, showThen = false, impact, maxRiskLevel, onImpactChange }: BoolRowProps) {
   const { t } = useTranslation(['user-scoring']);
   return (
     <div className="grid grid-cols-[164px_minmax(auto,_40px)_70px_auto] items-center gap-2">
       <span className="text-right text-purple-primary">{label}</span>
-      <span className="text-center text-grey-secondary">{showAlors ? t('user-scoring:switch.bool.then') : ''}</span>
+      <span className="text-center text-grey-secondary">{showThen ? t('user-scoring:switch.bool.then') : ''}</span>
       <Input
         type="number"
         value={impact.modifier}

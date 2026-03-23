@@ -2,6 +2,7 @@ import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationC
 import { ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
   formatCooldown,
+  isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABELS,
   type ScoringRulesetWithRules,
@@ -109,12 +110,12 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
 
 function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; thresholds: number[] }) {
   const { t } = useTranslation(['user-scoring']);
-  if (!(maxRiskLevel in SCORING_LEVELS_COLORS) || !(maxRiskLevel in SCORING_LEVELS_LABELS)) {
+  if (!isMaxRiskLevelInRange(maxRiskLevel)) {
     return null;
   }
 
-  const colors = SCORING_LEVELS_COLORS[maxRiskLevel as keyof typeof SCORING_LEVELS_COLORS];
-  const labels = SCORING_LEVELS_LABELS[maxRiskLevel as keyof typeof SCORING_LEVELS_LABELS];
+  const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
+  const labels = SCORING_LEVELS_LABELS[maxRiskLevel];
 
   return (
     <div className="flex flex-col gap-v2-sm">

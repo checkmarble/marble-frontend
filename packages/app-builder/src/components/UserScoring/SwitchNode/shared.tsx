@@ -4,6 +4,7 @@ import { getDataTypeIcon } from '@app-builder/models/data-model';
 import {
   type AllowedScoringRuleSourceType,
   isAllowedScoringRuleType,
+  isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   type ScoreImpact,
 } from '@app-builder/models/scoring';
@@ -42,7 +43,8 @@ interface SwitchCaseRowProps {
 
 export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowProps) {
   const { t } = useTranslation(['user-scoring']);
-  const colors = SCORING_LEVELS_COLORS[maxRiskLevel as keyof typeof SCORING_LEVELS_COLORS];
+
+  const colors = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : [];
 
   return (
     <li className="flex items-center gap-v2-sm">
@@ -87,7 +89,8 @@ interface RiskLevelSelectProps {
 
 export function RiskLevelSelect({ floor, maxRiskLevel, onChange }: RiskLevelSelectProps) {
   const { t } = useTranslation(['user-scoring']);
-  const levels = SCORING_LEVELS_COLORS[maxRiskLevel as keyof typeof SCORING_LEVELS_COLORS] ?? [];
+
+  const levels = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : [];
   const options: SelectOption<number | null>[] = [
     { label: t('user-scoring:switch.add_floor'), value: null },
     ...levels.map((color, i) => ({

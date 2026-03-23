@@ -1,4 +1,4 @@
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABELS } from '@app-builder/models/scoring';
+import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABELS } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
 import { Input } from 'ui-design-system';
 
@@ -10,12 +10,12 @@ interface ScoringLevelThresholdsProps {
 
 export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsChange }: ScoringLevelThresholdsProps) {
   const { t } = useTranslation(['user-scoring']);
-  if (!(maxRiskLevel in SCORING_LEVELS_COLORS) || !(maxRiskLevel in SCORING_LEVELS_LABELS)) {
+  if (!isMaxRiskLevelInRange(maxRiskLevel)) {
     return null;
   }
 
-  const colors = SCORING_LEVELS_COLORS[maxRiskLevel as keyof typeof SCORING_LEVELS_COLORS];
-  const labels = SCORING_LEVELS_LABELS[maxRiskLevel as keyof typeof SCORING_LEVELS_LABELS];
+  const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
+  const labels = SCORING_LEVELS_LABELS[maxRiskLevel];
 
   const handleChange = (index: number, value: number) => {
     const next = [...thresholds];
@@ -52,12 +52,14 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
                     onChange={(e) => handleChange(i, Number(e.target.value))}
                   />
                 </>
-              ) : isLast ? (
+              ) : null}
+              {isLast ? (
                 <>
                   <span className="text-s font-medium w-[30px] shrink-0 text-right">{'>'}</span>
                   <Input type="number" className="flex-1" value={lowerBound ?? ''} readOnly />
                 </>
-              ) : (
+              ) : null}
+              {!isFirst && !isLast ? (
                 <>
                   <span className="text-s text-grey-primary whitespace-nowrap shrink-0">
                     {t('user-scoring:thresholds.between')}
@@ -73,7 +75,7 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
                     onChange={(e) => handleChange(i, Number(e.target.value))}
                   />
                 </>
-              )}
+              ) : null}
             </div>
           );
         })}
