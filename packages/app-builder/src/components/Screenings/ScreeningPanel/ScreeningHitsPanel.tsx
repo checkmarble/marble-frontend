@@ -237,6 +237,9 @@ export function ScreeningHitsPanel({
                       isInPreview={isInPreview}
                     />
 
+                    {/* Separator */}
+                    <div className="shrink-0 border-l border-grey-border self-stretch" />
+
                     {/* Right: Search details sidebar */}
                     <PanelSearchDetails
                       screening={screeningData}

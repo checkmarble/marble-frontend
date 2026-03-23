@@ -39,7 +39,7 @@ export function PanelSearchDetails({
   }
 
   return (
-    <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-4 border-l border-grey-border pl-4">
+    <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-4 pl-4">
       <span className="text-m font-medium">{t('screenings:panel.search_details')}</span>
 
       {request ? (
