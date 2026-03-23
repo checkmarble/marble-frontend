@@ -1,5 +1,6 @@
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useArchiveScenarioMutation } from '@app-builder/queries/scenarios/archive-scenario';
-import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
@@ -14,19 +15,43 @@ export function ArchiveScenario({
   scenarioId: string;
   scenarioName: string;
 }) {
+  const [open, setOpen] = useState(false);
   return (
-    <Modal.Root>
+    <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
-        <ArchiveScenarioContent scenarioId={scenarioId} scenarioName={scenarioName} />
+        {open ? (
+          <ArchiveScenarioContent scenarioId={scenarioId} scenarioName={scenarioName} onClose={() => setOpen(false)} />
+        ) : null}
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-function ArchiveScenarioContent({ scenarioId, scenarioName }: { scenarioId: string; scenarioName: string }) {
+function ArchiveScenarioContent({
+  scenarioId,
+  scenarioName,
+  onClose,
+}: {
+  scenarioId: string;
+  scenarioName: string;
+  onClose: () => void;
+}) {
   const { t } = useTranslation(['scenarios', 'common']);
   const archiveScenarioMutation = useArchiveScenarioMutation();
+  const revalidate = useLoaderRevalidator();
+
+  const handleArchiveScenario = () => {
+    archiveScenarioMutation.mutate(
+      { scenarioId },
+      {
+        onSuccess: () => {
+          revalidate();
+          onClose();
+        },
+      },
+    );
+  };
 
   return (
     <>
@@ -46,9 +71,7 @@ function ArchiveScenarioContent({ scenarioId, scenarioName }: { scenarioId: stri
           className="flex-1"
           variant="destructive"
           disabled={archiveScenarioMutation.isPending}
-          onClick={() => {
-            archiveScenarioMutation.mutate({ scenarioId });
-          }}
+          onClick={handleArchiveScenario}
         >
           {t('scenarios:archive_scenario.button')}
         </Button>
