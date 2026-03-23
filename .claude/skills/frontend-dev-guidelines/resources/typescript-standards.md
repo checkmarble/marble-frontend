@@ -158,7 +158,7 @@ const result: ApiResult<Case> = await fetchCase(id);
 if (result.success) {
   console.log(result.data); // typed as Case
 } else {
-  console.log(result.error); // typed as string
+  console.error(result.error); // typed as string
 }
 ```
 

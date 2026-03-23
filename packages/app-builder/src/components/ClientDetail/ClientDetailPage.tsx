@@ -14,13 +14,13 @@ import { match } from 'ts-pattern';
 import { Button, cn, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientDocumentsPopover } from '../Annotations/ClientDocumentsPopover';
+import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorer } from '../DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { PanelContainer, PanelHeader, PanelRoot } from '../Panel';
 import { Spinner } from '../Spinner';
 import { AlertHitsList } from './AlertHitsList';
 import { ClientComments } from './ClientComments';
-import { ClientDataInfo } from './ClientDataInfo';
 import { DocumentsList } from './DocumentsList';
 import { MonitoringHitsList } from './MonitoringHitsList';
 import { ObjectHierarchy } from './ObjectHierarchy';
@@ -108,10 +108,15 @@ export const ClientDetailPage = ({
                       return <div>{t('common:generic_fetch_data_error')}</div>;
                     })
                     .with({ isSuccess: true }, (dmQuery) => {
-                      const tableModel = dmQuery.data.dataModel.find((t) => t.name === objectType);
-                      if (!tableModel) return null;
-
-                      return <ClientDataInfo objectDetails={objectDetails} table={tableModel} />;
+                      return (
+                        <DataFields
+                          table={objectType}
+                          object={objectDetails}
+                          options={{
+                            layout: '2-columns',
+                          }}
+                        />
+                      );
                     })
                     .exhaustive()}
                 </div>

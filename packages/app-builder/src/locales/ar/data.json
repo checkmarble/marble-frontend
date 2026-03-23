@@ -136,6 +136,8 @@
   "link_name": "الاسم",
   "links_from_table": "روابط إلى كيانات أخرى من <TableLocale>{{tableName}}</TableLocale>",
   "menu.create_pivot.label": "تجميع القرارات حسب...",
+  "no": "لا",
+  "no_vpn": "لا يوجد VPN",
   "parent_field_name": "اسم الحقل للجدول الرئيسي",
   "parent_table": "جدول ذو صلة",
   "select_archetype.button_accept": "تطبيق النموذج",
@@ -153,5 +155,7 @@
   "view_pivot.type": "النوع",
   "viewer.no_object_found": "لم يتم العثور على كائن بالمعرف \"{{objectId}}\" في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
-  "viewer.object_type": "نوع الكائن"
+  "viewer.object_type": "نوع الكائن",
+  "vpn": "نعم",
+  "yes": "نعم"
 }

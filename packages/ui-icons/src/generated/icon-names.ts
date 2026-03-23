@@ -80,6 +80,7 @@ export const iconNames = [
   'manage-search',
   'manually_accepted',
   'manually_denied',
+  'map-pin',
   'minus',
   'modeling',
   'monitor',

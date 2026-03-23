@@ -3,7 +3,9 @@ import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import cronstrue from 'cronstrue';
 import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
 import { add } from 'date-fns/add';
+import { differenceInYears } from 'date-fns/differenceInYears';
 import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
+import { formatDuration as dateFnsFormatDuration } from 'date-fns/formatDuration';
 import { formatRelative } from 'date-fns/formatRelative';
 import { type Currency, dinero, toDecimal } from 'dinero.js';
 import { useCallback } from 'react';
@@ -111,6 +113,11 @@ export function formatDuration(duration: string, language: string) {
     addSuffix: true,
     locale: getDateFnsLocale(language),
   });
+}
+
+export function formatAge(birthdate: Date, language: string) {
+  const years = Math.max(0, differenceInYears(new Date(), birthdate));
+  return dateFnsFormatDuration({ years }, { locale: getDateFnsLocale(language) });
 }
 
 export function formatDateRelative(date: string | Date, options: { language: string }) {

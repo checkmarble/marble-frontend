@@ -10,11 +10,7 @@ import { CopyToClipboardButton } from './CopyToClipboardButton';
 import { ExternalLink } from './ExternalLink';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
-
-const CARTO_BASEMAP = {
-  light: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-  dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-} as const;
+import { CARTO_BASEMAP, parseCoords, resolveCoords } from './Data/DataVisualisation/dataFieldsUtils';
 
 type Data =
   | {
@@ -98,25 +94,6 @@ export function FormatData({
   }
 }
 
-function isValidCoords(latitude: number, longitude: number) {
-  return latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180;
-}
-
-function resolveCoords(value: unknown): { latitude: number; longitude: number } | null {
-  if (typeof value === 'string' && value) {
-    return parseCoords(value);
-  }
-  if (typeof value === 'object' && value !== null) {
-    const obj = value as Record<string, unknown>;
-    const lat = obj['latitude'] ?? obj['lat'];
-    const lng = obj['longitude'] ?? obj['lng'] ?? obj['lon'];
-    if (typeof lat === 'number' && typeof lng === 'number' && isValidCoords(lat, lng)) {
-      return { latitude: lat, longitude: lng };
-    }
-  }
-  return null;
-}
-
 function DerivedDataDetails({ value }: { value: object }) {
   const { t } = useTranslation(['scenarios']);
 
@@ -157,16 +134,6 @@ function CompactDerivedDataField({ value }: { value: object }) {
   );
 }
 
-function parseCoords(s: string) {
-  const [lat, lng] = s.split(',');
-  const latitude = parseFloat(lat ?? '');
-  const longitude = parseFloat(lng ?? '');
-  if (isNaN(latitude) || isNaN(longitude)) return null;
-  if (latitude < -90 || latitude > 90) return null;
-  if (longitude < -180 || longitude > 180) return null;
-  return { latitude, longitude, zoom: 5 };
-}
-
 function CompactCoordsField({
   latitude,
   longitude,
@@ -205,7 +172,7 @@ function CompactCoordsField({
                 mapStyle={CARTO_BASEMAP[theme]}
               >
                 <Marker longitude={longitude} latitude={latitude} anchor="bottom">
-                  <MapPin />
+                  <Icon icon="map-pin" className="size-4" />
                 </Marker>
               </MapLibre>
             </div>
@@ -235,22 +202,10 @@ function CoordsMap({ value, height = 400 }: { value: string; height?: number }) 
       <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
         <MapLibre initialViewState={opts} style={{ width: '100%', height }} mapStyle={CARTO_BASEMAP[theme]}>
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
-            <MapPin />
+            <Icon icon="map-pin" className="size-4" />
           </Marker>
         </MapLibre>
       </div>
     </div>
-  );
-}
-
-const MAP_PIN_PATH = `M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,4.5,2,10c0,2,0.6,3.9,1.6,5.4c0,0.1,0.1,0.2,0.2,0.3
-  c0,0,0.1,0.1,0.1,0.2c0.2,0.3,0.4,0.6,0.7,0.9c2.6,3.1,7.4,7.6,7.4,7.6s4.8-4.5,7.4-7.5c0.2-0.3,0.5-0.6,0.7-0.9
-  C20.1,15.8,20.2,15.8,20.2,15.7z`;
-
-function MapPin({ size = 20 }: { size?: number }) {
-  return (
-    <svg height={size} viewBox="0 0 24 24" style={{ cursor: 'pointer', fill: '#d00', stroke: 'none' }}>
-      <path d={MAP_PIN_PATH} />
-    </svg>
   );
 }

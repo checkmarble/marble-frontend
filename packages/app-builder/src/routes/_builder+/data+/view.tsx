@@ -10,7 +10,7 @@ import { Outlet, useMatch } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Select } from 'ui-design-system';
+import { Button, Input, MenuCommand } from 'ui-design-system';
 
 export const handle = {
   i18n: dataI18n satisfies Namespace,
@@ -43,31 +43,46 @@ export default function DataViewer() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate(
+      getRoute('/data/view/:tableName/:objectId', {
+        tableName,
+        objectId,
+      }),
+    );
+  };
+
   return (
     <Page.Container>
       <Page.Content>
         <DataTabs />
-        <div className="flex flex-col gap-4">
+        <form className="grid gap-2" onSubmit={handleSubmit}>
           <div className="flex items-end gap-2">
             <div className="text-s flex flex-col gap-1">
               <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
-              <Select.Default
-                value={tableName}
-                onValueChange={handleTableNameChange}
-                placeholder="select a table"
-                className="h-10 min-w-40"
-              >
-                {dataModel.map((table) => (
-                  <Select.DefaultItem value={table.name} key={table.name}>
-                    {table.name}
-                  </Select.DefaultItem>
-                ))}
-              </Select.Default>
+              <MenuCommand.Menu>
+                <MenuCommand.Trigger>
+                  <MenuCommand.SelectButton className="min-w-40">
+                    <span className={tableName ? undefined : 'text-grey-50'}>{tableName || 'select a table'}</span>
+                  </MenuCommand.SelectButton>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content sameWidth>
+                  <MenuCommand.List>
+                    {dataModel.map((table) => (
+                      <MenuCommand.Item key={table.name} value={table.name} onSelect={handleTableNameChange}>
+                        {table.name}
+                      </MenuCommand.Item>
+                    ))}
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
             </div>
             <div className="flex gap-2">
               <div className="text-s flex flex-col gap-1">
                 <label htmlFor="objectIdField">{t('data:viewer.object_id')}</label>
                 <Input
+                  name="objectId"
                   type="text"
                   id="objectIdField"
                   value={objectId}
@@ -76,25 +91,12 @@ export default function DataViewer() {
                 />
               </div>
             </div>
-            <Button
-              type="button"
-              variant="primary"
-              disabled={!tableName || !objectId}
-              onClick={() => {
-                navigate(
-                  getRoute('/data/view/:tableName/:objectId', {
-                    tableName,
-                    objectId,
-                  }),
-                );
-              }}
-              className="h-10"
-            >
+            <Button type="submit" variant="primary" disabled={!tableName || !objectId} className="h-10">
               {t('common:search')}
             </Button>
           </div>
           <Outlet />
-        </div>
+        </form>
       </Page.Content>
     </Page.Container>
   );
