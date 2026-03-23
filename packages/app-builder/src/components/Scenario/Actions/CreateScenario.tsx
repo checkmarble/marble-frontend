@@ -3,6 +3,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { DataModel } from '@app-builder/models';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
@@ -57,6 +58,8 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
       onSubmit: createScenarioPayloadSchema,
     },
   });
+
+  const isSubmitting = createScenarioMutation.isPending || createScenarioMutation.isSuccess || form.state.isSubmitting;
 
   return (
     <form onSubmit={handleSubmit(form)}>
@@ -176,7 +179,8 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit">
+        <Button className="flex-1" variant="primary" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? <Spinner className="size-4" /> : null}
           {t('common:save')}
         </Button>
       </Modal.Footer>
