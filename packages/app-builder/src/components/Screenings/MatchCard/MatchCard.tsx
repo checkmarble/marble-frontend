@@ -57,6 +57,11 @@ export const MatchCard = ({
                     <Icon icon="wand" className="size-4" />
                   </Tag>
                 ) : null}
+                <Tag color="grey">
+                  {t('screenings:match.similarity', {
+                    percent: Math.round(entity.score * 100),
+                  })}
+                </Tag>
               </CollapsibleV2.Title>
               {!hideEnrich && !match.enriched ? <EnrichMatchButton matchId={match.id} /> : null}
               {!hideReview ? (

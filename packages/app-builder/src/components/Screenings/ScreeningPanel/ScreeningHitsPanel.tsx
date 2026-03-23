@@ -152,22 +152,6 @@ export function ScreeningHitsPanel({
   const showDismissButton = !isInPreview && probableFalsePositiveMatchIds.length >= 1;
   const showBulkButton = !isInPreview && selectedMatchIds.size >= 2;
 
-  // Debug: trace why buttons may not appear
-  console.log('[ScreeningHitsPanel] bulk action debug', {
-    isInPreview,
-    screeningExists: !!screening,
-    totalMatches: screening?.matches.length,
-    pendingMatchesCount: pendingMatches.length,
-    pendingMatchIds: pendingMatches.map((m) => m.id),
-    aiSuggestionsCount: aiSuggestions.length,
-    aiSuggestions: aiSuggestions.map((s) => ({ matchId: s.matchId, confidence: s.confidence })),
-    aiSuggestionsByMatchIdSize: aiSuggestionsByMatchId.size,
-    probableFalsePositiveMatchIds,
-    showDismissButton,
-    selectedMatchIdsSize: selectedMatchIds.size,
-    showBulkButton,
-  });
-
   const handleDismissFalsePositives = useCallback(() => {
     bulkReviewMutation.mutate(probableFalsePositiveMatchIds, {
       onSuccess: revalidateAfterBulk,
