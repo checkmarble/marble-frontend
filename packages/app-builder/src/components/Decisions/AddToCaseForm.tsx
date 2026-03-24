@@ -3,7 +3,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { AddToCasePayload, addToCasePayloadSchema, useAddToCaseMutation } from '@app-builder/queries/cases/add-to-case';
+import { addToCasePayloadSchema, useAddToCaseMutation } from '@app-builder/queries/cases/add-to-case';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Select, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function AddToCase() {
+export function AddToCaseForm() {
   const { t } = useTranslation(['decisions', 'navigation', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const addToCaseMutation = useAddToCaseMutation();
@@ -23,17 +23,18 @@ export function AddToCase() {
       newCase: false,
       decisionIds: data?.decisionIds ? data?.decisionIds : [],
       caseId: '',
-    } as AddToCasePayload,
+      name: '',
+      inboxId: '',
+    },
     onSubmit: ({ value }) => {
-      addToCaseMutation.mutateAsync(value).then((res) => {
+      const payload = addToCasePayloadSchema.safeParse(value);
+      if (!payload.success) return;
+      addToCaseMutation.mutateAsync(payload.data).then((res) => {
         if (res?.success) {
           closePanel();
         }
         revalidate();
       });
-    },
-    validators: {
-      onSubmit: addToCasePayloadSchema,
     },
   });
 
@@ -59,6 +60,7 @@ export function AddToCase() {
         e.stopPropagation();
         form.handleSubmit();
       }}
+      id="add-to-case-form"
     >
       <div className="flex flex-col gap-4">
         <form.Field name="newCase">
@@ -82,13 +84,7 @@ export function AddToCase() {
             <p className="text-s text-grey-primary font-semibold first-letter:capitalize">
               {t('decisions:add_to_case.new_case.informations')}
             </p>
-            <form.Field
-              name="name"
-              validators={{
-                onChange: addToCasePayloadSchema.options[0].shape.name,
-                onBlur: addToCasePayloadSchema.options[0].shape.name,
-              }}
-            >
+            <form.Field name="name">
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <FormLabel name={field.name} className="text-xs first-letter:capitalize">
@@ -97,7 +93,7 @@ export function AddToCase() {
                   <FormInput
                     type="text"
                     name={field.name}
-                    defaultValue={field.state.value as string}
+                    value={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     valid={field.state.meta.errors.length === 0}
@@ -106,13 +102,7 @@ export function AddToCase() {
                 </div>
               )}
             </form.Field>
-            <form.Field
-              name="inboxId"
-              validators={{
-                onChange: addToCasePayloadSchema.options[0].shape.inboxId,
-                onBlur: addToCasePayloadSchema.options[0].shape.inboxId,
-              }}
-            >
+            <form.Field name="inboxId">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name} className="text-xs first-letter:capitalize">
@@ -120,7 +110,7 @@ export function AddToCase() {
                   </FormLabel>
                   <Select.Default
                     className="w-full overflow-hidden"
-                    defaultValue={field.state.value as string}
+                    value={field.state.value}
                     onValueChange={(type) => {
                       field.handleChange(type);
                       field.handleBlur();
@@ -138,7 +128,7 @@ export function AddToCase() {
                 </div>
               )}
             </form.Field>
-            <Button type="submit">
+            <Button type="submit" form="add-to-case-form">
               <Icon icon="plus" className="size-5" />
               {t('decisions:add_to_case.create_new_case')}
             </Button>
@@ -148,13 +138,7 @@ export function AddToCase() {
             <p className="text-s text-grey-primary font-semibold first-letter:capitalize">
               {t('decisions:add_to_case.new_case.attribution')}
             </p>
-            <form.Field
-              name="caseId"
-              validators={{
-                onChange: addToCasePayloadSchema.options[1].shape.caseId,
-                onBlur: addToCasePayloadSchema.options[1].shape.caseId,
-              }}
-            >
+            <form.Field name="caseId">
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <FormLabel name={field.name} className="text-xs first-letter:capitalize">
@@ -164,7 +148,7 @@ export function AddToCase() {
                   <FormInput
                     type="text"
                     name={field.name}
-                    defaultValue={field.state.value as string}
+                    value={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
                     onBlur={field.handleBlur}
                     valid={field.state.meta.errors.length === 0}
@@ -173,7 +157,7 @@ export function AddToCase() {
                 </div>
               )}
             </form.Field>
-            <Button type="submit">
+            <Button type="submit" form="add-to-case-form">
               <Icon icon="plus" className="size-5" />
               {t('decisions:add_to_case')}
             </Button>
