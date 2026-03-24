@@ -388,9 +388,11 @@ const TreeItemLabel = ({
   metadata: Client360Table | null;
 }) => {
   const { t } = useTranslation(['client360']);
+  const entityName = metadata?.alias || metadata?.name;
+
   return metadata && !Array.isArray(item.data) ? (
     <div className="flex items-center gap-10 shrink-0">
-      <span>{metadata.alias ?? metadata.name}</span>
+      <span>{entityName}</span>
       <span>{item.data[metadata.caption_field] as string}</span>
     </div>
   ) : (

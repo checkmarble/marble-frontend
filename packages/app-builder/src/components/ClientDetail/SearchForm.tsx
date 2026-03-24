@@ -19,6 +19,7 @@ const searchFormSchema = z.object({
 export const SearchForm = ({ table }: SearchFormProps) => {
   const { t } = useTranslation(['client360']);
   const navigate = useAgnosticNavigation();
+  const tableName = table.alias || table.name;
 
   const form = useForm({
     defaultValues: {
@@ -47,7 +48,7 @@ export const SearchForm = ({ table }: SearchFormProps) => {
     <form className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
       <label htmlFor={`search_${table.id}`} className="flex items-center gap-v2-sm">
         <span className="font-medium">
-          {t('client360:client_detail.search_form.search_by', { name: (table.alias ?? table.name).toLowerCase() })}
+          {t('client360:client_detail.search_form.search_by', { name: tableName.toLowerCase() })}
         </span>
         {!table.ready ? (
           <span className="text-grey-text text-small flex items-center gap-v2-xs">
@@ -63,7 +64,7 @@ export const SearchForm = ({ table }: SearchFormProps) => {
               value={field.state.value}
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               startAdornment="search"
-              placeholder={`${table.alias || table.name}...`}
+              placeholder={`${tableName}...`}
               className="grow"
               disabled={!table.ready}
             />
