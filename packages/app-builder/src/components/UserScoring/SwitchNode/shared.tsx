@@ -53,7 +53,10 @@ export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowP
           <span className="inline-flex items-center gap-v2-sm">
             {children} {t('user-scoring:switch.then')}
           </span>
-          <Tag color="grey">score +{impact.modifier}</Tag>
+          <Tag color="grey">
+            score {impact.modifier > 0 ? '+' : ''}
+            {impact.modifier}
+          </Tag>
           {impact.floor !== undefined ? (
             <>
               <span>{t('user-scoring:switch.and')}</span>

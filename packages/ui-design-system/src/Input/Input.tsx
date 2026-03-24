@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { Icon, type IconName } from 'ui-icons';
 import { cn } from '../utils';
 import { type inputBorderColor } from './Input.constants';
@@ -80,5 +80,41 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         </div>
       ) : null}
     </div>
+  );
+});
+
+type NumberInputProps = Omit<InputProps, 'onChange' | 'value'> & {
+  value: number;
+  onChange: (value: number) => void;
+};
+
+export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
+  { onChange, value, ...props },
+  ref,
+) {
+  const [internalValue, setInternalValue] = useState(value.toString(10));
+
+  useEffect(() => {
+    let newIntervalValue = value.toString(10);
+    if (newIntervalValue !== internalValue) {
+      setInternalValue(newIntervalValue);
+    }
+  }, [value]);
+
+  return (
+    <Input
+      ref={ref}
+      {...props}
+      value={internalValue}
+      onChange={(e) => {
+        const inputValue = e.target.value;
+        setInternalValue(inputValue);
+
+        const inputNumberValue = parseInt(inputValue, 10);
+        if (!isNaN(inputNumberValue)) {
+          onChange(inputNumberValue);
+        }
+      }}
+    />
   );
 });
