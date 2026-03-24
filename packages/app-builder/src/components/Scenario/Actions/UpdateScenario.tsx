@@ -122,7 +122,7 @@ function UpdateScenarioContent({
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit">
+        <Button className="flex-1" variant="primary" type="submit" disabled={isSubmitting}>
           {isSubmitting ? <Spinner className="size-4" /> : null}
           {t('common:save')}
         </Button>
