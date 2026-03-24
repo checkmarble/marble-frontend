@@ -42,15 +42,10 @@ function ArchiveScenarioContent({
   const revalidate = useLoaderRevalidator();
 
   const handleArchiveScenario = () => {
-    archiveScenarioMutation.mutate(
-      { scenarioId },
-      {
-        onSuccess: () => {
-          revalidate();
-          onClose();
-        },
-      },
-    );
+    archiveScenarioMutation.mutateAsync({ scenarioId }).then(() => {
+      revalidate();
+      onClose();
+    });
   };
 
   return (
