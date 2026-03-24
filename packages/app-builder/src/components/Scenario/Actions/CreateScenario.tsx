@@ -79,7 +79,6 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
           <form.Field
             name="name"
             validators={{
-              onBlur: createScenarioPayloadSchema.shape.name,
               onChange: createScenarioPayloadSchema.shape.name,
             }}
           >
@@ -91,7 +90,6 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
                   name={field.name}
                   defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  onBlur={field.handleBlur}
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('scenarios:create_scenario.name_placeholder')}
                 />
@@ -108,7 +106,6 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
                   name={field.name}
                   defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  onBlur={field.handleBlur}
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('scenarios:create_scenario.description_placeholder')}
                 />
@@ -119,7 +116,6 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
           <form.Field
             name="triggerObjectType"
             validators={{
-              onBlur: createScenarioPayloadSchema.shape.triggerObjectType,
               onChange: createScenarioPayloadSchema.shape.triggerObjectType,
             }}
           >
@@ -172,13 +168,7 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button
-            className="flex-1"
-            type="button"
-            variant="secondary"
-            appearance="stroked"
-            onMouseDown={(e) => e.preventDefault()}
-          >
+          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
