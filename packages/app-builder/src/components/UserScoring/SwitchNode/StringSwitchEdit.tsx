@@ -8,7 +8,7 @@ import {
   type StringSwitch,
 } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, type SelectOption, SelectV2 } from 'ui-design-system';
+import { Button, Input, NumberInput, type SelectOption, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ListValueInput } from './ListValueInput';
 import { RiskLevelSelect } from './shared';
@@ -111,10 +111,9 @@ export function StringSwitchEdit({ conditions, maxRiskLevel, onChange, customLis
             <div className="grid grid-cols-[200px_minmax(auto,_40px)_70px_auto] items-center gap-2">
               <div />
               <span className="text-center text-grey-secondary">{t('user-scoring:switch.string.then')}</span>
-              <Input
-                type="number"
+              <NumberInput
                 value={branch.impact.modifier}
-                onChange={(e) => setImpact(idx, { ...branch.impact, modifier: e.target.valueAsNumber })}
+                onChange={(value) => setImpact(idx, { ...branch.impact, modifier: value })}
               />
               <RiskLevelSelect
                 floor={branch.impact.floor}
