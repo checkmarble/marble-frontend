@@ -32,15 +32,14 @@ export default function DataViewer() {
   const dataModel = useDataModel();
   const match = useMatch('/data/view/:tableName/:objectId' as RoutePath);
   const navigate = useAgnosticNavigation();
-
+  const [open, setOpen] = useState(false);
   const [tableName, setTableName] = useState(match?.params.tableName ?? '');
   const [objectId, setObjectId] = useState(match?.params.objectId ?? '');
 
   const handleTableNameChange = (value: string) => {
     setTableName(value);
-    if (tableName) {
-      setObjectId('');
-    }
+    if (tableName) setObjectId('');
+    setOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -61,7 +60,7 @@ export default function DataViewer() {
           <div className="flex items-end gap-2">
             <div className="text-s flex flex-col gap-1">
               <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
-              <MenuCommand.Menu>
+              <MenuCommand.Menu open={open} onOpenChange={setOpen}>
                 <MenuCommand.Trigger>
                   <MenuCommand.SelectButton className="min-w-40">
                     <span className={tableName ? undefined : 'text-grey-50'}>{tableName || 'select a table'}</span>
