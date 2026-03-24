@@ -62,7 +62,7 @@ export function PivotsPanelContent({
   return (
     <div className="flex flex-col gap-8">
       {isAllMissingPivotObject ? (
-        <div className="border-grey-border flex h-40 flex-col items-center justify-center gap-2 rounded-sm border p-8">
+        <div className="border-grey-border flex h-40 flex-col items-center justify-center gap-2 rounded-sm border p-8 mt-2">
           <span className="text-center">
             {isAdmin(currentUser)
               ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
@@ -90,24 +90,26 @@ export function PivotsPanelContent({
             {t('cases:ai_review.proof.title')}
           </button>
         ) : null}
-        <div className="border-grey-border flex gap-2 self-start rounded-v2-lg border p-v2-xs">
-          {pivotObjects.map((pivotObject, idx) => {
-            const uniqKey = pivotUniqKey(pivotObject);
-            return (
-              <button
-                key={uniqKey}
-                className="text-grey-secondary aria-current:bg-purple-background aria-current:text-purple-primary aria-current:dark:bg-grey-background-light aria-current:dark:text-purple-hover rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
-                aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
-                onClick={() => {
-                  setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
-                  setIsDisplayingProofs(false);
-                }}
-              >
-                {pivotObject.pivotObjectName} {idx + 1}
-              </button>
-            );
-          })}
-        </div>
+        {pivotObjects.length > 0 ? (
+          <div className="border-grey-border flex gap-2 self-start rounded-v2-lg border p-v2-xs">
+            {pivotObjects.map((pivotObject, idx) => {
+              const uniqKey = pivotUniqKey(pivotObject);
+              return (
+                <button
+                  key={uniqKey}
+                  className="text-grey-secondary aria-current:bg-purple-background aria-current:text-purple-primary aria-current:dark:bg-grey-background-light aria-current:dark:text-purple-hover rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
+                  aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
+                  onClick={() => {
+                    setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
+                    setIsDisplayingProofs(false);
+                  }}
+                >
+                  {pivotObject.pivotObjectName} {idx + 1}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
       {!isDisplayingProofs ? (
         <>
