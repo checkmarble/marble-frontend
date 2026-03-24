@@ -193,6 +193,8 @@ paths:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}~1rules~1latest
   /scenarios/{scenarioId}/ast-ai-description:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}~1ast-ai-description
+  /scenarios/{scenarioId}/generate-ast:
+    $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}~1generate-ast
 
   # SCENARIO ITERATIONS
 

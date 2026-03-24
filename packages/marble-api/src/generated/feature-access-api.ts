@@ -29,6 +29,7 @@ export type FeatureAccessDto = {
     case_auto_assign: FeatureAccessLevelDto;
     case_ai_assist: FeatureAccessLevelDto;
     continuous_screening: FeatureAccessLevelDto;
+    ai_rule_building: FeatureAccessLevelDto;
 };
 /**
  * Get the entitlements of an organization

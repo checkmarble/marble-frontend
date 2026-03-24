@@ -3428,6 +3428,40 @@ export function generateAiDescriptionForAstExpression(scenarioId: string, body: 
     })));
 }
 /**
+ * Generate a rule formula using AI
+ */
+export function generateRuleAst(scenarioId: string, body: {
+    /** ID of the rule to generate formula for */
+    rule_id: string;
+    /** Natural language description of the rule to generate */
+    instruction: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            rule_ast: NodeDto;
+            validation: {
+                is_valid: boolean;
+                errors: string[];
+                warnings: string[];
+            };
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenarios/${encodeURIComponent(scenarioId)}/generate-ast`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List iterations with full body
  */
 export function listScenarioIterations(scenarioId: string, opts?: Oazapfts.RequestOpts) {

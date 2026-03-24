@@ -134,3 +134,5 @@ export const isContinuousScreeningAvailable = (entitlements: FeatureAccesses) =>
 
 export const isScreeningSearchAvailable = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.sanctions) || isContinuousScreeningAvailable(entitlements);
+
+export const isAiRuleBuildingAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.aiRuleBuilding);
