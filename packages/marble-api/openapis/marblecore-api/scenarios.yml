@@ -253,8 +253,82 @@
       "404":
         $ref: "components.yml#/responses/404"
 
+/scenarios/{scenarioId}/generate-ast:
+  post:
+    tags:
+      - Scenarios
+    summary: Generate a rule formula using AI
+    description: Generate a rule formula from a natural language instruction using AI. The rule is updated in-place on the server.
+    operationId: generateRuleAst
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioId
+        description: ID of the scenario containing the rule
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Rule ID and natural language instruction for generating the rule formula
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - rule_id
+              - instruction
+            properties:
+              rule_id:
+                type: string
+                format: uuid
+                description: ID of the rule to generate formula for
+              instruction:
+                type: string
+                description: Natural language description of the rule to generate
+      required: true
+    responses:
+      '200':
+        description: Rule formula generated and saved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateRuleResponseDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
 components:
   schemas:
+    GenerateRuleResponseDto:
+      type: object
+      properties:
+        rule_ast:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+        validation:
+          type: object
+          properties:
+            is_valid:
+              type: boolean
+            errors:
+              type: array
+              items:
+                type: string
+            warnings:
+              type: array
+              items:
+                type: string
+          required:
+            - is_valid
+            - errors
+            - warnings
+      required:
+        - rule_ast
+        - validation
     ScenarioDto:
       type: object
       properties:

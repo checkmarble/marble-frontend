@@ -25,12 +25,13 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   const [editTagsOpen, setEditTagsOpen] = useState(false);
   const [editRiskCateogoriesOpen, setEditRiskCategoriesOpen] = useState(false);
   const queryClient = useQueryClient();
+  const entityName = metadata.alias || metadata.name;
 
   return (
     <div className="flex gap-v2-md items-center">
       <div className="flex gap-v2-xs items-center">
         <h1 className="text-h1 font-semibold capitalize">{objectDetails.data[metadata.caption_field] as string}</h1>
-        <Tag color="grey">{metadata.alias ?? metadata.name}</Tag>
+        <Tag color="grey">{entityName}</Tag>
       </div>
       <div className="w-px self-stretch bg-grey-border" />
       <div className="flex gap-v2-xs items-center">
@@ -61,7 +62,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                       Entity: <Tag color="grey" />,
                     }}
                     values={{
-                      objectType: metadata.alias ?? metadata.name,
+                      objectType: entityName,
                     }}
                   />
                 )}
@@ -121,7 +122,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                       Entity: <Tag color="grey" />,
                     }}
                     values={{
-                      objectType: metadata.alias ?? metadata.name,
+                      objectType: entityName,
                     }}
                   />
                 )}
