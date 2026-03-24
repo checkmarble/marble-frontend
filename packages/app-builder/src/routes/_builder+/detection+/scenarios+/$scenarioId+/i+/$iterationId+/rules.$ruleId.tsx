@@ -6,6 +6,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { DeleteRule } from '@app-builder/components/Scenario/Rules/Actions/DeleteRule';
 import { DuplicateRule } from '@app-builder/components/Scenario/Rules/Actions/DuplicateRule';
 import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescription';
+import { AiGenerateRule } from '@app-builder/components/Scenario/Rules/AiGenerateRule';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
 import { type ServerFnResult } from '@app-builder/core/middleware-types';
@@ -16,7 +17,11 @@ import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
+import {
+  hasAnyEntitlement,
+  isAiRuleBuildingAvailable,
+  isContinuousScreeningAvailable,
+} from '@app-builder/services/feature-access';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -103,7 +108,7 @@ export const loader = createServerFn([authMiddleware], async function ruleLoader
     payloadAccessors,
     dataModel,
     customLists,
-    isAiRuleDescriptionEnabled: context.appConfig.isManagedMarble,
+    isAiRuleDescriptionEnabled: isAiRuleBuildingAvailable(entitlements),
     rule,
     hasValidLicense: hasAnyEntitlement(entitlements),
     hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
@@ -209,6 +214,9 @@ export default function RuleDetail() {
     },
     defaultValues: rule as EditRuleForm,
   });
+
+  // Track AI generation: update form directly with returned AST + re-mount AST builder
+  const [formulaKey, setFormulaKey] = useState(0);
 
   const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
   const [ruleDescription, setRuleDescription] = useState<string | undefined>(undefined);
@@ -403,6 +411,7 @@ export default function RuleDetail() {
                     >
                       {(field) => (
                         <FieldAstFormula
+                          key={formulaKey}
                           type="rule"
                           scenarioId={scenario.id}
                           options={options}
@@ -423,6 +432,18 @@ export default function RuleDetail() {
                       isPending={isDebouncing || ruleDescriptionMutation.isPending}
                       description={ruleDescription}
                       className="self-start max-w-2xl"
+                    />
+                  ) : null}
+
+                  {isAiRuleDescriptionEnabled && editor === 'edit' ? (
+                    <AiGenerateRule
+                      scenarioId={scenario.id}
+                      ruleId={rule.id}
+                      onFormulaGenerated={(ruleAst) => {
+                        form.setFieldValue('formula', ruleAst);
+                        handleFormulaChange(ruleAst);
+                        setFormulaKey((k) => k + 1);
+                      }}
                     />
                   ) : null}
                 </div>

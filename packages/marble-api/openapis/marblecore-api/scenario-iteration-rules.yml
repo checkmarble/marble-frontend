@@ -226,6 +226,31 @@
 
 components:
   schemas:
+    GenerateRuleResponseDto:
+      type: object
+      properties:
+        rule_ast:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+        validation:
+          type: object
+          properties:
+            is_valid:
+              type: boolean
+            errors:
+              type: array
+              items:
+                type: string
+            warnings:
+              type: array
+              items:
+                type: string
+          required:
+            - is_valid
+            - errors
+            - warnings
+      required:
+        - rule_ast
+        - validation
     ScenarioIterationRuleMetadataDto:
       type: object
       properties:

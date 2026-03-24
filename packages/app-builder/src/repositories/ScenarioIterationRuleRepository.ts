@@ -1,5 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { AstNode, adaptNodeDto } from '@app-builder/models';
+import { AstNode, adaptAstNode, adaptNodeDto } from '@app-builder/models';
 import {
   adaptCreateScenarioIterationRuleBodyDto,
   adaptScenarioIterationRule,
@@ -22,6 +22,11 @@ export interface ScenarioIterationRuleRepository {
     scenarioId: string;
     astNode: AstNode;
   }): Promise<{ description: string; isRuleValid: boolean }>;
+  generateRuleAst(args: {
+    scenarioId: string;
+    ruleId: string;
+    instruction: string;
+  }): Promise<{ ruleAst: AstNode; validation: { isValid: boolean; errors: string[]; warnings: string[] } }>;
 }
 
 export function makeGetScenarioIterationRuleRepository() {
@@ -62,6 +67,16 @@ export function makeGetScenarioIterationRuleRepository() {
         },
       );
       return { description, isRuleValid: is_rule_valid };
+    },
+    generateRuleAst: async ({ scenarioId, ruleId, instruction }) => {
+      const { rule_ast, validation } = await marbleCoreApiClient.generateRuleAst(scenarioId, {
+        rule_id: ruleId,
+        instruction,
+      });
+      return {
+        ruleAst: adaptAstNode(rule_ast),
+        validation: { isValid: validation.is_valid, errors: validation.errors, warnings: validation.warnings },
+      };
     },
   });
 }
