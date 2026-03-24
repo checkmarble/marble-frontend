@@ -1,15 +1,25 @@
 import { DetailedCaseDecision } from '@app-builder/models/cases';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
 const endpoint = (caseId: string, qs: string) =>
   getRoute('/ressources/cases/:caseId/decisions', {
     caseId: fromUUIDtoSUUID(caseId),
   }) + qs;
 
+const caseDecisionsQueryKey = ['cases', 'list-decisions'] as const;
+
+export function useInvalidateCaseDecisions() {
+  const queryClient = useQueryClient();
+  return useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: caseDecisionsQueryKey });
+  }, [queryClient]);
+}
+
 export function useCaseDecisionsQuery(caseId: string) {
-  const queryKey = ['cases', 'list-decisions', caseId] as const;
+  const queryKey = [...caseDecisionsQueryKey, caseId] as const;
 
   return useInfiniteQuery({
     queryKey,

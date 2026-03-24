@@ -2,6 +2,7 @@ import { CalloutV2 } from '@app-builder/components/Callout';
 import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { Screening, ScreeningMatch } from '@app-builder/models/screening';
 import { type ScreeningMatchPayload, type ScreeningStatus } from '@app-builder/models/screening';
+import { useInvalidateCaseDecisions } from '@app-builder/queries/cases/list-decisions';
 import {
   useInvalidateScreeningDetail,
   useScreeningDetailQuery,
@@ -45,6 +46,17 @@ export function ScreeningHitsPanel({
     setCurrentScreeningId(initialScreeningId);
   }, [initialScreeningId]);
   const invalidateScreeningDetail = useInvalidateScreeningDetail();
+  const invalidateCaseDecisions = useInvalidateCaseDecisions();
+
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      onOpenChange(isOpen);
+      if (!isOpen) {
+        invalidateCaseDecisions();
+      }
+    },
+    [onOpenChange, invalidateCaseDecisions],
+  );
 
   const screeningQuery = useScreeningDetailQuery(decisionId, currentScreeningId, open);
 
@@ -95,14 +107,14 @@ export function ScreeningHitsPanel({
   const currentStatus = screeningQuery.data?.status ?? screeningStatus;
 
   return (
-    <PanelRoot open={open} onOpenChange={onOpenChange}>
+    <PanelRoot open={open} onOpenChange={handleOpenChange}>
       <PanelContainer size="max" className="!max-w-[80vw]">
         {/* Header: X | Name + Status Badge | Action button */}
         <div className="flex items-center gap-4 pb-v2-lg">
           <Icon
             icon="cross"
             className="size-6 shrink-0 cursor-pointer text-grey-secondary hover:text-grey-primary"
-            onClick={() => onOpenChange(false)}
+            onClick={() => handleOpenChange(false)}
             aria-label="Close panel"
           />
           <div className="flex flex-1 items-center gap-1">

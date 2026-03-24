@@ -5,24 +5,20 @@ import { LoadingIcon } from '@app-builder/components/Spinner';
 import { nonPendingReviewStatuses } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { ScreeningStatus } from '@app-builder/models/screening';
+import {
+  type ReviewDecisionPayload,
+  reviewDecisionPayloadSchema,
+  useReviewDecisionMutation,
+} from '@app-builder/queries/cases/review-decision';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Modal, TextArea } from 'ui-design-system';
 import { z } from 'zod/v4';
-
-const reviewDecisionSchema = z.object({
-  decisionId: z.string(),
-  reviewComment: z.string(),
-  reviewStatus: z.enum(nonPendingReviewStatuses),
-});
-
-type ReviewDecisionForm = z.infer<typeof reviewDecisionSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -40,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { data, success, error } = reviewDecisionSchema.safeParse(rawData);
+  const { data, success, error } = reviewDecisionPayloadSchema.safeParse(rawData);
 
   if (!success) {
     return json(
@@ -111,31 +107,23 @@ function ReviewDecisionContent({
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
-  const fetcher = useFetcher<typeof action>();
-
-  useEffect(() => {
-    if (fetcher?.data?.status === 'success') {
-      setOpen(false);
-    }
-  }, [setOpen, fetcher?.data?.status]);
+  const reviewDecisionMutation = useReviewDecisionMutation();
 
   const form = useForm({
     defaultValues: {
       decisionId,
       reviewComment: '',
       reviewStatus: '' as Outcome,
-    } as ReviewDecisionForm,
+    } as ReviewDecisionPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          method: 'POST',
-          action: getRoute('/ressources/cases/review-decision'),
-          encType: 'application/json',
+        reviewDecisionMutation.mutate(value, {
+          onSuccess: () => setOpen(false),
         });
       }
     },
     validators: {
-      onSubmit: reviewDecisionSchema,
+      onSubmit: reviewDecisionPayloadSchema,
     },
   });
 
@@ -162,8 +150,8 @@ function ReviewDecisionContent({
           <form.Field
             name="reviewStatus"
             validators={{
-              onBlur: reviewDecisionSchema.shape.reviewStatus,
-              onChange: reviewDecisionSchema.shape.reviewStatus,
+              onBlur: reviewDecisionPayloadSchema.shape.reviewStatus,
+              onChange: reviewDecisionPayloadSchema.shape.reviewStatus,
             }}
           >
             {(field) => (
@@ -204,8 +192,8 @@ function ReviewDecisionContent({
           <form.Field
             name="reviewComment"
             validators={{
-              onBlur: reviewDecisionSchema.shape.reviewComment,
-              onChange: reviewDecisionSchema.shape.reviewComment,
+              onBlur: reviewDecisionPayloadSchema.shape.reviewComment,
+              onChange: reviewDecisionPayloadSchema.shape.reviewComment,
             }}
           >
             {(field) => (
@@ -228,7 +216,7 @@ function ReviewDecisionContent({
             </Button>
           </Modal.Close>
           <Button variant="primary" type="submit">
-            <LoadingIcon icon="case-manager" className="size-5" loading={fetcher.state === 'submitting'} />
+            <LoadingIcon icon="case-manager" className="size-5" loading={reviewDecisionMutation.isPending} />
             {t('common:validate')}
           </Button>
         </Modal.Footer>
