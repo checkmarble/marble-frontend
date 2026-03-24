@@ -25,20 +25,23 @@ import { Icon } from 'ui-icons';
 export function CreateScenario({ children }: { children: React.ReactElement }) {
   const hydrated = useHydrated();
   const dataModelQuery = useDataModelQuery();
+  const [open, setOpen] = React.useState(false);
 
   return (
-    <Modal.Root>
+    <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild disabled={hydrated && !dataModelQuery.isSuccess}>
         {children}
       </Modal.Trigger>
       <Modal.Content>
-        {dataModelQuery.isSuccess ? <CreateScenarioContent dataModel={dataModelQuery.data.dataModel} /> : null}
+        {dataModelQuery.isSuccess ? (
+          <CreateScenarioContent dataModel={dataModelQuery.data.dataModel} onCreateSuccess={() => setOpen(false)} />
+        ) : null}
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
+function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: DataModel; onCreateSuccess: () => void }) {
   const { t, i18n } = useTranslation(['common', 'scenarios']);
   const createScenarioMutation = useCreateScenarioMutation();
   const revalidate = useLoaderRevalidator();
@@ -51,6 +54,7 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
     } satisfies CreateScenarioPayload,
     onSubmit: ({ value }) => {
       createScenarioMutation.mutateAsync(value).then(() => {
+        onCreateSuccess();
         revalidate();
       });
     },
@@ -59,7 +63,7 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
     },
   });
 
-  const isSubmitting = createScenarioMutation.isPending || createScenarioMutation.isSuccess || form.state.isSubmitting;
+  const isSubmitting = createScenarioMutation.isPending || form.state.isSubmitting;
 
   return (
     <form onSubmit={handleSubmit(form)}>

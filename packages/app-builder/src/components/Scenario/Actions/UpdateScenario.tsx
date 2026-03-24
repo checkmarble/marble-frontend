@@ -1,6 +1,7 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   UpdateScenarioPayload,
@@ -62,6 +63,8 @@ function UpdateScenarioContent({
     },
   });
 
+  const isSubmitting = updateScenarioMutation.isPending || form.state.isSubmitting;
+
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>{t('scenarios:update_scenario.title')}</Modal.Title>
@@ -120,6 +123,7 @@ function UpdateScenarioContent({
           </Button>
         </Modal.Close>
         <Button className="flex-1" variant="primary" type="submit">
+          {isSubmitting ? <Spinner className="size-4" /> : null}
           {t('common:save')}
         </Button>
       </Modal.Footer>
