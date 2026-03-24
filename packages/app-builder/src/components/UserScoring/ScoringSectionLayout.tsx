@@ -123,7 +123,9 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
     <PanelContainer size="lg" className="flex-col gap-v2-md">
       <form className="contents" onSubmit={handleSubmit(form)}>
         <div className="flex items-center gap-v2-md">
-          <Icon icon="x" className="size-6" />
+          <button type="button" onClick={() => panelSharp.actions.close()}>
+            <Icon icon="x" className="size-6" />
+          </button>
           <h2 className="text-h2 font-semibold">{t('user-scoring:section.create_panel.title')}</h2>
         </div>
         <div>
