@@ -172,7 +172,13 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
+          <Button
+            className="flex-1"
+            type="button"
+            variant="secondary"
+            appearance="stroked"
+            onMouseDown={(e) => e.preventDefault()}
+          >
             {t('common:cancel')}
           </Button>
         </Modal.Close>
