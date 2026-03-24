@@ -86,7 +86,6 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
           <form.Field
             name="name"
             validators={{
-              onBlur: createScenarioPayloadSchema.shape.name,
               onChange: createScenarioPayloadSchema.shape.name,
             }}
           >
@@ -98,7 +97,6 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
                   name={field.name}
                   defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  onBlur={field.handleBlur}
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('scenarios:create_scenario.name_placeholder')}
                 />
@@ -115,7 +113,6 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
                   name={field.name}
                   defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  onBlur={field.handleBlur}
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('scenarios:create_scenario.description_placeholder')}
                 />
@@ -126,7 +123,6 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
           <form.Field
             name="triggerObjectType"
             validators={{
-              onBlur: createScenarioPayloadSchema.shape.triggerObjectType,
               onChange: createScenarioPayloadSchema.shape.triggerObjectType,
             }}
           >
