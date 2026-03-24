@@ -1,8 +1,7 @@
 import { createRightPanel, type RightPanelRootProps } from '@app-builder/components/RightPanel';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { useReducer } from 'react';
+import { type ReactNode, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AddToCase } from './AddToCase';
 import { decisionsI18n } from './decisions-i18n';
 
 type Data = {
@@ -54,7 +53,11 @@ const DecisionRightPanelContext = createSimpleContext<{
 }>('DecisionRightPanelContext');
 export const useDecisionRightPanelContext = DecisionRightPanelContext.useValue;
 
-function DecisionRightPanelRoot({ children, ...props }: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
+interface DecisionRightPanelRootProps extends Omit<RightPanelRootProps, 'open' | 'onClose'> {
+  content: ReactNode;
+}
+
+function DecisionRightPanelRoot({ children, content, ...props }: DecisionRightPanelRootProps) {
   const [state, dispatch] = useReducer(decisionRightPanelReducer, initialState);
 
   const value = {
@@ -77,13 +80,13 @@ function DecisionRightPanelRoot({ children, ...props }: Omit<RightPanelRootProps
         }}
       >
         <RightPanel.Viewport>{children}</RightPanel.Viewport>
-        <DecisionRightPanelContent />
+        <DecisionRightPanelContent content={content} />
       </RightPanel.Root>
     </DecisionRightPanelContext.Provider>
   );
 }
 
-function DecisionRightPanelContent() {
+function DecisionRightPanelContent({ content }: { content: ReactNode }) {
   const { t } = useTranslation(decisionsI18n);
 
   return (
@@ -92,7 +95,7 @@ function DecisionRightPanelContent() {
         <span className="w-full first-letter:capitalize">{t('decisions:add_to_case')}</span>
         <RightPanel.Close />
       </RightPanel.Title>
-      <AddToCase />
+      {content}
     </RightPanel.Content>
   );
 }

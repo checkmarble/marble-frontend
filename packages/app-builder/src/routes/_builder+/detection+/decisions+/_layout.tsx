@@ -39,7 +39,7 @@ export default function DecisionsLayout() {
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
-      <Outlet />;
+      <Outlet />
     </DataModelContextProvider>
   );
 }
