@@ -342,6 +342,7 @@ components:
         - record_type
         - thresholds
         - cooldown_seconds
+        - scoring_interval_seconds
         - created_at
       properties:
         id:
@@ -370,6 +371,9 @@ components:
         cooldown_seconds:
           type: integer
           example: 3600
+        scoring_interval_seconds:
+          type: integer
+          example: 3600
         created_at:
           type: string
           format: date-time
@@ -391,6 +395,10 @@ components:
             type: integer
           example: [10, 40, 50, 150]
         cooldown_seconds:
+          type: integer
+          default: 0
+          example: 3600
+        scoring_interval_seconds:
           type: integer
           default: 0
           example: 3600

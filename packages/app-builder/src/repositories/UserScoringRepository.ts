@@ -49,14 +49,15 @@ export function makeGetUserScoringRepository() {
     async updateScoringSettings({ maxRiskLevel }) {
       return adaptScoringSettings(await marbleCoreApiClient.updateScoringSettings({ max_risk_level: maxRiskLevel }));
     },
-    async updateScoringRuleset(recordType, { name, description, thresholds, cooldownSeconds, rules }) {
+    async updateScoringRuleset(recordType, payload) {
       return adaptScoringRulesetWithRules(
         await marbleCoreApiClient.updateScoringRuleset(recordType, '', {
-          name,
-          description,
-          thresholds,
-          cooldown_seconds: cooldownSeconds,
-          rules: rules.map(({ stableId, name, description, riskType, ast }) => ({
+          name: payload.name,
+          description: payload.description,
+          thresholds: payload.thresholds,
+          cooldown_seconds: payload.cooldownSeconds,
+          scoring_interval_seconds: payload.scoringIntervalSeconds,
+          rules: payload.rules.map(({ stableId, name, description, riskType, ast }) => ({
             stable_id: stableId ?? '',
             name,
             description,

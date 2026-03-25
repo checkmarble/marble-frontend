@@ -58,6 +58,21 @@ export const adaptScoringSettings = (dto: ScoringSettingsDto): ScoringSettings =
   };
 };
 
+export type DurationUnit = 'days' | 'months' | 'years';
+
+export const SECONDS_PER_UNIT: Record<DurationUnit, number> = {
+  days: 86400,
+  months: 30 * 86400,
+  years: 365 * 86400,
+};
+
+export function secondsToDisplay(seconds: number): { value: number; unit: DurationUnit | null } {
+  if (seconds === 0) return { value: 0, unit: null };
+  if (seconds % SECONDS_PER_UNIT.years === 0) return { value: seconds / SECONDS_PER_UNIT.years, unit: 'years' };
+  if (seconds % SECONDS_PER_UNIT.months === 0) return { value: seconds / SECONDS_PER_UNIT.months, unit: 'months' };
+  return { value: seconds / SECONDS_PER_UNIT.days, unit: 'days' };
+}
+
 export type ScoringRuleset = {
   id: string;
   orgId: string;
@@ -68,6 +83,7 @@ export type ScoringRuleset = {
   recordType: string;
   thresholds: number[];
   cooldownSeconds: number;
+  scoringIntervalSeconds: number;
   createdAt: string;
 };
 
@@ -80,6 +96,7 @@ export type UpdateScoringRuleset = {
   description?: string;
   thresholds: number[];
   cooldownSeconds?: number;
+  scoringIntervalSeconds?: number;
   rules: { stableId?: string; name: string; description?: string; riskType: string; ast: AstNode }[];
 };
 
@@ -93,6 +110,7 @@ export const adaptScoringRuleset = (dto: ScoringRulesetDto): ScoringRuleset => (
   recordType: dto.record_type,
   thresholds: dto.thresholds,
   cooldownSeconds: dto.cooldown_seconds,
+  scoringIntervalSeconds: dto.scoring_interval_seconds,
   createdAt: dto.created_at,
 });
 
