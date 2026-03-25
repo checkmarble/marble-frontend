@@ -4,19 +4,20 @@ import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
-export const addToCasePayloadSchema = z.discriminatedUnion('newCase', [
-  z.object({
-    newCase: z.literal(true),
-    name: z.string().min(1),
-    decisionIds: protectArray(z.array(z.string())),
-    inboxId: z.string().min(1),
-  }),
-  z.object({
-    newCase: z.literal(false),
-    caseId: z.string().min(1),
-    decisionIds: protectArray(z.array(z.string())),
-  }),
-]);
+export const newCaseSchema = z.object({
+  newCase: z.literal(true),
+  name: z.string().min(1),
+  decisionIds: protectArray(z.array(z.string())),
+  inboxId: z.string().min(1),
+});
+
+export const existingCaseSchema = z.object({
+  newCase: z.literal(false),
+  caseId: z.string().min(1),
+  decisionIds: protectArray(z.array(z.string())),
+});
+
+export const addToCasePayloadSchema = z.discriminatedUnion('newCase', [newCaseSchema, existingCaseSchema]);
 
 export type AddToCasePayload = z.infer<typeof addToCasePayloadSchema>;
 

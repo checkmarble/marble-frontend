@@ -14,6 +14,7 @@ import {
   paginationSchema,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
+import { AddToCaseForm } from '@app-builder/components/Decisions/AddToCaseForm';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
@@ -155,7 +156,7 @@ export default function DetectionDecisions() {
     useTanstackTableListSelection<DecisionViewModel>(decisions, (row) => row.id);
 
   return (
-    <DecisionRightPanel.Root>
+    <DecisionRightPanel.Root content={<AddToCaseForm />}>
       <Page.Main>
         <Page.Container>
           <Page.ContentV2 className="gap-v2-md">

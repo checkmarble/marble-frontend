@@ -10,6 +10,7 @@ import {
   useDecisionRightPanelContext,
 } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { AddToCaseForm } from '@app-builder/components/Decisions/AddToCaseForm';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
@@ -211,7 +212,7 @@ export default function DecisionPage() {
   const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
 
   return (
-    <DecisionRightPanel.Root>
+    <DecisionRightPanel.Root content={<AddToCaseForm />}>
       <Page.Main>
         <Page.Header className="justify-between">
           <BreadCrumbs />

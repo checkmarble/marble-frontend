@@ -1,6 +1,6 @@
 import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABELS } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
-import { Input } from 'ui-design-system';
+import { Input, NumberInput } from 'ui-design-system';
 
 interface ScoringLevelThresholdsProps {
   maxRiskLevel: number;
@@ -45,18 +45,17 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
               {isFirst ? (
                 <>
                   <span className="text-s font-medium w-[30px] shrink-0 text-right">≤</span>
-                  <Input
-                    type="number"
+                  <NumberInput
                     className="flex-1"
-                    value={upperThreshold ?? ''}
-                    onChange={(e) => handleChange(i, Number(e.target.value))}
+                    value={upperThreshold ?? 0}
+                    onChange={(value) => handleChange(i, value)}
                   />
                 </>
               ) : null}
               {isLast ? (
                 <>
                   <span className="text-s font-medium w-[30px] shrink-0 text-right">{'>'}</span>
-                  <Input type="number" className="flex-1" value={lowerBound ?? ''} readOnly />
+                  <Input className="flex-1" value={lowerBound ?? ''} readOnly />
                 </>
               ) : null}
               {!isFirst && !isLast ? (
@@ -64,15 +63,14 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
                   <span className="text-s text-grey-primary whitespace-nowrap shrink-0">
                     {t('user-scoring:thresholds.between')}
                   </span>
-                  <Input type="number" className="flex-1" value={lowerBound ?? ''} readOnly />
+                  <Input className="flex-1" value={lowerBound ?? ''} readOnly />
                   <span className="text-s text-grey-primary whitespace-nowrap shrink-0">
                     {t('user-scoring:thresholds.and')}
                   </span>
-                  <Input
-                    type="number"
+                  <NumberInput
                     className="flex-1"
-                    value={upperThreshold ?? ''}
-                    onChange={(e) => handleChange(i, Number(e.target.value))}
+                    value={upperThreshold ?? 0}
+                    onChange={(value) => handleChange(i, value)}
                   />
                 </>
               ) : null}

@@ -1,6 +1,6 @@
 import { type BoolSwitch, type ScoreImpact } from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
-import { Input } from 'ui-design-system';
+import { NumberInput } from 'ui-design-system';
 import { RiskLevelSelect } from './shared';
 
 interface BoolSwitchEditProps {
@@ -47,11 +47,7 @@ function BoolRow({ label, showThen = false, impact, maxRiskLevel, onImpactChange
     <div className="grid grid-cols-[164px_minmax(auto,_40px)_70px_auto] items-center gap-2">
       <span className="text-right text-purple-primary">{label}</span>
       <span className="text-center text-grey-secondary">{showThen ? t('user-scoring:switch.bool.then') : ''}</span>
-      <Input
-        type="number"
-        value={impact.modifier}
-        onChange={(e) => onImpactChange({ ...impact, modifier: e.target.valueAsNumber })}
-      />
+      <NumberInput value={impact.modifier} onChange={(value) => onImpactChange({ ...impact, modifier: value })} />
       <RiskLevelSelect
         floor={impact.floor}
         maxRiskLevel={maxRiskLevel}
