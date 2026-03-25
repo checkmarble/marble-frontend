@@ -230,7 +230,7 @@ export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string
           ))
           .otherwise(() =>
             reviews.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-s text-grey-secondary">
+              <div className="flex h-full items-center justify-center text-s text-grey-secondary p-4">
                 {t('cases:case.ai_reviews.empty')}
               </div>
             ) : (

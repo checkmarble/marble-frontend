@@ -7,8 +7,6 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type SerializeFrom } from '@remix-run/node';
 import { Outlet } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import { useTranslation } from 'react-i18next';
-import { Icon } from 'ui-icons';
 
 export const loader = createServerFn(
   [authMiddleware, caseDetailMiddleware],
@@ -20,16 +18,6 @@ export const loader = createServerFn(
 export const handle = {
   i18n: ['common', 'cases', 'decisions'] satisfies Namespace,
   BreadCrumbs: [
-    ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['navigation']);
-
-      return (
-        <BreadCrumbLink to={getRoute('/cases')} isLast={isLast}>
-          <Icon icon="case-manager" className="me-2 size-6" />
-          {t('navigation:case_manager')}
-        </BreadCrumbLink>
-      );
-    },
     ({ isLast, data }: BreadCrumbProps<SerializeFrom<typeof loader>>) => {
       const caseInbox = data.caseInbox;
 

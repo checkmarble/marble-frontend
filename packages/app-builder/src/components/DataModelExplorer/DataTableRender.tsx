@@ -295,7 +295,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                 >
                   <th
                     className={cn(
-                      'border-grey-border bg-surface-card sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
+                      'border-grey-border bg-surface-card sticky left-0 z-10 border-y border-r p-2 font-normal',
                       {
                         'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
                       },
