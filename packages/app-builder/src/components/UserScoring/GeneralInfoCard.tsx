@@ -1,12 +1,12 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
-  formatCooldown,
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABELS,
   type ScoringRulesetWithRules,
   type ScoringSettings,
+  secondsToDisplay,
 } from '@app-builder/models/scoring';
 import { useCommitScoringRulesetMutation } from '@app-builder/queries/scoring/commit-ruleset';
 import { useListScoringRulesetVersionsQuery } from '@app-builder/queries/scoring/list-ruleset-versions';
@@ -23,13 +23,20 @@ interface GeneralInfoCardProps {
   preparationStatus: ScenarioPublicationStatus | null;
 }
 
+function formatDuration(seconds: number, t: (key: string) => string): string | null {
+  const { value, unit } = secondsToDisplay(seconds);
+  if (!unit) return null;
+  return `${value} ${t(`common:duration_unit.${unit}`)}`;
+}
+
 export function GeneralInfoCard({ ruleset, settings, preparationStatus }: GeneralInfoCardProps) {
-  const { t } = useTranslation(['user-scoring']);
+  const { t } = useTranslation(['user-scoring', 'common']);
   const navigate = useAgnosticNavigation();
   const formatDateTime = useFormatDateTime();
   const prepareMutation = usePrepareScoringRulesetMutation();
   const commitMutation = useCommitScoringRulesetMutation();
-  const cooldownLabel = formatCooldown(ruleset.cooldownSeconds);
+  const cooldownLabel = formatDuration(ruleset.cooldownSeconds, t);
+  const scoringIntervalLabel = formatDuration(ruleset.scoringIntervalSeconds, t);
   const versionsQuery = useListScoringRulesetVersionsQuery(ruleset.recordType);
   const versionOptions: SelectOption<string>[] = (versionsQuery.data?.versions ?? []).map((v) => ({
     value: v.status === 'committed' ? v.version.toString() : 'draft',
@@ -98,6 +105,14 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
             <span className="text-grey-border">|</span>
             <span>
               {t('user-scoring:ruleset.cooldown')} <span className="text-grey-primary">{cooldownLabel}</span>
+            </span>
+          </>
+        ) : null}
+        {scoringIntervalLabel ? (
+          <>
+            <span className="text-grey-border">|</span>
+            <span>
+              {t('user-scoring:ruleset.score_renew')} <span className="text-grey-primary">{scoringIntervalLabel}</span>
             </span>
           </>
         ) : null}
