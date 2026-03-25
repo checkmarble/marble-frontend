@@ -26,7 +26,7 @@
   "error_one": "erreur",
   "error_other": "erreurs",
   "errors.account_exists_with_different_credential": "Un compte existe déjà avec cette adresse e-mail mais avec des identifiants différents. Connectez-vous avec un fournisseur associé à cette adresse e-mail.",
-  "errors.add_to_case.invalid": "Une décision appartient déjà à une investigation",
+  "errors.add_to_case.invalid": "L'ID de l'investigation est invalide",
   "errors.backend_global_error.disallowed-network": "Vous n'êtes pas autorisé à accéder à cette page depuis ce réseau",
   "errors.backend_global_error.unknown": "Une erreur inconnue s'est produite",
   "errors.backend_unvailable": "L'application ne peut pas communiquer avec le backend Marble. Vérifiez votre configuration ou réessayez plus tard.",

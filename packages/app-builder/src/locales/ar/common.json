@@ -26,7 +26,7 @@
   "error_one": "{{count}} خطأ",
   "error_other": "{{count}} أخطاء",
   "errors.account_exists_with_different_credential": "يوجد حساب بالفعل بنفس عنوان البريد الإلكتروني ولكن مع بيانات تسجيل دخول مختلفة. يرجى تسجيل الدخول باستخدام مزود مرتبط بهذا البريد الإلكتروني.",
-  "errors.add_to_case.invalid": "هذا القرار مرتبط بالحالة مسبقًا",
+  "errors.add_to_case.invalid": "رقم الحالة غير صالح",
   "errors.backend_global_error.disallowed-network": "لا تملك صلاحيات الوصول إلى هذه الصفحة من هذه الشبكة",
   "errors.backend_global_error.unknown": "حدث خطأ غير معروف.",
   "errors.backend_unvailable": "لا يمكن لتطبيق Marble التواصل مع الواجهة الخلفية لـ Marble.\nيرجى التحقق من التكوين الخاص بك أو المحاولة مرة أخرى لاحقًا.",
