@@ -129,98 +129,92 @@ function ReviewDecisionContent({
 
   return (
     // Stop React synthetic events from bubbling through the portal to the parent AlertCard
-    <div onClick={(e) => e.stopPropagation()}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          form.handleSubmit();
-        }}
-      >
-        <div className="flex flex-col gap-2 p-4">
-          <p className="text-grey-primary text-base font-semibold leading-[1.1]">
-            {t('cases:case_detail.review_decision.title')}
-          </p>
-          <Modal.Description asChild>
-            <p className="text-grey-primary text-s leading-[1.4]">
-              {t('cases:case_detail.review_decision.description')}
-            </p>
-          </Modal.Description>
+    <form
+      onClick={(e) => e.stopPropagation()}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <div className="flex flex-col gap-2 p-4">
+        <p className="text-grey-primary text-base font-semibold leading-[1.1]">
+          {t('cases:case_detail.review_decision.title')}
+        </p>
+        <Modal.Description asChild>
+          <p className="text-grey-primary text-s leading-[1.4]">{t('cases:case_detail.review_decision.description')}</p>
+        </Modal.Description>
 
-          <form.Field
-            name="reviewStatus"
-            validators={{
-              onBlur: reviewDecisionPayloadSchema.shape.reviewStatus,
-              onChange: reviewDecisionPayloadSchema.shape.reviewStatus,
-            }}
-          >
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                {nonPendingReviewStatuses.map((reviewStatus) => {
-                  const isSelected = field.state.value === reviewStatus;
-                  const hasScreeningWarning = screening && screening.status !== 'no_hit' && reviewStatus === 'approve';
+        <form.Field
+          name="reviewStatus"
+          validators={{
+            onChange: reviewDecisionPayloadSchema.shape.reviewStatus,
+          }}
+        >
+          {(field) => (
+            <div className="flex flex-col gap-2">
+              {nonPendingReviewStatuses.map((reviewStatus) => {
+                const isSelected = field.state.value === reviewStatus;
+                const hasScreeningWarning = screening && screening.status !== 'no_hit' && reviewStatus === 'approve';
 
-                  return (
-                    <label key={reviewStatus} className="flex cursor-pointer items-center gap-2">
-                      <input
-                        type="radio"
-                        name="reviewStatus"
-                        value={reviewStatus}
-                        checked={isSelected}
-                        onChange={() => field.handleChange(reviewStatus)}
-                        className={cn(
-                          'size-4 shrink-0 appearance-none rounded-full border',
-                          isSelected ? 'border-[5px] border-purple-primary' : 'border border-purple-primary bg-white',
-                        )}
-                      />
-                      <div className="flex flex-col gap-0.5">
-                        <ReviewStatusTag size="small" className="w-fit" reviewStatus={reviewStatus} />
-                        {hasScreeningWarning ? (
-                          <span className="text-red-hover text-xs">
-                            {t('cases:case_detail.review_decision.warning_approve')}
-                          </span>
-                        ) : null}
-                      </div>
-                    </label>
-                  );
-                })}
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
+                return (
+                  <label key={reviewStatus} className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="reviewStatus"
+                      value={reviewStatus}
+                      checked={isSelected}
+                      onChange={() => field.handleChange(reviewStatus)}
+                      className={cn(
+                        'size-4 shrink-0 appearance-none rounded-full border',
+                        isSelected ? 'border-[5px] border-purple-primary' : 'border border-purple-primary bg-white',
+                      )}
+                    />
+                    <div className="flex flex-col gap-0.5">
+                      <ReviewStatusTag size="small" className="w-fit" reviewStatus={reviewStatus} />
+                      {hasScreeningWarning ? (
+                        <span className="text-red-hover text-xs">
+                          {t('cases:case_detail.review_decision.warning_approve')}
+                        </span>
+                      ) : null}
+                    </div>
+                  </label>
+                );
+              })}
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
 
-          <form.Field
-            name="reviewComment"
-            validators={{
-              onBlur: reviewDecisionPayloadSchema.shape.reviewComment,
-              onChange: reviewDecisionPayloadSchema.shape.reviewComment,
-            }}
-          >
-            {(field) => (
-              <TextArea
-                className="w-full"
-                name={field.name}
-                defaultValue={field.state.value}
-                onChange={(e) => field.handleChange(e.currentTarget.value)}
-                onBlur={field.handleBlur}
-                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                placeholder={t('cases:case_detail.review_decision.comment.placeholder')}
-              />
-            )}
-          </form.Field>
-        </div>
-        <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">
-              {t('cases:case_detail.review_decision.go_back')}
-            </Button>
-          </Modal.Close>
-          <Button variant="primary" type="submit">
-            <LoadingIcon icon="case-manager" className="size-5" loading={reviewDecisionMutation.isPending} />
-            {t('common:validate')}
+        <form.Field
+          name="reviewComment"
+          validators={{
+            onChange: reviewDecisionPayloadSchema.shape.reviewComment,
+          }}
+        >
+          {(field) => (
+            <TextArea
+              className="w-full"
+              name={field.name}
+              defaultValue={field.state.value}
+              onChange={(e) => field.handleChange(e.currentTarget.value)}
+              borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+              placeholder={t('cases:case_detail.review_decision.comment.placeholder')}
+            />
+          )}
+        </form.Field>
+      </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button variant="secondary" appearance="stroked">
+            {t('cases:case_detail.review_decision.go_back')}
           </Button>
-        </Modal.Footer>
-      </form>
-    </div>
+        </Modal.Close>
+        <Button variant="primary" type="submit">
+          <LoadingIcon icon="case-manager" className="size-5" loading={reviewDecisionMutation.isPending} />
+          {t('common:validate')}
+        </Button>
+      </Modal.Footer>
+    </form>
   );
 }
