@@ -37,7 +37,7 @@ export function UpdateInboxUser({
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger>
+      <Modal.Trigger className="cursor-pointer block">
         <Icon icon="edit-square" className="size-6 shrink-0" aria-label={t('settings:tags.update_tag')} />
       </Modal.Trigger>
       <Modal.Content>

@@ -16,7 +16,7 @@ export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUser }) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger>
+      <Modal.Trigger className="cursor-pointer block hover:text-red-primary">
         <Icon icon="delete" className="size-6 shrink-0" aria-label={t('settings:inboxes.inbox_user.delete')} />
       </Modal.Trigger>
       <Modal.Content>
