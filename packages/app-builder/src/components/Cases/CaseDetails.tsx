@@ -127,8 +127,8 @@ export const CaseDetails = ({
               <div className="border-grey-border text-small flex flex-col gap-6 border p-v2-md bg-surface-card rounded-v2-lg xl:flex-row">
                 {/* Left column */}
                 <div className="flex flex-1 flex-col gap-3">
-                  <div className="flex gap-2 items-start">
-                    <span className="text-grey-secondary w-[90px] shrink-0 pt-px font-normal leading-[18px]">
+                  <div className="flex gap-2 items-center">
+                    <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.name_of_case')}
                     </span>
                     <EditCaseName name={detail.name} id={detail.id} />

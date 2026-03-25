@@ -131,10 +131,12 @@ export const AlertCard = ({
             <div className="flex items-center gap-2 overflow-hidden">
               <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
               <span className="truncate text-xs font-normal">{decision.scenario.name}</span>
-              <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-normal">
-                {decision.score >= 0 ? '+' : ''}
-                {decision.score}
-              </span>
+              {decision.rules.length > 0 ? (
+                <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-normal">
+                  {decision.score >= 0 ? '+' : ''}
+                  {decision.score}
+                </span>
+              ) : null}
             </div>
             {isPendingReview ? (
               <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>

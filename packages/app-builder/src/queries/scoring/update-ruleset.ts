@@ -16,6 +16,7 @@ export const updateScoringRulesetPayloadSchema = z.object({
     });
   }),
   cooldownSeconds: z.number().optional(),
+  scoringIntervalSeconds: z.number().optional(),
   rules: z.array(
     z.object({
       stableId: z.string().optional(),

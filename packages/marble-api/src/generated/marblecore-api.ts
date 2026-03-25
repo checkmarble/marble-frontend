@@ -1801,6 +1801,7 @@ export type ScoringRuleset = {
     record_type: string;
     thresholds: number[];
     cooldown_seconds: number;
+    scoring_interval_seconds: number;
     created_at: string;
 };
 export type ScoringRulesetWithRules = ScoringRuleset & {
@@ -1817,6 +1818,7 @@ export type UpdateScoringRuleset = {
     description?: string;
     thresholds: number[];
     cooldown_seconds?: number;
+    scoring_interval_seconds?: number;
     rules: {
         stable_id: string;
         name: string;

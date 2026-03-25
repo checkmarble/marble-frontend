@@ -1,32 +1,24 @@
-import { Callout } from '@app-builder/components';
 import { ReviewStatusTag } from '@app-builder/components/Decisions/ReviewStatusTag';
-import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { nonPendingReviewStatuses } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { ScreeningStatus } from '@app-builder/models/screening';
-import { blockingReviewDocHref } from '@app-builder/services/documentation-href';
+import {
+  type ReviewDecisionPayload,
+  reviewDecisionPayloadSchema,
+  useReviewDecisionMutation,
+} from '@app-builder/queries/cases/review-decision';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { useEffect, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal, Select, TextArea } from 'ui-design-system';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, cn, Modal, TextArea } from 'ui-design-system';
 import { z } from 'zod/v4';
-
-const reviewDecisionSchema = z.object({
-  decisionId: z.string(),
-  reviewComment: z.string(),
-  reviewStatus: z.enum(nonPendingReviewStatuses),
-});
-
-type ReviewDecisionForm = z.infer<typeof reviewDecisionSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -44,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { data, success, error } = reviewDecisionSchema.safeParse(rawData);
+  const { data, success, error } = reviewDecisionPayloadSchema.safeParse(rawData);
 
   if (!success) {
     return json(
@@ -115,92 +107,80 @@ function ReviewDecisionContent({
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
-  const fetcher = useFetcher<typeof action>();
-
-  useEffect(() => {
-    if (fetcher?.data?.status === 'success') {
-      setOpen(false);
-    }
-  }, [setOpen, fetcher?.data?.status]);
+  const reviewDecisionMutation = useReviewDecisionMutation();
 
   const form = useForm({
     defaultValues: {
       decisionId,
       reviewComment: '',
       reviewStatus: '' as Outcome,
-    } as ReviewDecisionForm,
+    } as ReviewDecisionPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          method: 'POST',
-          action: getRoute('/ressources/cases/review-decision'),
-          encType: 'application/json',
+        reviewDecisionMutation.mutate(value, {
+          onSuccess: () => setOpen(false),
         });
       }
     },
     validators: {
-      onSubmit: reviewDecisionSchema,
+      onSubmit: reviewDecisionPayloadSchema,
     },
   });
 
   return (
+    // Stop React synthetic events from bubbling through the portal to the parent AlertCard
     <form
+      onClick={(e) => e.stopPropagation()}
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
         form.handleSubmit();
       }}
     >
-      <Modal.Title>{t('cases:case_detail.review_decision.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-2 p-4">
+        <p className="text-grey-primary text-base font-semibold leading-[1.1]">
+          {t('cases:case_detail.review_decision.title')}
+        </p>
         <Modal.Description asChild>
-          <Callout variant="outlined">
-            <p className="whitespace-pre-wrap">
-              <Trans
-                t={t}
-                i18nKey="cases:case_detail.review_decision.callout"
-                components={{
-                  DocLink: <ExternalLink href={blockingReviewDocHref} />,
-                }}
-              />
-            </p>
-          </Callout>
+          <p className="text-grey-primary text-s leading-[1.4]">{t('cases:case_detail.review_decision.description')}</p>
         </Modal.Description>
 
         <form.Field
           name="reviewStatus"
           validators={{
-            onBlur: reviewDecisionSchema.shape.reviewStatus,
-            onChange: reviewDecisionSchema.shape.reviewStatus,
+            onChange: reviewDecisionPayloadSchema.shape.reviewStatus,
           }}
         >
           {(field) => (
             <div className="flex flex-col gap-2">
-              <FormLabel name={field.name}>{t('cases:case_detail.review_decision.review_status.label')}</FormLabel>
-              <Select.Default
-                className="h-10 w-full"
-                defaultValue={field.state.value}
-                onValueChange={(status) => field.handleChange(status as ReviewDecisionForm['reviewStatus'])}
-                placeholder={t('cases:case_detail.review_decision.review_status.placeholder')}
-                //contentClassName="max-w-(--radix-select-trigger-width)"
-              >
-                {nonPendingReviewStatuses.map((reviewStatus) => {
-                  const disabled = screening && screening.status !== 'no_hit';
+              {nonPendingReviewStatuses.map((reviewStatus) => {
+                const isSelected = field.state.value === reviewStatus;
+                const hasScreeningWarning = screening && screening.status !== 'no_hit' && reviewStatus === 'approve';
 
-                  return (
-                    <Select.DefaultItem key={reviewStatus} value={reviewStatus}>
-                      <div className="flex flex-col gap-2">
-                        <ReviewStatusTag size="big" className="w-fit" reviewStatus={reviewStatus} />
-                        {disabled && reviewStatus === 'approve' ? (
-                          <span className="text-red-hover text-xs">
-                            {t('cases:case_detail.review_decision.warning_approve')}
-                          </span>
-                        ) : null}
-                      </div>
-                    </Select.DefaultItem>
-                  );
-                })}
-              </Select.Default>
+                return (
+                  <label key={reviewStatus} className="flex cursor-pointer items-center gap-2">
+                    <input
+                      type="radio"
+                      name="reviewStatus"
+                      value={reviewStatus}
+                      checked={isSelected}
+                      onChange={() => field.handleChange(reviewStatus)}
+                      className={cn(
+                        'size-4 shrink-0 appearance-none rounded-full border',
+                        isSelected ? 'border-[5px] border-purple-primary' : 'border border-purple-primary bg-white',
+                      )}
+                    />
+                    <div className="flex flex-col gap-0.5">
+                      <ReviewStatusTag size="small" className="w-fit" reviewStatus={reviewStatus} />
+                      {hasScreeningWarning ? (
+                        <span className="text-red-hover text-xs">
+                          {t('cases:case_detail.review_decision.warning_approve')}
+                        </span>
+                      ) : null}
+                    </div>
+                  </label>
+                );
+              })}
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
@@ -209,35 +189,29 @@ function ReviewDecisionContent({
         <form.Field
           name="reviewComment"
           validators={{
-            onBlur: reviewDecisionSchema.shape.reviewComment,
-            onChange: reviewDecisionSchema.shape.reviewComment,
+            onChange: reviewDecisionPayloadSchema.shape.reviewComment,
           }}
         >
           {(field) => (
-            <div className="flex flex-col gap-2">
-              <FormLabel name={field.name}>{t('cases:case_detail.review_decision.comment.label')}</FormLabel>
-              <TextArea
-                className="w-full"
-                name={field.name}
-                defaultValue={field.state.value}
-                onChange={(e) => field.handleChange(e.currentTarget.value)}
-                onBlur={field.handleBlur}
-                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                placeholder={t('cases:case_detail.review_decision.comment.placeholder')}
-              />
-              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-            </div>
+            <TextArea
+              className="w-full"
+              name={field.name}
+              defaultValue={field.state.value}
+              onChange={(e) => field.handleChange(e.currentTarget.value)}
+              borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+              placeholder={t('cases:case_detail.review_decision.comment.placeholder')}
+            />
           )}
         </form.Field>
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
           <Button variant="secondary" appearance="stroked">
-            {t('common:cancel')}
+            {t('cases:case_detail.review_decision.go_back')}
           </Button>
         </Modal.Close>
         <Button variant="primary" type="submit">
-          <LoadingIcon icon="case-manager" className="size-5" loading={fetcher.state === 'submitting'} />
+          <LoadingIcon icon="case-manager" className="size-5" loading={reviewDecisionMutation.isPending} />
           {t('common:validate')}
         </Button>
       </Modal.Footer>

@@ -27,6 +27,7 @@
   "ruleset.risk_types_column": "Risk types",
   "ruleset.rule_type_heading": "Type of rule",
   "ruleset.rules_column": "Rules",
+  "ruleset.score_renew": "Score renew:",
 
   "ruleset.title": "Global information",
   "ruleset.version_placeholder": "Version",
