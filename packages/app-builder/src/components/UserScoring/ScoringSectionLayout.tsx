@@ -1,4 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { type DurationUnit, SECONDS_PER_UNIT, secondsToDisplay } from '@app-builder/models/scoring';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
 import {
@@ -13,7 +14,7 @@ import { NavLink, Outlet, useMatches } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
+import { Button, NumberInput, SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
 import { PanelContainer, PanelRoot } from '../Panel';
@@ -84,6 +85,53 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   );
 }
 
+function DurationSecondsField({
+  value,
+  onChange,
+}: {
+  value: number | undefined;
+  onChange: (seconds: number | undefined) => void;
+}) {
+  const { t } = useTranslation(['common', 'user-scoring']);
+  const initial = value !== undefined ? secondsToDisplay(value) : { value: 0, unit: 'days' as DurationUnit };
+  const [inputValue, setInputValue] = useState(initial.value);
+  const [unit, setUnit] = useState<DurationUnit | null>(initial.unit);
+
+  const durationUnitOptions: SelectOption<DurationUnit | null>[] = [
+    { label: t('user-scoring:section.create_panel.unit_placeholder'), value: null },
+    { label: t('common:duration_unit.days'), value: 'days' },
+    { label: t('common:duration_unit.months'), value: 'months' },
+    { label: t('common:duration_unit.years'), value: 'years' },
+  ];
+
+  return (
+    <>
+      <NumberInput
+        className="max-w-15"
+        value={inputValue}
+        onChange={(v) => {
+          setInputValue(v);
+          if (unit) {
+            onChange(v > 0 ? v * SECONDS_PER_UNIT[unit] : undefined);
+          }
+        }}
+      />
+      <SelectV2<DurationUnit | null>
+        placeholder={t('user-scoring:section.create_panel.unit_placeholder')}
+        options={durationUnitOptions}
+        value={unit}
+        onChange={(u) => {
+          setUnit(u);
+          if (u) {
+            onChange(inputValue > 0 ? inputValue * SECONDS_PER_UNIT[u] : undefined);
+          }
+        }}
+        className="text-small min-w-22"
+      />
+    </>
+  );
+}
+
 function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number }) {
   const { t } = useTranslation(['user-scoring']);
   const revalidate = useLoaderRevalidator();
@@ -96,6 +144,8 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
       recordType: '',
       thresholds: Array.from({ length: maxRiskLevel - 1 }, (_, i) => (i + 1) * 10) as number[],
       rules: [],
+      cooldownSeconds: 0,
+      scoringIntervalSeconds: 0,
     } as UpdateScoringRulesetPayload,
     validators: {
       onSubmit: updateScoringRulesetPayloadSchema,
@@ -146,24 +196,16 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
           <div className="border border-grey-border rounded-v2-md p-v2-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-v2-sm gap-y-v2-md">
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
-              <Input className="max-w-15" />
-              <SelectV2
-                placeholder={t('user-scoring:section.create_panel.unit_placeholder')}
-                options={[]}
-                value={undefined}
-                onChange={() => undefined}
-              />
+              <form.Field name="cooldownSeconds">
+                {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
+              </form.Field>
               <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
             </div>
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
-              <Input className="max-w-15" />
-              <SelectV2
-                placeholder={t('user-scoring:section.create_panel.unit_placeholder')}
-                options={[]}
-                value={undefined}
-                onChange={() => undefined}
-              />
+              <form.Field name="scoringIntervalSeconds">
+                {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
+              </form.Field>
               <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
             </div>
           </div>
