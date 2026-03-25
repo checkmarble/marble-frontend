@@ -31,7 +31,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen, hideEnri
   return (
     <div className="grid grid-cols-[max-content_1fr_max-content] gap-x-6 gap-y-2">
       <CollapsibleV2.Provider defaultOpen={defaultOpen}>
-        <div className="border-grey-border col-span-full grid grid-cols-subgrid rounded-lg border bg-white">
+        <div className="border-grey-border col-span-full grid grid-cols-subgrid rounded-lg border">
           <div className="col-span-full flex flex-col gap-2 p-4">
             <div className="flex items-center justify-between gap-2">
               <CollapsibleV2.Title className="focus-visible:text-purple-primary group flex grow items-center gap-2 rounded-sm outline-hidden transition-colors">

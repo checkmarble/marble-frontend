@@ -138,7 +138,7 @@ export const CaseDetails = ({
                       {t('cases:case.id')}
                     </span>
                     <button
-                      className="border-grey-border flex h-6 w-fit shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded border bg-white py-1 pl-2 pr-1"
+                      className="border-grey-border flex h-6 w-fit shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded border py-1 pl-2 pr-1"
                       {...getCopyToClipboardProps(detail.id)}
                     >
                       <code className="font-['Menlo',monospace] text-[10px] whitespace-nowrap overflow-hidden text-ellipsis">
