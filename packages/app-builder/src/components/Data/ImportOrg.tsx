@@ -1,22 +1,23 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { useImportOrgFromFileMutation, useImportOrgMutation } from '@app-builder/queries/data/import-org';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function ImportOrg({ children }: { children: React.ReactNode }) {
+export function ImportOrg({
+  children,
+  onImportSuccess,
+}: {
+  children: React.ReactNode;
+  onImportSuccess?: (data: unknown) => void;
+}) {
   const { t } = useTranslation(['data', 'common']);
-  const importFileMutation = useImportOrgFromFileMutation();
-  const importBodyMutation = useImportOrgMutation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [jsonContent, setJsonContent] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [isParsing, setIsParsing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const revalidate = useLoaderRevalidator();
 
-  const isPending = importFileMutation.isPending || importBodyMutation.isPending;
   const hasFile = selectedFile !== null;
   const hasJson = jsonContent.trim().length > 0;
   const canImport = (hasFile || hasJson) && !(hasFile && hasJson);
@@ -25,38 +26,32 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
     setSelectedFile(null);
     setJsonContent('');
     setJsonError(null);
+    setIsParsing(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const handleImport = () => {
-    if (hasFile) {
-      importFileMutation.mutate(selectedFile, {
-        onSuccess: (result) => {
-          revalidate();
-          if (result.success) {
-            setIsOpen(false);
-            resetState();
-          }
-        },
-      });
-    } else if (hasJson) {
-      try {
-        const parsed = JSON.parse(jsonContent);
-        setJsonError(null);
-        importBodyMutation.mutate(parsed, {
-          onSuccess: (result) => {
-            revalidate();
-            if (result.success) {
-              setIsOpen(false);
-              resetState();
-            }
-          },
-        });
-      } catch {
-        setJsonError(t('data:import_org.invalid_json'));
+  const handleImport = async () => {
+    setIsParsing(true);
+    try {
+      let parsed: unknown;
+      if (hasFile) {
+        const text = await selectedFile.text();
+        parsed = JSON.parse(text);
+      } else if (hasJson) {
+        parsed = JSON.parse(jsonContent);
+      } else {
+        return;
       }
+      setJsonError(null);
+      setIsOpen(false);
+      resetState();
+      onImportSuccess?.(parsed);
+    } catch {
+      setJsonError(t('data:import_org.invalid_json'));
+    } finally {
+      setIsParsing(false);
     }
   };
 
@@ -120,8 +115,8 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button variant="primary" disabled={!canImport || isPending} onClick={handleImport}>
-            {isPending ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
+          <Button variant="primary" disabled={!canImport || isParsing} onClick={handleImport}>
+            {isParsing ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
             {t('data:import_org.button_accept')}
           </Button>
         </Modal.Footer>

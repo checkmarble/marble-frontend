@@ -372,7 +372,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
         }
       >
         <Icon icon="upload" className="size-6" />
-        {t('data:upload_data')}
+        {t('data:upload_data.title')}
       </SchemaMenuMenuItem>,
     );
   }

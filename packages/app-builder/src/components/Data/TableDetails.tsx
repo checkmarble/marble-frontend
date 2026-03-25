@@ -112,7 +112,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             })}
           >
             <Icon icon="upload" className="size-4" />
-            {t('data:upload_data')}
+            {t('data:upload_data.title')}
           </NavLink>
         ) : null}
         {isDeleteDataModelTableAvailable ? (
