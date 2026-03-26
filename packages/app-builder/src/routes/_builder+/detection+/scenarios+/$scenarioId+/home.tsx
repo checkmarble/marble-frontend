@@ -5,6 +5,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { Page } from '@app-builder/components/Page';
 import { CreateTestRun } from '@app-builder/components/Scenario/Actions/CreateTestRun';
+import { CreateDraftIteration } from '@app-builder/components/Scenario/Iteration/Actions/CreateDraft';
 import { ScenarioDescriptionEditable, ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
 import { Spinner } from '@app-builder/components/Spinner';
@@ -160,7 +161,7 @@ export default function ScenarioHome() {
   const draftScenario = useMemo(() => scenarioIterations.find(({ type }) => type === 'draft'), [scenarioIterations]);
 
   const scenarioToWatch = liveScenarioIteration ?? lastScenarioIteration;
-  const scenarioToEdit = lastScenarioIteration ?? draftScenario;
+  const scenarioToEdit = liveScenarioIteration ?? lastScenarioIteration;
 
   return (
     <Page.Main>
@@ -202,17 +203,23 @@ export default function ScenarioHome() {
                 </Link>
               ) : null
             }
-            {scenarioToEdit ? (
+            {draftScenario ? (
               <Link
                 to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
-                  scenarioId: fromUUIDtoSUUID(scenarioToEdit.scenarioId),
-                  iterationId: fromUUIDtoSUUID(scenarioToEdit.id),
+                  scenarioId: fromUUIDtoSUUID(draftScenario.scenarioId),
+                  iterationId: fromUUIDtoSUUID(draftScenario.id),
                 })}
                 className={CtaV2ClassName({ variant: 'primary', appearance: 'filled', size: 'default' })}
               >
                 <Icon icon="edit" className="size-4" />
                 {t('scenarios:update_scenario.title')}
               </Link>
+            ) : scenarioToEdit?.id ? (
+              <CreateDraftIteration
+                iterationId={scenarioToEdit.id}
+                scenarioId={currentScenario.id}
+                draftId={undefined}
+              />
             ) : null}
           </div>
         </section>

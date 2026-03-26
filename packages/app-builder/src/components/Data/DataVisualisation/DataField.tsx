@@ -362,7 +362,7 @@ function NumberFloat({ value }: { value?: number }) {
 function NumberCurrency({ value }: { value?: number }) {
   const language = useFormatLanguage();
   const currency = useCurrency();
-  if (value === undefined) return <EmptyValue />;
+  if (value === undefined || isNaN(value)) return <EmptyValue />;
   if (!currency) return <span>{formatNumber(value, { language })}</span>;
   return <span>{formatCurrency(value, { language, currency })}</span>;
 }
@@ -370,7 +370,7 @@ function NumberCurrency({ value }: { value?: number }) {
 function NumberPercentile({ value }: { value?: number }) {
   const language = useFormatLanguage();
   if (value === undefined || isNaN(value)) return <EmptyValue />;
-  return <span>{formatNumber(value / 100, { language, style: 'percent' })}</span>;
+  return <span>{formatNumber(value, { language, style: 'percent' })}</span>;
 }
 
 function BooleanCheckbox({ value }: { value?: boolean }) {
