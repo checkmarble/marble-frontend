@@ -2,13 +2,7 @@ import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardBu
 import { Spinner } from '@app-builder/components/Spinner';
 import { type DataModelField, DataType } from '@app-builder/models';
 import { objectDetailsQueryOptions } from '@app-builder/queries/data/get-object-details';
-import {
-  formatAge,
-  formatCurrency,
-  formatNumber,
-  useFormatDateTime,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatAge, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { useQuery } from '@tanstack/react-query';
 import CountryFlag from 'country-flag-emojis';
@@ -140,6 +134,7 @@ function adaptFieldType(dataType?: DataType | null, name?: string): VALID_DATA_T
       if (/_id/i.test(name)) return 'string-id';
       if (/iban/i.test(name)) return 'string-iban';
       if (/currency/i.test(name)) return 'string-currency';
+      if (/curr_/i.test(name)) return 'string-currency';
       if (/url/i.test(name)) return 'string-link';
       if (/code/i.test(name)) return 'string-code';
       if (/vpn/i.test(name)) return 'string-vpn';
@@ -363,8 +358,15 @@ function NumberCurrency({ value }: { value?: number }) {
   const language = useFormatLanguage();
   const currency = useCurrency();
   if (value === undefined || isNaN(value)) return <EmptyValue />;
-  if (!currency) return <span>{formatNumber(value, { language })}</span>;
-  return <span>{formatCurrency(value, { language, currency })}</span>;
+  return (
+    <span className="inline-flex items-baseline gap-2">
+      {currency ? (
+        <span className="text-xs text-grey-secondary border border-grey-border rounded-sm">{currency.code}</span>
+      ) : null}
+      <span>{formatNumber(value, { language, style: 'decimal', minimumFractionDigits: 2 })}</span>
+    </span>
+  );
+  // return <span>{formatCurrency(value, { language, currency })}</span>;
 }
 
 function NumberPercentile({ value }: { value?: number }) {
