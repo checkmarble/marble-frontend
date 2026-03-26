@@ -341,6 +341,12 @@ DataModelDto:
   $ref: data-model.yml#/components/schemas/DataModelDto
 CreateTableBody:
   $ref: data-model.yml#/components/schemas/CreateTableBody
+CreateTableResponseDto:
+  $ref: data-model.yml#/components/schemas/CreateTableResponseDto
+CreateTableBodyField:
+  $ref: data-model.yml#/components/schemas/CreateTableBodyField
+CreateTableBodyLink:
+  $ref: data-model.yml#/components/schemas/CreateTableBodyLink
 UpdateTableBodyDto:
   $ref: data-model.yml#/components/schemas/UpdateTableBodyDto
 CreateTableFieldDto:
