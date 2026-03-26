@@ -1,13 +1,15 @@
-import { DragDropContext, Draggable, Droppable, DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
 import { useForm, useStore } from '@tanstack/react-form';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { UploadDataDrawerContext } from './Drawer';
+import { FieldDetailPanel } from './FieldDetailPanel';
+import { FieldsForm } from './FieldsForm';
 import { LinkForm } from './LinkForm';
-import { FtmEntityV2, ftmEntities, ftmEntityPersonOptions, ftmEntityVehicleOptions } from './uploadData-types';
+import { type FtmEntityV2, ftmEntities, ftmEntityPersonOptions, ftmEntityVehicleOptions } from './uploadData-types';
 
 export function FormTable({ tableId }: { tableId: string }) {
   const { tablesState, updateTableState } = UploadDataDrawerContext.useValue();
@@ -58,59 +60,67 @@ export function FormTable({ tableId }: { tableId: string }) {
 
   const hasSubEntity = selectedFtmEntity === 'person' || selectedFtmEntity === 'vehicle';
 
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+
   return (
-    <div className="flex flex-col gap-v2-lg">
-      <section className="flex flex-col gap-v2-md">
-        <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
-        <div className="flex items-center gap-v2-md">
-          <form.Field name="alias">
-            {(field) => (
-              <Input
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.currentTarget.value)}
-                placeholder={t('data:upload_data.name_placeholder')}
-                className="flex-1"
-              />
-            )}
-          </form.Field>
-          <form.Field name="ftmEntity">
-            {(field) => (
-              <SelectV2
-                value={field.state.value}
-                placeholder={t('data:upload_data.object_placeholder')}
-                onChange={(value) => {
-                  field.handleChange(value as FtmEntityV2);
-                  form.setFieldValue('ftmSubEntity', '');
-                }}
-                options={ftmEntityOptions}
-                className="flex-1"
-              />
-            )}
-          </form.Field>
-          {hasSubEntity ? (
-            <form.Field name="ftmSubEntity">
+    <div className="flex gap-v2-lg">
+      <div className="flex min-w-0 flex-1 flex-col gap-v2-lg">
+        <section className="flex flex-col gap-v2-md">
+          <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
+          <div className="flex items-center gap-v2-md">
+            <form.Field name="alias">
               {(field) => (
-                <SelectV2
+                <Input
                   value={field.state.value}
-                  placeholder={t('data:upload_data.sub_object_placeholder')}
-                  onChange={field.handleChange}
-                  options={subEntityOptions}
+                  onChange={(e) => field.handleChange(e.currentTarget.value)}
+                  placeholder={t('data:upload_data.name_placeholder')}
                   className="flex-1"
                 />
               )}
             </form.Field>
-          ) : null}
-          <form.Field name="mainTable">
-            {(field) => (
-              <label className="flex shrink-0 items-center gap-v2-sm cursor-pointer">
-                <Switch checked={field.state.value} onCheckedChange={(checked) => field.handleChange(checked)} />
-                <span className="text-s">{t('data:upload_data.main_table')}</span>
-              </label>
-            )}
-          </form.Field>
-        </div>
-      </section>
-      <LinkForm tableId={tableId} />
+            <form.Field name="ftmEntity">
+              {(field) => (
+                <SelectV2
+                  value={field.state.value}
+                  placeholder={t('data:upload_data.object_placeholder')}
+                  onChange={(value) => {
+                    field.handleChange(value as FtmEntityV2);
+                    form.setFieldValue('ftmSubEntity', '');
+                  }}
+                  options={ftmEntityOptions}
+                  className="flex-1"
+                />
+              )}
+            </form.Field>
+            {hasSubEntity ? (
+              <form.Field name="ftmSubEntity">
+                {(field) => (
+                  <SelectV2
+                    value={field.state.value}
+                    placeholder={t('data:upload_data.sub_object_placeholder')}
+                    onChange={field.handleChange}
+                    options={subEntityOptions}
+                    className="flex-1"
+                  />
+                )}
+              </form.Field>
+            ) : null}
+            <form.Field name="mainTable">
+              {(field) => (
+                <label className="flex shrink-0 items-center gap-v2-sm cursor-pointer">
+                  <Switch checked={field.state.value} onCheckedChange={(checked) => field.handleChange(checked)} />
+                  <span className="text-s">{t('data:upload_data.main_table')}</span>
+                </label>
+              )}
+            </form.Field>
+          </div>
+        </section>
+        <LinkForm tableId={tableId} compact={!!selectedFieldId} />
+        <FieldsForm tableId={tableId} onFieldSelect={setSelectedFieldId} selectedFieldId={selectedFieldId} />
+      </div>
+      {selectedFieldId ? (
+        <FieldDetailPanel tableId={tableId} fieldId={selectedFieldId} onClose={() => setSelectedFieldId(null)} />
+      ) : null}
     </div>
   );
 }

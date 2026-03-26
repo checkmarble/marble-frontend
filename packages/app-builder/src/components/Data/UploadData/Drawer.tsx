@@ -1,13 +1,12 @@
-import { DataModelField, UnicityConstraintType } from '@app-builder/models';
 import { createSimpleContext } from '@marble/shared';
 import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormTable, SummaryView } from './FormTable';
-import type { FtmEntityV2, LinkValue, RawField, RawLink } from './uploadData-types';
+import type { FtmEntityV2, LinkValue, RawField, RawLink, TableField } from './uploadData-types';
 
-type FormTableValue = {
+export type FormTableValue = {
   tableId: string;
   name: string;
   alias: string;
@@ -18,7 +17,8 @@ type FormTableValue = {
   isCanceled: boolean;
   isVisited: boolean;
   order: number;
-  fields: DataModelField[];
+  fields: TableField[];
+  mainTimestampFieldId: string;
 };
 
 /**
@@ -50,6 +50,10 @@ export const UploadDataDrawerContext = createSimpleContext<{
   addLink: (sourceTableId: string) => void;
   removeLink: (linkId: string) => void;
   getLinksForTable: (tableId: string) => LinkValue[];
+  updateField: (tableId: string, fieldId: string, values: Partial<TableField>) => void;
+  reorderFields: (tableId: string, startIndex: number, endIndex: number) => void;
+  addField: (tableId: string, name: string) => string;
+  removeField: (tableId: string, fieldId: string) => void;
 }>('UploadDataDrawer');
 
 export type UploadDataDrawerProps = {
@@ -132,6 +136,83 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
     [linksState],
   );
 
+  const updateField = useCallback((tableId: string, fieldId: string, values: Partial<TableField>) => {
+    setTablesState((prev) => {
+      const table = prev[tableId];
+      if (!table) return prev;
+      return {
+        ...prev,
+        [tableId]: {
+          ...table,
+          fields: table.fields.map((f) => (f.id === fieldId ? { ...f, ...values } : f)),
+        },
+      };
+    });
+  }, []);
+
+  const reorderFields = useCallback((tableId: string, startIndex: number, endIndex: number) => {
+    setTablesState((prev) => {
+      const table = prev[tableId];
+      if (!table) return prev;
+      const fields = [...table.fields];
+      const [moved] = fields.splice(startIndex, 1);
+      if (!moved) return prev;
+      fields.splice(endIndex, 0, moved);
+      return {
+        ...prev,
+        [tableId]: {
+          ...table,
+          fields: fields.map((f, i) => ({ ...f, order: i })),
+        },
+      };
+    });
+  }, []);
+
+  const addField = useCallback((tableId: string, name: string): string => {
+    const fieldId = crypto.randomUUID();
+    setTablesState((prev) => {
+      const table = prev[tableId];
+      if (!table) return prev;
+      const newField: TableField = {
+        id: fieldId,
+        name,
+        description: '',
+        dataType: 'String',
+        tableId,
+        isEnum: false,
+        nullable: true,
+        alias: name,
+        visible: true,
+        hidden: false,
+        order: table.fields.length,
+        unicityConstraint: 'no_unicity_constraint',
+        ftmProperty: '',
+        semanticType: undefined,
+        semanticSubType: undefined,
+        isNew: true,
+      };
+      return {
+        ...prev,
+        [tableId]: { ...table, fields: [...table.fields, newField] },
+      };
+    });
+    return fieldId;
+  }, []);
+
+  const removeField = useCallback((tableId: string, fieldId: string) => {
+    setTablesState((prev) => {
+      const table = prev[tableId];
+      if (!table) return prev;
+      return {
+        ...prev,
+        [tableId]: {
+          ...table,
+          fields: table.fields.filter((f) => f.id !== fieldId).map((f, i) => ({ ...f, order: i })),
+        },
+      };
+    });
+  }, []);
+
   if (!open) return null;
 
   return (
@@ -149,6 +230,10 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         addLink,
         removeLink,
         getLinksForTable,
+        updateField,
+        reorderFields,
+        addField,
+        removeField,
       }}
     >
       {/* Backdrop */}
@@ -179,15 +264,23 @@ function buildInitialTablesState(data: unknown): Record<string, FormTableValue> 
     tables.map((table, index) => {
       const rawFields = table.fields ? (Array.isArray(table.fields) ? table.fields : Object.values(table.fields)) : [];
 
-      const fields: DataModelField[] = rawFields.map((f) => ({
+      const fields: TableField[] = rawFields.map((f, i) => ({
         id: f.id,
         name: f.name,
-        description: f.description || f.name,
+        description: f.description || '',
         dataType: f.data_type,
         tableId: f.table_id || table.id,
         isEnum: f.is_enum ?? false,
-        nullable: f.nullable ?? false,
-        unicityConstraint: f.unicity_constraint as UnicityConstraintType,
+        nullable: f.nullable ?? true,
+        alias: f.name,
+        visible: true,
+        hidden: false,
+        order: i,
+        unicityConstraint: f.unicity_constraint ?? 'no_unicity_constraint',
+        ftmProperty: f.ftm_property ?? '',
+        semanticType: undefined,
+        semanticSubType: undefined,
+        isNew: false,
       }));
 
       // Ensure there's always an object_id field
@@ -200,7 +293,19 @@ function buildInitialTablesState(data: unknown): Record<string, FormTableValue> 
           tableId: table.id,
           isEnum: false,
           nullable: false,
+          alias: 'object_id',
+          visible: true,
+          hidden: false,
+          order: -1,
           unicityConstraint: 'no_unicity_constraint',
+          ftmProperty: '',
+          semanticType: undefined,
+          semanticSubType: undefined,
+          isNew: false,
+        });
+        // Re-index orders
+        fields.forEach((f, i) => {
+          f.order = i;
         });
       }
 
@@ -218,6 +323,7 @@ function buildInitialTablesState(data: unknown): Record<string, FormTableValue> 
           isVisited: false,
           order: index,
           fields,
+          mainTimestampFieldId: '',
         } satisfies FormTableValue,
       ];
     }),

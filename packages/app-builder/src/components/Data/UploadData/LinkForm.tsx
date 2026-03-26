@@ -1,13 +1,13 @@
-import { DataModelField, getDataTypeIcon } from '@app-builder/models';
+import { getDataTypeIcon } from '@app-builder/models';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, SelectV2 } from 'ui-design-system';
+import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { UploadDataDrawerContext } from './Drawer';
 import type { LinkRelationType } from './uploadData-types';
 import { linkRelationTypes } from './uploadData-types';
 
-export function LinkForm({ tableId }: { tableId: string }) {
+export function LinkForm({ tableId, compact }: { tableId: string; compact?: boolean }) {
   const { getLinksForTable, addLink } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
 
@@ -18,7 +18,7 @@ export function LinkForm({ tableId }: { tableId: string }) {
       <h4 className="text-m font-semibold">{t('data:upload_data.links_settings')}</h4>
       <div className="flex flex-col gap-v2-md">
         {links.map((link) => (
-          <LinkRow key={link.linkId} linkId={link.linkId} tableId={tableId} />
+          <LinkRow key={link.linkId} linkId={link.linkId} tableId={tableId} compact={compact} />
         ))}
       </div>
       <div>
@@ -31,7 +31,7 @@ export function LinkForm({ tableId }: { tableId: string }) {
   );
 }
 
-function LinkRow({ linkId, tableId }: { linkId: string; tableId: string }) {
+function LinkRow({ linkId, tableId, compact }: { linkId: string; tableId: string; compact?: boolean }) {
   const { linksState, updateLinkState, removeLink, tablesState } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
 
@@ -40,7 +40,7 @@ function LinkRow({ linkId, tableId }: { linkId: string; tableId: string }) {
 
   const fieldOptions = useMemo(
     () =>
-      currentTable.fields.map((field: DataModelField) => ({
+      currentTable.fields.map((field) => ({
         label: (
           <span className="flex items-center gap-v2-sm">
             <Icon icon={getDataTypeIcon(field.dataType) ?? 'minus'} className="size-4" />
@@ -90,33 +90,33 @@ function LinkRow({ linkId, tableId }: { linkId: string; tableId: string }) {
   );
 
   return (
-    <div className="flex items-center gap-v2-md">
+    <div className={cn('flex gap-x-v2-md gap-y-v2-sm', compact ? 'flex-wrap items-start' : 'items-center')}>
       <Input
         value={link.name}
         onChange={(e) => updateLinkState(linkId, { name: e.currentTarget.value })}
         placeholder={t('data:upload_data.link_name_placeholder')}
-        className="w-36"
+        className="w-36 min-w-fit"
       />
       <SelectV2
         value={link.tableFieldId}
         placeholder={t('data:upload_data.link_field_placeholder')}
         onChange={(value) => updateLinkState(linkId, { tableFieldId: value })}
         options={fieldOptions}
-        className="flex-1"
+        className="flex-1 min-w-fit"
       />
       <SelectV2
         value={link.relationType}
         placeholder=""
         onChange={(value) => updateLinkState(linkId, { relationType: value as LinkRelationType })}
         options={relationOptions}
-        className="w-40"
+        className="w-40 min-w-fit "
       />
       <SelectV2
         value={link.targetTableId}
         placeholder={t('data:upload_data.link_destination_placeholder')}
         onChange={(value) => updateLinkState(linkId, { targetTableId: value })}
         options={destinationOptions}
-        className="flex-1"
+        className="flex-1 min-w-fit"
       />
       <button
         type="button"
