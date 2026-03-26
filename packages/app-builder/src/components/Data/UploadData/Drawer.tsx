@@ -1,16 +1,11 @@
-import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
-import { createSimpleContext, useCallbackRef } from '@marble/shared';
-import { useForm, useStore } from '@tanstack/react-form';
+import { DataModelField, UnicityConstraintType } from '@app-builder/models';
+import { createSimpleContext } from '@marble/shared';
 import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Input, SelectV2, Switch } from 'ui-design-system';
+import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-const ftmEntities = ['person', 'account', 'transaction', 'event', 'other'] as const;
-const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
-const ftmEntityOtherOptions = ['vessel', 'airplane'] as const;
-
-type FtmEntityV2 = (typeof ftmEntities)[number];
+import { FormTable, SummaryView } from './FormTable';
+import type { FtmEntityV2, LinkValue, RawField, RawLink } from './uploadData-types';
 
 type FormTableValue = {
   tableId: string;
@@ -23,6 +18,7 @@ type FormTableValue = {
   isCanceled: boolean;
   isVisited: boolean;
   order: number;
+  fields: DataModelField[];
 };
 
 /**
@@ -49,6 +45,11 @@ export const UploadDataDrawerContext = createSimpleContext<{
   updateTableState: (tableId: string, values: Partial<FormTableValue>) => void;
   orderedTableIds: string[];
   reorderTables: (startIndex: number, endIndex: number) => void;
+  linksState: Record<string, LinkValue>;
+  updateLinkState: (linkId: string, values: Partial<LinkValue>) => void;
+  addLink: (sourceTableId: string) => void;
+  removeLink: (linkId: string) => void;
+  getLinksForTable: (tableId: string) => LinkValue[];
 }>('UploadDataDrawer');
 
 export type UploadDataDrawerProps = {
@@ -58,37 +59,15 @@ export type UploadDataDrawerProps = {
   children: ReactNode;
 };
 
-function buildInitialTablesState(data: unknown): Record<string, FormTableValue> {
-  const raw = data as {
-    data_model?: { tables?: Array<{ id: string; name: string; description?: string }> };
-  };
-  const tables = raw?.data_model?.tables ?? [];
-  return Object.fromEntries(
-    tables.map((table, index) => [
-      table.id,
-      {
-        tableId: table.id,
-        name: table.name,
-        alias: table.description || table.name.charAt(0).toUpperCase() + table.name.slice(1),
-        mainTable: false,
-        ftmEntity: 'other' as FtmEntityV2,
-        ftmSubEntity: '',
-        metaData: {},
-        isCanceled: false,
-        isVisited: false,
-        order: index,
-      } satisfies FormTableValue,
-    ]),
-  );
-}
-
 export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDrawerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [tablesState, setTablesState] = useState<Record<string, FormTableValue>>(() => buildInitialTablesState(data));
+  const [linksState, setLinksState] = useState<Record<string, LinkValue>>(() => buildInitialLinksState(data));
 
   useEffect(() => {
     setTablesState(buildInitialTablesState(data));
+    setLinksState(buildInitialLinksState(data));
   }, [data]);
 
   const updateTableState = useCallback((tableId: string, values: Partial<FormTableValue>) => {
@@ -116,6 +95,43 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
     });
   }, []);
 
+  const updateLinkState = useCallback((linkId: string, values: Partial<LinkValue>) => {
+    setLinksState((prev) => ({
+      ...prev,
+      [linkId]: { ...prev[linkId]!, ...values },
+    }));
+  }, []);
+
+  const addLink = useCallback((sourceTableId: string) => {
+    const linkId = crypto.randomUUID();
+    setLinksState((prev) => ({
+      ...prev,
+      [linkId]: {
+        linkId,
+        name: '',
+        tableFieldId: '',
+        relationType: 'belongs_to',
+        targetTableId: '',
+        sourceTableId,
+      },
+    }));
+  }, []);
+
+  const removeLink = useCallback((linkId: string) => {
+    setLinksState((prev) => {
+      const next = { ...prev };
+      delete next[linkId];
+      return next;
+    });
+  }, []);
+
+  const getLinksForTable = useCallback(
+    (tableId: string) => {
+      return Object.values(linksState).filter((link) => link.sourceTableId === tableId);
+    },
+    [linksState],
+  );
+
   if (!open) return null;
 
   return (
@@ -128,12 +144,17 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         updateTableState,
         orderedTableIds,
         reorderTables,
+        linksState,
+        updateLinkState,
+        addLink,
+        removeLink,
+        getLinksForTable,
       }}
     >
       {/* Backdrop */}
       <div className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs" onClick={onClose} />
       {/* Drawer panel */}
-      <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(700px,50vw)] border-l border-grey-border shadow-lg">
+      <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1024px,70vw)] border-l border-grey-border shadow-lg">
         <div ref={containerRef} className="bg-surface-card h-full overflow-y-auto">
           {children}
         </div>
@@ -142,9 +163,92 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
   );
 }
 
+function buildInitialTablesState(data: unknown): Record<string, FormTableValue> {
+  const raw = data as {
+    data_model?: {
+      tables?: Array<{
+        id: string;
+        name: string;
+        description?: string;
+        fields?: Record<string, RawField> | RawField[];
+      }>;
+    };
+  };
+  const tables = raw?.data_model?.tables ?? [];
+  return Object.fromEntries(
+    tables.map((table, index) => {
+      const rawFields = table.fields ? (Array.isArray(table.fields) ? table.fields : Object.values(table.fields)) : [];
+
+      const fields: DataModelField[] = rawFields.map((f) => ({
+        id: f.id,
+        name: f.name,
+        description: f.description || f.name,
+        dataType: f.data_type,
+        tableId: f.table_id || table.id,
+        isEnum: f.is_enum ?? false,
+        nullable: f.nullable ?? false,
+        unicityConstraint: f.unicity_constraint as UnicityConstraintType,
+      }));
+
+      // Ensure there's always an object_id field
+      if (!fields.some((f) => f.name === 'object_id')) {
+        fields.unshift({
+          id: `${table.id}_object_id`,
+          name: 'object_id',
+          description: 'ID',
+          dataType: 'String',
+          tableId: table.id,
+          isEnum: false,
+          nullable: false,
+          unicityConstraint: 'no_unicity_constraint',
+        });
+      }
+
+      return [
+        table.id,
+        {
+          tableId: table.id,
+          name: table.name,
+          alias: table.description || table.name.charAt(0).toUpperCase() + table.name.slice(1),
+          mainTable: false,
+          ftmEntity: 'other' as FtmEntityV2,
+          ftmSubEntity: '',
+          metaData: {},
+          isCanceled: false,
+          isVisited: false,
+          order: index,
+          fields,
+        } satisfies FormTableValue,
+      ];
+    }),
+  );
+}
+
+function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
+  const raw = data as {
+    data_model?: { links?: RawLink[] };
+  };
+  const links = raw?.data_model?.links ?? [];
+  return Object.fromEntries(
+    links.map((link) => [
+      link.id,
+      {
+        linkId: link.id,
+        name: link.name,
+        tableFieldId: link.child_field_id,
+        relationType: 'belongs_to',
+        targetTableId: link.parent_table_id,
+        sourceTableId: link.child_table_id,
+      } satisfies LinkValue,
+    ]),
+  );
+}
+
 export function UploadDataDrawerContent() {
   const { data, close, tablesState, updateTableState, orderedTableIds } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
+
+  const isSingleTable = orderedTableIds.length === 1;
 
   const allVisited = useMemo(
     () => orderedTableIds.length > 0 && orderedTableIds.every((id) => tablesState[id]!.isVisited),
@@ -164,7 +268,7 @@ export function UploadDataDrawerContent() {
     [tablesState],
   );
 
-  const [selectedTableId, setSelectedTableId] = useState<string>('');
+  const [selectedTableId, setSelectedTableId] = useState<string>(() => (isSingleTable ? orderedTableIds[0]! : ''));
   const [showSummary, setShowSummary] = useState(false);
 
   // Mark selected table as visited
@@ -173,6 +277,10 @@ export function UploadDataDrawerContent() {
       updateTableState(selectedTableId, { isVisited: true });
     }
   }, [selectedTableId, tablesState, updateTableState]);
+
+  function handleSave() {
+    // TODO: implement save logic
+  }
 
   function handleNextOrSummary() {
     if (allVisited) {
@@ -188,6 +296,28 @@ export function UploadDataDrawerContent() {
     if (nextUnvisited) {
       setSelectedTableId(nextUnvisited);
     }
+  }
+
+  // Empty state: no tables found
+  if (orderedTableIds.length === 0) {
+    return (
+      <div className="flex h-full flex-col">
+        <header className="flex shrink-0 gap-v2-md items-center p-v2-lg">
+          <button type="button" onClick={close} className="p-2 rounded-lg hover:bg-grey-border">
+            <Icon icon="x" className="size-5" />
+          </button>
+          <h3 className="text-l font-semibold">{t('data:upload_data.title')}</h3>
+        </header>
+        <div className="flex flex-1 items-center justify-center px-v2-lg">
+          <p className="text-m text-grey-secondary text-center">{t('data:upload_data.empty_state')}</p>
+        </div>
+        <footer className="flex shrink-0 justify-end gap-v2-md p-v2-lg border-t border-grey-border">
+          <Button variant="secondary" appearance="stroked" onClick={close}>
+            {t('data:upload_data.button_cancel')}
+          </Button>
+        </footer>
+      </div>
+    );
   }
 
   if (showSummary) {
@@ -206,7 +336,9 @@ export function UploadDataDrawerContent() {
           <Button variant="secondary" appearance="stroked" onClick={close}>
             {t('data:upload_data.button_cancel')}
           </Button>
-          <Button variant="primary">{t('data:upload_data.button_upload')}</Button>
+          <Button variant="primary" onClick={handleSave}>
+            {t('data:upload_data.button_save')}
+          </Button>
         </footer>
       </div>
     );
@@ -219,13 +351,17 @@ export function UploadDataDrawerContent() {
           <Icon icon="x" className="size-5" />
         </button>
         <h3 className="text-l font-semibold">{t('data:upload_data.title')}</h3>
-        <SelectV2
-          value={selectedTableId}
-          placeholder={t('data:upload_data.select_table_placeholder')}
-          onChange={setSelectedTableId}
-          options={tableOptions}
-          className="w-60"
-        />
+        {isSingleTable ? (
+          <span className="text-xl text-purple-primary">{tablesState[orderedTableIds[0]!]!.name}</span>
+        ) : (
+          <SelectV2
+            value={selectedTableId}
+            placeholder={t('data:upload_data.select_table_placeholder')}
+            onChange={setSelectedTableId}
+            options={tableOptions}
+            className="w-60"
+          />
+        )}
       </header>
       <div className="flex-1 overflow-auto px-v2-lg">
         {selectedTableId && tablesState[selectedTableId] ? (
@@ -234,288 +370,32 @@ export function UploadDataDrawerContent() {
         <pre className="text-xs p-4 bg-grey-border rounded-lg mt-4">{JSON.stringify(data, null, 2)}</pre>
       </div>
       <footer className="flex shrink-0 justify-end gap-v2-md p-v2-lg border-t border-grey-border">
-        <Button
-          variant="secondary"
-          appearance="stroked"
-          onClick={() => {
-            if (selectedTableId) {
-              const current = tablesState[selectedTableId];
-              updateTableState(selectedTableId, { isCanceled: !current?.isCanceled });
-            }
-          }}
-        >
-          {selectedTableId && tablesState[selectedTableId]?.isCanceled
-            ? t('data:upload_data.button_restore')
-            : t('data:upload_data.button_cancel')}
-        </Button>
-        <Button variant="primary" onClick={handleNextOrSummary}>
-          {allVisited ? t('data:upload_data.button_review') : t('data:upload_data.button_upload')}
-        </Button>
-      </footer>
-    </div>
-  );
-}
-
-function FormTable({ tableId }: { tableId: string }) {
-  const { tablesState, updateTableState } = UploadDataDrawerContext.useValue();
-  const { t } = useTranslation(['data']);
-  const tableState = tablesState[tableId]!;
-
-  const form = useForm({
-    defaultValues: tableState,
-    onSubmit: ({ value }) => {
-      console.log(value);
-    },
-  });
-
-  // Persist form values to context on unmount (table switch)
-  useEffect(() => {
-    return () => {
-      updateTableState(tableId, form.state.values);
-    };
-  }, [tableId, updateTableState, form]);
-
-  const ftmEntityOptions = useMemo(
-    () =>
-      ftmEntities.map((entity) => ({
-        label: t(`data:upload_data.ftm_entity.${entity}`),
-        value: entity,
-      })),
-    [t],
-  );
-
-  const selectedFtmEntity = useStore(form.store, (state) => state.values.ftmEntity);
-
-  const subEntityOptions = useMemo(() => {
-    if (selectedFtmEntity === 'person') {
-      return ftmEntityPersonOptions.map((sub) => ({
-        label: t(`data:upload_data.ftm_entity_person.${sub}`),
-        value: sub,
-      }));
-    }
-    if (selectedFtmEntity === 'other') {
-      return ftmEntityOtherOptions.map((sub) => ({
-        label: t(`data:upload_data.ftm_entity_other.${sub}`),
-        value: sub,
-      }));
-    }
-    return [];
-  }, [selectedFtmEntity, t]);
-
-  const hasSubEntity = selectedFtmEntity === 'person' || selectedFtmEntity === 'other';
-
-  return (
-    <div className="flex flex-col gap-v2-lg">
-      <section className="flex flex-col gap-v2-md">
-        <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
-        <div className="flex items-center gap-v2-md">
-          <form.Field name="alias">
-            {(field) => (
-              <Input
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.currentTarget.value)}
-                placeholder={t('data:upload_data.name_placeholder')}
-                className="flex-1"
-              />
-            )}
-          </form.Field>
-          <form.Field name="ftmEntity">
-            {(field) => (
-              <SelectV2
-                value={field.state.value}
-                placeholder={t('data:upload_data.object_placeholder')}
-                onChange={(value) => {
-                  field.handleChange(value as FtmEntityV2);
-                  form.setFieldValue('ftmSubEntity', '');
-                }}
-                options={ftmEntityOptions}
-                className="flex-1"
-              />
-            )}
-          </form.Field>
-          {hasSubEntity ? (
-            <form.Field name="ftmSubEntity">
-              {(field) => (
-                <SelectV2
-                  value={field.state.value}
-                  placeholder={t('data:upload_data.sub_object_placeholder')}
-                  onChange={field.handleChange}
-                  options={subEntityOptions}
-                  className="flex-1"
-                />
-              )}
-            </form.Field>
-          ) : null}
-          <form.Field name="mainTable">
-            {(field) => (
-              <label className="flex shrink-0 items-center gap-v2-sm cursor-pointer">
-                <Switch checked={field.state.value} onCheckedChange={(checked) => field.handleChange(checked)} />
-                <span className="text-s">{t('data:upload_data.main_table')}</span>
-              </label>
-            )}
-          </form.Field>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function SummaryView() {
-  const { orderedTableIds, reorderTables } = UploadDataDrawerContext.useValue();
-  const { t } = useTranslation(['data']);
-
-  const handleDragEnd = useCallbackRef((result: DropResult) => {
-    if (!result.destination || result.source.index === result.destination.index) {
-      return;
-    }
-    reorderTables(result.source.index, result.destination.index);
-  });
-
-  return (
-    <div className="flex flex-col gap-v2-md">
-      <h4 className="text-m font-semibold">{t('data:upload_data.tables_label')}</h4>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="summary-tables">
-          {(dropProvided) => (
-            <div ref={dropProvided.innerRef} {...dropProvided.droppableProps} className="flex flex-col gap-v2-md">
-              {orderedTableIds.map((tableId, index) => (
-                <Draggable key={tableId} draggableId={tableId} index={index}>
-                  {(dragProvided, snapshot) => (
-                    <div
-                      ref={dragProvided.innerRef}
-                      {...dragProvided.draggableProps}
-                      className={cn(snapshot.isDragging && 'opacity-80')}
-                    >
-                      <SummaryTableRow tableId={tableId} dragHandleProps={dragProvided.dragHandleProps} />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {dropProvided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </div>
-  );
-}
-
-function SummaryTableRow({
-  tableId,
-  dragHandleProps,
-}: {
-  tableId: string;
-  dragHandleProps: React.HTMLAttributes<HTMLElement> | null | undefined;
-}) {
-  const { tablesState, updateTableState } = UploadDataDrawerContext.useValue();
-  const { t } = useTranslation(['data']);
-  const tableState = tablesState[tableId]!;
-
-  const form = useForm({
-    defaultValues: tableState,
-    onSubmit: ({ value }) => {
-      console.log(value);
-    },
-  });
-
-  // Sync form -> context on every change
-  const formValues = useStore(form.store, (state) => state.values);
-  useEffect(() => {
-    updateTableState(tableId, formValues);
-  }, [tableId, formValues, updateTableState]);
-
-  const ftmEntityOptions = useMemo(
-    () =>
-      ftmEntities.map((entity) => ({
-        label: t(`data:upload_data.ftm_entity.${entity}`),
-        value: entity,
-      })),
-    [t],
-  );
-
-  const selectedFtmEntity = useStore(form.store, (state) => state.values.ftmEntity);
-
-  const subEntityOptions = useMemo(() => {
-    if (selectedFtmEntity === 'person') {
-      return ftmEntityPersonOptions.map((sub) => ({
-        label: t(`data:upload_data.ftm_entity_person.${sub}`),
-        value: sub,
-      }));
-    }
-    if (selectedFtmEntity === 'other') {
-      return ftmEntityOtherOptions.map((sub) => ({
-        label: t(`data:upload_data.ftm_entity_other.${sub}`),
-        value: sub,
-      }));
-    }
-    return [];
-  }, [selectedFtmEntity, t]);
-
-  const hasSubEntity = selectedFtmEntity === 'person' || selectedFtmEntity === 'other';
-
-  // In summary, show sub-entity select if applicable, otherwise main entity select
-  const displayedOptions = hasSubEntity && subEntityOptions.length > 0 ? subEntityOptions : ftmEntityOptions;
-  const selectedFtmSubEntity = useStore(form.store, (state) => state.values.ftmSubEntity);
-  const displayedValue = hasSubEntity && selectedFtmSubEntity ? selectedFtmSubEntity : selectedFtmEntity;
-
-  return (
-    <div className="flex items-center gap-v2-md">
-      <div {...dragHandleProps} className="flex shrink-0 items-center">
-        <Icon icon="drag" className="size-4 text-grey-secondary cursor-grab" />
-      </div>
-      <div
-        className={cn(
-          'flex items-center gap-v2-md rounded-lg border border-grey-border p-v2-md',
-          tableState.isCanceled && 'opacity-50',
+        {!isSingleTable ? (
+          <Button
+            variant="secondary"
+            appearance="stroked"
+            onClick={() => {
+              if (selectedTableId) {
+                const current = tablesState[selectedTableId];
+                updateTableState(selectedTableId, { isCanceled: !current?.isCanceled });
+              }
+            }}
+          >
+            {selectedTableId && tablesState[selectedTableId]?.isCanceled
+              ? t('data:upload_data.button_restore')
+              : t('data:upload_data.button_cancel')}
+          </Button>
+        ) : null}
+        {isSingleTable ? (
+          <Button variant="primary" onClick={handleSave}>
+            {t('data:upload_data.button_save')}
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={handleNextOrSummary}>
+            {allVisited ? t('data:upload_data.button_review') : t('data:upload_data.button_next_table')}
+          </Button>
         )}
-      >
-        <form.Field name="alias">
-          {(field) => (
-            <Input
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              placeholder={t('data:upload_data.name_placeholder')}
-              className={cn('flex-1', tableState.isCanceled && 'line-through')}
-              disabled={tableState.isCanceled}
-            />
-          )}
-        </form.Field>
-        <SelectV2
-          value={displayedValue}
-          placeholder={t('data:upload_data.object_placeholder')}
-          onChange={(value) => {
-            const isMainEntity = ftmEntities.includes(value as FtmEntityV2);
-            if (isMainEntity) {
-              form.setFieldValue('ftmEntity', value as FtmEntityV2);
-              form.setFieldValue('ftmSubEntity', '');
-            } else {
-              form.setFieldValue('ftmSubEntity', value);
-            }
-          }}
-          options={displayedOptions}
-          className="w-48"
-          disabled={tableState.isCanceled}
-        />
-        <form.Field name="mainTable">
-          {(field) => (
-            <label className="flex shrink-0 items-center gap-v2-sm cursor-pointer">
-              <Switch
-                checked={field.state.value}
-                onCheckedChange={(checked) => field.handleChange(checked)}
-                disabled={tableState.isCanceled}
-              />
-              <span className="text-s">{t('data:upload_data.main_table')}</span>
-            </label>
-          )}
-        </form.Field>
-      </div>
-      <Button
-        type="button"
-        variant="secondary"
-        onClick={() => updateTableState(tableId, { isCanceled: !tableState.isCanceled })}
-      >
-        <Icon icon={tableState.isCanceled ? 'restart-alt' : 'delete'} className="size-4" />
-      </Button>
+      </footer>
     </div>
   );
 }

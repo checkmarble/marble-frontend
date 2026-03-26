@@ -46,6 +46,9 @@ export interface DataModelField {
   values?: EnumValue[];
   unicityConstraint: UnicityConstraintType;
   ftmProperty?: string;
+  alias?: string;
+  visible?: boolean;
+  order?: number;
 }
 
 function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
@@ -60,6 +63,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
     values: dataModelFieldDto.values,
     unicityConstraint: dataModelFieldDto.unicity_constraint,
     ftmProperty: dataModelFieldDto.ftm_property,
+    // TODO: add alias, visible, order
   };
 }
 
