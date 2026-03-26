@@ -28,7 +28,7 @@
   post:
     tags:
       - Data Model
-    summary: Create a new table on the data model
+    summary: Create a new table on the data model along with its initial fields and optional links
     operationId: postDataModelTable
     requestBody:
       description: 'Describe the table to create'
@@ -40,14 +40,20 @@
     security:
       - bearerAuth: []
     responses:
-      '204':
-        description: Empty response body
+      '201':
+        description: Table created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTableResponseDto'
+      '400':
+        description: Bad Request — missing required fields, invalid enum value, or empty fields array
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      '409':
+        description: Conflict — table name already exists in this organization
 /data-model/tables/{tableId}:
   patch:
     tags:
@@ -771,14 +777,90 @@ components:
       type: object
       required:
         - name
-        - description
+        - semantic_type
+        - fields
+      properties:
+        name:
+          type: string
+          description: snake_case table name
+        description:
+          type: string
+        alias:
+          type: string
+          description: Human-readable display name
+        semantic_type:
+          type: string
+          enum: [person, company, account, transaction, event, partner, other]
+        ftm_entity:
+          $ref: '#/components/schemas/FtmEntity'
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: {}
+        fields:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CreateTableBodyField'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateTableBodyLink'
+    CreateTableResponseDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the newly created table
+    CreateTableBodyField:
+      type: object
+      required:
+        - name
+        - type
       properties:
         name:
           type: string
         description:
           type: string
-        ftm_entity:
-          $ref: '#/components/schemas/FtmEntity'
+        type:
+          type: string
+          enum: [Bool, Int, Float, String, Timestamp, IpAddress, Coords]
+        alias:
+          type: string
+        nullable:
+          type: boolean
+        is_enum:
+          type: boolean
+        is_unique:
+          type: boolean
+        ftm_property:
+          type: string
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: {}
+    CreateTableBodyLink:
+      type: object
+      required:
+        - name
+        - child_field_name
+        - parent_table_id
+        - parent_field_id
+      properties:
+        name:
+          type: string
+        child_field_name:
+          type: string
+          description: Name of a field defined in the 'fields' array
+        parent_table_id:
+          type: string
+          format: uuid
+        parent_field_id:
+          type: string
+          format: uuid
     UpdateTableBodyDto:
       type: object
       properties:
@@ -786,7 +868,7 @@ components:
           type: string
         semantic_type:
           type: string
-          enum: [person, company]
+          enum: [person, company, account, transaction, event, partner, other]
         caption_field:
           type: string
         alias:

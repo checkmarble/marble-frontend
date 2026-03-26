@@ -1255,14 +1255,47 @@ export type DataModelDto = {
         [key: string]: TableDto;
     };
 };
-export type CreateTableBody = {
+export type CreateTableBodyField = {
     name: string;
-    description: string;
+    description?: string;
+    "type": "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords";
+    alias?: string;
+    nullable?: boolean;
+    is_enum?: boolean;
+    is_unique?: boolean;
+    ftm_property?: string;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+};
+export type CreateTableBodyLink = {
+    name: string;
+    /** Name of a field defined in the 'fields' array */
+    child_field_name: string;
+    parent_table_id: string;
+    parent_field_id: string;
+};
+export type CreateTableBody = {
+    /** snake_case table name */
+    name: string;
+    description?: string;
+    /** Human-readable display name */
+    alias?: string;
+    semantic_type: "person" | "company" | "account" | "transaction" | "event" | "partner" | "other";
     ftm_entity?: FtmEntity;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+    fields: CreateTableBodyField[];
+    links?: CreateTableBodyLink[];
+};
+export type CreateTableResponseDto = {
+    /** ID of the newly created table */
+    id: string;
 };
 export type UpdateTableBodyDto = {
     description?: string;
-    semantic_type?: "person" | "company";
+    semantic_type?: "person" | "company" | "account" | "transaction" | "event" | "partner" | "other";
     caption_field?: string;
     alias?: string;
     ftm_entity?: FtmEntity;
@@ -4358,11 +4391,14 @@ export function getDataModel(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
- * Create a new table on the data model
+ * Create a new table on the data model along with its initial fields and optional links
  */
 export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 204;
+        status: 201;
+        data: CreateTableResponseDto;
+    } | {
+        status: 400;
     } | {
         status: 401;
         data: string;
@@ -4370,8 +4406,7 @@ export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oaza
         status: 403;
         data: string;
     } | {
-        status: 404;
-        data: string;
+        status: 409;
     }>("/data-model/tables", oazapfts.json({
         ...opts,
         method: "POST",
