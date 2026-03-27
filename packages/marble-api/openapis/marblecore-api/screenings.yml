@@ -231,6 +231,64 @@
             schema:
               $ref: '#/components/schemas/ScreeningDto'
 
+/screenings/{screeningId}/ai-suggestions:
+  get:
+    tags:
+      - Screening
+    summary: Retrieve AI-generated suggestions for all hits in a screening
+    description: >-
+      Returns the list of AI suggestions already computed for each match in the given screening.
+      Only matches that have already been analysed will appear in the response.
+    operationId: getScreeningAiSuggestions
+    parameters:
+      - name: screeningId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Array of suggestion objects (one per analysed screening match). May be empty if no suggestions have been generated yet.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScreeningAiSuggestionDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/screenings/{screeningId}/ai-suggestions/enqueue:
+  post:
+    tags:
+      - Screening
+    summary: Enqueue an async job to generate AI suggestions for a screening's hits
+    description: >-
+      Validates the caller's permissions and feature access, then enqueues a background job to
+      analyse all pending matches in the screening using an LLM. After the job completes, results can be retrieved via
+      GET /screenings/{screeningId}/ai-suggestions. 
+    operationId: enqueueScreeningAiSuggestions
+    parameters:
+      - name: screeningId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '202':
+        description: Job has been successfully enqueued
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
 /screenings/freeform-search:
   post:
     tags:
@@ -790,6 +848,37 @@ components:
           type: string
         address:
           type: string
+    ScreeningAiSuggestionDto:
+      type: object
+      required:
+        - match_id
+        - entity_id
+        - confidence
+        - reason
+        - version
+        - created_at
+      properties:
+        match_id:
+          type: string
+          description: ID of the screening match this suggestion applies to
+        entity_id:
+          type: string
+          description: ID of the sanctioned entity proposed as a match
+        confidence:
+          type: string
+          enum: ['probable_false_positive', 'inconclusive', 'investigate']
+          description: AI assessment of the match
+        reason:
+          type: string
+          description: Concise AI explanation for the suggestion (1–3 sentences)
+        version:
+          type: string
+          description: Schema version of the suggestion object
+          example: v1
+        created_at:
+          type: string
+          format: date-time
+          description: When the suggestion was generated
     RefineQueryVehicle:
       type: object
       properties:

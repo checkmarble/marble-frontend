@@ -313,6 +313,8 @@ ScreeningRefineDto:
   $ref: screenings.yml#/components/schemas/ScreeningRefineDto
 updateScreeningMatchDto:
   $ref: screenings.yml#/components/schemas/updateScreeningMatchDto
+ScreeningAiSuggestionDto:
+  $ref: screenings.yml#/components/schemas/ScreeningAiSuggestionDto
 
 # SCENARIO PUBLICATIONS
 
