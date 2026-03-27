@@ -114,6 +114,11 @@ export const routes = [
                 "file": "routes/_builder+/cases+/_index.tsx"
               },
               {
+                "id": "routes/_builder+/cases+/analytics",
+                "path": "analytics",
+                "file": "routes/_builder+/cases+/analytics.tsx"
+              },
+              {
                 "id": "routes/_builder+/cases+/inboxes.$inboxId",
                 "path": "inboxes/:inboxId",
                 "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
@@ -511,6 +516,11 @@ export const routes = [
         "id": "routes/ressources+/analytics+/$scenarioId+/query.$queryName",
         "path": "ressources/analytics/:scenarioId/query/:queryName",
         "file": "routes/ressources+/analytics+/$scenarioId+/query.$queryName.ts"
+      },
+      {
+        "id": "routes/ressources+/analytics+/case-analytics",
+        "path": "ressources/analytics/case-analytics",
+        "file": "routes/ressources+/analytics+/case-analytics.tsx"
       },
       {
         "id": "routes/ressources+/analytics+/case-status-by-date",
@@ -1041,6 +1051,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/builder-options.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/generate-ast",
+        "path": "ressources/scenarios/:scenarioId/generate-ast",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/generate-ast.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel",
         "path": "ressources/scenarios/:scenarioId/testrun/:testRunId/cancel",
         "file": "routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel.tsx"
@@ -1054,11 +1069,6 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/$scenarioId+/validate-ast",
         "path": "ressources/scenarios/:scenarioId/validate-ast",
         "file": "routes/ressources+/scenarios+/$scenarioId+/validate-ast.tsx"
-      },
-      {
-        "id": "routes/ressources+/scenarios+/$scenarioId.generate-ast",
-        "path": "ressources/scenarios/:scenarioId/generate-ast",
-        "file": "routes/ressources+/scenarios+/$scenarioId.generate-ast.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/archive",
