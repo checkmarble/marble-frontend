@@ -1,5 +1,6 @@
 import { EnrichMatchButton } from '@app-builder/components/Screenings/EnrichMatchButton';
 import { type ScreeningMatch } from '@app-builder/models/screening';
+import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CollapsibleV2, Tag } from 'ui-design-system';
@@ -18,9 +19,18 @@ type MatchCardProps = {
   defaultOpen?: boolean;
   hideEnrich?: boolean;
   hideReview?: boolean;
+  aiSuggestion?: ScreeningAiSuggestion;
 };
 
-export const MatchCard = ({ match, readonly, unreviewable, defaultOpen, hideEnrich, hideReview }: MatchCardProps) => {
+export const MatchCard = ({
+  match,
+  readonly,
+  unreviewable,
+  defaultOpen,
+  hideEnrich,
+  hideReview,
+  aiSuggestion,
+}: MatchCardProps) => {
   const { t } = useTranslation(screeningsI18n);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -41,6 +51,12 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen, hideEnri
                   className="size-4 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-initial:rotate-180 rtl:-rotate-90 group-aria-expanded:rtl:-rotate-180 group-data-initial:rtl:-rotate-180"
                 />
                 <span className="text-s font-medium">{entity.caption}</span>
+                {aiSuggestion && match.status === 'pending' ? (
+                  <Tag color="grey">
+                    {t(`screenings:match.ai_suggestion.${aiSuggestion.confidence}`)}
+                    <Icon icon="wand" className="size-4" />
+                  </Tag>
+                ) : null}
                 <Tag color="grey">
                   {t('screenings:match.similarity', {
                     percent: Math.round(entity.score * 100),

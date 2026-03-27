@@ -227,6 +227,10 @@ paths:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1{screeningId}~1files
   /screenings/{screeningId}/files/{fileId}:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1{screeningId}~1files~1{fileId}
+  /screenings/{screeningId}/ai-suggestions:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1{screeningId}~1ai-suggestions
+  /screenings/{screeningId}/ai-suggestions/enqueue:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1{screeningId}~1ai-suggestions~1enqueue
   /screenings/matches/{matchId}:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1matches~1{matchId}
   /screenings/matches/{matchId}/enrich:

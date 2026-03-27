@@ -1126,6 +1126,11 @@ export const routes = [
         "file": "routes/ressources+/scoring+/update-settings.tsx"
       },
       {
+        "id": "routes/ressources+/screenings+/ai-suggestions.$screeningId",
+        "path": "ressources/screenings/ai-suggestions/:screeningId",
+        "file": "routes/ressources+/screenings+/ai-suggestions.$screeningId.tsx"
+      },
+      {
         "id": "routes/ressources+/screenings+/detail.$decisionId.$screeningId",
         "path": "ressources/screenings/detail/:decisionId/:screeningId",
         "file": "routes/ressources+/screenings+/detail.$decisionId.$screeningId.tsx"

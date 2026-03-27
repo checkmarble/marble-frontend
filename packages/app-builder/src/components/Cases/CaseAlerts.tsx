@@ -379,22 +379,33 @@ export const AlertOutcomeIcon = ({
   );
 };
 
-const screeningStatusConfig: Record<
-  ScreeningStatus,
-  { variant: 'primary' | 'success' | 'destructive' | 'secondary'; appearance?: 'stroked' }
-> = {
+const screeningButtonStatusConfig: Record<'in_review' | 'error', { variant: 'primary' | 'secondary' }> = {
   in_review: { variant: 'primary' },
-  no_hit: { variant: 'success', appearance: 'stroked' },
-  confirmed_hit: { variant: 'destructive', appearance: 'stroked' },
   error: { variant: 'secondary' },
+};
+
+const screeningLabelColors: Record<'confirmed_hit' | 'no_hit', string> = {
+  confirmed_hit: 'text-red-primary',
+  no_hit: 'text-green-primary',
 };
 
 export const ScreeningStatusBadge = ({ status, count }: { status: ScreeningStatus; count: number }) => {
   const { t } = useTranslation(casesI18n);
-  const config = screeningStatusConfig[status];
+
+  // confirmed_hit and no_hit render as borderless inline labels with eye icon
+  if (status === 'confirmed_hit' || status === 'no_hit') {
+    return (
+      <span className={cn('inline-flex items-center gap-1 text-xs font-medium', screeningLabelColors[status])}>
+        {t(`screenings:status.${status}`)}
+        <Icon icon="eye" className="size-4 shrink-0" />
+      </span>
+    );
+  }
+
+  const config = screeningButtonStatusConfig[status];
 
   return (
-    <Button variant={config.variant} appearance={config.appearance} size="small" className="shadow-sm" tabIndex={-1}>
+    <Button variant={config.variant} size="small" className="shadow-sm" tabIndex={-1}>
       {t(`screenings:status.${status}`)}
       {status === 'in_review' && count > 0 ? ` (${count})` : ''}
       <Icon icon="eye" className="size-4 shrink-0" />
