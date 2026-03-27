@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 
-export function CreateTable({ children }: { children: React.ReactNode }) {
+export function CreateTableModal({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation(['data', 'navigation', 'common']);
   const createTableMutation = useCreateTableMutation();
   const [isOpen, setIsOpen] = useState(false);

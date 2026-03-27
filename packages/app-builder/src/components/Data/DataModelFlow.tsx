@@ -23,7 +23,7 @@ import { Button, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
-import { CreateTable } from './CreateTable';
+import { CreateTableModal } from './CreateTable/CreateTableModal';
 import { dataI18n } from './data-i18n';
 import {
   adaptLinkToSingleData,
@@ -245,12 +245,12 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
       <SelectedPivotPanel />
       {isCreateDataModelTableAvailable ? (
         <Panel position="bottom-right">
-          <CreateTable>
+          <CreateTableModal>
             <Button variant="primary">
               <Icon icon="plus" className="size-5" />
               {t('data:create_table.title')}
             </Button>
-          </CreateTable>
+          </CreateTableModal>
         </Panel>
       ) : null}
       {children}

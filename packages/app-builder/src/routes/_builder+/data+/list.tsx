@@ -1,5 +1,5 @@
 import { CalloutV2, Page } from '@app-builder/components';
-import { CreateTable } from '@app-builder/components/Data/CreateTable';
+import { CreateTableDrawer } from '@app-builder/components/Data/CreateTable/CreateTableDrawer';
 import { DataTabs } from '@app-builder/components/Data/DataTabs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { ImportOrg } from '@app-builder/components/Data/ImportOrg';
@@ -24,18 +24,20 @@ export default function DataList() {
   const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
   const exportOrgMutation = useExportOrgMutation();
   const [uploadDrawerData, setUploadDrawerData] = useState<unknown>(null);
+  const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const isUploadDrawerOpen = uploadDrawerData !== null;
 
   const isEmpty = dataModel.length === 0;
 
   const handleImportSuccess = (data: unknown) => setUploadDrawerData(data);
+  const handleOpenCreateDrawer = () => setIsCreateDrawerOpen(true);
 
   return (
     <div className="h-full">
       <Page.Container>
         <Page.Content>
           {isEmpty ? (
-            <EmptyHeader onImportSuccess={handleImportSuccess} />
+            <EmptyHeader onImportSuccess={handleImportSuccess} onCreateTable={handleOpenCreateDrawer} />
           ) : (
             <DataTabs
               actions={
@@ -54,12 +56,10 @@ export default function DataList() {
                     {t('data:export_org.button')}
                   </Button>
                   {isCreateDataModelTableAvailable ? (
-                    <CreateTable>
-                      <Button variant="primary">
-                        <Icon icon="plus" className="size-5" />
-                        {t('data:create_table.title')}
-                      </Button>
-                    </CreateTable>
+                    <Button variant="primary" onClick={handleOpenCreateDrawer}>
+                      <Icon icon="plus" className="size-5" />
+                      {t('data:create_table.title')}
+                    </Button>
                   ) : null}
                 </div>
               }
@@ -68,7 +68,7 @@ export default function DataList() {
           <CalloutV2>{t('data:callout')}</CalloutV2>
 
           {isEmpty ? (
-            <DataListEmptyState onImportSuccess={handleImportSuccess} />
+            <DataListEmptyState onImportSuccess={handleImportSuccess} onCreateTable={handleOpenCreateDrawer} />
           ) : (
             dataModel.map((table) => <TableDetails key={table.name} tableModel={table} dataModel={dataModel} />)
           )}
@@ -77,11 +77,18 @@ export default function DataList() {
       <UploadDataDrawer open={isUploadDrawerOpen} data={uploadDrawerData} onClose={() => setUploadDrawerData(null)}>
         <UploadDataDrawerContent />
       </UploadDataDrawer>
+      <CreateTableDrawer open={isCreateDrawerOpen} onClose={() => setIsCreateDrawerOpen(false)} />
     </div>
   );
 }
 
-function EmptyHeader({ onImportSuccess }: { onImportSuccess: (data: unknown) => void }) {
+function EmptyHeader({
+  onImportSuccess,
+  onCreateTable,
+}: {
+  onImportSuccess: (data: unknown) => void;
+  onCreateTable: () => void;
+}) {
   const { t } = useTranslation(['navigation']);
 
   return (
@@ -106,12 +113,10 @@ function EmptyHeader({ onImportSuccess }: { onImportSuccess: (data: unknown) => 
                 </ImportOrg>
               </MenuCommand.Item>
               <MenuCommand.Item>
-                <CreateTable>
-                  <button className="flex items-center gap-2" disabled>
-                    <Icon icon="edit" className="size-4" />
-                    {t('data:create_new_table.manually')}
-                  </button>
-                </CreateTable>
+                <button className="flex items-center gap-2" onClick={onCreateTable}>
+                  <Icon icon="edit" className="size-4" />
+                  {t('data:create_new_table.manually')}
+                </button>
               </MenuCommand.Item>
             </MenuCommand.List>
           </MenuCommand.Content>
@@ -121,7 +126,13 @@ function EmptyHeader({ onImportSuccess }: { onImportSuccess: (data: unknown) => 
   );
 }
 
-function DataListEmptyState({ onImportSuccess }: { onImportSuccess: (data: unknown) => void }) {
+function DataListEmptyState({
+  onImportSuccess,
+  onCreateTable,
+}: {
+  onImportSuccess: (data: unknown) => void;
+  onCreateTable: () => void;
+}) {
   const { t } = useTranslation(handle.i18n);
 
   return (
@@ -144,12 +155,16 @@ function DataListEmptyState({ onImportSuccess }: { onImportSuccess: (data: unkno
               <Icon icon="upload" className="size-4" />
             </Button>
           </ImportOrg>
-          <CreateTable>
-            <Button type="button" appearance="stroked" size="default" className="w-full justify-center" disabled>
-              {t('data:empty_state.create_table.title')}
-              <Icon icon="plus" className=" size-4" />
-            </Button>
-          </CreateTable>
+          <Button
+            type="button"
+            appearance="stroked"
+            size="default"
+            className="w-full justify-center"
+            onClick={onCreateTable}
+          >
+            {t('data:empty_state.create_table.title')}
+            <Icon icon="plus" className=" size-4" />
+          </Button>
         </div>
       </div>
     </section>

@@ -10,29 +10,23 @@ export type FormTableValue = {
   tableId: string;
   name: string;
   alias: string;
-  mainTable: boolean;
   ftmEntity: FtmEntityV2;
   ftmSubEntity: string;
   metaData: Record<string, unknown>;
   isCanceled: boolean;
   isVisited: boolean;
-  order: number;
   fields: TableField[];
   mainTimestampFieldId: string;
 };
 
 /**
- * Sort table IDs: mainTable first, then by order, canceled last.
+ * Get table IDs with canceled last.
  */
 function sortedTableIds(tablesState: Record<string, FormTableValue>): string[] {
   return Object.values(tablesState)
     .sort((a, b) => {
-      // Canceled always last
       if (a.isCanceled !== b.isCanceled) return a.isCanceled ? 1 : -1;
-      // MainTable always first (within non-canceled)
-      if (a.mainTable !== b.mainTable) return a.mainTable ? -1 : 1;
-      // Then by order
-      return a.order - b.order;
+      return 0;
     })
     .map((t) => t.tableId);
 }
@@ -43,8 +37,7 @@ export const UploadDataDrawerContext = createSimpleContext<{
   close: () => void;
   tablesState: Record<string, FormTableValue>;
   updateTableState: (tableId: string, values: Partial<FormTableValue>) => void;
-  orderedTableIds: string[];
-  reorderTables: (startIndex: number, endIndex: number) => void;
+  tableIds: string[];
   linksState: Record<string, LinkValue>;
   updateLinkState: (linkId: string, values: Partial<LinkValue>) => void;
   addLink: (sourceTableId: string) => void;
@@ -81,23 +74,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
     }));
   }, []);
 
-  const orderedTableIds = useMemo(() => sortedTableIds(tablesState), [tablesState]);
-
-  const reorderTables = useCallback((startIndex: number, endIndex: number) => {
-    setTablesState((prev) => {
-      const ids = sortedTableIds(prev);
-      // Move the dragged item
-      const [movedId] = ids.splice(startIndex, 1);
-      if (!movedId) return prev;
-      ids.splice(endIndex, 0, movedId);
-      // Reassign order values based on new positions
-      const next = { ...prev };
-      ids.forEach((id, index) => {
-        next[id] = { ...next[id]!, order: index };
-      });
-      return next;
-    });
-  }, []);
+  const tableIds = useMemo(() => sortedTableIds(tablesState), [tablesState]);
 
   const updateLinkState = useCallback((linkId: string, values: Partial<LinkValue>) => {
     setLinksState((prev) => ({
@@ -223,8 +200,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         close: onClose,
         tablesState,
         updateTableState,
-        orderedTableIds,
-        reorderTables,
+        tableIds,
         linksState,
         updateLinkState,
         addLink,
@@ -261,7 +237,7 @@ function buildInitialTablesState(data: unknown): Record<string, FormTableValue> 
   };
   const tables = raw?.data_model?.tables ?? [];
   return Object.fromEntries(
-    tables.map((table, index) => {
+    tables.map((table) => {
       const rawFields = table.fields ? (Array.isArray(table.fields) ? table.fields : Object.values(table.fields)) : [];
 
       const fields: TableField[] = rawFields.map((f, i) => ({
@@ -315,13 +291,11 @@ function buildInitialTablesState(data: unknown): Record<string, FormTableValue> 
           tableId: table.id,
           name: table.name,
           alias: table.description || table.name.charAt(0).toUpperCase() + table.name.slice(1),
-          mainTable: false,
           ftmEntity: 'other' as FtmEntityV2,
           ftmSubEntity: '',
           metaData: {},
           isCanceled: false,
           isVisited: false,
-          order: index,
           fields,
           mainTimestampFieldId: '',
         } satisfies FormTableValue,
@@ -351,14 +325,14 @@ function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
 }
 
 export function UploadDataDrawerContent() {
-  const { close, tablesState, updateTableState, orderedTableIds } = UploadDataDrawerContext.useValue();
+  const { close, tablesState, updateTableState, tableIds } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
 
-  const isSingleTable = orderedTableIds.length === 1;
+  const isSingleTable = tableIds.length === 1;
 
   const allVisited = useMemo(
-    () => orderedTableIds.length > 0 && orderedTableIds.every((id) => tablesState[id]!.isVisited),
-    [tablesState, orderedTableIds],
+    () => tableIds.length > 0 && tableIds.every((id) => tablesState[id]!.isVisited),
+    [tablesState, tableIds],
   );
 
   const tableOptions = useMemo(
@@ -374,7 +348,7 @@ export function UploadDataDrawerContent() {
     [tablesState],
   );
 
-  const [selectedTableId, setSelectedTableId] = useState<string>(() => (isSingleTable ? orderedTableIds[0]! : ''));
+  const [selectedTableId, setSelectedTableId] = useState<string>(() => (isSingleTable ? tableIds[0]! : ''));
   const [showSummary, setShowSummary] = useState(false);
 
   // Mark selected table as visited
@@ -395,17 +369,17 @@ export function UploadDataDrawerContent() {
       return;
     }
     // Find next unvisited table
-    const currentIndex = orderedTableIds.indexOf(selectedTableId);
+    const currentIndex = tableIds.indexOf(selectedTableId);
     const nextUnvisited =
-      orderedTableIds.find((id, i) => i > currentIndex && !tablesState[id]!.isVisited) ??
-      orderedTableIds.find((id) => !tablesState[id]!.isVisited);
+      tableIds.find((id, i) => i > currentIndex && !tablesState[id]!.isVisited) ??
+      tableIds.find((id) => !tablesState[id]!.isVisited);
     if (nextUnvisited) {
       setSelectedTableId(nextUnvisited);
     }
   }
 
   // Empty state: no tables found
-  if (orderedTableIds.length === 0) {
+  if (tableIds.length === 0) {
     return (
       <div className="flex h-full flex-col">
         <header className="flex shrink-0 gap-v2-md items-center p-v2-lg">
@@ -458,7 +432,7 @@ export function UploadDataDrawerContent() {
         </button>
         <h3 className="text-l font-semibold">{t('data:upload_data.title')}</h3>
         {isSingleTable ? (
-          <span className="text-xl text-purple-primary">{tablesState[orderedTableIds[0]!]!.name}</span>
+          <span className="text-xl text-purple-primary">{tablesState[tableIds[0]!]!.name}</span>
         ) : (
           <SelectV2
             value={selectedTableId}
