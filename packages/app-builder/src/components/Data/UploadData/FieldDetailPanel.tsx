@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../DataVisualisation/DataField';
-import { UploadDataDrawerContext } from './Drawer';
+import { isValidDataModelName } from '../shared/dataModelNameValidation';
+import { FieldsEditorContext } from '../shared/FieldsEditorContext';
 import {
   type DataTypeKey,
   getMockValue,
@@ -12,6 +13,7 @@ import {
   SemanticSubType,
   type SemanticType,
   semanticTypesByDataType,
+  type TableField,
 } from './uploadData-types';
 
 const dataTypeOptions: { value: DataType; labelKey: string }[] = [
@@ -25,23 +27,23 @@ const dataTypeOptions: { value: DataType; labelKey: string }[] = [
 ];
 
 export function FieldDetailPanel({
-  tableId,
   fieldId,
   onClose,
+  title,
 }: {
-  tableId: string;
   fieldId: string;
   onClose: () => void;
+  title?: string;
 }) {
-  const { tablesState, updateField, updateTableState, removeField } = UploadDataDrawerContext.useValue();
+  const { fields, updateField, removeField, mainTimestampFieldId, setMainTimestampFieldId } =
+    FieldsEditorContext.useValue();
   const { t } = useTranslation(['data']);
-  const tableState = tablesState[tableId]!;
-  const field = tableState.fields.find((f) => f.id === fieldId);
+  const field = fields.find((f) => f.id === fieldId);
 
   const isNameDuplicate = useMemo(() => {
     if (!field) return false;
-    return tableState.fields.some((f) => f.id !== fieldId && f.name === field.name);
-  }, [field, fieldId, tableState.fields]);
+    return fields.some((f) => f.id !== fieldId && f.name === field.name);
+  }, [field, fieldId, fields]);
 
   const typeSelectOptions = useMemo(
     () =>
@@ -77,10 +79,18 @@ export function FieldDetailPanel({
     }));
   }, [field, t]);
 
+  const currencyFieldOptions = useMemo(
+    () =>
+      fields
+        .filter((f) => f.id !== fieldId && f.semanticType === 'currency_code')
+        .map((f) => ({ label: f.alias || f.name, value: f.id })),
+    [fields, fieldId],
+  );
+
   if (!field) return null;
 
-  function update(values: Parameters<typeof updateField>[2]) {
-    updateField(tableId, fieldId, values);
+  function update(values: Partial<TableField>) {
+    updateField(fieldId, values);
   }
 
   const mockedValue = getMockValue(field.dataType, field.semanticType, field.semanticSubType);
@@ -92,18 +102,20 @@ export function FieldDetailPanel({
           <button type="button" onClick={onClose} className="rounded-lg p-1 hover:bg-grey-border">
             <Icon icon="x" className="size-4" />
           </button>
-          <h4 className="text-m font-semibold">{t('data:upload_data.field_detail_title')}</h4>
+          <h4 className="text-m font-semibold">{title ?? t('data:upload_data.field_detail_title')}</h4>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            removeField(tableId, fieldId);
-            onClose();
-          }}
-          className="rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
-        >
-          <Icon icon="delete" className="size-4" />
-        </button>
+        {field.isNew ? (
+          <button
+            type="button"
+            onClick={() => {
+              removeField(fieldId);
+              onClose();
+            }}
+            className="rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+          >
+            <Icon icon="delete" className="size-4" />
+          </button>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-v2-lg p-v2-lg">
@@ -113,7 +125,7 @@ export function FieldDetailPanel({
           <SelectV2
             value={field.dataType}
             placeholder=""
-            onChange={(value) => update({ dataType: value })}
+            onChange={(value) => update({ dataType: value, semanticType: undefined, semanticSubType: undefined })}
             options={typeSelectOptions}
             disabled={!field.isNew}
           />
@@ -128,6 +140,9 @@ export function FieldDetailPanel({
           ) : null}
           {!field.name ? (
             <p className="text-xs text-red-primary">{t('data:upload_data.field_name_required_error')}</p>
+          ) : null}
+          {field.name && !isValidDataModelName(field.name) ? (
+            <p className="text-xs text-red-primary">{t('data:create_field.name_regex_error')}</p>
           ) : null}
         </div>
 
@@ -194,6 +209,17 @@ export function FieldDetailPanel({
         {field.semanticType === 'monetary_amount' ? (
           <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
             <span className="text-s text-grey-secondary">{t('data:upload_data.field_currency_settings')}</span>
+            {currencyFieldOptions.length > 0 ? (
+              <div className="flex flex-col gap-v2-xs">
+                <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_field')}</label>
+                <SelectV2
+                  value={field.currencyFieldId}
+                  placeholder={t('data:upload_data.field_currency_field_placeholder')}
+                  onChange={(value) => update({ currencyFieldId: value })}
+                  options={currencyFieldOptions}
+                />
+              </div>
+            ) : null}
             <div className="flex flex-col gap-v2-xs">
               <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_exponent')}</label>
               <NumberInput
@@ -221,10 +247,8 @@ export function FieldDetailPanel({
             <span className="text-s text-grey-secondary">{t('data:upload_data.field_timestamp_settings')}</span>
             <label className="flex items-center gap-v2-sm cursor-pointer">
               <Switch
-                checked={tableState.mainTimestampFieldId === fieldId}
-                onCheckedChange={(checked) =>
-                  updateTableState(tableId, { mainTimestampFieldId: checked ? fieldId : '' })
-                }
+                checked={mainTimestampFieldId === fieldId}
+                onCheckedChange={(checked) => setMainTimestampFieldId(checked ? fieldId : '')}
               />
               <span className="text-s">{t('data:upload_data.field_main_ordering_timestamp')}</span>
             </label>
@@ -253,6 +277,7 @@ export function FieldDetailPanel({
                   semanticSubType: field.semanticSubType,
                   currencyExponent: field.currencyExponent,
                   decimalPrecision: field.decimalPrecision,
+                  currencyFieldId: field.currencyFieldId,
                 }}
                 value={mockedValue}
               />

@@ -4,30 +4,32 @@ import { useCallbackRef } from '@marble/shared';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { UploadDataDrawerContext } from './Drawer';
+import { FieldsEditorContext } from '../shared/FieldsEditorContext';
 import type { TableField } from './uploadData-types';
 
 export function FieldsForm({
-  tableId,
   onFieldSelect,
   selectedFieldId,
+  title,
+  description,
+  droppableId = 'fields-list',
 }: {
-  tableId: string;
   onFieldSelect: (fieldId: string) => void;
   selectedFieldId: string | null;
+  title?: string;
+  description?: string;
+  droppableId?: string;
 }) {
-  const { tablesState, reorderFields, addField } = UploadDataDrawerContext.useValue();
+  const { fields, reorderFields, addField } = FieldsEditorContext.useValue();
   const { t } = useTranslation(['data']);
-  const tableState = tablesState[tableId]!;
-  const fields = tableState.fields;
 
   const handleDragEnd = useCallbackRef((result: DropResult) => {
     if (!result.destination || result.source.index === result.destination.index) return;
-    reorderFields(tableId, result.source.index, result.destination.index);
+    reorderFields(result.source.index, result.destination.index);
   });
 
   function handleAddField() {
-    const fieldId = addField(tableId, '');
+    const fieldId = addField('');
     onFieldSelect(fieldId);
   }
 
@@ -35,8 +37,8 @@ export function FieldsForm({
     <section className="flex flex-col gap-v2-md">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-v2-xs">
-          <h4 className="text-m font-semibold">{t('data:upload_data.fields_title')}</h4>
-          <p className="text-s text-grey-secondary">{t('data:upload_data.fields_description')}</p>
+          <h4 className="text-m font-semibold">{title ?? t('data:upload_data.fields_title')}</h4>
+          <p className="text-s text-grey-secondary">{description ?? t('data:upload_data.fields_description')}</p>
         </div>
         <Button variant="primary" appearance="stroked" onClick={handleAddField}>
           <Icon icon="plus" className="size-4" />
@@ -44,7 +46,7 @@ export function FieldsForm({
         </Button>
       </div>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId={`fields-${tableId}`}>
+        <Droppable droppableId={droppableId}>
           {(dropProvided) => (
             <div ref={dropProvided.innerRef} {...dropProvided.droppableProps} className="flex flex-col gap-v2-sm">
               {fields.map((field, index) => (

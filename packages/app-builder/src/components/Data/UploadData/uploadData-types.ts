@@ -63,6 +63,7 @@ export type TableField = {
   semanticSubType?: SemanticSubType;
   currencyExponent?: number;
   decimalPrecision?: number;
+  currencyFieldId?: string;
   isNew: boolean;
 };
 

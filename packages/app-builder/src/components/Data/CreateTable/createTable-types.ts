@@ -1,9 +1,11 @@
 import z from 'zod/v4';
+import { dataModelNameRegex } from '../shared/dataModelNameValidation';
 import {
   type FtmEntityV2,
   ftmEntities,
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
+  type TableField,
 } from '../UploadData/uploadData-types';
 
 export type CreateTableFormValues = {
@@ -12,7 +14,48 @@ export type CreateTableFormValues = {
   entityType: FtmEntityV2 | '';
   subEntity: string;
   belongsToTableId: string;
+  fields: TableField[];
+  mainTimestampFieldId: string;
 };
+
+export const defaultCreateTableFields: TableField[] = [
+  {
+    id: 'default_object_id',
+    name: 'object_id',
+    description: '',
+    dataType: 'String',
+    tableId: '',
+    isEnum: false,
+    nullable: false,
+    alias: 'object_id',
+    visible: true,
+    hidden: false,
+    order: 0,
+    unicityConstraint: 'no_unicity_constraint',
+    ftmProperty: '',
+    semanticType: 'unique_id',
+    semanticSubType: 'opaque_id',
+    isNew: false,
+  },
+  {
+    id: 'default_updated_at',
+    name: 'updated_at',
+    description: '',
+    dataType: 'Timestamp',
+    tableId: '',
+    isEnum: false,
+    nullable: false,
+    alias: 'updated_at',
+    visible: true,
+    hidden: false,
+    order: 1,
+    unicityConstraint: 'no_unicity_constraint',
+    ftmProperty: '',
+    semanticType: 'last_update',
+    semanticSubType: undefined,
+    isNew: false,
+  },
+];
 
 export const defaultCreateTableFormValues: CreateTableFormValues = {
   name: '',
@@ -20,6 +63,8 @@ export const defaultCreateTableFormValues: CreateTableFormValues = {
   entityType: '',
   subEntity: '',
   belongsToTableId: '',
+  fields: defaultCreateTableFields,
+  mainTimestampFieldId: '',
 };
 
 const entityTypesWithSubEntity = ['person', 'vehicle'] as const;
@@ -27,12 +72,9 @@ const entityTypesRequiringLink = ['transaction', 'event'] as const;
 
 export const createTableEntityStepSchema = z
   .object({
-    name: z
-      .string()
-      .min(1)
-      .regex(/^[a-z]+[a-z0-9_]+$/, {
-        error: 'Only lower case alphanumeric and _, must start with a letter',
-      }),
+    name: z.string().min(1).regex(dataModelNameRegex, {
+      error: 'Only lower case alphanumeric and _, must start with a letter',
+    }),
     alias: z.string(),
     entityType: z.enum(ftmEntities),
     subEntity: z.string(),

@@ -24,6 +24,7 @@ import {
   useCurrency,
   useDataField,
   useField,
+  useFieldCurrency,
   useFieldMetaData,
   useFieldValue,
   useOptions,
@@ -39,6 +40,7 @@ type DataFieldProps = {
   value?: string | number | boolean;
   linkedTo?: string;
   metaData?: MetadataType;
+  currency?: string;
 };
 
 const FIELD_TYPE_COMPONENTS: Record<VALID_DATA_TYPE, ComponentType> = {
@@ -89,14 +91,14 @@ function RenderFieldComponent({
   );
 }
 
-export function DataField({ field, value, linkedTo, metaData }: DataFieldProps) {
+export function DataField({ field, value, linkedTo, metaData, currency }: DataFieldProps) {
   const options = useOptions();
   const fieldType = adaptFieldType(field?.dataType, field?.name, field?.semanticType, field?.semanticSubType);
   const resolvedMetaData = options?.hideMetadata ? undefined : metaData;
 
   const contextValue = useMemo(
-    () => ({ field, value, metaData: resolvedMetaData, fieldType }),
-    [field, value, resolvedMetaData, fieldType],
+    () => ({ field, value, metaData: resolvedMetaData, fieldType, currency }),
+    [field, value, resolvedMetaData, fieldType, currency],
   );
 
   return (
@@ -466,7 +468,9 @@ function NumberFloat() {
 function NumberCurrency() {
   const value = useNumberValue();
   const language = useFormatLanguage();
-  const currency = useCurrency();
+  const fieldCurrency = useFieldCurrency();
+  const tableCurrency = useCurrency();
+  const currency = fieldCurrency ?? tableCurrency;
   const field = useField();
   const currencyExponent = field?.currencyExponent ?? 0;
   const decimalPrecision = field?.decimalPrecision ?? 2;

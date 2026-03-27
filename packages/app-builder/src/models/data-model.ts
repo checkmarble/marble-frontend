@@ -54,6 +54,7 @@ export interface DataModelField {
   semanticSubType?: SemanticSubType;
   currencyExponent?: number;
   decimalPrecision?: number;
+  currencyFieldId?: string;
 }
 
 function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {

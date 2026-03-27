@@ -58,6 +58,7 @@ type DataFieldContextValue = {
   value: string | number | boolean | undefined;
   metaData: MetadataType | undefined;
   fieldType: VALID_DATA_TYPE;
+  currency?: string;
 };
 
 const DataFieldContext = createContext<DataFieldContextValue>({
@@ -88,4 +89,8 @@ export function useField() {
 
 export function useFieldType() {
   return useContext(DataFieldContext).fieldType;
+}
+
+export function useFieldCurrency() {
+  return useContext(DataFieldContext).currency;
 }

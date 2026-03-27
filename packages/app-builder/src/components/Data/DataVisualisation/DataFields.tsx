@@ -131,6 +131,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
                 const linkedTo = field ? links?.[field.name] : undefined;
                 const metaDataValue =
                   field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
+                const fieldCurrency = resolveFieldCurrency(field, tableModel?.fields, object.data);
                 return field ? (
                   <DataField
                     key={field?.id}
@@ -138,6 +139,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
                     value={formatValue(object.data?.[field.name])}
                     linkedTo={linkedTo}
                     metaData={metaDataValue}
+                    currency={fieldCurrency}
                   />
                 ) : null;
               })
@@ -184,6 +186,18 @@ function filterFieldsByPreset(
     if (bi === -1) return -1;
     return ai - bi;
   });
+}
+
+function resolveFieldCurrency(
+  field: DataModelField | undefined,
+  allFields: DataModelField[] | undefined,
+  data: Record<string, unknown> | undefined,
+): string | undefined {
+  if (!field?.currencyFieldId || !allFields || !data) return undefined;
+  const currencyField = allFields.find((f) => f.id === field.currencyFieldId);
+  if (!currencyField) return undefined;
+  const raw = data[currencyField.name];
+  return typeof raw === 'string' && raw.length > 0 ? raw : undefined;
 }
 
 function formatValue(value: unknown): string | number | boolean | undefined {

@@ -3,11 +3,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { FieldsEditorContext } from '../shared/FieldsEditorContext';
 import { UploadDataDrawerContext } from './Drawer';
 import { FieldDetailPanel } from './FieldDetailPanel';
 import { FieldsForm } from './FieldsForm';
 import { LinkForm } from './LinkForm';
-import { type FtmEntityV2, ftmEntities, ftmEntityPersonOptions, ftmEntityVehicleOptions } from './uploadData-types';
+import {
+  type FtmEntityV2,
+  ftmEntities,
+  ftmEntityPersonOptions,
+  ftmEntityVehicleOptions,
+  type TableField,
+} from './uploadData-types';
 
 export function FormTable({ tableId }: { tableId: string }) {
   const { tablesState, updateTableState } = UploadDataDrawerContext.useValue();
@@ -60,6 +67,36 @@ export function FormTable({ tableId }: { tableId: string }) {
 
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
+  const {
+    updateField,
+    reorderFields,
+    addField,
+    removeField,
+    updateTableState: updateTable,
+  } = UploadDataDrawerContext.useValue();
+
+  const fieldsEditorValue = useMemo(
+    () => ({
+      fields: tableState.fields,
+      mainTimestampFieldId: tableState.mainTimestampFieldId,
+      updateField: (fieldId: string, values: Partial<TableField>) => updateField(tableId, fieldId, values),
+      reorderFields: (start: number, end: number) => reorderFields(tableId, start, end),
+      addField: (name: string) => addField(tableId, name),
+      removeField: (fieldId: string) => removeField(tableId, fieldId),
+      setMainTimestampFieldId: (fieldId: string) => updateTable(tableId, { mainTimestampFieldId: fieldId }),
+    }),
+    [
+      tableState.fields,
+      tableState.mainTimestampFieldId,
+      tableId,
+      updateField,
+      reorderFields,
+      addField,
+      removeField,
+      updateTable,
+    ],
+  );
+
   return (
     <div className="flex gap-v2-lg">
       <div className="flex min-w-0 flex-1 flex-col gap-v2-lg">
@@ -106,11 +143,19 @@ export function FormTable({ tableId }: { tableId: string }) {
           </div>
         </section>
         <LinkForm tableId={tableId} compact={!!selectedFieldId} />
-        <FieldsForm tableId={tableId} onFieldSelect={setSelectedFieldId} selectedFieldId={selectedFieldId} />
+        <FieldsEditorContext.Provider value={fieldsEditorValue}>
+          <FieldsForm
+            onFieldSelect={setSelectedFieldId}
+            selectedFieldId={selectedFieldId}
+            droppableId={`fields-${tableId}`}
+          />
+        </FieldsEditorContext.Provider>
       </div>
-      {selectedFieldId ? (
-        <FieldDetailPanel tableId={tableId} fieldId={selectedFieldId} onClose={() => setSelectedFieldId(null)} />
-      ) : null}
+      <FieldsEditorContext.Provider value={fieldsEditorValue}>
+        {selectedFieldId ? (
+          <FieldDetailPanel fieldId={selectedFieldId} onClose={() => setSelectedFieldId(null)} />
+        ) : null}
+      </FieldsEditorContext.Provider>
     </div>
   );
 }

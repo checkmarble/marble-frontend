@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Stepper, type StepperStep } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CreateTableEntityStep } from './CreateTableEntityStep';
+import { CreateTableFieldsStep } from './CreateTableFieldsStep';
 import { type CreateTableFormValues, canProceedToStep2, defaultCreateTableFormValues } from './createTable-types';
 
 function useCreateTableForm() {
@@ -48,11 +49,18 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
   );
 
   const formValues = useStore(form.store, (state) => state.values);
-  const canNext = currentStep === 0 && canProceedToStep2(formValues);
+
+  const canNext = currentStep === 0 ? canProceedToStep2(formValues) : currentStep < 2;
 
   function handleNext() {
-    if (currentStep === 0 && canNext) {
-      setCurrentStep(1);
+    if (canNext) {
+      setCurrentStep((s) => s + 1);
+    }
+  }
+
+  function handleBack() {
+    if (currentStep > 0) {
+      setCurrentStep((s) => s - 1);
     }
   }
 
@@ -78,11 +86,7 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
 
           <div className="flex-1 overflow-auto px-v2-lg">
             {currentStep === 0 ? <CreateTableEntityStep /> : null}
-            {currentStep === 1 ? (
-              <div className="flex items-center justify-center p-8 text-grey-secondary">
-                {t('data:create_table.step_fields')} (coming soon)
-              </div>
-            ) : null}
+            {currentStep === 1 ? <CreateTableFieldsStep /> : null}
             {currentStep === 2 ? (
               <div className="flex items-center justify-center p-8 text-grey-secondary">
                 {t('data:create_table.step_links')} (coming soon)
@@ -94,6 +98,11 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
             <Button variant="secondary" appearance="stroked" onClick={handleClose}>
               {t('common:cancel')}
             </Button>
+            {currentStep > 0 ? (
+              <Button variant="secondary" appearance="stroked" onClick={handleBack}>
+                {t('data:create_table.button_back')}
+              </Button>
+            ) : null}
             <Button variant="primary" disabled={!canNext} onClick={handleNext}>
               {t('data:create_table.button_next')}
             </Button>

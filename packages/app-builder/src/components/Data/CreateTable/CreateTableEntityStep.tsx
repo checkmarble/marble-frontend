@@ -7,6 +7,7 @@ import { useStore } from '@tanstack/react-form';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
+import { isValidDataModelName } from '../shared/dataModelNameValidation';
 import {
   type FtmEntityV2,
   ftmEntities,
@@ -70,7 +71,7 @@ export function CreateTableEntityStep() {
           name="name"
           validators={{
             onChange: ({ value }) => {
-              if (value.length > 0 && !/^[a-z][a-z0-9_]*$/.test(value)) {
+              if (value.length > 0 && !isValidDataModelName(value)) {
                 return { message: t('data:create_table.name_regex_error') };
               }
               return undefined;
