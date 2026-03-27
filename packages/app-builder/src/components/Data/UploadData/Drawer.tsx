@@ -239,7 +239,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
       {/* Backdrop */}
       <div className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs" onClick={onClose} />
       {/* Drawer panel */}
-      <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1024px,70vw)] border-l border-grey-border shadow-lg">
+      <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
         <div ref={containerRef} className="bg-surface-card h-full overflow-y-auto">
           {children}
         </div>
@@ -351,7 +351,7 @@ function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
 }
 
 export function UploadDataDrawerContent() {
-  const { data, close, tablesState, updateTableState, orderedTableIds } = UploadDataDrawerContext.useValue();
+  const { close, tablesState, updateTableState, orderedTableIds } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
 
   const isSingleTable = orderedTableIds.length === 1;
@@ -473,7 +473,6 @@ export function UploadDataDrawerContent() {
         {selectedTableId && tablesState[selectedTableId] ? (
           <FormTable key={selectedTableId} tableId={selectedTableId} />
         ) : null}
-        <pre className="text-xs p-4 bg-grey-border rounded-lg mt-4">{JSON.stringify(data, null, 2)}</pre>
       </div>
       <footer className="flex shrink-0 justify-end gap-v2-md p-v2-lg border-t border-grey-border">
         {!isSingleTable ? (

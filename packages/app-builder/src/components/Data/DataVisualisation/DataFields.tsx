@@ -3,7 +3,6 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type DataModelField, DataModelObject } from '@app-builder/models';
 import { useTableOptionsQuery } from '@app-builder/queries/data/get-table-options';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { adaptCurrency } from '@app-builder/utils/currencies';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useMemo } from 'react';
@@ -71,12 +70,13 @@ export function DataFields({ table, object, preset, customFields, className, opt
     const rawCountry = countryField ? object.data?.[countryField.name] : undefined;
     const country = typeof rawCountry === 'string' && rawCountry.length > 0 ? rawCountry.toUpperCase() : undefined;
 
-    // Priority 1: explicit currency field
-    const currencyField = tableModel.fields.find((f) => /currency|curr_/i.test(f.name));
+    // Search for explicit currency field (semantic)
+    let currencyField = tableModel.fields.find((f) => f.semanticType === 'currency_code');
+    // fallback search from field name
+    if (!currencyField) currencyField = tableModel.fields.find((f) => /currency|curr_/i.test(f.name));
     const rawCurrency = currencyField ? object.data?.[currencyField.name] : undefined;
     if (typeof rawCurrency === 'string' && rawCurrency.length > 0) {
-      const currency = adaptCurrency(rawCurrency, false);
-      if (currency) return { currency, country, preset, options, table: tableModel, tableOptions };
+      return { currency: rawCurrency, country, preset, options, table: tableModel, tableOptions };
     }
 
     return { currency: undefined, country, preset, options, table: tableModel, tableOptions };

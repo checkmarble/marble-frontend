@@ -1,3 +1,4 @@
+import { SemanticSubType, SemanticType } from '@app-builder/components/Data/UploadData/uploadData-types';
 import { type ParseKeys } from 'i18next';
 import {
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
@@ -49,6 +50,10 @@ export interface DataModelField {
   alias?: string;
   visible?: boolean;
   order?: number;
+  semanticType?: SemanticType;
+  semanticSubType?: SemanticSubType;
+  currencyExponent?: number;
+  decimalPrecision?: number;
 }
 
 function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
@@ -63,7 +68,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
     values: dataModelFieldDto.values,
     unicityConstraint: dataModelFieldDto.unicity_constraint,
     ftmProperty: dataModelFieldDto.ftm_property,
-    // TODO: add alias, visible, order
+    // TODO: add alias, visible, order, semanticType, semanticSubType
   };
 }
 

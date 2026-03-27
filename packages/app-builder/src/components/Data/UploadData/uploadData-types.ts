@@ -1,5 +1,5 @@
 import { type DataType } from '@app-builder/models';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
 export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other', 'vehicle'] as const;
 export const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
@@ -61,6 +61,8 @@ export type TableField = {
   ftmProperty: string;
   semanticType?: SemanticType;
   semanticSubType?: SemanticSubType;
+  currencyExponent?: number;
+  decimalPrecision?: number;
   isNew: boolean;
 };
 
@@ -143,15 +145,25 @@ export function getMockValue(
   semanticType?: SemanticType,
   semanticSubType?: SemanticSubType | undefined,
 ) {
-  if (dataType === 'IpAddress') return '127.0.0.1';
-  if (dataType === 'Coords') return '48.8566, 2.3522';
-  if (!semanticType) return undefined;
+  if (!semanticType) {
+    return match(dataType)
+      .with(P.union('String', 'String[]'), () => 'Welcome to Marble')
+      .with(P.union('Timestamp', 'Timestamp[]'), () => '2021-01-01T14:20:00.000Z')
+      .with(P.union('Int', 'Int[]'), () => 42)
+      .with(P.union('Float', 'Float[]'), () => 1234567890)
+      .with(P.union('Bool', 'Bool[]'), () => true)
+      .with(P.union('Coords', 'Coords[]'), () => '48.8566, 2.3522')
+      .with(P.union('IpAddress', 'IpAddress[]'), () => '127.0.0.1')
+      .with('DerivedData', () => 'Derived data')
+      .with('unknown', () => 'Unknown')
+      .exhaustive();
+  }
   const value = match(semanticType)
     .with('text', () => 'Welcome to Marble')
     .with('name', () =>
       semanticSubType
         ? match(semanticSubType as SemanticSubTypeMap['name'])
-            .with('caption', () => 'Company name')
+            .with('caption', () => 'Company name or John Doe Jr')
             .with('first_name', () => 'John')
             .with('last_name', () => 'Doe')
             .with('middle_name', () => 'Jr')
@@ -200,13 +212,13 @@ export function getMockValue(
             .exhaustive()
         : 'Account identifier value',
     )
-    .with('timestamp', () => '2021-01-01')
+    .with('timestamp', () => '2021-01-01T14:20:00.000Z')
     .with('date_of_birth', () => '1990-01-01')
-    .with('last_update', () => '2021-01-01')
-    .with('creation_date', () => '2021-01-01')
-    .with('deletion_date', () => '2021-01-01')
-    .with('initiation_date', () => '2021-01-01')
-    .with('validation_date', () => '2021-01-01')
+    .with('last_update', () => '2021-01-01T14:20:00.000Z')
+    .with('creation_date', () => '2021-01-01T14:20:00.000Z')
+    .with('deletion_date', () => '2021-01-01T14:20:00.000Z')
+    .with('initiation_date', () => '2021-01-01T14:20:00.000Z')
+    .with('validation_date', () => '2021-01-01T14:20:00.000Z')
     .with('number', () => 42)
     .with('monetary_amount', () => 1234567890)
     .with('percentage', () => 0.34)

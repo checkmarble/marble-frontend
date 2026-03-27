@@ -22,7 +22,7 @@ export function LinkForm({ tableId, compact }: { tableId: string; compact?: bool
         ))}
       </div>
       <div>
-        <Button variant="secondary" appearance="stroked" onClick={() => addLink(tableId)}>
+        <Button variant="primary" appearance="stroked" onClick={() => addLink(tableId)}>
           <Icon icon="plus" className="size-4" />
           {t('data:upload_data.link_add')}
         </Button>

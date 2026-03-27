@@ -1,7 +1,7 @@
 import { type DataType, getDataTypeIcon } from '@app-builder/models';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, SelectV2, Switch } from 'ui-design-system';
+import { Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../DataVisualisation/DataField';
 import { UploadDataDrawerContext } from './Drawer';
@@ -82,6 +82,8 @@ export function FieldDetailPanel({
   function update(values: Parameters<typeof updateField>[2]) {
     updateField(tableId, fieldId, values);
   }
+
+  const mockedValue = getMockValue(field.dataType, field.semanticType, field.semanticSubType);
 
   return (
     <div className="flex w-1/2 shrink-0 flex-col border-l border-grey-border overflow-y-auto">
@@ -188,6 +190,31 @@ export function FieldDetailPanel({
           </div>
         ) : null}
 
+        {/* Currency-specific: currency exponent (only when semantic type is number and sub type is currency) */}
+        {field.semanticType === 'monetary_amount' ? (
+          <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+            <span className="text-s text-grey-secondary">{t('data:upload_data.field_currency_settings')}</span>
+            <div className="flex flex-col gap-v2-xs">
+              <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_exponent')}</label>
+              <NumberInput
+                min={0}
+                max={10}
+                value={field.currencyExponent ?? 0}
+                onChange={(value) => update({ currencyExponent: Math.min(10, Math.max(0, value)) })}
+              />
+            </div>
+            <div className="flex flex-col gap-v2-xs">
+              <label className="text-s text-grey-secondary">{t('data:upload_data.field_decimal_precision')}</label>
+              <NumberInput
+                min={0}
+                max={10}
+                value={field.decimalPrecision ?? 2}
+                onChange={(value) => update({ decimalPrecision: Math.min(10, Math.max(0, value)) })}
+              />
+            </div>
+          </div>
+        ) : null}
+
         {/* Timestamp-specific: main ordering timestamp (only one per table) */}
         {field.dataType === 'Timestamp' ? (
           <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
@@ -208,7 +235,10 @@ export function FieldDetailPanel({
         <div className="flex flex-col gap-v2-xs">
           <label className="text-s text-grey-secondary italic">{t('data:upload_data.field_visual_example')}</label>
           <div className="rounded-lg border border-grey-border bg-grey-98 p-v2-md">
-            <div className="flex items-center gap-v2-md">
+            <div className="flex flex-col gap-v2-md">
+              <div className="p-v2-xs rounded border border-grey-border font-mono w-full text-xs text-grey-secondary">
+                <span>{`${t('data:upload_data.raw_data')} { "${field.name}": ${typeof mockedValue === 'string' ? '"' : ''}${mockedValue}${typeof mockedValue === 'string' ? '"' : ''}}`}</span>
+              </div>
               <DataField
                 field={{
                   id: field.id,
@@ -219,8 +249,12 @@ export function FieldDetailPanel({
                   nullable: field.nullable,
                   tableId: 'id',
                   unicityConstraint: 'no_unicity_constraint',
+                  semanticType: field.semanticType,
+                  semanticSubType: field.semanticSubType,
+                  currencyExponent: field.currencyExponent,
+                  decimalPrecision: field.decimalPrecision,
                 }}
-                value={getMockValue(field.dataType, field.semanticType, field.semanticSubType)}
+                value={mockedValue}
               />
             </div>
           </div>
