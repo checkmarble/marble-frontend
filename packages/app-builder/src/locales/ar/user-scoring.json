@@ -57,6 +57,7 @@
   "switch.bool.if_true": "إذا كان صحيحًا",
   "switch.bool.then": "إذن",
 
+  "switch.configure_aggregation": "تكوين التجميع",
   "switch.depending_on": "بناءً على قيمة",
   "switch.description.else": "وإلا",
   "switch.description.if_false": "إذا كان خاطئًا",

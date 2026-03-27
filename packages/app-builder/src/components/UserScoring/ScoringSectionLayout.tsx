@@ -14,7 +14,7 @@ import { NavLink, Outlet, useMatches } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
+import { Button, NumberInput, type SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
 import { PanelContainer, PanelRoot } from '../Panel';

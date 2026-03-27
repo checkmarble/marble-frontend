@@ -1,5 +1,5 @@
 import { type CustomList } from '@app-builder/models/custom-list';
-import { ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
+import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import { type ScoringRulesetWithRules, type ScoringSettings } from '@app-builder/models/scoring';
 import { GeneralInfoCard } from './GeneralInfoCard';
 import { RulesTable } from './RulesTable';

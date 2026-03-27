@@ -40,8 +40,9 @@ import { type DataModelFieldOption, EditDataModelFieldTableMenu } from './EditDa
 type EditFiltersProps = {
   aggregatedField: DataModelFieldOption | null;
   dataModel: DataModel;
+  onChange?: () => void;
 };
-export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
+export function EditFilters({ aggregatedField, dataModel, onChange }: EditFiltersProps) {
   const { t } = useTranslation(scenarioI18n);
   const { t: stringifyContextT } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
@@ -127,6 +128,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                             filter.namedChildren.fieldName.constant = filteredField.fieldName;
                           });
                           nodeSharp.actions.validate();
+                          onChange?.();
                         }}
                       />
                       <span>{t('scenarios:edit_aggregation.filter_operator_label')}</span>
@@ -189,6 +191,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                             // TODO: Manage complex operator change
                           });
                           nodeSharp.actions.validate();
+                          onChange?.();
                         }}
                         validationStatus={operatorErrors.length > 0 ? 'error' : 'valid'}
                       />
@@ -201,6 +204,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                               if (isKnownOperandAstNode(node)) {
                                 filter.namedChildren.value = node;
                                 nodeSharp.actions.validate();
+                                onChange?.();
                               }
                             }}
                             optionsDataType={(opt) => opt.operandType !== 'Modeling'}
@@ -223,6 +227,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                                 if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
                                   filter.namedChildren.value = astNode;
                                   nodeSharp.actions.validate();
+                                  onChange?.();
                                 }
                                 setEditedFilterIndex(null);
                               }}
@@ -237,6 +242,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                     <RemoveButton
                       onClick={() => {
                         filters.splice(filterIndex, 1);
+                        onChange?.();
                       }}
                     />
                   </div>
@@ -271,6 +277,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                 },
               }),
             );
+            onChange?.();
           }}
         />
         {filters.length === 0 ? <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout> : null}

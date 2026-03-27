@@ -1,4 +1,6 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { NewAstNode } from '@app-builder/models';
+import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { isSwitchAstNode, NewSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
@@ -18,7 +20,7 @@ import { SwitchNode } from './SwitchNode';
 
 const RULE_TYPES = [
   { value: 'user_attribute', label: 'User attribute' },
-  { value: 'aggregates', label: 'Agregates (transaction, event, ...)' },
+  { value: 'aggregate', label: 'Agregates (transaction, event, ...)' },
   { value: 'tags', label: 'Tags' },
   { value: 'screening', label: 'Screening (PEP, Sanction, ...)' },
   { value: 'past_alerts', label: 'Past alerts' },
@@ -90,12 +92,17 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
   const mutation = useUpdateScoringRulesetMutation();
 
   const handleConfirm = (ruleType: RuleType) => {
+    const fieldNode = match(ruleType)
+      .with('user_attribute', () => NewAstNode())
+      .with('aggregate', () => NewAggregatorAstNode('SUM'))
+      .otherwise(() => undefined);
+
     setPanelRule({
       stableId: uuidv7(),
       name: '',
       description: '',
       riskType: 'customer_features',
-      ast: NewSwitchAstNode(ruleType),
+      ast: NewSwitchAstNode(ruleType, fieldNode),
     });
     setOpen(false);
   };

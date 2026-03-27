@@ -57,6 +57,7 @@
   "switch.bool.if_true": "si oui",
   "switch.bool.then": "alors",
 
+  "switch.configure_aggregation": "Configurer l'agrégation",
   "switch.depending_on": "En fonction de la valeur de",
   "switch.description.else": "Sinon",
   "switch.description.if_false": "Si faux",

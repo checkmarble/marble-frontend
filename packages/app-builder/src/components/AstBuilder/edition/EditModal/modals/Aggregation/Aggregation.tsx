@@ -24,7 +24,7 @@ import { type OperandEditModalProps } from '../../EditModal';
 import { type DataModelFieldOption, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
 
-export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
+export function AggregationEditContent({ onChange }: { onChange?: () => void } = {}) {
   const { t } = useTranslation(['scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
   const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
@@ -49,7 +49,6 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
       : null;
   });
 
-  // Create operator options with tooltips
   const aggregatorOptions: OperatorSelectOptions<AggregatorOperator> = aggregatorOperators.reduce(
     (acc, op) => {
       acc[op] = { tooltipKey: aggregatorMetadata[op].tooltipKey };
@@ -59,33 +58,8 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   );
 
   return (
-    <OperandEditModalContainer
-      {...props}
-      saveDisabled={isCurrentRestricted && !hasValidLicense}
-      title={
-        <div className="flex flex-row items-center justify-center gap-3">
-          {t('scenarios:edit_aggregation.title')}
-          <div className="flex flex-row items-center justify-center gap-1">
-            <Logo logo="logo" className="size-4" />
-            <span className="text-grey-secondary text-xs font-light">{t('scenarios:edit_aggregation.subtitle')}</span>
-          </div>
-        </div>
-      }
-      size="large"
-      className="max-h-[70dvh] gap-10 overflow-auto"
-    >
+    <>
       <div className="flex flex-1 flex-col gap-4">
-        <Callout variant="outlined">
-          <Modal.Description className="whitespace-pre-wrap">
-            <Trans
-              t={t}
-              i18nKey="scenarios:edit_aggregation.description"
-              components={{
-                DocLink: <ExternalLink href={aggregationDocHref} />,
-              }}
-            />
-          </Modal.Description>
-        </Callout>
         <div className="flex flex-col gap-2">
           <label htmlFor="aggregation.label">{t('scenarios:edit_aggregation.label_title')}</label>
           <Input
@@ -95,14 +69,9 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             value={node.namedChildren.label.constant}
             onChange={(e) => {
               node.namedChildren.label.constant = e.target.value;
+              onChange?.();
             }}
-            // borderColor={aggregation.errors.label.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
           />
-          {/* <EvaluationErrors
-            errors={adaptEvaluationErrorViewModels(aggregation.errors.label).map(
-              getNodeEvaluationErrorMessage,
-            )}
-          /> */}
         </div>
         <div
           className={`grid ${aggregatorHasParams(currentAggregator) ? 'grid-cols-[240px_120px_1fr]' : 'grid-cols-[240px_1fr]'} gap-2`}
@@ -133,28 +102,20 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
               onOperatorChange={(aggregator) => {
                 node.namedChildren.aggregator.constant = aggregator;
 
-                // Add or remove percentile field based on aggregator type
                 if (aggregatorHasParams(aggregator)) {
-                  // Add percentile field if it doesn't exist
                   if (!node.namedChildren.percentile) {
                     node.namedChildren.percentile = NewConstantAstNode({ constant: 0.5 });
                   }
                 } else {
-                  // Remove percentile field for non-PCTILE aggregators
                   delete node.namedChildren.percentile;
                 }
 
                 nodeSharp.actions.validate();
+                onChange?.();
               }}
               featureAccess={hasValidLicense ? undefined : 'restricted'}
               isOperatorRestricted={isRestrictedAggregator}
-              // validationStatus={aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'}
             />
-            {/* <EvaluationErrors
-              errors={adaptEvaluationErrorViewModels(aggregation.errors.aggregator).map(
-                getNodeEvaluationErrorMessage,
-              )}
-            /> */}
           </div>
           {aggregatorHasParams(currentAggregator) ? (
             <Input
@@ -168,6 +129,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
                   const clamped = Math.max(0, Math.min(100, value));
                   node.namedChildren.percentile = NewConstantAstNode({ constant: clamped / 100 });
                   e.target.value = String(clamped);
+                  onChange?.();
                 }
               }}
             />
@@ -183,6 +145,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
                   node.namedChildren.fieldName.constant = aggregatedField.fieldName;
                 });
                 nodeSharp.actions.validate();
+                onChange?.();
               }}
             />
             <EditionEvaluationErrors direct id={node.namedChildren.fieldName.id} />
@@ -199,7 +162,46 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
           </Callout>
         ) : null}
       </div>
-      <EditFilters aggregatedField={aggregatedField.value} dataModel={dataModel} />
+      <EditFilters aggregatedField={aggregatedField.value} dataModel={dataModel} onChange={onChange} />
+    </>
+  );
+}
+
+export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
+  const { t } = useTranslation(['scenarios']);
+  const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
+  const node = nodeSharp.select((s) => s.node as AggregationAstNode);
+  const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
+  const isCurrentRestricted = isRestrictedAggregator(node.namedChildren.aggregator.constant);
+
+  return (
+    <OperandEditModalContainer
+      {...props}
+      saveDisabled={isCurrentRestricted && !hasValidLicense}
+      title={
+        <div className="flex flex-row items-center justify-center gap-3">
+          {t('scenarios:edit_aggregation.title')}
+          <div className="flex flex-row items-center justify-center gap-1">
+            <Logo logo="logo" className="size-4" />
+            <span className="text-grey-secondary text-xs font-light">{t('scenarios:edit_aggregation.subtitle')}</span>
+          </div>
+        </div>
+      }
+      size="large"
+      className="max-h-[70dvh] gap-10 overflow-auto"
+    >
+      <Callout variant="outlined">
+        <Modal.Description className="whitespace-pre-wrap">
+          <Trans
+            t={t}
+            i18nKey="scenarios:edit_aggregation.description"
+            components={{
+              DocLink: <ExternalLink href={aggregationDocHref} />,
+            }}
+          />
+        </Modal.Description>
+      </Callout>
+      <AggregationEditContent />
     </OperandEditModalContainer>
   );
 }
