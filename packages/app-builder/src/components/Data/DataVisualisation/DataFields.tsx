@@ -6,9 +6,6 @@ import { useDataModel } from '@app-builder/services/data/data-model';
 import { adaptCurrency } from '@app-builder/utils/currencies';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { tryCatch } from '@app-builder/utils/tryCatch';
-import CountryFlag from 'country-flag-emojis';
-import cc from 'currency-codes';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -75,23 +72,11 @@ export function DataFields({ table, object, preset, customFields, className, opt
     const country = typeof rawCountry === 'string' && rawCountry.length > 0 ? rawCountry.toUpperCase() : undefined;
 
     // Priority 1: explicit currency field
-    const currencyField = tableModel.fields.find((f) => /currency/i.test(f.name));
+    const currencyField = tableModel.fields.find((f) => /currency|curr_/i.test(f.name));
     const rawCurrency = currencyField ? object.data?.[currencyField.name] : undefined;
     if (typeof rawCurrency === 'string' && rawCurrency.length > 0) {
       const currency = adaptCurrency(rawCurrency, false);
       if (currency) return { currency, country, preset, options, table: tableModel, tableOptions };
-    }
-
-    // Priority 2: derive from country
-    if (country) {
-      const result = tryCatch(() => {
-        const countryInfo = CountryFlag.byCountryCode(country);
-        const currencyRecords = cc.country(countryInfo.nameEnglish);
-        const code = currencyRecords[0]?.code;
-        const currency = code ? adaptCurrency(code, false) : undefined;
-        return { currency, country, preset, options, table: tableModel, tableOptions };
-      });
-      if (result.ok) return result.value;
     }
 
     return { currency: undefined, country, preset, options, table: tableModel, tableOptions };
