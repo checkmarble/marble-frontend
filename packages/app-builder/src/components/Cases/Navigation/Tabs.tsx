@@ -13,10 +13,9 @@ export function CasesNavigationTabs({ actions }: { actions?: React.ReactNode }) 
           <NavLink to="/cases/overview" className={tabClassName}>
             {t('cases:overview.navigation.overview')}
           </NavLink>
-          {/* TODO: Add analytics tab */}
-          {/* <NavLink to="/cases/analytics" className={tabClassName}>
+          <NavLink to="/cases/analytics" className={tabClassName}>
             {t('cases:overview.navigation.analytics')}
-          </NavLink> */}
+          </NavLink>
           <NavLink to="/cases/inboxes" className={tabClassName}>
             {t('cases:overview.navigation.cases')}
           </NavLink>
