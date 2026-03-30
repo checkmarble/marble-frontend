@@ -1,7 +1,21 @@
 import { parseUnknownData } from '@app-builder/utils/parse';
 
 const SEMANTIC_DATA_TYPE = {
-  string: ['main', 'country', 'city', 'phone', 'email', 'iban', 'currency', 'link', 'code', 'vpn', 'free', 'id'],
+  string: [
+    'main',
+    'country',
+    'city',
+    'phone',
+    'email',
+    'iban',
+    'currency',
+    'link',
+    'code',
+    'vpn',
+    'free',
+    'id',
+    'foreign_key',
+  ],
   date: ['birthdate', 'date', 'datetime', 'time'],
   data: ['gps_coords', 'ip_address'],
   number: ['integer', 'float', 'currency', 'percentile'],

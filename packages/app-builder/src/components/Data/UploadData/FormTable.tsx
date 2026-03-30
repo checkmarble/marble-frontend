@@ -36,6 +36,14 @@ export function FormTable({ tableId }: { tableId: string }) {
     };
   }, [tableId, updateTableState, form]);
 
+  const tableOptions = useMemo(
+    () =>
+      Object.values(tablesState)
+        .filter((table) => !table.isCanceled)
+        .map((table) => ({ label: table.alias || table.name, value: table.name })),
+    [tablesState],
+  );
+
   const ftmEntityOptions = useMemo(
     () =>
       ftmEntities.map((entity) => ({
@@ -153,7 +161,11 @@ export function FormTable({ tableId }: { tableId: string }) {
       </div>
       <FieldsEditorContext.Provider value={fieldsEditorValue}>
         {selectedFieldId ? (
-          <FieldDetailPanel fieldId={selectedFieldId} onClose={() => setSelectedFieldId(null)} />
+          <FieldDetailPanel
+            fieldId={selectedFieldId}
+            onClose={() => setSelectedFieldId(null)}
+            tableOptions={tableOptions}
+          />
         ) : null}
       </FieldsEditorContext.Provider>
     </div>

@@ -56,6 +56,7 @@ const FIELD_TYPE_COMPONENTS: Record<VALID_DATA_TYPE, ComponentType> = {
   'string-iban': StringIban,
   'string-currency': StringCurrency,
   'string-id': StringId,
+  'string-foreign_key': StringForeignKey,
   'date-birthdate': DateBirthdate,
   'date-datetime': DateDatetime,
   'date-date': DateDatetime,
@@ -93,7 +94,13 @@ function RenderFieldComponent({
 
 export function DataField({ field, value, linkedTo, metaData, currency }: DataFieldProps) {
   const options = useOptions();
-  const fieldType = adaptFieldType(field?.dataType, field?.name, field?.semanticType, field?.semanticSubType);
+  const fieldType = adaptFieldType(
+    field?.dataType,
+    field?.name,
+    field?.semanticType,
+    field?.semanticSubType,
+    field?.booleanDisplay,
+  );
   const resolvedMetaData = options?.hideMetadata ? undefined : metaData;
 
   const contextValue = useMemo(
@@ -135,6 +142,7 @@ function adaptFieldType(
   name?: string,
   semanticType?: SemanticType,
   semanticSubType?: SemanticSubType,
+  booleanDisplay?: 'yes_no' | 'checkbox',
 ): VALID_DATA_TYPE {
   if (!dataType || !name) return 'string-free';
 
@@ -187,7 +195,7 @@ function adaptFieldType(
       case 'currency_code':
         return 'string-currency';
       case 'foreign_key':
-        return 'string-code';
+        return 'string-foreign_key';
       case 'name':
         return 'string-main';
       case 'text':
@@ -235,6 +243,7 @@ function adaptFieldType(
       return 'number-float';
     case 'Bool':
     case 'Bool[]':
+      if (booleanDisplay) return `boolean-${booleanDisplay}`;
       if (/vpn/i.test(name)) return 'boolean-yes_no';
       return 'boolean-checkbox';
     default:
@@ -355,6 +364,17 @@ function StringId() {
     <CopyToClipboardButton toCopy={value}>
       <span>{value}</span>
     </CopyToClipboardButton>
+  );
+}
+
+function StringForeignKey() {
+  const field = useField();
+  const value = useStringValue();
+  return (
+    <span className={cn('inline-flex items-center gap-1', codeClassName)}>
+      <Icon icon="arrow-forward" className="size-4 text-purple-primary" />
+      <span>{field?.foreignkeyTable ?? value ?? '-'}</span>
+    </span>
   );
 }
 

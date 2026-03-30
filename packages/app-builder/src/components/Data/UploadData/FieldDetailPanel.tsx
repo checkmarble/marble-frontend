@@ -30,10 +30,12 @@ export function FieldDetailPanel({
   fieldId,
   onClose,
   title,
+  tableOptions = [],
 }: {
   fieldId: string;
   onClose: () => void;
   title?: string;
+  tableOptions?: { label: string; value: string }[];
 }) {
   const { fields, updateField, removeField, mainTimestampFieldId, setMainTimestampFieldId } =
     FieldsEditorContext.useValue();
@@ -205,54 +207,26 @@ export function FieldDetailPanel({
           </div>
         ) : null}
 
+        {/* ForeignKey-specific: destination table */}
+        {field.semanticType === 'foreign_key' ? (
+          <ForeignKeySettings foreignkeyTable={field.foreignkeyTable} onChange={update} tableOptions={tableOptions} />
+        ) : null}
+
         {/* Currency-specific: currency exponent (only when semantic type is number and sub type is currency) */}
         {field.semanticType === 'monetary_amount' ? (
-          <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
-            <span className="text-s text-grey-secondary">{t('data:upload_data.field_currency_settings')}</span>
-            {currencyFieldOptions.length > 0 ? (
-              <div className="flex flex-col gap-v2-xs">
-                <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_field')}</label>
-                <SelectV2
-                  value={field.currencyFieldId}
-                  placeholder={t('data:upload_data.field_currency_field_placeholder')}
-                  onChange={(value) => update({ currencyFieldId: value })}
-                  options={currencyFieldOptions}
-                />
-              </div>
-            ) : null}
-            <div className="flex flex-col gap-v2-xs">
-              <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_exponent')}</label>
-              <NumberInput
-                min={0}
-                max={10}
-                value={field.currencyExponent ?? 0}
-                onChange={(value) => update({ currencyExponent: Math.min(10, Math.max(0, value)) })}
-              />
-            </div>
-            <div className="flex flex-col gap-v2-xs">
-              <label className="text-s text-grey-secondary">{t('data:upload_data.field_decimal_precision')}</label>
-              <NumberInput
-                min={0}
-                max={10}
-                value={field.decimalPrecision ?? 2}
-                onChange={(value) => update({ decimalPrecision: Math.min(10, Math.max(0, value)) })}
-              />
-            </div>
-          </div>
+          <CurrencySettings field={field} currencyFieldOptions={currencyFieldOptions} onChange={update} />
         ) : null}
+
+        {/* Boolean-specific: display as switch or yes/no */}
+        {field.dataType === 'Bool' ? <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} /> : null}
 
         {/* Timestamp-specific: main ordering timestamp (only one per table) */}
         {field.dataType === 'Timestamp' ? (
-          <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
-            <span className="text-s text-grey-secondary">{t('data:upload_data.field_timestamp_settings')}</span>
-            <label className="flex items-center gap-v2-sm cursor-pointer">
-              <Switch
-                checked={mainTimestampFieldId === fieldId}
-                onCheckedChange={(checked) => setMainTimestampFieldId(checked ? fieldId : '')}
-              />
-              <span className="text-s">{t('data:upload_data.field_main_ordering_timestamp')}</span>
-            </label>
-          </div>
+          <TimestampSettings
+            fieldId={fieldId}
+            mainTimestampFieldId={mainTimestampFieldId}
+            setMainTimestampFieldId={setMainTimestampFieldId}
+          />
         ) : null}
 
         {/* Example of visual in Marble */}
@@ -278,6 +252,8 @@ export function FieldDetailPanel({
                   currencyExponent: field.currencyExponent,
                   decimalPrecision: field.decimalPrecision,
                   currencyFieldId: field.currencyFieldId,
+                  booleanDisplay: field.booleanDisplay,
+                  foreignkeyTable: field.foreignkeyTable,
                 }}
                 value={mockedValue}
               />
@@ -285,6 +261,135 @@ export function FieldDetailPanel({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function CurrencySettings({
+  field,
+  currencyFieldOptions,
+  onChange,
+}: {
+  field: TableField;
+  currencyFieldOptions: { label: string; value: string }[];
+  onChange: (values: Partial<TableField>) => void;
+}) {
+  const { t } = useTranslation(['data']);
+  return (
+    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+      <span className="text-s text-grey-secondary">{t('data:upload_data.field_currency_settings')}</span>
+      {currencyFieldOptions.length > 0 ? (
+        <div className="flex flex-col gap-v2-xs">
+          <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_field')}</label>
+          <SelectV2
+            value={field.currencyFieldId}
+            placeholder={t('data:upload_data.field_currency_field_placeholder')}
+            onChange={(value) => onChange({ currencyFieldId: value })}
+            options={currencyFieldOptions}
+          />
+        </div>
+      ) : null}
+      <div className="flex flex-col gap-v2-xs">
+        <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_exponent')}</label>
+        <NumberInput
+          min={0}
+          max={10}
+          value={field.currencyExponent ?? 0}
+          onChange={(value) => onChange({ currencyExponent: Math.min(10, Math.max(0, value)) })}
+        />
+      </div>
+      <div className="flex flex-col gap-v2-xs">
+        <label className="text-s text-grey-secondary">{t('data:upload_data.field_decimal_precision')}</label>
+        <NumberInput
+          min={0}
+          max={10}
+          value={field.decimalPrecision ?? 2}
+          onChange={(value) => onChange({ decimalPrecision: Math.min(10, Math.max(0, value)) })}
+        />
+      </div>
+    </div>
+  );
+}
+
+function BooleanSettings({
+  booleanDisplay,
+  onChange,
+}: {
+  booleanDisplay?: 'yes_no' | 'checkbox';
+  onChange: (values: Partial<TableField>) => void;
+}) {
+  const { t } = useTranslation(['data']);
+  const options = [
+    { label: t('data:upload_data.field_boolean_display_switch'), value: 'checkbox' },
+    { label: t('data:upload_data.field_boolean_display_yes_no'), value: 'yes_no' },
+  ] as const;
+  return (
+    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+      <span className="text-s text-grey-secondary">{t('data:upload_data.field_boolean_settings')}</span>
+      <div className="flex gap-v2-sm">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange({ booleanDisplay: opt.value })}
+            className={`flex-1 rounded-lg border px-v2-sm py-v2-xs text-s transition-colors ${
+              (booleanDisplay ?? 'checkbox') === opt.value
+                ? 'border-purple-primary bg-purple-10 text-purple-primary'
+                : 'border-grey-border text-grey-secondary hover:bg-grey-border'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ForeignKeySettings({
+  foreignkeyTable,
+  onChange,
+  tableOptions,
+}: {
+  foreignkeyTable?: string;
+  onChange: (values: Partial<TableField>) => void;
+  tableOptions: { label: string; value: string }[];
+}) {
+  const { t } = useTranslation(['data']);
+
+  return (
+    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+      <span className="text-s text-grey-secondary">{t('data:upload_data.field_foreign_key_settings')}</span>
+      <SelectV2
+        value={foreignkeyTable}
+        placeholder={t('data:upload_data.field_foreign_key_placeholder')}
+        onChange={(value) => onChange({ foreignkeyTable: value })}
+        options={tableOptions}
+      />
+    </div>
+  );
+}
+
+function TimestampSettings({
+  fieldId,
+  mainTimestampFieldId,
+  setMainTimestampFieldId,
+}: {
+  fieldId: string;
+  mainTimestampFieldId: string;
+  setMainTimestampFieldId: (id: string) => void;
+}) {
+  const { t } = useTranslation(['data']);
+  return (
+    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+      <span className="text-s text-grey-secondary">{t('data:upload_data.field_timestamp_settings')}</span>
+      <label className="flex items-center gap-v2-sm cursor-pointer">
+        <Switch
+          checked={mainTimestampFieldId === fieldId}
+          onCheckedChange={(checked) => setMainTimestampFieldId(checked ? fieldId : '')}
+        />
+        <span className="text-s">{t('data:upload_data.field_main_ordering_timestamp')}</span>
+      </label>
     </div>
   );
 }

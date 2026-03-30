@@ -55,6 +55,8 @@ export interface DataModelField {
   currencyExponent?: number;
   decimalPrecision?: number;
   currencyFieldId?: string;
+  booleanDisplay?: 'yes_no' | 'checkbox';
+  foreignkeyTable?: string;
 }
 
 function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
