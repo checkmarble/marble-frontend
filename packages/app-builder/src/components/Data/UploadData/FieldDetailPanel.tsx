@@ -1,4 +1,4 @@
-import { type DataType, getDataTypeIcon } from '@app-builder/models';
+import { getDataTypeIcon, type PrimitiveTypes } from '@app-builder/models';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
@@ -10,13 +10,13 @@ import {
   type DataTypeKey,
   getMockValue,
   getSemanticSubOptions,
-  SemanticSubType,
+  type SemanticSubType,
   type SemanticType,
   semanticTypesByDataType,
   type TableField,
 } from './uploadData-types';
 
-const dataTypeOptions: { value: DataType; labelKey: string }[] = [
+const dataTypeOptions: { value: PrimitiveTypes; labelKey: string }[] = [
   { value: 'String', labelKey: 'String' },
   { value: 'Timestamp', labelKey: 'Timestamp' },
   { value: 'Int', labelKey: 'Integer' },

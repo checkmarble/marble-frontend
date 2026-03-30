@@ -1,11 +1,13 @@
-import { type DataType } from '@app-builder/models';
-import { match, P } from 'ts-pattern';
+import { type PrimitiveTypes } from '@app-builder/models';
+import { match } from 'ts-pattern';
 
 export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other', 'vehicle'] as const;
 export const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
 export const ftmEntityVehicleOptions = ['vessel', 'airplane'] as const;
 
 export type FtmEntityV2 = (typeof ftmEntities)[number];
+export type FtmEntityPersonOption = (typeof ftmEntityPersonOptions)[number];
+export type FtmEntityVehicleOption = (typeof ftmEntityVehicleOptions)[number];
 
 export const linkRelationTypes = ['belongs_to', 'related'] as const;
 export type LinkRelationType = (typeof linkRelationTypes)[number];
@@ -36,7 +38,7 @@ export type RawField = {
   id: string;
   name: string;
   description: string;
-  data_type: DataType;
+  data_type: PrimitiveTypes;
   table_id: string;
   is_enum?: boolean;
   nullable?: boolean;
@@ -45,16 +47,28 @@ export type RawField = {
   ftm_property?: string;
 };
 
+export type ColorKey =
+  | 'red'
+  | 'green'
+  | 'blue'
+  | 'yellow'
+  | 'purple'
+  | 'orange'
+  | 'pink'
+  | 'brown'
+  | 'gray'
+  | 'black'
+  | 'white';
+
 export type TableField = {
   id: string;
   name: string;
   description: string;
-  dataType: DataType;
+  dataType: PrimitiveTypes;
   tableId: string;
   isEnum: boolean;
   nullable: boolean;
   alias: string;
-  visible: boolean;
   hidden: boolean;
   order: number;
   unicityConstraint: string;
@@ -64,6 +78,9 @@ export type TableField = {
   currencyExponent?: number;
   decimalPrecision?: number;
   currencyFieldId?: string;
+  booleanDisplay?: 'yes_no' | 'checkbox';
+  foreignkeyTable?: string;
+  enumValues?: { color: ColorKey; value: string }[];
   isNew: boolean;
 };
 
@@ -142,21 +159,19 @@ export function getSemanticSubOptions(
 }
 
 export function getMockValue(
-  dataType: DataType,
+  dataType: PrimitiveTypes,
   semanticType?: SemanticType,
   semanticSubType?: SemanticSubType | undefined,
 ) {
   if (!semanticType) {
     return match(dataType)
-      .with(P.union('String', 'String[]'), () => 'Welcome to Marble')
-      .with(P.union('Timestamp', 'Timestamp[]'), () => '2021-01-01T14:20:00.000Z')
-      .with(P.union('Int', 'Int[]'), () => 42)
-      .with(P.union('Float', 'Float[]'), () => 1234567890)
-      .with(P.union('Bool', 'Bool[]'), () => true)
-      .with(P.union('Coords', 'Coords[]'), () => '48.8566, 2.3522')
-      .with(P.union('IpAddress', 'IpAddress[]'), () => '127.0.0.1')
-      .with('DerivedData', () => 'Derived data')
-      .with('unknown', () => 'Unknown')
+      .with('String', () => 'Welcome to Marble')
+      .with('Timestamp', () => '2021-01-01T14:20:00.000Z')
+      .with('Int', () => 42)
+      .with('Float', () => 1234567890)
+      .with('Bool', () => true)
+      .with('Coords', () => '48.8566, 2.3522')
+      .with('IpAddress', () => '127.0.0.1')
       .exhaustive();
   }
   const value = match(semanticType)

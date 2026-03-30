@@ -1,7 +1,11 @@
+import { CreateTableValue, FieldEntity } from '@app-builder/queries/data/create-table';
+import { match } from 'ts-pattern';
 import z from 'zod/v4';
 import { dataModelNameRegex } from '../shared/dataModelNameValidation';
 import {
+  type FtmEntityPersonOption,
   type FtmEntityV2,
+  type FtmEntityVehicleOption,
   ftmEntities,
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
@@ -11,8 +15,8 @@ import {
 export type CreateTableFormValues = {
   name: string;
   alias: string;
-  entityType: FtmEntityV2 | '';
-  subEntity: string;
+  entityType: FtmEntityV2;
+  subEntity: FtmEntityPersonOption | FtmEntityVehicleOption;
   belongsToTableId: string;
   fields: TableField[];
   mainTimestampFieldId: string;
@@ -28,7 +32,6 @@ export const defaultCreateTableFields: TableField[] = [
     isEnum: false,
     nullable: false,
     alias: 'object_id',
-    visible: true,
     hidden: false,
     order: 0,
     unicityConstraint: 'no_unicity_constraint',
@@ -46,7 +49,6 @@ export const defaultCreateTableFields: TableField[] = [
     isEnum: false,
     nullable: false,
     alias: 'updated_at',
-    visible: true,
     hidden: false,
     order: 1,
     unicityConstraint: 'no_unicity_constraint',
@@ -60,8 +62,8 @@ export const defaultCreateTableFields: TableField[] = [
 export const defaultCreateTableFormValues: CreateTableFormValues = {
   name: '',
   alias: '',
-  entityType: '',
-  subEntity: '',
+  entityType: 'person',
+  subEntity: 'moral',
   belongsToTableId: '',
   fields: defaultCreateTableFields,
   mainTimestampFieldId: '',
@@ -112,4 +114,62 @@ export function requiresLink(entityType: FtmEntityV2 | ''): entityType is 'trans
 
 export function canProceedToStep2(values: CreateTableFormValues): boolean {
   return createTableEntityStepSchema.safeParse(values).success;
+}
+
+export function adaptCreateTableValue(values: CreateTableFormValues): CreateTableValue {
+  return {
+    name: values.name,
+    alias: values.alias,
+    semantic_type: getEntityType(values.entityType, values.subEntity),
+    description: '',
+    fields: values.fields.map(adaptTableField),
+    links: [],
+    metadata: {
+      belongsToTableId: values.belongsToTableId,
+      mainTimestampFieldId: values.mainTimestampFieldId,
+    },
+  };
+}
+
+function adaptTableField(field: TableField): CreateTableValue['fields'][number] {
+  return {
+    name: field.name,
+    description: field.description,
+    type: field.dataType,
+    alias: field.alias,
+    nullable: field.nullable,
+    is_enum: field.isEnum,
+    is_unique: field.unicityConstraint === 'active_unique_constraint',
+    ftm_property: field.ftmProperty,
+    metadata: {
+      semanticType: field.semanticType,
+      semanticSubType: field.semanticSubType,
+      currencyExponent: field.currencyExponent,
+      decimalPrecision: field.decimalPrecision,
+      currencyFieldId: field.currencyFieldId,
+      hidden: field.hidden,
+      order: field.order,
+    },
+  };
+}
+
+function getEntityType(
+  entityType: FtmEntityV2,
+  subEntity: FtmEntityPersonOption | FtmEntityVehicleOption,
+): FieldEntity {
+  const fieldEntity = match(entityType)
+    .with('person', () => {
+      return match(subEntity)
+        .with('moral', () => 'company')
+        .with('natural', () => 'person')
+        .with('generic', () => 'partner');
+    })
+    .with('vehicle', () => 'vehicle')
+    .with('transaction', () => 'transaction')
+    .with('event', () => 'event')
+    .with('other', () => 'other')
+    .with('account', () => 'account')
+    .exhaustive();
+
+  return fieldEntity as FieldEntity;
 }

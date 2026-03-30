@@ -1,3 +1,4 @@
+import { primitiveTypes } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod/v4';
@@ -16,7 +17,7 @@ export const createFieldValueSchema = z.object({
     }),
   description: z.string(),
   required: z.string(),
-  type: z.enum(['String', 'Bool', 'Timestamp', 'Float', 'Int', 'IpAddress', 'Coords']),
+  type: z.enum(primitiveTypes),
   tableId: z.string(),
   isEnum: z.boolean(),
   isUnique: z.boolean(),

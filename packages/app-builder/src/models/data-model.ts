@@ -29,7 +29,8 @@ import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 import { ScreeningCategory } from './screening';
 
-type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
+export const primitiveTypes = ['Bool', 'Int', 'Float', 'String', 'Timestamp', 'IpAddress', 'Coords'] as const;
+export type PrimitiveTypes = (typeof primitiveTypes)[number];
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'DerivedData' | 'unknown';
 export const EnumDataTypes = ['Float', 'Int', 'String'];
 export const UniqueDataTypes = ['Float', 'Int', 'String'];
@@ -48,7 +49,6 @@ export interface DataModelField {
   unicityConstraint: UnicityConstraintType;
   ftmProperty?: string;
   alias?: string;
-  visible?: boolean;
   order?: number;
   semanticType?: SemanticType;
   semanticSubType?: SemanticSubType;
@@ -241,7 +241,7 @@ export function adaptCreatePivotInputDto(createPivotInput: CreatePivotInput): Cr
 export interface CreateFieldInput {
   name: string;
   description: string;
-  type: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
+  type: PrimitiveTypes;
   nullable: boolean;
   isEnum?: boolean;
   isUnique?: boolean;

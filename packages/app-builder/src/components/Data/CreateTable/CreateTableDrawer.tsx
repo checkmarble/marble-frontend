@@ -1,31 +1,12 @@
-import { useForm, useStore } from '@tanstack/react-form';
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { useStore } from '@tanstack/react-form';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Stepper, type StepperStep } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext';
 import { CreateTableEntityStep } from './CreateTableEntityStep';
 import { CreateTableFieldsStep } from './CreateTableFieldsStep';
-import { type CreateTableFormValues, canProceedToStep2, defaultCreateTableFormValues } from './createTable-types';
-
-function useCreateTableForm() {
-  return useForm({
-    defaultValues: defaultCreateTableFormValues satisfies CreateTableFormValues,
-    onSubmit: ({ value }) => {
-      // TODO: will call createSemanticTable endpoint
-      console.log('submit', value);
-    },
-  });
-}
-
-export type CreateTableFormInstance = ReturnType<typeof useCreateTableForm>;
-
-const CreateTableFormContext = createContext<CreateTableFormInstance | null>(null);
-
-export function useCreateTableFormContext() {
-  const ctx = useContext(CreateTableFormContext);
-  if (!ctx) throw new Error('useCreateTableFormContext must be used within CreateTableDrawer');
-  return ctx;
-}
+import { canProceedToStep2 } from './createTable-types';
 
 export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslation(['data', 'common']);

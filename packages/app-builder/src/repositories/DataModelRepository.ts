@@ -35,12 +35,14 @@ import {
 } from '@app-builder/models';
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
+import { type CreateTableValue } from '@app-builder/queries/data/create-table';
 import { GroupedAnnotations, type OpenApiSpec } from 'marble-api';
 
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
   getOpenApiSpec(): Promise<OpenApiSpec>;
   getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
+  createTable(body: CreateTableValue): Promise<void>;
   patchDataModelTable(tableId: string, body: UpdateTableBody): Promise<void>;
   postDataModelTableField(tableId: string, createFieldInput: CreateFieldInput): Promise<void>;
   patchDataModelField(tableId: string, updateFieldInput: UpdateFieldInput): Promise<void>;
@@ -69,6 +71,11 @@ export interface DataModelRepository {
 
 export function makeGetDataModelRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): DataModelRepository => ({
+    createTable: async (body) => {
+      await marbleCoreApiClient.postDataModelTable(
+        body as unknown as Parameters<typeof marbleCoreApiClient.postDataModelTable>[0],
+      );
+    },
     getDataModel: async () => {
       const { data_model } = await marbleCoreApiClient.getDataModel();
 

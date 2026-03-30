@@ -5,7 +5,7 @@ import { FieldsEditorContext } from '../shared/FieldsEditorContext';
 import { FieldDetailPanel } from '../UploadData/FieldDetailPanel';
 import { FieldsForm } from '../UploadData/FieldsForm';
 import type { TableField } from '../UploadData/uploadData-types';
-import { useCreateTableFormContext } from './CreateTableDrawer';
+import { useCreateTableFormContext } from './CreateTableContext';
 
 export function CreateTableFieldsStep() {
   const { t } = useTranslation(['data']);

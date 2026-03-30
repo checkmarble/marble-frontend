@@ -9,12 +9,14 @@ import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
 import { isValidDataModelName } from '../shared/dataModelNameValidation';
 import {
+  FtmEntityPersonOption,
   type FtmEntityV2,
+  FtmEntityVehicleOption,
   ftmEntities,
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
 } from '../UploadData/uploadData-types';
-import { useCreateTableFormContext } from './CreateTableDrawer';
+import { useCreateTableFormContext } from './CreateTableContext';
 import { requiresLink } from './createTable-types';
 
 export function CreateTableEntityStep() {
@@ -51,12 +53,12 @@ export function CreateTableEntityStep() {
 
   function handleEntitySelect(entity: FtmEntityV2) {
     form.setFieldValue('entityType', entity);
-    form.setFieldValue('subEntity', '');
+    form.setFieldValue('subEntity', entity === 'person' ? 'moral' : 'vessel');
     form.setFieldValue('belongsToTableId', '');
   }
 
   function handleSubEntitySelect(sub: string) {
-    form.setFieldValue('subEntity', sub);
+    form.setFieldValue('subEntity', sub as FtmEntityPersonOption | FtmEntityVehicleOption);
   }
 
   function isEntityDisabled(entity: FtmEntityV2): boolean {
