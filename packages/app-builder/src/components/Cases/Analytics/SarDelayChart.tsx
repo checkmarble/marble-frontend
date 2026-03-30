@@ -34,11 +34,7 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
                 tickRotation: -30,
                 format: (v: string) => v,
               }}
-              axisLeft={{
-                legend: t('cases:analytics.chart.days'),
-                legendOffset: -40,
-                legendPosition: 'middle',
-              }}
+              axisLeft={{}}
               tooltip={({ id, value, indexValue }) => (
                 <div className={tooltipStyle}>
                   <span className="text-s text-grey-secondary">{indexValue}</span>
@@ -70,7 +66,7 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
               keys={['count']}
               indexBy="bucket"
               layout="horizontal"
-              enableLabel
+              enableLabel={false}
               padding={0.4}
               margin={{ top: 5, right: 20, bottom: 24, left: 90 }}
               colors={['#8B5CF6']}
