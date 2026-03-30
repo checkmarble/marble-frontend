@@ -118,6 +118,7 @@ function FieldRow({
               {semanticLabel}
             </span>
           ) : null}
+          {field.locked ? <Icon icon="lock" className="size-4 text-grey-secondary" /> : null}
           {!field.nullable ? <span className="size-2 rounded-full bg-purple-primary" /> : null}
           {field.hidden ? <Icon icon="visibility_off" className="size-4 text-grey-secondary" /> : null}
           <Icon icon="arrow-right" className="size-4 text-grey-secondary" />

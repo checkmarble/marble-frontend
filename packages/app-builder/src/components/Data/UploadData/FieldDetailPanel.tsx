@@ -1,13 +1,15 @@
 import { getDataTypeIcon, type PrimitiveTypes } from '@app-builder/models';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
+import { Button, Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../DataVisualisation/DataField';
 import { isValidDataModelName } from '../shared/dataModelNameValidation';
 import { FieldsEditorContext } from '../shared/FieldsEditorContext';
 import {
   type DataTypeKey,
+  type EnumColors,
+  enumColors,
   getMockValue,
   getSemanticSubOptions,
   type SemanticSubType,
@@ -91,6 +93,8 @@ export function FieldDetailPanel({
 
   if (!field) return null;
 
+  const isLocked = field.locked ?? false;
+
   function update(values: Partial<TableField>) {
     updateField(fieldId, values);
   }
@@ -129,14 +133,18 @@ export function FieldDetailPanel({
             placeholder=""
             onChange={(value) => update({ dataType: value, semanticType: undefined, semanticSubType: undefined })}
             options={typeSelectOptions}
-            disabled={!field.isNew}
+            disabled={isLocked || !field.isNew}
           />
         </div>
 
         {/* Name of the field */}
         <div className="flex flex-col gap-v2-xs">
           <label className="text-s text-grey-secondary">{t('data:upload_data.field_name_label')}</label>
-          <Input value={field.name} onChange={(e) => update({ name: e.currentTarget.value })} disabled={!field.isNew} />
+          <Input
+            value={field.name}
+            onChange={(e) => update({ name: e.currentTarget.value })}
+            disabled={isLocked || !field.isNew}
+          />
           {isNameDuplicate ? (
             <p className="text-xs text-red-primary">{t('data:upload_data.field_name_unique_error')}</p>
           ) : null}
@@ -169,10 +177,12 @@ export function FieldDetailPanel({
           </div>
 
           {/* Required */}
-          <label className="flex items-center gap-v2-sm cursor-pointer">
-            <Switch checked={!field.nullable} onCheckedChange={(checked) => update({ nullable: !checked })} />
-            <span className="text-s">{t('data:upload_data.field_required')}</span>
-          </label>
+          {!isLocked ? (
+            <label className="flex items-center gap-v2-sm cursor-pointer">
+              <Switch checked={!field.nullable} onCheckedChange={(checked) => update({ nullable: !checked })} />
+              <span className="text-s">{t('data:upload_data.field_required')}</span>
+            </label>
+          ) : null}
 
           {/* Hidden */}
           <label className="flex items-center gap-v2-sm cursor-pointer">
@@ -182,7 +192,7 @@ export function FieldDetailPanel({
         </div>
 
         {/* Semantic type */}
-        {semanticOptions.length > 0 ? (
+        {!isLocked && semanticOptions.length > 0 ? (
           <div className="flex flex-col gap-v2-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_type')}</label>
             <SelectV2
@@ -195,7 +205,7 @@ export function FieldDetailPanel({
         ) : null}
 
         {/* Semantic sub-type */}
-        {semanticSubOptions.length > 0 ? (
+        {!isLocked && semanticSubOptions.length > 0 ? (
           <div className="flex flex-col gap-v2-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_sub_type')}</label>
             <SelectV2
@@ -208,20 +218,27 @@ export function FieldDetailPanel({
         ) : null}
 
         {/* ForeignKey-specific: destination table */}
-        {field.semanticType === 'foreign_key' ? (
+        {!isLocked && field.semanticType === 'foreign_key' ? (
           <ForeignKeySettings foreignkeyTable={field.foreignkeyTable} onChange={update} tableOptions={tableOptions} />
         ) : null}
 
         {/* Currency-specific: currency exponent (only when semantic type is number and sub type is currency) */}
-        {field.semanticType === 'monetary_amount' ? (
+        {!isLocked && field.semanticType === 'monetary_amount' ? (
           <CurrencySettings field={field} currencyFieldOptions={currencyFieldOptions} onChange={update} />
         ) : null}
 
+        {/* Enum-specific: key/color/value list */}
+        {!isLocked && field.semanticType === 'enum' && field.semanticSubType === 'key_color_value' ? (
+          <EnumValuesSettings field={field} onChange={update} />
+        ) : null}
+
         {/* Boolean-specific: display as switch or yes/no */}
-        {field.dataType === 'Bool' ? <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} /> : null}
+        {!isLocked && field.dataType === 'Bool' ? (
+          <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} />
+        ) : null}
 
         {/* Timestamp-specific: main ordering timestamp (only one per table) */}
-        {field.dataType === 'Timestamp' ? (
+        {!isLocked && field.dataType === 'Timestamp' ? (
           <TimestampSettings
             fieldId={fieldId}
             mainTimestampFieldId={mainTimestampFieldId}
@@ -366,6 +383,105 @@ function ForeignKeySettings({
         onChange={(value) => onChange({ foreignkeyTable: value })}
         options={tableOptions}
       />
+    </div>
+  );
+}
+
+function toSnakeCase(str: string): string {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9_]/g, '');
+}
+
+function EnumValuesSettings({
+  field,
+  onChange,
+}: {
+  field: TableField;
+  onChange: (values: Partial<TableField>) => void;
+}) {
+  const { t } = useTranslation(['data']);
+  const enumValues = field.enumValues ?? [];
+
+  const colorOptions = useMemo(
+    () =>
+      enumColors.map((color) => ({
+        value: color,
+        label: (
+          <div className="size-4 rounded-full border border-grey-border" style={{ backgroundColor: color }}>
+            &nbsp;
+          </div>
+        ),
+      })),
+    [],
+  );
+
+  function addValue() {
+    onChange({ enumValues: [...enumValues, { key: '', color: 'gray', value: '' }] });
+  }
+
+  function updateValue(index: number, patch: Partial<{ key: string; color: EnumColors; value: string }>) {
+    const newValues = enumValues.map((v, i) => {
+      if (i !== index) return v;
+      const newValue = patch.value !== undefined ? patch.value : v.value;
+      return {
+        key: patch.value !== undefined ? toSnakeCase(patch.value) : (patch.key ?? v.key),
+        color: patch.color ?? v.color,
+        value: newValue,
+      };
+    });
+    onChange({ enumValues: newValues });
+  }
+
+  function removeValue(index: number) {
+    onChange({ enumValues: enumValues.filter((_, i) => i !== index) });
+  }
+
+  return (
+    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+      <span className="text-s text-grey-secondary">{t('data:upload_data.field_enum_settings')}</span>
+      <div className="flex flex-col gap-v2-sm">
+        {enumValues.map((enumValue, index) => {
+          const isDuplicate =
+            enumValue.value !== '' && enumValues.some((v, i) => i !== index && v.value === enumValue.value);
+          return (
+            <div key={index} className="flex flex-col gap-v2-xs">
+              <div className="flex items-center gap-v2-sm">
+                <div className="w-max shrink-0">
+                  <SelectV2
+                    value={enumValue.color}
+                    placeholder=""
+                    onChange={(value) => updateValue(index, { color: value as EnumColors })}
+                    options={colorOptions}
+                  />
+                </div>
+                <Input
+                  className="flex-1"
+                  value={enumValue.value}
+                  placeholder={t('data:upload_data.field_enum_value_placeholder')}
+                  onChange={(e) => updateValue(index, { value: e.currentTarget.value })}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeValue(index)}
+                  className="shrink-0 rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+                >
+                  <Icon icon="delete" className="size-4" />
+                </button>
+              </div>
+              {isDuplicate ? (
+                <p className="text-xs text-red-primary">{t('data:upload_data.field_enum_value_unique_error')}</p>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+      <Button variant="secondary" appearance="stroked" onClick={addValue}>
+        <Icon icon="plus" className="size-4" />
+        {t('data:upload_data.field_enum_add_value')}
+      </Button>
     </div>
   );
 }

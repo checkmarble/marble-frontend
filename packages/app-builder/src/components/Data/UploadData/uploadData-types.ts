@@ -47,18 +47,20 @@ export type RawField = {
   ftm_property?: string;
 };
 
-export type ColorKey =
-  | 'red'
-  | 'green'
-  | 'blue'
-  | 'yellow'
-  | 'purple'
-  | 'orange'
-  | 'pink'
-  | 'brown'
-  | 'gray'
-  | 'black'
-  | 'white';
+export const enumColors = [
+  'green',
+  'orange',
+  'red',
+  'blue',
+  'yellow',
+  'purple',
+  'pink',
+  'brown',
+  'gray',
+  'black',
+  'white',
+] as const;
+export type EnumColors = (typeof enumColors)[number];
 
 export type TableField = {
   id: string;
@@ -80,8 +82,9 @@ export type TableField = {
   currencyFieldId?: string;
   booleanDisplay?: 'yes_no' | 'checkbox';
   foreignkeyTable?: string;
-  enumValues?: { color: ColorKey; value: string }[];
+  enumValues?: { key: string; color: EnumColors; value: string }[];
   isNew: boolean;
+  locked?: boolean;
 };
 
 type SemanticOption = {
@@ -191,7 +194,7 @@ export function getMockValue(
         ? match(semanticSubType as SemanticSubTypeMap['enum'])
             .with('currency', () => 'EUR')
             .with('country', () => 'FR')
-            .with('key_color_value', () => 'Red')
+            .with('key_color_value', () => 'value from enum')
             .with('mcc_code', () => 'VISA')
             .with('autocomplete', () => 'Autocompleted value')
             .exhaustive()

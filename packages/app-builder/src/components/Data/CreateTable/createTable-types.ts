@@ -39,6 +39,7 @@ export const defaultCreateTableFields: TableField[] = [
     semanticType: 'unique_id',
     semanticSubType: 'opaque_id',
     isNew: false,
+    locked: true,
   },
   {
     id: 'default_updated_at',
@@ -56,6 +57,7 @@ export const defaultCreateTableFields: TableField[] = [
     semanticType: 'last_update',
     semanticSubType: undefined,
     isNew: false,
+    locked: true,
   },
 ];
 
