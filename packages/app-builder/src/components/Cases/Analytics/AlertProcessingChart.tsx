@@ -31,11 +31,7 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
               colors={[CASE_ANALYTICS_COLORS.success, CASE_ANALYTICS_COLORS.secondaryLight]}
               valueScale={{ type: 'linear' }}
               axisBottom={{ tickRotation: -30 }}
-              axisLeft={{
-                legend: t('cases:analytics.chart.days'),
-                legendOffset: -40,
-                legendPosition: 'middle',
-              }}
+              axisLeft={{}}
               tooltip={({ id, value, indexValue }) => (
                 <div className={tooltipStyle}>
                   <span className="text-s text-grey-secondary">{indexValue}</span>
@@ -67,7 +63,7 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
               keys={['count']}
               indexBy="bucket"
               layout="horizontal"
-              enableLabel
+              enableLabel={false}
               padding={0.4}
               margin={{ top: 5, right: 20, bottom: 24, left: 90 }}
               colors={[CASE_ANALYTICS_COLORS.secondary]}
