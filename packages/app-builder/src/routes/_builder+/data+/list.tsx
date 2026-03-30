@@ -1,11 +1,14 @@
 import { CalloutV2, Page } from '@app-builder/components';
-import { CreateTableDrawer } from '@app-builder/components/Data/CreateTable/CreateTableDrawer';
 import { DataTabs } from '@app-builder/components/Data/DataTabs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { ImportOrg } from '@app-builder/components/Data/ImportOrg';
 import { SelectArchetype } from '@app-builder/components/Data/SelectArchetype';
+import { CreateTableDrawer } from '@app-builder/components/Data/SemanticTables/CreateTable/CreateTableDrawer';
+import {
+  UploadDataDrawer,
+  UploadDataDrawerContent,
+} from '@app-builder/components/Data/SemanticTables/UploadData/Drawer';
 import { TableDetails } from '@app-builder/components/Data/TableDetails';
-import { UploadDataDrawer, UploadDataDrawerContent } from '@app-builder/components/Data/UploadData/Drawer';
 import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { type Namespace } from 'i18next';

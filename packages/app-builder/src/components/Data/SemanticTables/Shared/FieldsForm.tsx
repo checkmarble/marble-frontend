@@ -4,8 +4,8 @@ import { useCallbackRef } from '@marble/shared';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { FieldsEditorContext } from '../shared/FieldsEditorContext';
-import type { TableField } from './uploadData-types';
+import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
+import type { TableField } from './semanticData-types';
 
 export function FieldsForm({
   onFieldSelect,

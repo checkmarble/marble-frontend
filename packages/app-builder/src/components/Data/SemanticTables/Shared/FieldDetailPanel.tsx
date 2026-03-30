@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { DataField } from '../DataVisualisation/DataField';
-import { isValidDataModelName } from '../shared/dataModelNameValidation';
-import { FieldsEditorContext } from '../shared/FieldsEditorContext';
+import { DataField } from '../../DataVisualisation/DataField';
+import { isValidDataModelName } from '../../shared/dataModelNameValidation';
+import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import {
   type DataTypeKey,
   type EnumColors,
@@ -16,7 +16,7 @@ import {
   type SemanticType,
   semanticTypesByDataType,
   type TableField,
-} from './uploadData-types';
+} from './semanticData-types';
 
 const dataTypeOptions: { value: PrimitiveTypes; labelKey: string }[] = [
   { value: 'String', labelKey: 'String' },

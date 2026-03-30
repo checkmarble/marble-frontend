@@ -15,7 +15,7 @@ import { match, P } from 'ts-pattern';
 import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
-import { SemanticSubType, SemanticSubTypeMap, SemanticType } from '../UploadData/uploadData-types';
+import { SemanticSubType, SemanticSubTypeMap, SemanticType } from '../SemanticTables/Shared/semanticData-types';
 import { DataFields } from './DataFields';
 import type { MetadataType, VALID_DATA_TYPE } from './data-type';
 import { hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';

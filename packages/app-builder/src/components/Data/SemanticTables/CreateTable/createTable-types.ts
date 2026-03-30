@@ -1,7 +1,7 @@
 import { CreateTableValue, FieldEntity } from '@app-builder/queries/data/create-table';
 import { match } from 'ts-pattern';
 import z from 'zod/v4';
-import { dataModelNameRegex } from '../shared/dataModelNameValidation';
+import { dataModelNameRegex } from '../../shared/dataModelNameValidation';
 import {
   type FtmEntityPersonOption,
   type FtmEntityV2,
@@ -10,7 +10,7 @@ import {
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
   type TableField,
-} from '../UploadData/uploadData-types';
+} from '../Shared/semanticData-types';
 
 export type CreateTableFormValues = {
   name: string;

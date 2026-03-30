@@ -7,7 +7,7 @@ import { useStore } from '@tanstack/react-form';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
-import { isValidDataModelName } from '../shared/dataModelNameValidation';
+import { isValidDataModelName } from '../../shared/dataModelNameValidation';
 import {
   FtmEntityPersonOption,
   type FtmEntityV2,
@@ -15,7 +15,7 @@ import {
   ftmEntities,
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
-} from '../UploadData/uploadData-types';
+} from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 import { requiresLink } from './createTable-types';
 

@@ -3,9 +3,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { UploadDataDrawerContext } from './Drawer';
-import type { LinkRelationType } from './uploadData-types';
-import { linkRelationTypes } from './uploadData-types';
+import { UploadDataDrawerContext } from '../UploadData/Drawer';
+import { LinkRelationType, linkRelationTypes } from './semanticData-types';
 
 export function LinkForm({ tableId, compact }: { tableId: string; compact?: boolean }) {
   const { getLinksForTable, addLink } = UploadDataDrawerContext.useValue();

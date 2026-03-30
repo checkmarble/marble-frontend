@@ -3,8 +3,8 @@ import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { FormTable, SummaryView } from './FormTable';
-import type { FtmEntityV2, LinkValue, RawField, RawLink, TableField } from './uploadData-types';
+import { FormTable, SummaryView } from '../Shared/FormTable';
+import type { FtmEntityV2, LinkValue, RawField, RawLink, TableField } from '../Shared/semanticData-types';
 
 export type FormTableValue = {
   tableId: string;

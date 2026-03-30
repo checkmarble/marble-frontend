@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { FieldsEditorContext } from '../shared/FieldsEditorContext';
-import { UploadDataDrawerContext } from './Drawer';
+import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
+import { UploadDataDrawerContext } from '../UploadData/Drawer';
 import { FieldDetailPanel } from './FieldDetailPanel';
 import { FieldsForm } from './FieldsForm';
 import { LinkForm } from './LinkForm';
@@ -14,7 +14,7 @@ import {
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
   type TableField,
-} from './uploadData-types';
+} from './semanticData-types';
 
 export function FormTable({ tableId }: { tableId: string }) {
   const { tablesState, updateTableState } = UploadDataDrawerContext.useValue();

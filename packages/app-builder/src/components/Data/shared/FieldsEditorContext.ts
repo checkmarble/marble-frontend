@@ -1,5 +1,5 @@
 import { createSimpleContext } from '@marble/shared';
-import type { TableField } from '../UploadData/uploadData-types';
+import type { TableField } from '../SemanticTables/Shared/semanticData-types';
 
 export type FieldsEditorContextValue = {
   fields: TableField[];

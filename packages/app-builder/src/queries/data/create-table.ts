@@ -1,5 +1,5 @@
+import { ftmEntityVehicleOptions } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
-import { ftmEntityVehicleOptions } from '@app-builder/components/Data/UploadData/uploadData-types';
 import { primitiveTypes } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';

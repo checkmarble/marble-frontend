@@ -23,7 +23,6 @@ import { Button, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
-import { CreateTableModal } from './CreateTable/CreateTableModal';
 import { dataI18n } from './data-i18n';
 import {
   adaptLinkToSingleData,
@@ -34,6 +33,7 @@ import {
   LinkToSingleEdge,
 } from './LinkToSingleEdge';
 import { SelectedPivotPanel, SelectedPivotProvider } from './SelectedPivot';
+import { CreateTableModal } from './SemanticTables/CreateTable/CreateTableModal';
 import {
   adaptTableModelNodeData,
   getTableModelNodeDataId,

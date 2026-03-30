@@ -1,4 +1,4 @@
-import { SemanticSubType, SemanticType } from '@app-builder/components/Data/UploadData/uploadData-types';
+import { SemanticSubType, SemanticType } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { type ParseKeys } from 'i18next';
 import {
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,

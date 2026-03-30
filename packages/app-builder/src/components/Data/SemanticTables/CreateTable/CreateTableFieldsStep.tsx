@@ -1,10 +1,10 @@
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FieldsEditorContext } from '../shared/FieldsEditorContext';
-import { FieldDetailPanel } from '../UploadData/FieldDetailPanel';
-import { FieldsForm } from '../UploadData/FieldsForm';
-import type { TableField } from '../UploadData/uploadData-types';
+import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
+import { FieldDetailPanel } from '../Shared/FieldDetailPanel';
+import { FieldsForm } from '../Shared/FieldsForm';
+import type { TableField } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 
 export function CreateTableFieldsStep() {
