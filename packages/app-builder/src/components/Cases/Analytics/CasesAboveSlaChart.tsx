@@ -33,11 +33,7 @@ export function CasesAboveSlaChart({ casesAboveSla }: CasesAboveSlaChartProps) {
             colors={[CASE_ANALYTICS_COLORS.danger]}
             valueScale={{ type: 'linear' }}
             axisBottom={{ tickRotation: -30 }}
-            axisLeft={{
-              legend: t('cases:analytics.sla.count_label'),
-              legendOffset: -40,
-              legendPosition: 'middle',
-            }}
+            axisLeft={{}}
             tooltip={({ data }) => (
               <div className={tooltipStyle}>
                 <span className="text-s text-grey-secondary">{data.period}</span>

@@ -30,11 +30,7 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
               colors={[CASE_ANALYTICS_COLORS.secondary]}
               valueScale={{ type: 'linear' }}
               axisBottom={{ tickRotation: -30 }}
-              axisLeft={{
-                legend: t('cases:analytics.alerts.count_label'),
-                legendOffset: -40,
-                legendPosition: 'middle',
-              }}
+              axisLeft={{}}
               tooltip={({ indexValue, value }) => (
                 <div className={tooltipStyle}>
                   <span className="text-s text-grey-secondary">{indexValue}</span>
@@ -57,14 +53,14 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
               indexBy="period"
               enableLabel={false}
               padding={0.3}
-              margin={{ top: 5, right: 5, bottom: 40, left: 50 }}
+              margin={{ top: 5, right: 5, bottom: 40, left: 40 }}
               colors={[CASE_ANALYTICS_COLORS.warning]}
-              valueScale={{ type: 'linear' }}
+              valueScale={{ type: 'linear', min: 0, max: 100 }}
+              gridYValues={[0, 25, 50, 75, 100]}
               axisBottom={{ tickRotation: -30 }}
               axisLeft={{
-                legend: '%',
-                legendOffset: -40,
-                legendPosition: 'middle',
+                tickValues: [0, 25, 50, 75, 100],
+                format: (v: number) => `${v}%`,
               }}
               tooltip={({ data }) => (
                 <div className={tooltipStyle}>
