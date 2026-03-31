@@ -1,3 +1,5 @@
+import type { BarDatum } from '@nivo/bar';
+
 export type TimeBucket = 'week' | 'month' | 'quarter' | 'year';
 
 export interface CaseAnalyticsFilters {
@@ -8,26 +10,22 @@ export interface CaseAnalyticsFilters {
 }
 
 export interface PeriodDelay {
-  [key: string]: string | number;
   period: string;
   avgDays: number;
   maxDays: number;
 }
 
 export interface BucketCount {
-  [key: string]: string | number;
   bucket: string;
   count: number;
 }
 
 export interface PeriodCount {
-  [key: string]: string | number;
   period: string;
   count: number;
 }
 
 export interface FalsePositiveRate {
-  [key: string]: string | number;
   period: string;
   rate: number;
   fpCount: number;
@@ -35,7 +33,6 @@ export interface FalsePositiveRate {
 }
 
 export interface SlaViolation {
-  [key: string]: string | number;
   period: string;
   aboveCount: number;
   totalCount: number;
@@ -55,3 +52,9 @@ export interface CaseAnalyticsResponse {
   // SLA (mocked)
   casesAboveSla: SlaViolation[];
 }
+
+/**
+ * Helper type to satisfy nivo's BarDatum constraint at call sites.
+ * Use: `data={items as BarData<PeriodDelay>[]}`
+ */
+export type BarData<T> = T & BarDatum;
