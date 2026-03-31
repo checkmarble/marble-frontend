@@ -1,4 +1,4 @@
-import type { FalsePositiveRate, PeriodCount } from '@app-builder/models/analytics/case-analytics';
+import type { BarData, FalsePositiveRate, PeriodCount } from '@app-builder/models/analytics/case-analytics';
 import { ResponsiveBar } from '@nivo/bar';
 import { useTranslation } from 'react-i18next';
 
@@ -20,8 +20,8 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
         <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.alerts.count_by_period')}</span>
           <div className="flex-1">
-            <ResponsiveBar<PeriodCount>
-              data={alertCountByPeriod}
+            <ResponsiveBar<BarData<PeriodCount>>
+              data={alertCountByPeriod as BarData<PeriodCount>[]}
               keys={['count']}
               indexBy="period"
               enableLabel={false}
@@ -47,8 +47,8 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
         <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.alerts.fp_rate_by_period')}</span>
           <div className="flex-1">
-            <ResponsiveBar<FalsePositiveRate>
-              data={falsePositiveRateByPeriod}
+            <ResponsiveBar<BarData<FalsePositiveRate>>
+              data={falsePositiveRateByPeriod as BarData<FalsePositiveRate>[]}
               keys={['rate']}
               indexBy="period"
               enableLabel={false}
