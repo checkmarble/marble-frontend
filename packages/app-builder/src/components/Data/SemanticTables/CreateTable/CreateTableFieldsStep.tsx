@@ -7,7 +7,13 @@ import { FieldsForm } from '../Shared/FieldsForm';
 import type { TableField } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 
-export function CreateTableFieldsStep() {
+export function CreateTableFieldsStep({
+  errorFieldIds,
+  hasError,
+}: {
+  errorFieldIds?: ReadonlySet<string>;
+  hasError?: boolean;
+}) {
   const { t } = useTranslation(['data']);
   const form = useCreateTableFormContext();
   const fields = useStore(form.store, (s) => s.values.fields);
@@ -105,6 +111,8 @@ export function CreateTableFieldsStep() {
             title={title}
             description={t('data:create_table.suggested_fields_description')}
             droppableId="create-table-fields"
+            errorFieldIds={errorFieldIds}
+            hasError={hasError}
           />
         </div>
         {selectedFieldId ? (

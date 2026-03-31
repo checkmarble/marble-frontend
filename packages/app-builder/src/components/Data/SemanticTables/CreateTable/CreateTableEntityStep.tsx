@@ -15,9 +15,9 @@ import {
   ftmEntityPersonOptions,
 } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
-import { requiresLink } from './createTable-types';
+import { requiresLink, type TablePropertyError } from './createTable-types';
 
-export function CreateTableEntityStep() {
+export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlySet<TablePropertyError['field']> }) {
   const form = useCreateTableFormContext();
   const { t } = useTranslation(['data']);
   const dataModel = useDataModel();
@@ -39,6 +39,10 @@ export function CreateTableEntityStep() {
   );
 
   const canSelectTransactionOrEvent = personOrOtherTables.length > 0;
+  const hasNameError = errorFields?.has('name') ?? false;
+  const hasEntityTypeError = errorFields?.has('entityType') ?? false;
+  const hasSubEntityError = errorFields?.has('subEntity') ?? false;
+  const hasBelongsToError = errorFields?.has('belongsToTableId') ?? false;
 
   const linkTargetOptions = useMemo(
     () =>
@@ -87,7 +91,7 @@ export function CreateTableEntityStep() {
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                valid={field.state.meta.errors.length === 0}
+                valid={field.state.meta.errors.length === 0 && !hasNameError}
                 placeholder={t('data:create_table.name_placeholder')}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -114,7 +118,9 @@ export function CreateTableEntityStep() {
       </div>
 
       {/* Entity type selection */}
-      <div className="flex flex-col gap-v2-md">
+      <div
+        className={cn('flex flex-col gap-v2-md rounded-lg', hasEntityTypeError && 'border border-red-primary p-v2-md')}
+      >
         <span className="text-s font-medium">{t('data:create_table.choose_entity')}</span>
         <div className="flex flex-col gap-v2-sm">
           {ftmEntities.map((entity) => {
@@ -159,6 +165,7 @@ export function CreateTableEntityStep() {
                     selected={selectedSubEntity}
                     onSelect={handleSubEntitySelect}
                     labelPrefix="data:upload_data.ftm_entity_person"
+                    hasError={hasSubEntityError}
                   />
                 ) : null}
 
@@ -171,7 +178,7 @@ export function CreateTableEntityStep() {
                       placeholder={t('data:create_table.select_destination_table')}
                       onChange={(value) => form.setFieldValue('belongsToTableId', value)}
                       options={linkTargetOptions}
-                      className="w-60"
+                      className={cn('w-60', hasBelongsToError && 'border-red-primary')}
                     />
                   </div>
                 ) : null}
@@ -189,16 +196,20 @@ function SubEntityOptions({
   selected,
   onSelect,
   labelPrefix,
+  hasError,
 }: {
   options: string[];
   selected: string;
   onSelect: (value: string) => void;
   labelPrefix: string;
+  hasError?: boolean;
 }) {
   const { t } = useTranslation(['data']);
 
   return (
-    <div className="ml-7 flex flex-col gap-v2-xs rounded-md bg-grey-bg p-2">
+    <div
+      className={cn('ml-7 flex flex-col gap-v2-xs rounded-md bg-grey-bg p-2', hasError && 'border border-red-primary')}
+    >
       {options.map((option) => {
         const isSelected = selected === option;
         return (

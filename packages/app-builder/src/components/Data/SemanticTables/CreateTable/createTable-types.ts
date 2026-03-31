@@ -24,6 +24,7 @@ export type FieldValidationError = { kind: 'field'; fieldId: string; message: st
 export type LinkValidationError = { kind: 'link'; linkId: string; message: string };
 export type ValidationError = TablePropertyError | FieldValidationError | LinkValidationError;
 export type ValidationResult = { ok: true } | { ok: false; errors: ValidationError[] };
+export type ValidationScope = 'all' | 'table' | 'fields' | 'links';
 
 export const defaultCreateTableFields: TableField[] = [
   {
@@ -206,31 +207,30 @@ const specificTableConstraints: Record<FtmEntityV2, SemanticTableConstraints> = 
 
 const knownTableFields = ['name', 'entityType', 'subEntity', 'belongsToTableId'] as const;
 
-export function validateValues(values: SemanticTableFormValues): ValidationResult {
-  const errors: ValidationError[] = [];
-
-  // Table-property validation via schema
+function getTablePropertyErrors(values: SemanticTableFormValues): TablePropertyError[] {
   const parsing = createTableEntityStepSchema.safeParse(values);
   if (!parsing.success) {
-    return {
-      ok: false,
-      errors: parsing.error.issues.map((issue) => ({
-        kind: 'table' as const,
-        field: (knownTableFields.includes(issue.path[0] as (typeof knownTableFields)[number])
-          ? issue.path[0]
-          : 'name') as TablePropertyError['field'],
-        message: issue.message,
-      })),
-    };
+    return parsing.error.issues.map((issue) => ({
+      kind: 'table' as const,
+      field: (knownTableFields.includes(issue.path[0] as (typeof knownTableFields)[number])
+        ? issue.path[0]
+        : 'name') as TablePropertyError['field'],
+      message: issue.message,
+    }));
   }
 
-  // Constraint checks
+  return [];
+}
+
+function getConstraintErrors(values: SemanticTableFormValues, scope: Exclude<ValidationScope, 'all' | 'table'>) {
+  const errors: ValidationError[] = [];
   const constraints: SemanticTableConstraints = [
     ...defaultTableConstraints,
     ...specificTableConstraints[values.entityType],
   ];
+
   for (const constraint of constraints) {
-    if (constraint.fieldExist) {
+    if (scope === 'fields' && constraint.fieldExist) {
       const { name, type, subType } = constraint.fieldExist;
       const found = values.fields.some((f) => {
         if (name && f.name !== name) return false;
@@ -246,7 +246,8 @@ export function validateValues(values: SemanticTableFormValues): ValidationResul
         });
       }
     }
-    if (constraint.linkExist) {
+
+    if (scope === 'links' && constraint.linkExist) {
       const found = values.links.some((l) => l.targetTableId !== '');
       if (!found) {
         errors.push({
@@ -258,8 +259,13 @@ export function validateValues(values: SemanticTableFormValues): ValidationResul
     }
   }
 
-  // Field-level validation
+  return errors;
+}
+
+function getFieldErrors(values: SemanticTableFormValues): FieldValidationError[] {
+  const errors: FieldValidationError[] = [];
   const nameCounts = new Map<string, string[]>();
+
   for (const field of values.fields) {
     if (!field.name.trim()) {
       errors.push({
@@ -279,6 +285,7 @@ export function validateValues(values: SemanticTableFormValues): ValidationResul
       nameCounts.set(field.name, ids);
     }
   }
+
   for (const [name, ids] of nameCounts) {
     if (ids.length > 1) {
       for (const fieldId of ids) {
@@ -287,7 +294,12 @@ export function validateValues(values: SemanticTableFormValues): ValidationResul
     }
   }
 
-  // Link-level validation
+  return errors;
+}
+
+function getLinkErrors(values: SemanticTableFormValues): LinkValidationError[] {
+  const errors: LinkValidationError[] = [];
+
   for (const link of values.links) {
     if (!link.name.trim()) {
       errors.push({ kind: 'link', linkId: link.linkId, message: 'A link is missing a name' });
@@ -307,6 +319,37 @@ export function validateValues(values: SemanticTableFormValues): ValidationResul
       });
     }
   }
+
+  return errors;
+}
+
+export function validateValues(values: SemanticTableFormValues, scope: ValidationScope = 'all'): ValidationResult {
+  if (scope === 'table') {
+    const errors = getTablePropertyErrors(values);
+    return errors.length > 0 ? { ok: false, errors } : { ok: true };
+  }
+
+  if (scope === 'fields') {
+    const errors = [...getConstraintErrors(values, 'fields'), ...getFieldErrors(values)];
+    return errors.length > 0 ? { ok: false, errors } : { ok: true };
+  }
+
+  if (scope === 'links') {
+    const errors = [...getConstraintErrors(values, 'links'), ...getLinkErrors(values)];
+    return errors.length > 0 ? { ok: false, errors } : { ok: true };
+  }
+
+  const tableErrors = getTablePropertyErrors(values);
+  if (tableErrors.length > 0) {
+    return { ok: false, errors: tableErrors };
+  }
+
+  const errors: ValidationError[] = [
+    ...getConstraintErrors(values, 'fields'),
+    ...getFieldErrors(values),
+    ...getConstraintErrors(values, 'links'),
+    ...getLinkErrors(values),
+  ];
 
   if (errors.length > 0) return { ok: false, errors };
   return { ok: true };

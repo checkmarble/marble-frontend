@@ -6,7 +6,13 @@ import { LinkForm } from '../Shared/LinkForm';
 import type { LinkValue } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 
-export function CreateTableLinksStep() {
+export function CreateTableLinksStep({
+  errorLinkIds,
+  hasError,
+}: {
+  errorLinkIds?: ReadonlySet<string>;
+  hasError?: boolean;
+}) {
   const form = useCreateTableFormContext();
   const dataModel = useDataModel();
   const fields = useStore(form.store, (s) => s.values.fields);
@@ -73,7 +79,7 @@ export function CreateTableLinksStep() {
 
   return (
     <LinksEditorContext.Provider value={editorValue}>
-      <LinkForm />
+      <LinkForm errorLinkIds={errorLinkIds} hasError={hasError} />
     </LinksEditorContext.Provider>
   );
 }

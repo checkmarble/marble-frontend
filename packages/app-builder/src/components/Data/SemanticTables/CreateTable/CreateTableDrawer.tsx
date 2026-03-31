@@ -1,7 +1,7 @@
+import { Callout } from '@app-builder/components/Callout';
 import { type CreateTableValue } from '@app-builder/queries/data/create-table';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Stepper, type StepperStep } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -9,7 +9,15 @@ import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext
 import { CreateTableEntityStep } from './CreateTableEntityStep';
 import { CreateTableFieldsStep } from './CreateTableFieldsStep';
 import { CreateTableLinksStep } from './CreateTableLinksStep';
-import { adaptCreateTableValue, canProceedToStep2, validateValues } from './createTable-types';
+import {
+  adaptCreateTableValue,
+  type FieldValidationError,
+  type LinkValidationError,
+  type TablePropertyError,
+  type ValidationError,
+  type ValidationScope,
+  validateValues,
+} from './createTable-types';
 
 export function CreateTableDrawer({
   open,
@@ -22,20 +30,23 @@ export function CreateTableDrawer({
 }) {
   const { t } = useTranslation(['data', 'common']);
   const [currentStep, setCurrentStep] = useState(0);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
 
   const form = useCreateTableForm(async (value) => {
     if (!form.state.isValid) return;
     const checkValidation = validateValues(value);
     if (!checkValidation.ok) {
-      toast.error(checkValidation.errors.map((e) => e.message).join('\n'));
+      setValidationErrors(checkValidation.errors);
       return;
     }
+    setValidationErrors([]);
     await onSave(adaptCreateTableValue(value));
     form.reset();
     setCurrentStep(0);
   });
 
   const handleClose = useCallback(() => {
+    setValidationErrors([]);
     form.reset();
     setCurrentStep(0);
     onClose();
@@ -51,19 +62,56 @@ export function CreateTableDrawer({
   );
 
   const formValues = useStore(form.store, (state) => state.values);
-
-  const canNext = currentStep === 0 ? canProceedToStep2(formValues) : true;
+  const currentValidationScope = useMemo<ValidationScope>(() => {
+    if (currentStep === 0) return 'table';
+    if (currentStep === 1) return 'fields';
+    return 'links';
+  }, [currentStep]);
+  const tableErrorFields = useMemo(
+    () =>
+      new Set(
+        validationErrors
+          .filter((error): error is TablePropertyError => error.kind === 'table')
+          .map((error) => error.field),
+      ),
+    [validationErrors],
+  );
+  const fieldErrorIds = useMemo(
+    () =>
+      new Set(
+        validationErrors
+          .filter((error): error is FieldValidationError => error.kind === 'field')
+          .map((error) => error.fieldId),
+      ),
+    [validationErrors],
+  );
+  const linkErrorIds = useMemo(
+    () =>
+      new Set(
+        validationErrors
+          .filter((error): error is LinkValidationError => error.kind === 'link')
+          .map((error) => error.linkId),
+      ),
+    [validationErrors],
+  );
 
   function handleNext(e: React.MouseEvent<HTMLButtonElement>) {
-    if (canNext) {
-      setCurrentStep((s) => s + 1);
-      e.preventDefault();
-      e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
+
+    const result = validateValues(formValues, currentValidationScope);
+    if (!result.ok) {
+      setValidationErrors(result.errors);
+      return;
     }
+
+    setValidationErrors([]);
+    setCurrentStep((s) => s + 1);
   }
 
   function handleBack() {
     if (currentStep > 0) {
+      setValidationErrors([]);
       setCurrentStep((s) => s - 1);
     }
   }
@@ -96,29 +144,44 @@ export function CreateTableDrawer({
           </header>
 
           <div className="flex-1 overflow-auto px-v2-lg">
-            {currentStep === 0 ? <CreateTableEntityStep /> : null}
-            {currentStep === 1 ? <CreateTableFieldsStep /> : null}
-            {currentStep === 2 ? <CreateTableLinksStep /> : null}
-          </div>
-
-          <footer className="flex shrink-0 justify-end gap-v2-md border-t border-grey-border p-v2-lg">
-            <Button variant="secondary" appearance="stroked" onClick={handleClose}>
-              {t('common:cancel')}
-            </Button>
-            {currentStep > 0 ? (
-              <Button variant="secondary" appearance="stroked" onClick={handleBack}>
-                {t('data:create_table.button_back')}
-              </Button>
+            {currentStep === 0 ? <CreateTableEntityStep errorFields={tableErrorFields} /> : null}
+            {currentStep === 1 ? (
+              <CreateTableFieldsStep errorFieldIds={fieldErrorIds} hasError={validationErrors.length > 0} />
             ) : null}
             {currentStep === 2 ? (
-              <Button variant="primary" type="submit">
-                {t('data:create_table.button_save_table')}
+              <CreateTableLinksStep errorLinkIds={linkErrorIds} hasError={validationErrors.length > 0} />
+            ) : null}
+          </div>
+
+          <footer className="flex shrink-0 flex-col gap-v2-md border-t border-grey-border p-v2-lg">
+            {validationErrors.length > 0 ? (
+              <Callout color="red" icon="error">
+                <ul className="flex list-disc flex-col gap-v2-xs pl-3">
+                  {validationErrors.map((error, index) => (
+                    <li key={`${error.kind}-${index}`}>{error.message}</li>
+                  ))}
+                </ul>
+              </Callout>
+            ) : null}
+            <div className="flex justify-end gap-v2-md">
+              <Button variant="secondary" appearance="stroked" onClick={handleClose}>
+                {t('common:cancel')}
               </Button>
-            ) : (
-              <Button variant="primary" disabled={!canNext} onClick={handleNext} type={'button'}>
-                {t('data:create_table.button_next')}
-              </Button>
-            )}
+              {currentStep > 0 ? (
+                <Button variant="secondary" appearance="stroked" onClick={handleBack}>
+                  {t('data:create_table.button_back')}
+                </Button>
+              ) : null}
+              {currentStep === 2 ? (
+                <Button variant="primary" type="submit">
+                  {t('data:create_table.button_save_table')}
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={handleNext} type="button">
+                  {t('data:create_table.button_next')}
+                </Button>
+              )}
+            </div>
           </footer>
         </form>
       </aside>

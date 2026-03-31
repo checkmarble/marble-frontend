@@ -6,16 +6,24 @@ import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { linkRelationTypes } from './semanticData-types';
 
-export function LinkForm({ compact }: { compact?: boolean }) {
+export function LinkForm({
+  compact,
+  errorLinkIds,
+  hasError,
+}: {
+  compact?: boolean;
+  errorLinkIds?: ReadonlySet<string>;
+  hasError?: boolean;
+}) {
   const { links, addLink, destinationTableOptions } = LinksEditorContext.useValue();
   const { t } = useTranslation(['data']);
 
   return (
-    <section className="flex flex-col gap-v2-md">
+    <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'border border-red-primary p-v2-md')}>
       <h4 className="text-m font-semibold">{t('data:upload_data.links_settings')}</h4>
       <div className="flex flex-col gap-v2-md">
         {links.map((link) => (
-          <LinkRow key={link.linkId} linkId={link.linkId} compact={compact} />
+          <LinkRow key={link.linkId} linkId={link.linkId} compact={compact} hasError={errorLinkIds?.has(link.linkId)} />
         ))}
       </div>
       <div className="flex items-center gap-v2-sm">
@@ -36,7 +44,7 @@ export function LinkForm({ compact }: { compact?: boolean }) {
   );
 }
 
-function LinkRow({ linkId, compact }: { linkId: string; compact?: boolean }) {
+function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: boolean; hasError?: boolean }) {
   const { links, sourceTableFields, destinationTableOptions, updateLink, removeLink } = LinksEditorContext.useValue();
   const { t } = useTranslation(['data']);
 
@@ -92,11 +100,18 @@ function LinkRow({ linkId, compact }: { linkId: string; compact?: boolean }) {
   );
 
   return (
-    <div className={cn('flex gap-x-v2-md gap-y-v2-sm', compact ? 'flex-wrap items-start' : 'items-center')}>
+    <div
+      className={cn(
+        'flex gap-x-v2-md gap-y-v2-sm rounded-lg',
+        compact ? 'flex-wrap items-start' : 'items-center',
+        hasError && 'border border-red-primary p-v2-sm',
+      )}
+    >
       <Input
         value={link.name}
         onChange={(e) => updateLink(linkId, { name: e.currentTarget.value })}
         placeholder={t('data:upload_data.link_name_placeholder')}
+        borderColor={hasError ? 'redfigma-47' : undefined}
         className="w-36 min-w-fit"
       />
       <SelectV2
@@ -104,21 +119,21 @@ function LinkRow({ linkId, compact }: { linkId: string; compact?: boolean }) {
         placeholder={t('data:upload_data.link_field_placeholder')}
         onChange={(value) => updateLink(linkId, { tableFieldId: value })}
         options={fieldOptions}
-        className="flex-1 min-w-fit"
+        className={cn('flex-1 min-w-fit', hasError && 'border-red-primary')}
       />
       <SelectV2
         value={link.relationType}
         placeholder=""
         onChange={(value) => updateLink(linkId, { relationType: value })}
         options={relationOptions}
-        className="w-40 min-w-fit "
+        className={cn('w-40 min-w-fit', hasError && 'border-red-primary')}
       />
       <SelectV2
         value={link.targetTableId}
         placeholder={t('data:upload_data.link_destination_placeholder')}
         onChange={(value) => updateLink(linkId, { targetTableId: value })}
         options={destinationOptions}
-        className="flex-1 min-w-fit"
+        className={cn('flex-1 min-w-fit', hasError && 'border-red-primary')}
       />
       <button
         type="button"

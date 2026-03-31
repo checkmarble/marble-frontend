@@ -14,6 +14,7 @@ export function FieldsForm({
   description,
   droppableId = 'fields-list',
   errorFieldIds,
+  hasError,
 }: {
   onFieldSelect: (fieldId: string) => void;
   selectedFieldId: string | null;
@@ -21,6 +22,7 @@ export function FieldsForm({
   description?: string;
   droppableId?: string;
   errorFieldIds?: ReadonlySet<string>;
+  hasError?: boolean;
 }) {
   const { fields, reorderFields, addField } = FieldsEditorContext.useValue();
   const { t } = useTranslation(['data']);
@@ -36,7 +38,7 @@ export function FieldsForm({
   }
 
   return (
-    <section className="flex flex-col gap-v2-md">
+    <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'border border-red-primary p-v2-md')}>
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-v2-xs">
           <h4 className="text-m font-semibold">{title ?? t('data:upload_data.fields_title')}</h4>
