@@ -12,13 +12,16 @@ const endpoint = (scenarioId: string) =>
   });
 
 type UseValidateAstMutationParams = {
-  scenarioId: string;
+  scenarioId: string | undefined;
 };
 export function useValidateAstMutation(params: UseValidateAstMutationParams) {
-  const scenarioNanoId = fromUUIDtoSUUID(params.scenarioId);
+  const scenarioNanoId = params.scenarioId ? fromUUIDtoSUUID(params.scenarioId) : '';
 
   return useMutation({
     mutationFn: async (payload: AstValidationPayload & { ac: AbortController }) => {
+      if (!scenarioNanoId) {
+        return { errors: [], evaluation: [] };
+      }
       const response = await fetch(endpoint(scenarioNanoId), {
         method: 'POST',
         body: JSON.stringify(payload),

@@ -26,7 +26,7 @@ type WizardStep = 1 | 2 | 3;
 
 export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node'>) => {
   const { t } = useTranslation(['common', 'scenarios']);
-  const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);
+  const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId ?? '');
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
   const hasContinuousScreening = AstBuilderDataSharpFactory.select((s) => s.data.hasContinuousScreening);
   const screeningConfigs = AstBuilderDataSharpFactory.select((s) => s.data.screeningConfigs) ?? [];

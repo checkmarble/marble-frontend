@@ -1,5 +1,5 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
+import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
@@ -83,13 +83,6 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
               </Button>
             )
           ) : null}
-          {/*<button
-            type="button"
-            className="text-grey-secondary hover:text-grey-primary transition-colors"
-            aria-label="Edit"
-          >
-            <Icon icon="edit" className="size-5" />
-          </button>*/}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { ScoringRuleset, ScoringSettings as ScoringSettingsModel } from '@app-builder/models/scoring';
+import { type ScoringRuleset, type ScoringSettings as ScoringSettingsModel } from '@app-builder/models/scoring';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';

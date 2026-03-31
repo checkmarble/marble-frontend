@@ -127,10 +127,9 @@ export function StringSwitchEdit({ conditions, maxRiskLevel, onChange, customLis
       <div className="grid grid-cols-[200px_minmax(auto,_40px)_70px_auto] items-center gap-2">
         <span className="text-right text-purple-primary">{t('user-scoring:switch.string.else')}</span>
         <div />
-        <Input
-          type="number"
+        <NumberInput
           value={defaultImpact.modifier}
-          onChange={(e) => setImpact('default', { ...defaultImpact, modifier: e.target.valueAsNumber })}
+          onChange={(value) => setImpact('default', { ...defaultImpact, modifier: value })}
         />
         <RiskLevelSelect
           floor={defaultImpact.floor}

@@ -15,6 +15,11 @@ export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
   const mutation = useValidateAstMutation({ scenarioId });
   const mutationAbortController = useRef<AbortController | null>(null);
   const validationFn = useCallbackRef<AstBuilderValidationFn>(async (node) => {
+    if (!scenarioId) {
+      const empty = { errors: [], evaluation: [] };
+      onValidationUpdate(empty);
+      return empty;
+    }
     if (mutationAbortController.current) {
       mutationAbortController.current.abort('VALIDATION_ABORTED');
     }

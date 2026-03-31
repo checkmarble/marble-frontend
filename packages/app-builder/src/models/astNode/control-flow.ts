@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import { type AstNode, CheckNodeId, IdLessAstNode, NewAstNode } from './ast-node';
+import { type AstNode, CheckNodeId, IdLessAstNode, NewUndefinedAstNode } from './ast-node';
 import { ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const switchAstNodeName = 'Switch';
@@ -19,14 +19,14 @@ export function isSwitchAstNode(node: IdLessAstNode | AstNode): node is CheckNod
   return node.name === switchAstNodeName;
 }
 
-export function NewSwitchAstNode(ruleType: string): SwitchAstNode {
+export function NewSwitchAstNode(ruleType: string, field?: AstNode): SwitchAstNode {
   return {
     id: uuidv7(),
     name: switchAstNodeName,
     constant: undefined,
     children: [],
     namedChildren: {
-      field: NewAstNode(),
+      field: field ?? NewUndefinedAstNode(),
       type: NewConstantAstNode({ constant: ruleType }),
     },
   };
