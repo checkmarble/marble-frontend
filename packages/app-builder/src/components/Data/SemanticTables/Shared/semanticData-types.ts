@@ -195,7 +195,7 @@ export function getMockValue(
             .with('currency', () => 'EUR')
             .with('country', () => 'FR')
             .with('key_color_value', () => 'value from enum')
-            .with('mcc_code', () => 'VISA')
+            .with('mcc_code', () => '5219')
             .with('autocomplete', () => 'Autocompleted value')
             .exhaustive()
         : 'Enum value',

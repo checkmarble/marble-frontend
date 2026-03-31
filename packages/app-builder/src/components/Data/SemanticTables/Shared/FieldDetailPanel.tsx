@@ -67,11 +67,13 @@ export function FieldDetailPanel({
     if (!field) return [];
     const options = semanticTypesByDataType[field.dataType as keyof typeof semanticTypesByDataType];
     if (!options) return [];
-    return options.map((opt: { value: string }) => ({
-      label: t(`data:upload_data.field_semantic.${opt.value}`),
-      value: opt.value,
-    }));
-  }, [field, t]);
+    return options
+      .filter((opt: { value: string }) => opt.value !== 'foreign_key' || tableOptions.length > 0)
+      .map((opt: { value: string }) => ({
+        label: t(`data:upload_data.field_semantic.${opt.value}`),
+        value: opt.value,
+      }));
+  }, [field, t, tableOptions]);
 
   const semanticSubOptions = useMemo(() => {
     if (!field || !field.semanticType) return [];
@@ -383,6 +385,9 @@ function ForeignKeySettings({
         onChange={(value) => onChange({ foreignkeyTable: value })}
         options={tableOptions}
       />
+      {!foreignkeyTable ? (
+        <p className="text-xs text-red-primary">{t('data:upload_data.field_foreign_key_required_error')}</p>
+      ) : null}
     </div>
   );
 }

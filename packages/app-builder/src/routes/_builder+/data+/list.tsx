@@ -7,7 +7,7 @@ import { CreateTableDrawer } from '@app-builder/components/Data/SemanticTables/C
 import {
   UploadDataDrawer,
   UploadDataDrawerContent,
-} from '@app-builder/components/Data/SemanticTables/UploadData/Drawer';
+} from '@app-builder/components/Data/SemanticTables/UploadData/UploadDataDrawer';
 import { TableDetails } from '@app-builder/components/Data/TableDetails';
 import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';

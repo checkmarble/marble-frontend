@@ -1,3 +1,4 @@
+import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,13 +7,21 @@ import { Icon } from 'ui-icons';
 import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext';
 import { CreateTableEntityStep } from './CreateTableEntityStep';
 import { CreateTableFieldsStep } from './CreateTableFieldsStep';
-import { canProceedToStep2 } from './createTable-types';
+import { CreateTableLinksStep } from './CreateTableLinksStep';
+import { adaptCreateTableValue, canProceedToStep2 } from './createTable-types';
 
 export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslation(['data', 'common']);
   const [currentStep, setCurrentStep] = useState(0);
+  const createTableMutation = useCreateTableMutation();
 
-  const form = useCreateTableForm();
+  const form = useCreateTableForm((value) => {
+    if (form.state.isValid) {
+      const adaptedValues = adaptCreateTableValue(value);
+      console.log(adaptedValues);
+      createTableMutation.mutateAsync(adaptedValues);
+    }
+  });
 
   const handleClose = useCallback(() => {
     form.reset();
@@ -31,7 +40,7 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
 
   const formValues = useStore(form.store, (state) => state.values);
 
-  const canNext = currentStep === 0 ? canProceedToStep2(formValues) : currentStep < 2;
+  const canNext = currentStep === 0 ? canProceedToStep2(formValues) : true;
 
   function handleNext() {
     if (canNext) {
@@ -68,11 +77,7 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
           <div className="flex-1 overflow-auto px-v2-lg">
             {currentStep === 0 ? <CreateTableEntityStep /> : null}
             {currentStep === 1 ? <CreateTableFieldsStep /> : null}
-            {currentStep === 2 ? (
-              <div className="flex items-center justify-center p-8 text-grey-secondary">
-                {t('data:create_table.step_links')} (coming soon)
-              </div>
-            ) : null}
+            {currentStep === 2 ? <CreateTableLinksStep /> : null}
           </div>
 
           <footer className="flex shrink-0 justify-end gap-v2-md border-t border-grey-border p-v2-lg">
@@ -85,7 +90,7 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
               </Button>
             ) : null}
             <Button variant="primary" disabled={!canNext} onClick={handleNext}>
-              {t('data:create_table.button_next')}
+              {currentStep === 2 ? t('data:create_table.button_save_table') : t('data:create_table.button_next')}
             </Button>
           </footer>
         </div>

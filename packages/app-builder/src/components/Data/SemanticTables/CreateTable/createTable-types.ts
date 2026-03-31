@@ -9,6 +9,7 @@ import {
   ftmEntities,
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
+  type LinkValue,
   type TableField,
 } from '../Shared/semanticData-types';
 
@@ -20,6 +21,7 @@ export type CreateTableFormValues = {
   belongsToTableId: string;
   fields: TableField[];
   mainTimestampFieldId: string;
+  links: LinkValue[];
 };
 
 export const defaultCreateTableFields: TableField[] = [
@@ -69,6 +71,7 @@ export const defaultCreateTableFormValues: CreateTableFormValues = {
   belongsToTableId: '',
   fields: defaultCreateTableFields,
   mainTimestampFieldId: '',
+  links: [],
 };
 
 const entityTypesWithSubEntity = ['person', 'vehicle'] as const;
@@ -125,7 +128,15 @@ export function adaptCreateTableValue(values: CreateTableFormValues): CreateTabl
     semantic_type: getEntityType(values.entityType, values.subEntity),
     description: '',
     fields: values.fields.map(adaptTableField),
-    links: [],
+    links: values.links
+      .filter((l) => l.name && l.tableFieldId && l.targetTableId)
+      .map((l) => ({
+        name: l.name,
+        child_field_name: values.fields.find((f) => f.id === l.tableFieldId)?.name ?? '',
+        parent_table_id: l.targetTableId,
+        // TODO: resolve parent_field_id from dataModel (object_id field of destination table)
+        parent_field_id: '',
+      })),
     metadata: {
       belongsToTableId: values.belongsToTableId,
       mainTimestampFieldId: values.mainTimestampFieldId,

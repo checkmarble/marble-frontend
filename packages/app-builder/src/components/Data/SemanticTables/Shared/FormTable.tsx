@@ -1,10 +1,11 @@
+import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
-import { UploadDataDrawerContext } from '../UploadData/Drawer';
+import { UploadDataDrawerContext } from '../UploadData/UploadDataDrawer';
 import { FieldDetailPanel } from './FieldDetailPanel';
 import { FieldsForm } from './FieldsForm';
 import { LinkForm } from './LinkForm';
@@ -13,11 +14,19 @@ import {
   ftmEntities,
   ftmEntityPersonOptions,
   ftmEntityVehicleOptions,
+  type LinkValue,
   type TableField,
 } from './semanticData-types';
 
 export function FormTable({ tableId }: { tableId: string }) {
-  const { tablesState, updateTableState } = UploadDataDrawerContext.useValue();
+  const {
+    tablesState,
+    updateTableState,
+    updateLinkState,
+    addLink: ctxAddLink,
+    removeLink,
+    getLinksForTable,
+  } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
   const tableState = tablesState[tableId]!;
 
@@ -105,6 +114,28 @@ export function FormTable({ tableId }: { tableId: string }) {
     ],
   );
 
+  const links = getLinksForTable(tableId);
+
+  const destinationTableOptions = useMemo(
+    () =>
+      Object.values(tablesState)
+        .filter((t) => t.tableId !== tableId && !t.isCanceled)
+        .map((t) => ({ tableId: t.tableId, label: t.alias || t.name })),
+    [tablesState, tableId],
+  );
+
+  const linksEditorValue = useMemo(
+    () => ({
+      links,
+      sourceTableFields: tableState.fields,
+      destinationTableOptions,
+      updateLink: (linkId: string, values: Partial<LinkValue>) => updateLinkState(linkId, values),
+      addLink: () => ctxAddLink(tableId),
+      removeLink,
+    }),
+    [links, tableState.fields, destinationTableOptions, updateLinkState, ctxAddLink, tableId, removeLink],
+  );
+
   return (
     <div className="flex gap-v2-lg">
       <div className="flex min-w-0 flex-1 flex-col gap-v2-lg">
@@ -150,7 +181,9 @@ export function FormTable({ tableId }: { tableId: string }) {
             ) : null}
           </div>
         </section>
-        <LinkForm tableId={tableId} compact={!!selectedFieldId} />
+        <LinksEditorContext.Provider value={linksEditorValue}>
+          <LinkForm compact={!!selectedFieldId} />
+        </LinksEditorContext.Provider>
         <FieldsEditorContext.Provider value={fieldsEditorValue}>
           <FieldsForm
             onFieldSelect={setSelectedFieldId}

@@ -1,16 +1,11 @@
-import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useForm } from '@tanstack/react-form';
 import { createContext, useContext } from 'react';
-import { adaptCreateTableValue, type CreateTableFormValues, defaultCreateTableFormValues } from './createTable-types';
+import { type CreateTableFormValues, defaultCreateTableFormValues } from './createTable-types';
 
-function useCreateTableForm() {
-  const createTableMutation = useCreateTableMutation();
+function useCreateTableForm(onSubmit: (value: CreateTableFormValues) => void | Promise<void>) {
   return useForm({
     defaultValues: defaultCreateTableFormValues satisfies CreateTableFormValues,
-    onSubmit: ({ value }) => {
-      console.log('submit', value);
-      createTableMutation.mutateAsync(adaptCreateTableValue(value));
-    },
+    onSubmit: ({ value }) => onSubmit(value),
   });
 }
 
