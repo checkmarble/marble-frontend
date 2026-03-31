@@ -1,17 +1,8 @@
 import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
-import {
-  doesRuleHaveField,
-  getOperationType,
-  isCompleteRule,
-  isCompleteRuleModel,
-  transformSwitchAstNodeToModel,
-} from '@app-builder/models/scoring';
-import {
-  SCREENING_CATEGORY_I18N_KEY_MAP,
-  topicsToCategories,
-} from '@app-builder/models/screening';
+import { getOperationType, isCompleteRule, transformSwitchAstNodeToModel } from '@app-builder/models/scoring';
+import { SCREENING_CATEGORY_I18N_KEY_MAP, topicsToCategories } from '@app-builder/models/screening';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { useTranslation } from 'react-i18next';
@@ -48,7 +39,7 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
         {model
           ? match(model)
               .with({ type: 'user_attribute' }, (m) =>
-                doesRuleHaveField(m) && isCompleteRuleModel(m) ? (
+                isCompleteRule(m) ? (
                   <>
                     <span>{t('user-scoring:switch.depending_on')}</span>
                     <FieldPill field={m.field} fieldType={fieldType} />
@@ -57,7 +48,7 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
                 ) : null,
               )
               .with({ type: 'aggregate' }, (m) =>
-                doesRuleHaveField(m) && isCompleteRuleModel(m) ? (
+                isCompleteRule(m) ? (
                   <>
                     <span>{t('user-scoring:switch.depending_on')}</span>
                     <Tag color="grey" className="gap-v2-sm">

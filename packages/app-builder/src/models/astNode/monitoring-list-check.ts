@@ -158,16 +158,17 @@ type TagCheckConfig = {
   linkedTableChecks?: LinkedTableCheck[];
 };
 
-export function NewTagCheckAstNode(name: typeof monitoringListCheckAstNodeName, config?: TagCheckConfig): MonitoringListCheckAstNode;
-export function NewTagCheckAstNode(name: typeof recordHasTagsAstNodeName, config?: TagCheckConfig): RecordHasTagsAstNode;
+export function NewTagCheckAstNode(
+  name: typeof monitoringListCheckAstNodeName,
+  config?: TagCheckConfig,
+): MonitoringListCheckAstNode;
+export function NewTagCheckAstNode(
+  name: typeof recordHasTagsAstNodeName,
+  config?: TagCheckConfig,
+): RecordHasTagsAstNode;
 export function NewTagCheckAstNode(
   name: typeof monitoringListCheckAstNodeName | typeof recordHasTagsAstNodeName,
-  {
-    targetTableName = '',
-    pathToTarget = [],
-    topicFilters = [],
-    linkedTableChecks = [],
-  }: TagCheckConfig = {},
+  { targetTableName = '', pathToTarget = [], topicFilters = [], linkedTableChecks = [] }: TagCheckConfig = {},
 ): MonitoringListCheckAstNode | RecordHasTagsAstNode {
   return {
     id: uuidv7(),

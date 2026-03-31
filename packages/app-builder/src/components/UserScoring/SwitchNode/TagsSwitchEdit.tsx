@@ -12,13 +12,7 @@ interface TagsSwitchEditProps {
   normalizeValue?: (v: string[]) => string[];
 }
 
-export function TagsSwitchEdit({
-  options,
-  conditions,
-  maxRiskLevel,
-  onChange,
-  normalizeValue,
-}: TagsSwitchEditProps) {
+export function TagsSwitchEdit({ options, conditions, maxRiskLevel, onChange, normalizeValue }: TagsSwitchEditProps) {
   const { t } = useTranslation(['user-scoring']);
   const { branches, default: defaultImpact } = conditions;
 

@@ -234,8 +234,16 @@ function renderOptionLabel<T, O extends SelectOption<T>>(option: O, displayedVal
 }
 
 export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(props: SelectV2Props<T, O>) {
-  const { options, placeholder, disabled, className, displayedValue, selectedIcon, variant = 'default', menuClassName } =
-    props;
+  const {
+    options,
+    placeholder,
+    disabled,
+    className,
+    displayedValue,
+    selectedIcon,
+    variant = 'default',
+    menuClassName,
+  } = props;
 
   const [open, setOpen] = useState(false);
   const justSelectedRef = useRef(false);
@@ -266,9 +274,7 @@ export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(props: 
     }
   };
 
-  const selectedOptions = props.multiple
-    ? options.filter((o) => props.value.some((v) => v === o.value))
-    : null;
+  const selectedOptions = props.multiple ? options.filter((o) => props.value.some((v) => v === o.value)) : null;
 
   const singleValueLabel = !props.multiple
     ? (() => {
