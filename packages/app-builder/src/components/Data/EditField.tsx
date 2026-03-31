@@ -12,7 +12,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Modal, Select } from 'ui-design-system';
+import { Button, Checkbox, Modal, SelectV2 } from 'ui-design-system';
 
 const REQUIRED_OPTIONS = [
   { value: 'optional', display: 'data:create_field.option_optional' },
@@ -107,6 +107,8 @@ export function EditField({
     [inputField, linksToThisTable, selectedEnum],
   );
 
+  const isLocked = useMemo(() => ['object_id', 'updated_at'].includes(inputField.name), [inputField.name]);
+
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>{children}</Modal.Trigger>
@@ -142,21 +144,17 @@ export function EditField({
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('data:create_field.option_required')}</FormLabel>
-                    <Select.Default
-                      className="w-full overflow-hidden"
-                      defaultValue={field.state.value}
-                      onValueChange={(value) => {
-                        field.handleChange(value as 'optional' | 'required');
-                      }}
-                    >
-                      {REQUIRED_OPTIONS.map(({ value, display }) => {
-                        return (
-                          <Select.DefaultItem key={value} value={value}>
-                            {t(display)}
-                          </Select.DefaultItem>
-                        );
-                      })}
-                    </Select.Default>
+                    <SelectV2
+                      className="w-full"
+                      value={field.state.value}
+                      placeholder=""
+                      options={REQUIRED_OPTIONS.map(({ value, display }) => ({
+                        label: t(display),
+                        value,
+                      }))}
+                      onChange={(value) => field.handleChange(value)}
+                      disabled={isLocked}
+                    />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
