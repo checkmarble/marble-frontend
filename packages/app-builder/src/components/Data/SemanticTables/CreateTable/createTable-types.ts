@@ -186,3 +186,10 @@ function getEntityType(
 
   return fieldEntity as FieldEntity;
 }
+
+export function validateValues(values: CreateTableFormValues): { ok: boolean; errors: string[] } {
+  const parsing = createTableEntityStepSchema.safeParse(values);
+  if (!parsing.success) return { ok: false, errors: parsing.error.issues.map((issue) => issue.message) };
+  // TODO: add more validation
+  return { ok: false, errors: ['not ready to save yet'] };
+}

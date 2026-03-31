@@ -1,6 +1,7 @@
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Stepper, type StepperStep } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -8,18 +9,28 @@ import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext
 import { CreateTableEntityStep } from './CreateTableEntityStep';
 import { CreateTableFieldsStep } from './CreateTableFieldsStep';
 import { CreateTableLinksStep } from './CreateTableLinksStep';
-import { adaptCreateTableValue, canProceedToStep2 } from './createTable-types';
+import { adaptCreateTableValue, canProceedToStep2, validateValues } from './createTable-types';
 
 export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useTranslation(['data', 'common']);
   const [currentStep, setCurrentStep] = useState(0);
   const createTableMutation = useCreateTableMutation();
 
-  const form = useCreateTableForm((value) => {
+  const form = useCreateTableForm((values) => {
     if (form.state.isValid) {
-      const adaptedValues = adaptCreateTableValue(value);
-      console.log(adaptedValues);
-      createTableMutation.mutateAsync(adaptedValues);
+      console.log('values', values);
+      const checkValidation = validateValues(values);
+      if (!checkValidation.ok) {
+        toast.error(checkValidation.errors.join('\n'));
+        return;
+      }
+
+      const adaptedValues = adaptCreateTableValue(values);
+      console.log('adaptedValues', adaptedValues);
+      createTableMutation.mutateAsync(adaptedValues).then((result) => {
+        form.reset();
+        setCurrentStep(0);
+      });
     }
   });
 
