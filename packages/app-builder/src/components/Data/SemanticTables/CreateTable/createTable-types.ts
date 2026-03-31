@@ -15,6 +15,16 @@ import {
 
 export type { SemanticTableFormValues };
 
+export type TablePropertyError = {
+  kind: 'table';
+  field: 'name' | 'entityType' | 'subEntity' | 'belongsToTableId';
+  message: string;
+};
+export type FieldValidationError = { kind: 'field'; fieldId: string; message: string };
+export type LinkValidationError = { kind: 'link'; linkId: string; message: string };
+export type ValidationError = TablePropertyError | FieldValidationError | LinkValidationError;
+export type ValidationResult = { ok: true } | { ok: false; errors: ValidationError[] };
+
 export const defaultCreateTableFields: TableField[] = [
   {
     id: 'default_object_id',
@@ -184,7 +194,7 @@ type SemanticTableConstraints = {
 const defaultTableConstraints = [
   { fieldExist: { name: 'object_id', type: 'unique_id', subType: 'opaque_id' } },
   { fieldExist: { name: 'updated_at', type: 'last_update' } },
-];
+] as const satisfies SemanticTableConstraints;
 
 const specificTableConstraints: Record<FtmEntityV2, SemanticTableConstraints> = {
   person: [{ fieldExist: { type: 'name' } }],
@@ -194,12 +204,110 @@ const specificTableConstraints: Record<FtmEntityV2, SemanticTableConstraints> = 
   other: [],
 } as const;
 
-export function validateValues(values: SemanticTableFormValues): { ok: boolean; errors: string[] } {
+const knownTableFields = ['name', 'entityType', 'subEntity', 'belongsToTableId'] as const;
+
+export function validateValues(values: SemanticTableFormValues): ValidationResult {
+  const errors: ValidationError[] = [];
+
+  // Table-property validation via schema
   const parsing = createTableEntityStepSchema.safeParse(values);
-  if (!parsing.success) return { ok: false, errors: parsing.error.issues.map((issue) => issue.message) };
-  // TODO: add more validation
-  const constraints = [...defaultTableConstraints, ...specificTableConstraints[values.entityType]];
-  // Tables: check  constraints
-  console.log(constraints);
-  return { ok: false, errors: ['not ready to save yet'] };
+  if (!parsing.success) {
+    return {
+      ok: false,
+      errors: parsing.error.issues.map((issue) => ({
+        kind: 'table' as const,
+        field: (knownTableFields.includes(issue.path[0] as (typeof knownTableFields)[number])
+          ? issue.path[0]
+          : 'name') as TablePropertyError['field'],
+        message: issue.message,
+      })),
+    };
+  }
+
+  // Constraint checks
+  const constraints: SemanticTableConstraints = [
+    ...defaultTableConstraints,
+    ...specificTableConstraints[values.entityType],
+  ];
+  for (const constraint of constraints) {
+    if (constraint.fieldExist) {
+      const { name, type, subType } = constraint.fieldExist;
+      const found = values.fields.some((f) => {
+        if (name && f.name !== name) return false;
+        if (type && f.semanticType !== type) return false;
+        if (subType && f.semanticSubType !== subType) return false;
+        return true;
+      });
+      if (!found) {
+        errors.push({
+          kind: 'table',
+          field: 'name',
+          message: `Missing required field: ${name ?? type}`,
+        });
+      }
+    }
+    if (constraint.linkExist) {
+      const found = values.links.some((l) => l.targetTableId !== '');
+      if (!found) {
+        errors.push({
+          kind: 'table',
+          field: 'belongsToTableId',
+          message: 'A link to a related table is required for this entity type',
+        });
+      }
+    }
+  }
+
+  // Field-level validation
+  const nameCounts = new Map<string, string[]>();
+  for (const field of values.fields) {
+    if (!field.name.trim()) {
+      errors.push({
+        kind: 'field',
+        fieldId: field.id,
+        message: `Field "${field.alias || field.id}": name is required`,
+      });
+    } else if (!dataModelNameRegex.test(field.name)) {
+      errors.push({
+        kind: 'field',
+        fieldId: field.id,
+        message: `Field "${field.name}": only lower case alphanumeric and _, must start with a letter`,
+      });
+    } else {
+      const ids = nameCounts.get(field.name) ?? [];
+      ids.push(field.id);
+      nameCounts.set(field.name, ids);
+    }
+  }
+  for (const [name, ids] of nameCounts) {
+    if (ids.length > 1) {
+      for (const fieldId of ids) {
+        errors.push({ kind: 'field', fieldId, message: `Duplicate field name: "${name}"` });
+      }
+    }
+  }
+
+  // Link-level validation
+  for (const link of values.links) {
+    if (!link.name.trim()) {
+      errors.push({ kind: 'link', linkId: link.linkId, message: 'A link is missing a name' });
+    }
+    if (!link.targetTableId) {
+      errors.push({
+        kind: 'link',
+        linkId: link.linkId,
+        message: `Link "${link.name || '(unnamed)'}": target table is required`,
+      });
+    }
+    if (!link.tableFieldId) {
+      errors.push({
+        kind: 'link',
+        linkId: link.linkId,
+        message: `Link "${link.name || '(unnamed)'}": field is required`,
+      });
+    }
+  }
+
+  if (errors.length > 0) return { ok: false, errors };
+  return { ok: true };
 }

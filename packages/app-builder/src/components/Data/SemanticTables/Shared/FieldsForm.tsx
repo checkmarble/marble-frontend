@@ -13,12 +13,14 @@ export function FieldsForm({
   title,
   description,
   droppableId = 'fields-list',
+  errorFieldIds,
 }: {
   onFieldSelect: (fieldId: string) => void;
   selectedFieldId: string | null;
   title?: string;
   description?: string;
   droppableId?: string;
+  errorFieldIds?: ReadonlySet<string>;
 }) {
   const { fields, reorderFields, addField } = FieldsEditorContext.useValue();
   const { t } = useTranslation(['data']);
@@ -62,6 +64,7 @@ export function FieldsForm({
                         isSelected={field.id === selectedFieldId}
                         onSelect={() => onFieldSelect(field.id)}
                         dragHandleProps={dragProvided.dragHandleProps}
+                        hasError={errorFieldIds?.has(field.id) ?? false}
                       />
                     </div>
                   )}
@@ -81,11 +84,13 @@ function FieldRow({
   isSelected,
   onSelect,
   dragHandleProps,
+  hasError,
 }: {
   field: TableField;
   isSelected: boolean;
   onSelect: () => void;
   dragHandleProps: React.HTMLAttributes<HTMLElement> | null | undefined;
+  hasError?: boolean;
 }) {
   const { t } = useTranslation(['data']);
   const typeIcon = getDataTypeIcon(field.dataType) ?? 'minus';
@@ -106,7 +111,12 @@ function FieldRow({
         onClick={onSelect}
         className={cn(
           'flex flex-1 items-center gap-v2-md rounded-lg border p-v2-md transition-colors',
-          isSelected ? 'border-purple-primary bg-purple-96' : 'border-grey-border hover:bg-grey-98',
+          hasError
+            ? 'border-red-primary'
+            : isSelected
+              ? 'border-purple-primary'
+              : 'border-grey-border hover:bg-grey-98',
+          isSelected ? 'bg-purple-96' : '',
           field.hidden && 'opacity-50',
         )}
       >

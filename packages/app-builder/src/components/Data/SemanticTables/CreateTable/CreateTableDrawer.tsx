@@ -27,7 +27,7 @@ export function CreateTableDrawer({
     if (!form.state.isValid) return;
     const checkValidation = validateValues(value);
     if (!checkValidation.ok) {
-      toast.error(checkValidation.errors.join('\n'));
+      toast.error(checkValidation.errors.map((e) => e.message).join('\n'));
       return;
     }
     await onSave(adaptCreateTableValue(value));

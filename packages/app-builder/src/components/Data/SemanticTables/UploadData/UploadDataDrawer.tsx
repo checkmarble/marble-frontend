@@ -1,9 +1,10 @@
+import { Callout } from '@app-builder/components/Callout';
 import { createSimpleContext } from '@marble/shared';
 import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { validateValues } from '../CreateTable/createTable-types';
+import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
 import { FormTable, SummaryView } from '../Shared/FormTable';
 import type { LinkValue, RawField, RawLink, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 
@@ -227,27 +228,32 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
   const tables = raw?.data_model?.tables ?? [];
   return Object.fromEntries(
     tables.map((table) => {
-      const rawFields = table.fields ? (Array.isArray(table.fields) ? table.fields : Object.values(table.fields)) : [];
+      const rawFields = table.fields
+        ? Array.isArray(table.fields)
+          ? table.fields.map((field) => ({ key: field.name, field }))
+          : Object.entries(table.fields).map(([key, field]) => ({ key, field }))
+        : [];
 
-      const fields: TableField[] = rawFields.map((f, i) => ({
-        id: f.id,
-        name: f.name,
-        description: f.description || '',
-        dataType: f.data_type,
-        tableId: f.table_id || table.id,
-        isEnum: f.is_enum ?? false,
-        nullable: f.nullable ?? true,
-        alias: f.name,
+      const fields: TableField[] = rawFields.map(({ key, field }, i) => ({
+        id: field.id,
+        name: key,
+        description: field.description || '',
+        dataType: field.data_type,
+        tableId: field.table_id || table.id,
+        isEnum: field.is_enum ?? false,
+        nullable: field.nullable ?? true,
+        alias: field.name,
         hidden: false,
         order: i,
-        unicityConstraint: f.unicity_constraint ?? 'no_unicity_constraint',
-        ftmProperty: f.ftm_property ?? '',
-        semanticType: undefined,
-        semanticSubType: undefined,
-        isNew: false,
+        unicityConstraint: field.unicity_constraint ?? 'no_unicity_constraint',
+        ftmProperty: field.ftm_property ?? '',
+        semanticType: key === 'object_id' ? 'unique_id' : key === 'updated_at' ? 'last_update' : undefined,
+        semanticSubType: key === 'object_id' ? 'opaque_id' : undefined,
+        isNew: key !== 'object_id' && key !== 'updated_at',
+        locked: key === 'object_id' || key === 'updated_at',
       }));
 
-      // Ensure there's always an object_id field
+      // Ensure required system fields are always present
       if (!fields.some((f) => f.name === 'object_id')) {
         fields.unshift({
           id: `${table.id}_object_id`,
@@ -262,15 +268,37 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           order: -1,
           unicityConstraint: 'no_unicity_constraint',
           ftmProperty: '',
-          semanticType: undefined,
-          semanticSubType: undefined,
+          semanticType: 'unique_id',
+          semanticSubType: 'opaque_id',
           isNew: false,
-        });
-        // Re-index orders
-        fields.forEach((f, i) => {
-          f.order = i;
+          locked: true,
         });
       }
+
+      if (!fields.some((f) => f.name === 'updated_at')) {
+        fields.splice(1, 0, {
+          id: `${table.id}_updated_at`,
+          name: 'updated_at',
+          description: '',
+          dataType: 'Timestamp',
+          tableId: table.id,
+          isEnum: false,
+          nullable: false,
+          alias: 'updated_at',
+          hidden: false,
+          order: -1,
+          unicityConstraint: 'no_unicity_constraint',
+          ftmProperty: '',
+          semanticType: 'last_update',
+          semanticSubType: undefined,
+          isNew: false,
+          locked: true,
+        });
+      }
+
+      fields.forEach((f, i) => {
+        f.order = i;
+      });
 
       return [
         table.id,
@@ -339,6 +367,7 @@ export function UploadDataDrawerContent() {
 
   const [selectedTableId, setSelectedTableId] = useState<string>(() => (isSingleTable ? tableIds[0]! : ''));
   const [showSummary, setShowSummary] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
 
   // Mark selected table as visited
   useEffect(() => {
@@ -346,6 +375,16 @@ export function UploadDataDrawerContent() {
       updateTableState(selectedTableId, { isVisited: true });
     }
   }, [selectedTableId, tablesState, updateTableState]);
+
+  // Clear validation errors when switching tables
+  useEffect(() => {
+    setValidationErrors([]);
+  }, [selectedTableId]);
+
+  const errorFieldIds = useMemo(
+    () => new Set(validationErrors.filter((e): e is FieldValidationError => e.kind === 'field').map((e) => e.fieldId)),
+    [validationErrors],
+  );
 
   function handleSave() {
     // TODO: implement save logic
@@ -358,9 +397,12 @@ export function UploadDataDrawerContent() {
       ...tableState,
       links: getLinksForTable(selectedTableId),
     };
-    if (!validateValues(values).ok) {
+    const result = validateValues(values);
+    if (!result.ok) {
+      setValidationErrors(result.errors);
       return;
     }
+    setValidationErrors([]);
     if (allVisited) {
       setShowSummary(true);
       setSelectedTableId('');
@@ -443,35 +485,46 @@ export function UploadDataDrawerContent() {
       </header>
       <div className="flex-1 overflow-auto px-v2-lg">
         {selectedTableId && tablesState[selectedTableId] ? (
-          <FormTable key={selectedTableId} tableId={selectedTableId} />
+          <FormTable key={selectedTableId} tableId={selectedTableId} errorFieldIds={errorFieldIds} />
         ) : null}
       </div>
-      <footer className="flex shrink-0 justify-end gap-v2-md p-v2-lg border-t border-grey-border">
-        {!isSingleTable ? (
-          <Button
-            variant="secondary"
-            appearance="stroked"
-            onClick={() => {
-              if (selectedTableId) {
-                const current = tablesState[selectedTableId];
-                updateTableState(selectedTableId, { isCanceled: !current?.isCanceled });
-              }
-            }}
-          >
-            {selectedTableId && tablesState[selectedTableId]?.isCanceled
-              ? t('data:upload_data.button_restore')
-              : t('data:upload_data.button_cancel')}
-          </Button>
+      <footer className="flex shrink-0 flex-col gap-v2-md p-v2-lg border-t border-grey-border">
+        {validationErrors.length > 0 ? (
+          <Callout color="red" icon="error">
+            <ul className="flex flex-col gap-v2-xs list-disc pl-3">
+              {validationErrors.map((e, i) => (
+                <li key={i}>{e.message}</li>
+              ))}
+            </ul>
+          </Callout>
         ) : null}
-        {isSingleTable ? (
-          <Button variant="primary" onClick={handleSave}>
-            {t('data:upload_data.button_save')}
-          </Button>
-        ) : (
-          <Button variant="primary" onClick={handleNextOrSummary}>
-            {allVisited ? t('data:upload_data.button_review') : t('data:upload_data.button_next_table')}
-          </Button>
-        )}
+        <div className="flex justify-end gap-v2-md">
+          {!isSingleTable ? (
+            <Button
+              variant="secondary"
+              appearance="stroked"
+              onClick={() => {
+                if (selectedTableId) {
+                  const current = tablesState[selectedTableId];
+                  updateTableState(selectedTableId, { isCanceled: !current?.isCanceled });
+                }
+              }}
+            >
+              {selectedTableId && tablesState[selectedTableId]?.isCanceled
+                ? t('data:upload_data.button_restore')
+                : t('data:upload_data.button_cancel')}
+            </Button>
+          ) : null}
+          {isSingleTable ? (
+            <Button variant="primary" onClick={handleSave}>
+              {t('data:upload_data.button_save')}
+            </Button>
+          ) : (
+            <Button variant="primary" onClick={handleNextOrSummary}>
+              {allVisited ? t('data:upload_data.button_review') : t('data:upload_data.button_next_table')}
+            </Button>
+          )}
+        </div>
       </footer>
     </div>
   );

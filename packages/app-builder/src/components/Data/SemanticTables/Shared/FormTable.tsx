@@ -16,7 +16,7 @@ import {
   type TableField,
 } from './semanticData-types';
 
-export function FormTable({ tableId }: { tableId: string }) {
+export function FormTable({ tableId, errorFieldIds }: { tableId: string; errorFieldIds?: ReadonlySet<string> }) {
   const {
     tablesState,
     updateTableState,
@@ -145,6 +145,7 @@ export function FormTable({ tableId }: { tableId: string }) {
             onFieldSelect={setSelectedFieldId}
             selectedFieldId={selectedFieldId}
             droppableId={`fields-${tableId}`}
+            errorFieldIds={errorFieldIds}
           />
         </FieldsEditorContext.Provider>
       </div>
