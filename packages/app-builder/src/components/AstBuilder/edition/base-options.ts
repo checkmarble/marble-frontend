@@ -1,7 +1,7 @@
 import { type AstNode, type DataType, type IdLessAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewIpHasFlagAstNode } from '@app-builder/models/astNode/ip';
-import { NewMonitoringListCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
+import { monitoringListCheckAstNodeName, NewTagCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
 import { NewTimeAddAstNode, NewTimeNowAstNode, NewTimestampExtractAstNode } from '@app-builder/models/astNode/time';
@@ -62,7 +62,7 @@ export const CLIENT_RISK_OPTIONS = ({
   t: TFunction<['common', 'scenarios'], undefined>;
 }): OperandMenuOption[] => [
   {
-    astNode: NewMonitoringListCheckAstNode(),
+    astNode: NewTagCheckAstNode(monitoringListCheckAstNodeName),
     displayName: t('scenarios:monitoring_list_check.menu_label'),
     operandType: 'ClientRisk',
     dataType: 'Bool',

@@ -4,8 +4,9 @@ import {
   fromLinkedTableChecks,
   fromPathToTarget,
   type LinkedObjectCheck,
+  monitoringListCheckAstNodeName,
   type MonitoringListCheckAstNode,
-  NewMonitoringListCheckAstNode,
+  NewTagCheckAstNode,
   type ObjectPathSegment,
   toMonitoringListCheckConfig,
 } from '@app-builder/models/astNode/monitoring-list-check';
@@ -147,7 +148,7 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
     }
 
     const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
-    const updatedNode = NewMonitoringListCheckAstNode(newConfig);
+    const updatedNode = NewTagCheckAstNode(monitoringListCheckAstNodeName, newConfig);
     updatedNode.id = node.id;
 
     props.onSave(updatedNode);

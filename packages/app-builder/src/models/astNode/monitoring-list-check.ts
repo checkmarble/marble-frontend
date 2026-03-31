@@ -124,6 +124,18 @@ export interface MonitoringListCheckAstNode {
   };
 }
 
+export const recordHasTagsAstNodeName = 'RecordHasTags';
+
+export interface RecordHasTagsAstNode {
+  id: string;
+  name: typeof recordHasTagsAstNodeName;
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    config: ConstantAstNode<MonitoringListCheckConfig>;
+  };
+}
+
 /**
  * Type guard to check if a node is a MonitoringListCheckAstNode.
  */
@@ -133,23 +145,33 @@ export function isMonitoringListCheckAstNode(
   return node.name === monitoringListCheckAstNodeName;
 }
 
-/**
- * Factory function to create a new MonitoringListCheckAstNode with default values.
- */
-export function NewMonitoringListCheckAstNode({
-  targetTableName = '',
-  pathToTarget = [],
-  topicFilters = [],
-  linkedTableChecks = [],
-}: {
+export function isRecordHasTagsAstNode(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<RecordHasTagsAstNode, typeof node> {
+  return node.name === recordHasTagsAstNodeName;
+}
+
+type TagCheckConfig = {
   targetTableName?: string;
   pathToTarget?: string[];
   topicFilters?: string[];
   linkedTableChecks?: LinkedTableCheck[];
-} = {}): MonitoringListCheckAstNode {
+};
+
+export function NewTagCheckAstNode(name: typeof monitoringListCheckAstNodeName, config?: TagCheckConfig): MonitoringListCheckAstNode;
+export function NewTagCheckAstNode(name: typeof recordHasTagsAstNodeName, config?: TagCheckConfig): RecordHasTagsAstNode;
+export function NewTagCheckAstNode(
+  name: typeof monitoringListCheckAstNodeName | typeof recordHasTagsAstNodeName,
+  {
+    targetTableName = '',
+    pathToTarget = [],
+    topicFilters = [],
+    linkedTableChecks = [],
+  }: TagCheckConfig = {},
+): MonitoringListCheckAstNode | RecordHasTagsAstNode {
   return {
     id: uuidv7(),
-    name: monitoringListCheckAstNodeName,
+    name,
     constant: undefined,
     children: [],
     namedChildren: {

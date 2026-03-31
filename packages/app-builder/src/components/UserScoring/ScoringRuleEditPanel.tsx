@@ -4,7 +4,7 @@ import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   buildSwitchAstNodeFromModel,
-  isCompleteRuleModel,
+  isCompleteRule,
   RISK_TYPES,
   type RuleModel,
   type ScoringRule,
@@ -67,10 +67,10 @@ export function ScoringRuleEditPanel({
     label: t(`user-scoring:risk_type.${v}`),
   }));
 
-  const isValid = !!name.trim() && !!riskType && !!currentModel && isCompleteRuleModel(currentModel);
+  const isValid = !!name.trim() && !!riskType && !!currentModel && isCompleteRule(currentModel);
 
   const handleValidate = () => {
-    if (isValid && currentModel && isCompleteRuleModel(currentModel)) {
+    if (isValid && currentModel && isCompleteRule(currentModel)) {
       onChange?.({ ...rule, name, riskType, ast: buildSwitchAstNodeFromModel(currentModel) });
     }
     sharp.actions.close();

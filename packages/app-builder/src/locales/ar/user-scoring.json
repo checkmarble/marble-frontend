@@ -88,6 +88,11 @@
 
   "switch.string.then": "إذن",
   "switch.then": "إذن",
+  "switch.entity_tags.depending_on": "بناءً على وسوم الكيان",
+  "switch.screening_tags.add_branch": "إضافة فرع",
+  "switch.screening_tags.depending_on": "بناءً على وسوم الفحص",
+  "switch.screening_tags.if_tags_include": "إذا كانت الوسوم تتضمن",
+  "switch.screening_tags.tags_placeholder": "إضافة...",
   "thresholds.and": "و",
   "thresholds.between": "بين",
   "thresholds.risk_levels": "مستويات المخاطر:",

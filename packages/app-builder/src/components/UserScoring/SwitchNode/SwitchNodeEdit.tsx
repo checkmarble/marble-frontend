@@ -14,8 +14,15 @@ import {
   type NumberSwitch,
   type RuleModel,
   type StringSwitch,
+  TagsSwitch,
   transformSwitchAstNodeToModel,
 } from '@app-builder/models/scoring';
+import {
+  SCREENING_CATEGORIES,
+  SCREENING_CATEGORY_I18N_KEY_MAP,
+  topicsToCategories,
+} from '@app-builder/models/screening';
+import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clone } from 'remeda';
@@ -25,6 +32,7 @@ import { Icon } from 'ui-icons';
 import { BoolSwitchEdit } from './BoolSwitchEdit';
 import { NumberSwitchEdit } from './NumberSwitchEdit';
 import { StringSwitchEdit } from './StringSwitchEdit';
+import { TagsSwitchEdit } from './TagsSwitchEdit';
 
 function createDefaultConditions(fieldType: AllowedScoringRuleSourceType): NumberSwitch | StringSwitch | BoolSwitch {
   switch (fieldType) {
@@ -85,9 +93,10 @@ export function SwitchNodeEdit({
   customLists,
   onModelChange,
 }: SwitchNodeEditProps) {
-  const { t } = useTranslation(['user-scoring']);
+  const { t } = useTranslation(['user-scoring', 'scenarios']);
+  const { orgObjectTags } = useOrganizationObjectTags();
   const model = transformSwitchAstNodeToModel(node, entityType, dataModel);
-  const [conditions, setConditions] = useState<NumberSwitch | StringSwitch | BoolSwitch | null>(
+  const [conditions, setConditions] = useState<NumberSwitch | StringSwitch | BoolSwitch | TagsSwitch | null>(
     model ? model.conditions : null,
   );
   const [selectedField, setSelectedField] = useState<string | null>(() => {
@@ -131,15 +140,17 @@ export function SwitchNodeEdit({
     onModelChange?.({ type: 'aggregate', field: updatedNode, conditions: newConditions } as RuleModel);
   };
 
-  const handleConditionsChange = (next: NumberSwitch | StringSwitch | BoolSwitch) => {
+  const handleConditionsChange = (next: NumberSwitch | StringSwitch | BoolSwitch | TagsSwitch) => {
     setConditions(next);
     if (!model || !onModelChange) return;
+    if ((model.type === 'screening_tags' || model.type === 'entity_tags') && next.type === 'tags') {
+      onModelChange({ type: model.type, conditions: next });
+      return;
+    }
     const field =
       model.type === 'user_attribute' ? (selectedField ? NewPayloadAstNode(selectedField) : null) : aggregationNode;
     onModelChange({ type: model.type, field, conditions: next } as RuleModel);
   };
-
-  const isAttributeType = model?.type === 'user_attribute';
 
   const fieldOptions = useMemo((): SelectOption<string>[] => {
     const entityTable = dataModel.find((t) => t.name === entityType);
@@ -163,28 +174,37 @@ export function SwitchNodeEdit({
 
   return (
     <div className="flex flex-col gap-v2-sm text-s text-grey-secondary">
-      {isAttributeType ? (
-        <div className="flex flex-wrap items-center gap-v2-sm">
-          <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
-          <SelectV2
-            value={selectedField}
-            placeholder="—"
-            options={fieldOptions}
-            onChange={handleFieldChange}
-            className="w-[164px]"
-          />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-v2-sm">
-          <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
-          <div className="p-v2-md bg-grey-background-light border border-grey-border rounded-v2-md flex flex-col gap-v2-lg">
-            <InlineAggregationEditor
-              node={aggregationNode ?? NewAggregatorAstNode('SUM')}
-              onChange={handleAggregationChange}
+      {match(model)
+        .with({ type: 'user_attribute' }, () => (
+          <div className="flex flex-wrap items-center gap-v2-sm">
+            <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
+            <SelectV2
+              value={selectedField}
+              placeholder="—"
+              options={fieldOptions}
+              onChange={handleFieldChange}
+              className="w-[164px]"
             />
           </div>
-        </div>
-      )}
+        ))
+        .with({ type: 'aggregate' }, () => (
+          <div className="flex flex-col gap-v2-sm">
+            <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
+            <div className="p-v2-md bg-grey-background-light border border-grey-border rounded-v2-md flex flex-col gap-v2-lg">
+              <InlineAggregationEditor
+                node={aggregationNode ?? NewAggregatorAstNode('SUM')}
+                onChange={handleAggregationChange}
+              />
+            </div>
+          </div>
+        ))
+        .with({ type: 'screening_tags' }, () => (
+          <span className="font-medium">{t('user-scoring:switch.screening_tags.depending_on')}</span>
+        ))
+        .with({ type: 'entity_tags' }, () => (
+          <span className="font-medium">{t('user-scoring:switch.entity_tags.depending_on')}</span>
+        ))
+        .exhaustive()}
       {conditions ? (
         <>
           <span className="font-medium">{t('user-scoring:switch.apply_conditions')}</span>
@@ -203,6 +223,26 @@ export function SwitchNodeEdit({
                 onChange={handleConditionsChange}
               />
             ))
+            .with({ type: 'tags' }, (c) => {
+              const tagOptions: SelectOption<string>[] =
+                model.type === 'screening_tags'
+                  ? SCREENING_CATEGORIES.map((cat) => ({
+                      value: cat,
+                      label: t(
+                        `scenarios:monitoring_list_check.hit_type.${SCREENING_CATEGORY_I18N_KEY_MAP[cat]}`,
+                      ),
+                    }))
+                  : orgObjectTags.map((tag) => ({ value: tag.id, label: tag.name }));
+              return (
+                <TagsSwitchEdit
+                  conditions={c}
+                  maxRiskLevel={maxRiskLevel}
+                  options={tagOptions}
+                  normalizeValue={model.type === 'screening_tags' ? topicsToCategories : undefined}
+                  onChange={handleConditionsChange}
+                />
+              );
+            })
             .exhaustive()}
         </>
       ) : null}

@@ -21,8 +21,8 @@ import { SwitchNode } from './SwitchNode';
 const RULE_TYPES = [
   { value: 'user_attribute', label: 'User attribute' },
   { value: 'aggregate', label: 'Agregates (transaction, event, ...)' },
-  { value: 'tags', label: 'Tags' },
-  { value: 'screening', label: 'Screening (PEP, Sanction, ...)' },
+  { value: 'entity_tags', label: 'Tags' },
+  { value: 'screening_tags', label: 'Screening (PEP, Sanction, ...)' },
   { value: 'past_alerts', label: 'Past alerts' },
 ] as const;
 

@@ -7,6 +7,7 @@ import { match } from 'ts-pattern';
 import { v7 as uuidv7 } from 'uuid';
 import { AstNode, adaptAstNode, DataModel } from '.';
 import { type AggregationAstNode, isAggregation } from './astNode/aggregation';
+import { NewUndefinedAstNode } from './astNode/ast-node';
 import { isMainAstBinaryNode } from './astNode/builder-ast-node';
 import { isConstant, NewConstantAstNode } from './astNode/constant';
 import {
@@ -18,6 +19,11 @@ import {
 } from './astNode/control-flow';
 import { isCustomListAccess, NewCustomListAstNode } from './astNode/custom-list';
 import { isPayload, PayloadAstNode } from './astNode/data-accessor';
+import {
+  isMonitoringListCheckAstNode,
+  monitoringListCheckAstNodeName,
+  NewTagCheckAstNode,
+} from './astNode/monitoring-list-check';
 
 export const RISK_TYPES = [
   'customer_features',
@@ -249,6 +255,15 @@ export type BoolSwitch = {
   ifFalse: ScoreImpact;
 };
 
+export type TagsSwitch = {
+  type: 'tags';
+  branches: {
+    value: string[];
+    impact: ScoreImpact;
+  }[];
+  default: ScoreImpact;
+};
+
 export type CompleteUserAttributeRule = {
   type: 'user_attribute';
   field: PayloadAstNode;
@@ -267,12 +282,31 @@ export type CompleteAggregateRule = {
 
 type EmptyAggregateRule = { type: 'aggregate'; field: null; conditions: null };
 
+export type ScreeningTagsRule = { type: 'screening_tags'; conditions: TagsSwitch };
+
+export type EntityTagsRule = { type: 'entity_tags'; conditions: TagsSwitch };
+
 export type AggregateRule = CompleteAggregateRule | EmptyAggregateRule;
 
-export type RuleModel = UserAttributeRule | AggregateRule; // | ObjectTagRule | ScreeningTagRule | PastAlertRule;
+export type RuleModel = UserAttributeRule | AggregateRule | ScreeningTagsRule | EntityTagsRule; // | ObjectTagRule | ScreeningTagRule | PastAlertRule;
 
-export function isCompleteRuleModel(model: RuleModel): model is CompleteUserAttributeRule | CompleteAggregateRule {
+export type FieldedRuleModel = UserAttributeRule | AggregateRule;
+
+export function doesRuleHaveField(model: RuleModel): model is FieldedRuleModel {
+  return 'field' in model;
+}
+
+export function isCompleteRuleModel(
+  model: FieldedRuleModel,
+): model is CompleteUserAttributeRule | CompleteAggregateRule {
   return model.field !== null;
+}
+
+export function isCompleteRule(
+  model: RuleModel,
+): model is CompleteUserAttributeRule | CompleteAggregateRule | ScreeningTagsRule | EntityTagsRule {
+  if (model.type !== 'user_attribute' && model.type != 'aggregate') return true;
+  return doesRuleHaveField(model) && isCompleteRuleModel(model);
 }
 
 function parseNumberBranchValues(nodes: ScoreComputationAstNode[]): NumberSwitch['branches'] | null {
@@ -339,7 +373,21 @@ export function transformSwitchAstNodeToModel(
 ): RuleModel | null {
   if (!isConstant(node.namedChildren.type)) return null;
   const type = node.namedChildren.type.constant;
-  if (type !== 'user_attribute' && type !== 'aggregate') return null;
+  if (type !== 'user_attribute' && type !== 'aggregate' && type !== 'screening_tags' && type !== 'entity_tags')
+    return null;
+
+  if (type === 'screening_tags' || type === 'entity_tags') {
+    const scoreComputationNodes = node.children.filter(isScoreComputationAstNode) as ScoreComputationAstNode[];
+    if (scoreComputationNodes.length === 0) {
+      return {
+        type,
+        conditions: { type: 'tags', branches: [], default: { modifier: 0 } },
+      };
+    }
+    const conditions = parseTagsBranches(scoreComputationNodes);
+    if (!conditions) return null;
+    return { type, conditions };
+  }
 
   const scoreComputationNodes = node.children.filter(isScoreComputationAstNode) as ScoreComputationAstNode[];
 
@@ -368,7 +416,21 @@ export function transformSwitchAstNodeToModel(
   return null;
 }
 
-export function buildSwitchAstNodeFromModel(model: CompleteUserAttributeRule | CompleteAggregateRule): SwitchAstNode {
+export function buildSwitchAstNodeFromModel(
+  model: CompleteUserAttributeRule | CompleteAggregateRule | ScreeningTagsRule | EntityTagsRule,
+): SwitchAstNode {
+  if (model.type !== 'user_attribute' && model.type !== 'aggregate') {
+    return {
+      id: uuidv7(),
+      name: switchAstNodeName,
+      constant: undefined,
+      namedChildren: {
+        field: NewUndefinedAstNode(),
+        type: NewConstantAstNode({ constant: model.type }),
+      },
+      children: buildTagsSwitchChildren(model.conditions),
+    };
+  }
   const children = buildConditionChildren(model.field, model.conditions);
   return {
     id: uuidv7(),
@@ -380,6 +442,39 @@ export function buildSwitchAstNodeFromModel(model: CompleteUserAttributeRule | C
     },
     children,
   };
+}
+
+function buildTagsSwitchChildren(conditions: TagsSwitch): AstNode[] {
+  const branchNodes = conditions.branches.map((branch) => {
+    const branchCondition = NewTagCheckAstNode(monitoringListCheckAstNodeName, {
+      topicFilters: branch.value,
+    });
+    return buildScoreComputationAstNode(branchCondition, branch.impact);
+  });
+  return [...branchNodes, buildScoreComputationAstNode(NewConstantAstNode({ constant: true }), conditions.default)];
+}
+
+function parseTagsBranches(nodes: ScoreComputationAstNode[]): TagsSwitch | null {
+  const lastNode = nodes[nodes.length - 1]!;
+  const lastCondition = lastNode.children[0];
+  if (!lastCondition || !isConstant(lastCondition) || lastCondition.constant !== true) return null;
+
+  const defaultImpact: ScoreImpact = { modifier: lastNode.namedChildren.modifier.constant };
+  if (lastNode.namedChildren.floor) defaultImpact.floor = lastNode.namedChildren.floor.constant;
+
+  const branches = nodes.slice(0, -1).map((branchNode) => {
+    const branchImpact: ScoreImpact = { modifier: branchNode.namedChildren.modifier.constant };
+    if (branchNode.namedChildren.floor) branchImpact.floor = branchNode.namedChildren.floor.constant;
+
+    const conditionNode = branchNode.children[0];
+    let tagValues: string[] = [];
+    if (conditionNode && isMonitoringListCheckAstNode(conditionNode)) {
+      tagValues = conditionNode.namedChildren.config.constant.topicFilters;
+    }
+    return { value: tagValues, impact: branchImpact };
+  });
+
+  return { type: 'tags', branches, default: defaultImpact };
 }
 
 function buildConditionChildren(field: AstNode, conditions: NumberSwitch | StringSwitch | BoolSwitch): AstNode[] {

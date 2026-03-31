@@ -88,6 +88,11 @@
 
   "switch.string.then": "then",
   "switch.then": "then",
+  "switch.entity_tags.depending_on": "Depending on entity tags",
+  "switch.screening_tags.add_branch": "Add branch",
+  "switch.screening_tags.depending_on": "Depending on screening tags",
+  "switch.screening_tags.if_tags_include": "If tags include",
+  "switch.screening_tags.tags_placeholder": "Add...",
   "thresholds.and": "and",
   "thresholds.between": "between",
   "thresholds.risk_levels": "Risk levels:",
