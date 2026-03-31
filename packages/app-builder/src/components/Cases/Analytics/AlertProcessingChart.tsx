@@ -1,4 +1,4 @@
-import type { BucketCount, PeriodDelay } from '@app-builder/models/analytics/case-analytics';
+import type { BarData, BucketCount, PeriodDelay } from '@app-builder/models/analytics/case-analytics';
 import { ResponsiveBar } from '@nivo/bar';
 import { useTranslation } from 'react-i18next';
 
@@ -20,8 +20,8 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
         <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.processing.duration_by_period')}</span>
           <div className="flex-1">
-            <ResponsiveBar<PeriodDelay>
-              data={caseDurationByPeriod}
+            <ResponsiveBar<BarData<PeriodDelay>>
+              data={caseDurationByPeriod as BarData<PeriodDelay>[]}
               keys={['avgDays', 'maxDays']}
               indexBy="period"
               groupMode="grouped"
@@ -58,8 +58,8 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
         <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.processing.open_by_age')}</span>
           <div className="flex-1">
-            <ResponsiveBar<BucketCount>
-              data={openCasesByAge}
+            <ResponsiveBar<BarData<BucketCount>>
+              data={openCasesByAge as BarData<BucketCount>[]}
               keys={['count']}
               indexBy="bucket"
               layout="horizontal"
