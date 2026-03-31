@@ -8,7 +8,7 @@ export type AstBuilderMode = 'edit' | 'view';
 
 export const AstBuilderDataSharpFactory = createSharpFactory({
   name: 'AstBuilderData',
-  initializer(init: { scenarioId: string; data: BuilderOptionsResource; mode: AstBuilderMode; showValues: boolean }) {
+  initializer(init: { scenarioId?: string; data: BuilderOptionsResource; mode: AstBuilderMode; showValues: boolean }) {
     return { ...init };
   },
 }).withComputed({
@@ -32,7 +32,7 @@ type AstBuilderDataProviderProps = {
 };
 
 type AstBuilderInternalProviderProps = {
-  scenarioId: string;
+  scenarioId?: string;
   data: BuilderOptionsResource;
   mode: AstBuilderMode;
   showValues: boolean;
@@ -56,6 +56,26 @@ function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
   }, [store, props.data]);
 
   return <AstBuilderDataSharpFactory.Provider value={store}>{props.children}</AstBuilderDataSharpFactory.Provider>;
+}
+
+type AstBuilderStaticProviderProps = {
+  data: BuilderOptionsResource;
+  children: ReactNode;
+  mode?: AstBuilderMode;
+  showValues?: boolean;
+};
+
+export function AstBuilderStaticProvider(props: AstBuilderStaticProviderProps) {
+  return (
+    <AstBuilderInternalProvider
+      scenarioId={undefined}
+      data={props.data}
+      mode={props.mode ?? 'edit'}
+      showValues={props.showValues ?? false}
+    >
+      {props.children}
+    </AstBuilderInternalProvider>
+  );
 }
 
 export function AstBuilderProvider(props: AstBuilderDataProviderProps) {

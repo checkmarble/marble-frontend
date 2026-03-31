@@ -1,3 +1,7 @@
+import { AggregationEditContent } from '@app-builder/components/AstBuilder/edition/EditModal/modals/Aggregation/Aggregation';
+import { useRoot } from '@app-builder/components/AstBuilder/edition/hooks/useRoot';
+import { AstBuilderNodeSharpFactory } from '@app-builder/components/AstBuilder/edition/node-store';
+import { type AggregationAstNode, NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
@@ -5,6 +9,7 @@ import { type DataModel, getDataTypeIcon } from '@app-builder/models/data-model'
 import {
   type AllowedScoringRuleSourceType,
   type BoolSwitch,
+  getAggregationReturnType,
   isAllowedScoringRuleType,
   type NumberSwitch,
   type RuleModel,
@@ -13,13 +18,13 @@ import {
 } from '@app-builder/models/scoring';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { clone } from 'remeda';
 import { match } from 'ts-pattern';
 import { type SelectOption, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { BoolSwitchEdit } from './BoolSwitchEdit';
 import { NumberSwitchEdit } from './NumberSwitchEdit';
 import { StringSwitchEdit } from './StringSwitchEdit';
-import { FieldPlaceholder } from './shared';
 
 function createDefaultConditions(fieldType: AllowedScoringRuleSourceType): NumberSwitch | StringSwitch | BoolSwitch {
   switch (fieldType) {
@@ -39,6 +44,28 @@ function createDefaultConditions(fieldType: AllowedScoringRuleSourceType): Numbe
     case 'Bool':
       return { type: 'bool', ifTrue: { modifier: 0 }, ifFalse: { modifier: 0 } };
   }
+}
+
+function InlineAggregationEditorContent({ onChange }: { onChange: (node: AggregationAstNode) => void }) {
+  const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
+
+  return <AggregationEditContent onChange={() => onChange(clone(nodeSharp.value.node) as AggregationAstNode)} />;
+}
+
+function InlineAggregationEditor({
+  node,
+  onChange,
+}: {
+  node: AggregationAstNode;
+  onChange: (node: AggregationAstNode) => void;
+}) {
+  const nodeSharp = useRoot({ node, validation: { errors: [], evaluation: [] } }, false);
+
+  return (
+    <AstBuilderNodeSharpFactory.Provider value={nodeSharp}>
+      <InlineAggregationEditorContent onChange={onChange} />
+    </AstBuilderNodeSharpFactory.Provider>
+  );
 }
 
 interface SwitchNodeEditProps {
@@ -68,6 +95,10 @@ export function SwitchNodeEdit({
     return model.field.children[0].constant;
   });
 
+  const [aggregationNode, setAggregationNode] = useState<AggregationAstNode | null>(() =>
+    model?.type === 'aggregate' ? (model.field ?? null) : null,
+  );
+
   const handleFieldChange = (newField: string | null) => {
     setSelectedField(newField);
 
@@ -86,11 +117,25 @@ export function SwitchNodeEdit({
     } as RuleModel);
   };
 
+  const handleAggregationChange = (updatedNode: AggregationAstNode) => {
+    const newReturnType = getAggregationReturnType(updatedNode, dataModel);
+    const prevReturnType = aggregationNode ? getAggregationReturnType(aggregationNode, dataModel) : null;
+
+    let newConditions = conditions;
+    if (!newConditions || newReturnType !== prevReturnType) {
+      newConditions =
+        newReturnType && isAllowedScoringRuleType(newReturnType) ? createDefaultConditions(newReturnType) : null;
+      setConditions(newConditions);
+    }
+    setAggregationNode(updatedNode);
+    onModelChange?.({ type: 'aggregate', field: updatedNode, conditions: newConditions } as RuleModel);
+  };
+
   const handleConditionsChange = (next: NumberSwitch | StringSwitch | BoolSwitch) => {
     setConditions(next);
     if (!model || !onModelChange) return;
     const field =
-      model.type === 'user_attribute' ? (selectedField ? NewPayloadAstNode(selectedField) : null) : model.field;
+      model.type === 'user_attribute' ? (selectedField ? NewPayloadAstNode(selectedField) : null) : aggregationNode;
     onModelChange({ type: model.type, field, conditions: next } as RuleModel);
   };
 
@@ -118,9 +163,9 @@ export function SwitchNodeEdit({
 
   return (
     <div className="flex flex-col gap-v2-sm text-s text-grey-secondary">
-      <div className="flex flex-wrap items-center gap-v2-sm">
-        <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
-        {isAttributeType ? (
+      {isAttributeType ? (
+        <div className="flex flex-wrap items-center gap-v2-sm">
+          <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
           <SelectV2
             value={selectedField}
             placeholder="—"
@@ -128,10 +173,18 @@ export function SwitchNodeEdit({
             onChange={handleFieldChange}
             className="w-[164px]"
           />
-        ) : (
-          <FieldPlaceholder />
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-v2-sm">
+          <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
+          <div className="p-v2-md bg-grey-background-light border border-grey-border rounded-v2-md flex flex-col gap-v2-lg">
+            <InlineAggregationEditor
+              node={aggregationNode ?? NewAggregatorAstNode('SUM')}
+              onChange={handleAggregationChange}
+            />
+          </div>
+        </div>
+      )}
       {conditions ? (
         <>
           <span className="font-medium">{t('user-scoring:switch.apply_conditions')}</span>

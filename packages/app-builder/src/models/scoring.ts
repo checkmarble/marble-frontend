@@ -6,7 +6,7 @@ import {
 import { match } from 'ts-pattern';
 import { v7 as uuidv7 } from 'uuid';
 import { AstNode, adaptAstNode, DataModel } from '.';
-import { AggregationAstNode, isAggregation } from './astNode/aggregation';
+import { type AggregationAstNode, isAggregation } from './astNode/aggregation';
 import { isMainAstBinaryNode } from './astNode/builder-ast-node';
 import { isConstant, NewConstantAstNode } from './astNode/constant';
 import {
@@ -150,6 +150,30 @@ export function isAllowedScoringRuleType(type: string | null): type is AllowedSc
   return allowedRuleSourceTypes.includes(type as AllowedScoringRuleSourceType);
 }
 
+export function getAggregationReturnType(
+  aggregationNode: AggregationAstNode,
+  dataModel: DataModel,
+): AllowedScoringRuleSourceType | 'Undefined' | null {
+  const aggregator = aggregationNode.namedChildren.aggregator.constant;
+
+  if (aggregator === 'COUNT' || aggregator === 'COUNT_DISTINCT') return 'Int';
+
+  const tableName = aggregationNode.namedChildren.tableName.constant;
+  const fieldName = aggregationNode.namedChildren.fieldName.constant;
+  if (!tableName || !fieldName) return 'Undefined';
+
+  const field = dataModel.find((t) => t.name === tableName)?.fields.find((f) => f.name === fieldName);
+  if (!field) return 'Undefined';
+
+  if (aggregator === 'SUM' || aggregator === 'AVG' || aggregator === 'PCTILE') {
+    return field.dataType === 'Int' ? 'Int' : 'Float';
+  }
+  if (aggregator === 'MIN' || aggregator === 'MAX') {
+    return isAllowedScoringRuleType(field.dataType) ? field.dataType : null;
+  }
+  return null;
+}
+
 export function getOperationType(
   entityType: string,
   dataModel: DataModel,
@@ -171,6 +195,11 @@ export function getOperationType(
         return null;
       }
       return field.dataType;
+    }
+    case 'aggregate': {
+      const astField = node.namedChildren.field;
+      if (!astField || !isAggregation(astField)) return 'Undefined';
+      return getAggregationReturnType(astField, dataModel ?? []);
     }
     default:
       return null;

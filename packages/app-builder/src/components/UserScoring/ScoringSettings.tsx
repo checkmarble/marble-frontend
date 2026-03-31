@@ -2,7 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import {
   isMaxRiskLevelInRange,
   MAX_RISK_LEVELS,
-  MaxRiskLevel,
+  type MaxRiskLevel,
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABELS,
   type ScoringSettings as ScoringSettingsModel,
