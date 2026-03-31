@@ -1,10 +1,11 @@
 import { useForm } from '@tanstack/react-form';
 import { createContext, useContext } from 'react';
-import { type CreateTableFormValues, defaultCreateTableFormValues } from './createTable-types';
+import { type SemanticTableFormValues } from '../Shared/semanticData-types';
+import { defaultCreateTableFormValues } from './createTable-types';
 
-function useCreateTableForm(onSubmit: (value: CreateTableFormValues) => void | Promise<void>) {
+function useCreateTableForm(onSubmit: (value: SemanticTableFormValues) => void | Promise<void>) {
   return useForm({
-    defaultValues: defaultCreateTableFormValues satisfies CreateTableFormValues,
+    defaultValues: defaultCreateTableFormValues,
     onSubmit: ({ value }) => onSubmit(value),
   });
 }

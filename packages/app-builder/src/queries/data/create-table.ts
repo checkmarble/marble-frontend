@@ -1,11 +1,10 @@
-import { ftmEntityVehicleOptions } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { primitiveTypes } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
 import z from 'zod/v4';
 
-const fieldEntities = ['person', 'company', 'account', 'transaction', 'event', 'partner', 'other', 'vehicle'] as const;
+const fieldEntities = ['person', 'company', 'account', 'transaction', 'event', 'partner', 'other'] as const;
 export type FieldEntity = (typeof fieldEntities)[number];
 
 const createFieldValuesSchema = z.object({
@@ -33,8 +32,6 @@ const createLinksValuesSchema = z.object({
   parent_field_id: z.uuid(),
 });
 
-const ftmEntitySchema = z.enum(ftmEntityVehicleOptions);
-
 export const createTableValueSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
     error: 'Only lower case alphanumeric and _, must start with a letter',
@@ -42,7 +39,7 @@ export const createTableValueSchema = z.object({
   description: z.string().optional(),
   alias: z.string().optional(),
   semantic_type: z.enum(fieldEntities),
-  ftm_entity: ftmEntitySchema.optional(),
+  ftm_entity: z.string().optional(),
   metadata: z.record(z.string(), z.string()).optional(),
   fields: z.array(createFieldValuesSchema),
   links: z.array(createLinksValuesSchema).optional(),

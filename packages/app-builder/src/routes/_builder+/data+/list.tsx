@@ -9,6 +9,7 @@ import {
   UploadDataDrawerContent,
 } from '@app-builder/components/Data/SemanticTables/UploadData/UploadDataDrawer';
 import { TableDetails } from '@app-builder/components/Data/TableDetails';
+import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { type Namespace } from 'i18next';
@@ -26,6 +27,7 @@ export default function DataList() {
   const dataModel = useDataModel();
   const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
   const exportOrgMutation = useExportOrgMutation();
+  const createTableMutation = useCreateTableMutation();
   const [uploadDrawerData, setUploadDrawerData] = useState<unknown>(null);
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const isUploadDrawerOpen = uploadDrawerData !== null;
@@ -80,7 +82,11 @@ export default function DataList() {
       <UploadDataDrawer open={isUploadDrawerOpen} data={uploadDrawerData} onClose={() => setUploadDrawerData(null)}>
         <UploadDataDrawerContent />
       </UploadDataDrawer>
-      <CreateTableDrawer open={isCreateDrawerOpen} onClose={() => setIsCreateDrawerOpen(false)} />
+      <CreateTableDrawer
+        open={isCreateDrawerOpen}
+        onClose={() => setIsCreateDrawerOpen(false)}
+        onSave={(adapted) => createTableMutation.mutateAsync(adapted)}
+      />
     </div>
   );
 }

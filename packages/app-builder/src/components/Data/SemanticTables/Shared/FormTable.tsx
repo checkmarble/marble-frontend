@@ -1,6 +1,5 @@
 import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
-import { useForm, useStore } from '@tanstack/react-form';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -13,7 +12,6 @@ import {
   type FtmEntityV2,
   ftmEntities,
   ftmEntityPersonOptions,
-  ftmEntityVehicleOptions,
   type LinkValue,
   type TableField,
 } from './semanticData-types';
@@ -26,32 +24,13 @@ export function FormTable({ tableId }: { tableId: string }) {
     addLink: ctxAddLink,
     removeLink,
     getLinksForTable,
+    updateField,
+    reorderFields,
+    addField,
+    removeField,
   } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
   const tableState = tablesState[tableId]!;
-
-  const form = useForm({
-    defaultValues: tableState,
-    onSubmit: ({ value }) => {
-      // TODO: implement save logic
-      console.log(value);
-    },
-  });
-
-  // Persist form values to context on unmount (table switch)
-  useEffect(() => {
-    return () => {
-      updateTableState(tableId, form.state.values);
-    };
-  }, [tableId, updateTableState, form]);
-
-  const tableOptions = useMemo(
-    () =>
-      Object.values(tablesState)
-        .filter((table) => !table.isCanceled)
-        .map((table) => ({ label: table.alias || table.name, value: table.name })),
-    [tablesState],
-  );
 
   const ftmEntityOptions = useMemo(
     () =>
@@ -62,35 +41,27 @@ export function FormTable({ tableId }: { tableId: string }) {
     [t],
   );
 
-  const selectedFtmEntity = useStore(form.store, (state) => state.values.ftmEntity);
+  const hasSubEntity = tableState.entityType === 'person';
 
   const subEntityOptions = useMemo(() => {
-    if (selectedFtmEntity === 'person') {
+    if (hasSubEntity) {
       return ftmEntityPersonOptions.map((sub) => ({
         label: t(`data:upload_data.ftm_entity_person.${sub}`),
         value: sub,
       }));
     }
-    if (selectedFtmEntity === 'vehicle') {
-      return ftmEntityVehicleOptions.map((sub) => ({
-        label: t(`data:upload_data.ftm_entity_vehicle.${sub}`),
-        value: sub,
-      }));
-    }
     return [];
-  }, [selectedFtmEntity, t]);
-
-  const hasSubEntity = selectedFtmEntity === 'person' || selectedFtmEntity === 'vehicle';
+  }, [hasSubEntity, t]);
 
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
-  const {
-    updateField,
-    reorderFields,
-    addField,
-    removeField,
-    updateTableState: updateTable,
-  } = UploadDataDrawerContext.useValue();
+  const tableOptions = useMemo(
+    () =>
+      Object.values(tablesState)
+        .filter((table) => !table.isCanceled)
+        .map((table) => ({ label: table.alias || table.name, value: table.name })),
+    [tablesState],
+  );
 
   const fieldsEditorValue = useMemo(
     () => ({
@@ -100,7 +71,7 @@ export function FormTable({ tableId }: { tableId: string }) {
       reorderFields: (start: number, end: number) => reorderFields(tableId, start, end),
       addField: (name: string) => addField(tableId, name),
       removeField: (fieldId: string) => removeField(tableId, fieldId),
-      setMainTimestampFieldId: (fieldId: string) => updateTable(tableId, { mainTimestampFieldId: fieldId }),
+      setMainTimestampFieldId: (fieldId: string) => updateTableState(tableId, { mainTimestampFieldId: fieldId }),
     }),
     [
       tableState.fields,
@@ -110,7 +81,7 @@ export function FormTable({ tableId }: { tableId: string }) {
       reorderFields,
       addField,
       removeField,
-      updateTable,
+      updateTableState,
     ],
   );
 
@@ -142,42 +113,27 @@ export function FormTable({ tableId }: { tableId: string }) {
         <section className="flex flex-col gap-v2-md">
           <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
           <div className="flex items-center gap-v2-md">
-            <form.Field name="alias">
-              {(field) => (
-                <Input
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  placeholder={t('data:upload_data.name_placeholder')}
-                  className="flex-1"
-                />
-              )}
-            </form.Field>
-            <form.Field name="ftmEntity">
-              {(field) => (
-                <SelectV2
-                  value={field.state.value}
-                  placeholder={t('data:upload_data.object_placeholder')}
-                  onChange={(value) => {
-                    field.handleChange(value as FtmEntityV2);
-                    form.setFieldValue('ftmSubEntity', '');
-                  }}
-                  options={ftmEntityOptions}
-                  className="flex-1"
-                />
-              )}
-            </form.Field>
+            <Input
+              value={tableState.alias}
+              onChange={(e) => updateTableState(tableId, { alias: e.currentTarget.value })}
+              placeholder={t('data:upload_data.name_placeholder')}
+              className="flex-1"
+            />
+            <SelectV2
+              value={tableState.entityType}
+              placeholder={t('data:upload_data.object_placeholder')}
+              onChange={(value) => updateTableState(tableId, { entityType: value as FtmEntityV2, subEntity: 'moral' })}
+              options={ftmEntityOptions}
+              className="flex-1"
+            />
             {hasSubEntity ? (
-              <form.Field name="ftmSubEntity">
-                {(field) => (
-                  <SelectV2
-                    value={field.state.value}
-                    placeholder={t('data:upload_data.sub_object_placeholder')}
-                    onChange={field.handleChange}
-                    options={subEntityOptions}
-                    className="flex-1"
-                  />
-                )}
-              </form.Field>
+              <SelectV2
+                value={tableState.subEntity}
+                placeholder={t('data:upload_data.sub_object_placeholder')}
+                onChange={(value) => updateTableState(tableId, { subEntity: value as typeof tableState.subEntity })}
+                options={subEntityOptions}
+                className="flex-1"
+              />
             ) : null}
           </div>
         </section>
@@ -226,19 +182,6 @@ function SummaryTableRow({ tableId }: { tableId: string }) {
   const { t } = useTranslation(['data']);
   const tableState = tablesState[tableId]!;
 
-  const form = useForm({
-    defaultValues: tableState,
-    onSubmit: ({ value }) => {
-      console.log(value);
-    },
-  });
-
-  // Sync form -> context on every change
-  const formValues = useStore(form.store, (state) => state.values);
-  useEffect(() => {
-    updateTableState(tableId, formValues);
-  }, [tableId, formValues, updateTableState]);
-
   const ftmEntityOptions = useMemo(
     () =>
       ftmEntities.map((entity) => ({
@@ -248,25 +191,17 @@ function SummaryTableRow({ tableId }: { tableId: string }) {
     [t],
   );
 
-  const selectedFtmEntity = useStore(form.store, (state) => state.values.ftmEntity);
+  const hasSubEntity = tableState.entityType === 'person';
 
   const subEntityOptions = useMemo(() => {
-    if (selectedFtmEntity === 'person') {
+    if (hasSubEntity) {
       return ftmEntityPersonOptions.map((sub) => ({
         label: t(`data:upload_data.ftm_entity_person.${sub}`),
         value: sub,
       }));
     }
-    if (selectedFtmEntity === 'vehicle') {
-      return ftmEntityVehicleOptions.map((sub) => ({
-        label: t(`data:upload_data.ftm_entity_vehicle.${sub}`),
-        value: sub,
-      }));
-    }
     return [];
-  }, [selectedFtmEntity, t]);
-
-  const hasSubEntity = selectedFtmEntity === 'person' || selectedFtmEntity === 'vehicle';
+  }, [hasSubEntity, t]);
 
   return (
     <div className="flex items-center gap-v2-md">
@@ -276,44 +211,29 @@ function SummaryTableRow({ tableId }: { tableId: string }) {
           tableState.isCanceled && 'opacity-50',
         )}
       >
-        <form.Field name="alias">
-          {(field) => (
-            <Input
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              placeholder={t('data:upload_data.name_placeholder')}
-              className={cn(tableState.isCanceled && 'line-through')}
-              disabled={tableState.isCanceled}
-            />
-          )}
-        </form.Field>
-        <form.Field name="ftmEntity">
-          {(field) => (
-            <SelectV2
-              value={field.state.value}
-              placeholder={t('data:upload_data.object_placeholder')}
-              onChange={(value) => {
-                field.handleChange(value as FtmEntityV2);
-                form.setFieldValue('ftmSubEntity', '');
-              }}
-              options={ftmEntityOptions}
-              disabled={tableState.isCanceled}
-              className={cn(!hasSubEntity && 'col-span-2')}
-            />
-          )}
-        </form.Field>
+        <Input
+          value={tableState.alias}
+          onChange={(e) => updateTableState(tableId, { alias: e.currentTarget.value })}
+          placeholder={t('data:upload_data.name_placeholder')}
+          className={cn(tableState.isCanceled && 'line-through')}
+          disabled={tableState.isCanceled}
+        />
+        <SelectV2
+          value={tableState.entityType}
+          placeholder={t('data:upload_data.object_placeholder')}
+          onChange={(value) => updateTableState(tableId, { entityType: value as FtmEntityV2, subEntity: 'moral' })}
+          options={ftmEntityOptions}
+          disabled={tableState.isCanceled}
+          className={cn(!hasSubEntity && 'col-span-2')}
+        />
         {hasSubEntity ? (
-          <form.Field name="ftmSubEntity">
-            {(field) => (
-              <SelectV2
-                value={field.state.value}
-                placeholder={t('data:upload_data.sub_object_placeholder')}
-                onChange={field.handleChange}
-                options={subEntityOptions}
-                disabled={tableState.isCanceled}
-              />
-            )}
-          </form.Field>
+          <SelectV2
+            value={tableState.subEntity}
+            placeholder={t('data:upload_data.sub_object_placeholder')}
+            onChange={(value) => updateTableState(tableId, { subEntity: value as typeof tableState.subEntity })}
+            options={subEntityOptions}
+            disabled={tableState.isCanceled}
+          />
         ) : null}
       </div>
       <Button

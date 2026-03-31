@@ -1,13 +1,11 @@
 import { type PrimitiveTypes } from '@app-builder/models';
 import { match } from 'ts-pattern';
 
-export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other', 'vehicle'] as const;
+export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other'] as const;
 export const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
-export const ftmEntityVehicleOptions = ['vessel', 'airplane'] as const;
 
 export type FtmEntityV2 = (typeof ftmEntities)[number];
 export type FtmEntityPersonOption = (typeof ftmEntityPersonOptions)[number];
-export type FtmEntityVehicleOption = (typeof ftmEntityVehicleOptions)[number];
 
 export const linkRelationTypes = ['belongs_to', 'related'] as const;
 export type LinkRelationType = (typeof linkRelationTypes)[number];
@@ -15,10 +13,10 @@ export type LinkRelationType = (typeof linkRelationTypes)[number];
 export type LinkValue = {
   linkId: string;
   name: string;
+  sourceTableId: string;
   tableFieldId: string;
   relationType: LinkRelationType;
   targetTableId: string;
-  sourceTableId: string;
 };
 
 export type RawLink = {
@@ -160,6 +158,21 @@ export function getSemanticSubOptions(
   const match = options.find((o) => o.value === semanticType);
   return match && 'subOptions' in match ? (match.subOptions as { value: string }[]) : undefined;
 }
+
+export type SemanticTableFormValues = {
+  tableId: string;
+  name: string;
+  alias: string;
+  entityType: FtmEntityV2;
+  subEntity: FtmEntityPersonOption;
+  belongsToTableId: string;
+  fields: TableField[];
+  mainTimestampFieldId: string;
+  links: LinkValue[];
+  metaData: Record<string, unknown>;
+  isCanceled: boolean;
+  isVisited: boolean;
+};
 
 export function getMockValue(
   dataType: PrimitiveTypes,

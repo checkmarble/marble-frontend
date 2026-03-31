@@ -1,4 +1,4 @@
-import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
+import { type CreateTableValue } from '@app-builder/queries/data/create-table';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -11,27 +11,28 @@ import { CreateTableFieldsStep } from './CreateTableFieldsStep';
 import { CreateTableLinksStep } from './CreateTableLinksStep';
 import { adaptCreateTableValue, canProceedToStep2, validateValues } from './createTable-types';
 
-export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function CreateTableDrawer({
+  open,
+  onClose,
+  onSave,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: (adapted: CreateTableValue) => Promise<void>;
+}) {
   const { t } = useTranslation(['data', 'common']);
   const [currentStep, setCurrentStep] = useState(0);
-  const createTableMutation = useCreateTableMutation();
 
-  const form = useCreateTableForm((values) => {
-    if (form.state.isValid) {
-      console.log('values', values);
-      const checkValidation = validateValues(values);
-      if (!checkValidation.ok) {
-        toast.error(checkValidation.errors.join('\n'));
-        return;
-      }
-
-      const adaptedValues = adaptCreateTableValue(values);
-      console.log('adaptedValues', adaptedValues);
-      createTableMutation.mutateAsync(adaptedValues).then((result) => {
-        form.reset();
-        setCurrentStep(0);
-      });
+  const form = useCreateTableForm(async (value) => {
+    if (!form.state.isValid) return;
+    const checkValidation = validateValues(value);
+    if (!checkValidation.ok) {
+      toast.error(checkValidation.errors.join('\n'));
+      return;
     }
+    await onSave(adaptCreateTableValue(value));
+    form.reset();
+    setCurrentStep(0);
   });
 
   const handleClose = useCallback(() => {
@@ -53,9 +54,11 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
 
   const canNext = currentStep === 0 ? canProceedToStep2(formValues) : true;
 
-  function handleNext() {
+  function handleNext(e: React.MouseEvent<HTMLButtonElement>) {
     if (canNext) {
       setCurrentStep((s) => s + 1);
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
@@ -76,7 +79,14 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
       />
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
-        <div className="bg-surface-card flex h-full flex-col overflow-y-auto">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
+          }}
+          className="bg-surface-card flex h-full flex-col overflow-y-auto"
+        >
           <header className="flex shrink-0 items-center gap-v2-md p-v2-lg">
             <button type="button" onClick={handleClose} className="rounded-lg p-2 hover:bg-grey-border">
               <Icon icon="x" className="size-5" />
@@ -100,11 +110,17 @@ export function CreateTableDrawer({ open, onClose }: { open: boolean; onClose: (
                 {t('data:create_table.button_back')}
               </Button>
             ) : null}
-            <Button variant="primary" disabled={!canNext} onClick={handleNext}>
-              {currentStep === 2 ? t('data:create_table.button_save_table') : t('data:create_table.button_next')}
-            </Button>
+            {currentStep === 2 ? (
+              <Button variant="primary" type="submit">
+                {t('data:create_table.button_save_table')}
+              </Button>
+            ) : (
+              <Button variant="primary" disabled={!canNext} onClick={handleNext} type={'button'}>
+                {t('data:create_table.button_next')}
+              </Button>
+            )}
           </footer>
-        </div>
+        </form>
       </aside>
     </CreateTableFormContext.Provider>
   );

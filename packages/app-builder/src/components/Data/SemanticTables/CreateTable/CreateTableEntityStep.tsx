@@ -9,12 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
 import {
-  FtmEntityPersonOption,
+  type FtmEntityPersonOption,
   type FtmEntityV2,
-  FtmEntityVehicleOption,
   ftmEntities,
   ftmEntityPersonOptions,
-  ftmEntityVehicleOptions,
 } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 import { requiresLink } from './createTable-types';
@@ -53,12 +51,12 @@ export function CreateTableEntityStep() {
 
   function handleEntitySelect(entity: FtmEntityV2) {
     form.setFieldValue('entityType', entity);
-    form.setFieldValue('subEntity', entity === 'person' ? 'moral' : 'vessel');
+    form.setFieldValue('subEntity', 'moral');
     form.setFieldValue('belongsToTableId', '');
   }
 
   function handleSubEntitySelect(sub: string) {
-    form.setFieldValue('subEntity', sub as FtmEntityPersonOption | FtmEntityVehicleOption);
+    form.setFieldValue('subEntity', sub as FtmEntityPersonOption);
   }
 
   function isEntityDisabled(entity: FtmEntityV2): boolean {
@@ -161,14 +159,6 @@ export function CreateTableEntityStep() {
                     selected={selectedSubEntity}
                     onSelect={handleSubEntitySelect}
                     labelPrefix="data:upload_data.ftm_entity_person"
-                  />
-                ) : null}
-                {isSelected && entity === 'vehicle' ? (
-                  <SubEntityOptions
-                    options={[...ftmEntityVehicleOptions]}
-                    selected={selectedSubEntity}
-                    onSelect={handleSubEntitySelect}
-                    labelPrefix="data:upload_data.ftm_entity_vehicle"
                   />
                 ) : null}
 

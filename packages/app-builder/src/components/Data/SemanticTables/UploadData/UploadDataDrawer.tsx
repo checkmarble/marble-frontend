@@ -3,26 +3,14 @@ import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { validateValues } from '../CreateTable/createTable-types';
 import { FormTable, SummaryView } from '../Shared/FormTable';
-import type { FtmEntityV2, LinkValue, RawField, RawLink, TableField } from '../Shared/semanticData-types';
-
-export type FormTableValue = {
-  tableId: string;
-  name: string;
-  alias: string;
-  ftmEntity: FtmEntityV2;
-  ftmSubEntity: string;
-  metaData: Record<string, unknown>;
-  isCanceled: boolean;
-  isVisited: boolean;
-  fields: TableField[];
-  mainTimestampFieldId: string;
-};
+import type { LinkValue, RawField, RawLink, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 
 /**
  * Get table IDs with canceled last.
  */
-function sortedTableIds(tablesState: Record<string, FormTableValue>): string[] {
+function sortedTableIds(tablesState: Record<string, SemanticTableFormValues>): string[] {
   return Object.values(tablesState)
     .sort((a, b) => {
       if (a.isCanceled !== b.isCanceled) return a.isCanceled ? 1 : -1;
@@ -35,8 +23,8 @@ export const UploadDataDrawerContext = createSimpleContext<{
   container: RefObject<HTMLDivElement>;
   data: unknown;
   close: () => void;
-  tablesState: Record<string, FormTableValue>;
-  updateTableState: (tableId: string, values: Partial<FormTableValue>) => void;
+  tablesState: Record<string, SemanticTableFormValues>;
+  updateTableState: (tableId: string, values: Partial<SemanticTableFormValues>) => void;
   tableIds: string[];
   linksState: Record<string, LinkValue>;
   updateLinkState: (linkId: string, values: Partial<LinkValue>) => void;
@@ -59,7 +47,9 @@ export type UploadDataDrawerProps = {
 export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDrawerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [tablesState, setTablesState] = useState<Record<string, FormTableValue>>(() => buildInitialTablesState(data));
+  const [tablesState, setTablesState] = useState<Record<string, SemanticTableFormValues>>(() =>
+    buildInitialTablesState(data),
+  );
   const [linksState, setLinksState] = useState<Record<string, LinkValue>>(() => buildInitialLinksState(data));
 
   useEffect(() => {
@@ -67,7 +57,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
     setLinksState(buildInitialLinksState(data));
   }, [data]);
 
-  const updateTableState = useCallback((tableId: string, values: Partial<FormTableValue>) => {
+  const updateTableState = useCallback((tableId: string, values: Partial<SemanticTableFormValues>) => {
     setTablesState((prev) => ({
       ...prev,
       [tableId]: { ...prev[tableId]!, ...values },
@@ -223,7 +213,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
   );
 }
 
-function buildInitialTablesState(data: unknown): Record<string, FormTableValue> {
+function buildInitialTablesState(data: unknown): Record<string, SemanticTableFormValues> {
   const raw = data as {
     data_model?: {
       tables?: Array<{
@@ -288,14 +278,16 @@ function buildInitialTablesState(data: unknown): Record<string, FormTableValue> 
           tableId: table.id,
           name: table.name,
           alias: table.description || table.name.charAt(0).toUpperCase() + table.name.slice(1),
-          ftmEntity: 'other' as FtmEntityV2,
-          ftmSubEntity: '',
+          entityType: 'other',
+          subEntity: 'moral',
+          belongsToTableId: '',
           metaData: {},
           isCanceled: false,
           isVisited: false,
           fields,
           mainTimestampFieldId: '',
-        } satisfies FormTableValue,
+          links: [],
+        } satisfies SemanticTableFormValues,
       ];
     }),
   );
@@ -313,7 +305,7 @@ function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
         linkId: link.id,
         name: link.name,
         tableFieldId: link.child_field_id,
-        relationType: 'belongs_to',
+        relationType: 'related',
         targetTableId: link.parent_table_id,
         sourceTableId: link.child_table_id,
       } satisfies LinkValue,
@@ -322,7 +314,7 @@ function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
 }
 
 export function UploadDataDrawerContent() {
-  const { close, tablesState, updateTableState, tableIds } = UploadDataDrawerContext.useValue();
+  const { close, tablesState, updateTableState, tableIds, getLinksForTable } = UploadDataDrawerContext.useValue();
   const { t } = useTranslation(['data']);
 
   const isSingleTable = tableIds.length === 1;
@@ -360,6 +352,15 @@ export function UploadDataDrawerContent() {
   }
 
   function handleNextOrSummary() {
+    const tableState = tablesState[selectedTableId];
+    if (!tableState) return;
+    const values: SemanticTableFormValues = {
+      ...tableState,
+      links: getLinksForTable(selectedTableId),
+    };
+    if (!validateValues(values).ok) {
+      return;
+    }
     if (allVisited) {
       setShowSummary(true);
       setSelectedTableId('');

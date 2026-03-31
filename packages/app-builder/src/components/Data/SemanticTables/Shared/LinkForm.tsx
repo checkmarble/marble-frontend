@@ -44,33 +44,42 @@ function LinkRow({ linkId, compact }: { linkId: string; compact?: boolean }) {
 
   const fieldOptions = useMemo(
     () =>
-      sourceTableFields.map((field) => ({
-        label: (
-          <span className="flex items-center gap-v2-sm">
-            <Icon icon={getDataTypeIcon(field.dataType) ?? 'minus'} className="size-4" />
-            <span>{field.alias ?? field.name}</span>
-          </span>
-        ),
-        value: field.id,
-      })),
+      sourceTableFields
+        .filter((field) => field.dataType === 'String')
+        .map((field) => ({
+          label: (
+            <span className="flex items-center gap-v2-sm">
+              <Icon icon={getDataTypeIcon(field.dataType) ?? 'minus'} className="size-4" />
+              <span>{field.alias ?? field.name}</span>
+            </span>
+          ),
+          value: field.id,
+        })),
     [sourceTableFields],
+  );
+
+  const belongsToAlreadyUsed = useMemo(
+    () => links.some((l) => l.linkId !== linkId && l.relationType === 'belongs_to'),
+    [links, linkId],
   );
 
   const relationOptions = useMemo(
     () =>
-      linkRelationTypes.map((rel) => ({
-        label: (
-          <span className="flex items-center gap-v2-sm">
-            <Icon
-              icon={rel === 'belongs_to' ? 'arrow-forward' : 'arrow-range'}
-              className="size-4 text-purple-primary"
-            />
-            <span>{t(`data:upload_data.link_relation_${rel}`)}</span>
-          </span>
-        ),
-        value: rel,
-      })),
-    [t],
+      linkRelationTypes
+        .filter((rel) => rel !== 'belongs_to' || !belongsToAlreadyUsed)
+        .map((rel) => ({
+          label: (
+            <span className="flex items-center gap-v2-sm">
+              <Icon
+                icon={rel === 'belongs_to' ? 'arrow-forward' : 'arrow-range'}
+                className="size-4 text-purple-primary"
+              />
+              <span>{t(`data:upload_data.link_relation_${rel}`)}</span>
+            </span>
+          ),
+          value: rel,
+        })),
+    [t, belongsToAlreadyUsed],
   );
 
   const destinationOptions = useMemo(

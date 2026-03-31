@@ -5,24 +5,15 @@ import { dataModelNameRegex } from '../../shared/dataModelNameValidation';
 import {
   type FtmEntityPersonOption,
   type FtmEntityV2,
-  type FtmEntityVehicleOption,
   ftmEntities,
   ftmEntityPersonOptions,
-  ftmEntityVehicleOptions,
-  type LinkValue,
+  type SemanticSubType,
+  type SemanticTableFormValues,
+  type SemanticType,
   type TableField,
 } from '../Shared/semanticData-types';
 
-export type CreateTableFormValues = {
-  name: string;
-  alias: string;
-  entityType: FtmEntityV2;
-  subEntity: FtmEntityPersonOption | FtmEntityVehicleOption;
-  belongsToTableId: string;
-  fields: TableField[];
-  mainTimestampFieldId: string;
-  links: LinkValue[];
-};
+export type { SemanticTableFormValues };
 
 export const defaultCreateTableFields: TableField[] = [
   {
@@ -63,7 +54,8 @@ export const defaultCreateTableFields: TableField[] = [
   },
 ];
 
-export const defaultCreateTableFormValues: CreateTableFormValues = {
+export const defaultCreateTableFormValues: SemanticTableFormValues = {
+  tableId: '',
   name: '',
   alias: '',
   entityType: 'person',
@@ -72,9 +64,12 @@ export const defaultCreateTableFormValues: CreateTableFormValues = {
   fields: defaultCreateTableFields,
   mainTimestampFieldId: '',
   links: [],
+  metaData: {},
+  isCanceled: false,
+  isVisited: false,
 };
 
-const entityTypesWithSubEntity = ['person', 'vehicle'] as const;
+const entityTypesWithSubEntity = ['person'] as const;
 const entityTypesRequiringLink = ['transaction', 'event'] as const;
 
 export const createTableEntityStepSchema = z
@@ -92,9 +87,7 @@ export const createTableEntityStepSchema = z
       if (data.entityType === 'person') {
         return ftmEntityPersonOptions.includes(data.subEntity as (typeof ftmEntityPersonOptions)[number]);
       }
-      if (data.entityType === 'vehicle') {
-        return ftmEntityVehicleOptions.includes(data.subEntity as (typeof ftmEntityVehicleOptions)[number]);
-      }
+
       return true;
     },
     { error: 'Please select a sub-entity', path: ['subEntity'] },
@@ -109,7 +102,7 @@ export const createTableEntityStepSchema = z
     { error: 'Please select a destination table', path: ['belongsToTableId'] },
   );
 
-export function hasSubEntityOptions(entityType: FtmEntityV2 | ''): entityType is 'person' | 'vehicle' {
+export function hasSubEntityOptions(entityType: FtmEntityV2 | ''): entityType is 'person' {
   return entityTypesWithSubEntity.includes(entityType as (typeof entityTypesWithSubEntity)[number]);
 }
 
@@ -117,11 +110,11 @@ export function requiresLink(entityType: FtmEntityV2 | ''): entityType is 'trans
   return entityTypesRequiringLink.includes(entityType as (typeof entityTypesRequiringLink)[number]);
 }
 
-export function canProceedToStep2(values: CreateTableFormValues): boolean {
+export function canProceedToStep2(values: SemanticTableFormValues): boolean {
   return createTableEntityStepSchema.safeParse(values).success;
 }
 
-export function adaptCreateTableValue(values: CreateTableFormValues): CreateTableValue {
+export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTableValue {
   return {
     name: values.name,
     alias: values.alias,
@@ -166,10 +159,7 @@ function adaptTableField(field: TableField): CreateTableValue['fields'][number] 
   };
 }
 
-function getEntityType(
-  entityType: FtmEntityV2,
-  subEntity: FtmEntityPersonOption | FtmEntityVehicleOption,
-): FieldEntity {
+function getEntityType(entityType: FtmEntityV2, subEntity: FtmEntityPersonOption): FieldEntity {
   const fieldEntity = match(entityType)
     .with('person', () => {
       return match(subEntity)
@@ -177,7 +167,6 @@ function getEntityType(
         .with('natural', () => 'person')
         .with('generic', () => 'partner');
     })
-    .with('vehicle', () => 'vehicle')
     .with('transaction', () => 'transaction')
     .with('event', () => 'event')
     .with('other', () => 'other')
@@ -187,9 +176,30 @@ function getEntityType(
   return fieldEntity as FieldEntity;
 }
 
-export function validateValues(values: CreateTableFormValues): { ok: boolean; errors: string[] } {
+type SemanticTableConstraints = {
+  fieldExist?: { type: SemanticType; subType?: SemanticSubType; name?: string };
+  linkExist?: { dataType: FtmEntityV2 };
+}[];
+
+const defaultTableConstraints = [
+  { fieldExist: { name: 'object_id', type: 'unique_id', subType: 'opaque_id' } },
+  { fieldExist: { name: 'updated_at', type: 'last_update' } },
+];
+
+const specificTableConstraints: Record<FtmEntityV2, SemanticTableConstraints> = {
+  person: [{ fieldExist: { type: 'name' } }],
+  transaction: [{ linkExist: { dataType: 'person' } }],
+  event: [{ linkExist: { dataType: 'person' } }],
+  account: [],
+  other: [],
+} as const;
+
+export function validateValues(values: SemanticTableFormValues): { ok: boolean; errors: string[] } {
   const parsing = createTableEntityStepSchema.safeParse(values);
   if (!parsing.success) return { ok: false, errors: parsing.error.issues.map((issue) => issue.message) };
   // TODO: add more validation
+  const constraints = [...defaultTableConstraints, ...specificTableConstraints[values.entityType]];
+  // Tables: check  constraints
+  console.log(constraints);
   return { ok: false, errors: ['not ready to save yet'] };
 }
