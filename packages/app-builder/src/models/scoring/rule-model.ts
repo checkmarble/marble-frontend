@@ -22,6 +22,9 @@ export type EntityTagsRule = { type: 'entity_tags'; conditions: TagsSwitch };
 /** Always-complete model — use this for saved/submitted data. */
 export type RuleModel = UserAttributeRule | AggregateRule | ScreeningTagsRule | EntityTagsRule;
 
+export const RULE_TYPES = ['user_attribute', 'aggregate', 'screening_tags', 'entity_tags'] as const;
+export type RuleModelType = (typeof RULE_TYPES)[number];
+
 // --- Draft rule types (fields may be null, used during editing) ---
 
 export type DraftUserAttributeRule = {

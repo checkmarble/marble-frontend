@@ -28,6 +28,10 @@
   "ruleset.risk_level": "Niveau de risque :",
   "ruleset.risk_types_column": "Types de risque",
   "ruleset.rule_type_heading": "Type de règle",
+  "ruleset.rule_type.aggregate": "Agrégats (transaction, événement, ...)",
+  "ruleset.rule_type.entity_tags": "Tags",
+  "ruleset.rule_type.screening_tags": "Screening (PEP, Sanction, ...)",
+  "ruleset.rule_type.user_attribute": "Attribut utilisateur",
   "ruleset.rules_column": "Règles",
   "ruleset.score_renew": "Renouvellement du score :",
 

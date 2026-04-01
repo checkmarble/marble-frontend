@@ -28,6 +28,10 @@
   "ruleset.risk_level": "مستوى المخاطر:",
   "ruleset.risk_types_column": "أنواع المخاطر",
   "ruleset.rule_type_heading": "نوع القاعدة",
+  "ruleset.rule_type.aggregate": "التجميعات (معاملة، حدث، ...)",
+  "ruleset.rule_type.entity_tags": "الوسوم",
+  "ruleset.rule_type.screening_tags": "الفحص (PEP، عقوبة، ...)",
+  "ruleset.rule_type.user_attribute": "سمة المستخدم",
   "ruleset.rules_column": "القواعد",
   "ruleset.score_renew": "تجديد النتيجة:",
 

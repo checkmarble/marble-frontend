@@ -4,7 +4,12 @@ import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { isSwitchAstNode, NewSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
-import { type ScoringRule, type ScoringRulesetWithRules } from '@app-builder/models/scoring';
+import {
+  RULE_TYPES,
+  type RuleModelType,
+  type ScoringRule,
+  type ScoringRulesetWithRules,
+} from '@app-builder/models/scoring';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useUpdateScoringRulesetMutation } from '@app-builder/queries/scoring/update-ruleset';
 import { useState } from 'react';
@@ -18,31 +23,21 @@ import { Spinner } from '../Spinner';
 import { ScoringRuleEditPanel } from './ScoringRuleEditPanel';
 import { SwitchNode } from './SwitchNode';
 
-const RULE_TYPES = [
-  { value: 'user_attribute', label: 'User attribute' },
-  { value: 'aggregate', label: 'Agregates (transaction, event, ...)' },
-  { value: 'entity_tags', label: 'Tags' },
-  { value: 'screening_tags', label: 'Screening (PEP, Sanction, ...)' },
-  { value: 'past_alerts', label: 'Past alerts' },
-] as const;
-
-type RuleType = (typeof RULE_TYPES)[number]['value'];
-
 interface AddRuleMenuContentProps {
-  onConfirm: (ruleType: RuleType) => void;
+  onConfirm: (ruleType: RuleModelType) => void;
   onCancel: () => void;
 }
 
 function AddRuleMenuContent({ onConfirm, onCancel }: AddRuleMenuContentProps) {
   const { t } = useTranslation(['user-scoring']);
-  const [selectedType, setSelectedType] = useState<RuleType>('user_attribute');
+  const [selectedType, setSelectedType] = useState<RuleModelType>('user_attribute');
 
   return (
     <MenuCommand.Content align="end" sideOffset={4} className="min-w-80">
       <MenuCommand.List className="p-v2-md">
         <MenuCommand.Group heading={<div className="mb-v2-md">{t('user-scoring:ruleset.rule_type_heading')}</div>}>
           <div className="flex flex-col gap-v2-sm">
-            {RULE_TYPES.map(({ value, label }) => (
+            {RULE_TYPES.map((value) => (
               <MenuCommand.HeadlessItem key={value} value={value} onSelect={() => setSelectedType(value)}>
                 <div className="flex items-center gap-v2-sm">
                   <div
@@ -56,7 +51,7 @@ function AddRuleMenuContent({ onConfirm, onCancel }: AddRuleMenuContentProps) {
                   <span
                     className={cn('text-s text-grey-primary', selectedType === value ? 'font-semibold' : 'font-normal')}
                   >
-                    {label}
+                    {t(`user-scoring:ruleset.rule_type.${value}`)}
                   </span>
                 </div>
               </MenuCommand.HeadlessItem>
@@ -91,11 +86,12 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
   const dataModelQuery = useDataModelQuery();
   const mutation = useUpdateScoringRulesetMutation();
 
-  const handleConfirm = (ruleType: RuleType) => {
+  const handleConfirm = (ruleType: RuleModelType) => {
     const fieldNode = match(ruleType)
       .with('user_attribute', () => NewAstNode())
       .with('aggregate', () => NewAggregatorAstNode('SUM'))
-      .otherwise(() => undefined);
+      .with('screening_tags', 'entity_tags', () => undefined)
+      .exhaustive();
 
     setPanelRule({
       stableId: uuidv7(),
