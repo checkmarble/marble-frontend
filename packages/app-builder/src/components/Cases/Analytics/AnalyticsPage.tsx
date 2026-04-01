@@ -3,6 +3,7 @@ import { Page } from '@app-builder/components/Page';
 import { Spinner } from '@app-builder/components/Spinner';
 import type { TimeBucket } from '@app-builder/models/analytics/case-analytics';
 import type { Inbox } from '@app-builder/models/inbox';
+import type { User } from '@app-builder/models/user';
 import { useCaseAnalytics } from '@app-builder/queries/cases/case-analytics';
 import { subMonths } from 'date-fns';
 import { useState } from 'react';
@@ -19,21 +20,24 @@ import { SarReportsGauge } from './SarReportsGauge';
 
 interface AnalyticsPageProps {
   inboxes: Inbox[];
+  users: User[];
 }
 
-export function AnalyticsPage({ inboxes }: AnalyticsPageProps) {
+export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
   const { t } = useTranslation(['cases', 'common']);
 
   const [timeBucket, setTimeBucket] = useState<TimeBucket>('month');
   const [startDate, setStartDate] = useState(subMonths(new Date(), 6).toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
   const [inboxId, setInboxId] = useState<string | undefined>(undefined);
+  const [userId, setUserId] = useState<string | undefined>(undefined);
 
   const query = useCaseAnalytics({
     startDate,
     endDate,
     timeBucket,
     inboxId,
+    userId,
   });
 
   return (
@@ -52,6 +56,9 @@ export function AnalyticsPage({ inboxes }: AnalyticsPageProps) {
             inboxId={inboxId}
             onInboxIdChange={setInboxId}
             inboxes={inboxes}
+            userId={userId}
+            onUserIdChange={setUserId}
+            users={users}
           />
 
           {match(query)

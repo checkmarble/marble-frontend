@@ -35,6 +35,7 @@
   "analytics.alerts.title": "مقاييس التنبيهات",
   "analytics.chart.days": "أيام",
   "analytics.filters.all_inboxes": "جميع صناديق الوارد",
+  "analytics.filters.all_users": "جميع المستخدمين",
   "analytics.filters.from": "من",
   "analytics.filters.to": "إلى",
   "analytics.processing.duration_by_period": "مدة الحالات لكل فترة",
