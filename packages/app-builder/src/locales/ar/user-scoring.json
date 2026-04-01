@@ -10,6 +10,8 @@
 
   "rule_edit.cancel": "إلغاء",
   "rule_edit.model_type.aggregate": "إجمالي",
+  "rule_edit.model_type.entity_tags": "وسوم الكيان",
+  "rule_edit.model_type.screening_tags": "وسوم الفحص",
   "rule_edit.model_type.user_attribute": "سمات المستخدم",
   "rule_edit.name_placeholder": "اسم القاعدة...",
   "rule_edit.risk_type_placeholder": "نوع المخاطر *",
@@ -26,6 +28,10 @@
   "ruleset.risk_level": "مستوى المخاطر:",
   "ruleset.risk_types_column": "أنواع المخاطر",
   "ruleset.rule_type_heading": "نوع القاعدة",
+  "ruleset.rule_type.aggregate": "التجميعات (معاملة، حدث، ...)",
+  "ruleset.rule_type.entity_tags": "الوسوم",
+  "ruleset.rule_type.screening_tags": "الفحص (PEP، عقوبة، ...)",
+  "ruleset.rule_type.user_attribute": "سمة المستخدم",
   "ruleset.rules_column": "القواعد",
   "ruleset.score_renew": "تجديد النتيجة:",
 
@@ -67,6 +73,7 @@
 
   "switch.description.if_value_lte": "إذا كانت القيمة ≤ {{value}}",
   "switch.else": "وإلا",
+  "switch.entity_tags.depending_on": "بناءً على وسوم الكيان",
   "switch.floor_label": "الحد الأدنى =",
   "switch.no_condition": "لا توجد شروط محددة",
   "switch.number.and": "و",
@@ -75,6 +82,10 @@
   "switch.number.first": "إذا كانت القيمة ≤",
   "switch.number.middle": "إذا كانت القيمة بين",
   "switch.number.then": "إذن",
+  "switch.screening_tags.add_branch": "إضافة فرع",
+  "switch.screening_tags.depending_on": "بناءً على وسوم الفحص",
+  "switch.screening_tags.if_tags_include": "إذا كانت الوسوم تتضمن",
+  "switch.screening_tags.tags_placeholder": "إضافة...",
   "switch.string.else": "وإلا",
   "switch.string.op.contains": "يحتوي على",
   "switch.string.op.ends_with": "ينتهي بـ",
