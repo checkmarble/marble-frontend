@@ -208,6 +208,8 @@
   "creation_date": "تاريخ الإنشاء",
   "data_explorer.columns": "الأعمدة",
   "data_explorer.no_table_data": "لا توجد بيانات تطابق هذا المرشح في الجدول {{tableName}}",
+  "data_explorer.pin_column": "تثبيت العمود",
+  "data_explorer.unpin_column": "إلغاء تثبيت العمود",
   "decisions.alert": "تنبيه",
   "decisions.approve_or_decline": "قبول أو رفض",
   "decisions.date": "التاريخ",

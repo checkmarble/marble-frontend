@@ -3,9 +3,10 @@ import { DataModelExplorerContext } from '@app-builder/components/DataModelExplo
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser, DataModelObject, type DataModelWithTableOptions } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
-import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button, cn } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { CaseManagerDrawerButtons, DrawerBreadcrumb, DrawerContext } from '../Drawer/Drawer';
 import { PivotsPanelContent } from './PivotsPanelContent';
@@ -40,12 +41,20 @@ export function PivotsPanel(props: PivotsPanelProps) {
     <>
       <div ref={sentinelRef} />
       <div
-        className={clsx('bg-surface-card sticky top-0 z-10 flex items-center', {
+        className={cn('bg-surface-card sticky top-0 z-10 flex items-center', {
           'shadow-sticky-top': !intersection?.isIntersecting,
         })}
       >
         {dataModelExplorerContext.explorerState ? (
-          <CaseManagerDrawerButtons expandable={!!dataModelExplorerContext.explorerState} />
+          drawerContext.isExpanded ? (
+            <div className="p-4">
+              <Button mode="icon" variant="secondary" onClick={() => dataModelExplorerContext.setExplorerState(null)}>
+                <Icon icon="cross" className="size-4" />
+              </Button>
+            </div>
+          ) : (
+            <CaseManagerDrawerButtons expandable />
+          )
         ) : null}
         {drawerContext.isExpanded && dataModelExplorerContext.explorerState ? (
           <DrawerBreadcrumb

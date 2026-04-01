@@ -208,6 +208,8 @@
   "creation_date": "Creation date",
   "data_explorer.columns": "Columns",
   "data_explorer.no_table_data": "No data matches this filter on table {{tableName}}",
+  "data_explorer.pin_column": "Pin column",
+  "data_explorer.unpin_column": "Unpin column",
   "decisions.alert": "Alert",
   "decisions.approve_or_decline": "Approve or decline",
   "decisions.date": "Date",

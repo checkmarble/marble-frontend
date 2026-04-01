@@ -261,7 +261,9 @@ export const ClientDetailPage = ({
       <PanelRoot open={showExplorer} onOpenChange={setShowExplorer}>
         <PanelContainer className="max-w-[90vw]">
           <PanelHeader>{t('client360:client_detail.data_exploration.panel_title')}</PanelHeader>
-          <DataModelExplorer dataModel={dataModelQuery.data?.dataModel ?? []} />
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <DataModelExplorer dataModel={dataModelQuery.data?.dataModel ?? []} />
+          </div>
         </PanelContainer>
       </PanelRoot>
     </DataModelExplorerProvider>

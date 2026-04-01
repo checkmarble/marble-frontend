@@ -112,8 +112,8 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
   const { currentTab, lastActiveTab, closedTabsHistory, tabs } = explorerContext.explorerState;
 
   return (
-    <div className="h-[calc(100vh-210px)] min-w-[80vw] overflow-y-scroll p-14 py-2">
-      <div className="flex flex-col gap-3">
+    <div className="flex min-h-0 min-w-[80vw] flex-1 flex-col overflow-y-auto p-14 py-2">
+      <div className="flex min-h-0 flex-1 flex-col gap-3">
         <div className="before:bg-grey-border relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
           {tabs.map((tab) => {
             const tabUniqValue = getTabUniqValue(tab);
@@ -158,7 +158,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
             }}
           />
         </div>
-        <div>
+        <div className="flex min-h-0 flex-1 flex-col">
           <DataTableRender caseId={props.caseId} item={currentTab} dataModel={props.dataModel} navigateTo={addTab} />
         </div>
       </div>
