@@ -35,6 +35,7 @@
   "analytics.alerts.title": "Alert metrics",
   "analytics.chart.days": "days",
   "analytics.filters.all_inboxes": "All inboxes",
+  "analytics.filters.all_users": "All users",
   "analytics.filters.from": "From",
   "analytics.filters.to": "To",
   "analytics.processing.duration_by_period": "Case duration per period",
