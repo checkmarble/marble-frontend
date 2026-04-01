@@ -9,12 +9,12 @@ export const handle = {
 };
 
 export const loader = createServerFn([authMiddleware], async function casesAnalyticsLoader({ context }) {
-  const { inbox: inboxRepository } = context.authInfo;
-  const inboxes = await inboxRepository.listInboxes();
-  return { inboxes };
+  const { inbox: inboxRepository, organization } = context.authInfo;
+  const [inboxes, users] = await Promise.all([inboxRepository.listInboxes(), organization.listUsers()]);
+  return { inboxes, users };
 });
 
 export default function CasesAnalytics() {
-  const { inboxes } = useLoaderData<typeof loader>();
-  return <AnalyticsPage inboxes={inboxes} />;
+  const { inboxes, users } = useLoaderData<typeof loader>();
+  return <AnalyticsPage inboxes={inboxes} users={users} />;
 }

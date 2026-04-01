@@ -7,6 +7,7 @@ export interface CaseAnalyticsFilters {
   endDate: string;
   timeBucket: TimeBucket;
   inboxId?: string;
+  userId?: string;
 }
 
 export interface PeriodDelay {
