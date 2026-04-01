@@ -71,6 +71,7 @@ export type TableField = {
   currencyFieldId?: string;
   booleanDisplay?: 'yes_no' | 'checkbox';
   foreignkeyTable?: string;
+  isDefaultBelongsTo?: boolean;
   enumValues?: { key: string; color: EnumColors; value: string }[];
   isNew: boolean;
   locked?: boolean;

@@ -1,7 +1,13 @@
 import type { LinkValue, TableField } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { createSimpleContext } from '@marble/shared';
 
-export type DestinationTableOption = { tableId: string; label: string };
+export const CREATE_TABLE_SELF_LINK_TARGET_ID = '__create_table_self_link__';
+
+export type DestinationTableOption = {
+  tableId: string;
+  label: string;
+  isCurrentTable?: boolean;
+};
 
 export type LinksEditorContextValue = {
   links: LinkValue[];

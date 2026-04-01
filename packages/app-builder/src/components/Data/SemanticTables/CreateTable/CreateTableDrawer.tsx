@@ -1,5 +1,4 @@
 import { Callout } from '@app-builder/components/Callout';
-import { type CreateTableValue } from '@app-builder/queries/data/create-table';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,9 +9,9 @@ import { CreateTableEntityStep } from './CreateTableEntityStep';
 import { CreateTableFieldsStep } from './CreateTableFieldsStep';
 import { CreateTableLinksStep } from './CreateTableLinksStep';
 import {
-  adaptCreateTableValue,
   type FieldValidationError,
   type LinkValidationError,
+  type SemanticTableFormValues,
   type TablePropertyError,
   type ValidationError,
   type ValidationScope,
@@ -26,7 +25,7 @@ export function CreateTableDrawer({
 }: {
   open: boolean;
   onClose: () => void;
-  onSave: (adapted: CreateTableValue) => Promise<void>;
+  onSave: (values: SemanticTableFormValues) => Promise<void>;
 }) {
   const { t } = useTranslation(['data', 'common']);
   const [currentStep, setCurrentStep] = useState(0);
@@ -40,7 +39,7 @@ export function CreateTableDrawer({
       return;
     }
     setValidationErrors([]);
-    await onSave(adaptCreateTableValue(value));
+    await onSave(value);
     form.reset();
     setCurrentStep(0);
   });
@@ -156,16 +155,18 @@ export function CreateTableDrawer({
             ) : null}
           </div>
 
-          <footer className="flex shrink-0 flex-col gap-v2-md border-t border-grey-border p-v2-lg">
+          <footer className="flex shrink-0 justify-between gap-v2-md border-t border-grey-border p-v2-lg">
             {validationErrors.length > 0 ? (
-              <Callout color="red" icon="error">
-                <ul className="flex list-disc flex-col gap-v2-xs pl-3">
+              <Callout color="red" icon="lightbulb" iconColor="red">
+                <ul className="flex flex-col gap-v2-xs pl-3">
                   {validationErrors.map((error, index) => (
                     <li key={`${error.kind}-${index}`}>{error.message}</li>
                   ))}
                 </ul>
               </Callout>
-            ) : null}
+            ) : (
+              <div />
+            )}
             <div className="flex justify-end gap-v2-md">
               <Button variant="secondary" appearance="stroked" onClick={handleClose}>
                 {t('common:cancel')}

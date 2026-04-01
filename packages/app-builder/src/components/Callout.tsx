@@ -4,7 +4,15 @@ import { Icon, type IconName } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
 
-const callout = cva('text-s text-grey-primary flex flex-row items-center gap-2 rounded-sm p-2 font-normal', {
+const iconColorClassName = {
+  grey: 'text-grey-primary',
+  purple: 'text-purple-primary',
+  red: 'text-red-primary',
+  orange: 'text-orange-primary',
+  yellow: 'text-yellow-primary',
+} as const;
+
+const callout = cva('text-s flex flex-row items-center gap-2 rounded-sm p-2 font-normal', {
   variants: {
     /**
      * Outlined variant is usefull when you want to use the callout on non white background
@@ -30,6 +38,7 @@ const callout = cva('text-s text-grey-primary flex flex-row items-center gap-2 r
 
 interface CalloutProps extends VariantProps<typeof callout>, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
   icon?: IconName;
+  iconColor?: keyof typeof iconColorClassName;
 }
 
 export function Callout({
@@ -39,13 +48,14 @@ export function Callout({
   variant = 'soft',
   bordered,
   icon = 'lightbulb',
+  iconColor = 'grey',
   ...otherProps
 }: CalloutProps) {
   if (!children) return null;
 
   return (
     <div className={callout({ color, variant, className, bordered })} {...otherProps}>
-      <Icon icon={icon} className="size-4 shrink-0" />
+      <Icon icon={icon} className={cn('size-4 shrink-0', iconColorClassName[iconColor ?? 'grey'])} />
       {children}
     </div>
   );

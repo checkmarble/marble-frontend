@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
-import { FormTable, SummaryView } from '../Shared/FormTable';
 import type { LinkValue, RawField, RawLink, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
+import { FormTable, SummaryView } from '../Shared/TableForm';
 
 /**
  * Get table IDs with canceled last.
@@ -485,16 +485,18 @@ export function UploadDataDrawerContent() {
           <FormTable key={selectedTableId} tableId={selectedTableId} errorFieldIds={errorFieldIds} />
         ) : null}
       </div>
-      <footer className="flex shrink-0 flex-col gap-v2-md p-v2-lg border-t border-grey-border">
+      <footer className="flex shrink-0 justify-between gap-v2-md p-v2-lg border-t border-grey-border">
         {validationErrors.length > 0 ? (
-          <Callout color="red" icon="error">
-            <ul className="flex flex-col gap-v2-xs list-disc pl-3">
+          <Callout color="red" icon="lightbulb" iconColor="red">
+            <ul className="flex flex-col gap-v2-xs pl-3">
               {validationErrors.map((e, i) => (
                 <li key={i}>{e.message}</li>
               ))}
             </ul>
           </Callout>
-        ) : null}
+        ) : (
+          <div />
+        )}
         <div className="flex justify-end gap-v2-md">
           {!isSingleTable ? (
             <Button

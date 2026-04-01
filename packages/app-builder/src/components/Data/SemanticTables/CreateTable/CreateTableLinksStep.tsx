@@ -1,7 +1,11 @@
-import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
+import {
+  CREATE_TABLE_SELF_LINK_TARGET_ID,
+  LinksEditorContext,
+} from '@app-builder/components/Data/shared/LinksEditorContext';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LinkForm } from '../Shared/LinkForm';
 import type { LinkValue } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
@@ -14,7 +18,10 @@ export function CreateTableLinksStep({
   hasError?: boolean;
 }) {
   const form = useCreateTableFormContext();
+  const { t } = useTranslation(['data']);
   const dataModel = useDataModel();
+  const tableName = useStore(form.store, (s) => s.values.name);
+  const tableAlias = useStore(form.store, (s) => s.values.alias);
   const fields = useStore(form.store, (s) => s.values.fields);
   const links = useStore(form.store, (s) => s.values.links);
 
@@ -32,7 +39,7 @@ export function CreateTableLinksStep({
           linkId: crypto.randomUUID(),
           name: f.foreignkeyTable!,
           tableFieldId: f.id,
-          relationType: 'related' as const,
+          relationType: f.isDefaultBelongsTo ? 'belongs_to' : 'related',
           targetTableId,
           sourceTableId: '',
         };
@@ -41,8 +48,15 @@ export function CreateTableLinksStep({
   }, [fields, dataModel, form, links.length]);
 
   const destinationTableOptions = useMemo(
-    () => [...dataModel.map((t) => ({ tableId: t.id, label: t.name }))],
-    [dataModel],
+    () => [
+      ...dataModel.map((table) => ({ tableId: table.id, label: table.name })),
+      {
+        tableId: CREATE_TABLE_SELF_LINK_TARGET_ID,
+        label: tableAlias.trim() || tableName.trim() || t('data:create_table.current_table_option'),
+        isCurrentTable: true,
+      },
+    ],
+    [dataModel, tableAlias, tableName, t],
   );
 
   const updateLink = useCallback(

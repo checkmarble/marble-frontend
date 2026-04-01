@@ -1,5 +1,6 @@
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { useStore } from '@tanstack/react-form';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { FieldDetailPanel } from '../Shared/FieldDetailPanel';
@@ -16,10 +17,50 @@ export function CreateTableFieldsStep({
 }) {
   const { t } = useTranslation(['data']);
   const form = useCreateTableFormContext();
+  const dataModel = useDataModel();
   const fields = useStore(form.store, (s) => s.values.fields);
   const mainTimestampFieldId = useStore(form.store, (s) => s.values.mainTimestampFieldId);
   const entityType = useStore(form.store, (s) => s.values.entityType);
+  const belongsToTableId = useStore(form.store, (s) => s.values.belongsToTableId);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+
+  const belongsToTableName = useMemo(
+    () => dataModel.find((table) => table.id === belongsToTableId)?.name,
+    [belongsToTableId, dataModel],
+  );
+
+  useEffect(() => {
+    if (!belongsToTableName) return;
+
+    const fieldName = `${belongsToTableName}_id`;
+    form.setFieldValue('fields', (prev) => {
+      const hasDefaultForeignKeyField = prev.some(
+        (field) => field.name === fieldName || field.foreignkeyTable === belongsToTableName,
+      );
+      if (hasDefaultForeignKeyField) return prev;
+
+      const defaultForeignKeyField: TableField = {
+        id: crypto.randomUUID(),
+        name: fieldName,
+        description: '',
+        dataType: 'String',
+        tableId: '',
+        isEnum: false,
+        nullable: true,
+        alias: fieldName,
+        hidden: false,
+        order: prev.length,
+        unicityConstraint: 'no_unicity_constraint',
+        ftmProperty: '',
+        semanticType: 'foreign_key',
+        foreignkeyTable: belongsToTableName,
+        isDefaultBelongsTo: true,
+        isNew: true,
+      };
+
+      return [...prev, defaultForeignKeyField];
+    });
+  }, [belongsToTableName, form]);
 
   const updateField = useCallback(
     (fieldId: string, values: Partial<TableField>) => {

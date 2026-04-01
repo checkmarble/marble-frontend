@@ -46,6 +46,7 @@ export const createTableValueSchema = z.object({
 });
 
 export type CreateTableValue = z.infer<typeof createTableValueSchema>;
+export type CreateTableResponse = { success: true; data: { id: string } } | { success: false; errors: unknown };
 
 const endpoint = getRoute('/ressources/data/createTable');
 
@@ -58,7 +59,7 @@ export const useCreateTableMutation = () => {
         body: JSON.stringify(table),
       });
 
-      return response.json();
+      return response.json() as Promise<CreateTableResponse>;
     },
   });
 };

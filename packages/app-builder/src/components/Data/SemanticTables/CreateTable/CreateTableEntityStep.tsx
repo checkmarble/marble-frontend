@@ -42,7 +42,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
   const linkTargetOptions = useMemo(
     () =>
       personOrOtherTables.map((table) => ({
-        label: table.description || table.name,
+        label: table.alias || table.name,
         value: table.id,
       })),
     [personOrOtherTables],

@@ -5,6 +5,7 @@ import {
   type TableField,
 } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
+import { CREATE_TABLE_SELF_LINK_TARGET_ID } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { FtmEntityPersonOption, FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { CreateTableValue, FieldEntity } from '@app-builder/queries/data/create-table';
 import { match } from 'ts-pattern';
@@ -129,15 +130,6 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
     semantic_type: getEntityType(values.entityType, values.subEntity),
     description: '',
     fields: values.fields.map(adaptTableField),
-    links: values.links
-      .filter((l) => l.name && l.tableFieldId && l.targetTableId)
-      .map((l) => ({
-        name: l.name,
-        child_field_name: values.fields.find((f) => f.id === l.tableFieldId)?.name ?? '',
-        parent_table_id: l.targetTableId,
-        // TODO: resolve parent_field_id from dataModel (object_id field of destination table)
-        parent_field_id: '',
-      })),
     metadata: {
       belongsToTableId: values.belongsToTableId,
       mainTimestampFieldId: values.mainTimestampFieldId,
@@ -299,6 +291,11 @@ function getLinkErrors(values: SemanticTableFormValues): LinkValidationError[] {
   const errors: LinkValidationError[] = [];
 
   for (const link of values.links) {
+    const linkField = values.fields.find((field) => field.id === link.tableFieldId);
+    const isSelfLink =
+      link.targetTableId === CREATE_TABLE_SELF_LINK_TARGET_ID ||
+      (values.tableId !== '' && link.targetTableId === values.tableId);
+
     if (!link.name.trim()) {
       errors.push({ kind: 'link', linkId: link.linkId, message: 'A link is missing a name' });
     }
@@ -314,6 +311,13 @@ function getLinkErrors(values: SemanticTableFormValues): LinkValidationError[] {
         kind: 'link',
         linkId: link.linkId,
         message: `Link "${link.name || '(unnamed)'}": field is required`,
+      });
+    }
+    if (isSelfLink && linkField?.name === 'object_id') {
+      errors.push({
+        kind: 'link',
+        linkId: link.linkId,
+        message: `Link "${link.name || '(unnamed)'}": object_id cannot point to the current table`,
       });
     }
   }

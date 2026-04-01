@@ -42,7 +42,7 @@ export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
   getOpenApiSpec(): Promise<OpenApiSpec>;
   getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
-  createTable(body: CreateTableValue): Promise<void>;
+  createTable(body: CreateTableValue): Promise<{ id: string }>;
   patchDataModelTable(tableId: string, body: UpdateTableBody): Promise<void>;
   postDataModelTableField(tableId: string, createFieldInput: CreateFieldInput): Promise<void>;
   patchDataModelField(tableId: string, updateFieldInput: UpdateFieldInput): Promise<void>;
@@ -72,7 +72,7 @@ export interface DataModelRepository {
 export function makeGetDataModelRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): DataModelRepository => ({
     createTable: async (body) => {
-      await marbleCoreApiClient.postDataModelTable(
+      return marbleCoreApiClient.postDataModelTable(
         body as unknown as Parameters<typeof marbleCoreApiClient.postDataModelTable>[0],
       );
     },

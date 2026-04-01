@@ -3,11 +3,11 @@ import { type DataModelField, type FtmEntityV2 } from '@app-builder/models';
 import { type DataModel, ftmEntities, type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, SelectV2, Tag } from 'ui-design-system';
+import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
-import { FormTable } from '../Shared/FormTable';
 import type { LinkValue, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
+import { FormTable } from '../Shared/TableForm';
 import { UploadDataDrawerContext } from '../UploadData/UploadDataDrawer';
 
 export function EditTableDrawer({
@@ -33,6 +33,7 @@ export function EditTableDrawer({
     adaptLinksToLinkState(tableModel.linksToSingle, tableModel.id),
   );
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [entityTypeMenuOpen, setEntityTypeMenuOpen] = useState(false);
 
   const tableIds = useMemo(() => [tableModel.id], [tableModel.id]);
 
@@ -152,6 +153,7 @@ export function EditTableDrawer({
   }, []);
 
   const tableState = tablesState[tableModel.id]!;
+  const isSemanticTypeChanged = tableState.entityType !== tableModel.semanticType;
 
   const ftmEntityOptions = useMemo(
     () =>
@@ -224,19 +226,34 @@ export function EditTableDrawer({
             <span className="text-l">{t('data:edit_table.header_prefix')}</span>
             <EditableAlias alias={tableState.alias} onChange={(alias) => updateTableState(tableModel.id, { alias })} />
 
-            {tableModel.semanticType === 'other' ? (
-              <SelectV2
-                value={tableState.entityType}
-                placeholder={t('data:upload_data.object_placeholder')}
-                onChange={(value) =>
-                  updateTableState(tableModel.id, { entityType: value as FtmEntityV2, subEntity: 'moral' })
-                }
-                options={ftmEntityOptions}
-                className="w-48"
-              />
-            ) : (
-              <Tag color="grey">{t(`data:upload_data.ftm_entity.${tableModel.semanticType}`)}</Tag>
-            )}
+            <MenuCommand.Menu open={entityTypeMenuOpen} onOpenChange={setEntityTypeMenuOpen}>
+              <MenuCommand.Trigger>
+                <Tag color={isSemanticTypeChanged ? 'red' : 'grey'} className="cursor-pointer gap-1">
+                  {isSemanticTypeChanged && <Icon icon="tip" className="size-3" />}
+                  {tableState.entityType
+                    ? t(`data:upload_data.ftm_entity.${tableState.entityType}`)
+                    : t('data:upload_data.object_placeholder')}
+                  <Icon
+                    icon="caret-down"
+                    className={cn('size-3 transition-transform', entityTypeMenuOpen && 'rotate-180')}
+                  />
+                </Tag>
+              </MenuCommand.Trigger>
+              <MenuCommand.Content sideOffset={4}>
+                <MenuCommand.List>
+                  {ftmEntityOptions.map((option) => (
+                    <MenuCommand.Item
+                      key={option.value}
+                      onSelect={() =>
+                        updateTableState(tableModel.id, { entityType: option.value as FtmEntityV2, subEntity: 'moral' })
+                      }
+                    >
+                      {option.label}
+                    </MenuCommand.Item>
+                  ))}
+                </MenuCommand.List>
+              </MenuCommand.Content>
+            </MenuCommand.Menu>
           </header>
 
           <div className="flex-1 overflow-auto px-v2-lg py-v2-lg">
@@ -247,16 +264,20 @@ export function EditTableDrawer({
             />
           </div>
 
-          <footer className="flex shrink-0 flex-col gap-v2-md border-t border-grey-border p-v2-lg">
-            {validationErrors.length > 0 ? (
-              <Callout color="red" icon="error">
-                <ul className="flex list-disc flex-col gap-v2-xs pl-3">
+          <footer className="flex justify-between shrink-0 gap-v2-md border-t border-grey-border p-v2-lg">
+            {validationErrors.length > 0 || isSemanticTypeChanged ? (
+              <Callout color="red" icon="lightbulb" iconColor="red">
+                <ul className="flex flex-col gap-v2-xs pl-3">
                   {validationErrors.map((error, index) => (
                     <li key={`${error.kind}-${index}`}>{error.message}</li>
                   ))}
+                  {isSemanticTypeChanged ? <li>{t('data:edit_table.entity_type_change_warning')}</li> : null}
                 </ul>
               </Callout>
-            ) : null}
+            ) : (
+              <div />
+            )}
+
             <div className="flex justify-end gap-v2-md">
               <Button variant="secondary" appearance="stroked" onClick={onClose}>
                 {t('common:cancel')}

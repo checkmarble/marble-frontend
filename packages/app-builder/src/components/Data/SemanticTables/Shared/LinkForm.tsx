@@ -61,7 +61,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
           label: (
             <span className="flex items-center gap-v2-sm">
               <Icon icon={getDataTypeIcon(field.dataType) ?? 'minus'} className="size-4" />
-              <span>{field.alias ?? field.name}</span>
+              <span>{field.alias || field.name}</span>
             </span>
           ),
           value: field.id,

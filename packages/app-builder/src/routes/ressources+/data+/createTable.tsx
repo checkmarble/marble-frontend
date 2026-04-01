@@ -8,11 +8,11 @@ import { createTableValueSchema } from '@app-builder/queries/data/create-table';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { z } from 'zod/v4';
 
-type CreateTableActionResult = ServerFnResult<{ success: boolean; errors: unknown }>;
+type CreateTableActionData = { success: true; data: { id: string } } | { success: false; errors: unknown };
 
 export const action = createServerFn(
   [handleRedirectMiddleware, authMiddleware],
-  async function createTableAction({ request, context }): CreateTableActionResult {
+  async function createTableAction({ request, context }): ServerFnResult<CreateTableActionData> {
     const { toastSessionService, i18nextService } = context.services;
     const { dataModelRepository } = context.authInfo;
 
@@ -29,7 +29,7 @@ export const action = createServerFn(
 
     const result = await tryCatch(() => dataModelRepository.createTable(parsed.data));
     if (result.ok) {
-      return { success: true, errors: [] };
+      return { success: true, data: { id: result.value.id } };
     }
 
     setToastMessage(toastSession, {

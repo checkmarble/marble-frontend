@@ -1,6 +1,6 @@
 import { getDataTypeIcon, type PrimitiveTypes } from '@app-builder/models';
 import { useDeleteFieldMutation } from '@app-builder/queries/data/delete-field';
-import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
+import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
@@ -34,7 +34,7 @@ export function FieldDetailPanel({
   fieldId,
   onClose,
   title,
-  tableOptions = [],
+  tableOptions,
 }: {
   fieldId: string;
   onClose: () => void;
@@ -43,6 +43,7 @@ export function FieldDetailPanel({
 }) {
   const { fields, updateField, removeField, mainTimestampFieldId, setMainTimestampFieldId } =
     FieldsEditorContext.useValue();
+  const dataModel = useDataModel();
   const { isEditDataModelInfoAvailable, isDeleteDataModelFieldAvailable } = useDataModelFeatureAccess();
 
   const deleteFieldMutation = useDeleteFieldMutation();
@@ -68,17 +69,28 @@ export function FieldDetailPanel({
     [],
   );
 
+  const resolvedTableOptions = useMemo(() => {
+    const dataModelTableOptions = dataModel.map((table) => ({
+      label: table.alias || table.name,
+      value: table.name,
+    }));
+
+    return [...dataModelTableOptions, ...(tableOptions ?? [])].filter(
+      (option, index, allOptions) => allOptions.findIndex(({ value }) => value === option.value) === index,
+    );
+  }, [dataModel, tableOptions]);
+
   const semanticOptions = useMemo(() => {
     if (!field) return [];
     const options = semanticTypesByDataType[field.dataType as keyof typeof semanticTypesByDataType];
     if (!options) return [];
     return options
-      .filter((opt: { value: string }) => opt.value !== 'foreign_key' || tableOptions.length > 0)
+      .filter((opt: { value: string }) => opt.value !== 'foreign_key' || resolvedTableOptions.length > 0)
       .map((opt: { value: string }) => ({
         label: t(`data:upload_data.field_semantic.${opt.value}`),
         value: opt.value,
       }));
-  }, [field, t, tableOptions]);
+  }, [field, resolvedTableOptions.length, t]);
 
   const semanticSubOptions = useMemo(() => {
     if (!field || !field.semanticType) return [];
@@ -227,7 +239,11 @@ export function FieldDetailPanel({
 
         {/* ForeignKey-specific: destination table */}
         {!isLocked && field.semanticType === 'foreign_key' ? (
-          <ForeignKeySettings foreignkeyTable={field.foreignkeyTable} onChange={update} tableOptions={tableOptions} />
+          <ForeignKeySettings
+            foreignkeyTable={field.foreignkeyTable}
+            onChange={update}
+            tableOptions={resolvedTableOptions}
+          />
         ) : null}
 
         {/* Currency-specific: currency exponent (only when semantic type is number and sub type is currency) */}
