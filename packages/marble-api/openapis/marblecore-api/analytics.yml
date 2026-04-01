@@ -195,6 +195,207 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/analytics/cases/sar_completed:
+  post:
+    tags:
+      - Analytics
+    summary: Get SAR completed count
+    operationId: getCasesAnalyticsSarCompleted
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
+    responses:
+      '200':
+        description: The count of completed SARs
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SarCompletedResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/analytics/cases/sar_delay:
+  post:
+    tags:
+      - Analytics
+    summary: Get SAR delay metrics by time bucket
+    operationId: getCasesAnalyticsSarDelay
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
+    responses:
+      '200':
+        description: SAR delay metrics by time bucket
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SarDelayResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/analytics/cases/sar_delay_distribution:
+  post:
+    tags:
+      - Analytics
+    summary: Get SAR delay distribution
+    operationId: getCasesAnalyticsSarDelayDistribution
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
+    responses:
+      '200':
+        description: SAR delay distribution by bracket
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SarDelayDistributionResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/analytics/cases/cases_created:
+  post:
+    tags:
+      - Analytics
+    summary: Get cases created by time bucket
+    operationId: getCasesAnalyticsCasesCreated
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
+    responses:
+      '200':
+        description: Cases created by time bucket
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CasesCreatedResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/analytics/cases/cases_false_positive_rate:
+  post:
+    tags:
+      - Analytics
+    summary: Get false positive rate by time bucket
+    operationId: getCasesAnalyticsFalsePositiveRate
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
+    responses:
+      '200':
+        description: False positive rate by time bucket
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CasesFalsePositiveRateResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/analytics/cases/cases_duration:
+  post:
+    tags:
+      - Analytics
+    summary: Get case duration metrics by time bucket
+    operationId: getCasesAnalyticsCasesDuration
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
+    responses:
+      '200':
+        description: Case duration metrics by time bucket
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CasesDurationResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/analytics/cases/open_cases_by_age:
+  post:
+    tags:
+      - Analytics
+    summary: Get open cases by age bracket
+    operationId: getCasesAnalyticsOpenCasesByAge
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
+    responses:
+      '200':
+        description: Open cases by age bracket
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OpenCasesByAgeResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
 /analytics/available-filters:
   post:
     tags:
@@ -436,4 +637,115 @@ components:
           source:
             type: string
             enum: ['trigger_object']
+    CaseAnalyticsQueryDto:
+      type: object
+      required:
+        - start
+        - end
+        - timezone
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        inbox_id:
+          type: string
+          format: uuid
+        assigned_user_id:
+          type: string
+          format: uuid
+    SarCompletedResponseDto:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: integer
+    SarDelayResponseDto:
+      type: object
+      required:
+        - date
+        - avg_days
+        - max_days
+      properties:
+        date:
+          type: string
+          format: date
+        avg_days:
+          type: number
+        max_days:
+          type: number
+    AnalyticsBracketDto:
+      type: string
+      enum:
+        - '0-2'
+        - '3-10'
+        - '11-30'
+        - '31+'
+    SarDelayDistributionResponseDto:
+      type: object
+      required:
+        - bracket
+        - count
+      properties:
+        bracket:
+          $ref: '#/components/schemas/AnalyticsBracketDto'
+        count:
+          type: integer
+    CasesCreatedResponseDto:
+      type: object
+      required:
+        - date
+        - count
+      properties:
+        date:
+          type: string
+          format: date
+        count:
+          type: integer
+    CasesFalsePositiveRateResponseDto:
+      type: object
+      required:
+        - date
+        - total_closed
+        - false_positives
+        - rate
+      properties:
+        date:
+          type: string
+          format: date
+        total_closed:
+          type: integer
+        false_positives:
+          type: integer
+        rate:
+          type: number
+    CasesDurationResponseDto:
+      type: object
+      required:
+        - date
+        - avg_days
+        - max_days
+      properties:
+        date:
+          type: string
+          format: date
+        avg_days:
+          type: number
+        max_days:
+          type: number
+    OpenCasesByAgeResponseDto:
+      type: object
+      required:
+        - bracket
+        - count
+      properties:
+        bracket:
+          $ref: '#/components/schemas/AnalyticsBracketDto'
+        count:
+          type: integer
 

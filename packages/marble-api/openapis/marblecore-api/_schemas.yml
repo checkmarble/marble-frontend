@@ -527,6 +527,24 @@ CaseStatusByInboxResponseDto:
   $ref: analytics.yml#/components/schemas/CaseStatusByInboxResponseDto
 AvailableFiltersResponseDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersResponseDto
+AnalyticsBracketDto:
+  $ref: analytics.yml#/components/schemas/AnalyticsBracketDto
+CaseAnalyticsQueryDto:
+  $ref: analytics.yml#/components/schemas/CaseAnalyticsQueryDto
+SarCompletedResponseDto:
+  $ref: analytics.yml#/components/schemas/SarCompletedResponseDto
+SarDelayResponseDto:
+  $ref: analytics.yml#/components/schemas/SarDelayResponseDto
+SarDelayDistributionResponseDto:
+  $ref: analytics.yml#/components/schemas/SarDelayDistributionResponseDto
+CasesCreatedResponseDto:
+  $ref: analytics.yml#/components/schemas/CasesCreatedResponseDto
+CasesFalsePositiveRateResponseDto:
+  $ref: analytics.yml#/components/schemas/CasesFalsePositiveRateResponseDto
+CasesDurationResponseDto:
+  $ref: analytics.yml#/components/schemas/CasesDurationResponseDto
+OpenCasesByAgeResponseDto:
+  $ref: analytics.yml#/components/schemas/OpenCasesByAgeResponseDto
 
 # CONTINUOUS SCREENINGS
 
