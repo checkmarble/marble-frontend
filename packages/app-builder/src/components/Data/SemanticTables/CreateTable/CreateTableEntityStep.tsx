@@ -1,6 +1,7 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+import { type FtmEntityPersonOption, type FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useStore } from '@tanstack/react-form';
@@ -8,12 +9,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
-import {
-  type FtmEntityPersonOption,
-  type FtmEntityV2,
-  ftmEntities,
-  ftmEntityPersonOptions,
-} from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 import { requiresLink, type TablePropertyError } from './createTable-types';
 

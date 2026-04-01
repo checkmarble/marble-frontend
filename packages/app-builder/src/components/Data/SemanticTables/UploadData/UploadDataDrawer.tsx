@@ -347,10 +347,7 @@ export function UploadDataDrawerContent() {
 
   const isSingleTable = tableIds.length === 1;
 
-  const allVisited = useMemo(
-    () => tableIds.length > 0 && tableIds.every((id) => tablesState[id]!.isVisited),
-    [tablesState, tableIds],
-  );
+  const allVisited = tableIds.length > 0 && tableIds.every((id) => tablesState[id]!.isVisited);
 
   const tableOptions = useMemo(
     () =>

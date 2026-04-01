@@ -1,10 +1,10 @@
 import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
-import { getDataTypeIcon } from '@app-builder/models';
+import { getDataTypeIcon, linkRelationTypes } from '@app-builder/models';
+import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { linkRelationTypes } from './semanticData-types';
 
 export function LinkForm({
   compact,
@@ -17,7 +17,7 @@ export function LinkForm({
 }) {
   const { links, addLink, destinationTableOptions } = LinksEditorContext.useValue();
   const { t } = useTranslation(['data']);
-
+  const { isCreateDataModelLinkAvailable } = useDataModelFeatureAccess();
   return (
     <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'border border-red-primary p-v2-md')}>
       <h4 className="text-m font-semibold">{t('data:upload_data.links_settings')}</h4>
@@ -26,20 +26,22 @@ export function LinkForm({
           <LinkRow key={link.linkId} linkId={link.linkId} compact={compact} hasError={errorLinkIds?.has(link.linkId)} />
         ))}
       </div>
-      <div className="flex items-center gap-v2-sm">
-        <Button
-          variant="primary"
-          appearance="stroked"
-          onClick={() => addLink()}
-          disabled={!destinationTableOptions.length}
-        >
-          <Icon icon="plus" className="size-4" />
-          {t('data:upload_data.link_add')}
-        </Button>
-        {!destinationTableOptions.length && (
-          <span className="text-grey-secondary">{t('data:create_table.link_destination_table_required')}</span>
-        )}
-      </div>
+      {isCreateDataModelLinkAvailable && (
+        <div className="flex items-center gap-v2-sm">
+          <Button
+            variant="primary"
+            appearance="stroked"
+            onClick={() => addLink()}
+            disabled={!destinationTableOptions.length}
+          >
+            <Icon icon="plus" className="size-4" />
+            {t('data:upload_data.link_add')}
+          </Button>
+          {!destinationTableOptions.length && (
+            <span className="text-grey-secondary">{t('data:create_table.link_destination_table_required')}</span>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -47,6 +49,7 @@ export function LinkForm({
 function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: boolean; hasError?: boolean }) {
   const { links, sourceTableFields, destinationTableOptions, updateLink, removeLink } = LinksEditorContext.useValue();
   const { t } = useTranslation(['data']);
+  const { isDeleteDataModelLinkAvailable } = useDataModelFeatureAccess();
 
   const link = links.find((l) => l.linkId === linkId)!;
 
@@ -135,13 +138,15 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         options={destinationOptions}
         className={cn('flex-1 min-w-fit', hasError && 'border-red-primary')}
       />
-      <button
-        type="button"
-        onClick={() => removeLink(linkId)}
-        className="shrink-0 rounded-lg p-2 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
-      >
-        <Icon icon="delete" className="size-4" />
-      </button>
+      {isDeleteDataModelLinkAvailable && (
+        <button
+          type="button"
+          onClick={() => removeLink(linkId)}
+          className="shrink-0 rounded-lg p-2 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+        >
+          <Icon icon="delete" className="size-4" />
+        </button>
+      )}
     </div>
   );
 }

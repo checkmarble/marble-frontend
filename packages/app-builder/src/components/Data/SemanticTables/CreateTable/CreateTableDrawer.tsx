@@ -67,6 +67,7 @@ export function CreateTableDrawer({
     if (currentStep === 1) return 'fields';
     return 'links';
   }, [currentStep]);
+
   const tableErrorFields = useMemo(
     () =>
       new Set(
@@ -76,6 +77,7 @@ export function CreateTableDrawer({
       ),
     [validationErrors],
   );
+
   const fieldErrorIds = useMemo(
     () =>
       new Set(
@@ -85,6 +87,7 @@ export function CreateTableDrawer({
       ),
     [validationErrors],
   );
+
   const linkErrorIds = useMemo(
     () =>
       new Set(

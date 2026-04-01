@@ -75,7 +75,11 @@ export default function DataList() {
           {isEmpty ? (
             <DataListEmptyState onImportSuccess={handleImportSuccess} onCreateTable={handleOpenCreateDrawer} />
           ) : (
-            dataModel.map((table) => <TableDetails key={table.name} tableModel={table} dataModel={dataModel} />)
+            <div className="grid grid-rows-3 auto-cols-[360px] gap-x-[80px] gap-y-[40px] grid-flow-col place-content-center">
+              {dataModel.map((table) => (
+                <TableDetails key={table.name} tableModel={table} dataModel={dataModel} />
+              ))}
+            </div>
           )}
         </Page.Content>
       </Page.Container>

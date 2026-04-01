@@ -72,10 +72,7 @@ export function CreateTableLinksStep({
     [form],
   );
 
-  const editorValue = useMemo(
-    () => ({ links, sourceTableFields: fields, destinationTableOptions, updateLink, addLink, removeLink }),
-    [links, fields, destinationTableOptions, updateLink, addLink, removeLink],
-  );
+  const editorValue = { links, sourceTableFields: fields, destinationTableOptions, updateLink, addLink, removeLink };
 
   return (
     <LinksEditorContext.Provider value={editorValue}>

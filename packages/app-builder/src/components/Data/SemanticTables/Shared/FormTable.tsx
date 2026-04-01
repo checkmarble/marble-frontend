@@ -1,4 +1,5 @@
 import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
+import { FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
@@ -8,15 +9,17 @@ import { UploadDataDrawerContext } from '../UploadData/UploadDataDrawer';
 import { FieldDetailPanel } from './FieldDetailPanel';
 import { FieldsForm } from './FieldsForm';
 import { LinkForm } from './LinkForm';
-import {
-  type FtmEntityV2,
-  ftmEntities,
-  ftmEntityPersonOptions,
-  type LinkValue,
-  type TableField,
-} from './semanticData-types';
+import { type LinkValue, type TableField } from './semanticData-types';
 
-export function FormTable({ tableId, errorFieldIds }: { tableId: string; errorFieldIds?: ReadonlySet<string> }) {
+export function FormTable({
+  tableId,
+  errorFieldIds,
+  destinationTableOptions: overrideDestinationTableOptions,
+}: {
+  tableId: string;
+  errorFieldIds?: ReadonlySet<string>;
+  destinationTableOptions?: { tableId: string; label: string }[];
+}) {
   const {
     tablesState,
     updateTableState,
@@ -87,13 +90,14 @@ export function FormTable({ tableId, errorFieldIds }: { tableId: string; errorFi
 
   const links = getLinksForTable(tableId);
 
-  const destinationTableOptions = useMemo(
+  const derivedDestinationTableOptions = useMemo(
     () =>
       Object.values(tablesState)
         .filter((t) => t.tableId !== tableId && !t.isCanceled)
         .map((t) => ({ tableId: t.tableId, label: t.alias || t.name })),
     [tablesState, tableId],
   );
+  const destinationTableOptions = overrideDestinationTableOptions ?? derivedDestinationTableOptions;
 
   const linksEditorValue = useMemo(
     () => ({
@@ -110,33 +114,37 @@ export function FormTable({ tableId, errorFieldIds }: { tableId: string; errorFi
   return (
     <div className="flex gap-v2-lg">
       <div className="flex min-w-0 flex-1 flex-col gap-v2-lg">
-        <section className="flex flex-col gap-v2-md">
-          <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
-          <div className="flex items-center gap-v2-md">
-            <Input
-              value={tableState.alias}
-              onChange={(e) => updateTableState(tableId, { alias: e.currentTarget.value })}
-              placeholder={t('data:upload_data.name_placeholder')}
-              className="flex-1"
-            />
-            <SelectV2
-              value={tableState.entityType}
-              placeholder={t('data:upload_data.object_placeholder')}
-              onChange={(value) => updateTableState(tableId, { entityType: value as FtmEntityV2, subEntity: 'moral' })}
-              options={ftmEntityOptions}
-              className="flex-1"
-            />
-            {hasSubEntity ? (
-              <SelectV2
-                value={tableState.subEntity}
-                placeholder={t('data:upload_data.sub_object_placeholder')}
-                onChange={(value) => updateTableState(tableId, { subEntity: value as typeof tableState.subEntity })}
-                options={subEntityOptions}
+        {!tableState.tableId ? (
+          <section className="flex flex-col gap-v2-md">
+            <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
+            <div className="flex items-center gap-v2-md">
+              <Input
+                value={tableState.alias}
+                onChange={(e) => updateTableState(tableId, { alias: e.currentTarget.value })}
+                placeholder={t('data:upload_data.name_placeholder')}
                 className="flex-1"
               />
-            ) : null}
-          </div>
-        </section>
+              <SelectV2
+                value={tableState.entityType}
+                placeholder={t('data:upload_data.object_placeholder')}
+                onChange={(value) =>
+                  updateTableState(tableId, { entityType: value as FtmEntityV2, subEntity: 'moral' })
+                }
+                options={ftmEntityOptions}
+                className="flex-1"
+              />
+              {hasSubEntity ? (
+                <SelectV2
+                  value={tableState.subEntity}
+                  placeholder={t('data:upload_data.sub_object_placeholder')}
+                  onChange={(value) => updateTableState(tableId, { subEntity: value as typeof tableState.subEntity })}
+                  options={subEntityOptions}
+                  className="flex-1"
+                />
+              ) : null}
+            </div>
+          </section>
+        ) : null}
         <LinksEditorContext.Provider value={linksEditorValue}>
           <LinkForm compact={!!selectedFieldId} />
         </LinksEditorContext.Provider>

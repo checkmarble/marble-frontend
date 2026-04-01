@@ -1,17 +1,14 @@
-import { CreateTableValue, FieldEntity } from '@app-builder/queries/data/create-table';
-import { match } from 'ts-pattern';
-import z from 'zod/v4';
-import { dataModelNameRegex } from '../../shared/dataModelNameValidation';
 import {
-  type FtmEntityPersonOption,
-  type FtmEntityV2,
-  ftmEntities,
-  ftmEntityPersonOptions,
   type SemanticSubType,
   type SemanticTableFormValues,
   type SemanticType,
   type TableField,
-} from '../Shared/semanticData-types';
+} from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
+import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
+import { FtmEntityPersonOption, FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
+import { CreateTableValue, FieldEntity } from '@app-builder/queries/data/create-table';
+import { match } from 'ts-pattern';
+import z from 'zod/v4';
 
 export type { SemanticTableFormValues };
 
@@ -157,7 +154,7 @@ function adaptTableField(field: TableField): CreateTableValue['fields'][number] 
     nullable: field.nullable,
     is_enum: field.isEnum,
     is_unique: field.unicityConstraint === 'active_unique_constraint',
-    ftm_property: field.ftmProperty,
+    // ftm_property: field.ftmProperty,
     metadata: {
       semanticType: field.semanticType,
       semanticSubType: field.semanticSubType,
@@ -172,12 +169,13 @@ function adaptTableField(field: TableField): CreateTableValue['fields'][number] 
 
 function getEntityType(entityType: FtmEntityV2, subEntity: FtmEntityPersonOption): FieldEntity {
   const fieldEntity = match(entityType)
-    .with('person', () => {
-      return match(subEntity)
+    .with('person', () =>
+      match(subEntity)
         .with('moral', () => 'company')
         .with('natural', () => 'person')
-        .with('generic', () => 'partner');
-    })
+        .with('generic', () => 'partner')
+        .exhaustive(),
+    )
     .with('transaction', () => 'transaction')
     .with('event', () => 'event')
     .with('other', () => 'other')

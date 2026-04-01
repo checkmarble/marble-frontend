@@ -1,14 +1,5 @@
-import { type PrimitiveTypes } from '@app-builder/models';
+import { FtmEntityPersonOption, FtmEntityV2, LinkRelationType, type PrimitiveTypes } from '@app-builder/models';
 import { match } from 'ts-pattern';
-
-export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other'] as const;
-export const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
-
-export type FtmEntityV2 = (typeof ftmEntities)[number];
-export type FtmEntityPersonOption = (typeof ftmEntityPersonOptions)[number];
-
-export const linkRelationTypes = ['belongs_to', 'related'] as const;
-export type LinkRelationType = (typeof linkRelationTypes)[number];
 
 export type LinkValue = {
   linkId: string;

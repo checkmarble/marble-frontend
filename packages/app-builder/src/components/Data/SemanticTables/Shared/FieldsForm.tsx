@@ -1,4 +1,5 @@
 import { getDataTypeIcon } from '@app-builder/models';
+import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,11 @@ export function FieldsForm({
   errorFieldIds?: ReadonlySet<string>;
   hasError?: boolean;
 }) {
+  const {
+    isCreateDataModelFieldAvailable,
+    // isIngestDataAvailable,
+    // TODO: add ingest data feature access
+  } = useDataModelFeatureAccess();
   const { fields, reorderFields, addField } = FieldsEditorContext.useValue();
   const { t } = useTranslation(['data']);
 
@@ -44,10 +50,12 @@ export function FieldsForm({
           <h4 className="text-m font-semibold">{title ?? t('data:upload_data.fields_title')}</h4>
           <p className="text-s text-grey-secondary">{description ?? t('data:upload_data.fields_description')}</p>
         </div>
-        <Button variant="primary" appearance="stroked" onClick={handleAddField}>
-          <Icon icon="plus" className="size-4" />
-          {t('data:upload_data.field_add')}
-        </Button>
+        {isCreateDataModelFieldAvailable && (
+          <Button variant="primary" appearance="stroked" onClick={handleAddField}>
+            <Icon icon="plus" className="size-4" />
+            {t('data:upload_data.field_add')}
+          </Button>
+        )}
       </div>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId={droppableId}>

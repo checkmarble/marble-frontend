@@ -35,6 +35,14 @@ export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'DerivedData' | 
 export const EnumDataTypes = ['Float', 'Int', 'String'];
 export const UniqueDataTypes = ['Float', 'Int', 'String'];
 export type UnicityConstraintType = 'no_unicity_constraint' | 'pending_unique_constraint' | 'active_unique_constraint';
+export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other'] as const;
+export const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
+
+export type FtmEntityV2 = (typeof ftmEntities)[number];
+export type FtmEntityPersonOption = (typeof ftmEntityPersonOptions)[number];
+
+export const linkRelationTypes = ['belongs_to', 'related'] as const;
+export type LinkRelationType = (typeof linkRelationTypes)[number];
 
 export type EnumValue = string | number;
 export interface DataModelField {
@@ -137,6 +145,9 @@ export interface TableModel {
   id: string;
   name: string;
   description: string;
+  semanticType: FtmEntityV2;
+  alias: string;
+  captionField: string;
   fields: DataModelField[];
   linksToSingle: LinkToSingle[];
   navigationOptions?: NavigationOption[];
@@ -148,6 +159,10 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     id: tableDto.id,
     name: tableDto.name,
     description: tableDto.description,
+    // TODO: get from tableDto when updated
+    alias: 'alias',
+    captionField: 'captionField',
+    semanticType: 'person',
     fields: R.pipe(tableDto.fields, R.values(), R.map(adaptDataModelField)),
     linksToSingle: R.pipe(
       tableDto.links_to_single ?? {},

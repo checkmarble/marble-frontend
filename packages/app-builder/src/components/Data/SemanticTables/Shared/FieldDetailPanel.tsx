@@ -1,4 +1,6 @@
 import { getDataTypeIcon, type PrimitiveTypes } from '@app-builder/models';
+import { useDeleteFieldMutation } from '@app-builder/queries/data/delete-field';
+import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
@@ -41,6 +43,9 @@ export function FieldDetailPanel({
 }) {
   const { fields, updateField, removeField, mainTimestampFieldId, setMainTimestampFieldId } =
     FieldsEditorContext.useValue();
+  const { isEditDataModelInfoAvailable, isDeleteDataModelFieldAvailable } = useDataModelFeatureAccess();
+
+  const deleteFieldMutation = useDeleteFieldMutation();
   const { t } = useTranslation(['data']);
   const field = fields.find((f) => f.id === fieldId);
 
@@ -98,7 +103,7 @@ export function FieldDetailPanel({
   const isLocked = field.locked ?? false;
 
   function update(values: Partial<TableField>) {
-    updateField(fieldId, values);
+    if (isEditDataModelInfoAvailable) updateField(fieldId, values);
   }
 
   const mockedValue = getMockValue(field.dataType, field.semanticType, field.semanticSubType);
@@ -112,11 +117,12 @@ export function FieldDetailPanel({
           </button>
           <h4 className="text-m font-semibold">{title ?? t('data:upload_data.field_detail_title')}</h4>
         </div>
-        {field.isNew ? (
+        {(field.isNew || isDeleteDataModelFieldAvailable) && !field.locked ? (
           <button
             type="button"
             onClick={() => {
-              removeField(fieldId);
+              if (field.isNew) removeField(fieldId);
+              if (isDeleteDataModelFieldAvailable) deleteFieldMutation.mutate({ fieldId, perform: true });
               onClose();
             }}
             className="rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
