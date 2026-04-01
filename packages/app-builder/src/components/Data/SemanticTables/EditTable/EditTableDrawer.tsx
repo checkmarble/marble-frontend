@@ -10,67 +10,6 @@ import { FormTable } from '../Shared/FormTable';
 import type { LinkValue, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 import { UploadDataDrawerContext } from '../UploadData/UploadDataDrawer';
 
-function adaptFieldToTableField(field: DataModelField, index: number): TableField {
-  const isSystemField = field.name === 'object_id' || field.name === 'updated_at';
-  return {
-    id: field.id,
-    name: field.name,
-    description: field.description,
-    dataType: field.dataType as TableField['dataType'],
-    tableId: field.tableId,
-    isEnum: field.isEnum,
-    nullable: field.nullable,
-    alias: field.alias ?? field.name,
-    hidden: false,
-    order: field.order ?? index,
-    unicityConstraint: field.unicityConstraint,
-    ftmProperty: field.ftmProperty ?? '',
-    semanticType:
-      field.name === 'object_id' ? 'unique_id' : field.name === 'updated_at' ? 'last_update' : field.semanticType,
-    semanticSubType: field.name === 'object_id' ? 'opaque_id' : field.semanticSubType,
-    currencyExponent: field.currencyExponent,
-    decimalPrecision: field.decimalPrecision,
-    currencyFieldId: field.currencyFieldId,
-    booleanDisplay: field.booleanDisplay,
-    foreignkeyTable: field.foreignkeyTable,
-    isNew: false,
-    locked: isSystemField,
-  };
-}
-
-function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormValues {
-  return {
-    tableId: tableModel.id,
-    name: tableModel.name,
-    alias: tableModel.alias && tableModel.alias !== 'alias' ? tableModel.alias : tableModel.name,
-    entityType: tableModel.semanticType,
-    subEntity: 'moral',
-    belongsToTableId: '',
-    fields: tableModel.fields.map(adaptFieldToTableField),
-    mainTimestampFieldId: '',
-    links: [],
-    metaData: {},
-    isCanceled: false,
-    isVisited: true,
-  };
-}
-
-function adaptLinksToLinkState(links: LinkToSingle[], tableId: string): Record<string, LinkValue> {
-  return Object.fromEntries(
-    links.map((link) => [
-      link.id,
-      {
-        linkId: link.id,
-        name: link.name,
-        sourceTableId: tableId,
-        tableFieldId: link.childFieldId,
-        relationType: 'belongs_to' as const,
-        targetTableId: link.parentTableId,
-      } satisfies LinkValue,
-    ]),
-  );
-}
-
 export function EditTableDrawer({
   open,
   onClose,
@@ -282,13 +221,9 @@ export function EditTableDrawer({
             <button type="button" onClick={onClose} className="rounded-lg p-2 hover:bg-grey-border">
               <Icon icon="x" className="size-5" />
             </button>
-            <span className="text-grey-secondary text-m">{t('data:edit_table.header_prefix')}</span>
-            <input
-              value={tableState.alias}
-              onChange={(e) => updateTableState(tableModel.id, { alias: e.currentTarget.value })}
-              placeholder={tableModel.name}
-              className="text-l font-semibold bg-transparent border-b border-transparent hover:border-grey-border focus:border-purple-primary focus:outline-none px-1 min-w-0 flex-1"
-            />
+            <span className="text-l">{t('data:edit_table.header_prefix')}</span>
+            <EditableAlias alias={tableState.alias} onChange={(alias) => updateTableState(tableModel.id, { alias })} />
+
             {tableModel.semanticType === 'other' ? (
               <SelectV2
                 value={tableState.entityType}
@@ -334,5 +269,105 @@ export function EditTableDrawer({
         </div>
       </aside>
     </UploadDataDrawerContext.Provider>
+  );
+}
+
+type EditableAliasProps = { alias: string; onChange: (alias: string) => void };
+
+function EditableAlias({ alias, onChange }: EditableAliasProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedAlias, setEditedAlias] = useState(alias);
+
+  const onClose = () => setIsEditing(false);
+  const onSave = () => {
+    onChange(editedAlias);
+    onClose();
+  };
+  return (
+    <div className="flex items-center gap-2">
+      {isEditing ? (
+        <input
+          value={editedAlias}
+          onChange={(e) => setEditedAlias(e.currentTarget.value)}
+          onBlur={onClose}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter') onSave();
+            if (e.key === 'Escape') {
+              setEditedAlias(alias);
+              onClose();
+            }
+          }}
+          className="text-l font-semibold bg-transparent border-b border-transparent hover:border-grey-border focus:border-purple-primary focus:outline-none px-1 min-w-0"
+        />
+      ) : (
+        <>
+          <span className="text-l font-semibold text-purple-primary">{alias}</span>
+          <Button variant="secondary" appearance="stroked" onClick={() => setIsEditing(true)}>
+            <Icon icon="edit-square" className="size-4" />
+          </Button>
+        </>
+      )}
+    </div>
+  );
+}
+
+function adaptFieldToTableField(field: DataModelField, index: number): TableField {
+  const isSystemField = field.name === 'object_id' || field.name === 'updated_at';
+  return {
+    id: field.id,
+    name: field.name,
+    description: field.description,
+    dataType: field.dataType as TableField['dataType'],
+    tableId: field.tableId,
+    isEnum: field.isEnum,
+    nullable: field.nullable,
+    alias: field.alias ?? field.name,
+    hidden: false,
+    order: field.order ?? index,
+    unicityConstraint: field.unicityConstraint,
+    ftmProperty: field.ftmProperty ?? '',
+    semanticType:
+      field.name === 'object_id' ? 'unique_id' : field.name === 'updated_at' ? 'last_update' : field.semanticType,
+    semanticSubType: field.name === 'object_id' ? 'opaque_id' : field.semanticSubType,
+    currencyExponent: field.currencyExponent,
+    decimalPrecision: field.decimalPrecision,
+    currencyFieldId: field.currencyFieldId,
+    booleanDisplay: field.booleanDisplay,
+    foreignkeyTable: field.foreignkeyTable,
+    isNew: false,
+    locked: isSystemField,
+  };
+}
+
+function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormValues {
+  return {
+    tableId: tableModel.id,
+    name: tableModel.name,
+    alias: tableModel.alias && tableModel.alias !== 'alias' ? tableModel.alias : tableModel.name,
+    entityType: tableModel.semanticType,
+    subEntity: 'moral',
+    belongsToTableId: '',
+    fields: tableModel.fields.map(adaptFieldToTableField),
+    mainTimestampFieldId: '',
+    links: [],
+    metaData: {},
+    isCanceled: false,
+    isVisited: true,
+  };
+}
+
+function adaptLinksToLinkState(links: LinkToSingle[], tableId: string): Record<string, LinkValue> {
+  return Object.fromEntries(
+    links.map((link) => [
+      link.id,
+      {
+        linkId: link.id,
+        name: link.name,
+        sourceTableId: tableId,
+        tableFieldId: link.childFieldId,
+        relationType: 'belongs_to' as const,
+        targetTableId: link.parentTableId,
+      } satisfies LinkValue,
+    ]),
   );
 }

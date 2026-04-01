@@ -41,7 +41,7 @@ export function ScenarioHeader({ isEditScenarioAvailable }: { isEditScenarioAvai
         displayValueClassName="text-h2 truncate"
         inputClassName="text-h2 min-w-0 flex-1 border-none bg-transparent font-normal outline-hidden"
       />
-      <Tag size="small" color="grey">
+      <Tag size="small" color="grey" className="flex items-center gap-2">
         {currentScenario.triggerObjectType}
         <Icon icon="tip" className="size-4" />
       </Tag>
