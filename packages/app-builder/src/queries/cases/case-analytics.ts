@@ -17,6 +17,9 @@ export const useCaseAnalytics = (filters: CaseAnalyticsFilters) => {
   if (filters.inboxId) {
     params.set('inboxId', filters.inboxId);
   }
+  if (filters.userId) {
+    params.set('userId', filters.userId);
+  }
 
   return useQuery({
     queryKey: caseAnalyticsQueryKey(filters),
