@@ -73,11 +73,13 @@ export function adaptCasesCreated(dto: CasesCreatedResponseDto): PeriodCount {
 }
 
 export function adaptFalsePositiveRate(dto: CasesFalsePositiveRateResponseDto): FalsePositiveRate {
+  const closedCount = dto.total_closed;
+  const fpCount = dto.false_positives;
   return {
     period: dto.date,
-    rate: dto.rate,
-    fpCount: dto.false_positives,
-    closedCount: dto.total_closed,
+    rate: closedCount > 0 ? Math.round((fpCount / closedCount) * 1000) / 10 : 0,
+    fpCount,
+    closedCount,
   };
 }
 
