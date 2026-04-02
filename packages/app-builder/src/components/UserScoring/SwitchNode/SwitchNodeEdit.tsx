@@ -4,6 +4,7 @@ import { type DataModel } from '@app-builder/models/data-model';
 import { type RuleModel, transformSwitchAstNodeToModel } from '@app-builder/models/scoring';
 import { match } from 'ts-pattern';
 import { AggregateRuleEdit } from './AggregateRuleEdit';
+import { PastAlertsRuleEdit } from './PastAlertsRuleEdit';
 import { TagsRuleEdit } from './TagsRuleEdit';
 import { UserAttributeRuleEdit } from './UserAttributeRuleEdit';
 
@@ -51,6 +52,9 @@ export function SwitchNodeEdit({
         ))
         .with({ type: 'screening_tags' }, { type: 'entity_tags' }, (m) => (
           <TagsRuleEdit model={m} maxRiskLevel={maxRiskLevel} onModelChange={onModelChange} />
+        ))
+        .with({ type: 'past_alerts' }, (m) => (
+          <PastAlertsRuleEdit model={m} maxRiskLevel={maxRiskLevel} onModelChange={onModelChange} />
         ))
         .exhaustive()}
     </div>

@@ -19,10 +19,12 @@ export type AggregateRule = {
 export type ScreeningTagsRule = { type: 'screening_tags'; conditions: TagsSwitch };
 export type EntityTagsRule = { type: 'entity_tags'; conditions: TagsSwitch };
 
-/** Always-complete model — use this for saved/submitted data. */
-export type RuleModel = UserAttributeRule | AggregateRule | ScreeningTagsRule | EntityTagsRule;
+export type PastAlertsRule = { type: 'past_alerts'; conditions: BoolSwitch };
 
-export const RULE_TYPES = ['user_attribute', 'aggregate', 'screening_tags', 'entity_tags'] as const;
+/** Always-complete model — use this for saved/submitted data. */
+export type RuleModel = UserAttributeRule | AggregateRule | ScreeningTagsRule | EntityTagsRule | PastAlertsRule;
+
+export const RULE_TYPES = ['user_attribute', 'aggregate', 'screening_tags', 'entity_tags', 'past_alerts'] as const;
 export type RuleModelType = (typeof RULE_TYPES)[number];
 
 // --- Draft rule types (fields may be null, used during editing) ---
@@ -43,7 +45,12 @@ export type DraftAggregateRule = {
  * Editing-time model — field/conditions may be null while the user is configuring
  * a fielded rule. Tags rules are always complete and included as-is.
  */
-export type DraftRuleModel = DraftUserAttributeRule | DraftAggregateRule | ScreeningTagsRule | EntityTagsRule;
+export type DraftRuleModel =
+  | DraftUserAttributeRule
+  | DraftAggregateRule
+  | ScreeningTagsRule
+  | EntityTagsRule
+  | PastAlertsRule;
 
 // --- Type guards ---
 

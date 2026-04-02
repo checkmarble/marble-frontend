@@ -90,7 +90,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
     const fieldNode = match(ruleType)
       .with('user_attribute', () => NewAstNode())
       .with('aggregate', () => NewAggregatorAstNode('SUM'))
-      .with('screening_tags', 'entity_tags', () => undefined)
+      .with('screening_tags', 'entity_tags', 'past_alerts', () => undefined)
       .exhaustive();
 
     setPanelRule({

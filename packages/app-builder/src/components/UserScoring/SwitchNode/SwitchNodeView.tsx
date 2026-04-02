@@ -69,6 +69,7 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
                 <span>{t('user-scoring:switch.screening_tags.depending_on')}</span>
               ))
               .with({ type: 'entity_tags' }, () => <span>{t('user-scoring:switch.entity_tags.depending_on')}</span>)
+              .with({ type: 'past_alerts' }, () => <span>{t('user-scoring:switch.past_alerts.depending_on')}</span>)
               .exhaustive()
           : null}
       </div>
@@ -105,6 +106,9 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
               maxRiskLevel={maxRiskLevel}
               getTagLabel={(value) => getTagById(value)?.name ?? value}
             />
+          ))
+          .with({ type: 'past_alerts' }, (m) => (
+            <BoolSwitchDescription conditions={m.conditions} maxRiskLevel={maxRiskLevel} />
           ))
           .exhaustive()
       ) : null}

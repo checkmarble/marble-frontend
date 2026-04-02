@@ -19,6 +19,7 @@ import {
   monitoringListCheckAstNodeName,
   NewTagCheckAstNode,
 } from '../astNode/monitoring-list-check';
+import { isRecordHasPastAlertAstNode, NewRecordHasPastAlertsAstNode } from '../astNode/risk';
 import {
   type BoolSwitch,
   getOperationType,
@@ -39,8 +40,24 @@ export function transformSwitchAstNodeToModel(
 ): DraftRuleModel | null {
   if (!isConstant(node.namedChildren.type)) return null;
   const type = node.namedChildren.type.constant;
-  if (type !== 'user_attribute' && type !== 'aggregate' && type !== 'screening_tags' && type !== 'entity_tags')
+  if (
+    type !== 'user_attribute' &&
+    type !== 'aggregate' &&
+    type !== 'screening_tags' &&
+    type !== 'entity_tags' &&
+    type !== 'past_alerts'
+  )
     return null;
+
+  if (type === 'past_alerts') {
+    const scoreComputationNodes = node.children.filter(isScoreComputationAstNode) as ScoreComputationAstNode[];
+    if (scoreComputationNodes.length === 0) {
+      return { type: 'past_alerts', conditions: { type: 'bool', ifTrue: { modifier: 0 }, ifFalse: { modifier: 0 } } };
+    }
+    const conditions = parsePastAlertsBranches(scoreComputationNodes);
+    if (!conditions) return null;
+    return { type: 'past_alerts', conditions };
+  }
 
   if (type === 'screening_tags' || type === 'entity_tags') {
     const scoreComputationNodes = node.children.filter(isScoreComputationAstNode) as ScoreComputationAstNode[];
@@ -83,7 +100,7 @@ export function transformSwitchAstNodeToModel(
 }
 
 export function buildSwitchAstNodeFromModel(model: RuleModel): SwitchAstNode {
-  if (model.type !== 'user_attribute' && model.type !== 'aggregate') {
+  if (model.type === 'screening_tags' || model.type === 'entity_tags') {
     return {
       id: uuidv7(),
       name: switchAstNodeName,
@@ -93,6 +110,18 @@ export function buildSwitchAstNodeFromModel(model: RuleModel): SwitchAstNode {
         type: NewConstantAstNode({ constant: model.type }),
       },
       children: buildTagsSwitchChildren(model.conditions),
+    };
+  }
+  if (model.type === 'past_alerts') {
+    return {
+      id: uuidv7(),
+      name: switchAstNodeName,
+      constant: undefined,
+      namedChildren: {
+        field: NewUndefinedAstNode(),
+        type: NewConstantAstNode({ constant: model.type }),
+      },
+      children: buildPastAlertsSwitchChildren(model.conditions),
     };
   }
   const children = buildConditionChildren(model.field, model.conditions);
@@ -116,6 +145,32 @@ function buildTagsSwitchChildren(conditions: TagsSwitch): AstNode[] {
     return buildScoreComputationAstNode(branchCondition, branch.impact);
   });
   return [...branchNodes, buildScoreComputationAstNode(NewConstantAstNode({ constant: true }), conditions.default)];
+}
+
+function buildPastAlertsSwitchChildren(conditions: BoolSwitch): AstNode[] {
+  return [
+    buildScoreComputationAstNode(NewRecordHasPastAlertsAstNode(), conditions.ifTrue),
+    buildScoreComputationAstNode(NewConstantAstNode({ constant: true }), conditions.ifFalse),
+  ];
+}
+
+function parsePastAlertsBranches(nodes: ScoreComputationAstNode[]): BoolSwitch | null {
+  if (nodes.length !== 2) return null;
+  const [trueNode, falseNode] = nodes as [ScoreComputationAstNode, ScoreComputationAstNode];
+
+  const trueCondition = trueNode.children[0];
+  if (!trueCondition || !isRecordHasPastAlertAstNode(trueCondition)) return null;
+
+  const falseCondition = falseNode.children[0];
+  if (!falseCondition || !isConstant(falseCondition) || falseCondition.constant !== true) return null;
+
+  const ifTrue: ScoreImpact = { modifier: trueNode.namedChildren.modifier.constant };
+  if (trueNode.namedChildren.floor) ifTrue.floor = trueNode.namedChildren.floor.constant;
+
+  const ifFalse: ScoreImpact = { modifier: falseNode.namedChildren.modifier.constant };
+  if (falseNode.namedChildren.floor) ifFalse.floor = falseNode.namedChildren.floor.constant;
+
+  return { type: 'bool', ifTrue, ifFalse };
 }
 
 function parseTagsBranches(nodes: ScoreComputationAstNode[]): TagsSwitch | null {
