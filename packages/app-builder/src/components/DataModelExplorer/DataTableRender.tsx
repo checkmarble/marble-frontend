@@ -159,6 +159,8 @@ type DataTableProps = {
 };
 
 const ROW_NUMBER_COL_WIDTH = 50;
+const DEFAULT_PINNED_COL_WIDTH = 150;
+const INITIAL_COLUMN_PINNING: ColumnPinningState = { left: [], right: [] };
 const columnHelper = createColumnHelper<Record<string, unknown>>();
 
 function DataTable({ caseId, pivotObject, table, list, metadata, pagination, navigateTo }: DataTableProps) {
@@ -166,7 +168,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
   const [columnList, setColumnList] = useState(() => {
     return getColumnList(table);
   });
-  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({ left: [], right: [] });
+  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(INITIAL_COLUMN_PINNING);
   const tableData = useMemo(() => list.map((d) => d.data), [list]);
   const fieldOrder = useMemo(() => {
     return R.pipe(
@@ -187,7 +189,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
 
   useEffect(() => {
     setColumnList(getColumnList(table));
-    setColumnPinning({ left: [], right: [] });
+    setColumnPinning(INITIAL_COLUMN_PINNING);
   }, [table]);
 
   const columns = useMemo(() => {
@@ -233,7 +235,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
       const pinnedColId = pinnedLeft[i];
       if (!pinnedColId) continue;
       const el = headerRefs.current.get(pinnedColId);
-      offset += el?.getBoundingClientRect().width ?? 150;
+      offset += el?.getBoundingClientRect().width ?? DEFAULT_PINNED_COL_WIDTH;
     }
     return offset;
   };
@@ -245,6 +247,11 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
   const handleToggleColumn = (colName: string) => {
     setColumnList((cl) => {
       if (cl.includes(colName)) {
+        // Also unpin the column when hiding it to prevent phantom offsets
+        setColumnPinning((prev) => ({
+          ...prev,
+          left: (prev.left ?? []).filter((c) => c !== colName),
+        }));
         const idx = cl.indexOf(colName);
         return [...cl.slice(0, idx), ...cl.slice(idx + 1)];
       } else {
@@ -377,7 +384,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                                 ? 'text-purple-primary opacity-100'
                                 : 'opacity-0 group-hover/th:opacity-100 text-grey-secondary',
                             )}
-                            onClick={() => header.column.pin(isPinned ? false : 'left')}
+                            onClick={() => handleTogglePin(header.column.id)}
                           >
                             <Icon icon="map-pin" className="size-3" />
                           </button>
