@@ -797,6 +797,8 @@ components:
           type: object
           nullable: true
           additionalProperties: {}
+        primary_ordering_field:
+          type: string
         fields:
           type: array
           minItems: 1
@@ -830,6 +832,9 @@ components:
           enum: [Bool, Int, Float, String, Timestamp, IpAddress, Coords]
         alias:
           type: string
+        semantic_type:
+          type: string
+          enum: [text, name, enum, currency_code, foreign_key, country, address, unique_id, link, account_identifier, timestamp, date_of_birth, last_update, creation_date, deletion_date, initiation_date, validation_date, number , monetary_amount , percentage , unique_id, number , monetary_amount , percentage , unique_id]
         nullable:
           type: boolean
         is_enum:
@@ -861,6 +866,9 @@ components:
         parent_field_id:
           type: string
           format: uuid
+        link_type:
+          type: string
+          enum: [belongs_to, related]
     UpdateTableBodyDto:
       type: object
       properties:

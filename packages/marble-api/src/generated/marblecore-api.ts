@@ -1274,6 +1274,7 @@ export type CreateTableBodyField = {
     description?: string;
     "type": "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords";
     alias?: string;
+    semantic_type?: "text" | "name" | "enum" | "currency_code" | "foreign_key" | "country" | "address" | "unique_id" | "link" | "account_identifier" | "timestamp" | "date_of_birth" | "last_update" | "creation_date" | "deletion_date" | "initiation_date" | "validation_date" | "number" | "monetary_amount" | "percentage" | "unique_id" | "number" | "monetary_amount" | "percentage" | "unique_id";
     nullable?: boolean;
     is_enum?: boolean;
     is_unique?: boolean;
@@ -1288,6 +1289,7 @@ export type CreateTableBodyLink = {
     child_field_name: string;
     parent_table_id: string;
     parent_field_id: string;
+    link_type?: "belongs_to" | "related";
 };
 export type CreateTableBody = {
     /** snake_case table name */
@@ -1300,6 +1302,7 @@ export type CreateTableBody = {
     metadata?: {
         [key: string]: any;
     } | null;
+    primary_ordering_field?: string;
     fields: CreateTableBodyField[];
     links?: CreateTableBodyLink[];
 };
