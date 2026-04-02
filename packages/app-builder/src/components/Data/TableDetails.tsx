@@ -5,6 +5,7 @@ import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { dataI18n } from './data-i18n';
 import { EditTableDrawer } from './SemanticTables/EditTable/EditTableDrawer';
+import { LinkValue, SemanticTableFormValues } from './SemanticTables/Shared/semanticData-types';
 
 interface TableDetailsProps {
   tableModel: TableModel;
@@ -25,8 +26,12 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
               {tableModel.semanticType === 'other' ? (
                 <Tag color="red">{t('data:table_details.other_table')}</Tag>
               ) : (
-                <Tag color="grey">{t(`data:upload_data.ftm_entity.${tableModel.semanticType}`)}</Tag>
-                // TODO: add sub entity
+                <>
+                  <Tag color="grey">{t(`data:upload_data.ftm_entity.${tableModel.semanticType}`)}</Tag>
+                  {tableModel.semanticType === 'person' && tableModel.subEntity && (
+                    <Tag color="grey">{t(`data:upload_data.ftm_entity_person.${tableModel.subEntity}`)}</Tag>
+                  )}
+                </>
               )}
               <Tag color="grey">{t('data:table_details.numser_of_fields', { number: tableModel.fields.length })}</Tag>
             </div>
@@ -41,8 +46,10 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
         onClose={() => setIsEditOpen(false)}
         tableModel={tableModel}
         dataModel={dataModel}
-        onSave={async () => {
+        onSave={async (tableState: SemanticTableFormValues, links: LinkValue[]) => {
           // TODO: implement save mutations
+          console.log(tableState, links);
+          setIsEditOpen(false);
         }}
       />
     </>

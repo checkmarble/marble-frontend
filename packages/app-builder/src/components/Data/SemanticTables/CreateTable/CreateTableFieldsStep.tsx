@@ -19,7 +19,7 @@ export function CreateTableFieldsStep({
   const form = useCreateTableFormContext();
   const dataModel = useDataModel();
   const fields = useStore(form.store, (s) => s.values.fields);
-  const mainTimestampFieldId = useStore(form.store, (s) => s.values.mainTimestampFieldId);
+  const mainTimestampFieldName = useStore(form.store, (s) => s.values.mainTimestampFieldName);
   const entityType = useStore(form.store, (s) => s.values.entityType);
   const belongsToTableId = useStore(form.store, (s) => s.values.belongsToTableId);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
@@ -91,16 +91,16 @@ export function CreateTableFieldsStep({
           name,
           description: '',
           dataType: 'String' as const,
-          tableId: '',
           isEnum: false,
           nullable: true,
           alias: name,
-          visible: true,
           hidden: false,
           order: prev.length,
           unicityConstraint: 'no_unicity_constraint',
           ftmProperty: '',
           isNew: true,
+          semanticType: 'text' as const,
+          tableId: '',
         },
       ]);
       return fieldId;
@@ -116,9 +116,9 @@ export function CreateTableFieldsStep({
     [form, selectedFieldId],
   );
 
-  const setMainTimestampFieldId = useCallback(
-    (fieldId: string) => {
-      form.setFieldValue('mainTimestampFieldId', fieldId);
+  const setMainTimestampFieldName = useCallback(
+    (fieldName: string) => {
+      form.setFieldValue('mainTimestampFieldName', fieldName);
     },
     [form],
   );
@@ -126,14 +126,14 @@ export function CreateTableFieldsStep({
   const editorValue = useMemo(
     () => ({
       fields,
-      mainTimestampFieldId,
+      mainTimestampFieldName,
       updateField,
       reorderFields,
       addField,
       removeField,
-      setMainTimestampFieldId,
+      setMainTimestampFieldName,
     }),
-    [fields, mainTimestampFieldId, updateField, reorderFields, addField, removeField, setMainTimestampFieldId],
+    [fields, mainTimestampFieldName, updateField, reorderFields, addField, removeField, setMainTimestampFieldName],
   );
 
   const title = entityType

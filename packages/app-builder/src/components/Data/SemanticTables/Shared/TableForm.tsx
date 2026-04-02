@@ -69,16 +69,17 @@ export function FormTable({
   const fieldsEditorValue = useMemo(
     () => ({
       fields: tableState.fields,
-      mainTimestampFieldId: tableState.mainTimestampFieldId,
+      mainTimestampFieldName: tableState.mainTimestampFieldName,
       updateField: (fieldId: string, values: Partial<TableField>) => updateField(tableId, fieldId, values),
       reorderFields: (start: number, end: number) => reorderFields(tableId, start, end),
       addField: (name: string) => addField(tableId, name),
       removeField: (fieldId: string) => removeField(tableId, fieldId),
-      setMainTimestampFieldId: (fieldId: string) => updateTableState(tableId, { mainTimestampFieldId: fieldId }),
+      setMainTimestampFieldName: (fieldName: string) =>
+        updateTableState(tableId, { mainTimestampFieldName: fieldName }),
     }),
     [
       tableState.fields,
-      tableState.mainTimestampFieldId,
+      tableState.mainTimestampFieldName,
       tableId,
       updateField,
       reorderFields,

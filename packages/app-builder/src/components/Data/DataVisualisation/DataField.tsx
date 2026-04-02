@@ -15,7 +15,11 @@ import { match, P } from 'ts-pattern';
 import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
-import { SemanticSubType, SemanticSubTypeMap, SemanticType } from '../SemanticTables/Shared/semanticData-types';
+import {
+  SemanticSubTypeField,
+  SemanticSubTypeFieldMap,
+  SemanticTypeField,
+} from '../SemanticTables/Shared/semanticData-types';
 import { DataFields } from './DataFields';
 import type { MetadataType, VALID_DATA_TYPE } from './data-type';
 import { hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
@@ -140,8 +144,8 @@ function FieldRenderer() {
 function adaptFieldType(
   dataType?: DataType | null,
   name?: string,
-  semanticType?: SemanticType,
-  semanticSubType?: SemanticSubType,
+  semanticType?: SemanticTypeField,
+  semanticSubType?: SemanticSubTypeField,
   booleanDisplay?: 'yes_no' | 'checkbox',
 ): VALID_DATA_TYPE {
   if (!dataType || !name) return 'string-free';
@@ -149,7 +153,7 @@ function adaptFieldType(
   if (semanticType) {
     switch (semanticType) {
       case 'account_identifier':
-        switch (semanticSubType as SemanticSubTypeMap['account_identifier']) {
+        switch (semanticSubType as SemanticSubTypeFieldMap['account_identifier']) {
           case 'account_number':
           case 'bic':
             return 'string-code';
@@ -182,7 +186,7 @@ function adaptFieldType(
       case 'enum':
         return 'enum-values';
       case 'link':
-        switch (semanticSubType as SemanticSubTypeMap['link']) {
+        switch (semanticSubType as SemanticSubTypeFieldMap['link']) {
           case 'email':
             return 'string-email';
           case 'phone':

@@ -1,4 +1,7 @@
-import { SemanticSubType, SemanticType } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
+import {
+  SemanticSubTypeField,
+  SemanticTypeField,
+} from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { type ParseKeys } from 'i18next';
 import {
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
@@ -58,8 +61,8 @@ export interface DataModelField {
   ftmProperty?: string;
   alias?: string;
   order?: number;
-  semanticType?: SemanticType;
-  semanticSubType?: SemanticSubType;
+  semanticType?: SemanticTypeField;
+  semanticSubType?: SemanticSubTypeField;
   currencyExponent?: number;
   decimalPrecision?: number;
   currencyFieldId?: string;
@@ -104,9 +107,11 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
   const alias = typeof raw.alias === 'string' ? raw.alias : readMetadataString(meta, 'alias');
   const order = typeof raw.order === 'number' ? raw.order : readMetadataNumber(meta, 'order');
   const semanticType = (readMetadataString(meta, 'semanticType') ??
-    (typeof raw.semantic_type === 'string' ? raw.semantic_type : undefined)) as SemanticType | undefined;
+    (typeof raw.semantic_type === 'string' ? raw.semantic_type : undefined)) as SemanticTypeField | undefined;
   const semanticSubType = (readMetadataString(meta, 'semanticSubType', 'semantic_sub_type') ??
-    (typeof raw.semantic_sub_type === 'string' ? raw.semantic_sub_type : undefined)) as SemanticSubType | undefined;
+    (typeof raw.semantic_sub_type === 'string' ? raw.semantic_sub_type : undefined)) as
+    | SemanticSubTypeField
+    | undefined;
   const currencyExponent = readMetadataNumber(meta, 'currencyExponent');
   const decimalPrecision = readMetadataNumber(meta, 'decimalPrecision');
   const currencyFieldId = readMetadataString(meta, 'currencyFieldId');
@@ -212,7 +217,7 @@ export interface TableModel {
   navigationOptions?: NavigationOption[];
   ftmEntity?: FtmEntity;
   /** Field id of the main ordering timestamp (from table `metadata` on create / GET). */
-  mainTimestampFieldId?: string;
+  mainTimestampFieldName?: string;
   belongsToTableId?: string;
 }
 
@@ -249,7 +254,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
   const { entityType, subEntity } = apiSemanticTypeToFormEntity(
     typeof raw.semantic_type === 'string' ? raw.semantic_type : 'other',
   );
-  const mainTimestampFieldId = readMetadataString(meta, 'mainTimestampFieldId');
+  const mainTimestampFieldName = readMetadataString(meta, 'mainTimestampFieldName');
   const belongsToTableId = readMetadataString(meta, 'belongsToTableId');
 
   const fields = R.pipe(raw.fields, R.values(), R.map(adaptDataModelField), (arr) =>
@@ -269,7 +274,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     captionField: typeof raw.caption_field === 'string' ? raw.caption_field : '',
     semanticType: entityType,
     subEntity,
-    mainTimestampFieldId,
+    mainTimestampFieldName,
     belongsToTableId,
     fields,
     linksToSingle: R.pipe(

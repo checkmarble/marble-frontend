@@ -154,7 +154,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         order: table.fields.length,
         unicityConstraint: 'no_unicity_constraint',
         ftmProperty: '',
-        semanticType: undefined,
+        semanticType: 'text' as const,
         semanticSubType: undefined,
         isNew: true,
       };
@@ -247,7 +247,7 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
         order: i,
         unicityConstraint: field.unicity_constraint ?? 'no_unicity_constraint',
         ftmProperty: field.ftm_property ?? '',
-        semanticType: key === 'object_id' ? 'unique_id' : key === 'updated_at' ? 'last_update' : undefined,
+        semanticType: key === 'object_id' ? 'unique_id' : key === 'updated_at' ? 'last_update' : ('text' as const),
         semanticSubType: key === 'object_id' ? 'opaque_id' : undefined,
         isNew: key !== 'object_id' && key !== 'updated_at',
         locked: key === 'object_id' || key === 'updated_at',
@@ -313,7 +313,7 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           isCanceled: false,
           isVisited: false,
           fields,
-          mainTimestampFieldId: '',
+          mainTimestampFieldName: '',
           links: [],
         } satisfies SemanticTableFormValues,
       ];

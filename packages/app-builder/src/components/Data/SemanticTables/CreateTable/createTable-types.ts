@@ -1,14 +1,15 @@
 import {
   LinkValue,
-  type SemanticSubType,
+  type SemanticSubTypeField,
   type SemanticTableFormValues,
-  type SemanticType,
+  SemanticTypeField,
+  SemanticTypeTable,
   type TableField,
 } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { CREATE_TABLE_SELF_LINK_TARGET_ID } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { FtmEntityPersonOption, FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
-import { CreateTableValue, FieldEntity } from '@app-builder/queries/data/create-table';
+import { CreateTableValue } from '@app-builder/queries/data/create-table';
 import { match } from 'ts-pattern';
 import z from 'zod/v4';
 
@@ -16,7 +17,7 @@ export type { SemanticTableFormValues };
 
 export type TablePropertyError = {
   kind: 'table';
-  field: 'name' | 'entityType' | 'subEntity' | 'belongsToTableId' | 'mainTimestampFieldId';
+  field: 'name' | 'entityType' | 'subEntity' | 'belongsToTableId' | 'mainTimestampFieldName';
   message: string;
 };
 export type FieldValidationError = { kind: 'field'; fieldId: string; message: string };
@@ -72,7 +73,7 @@ export const defaultCreateTableFormValues: SemanticTableFormValues = {
   subEntity: 'moral',
   belongsToTableId: '',
   fields: defaultCreateTableFields,
-  mainTimestampFieldId: 'updated_at',
+  mainTimestampFieldName: 'updated_at',
   links: [],
   metaData: {},
   isCanceled: false,
@@ -134,7 +135,7 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
     links: values.links.map(adaptLink),
     metadata: {
       belongsToTableId: values.belongsToTableId || undefined,
-      mainTimestampFieldId: values.mainTimestampFieldId || undefined,
+      mainTimestampFieldName: values.mainTimestampFieldName || undefined,
     },
   };
 }
@@ -148,9 +149,9 @@ function adaptTableField(field: TableField): CreateTableValue['fields'][number] 
     nullable: field.nullable,
     is_enum: field.isEnum,
     is_unique: field.unicityConstraint === 'active_unique_constraint',
-    // ftm_property: field.ftmProperty,
+    ftm_property: field.ftmProperty,
+    semantic_type: field.semanticType,
     metadata: {
-      semanticType: field.semanticType,
       semanticSubType: field.semanticSubType,
       currencyExponent: field.currencyExponent,
       decimalPrecision: field.decimalPrecision,
@@ -170,7 +171,7 @@ function adaptLink(link: LinkValue): CreateTableValue['links'][number] {
   };
 }
 
-function getEntityType(entityType: FtmEntityV2, subEntity: FtmEntityPersonOption): FieldEntity {
+function getEntityType(entityType: FtmEntityV2, subEntity: FtmEntityPersonOption): SemanticTypeTable {
   const fieldEntity = match(entityType)
     .with('person', () =>
       match(subEntity)
@@ -185,11 +186,11 @@ function getEntityType(entityType: FtmEntityV2, subEntity: FtmEntityPersonOption
     .with('account', () => 'account')
     .exhaustive();
 
-  return fieldEntity as FieldEntity;
+  return fieldEntity as SemanticTypeTable;
 }
 
 type SemanticTableConstraints = {
-  fieldExist?: { type: SemanticType; subType?: SemanticSubType; name?: string };
+  fieldExist?: { type: SemanticTypeField; subType?: SemanticSubTypeField; name?: string };
   linkExist?: { dataType: FtmEntityV2 };
 }[];
 
@@ -339,14 +340,14 @@ function getLinkErrors(values: SemanticTableFormValues): LinkValidationError[] {
 export function validateValues(values: SemanticTableFormValues, scope: ValidationScope = 'all'): ValidationResult {
   if (scope === 'table') {
     // enforce 'updated_at' to be the default sort order if there is no other
-    if (!values.mainTimestampFieldId && values.fields.some((f) => f.name === 'updated_at')) {
-      values.mainTimestampFieldId = 'updated_at';
+    if (!values.mainTimestampFieldName && values.fields.some((f) => f.name === 'updated_at')) {
+      values.mainTimestampFieldName = 'updated_at';
     }
     const errors = getTablePropertyErrors(values);
-    if (!values.mainTimestampFieldId) {
+    if (!values.mainTimestampFieldName) {
       errors.push({
         kind: 'table',
-        field: 'mainTimestampFieldId',
+        field: 'mainTimestampFieldName',
         message: 'One Timestamp field should be selected as the main ordering field',
       });
     }

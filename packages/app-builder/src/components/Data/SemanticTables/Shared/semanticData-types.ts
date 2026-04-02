@@ -51,6 +51,9 @@ export const enumColors = [
 ] as const;
 export type EnumColors = (typeof enumColors)[number];
 
+export const semanticTypeTable = ['person', 'company', 'account', 'transaction', 'event', 'partner', 'other'] as const;
+export type SemanticTypeTable = (typeof semanticTypeTable)[number];
+
 export type TableField = {
   id: string;
   name: string;
@@ -64,8 +67,8 @@ export type TableField = {
   order: number;
   unicityConstraint: string;
   ftmProperty: string;
-  semanticType?: SemanticType;
-  semanticSubType?: SemanticSubType;
+  semanticType: SemanticTypeField;
+  semanticSubType?: SemanticSubTypeField;
   currencyExponent?: number;
   decimalPrecision?: number;
   currencyFieldId?: string;
@@ -77,8 +80,37 @@ export type TableField = {
   locked?: boolean;
 };
 
+export const semanticTypeField = [
+  'text',
+  'name',
+  'enum',
+  'currency_code',
+  'foreign_key',
+  'country',
+  'address',
+  'unique_id',
+  'link',
+  'account_identifier',
+  'timestamp',
+  'date_of_birth',
+  'last_update',
+  'creation_date',
+  'deletion_date',
+  'initiation_date',
+  'validation_date',
+  'number',
+  'monetary_amount',
+  'percentage',
+  'unique_id',
+  'number',
+  'monetary_amount',
+  'percentage',
+  'unique_id',
+] as const;
+export type SemanticTypeField = (typeof semanticTypeField)[number];
+
 type SemanticOption = {
-  value: string;
+  value: SemanticTypeField;
   subOptions?: { value: string }[];
 };
 
@@ -130,20 +162,20 @@ export const semanticTypesByDataType = {
 } as const satisfies Record<string, SemanticOption[]>;
 
 export type DataTypeKey = keyof typeof semanticTypesByDataType;
-export type SemanticType = (typeof semanticTypesByDataType)[DataTypeKey][number]['value'];
+// export type SemanticType = (typeof semanticTypesByDataType)[DataTypeKey][number]['value'];
 
 type AllSemanticOptions = (typeof semanticTypesByDataType)[DataTypeKey][number];
 type OptionsWithSubOptions = Extract<AllSemanticOptions, { subOptions: readonly unknown[] }>;
 
-export type SemanticSubTypeMap = {
+export type SemanticSubTypeFieldMap = {
   [K in OptionsWithSubOptions['value']]: Extract<OptionsWithSubOptions, { value: K }>['subOptions'][number]['value'];
 };
 
-export type SemanticSubType = SemanticSubTypeMap[keyof SemanticSubTypeMap];
+export type SemanticSubTypeField = SemanticSubTypeFieldMap[keyof SemanticSubTypeFieldMap];
 
 export function getSemanticSubOptions(
   dataType: DataTypeKey,
-  semanticType: SemanticType,
+  semanticType: SemanticTypeField,
 ): { value: string }[] | undefined {
   const options = semanticTypesByDataType[dataType];
   if (!options) return undefined;
@@ -159,7 +191,7 @@ export type SemanticTableFormValues = {
   subEntity: FtmEntityPersonOption;
   belongsToTableId: string;
   fields: TableField[];
-  mainTimestampFieldId: string;
+  mainTimestampFieldName: string;
   links: LinkValue[];
   metaData: Record<string, unknown>;
   isCanceled: boolean;
@@ -168,8 +200,8 @@ export type SemanticTableFormValues = {
 
 export function getMockValue(
   dataType: PrimitiveTypes,
-  semanticType?: SemanticType,
-  semanticSubType?: SemanticSubType | undefined,
+  semanticType?: SemanticTypeField,
+  semanticSubType?: SemanticSubTypeField | undefined,
 ) {
   if (!semanticType) {
     return match(dataType)
@@ -186,7 +218,7 @@ export function getMockValue(
     .with('text', () => 'Welcome to Marble')
     .with('name', () =>
       semanticSubType
-        ? match(semanticSubType as SemanticSubTypeMap['name'])
+        ? match(semanticSubType as SemanticSubTypeFieldMap['name'])
             .with('caption', () => 'Company name or John Doe Jr')
             .with('first_name', () => 'John')
             .with('last_name', () => 'Doe')
@@ -196,7 +228,7 @@ export function getMockValue(
     )
     .with('enum', () =>
       semanticSubType
-        ? match(semanticSubType as SemanticSubTypeMap['enum'])
+        ? match(semanticSubType as SemanticSubTypeFieldMap['enum'])
             .with('currency', () => 'EUR')
             .with('country', () => 'FR')
             .with('key_color_value', () => 'value from enum')
@@ -211,7 +243,7 @@ export function getMockValue(
     .with('address', () => '123 Main St, Anytown, USA')
     .with('unique_id', () =>
       semanticSubType
-        ? match(semanticSubType as SemanticSubTypeMap['unique_id'])
+        ? match(semanticSubType as SemanticSubTypeFieldMap['unique_id'])
             .with('registration_number', () => 'REG1234567890')
             .with('tax_id', () => 'TAX1234567890')
             .with('opaque_id', () => '58e6908a-4eab-4985-8ebe-00b2f6900507')
@@ -220,7 +252,7 @@ export function getMockValue(
     )
     .with('link', () =>
       semanticSubType
-        ? match(semanticSubType as SemanticSubTypeMap['link'])
+        ? match(semanticSubType as SemanticSubTypeFieldMap['link'])
             .with('url', () => 'https://www.google.com')
             .with('email', () => 'john.doe@example.com')
             .with('phone', () => '+33612345678')
@@ -229,7 +261,7 @@ export function getMockValue(
     )
     .with('account_identifier', () =>
       semanticSubType
-        ? match(semanticSubType as SemanticSubTypeMap['account_identifier'])
+        ? match(semanticSubType as SemanticSubTypeFieldMap['account_identifier'])
             .with('account_number', () => '12345678901234567890')
             .with('iban', () => 'FR7612345678901234567890123')
             .with('bic', () => 'TRZFR32AXXX')

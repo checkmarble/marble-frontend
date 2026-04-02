@@ -14,8 +14,8 @@ import {
   enumColors,
   getMockValue,
   getSemanticSubOptions,
-  type SemanticSubType,
-  type SemanticType,
+  type SemanticSubTypeField,
+  SemanticTypeField,
   semanticTypesByDataType,
   type TableField,
 } from './semanticData-types';
@@ -41,7 +41,7 @@ export function FieldDetailPanel({
   title?: string;
   tableOptions?: { label: string; value: string }[];
 }) {
-  const { fields, updateField, removeField, mainTimestampFieldId, setMainTimestampFieldId } =
+  const { fields, updateField, removeField, mainTimestampFieldName, setMainTimestampFieldName } =
     FieldsEditorContext.useValue();
   const dataModel = useDataModel();
   const { isEditDataModelInfoAvailable, isDeleteDataModelFieldAvailable } = useDataModelFeatureAccess();
@@ -94,7 +94,7 @@ export function FieldDetailPanel({
 
   const semanticSubOptions = useMemo(() => {
     if (!field || !field.semanticType) return [];
-    const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, field.semanticType as SemanticType);
+    const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, field.semanticType as SemanticTypeField);
     if (!subOpts) return [];
     return subOpts.map((opt) => ({
       label: t(`data:upload_data.field_semantic_sub.${opt.value}`),
@@ -220,7 +220,7 @@ export function FieldDetailPanel({
             <SelectV2
               value={field.semanticType}
               placeholder={t('data:upload_data.field_semantic_placeholder')}
-              onChange={(value) => update({ semanticType: value as SemanticType })}
+              onChange={(value) => update({ semanticType: value as SemanticTypeField })}
               options={semanticOptions}
               disabled={isLocked}
             />
@@ -234,7 +234,7 @@ export function FieldDetailPanel({
             <SelectV2
               value={field.semanticSubType}
               placeholder=""
-              onChange={(value) => update({ semanticSubType: value as SemanticSubType })}
+              onChange={(value) => update({ semanticSubType: value as SemanticSubTypeField })}
               options={semanticSubOptions}
               disabled={isLocked}
             />
@@ -274,9 +274,9 @@ export function FieldDetailPanel({
         {/* Timestamp-specific: main ordering timestamp (only one per table) */}
         {field.dataType === 'Timestamp' ? (
           <TimestampSettings
-            fieldId={fieldId}
-            mainTimestampFieldId={mainTimestampFieldId}
-            setMainTimestampFieldId={setMainTimestampFieldId}
+            fieldName={field.name}
+            mainTimestampFieldName={mainTimestampFieldName}
+            setMainTimestampFieldName={setMainTimestampFieldName}
             disabled={isLocked}
           />
         ) : null}
@@ -541,14 +541,14 @@ function EnumValuesSettings({
 }
 
 function TimestampSettings({
-  fieldId,
-  mainTimestampFieldId,
-  setMainTimestampFieldId,
+  fieldName,
+  mainTimestampFieldName,
+  setMainTimestampFieldName,
   disabled,
 }: {
-  fieldId: string;
-  mainTimestampFieldId: string;
-  setMainTimestampFieldId: (id: string) => void;
+  fieldName: string;
+  mainTimestampFieldName: string;
+  setMainTimestampFieldName: (id: string) => void;
   disabled: boolean;
 }) {
   const { t } = useTranslation(['data']);
@@ -557,8 +557,8 @@ function TimestampSettings({
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_timestamp_settings')}</span>
       <label className="flex items-center gap-v2-sm cursor-pointer">
         <Switch
-          checked={mainTimestampFieldId === fieldId}
-          onCheckedChange={(checked) => setMainTimestampFieldId(checked ? fieldId : '')}
+          checked={mainTimestampFieldName === fieldName}
+          onCheckedChange={(checked) => setMainTimestampFieldName(checked ? fieldName : 'updated_at')}
           disabled={disabled}
         />
         <span className="text-s">{t('data:upload_data.field_main_ordering_timestamp')}</span>

@@ -126,7 +126,7 @@ export function EditTableDrawer({
         order: table.fields.length,
         unicityConstraint: 'no_unicity_constraint',
         ftmProperty: '',
-        semanticType: undefined,
+        semanticType: 'text' as const,
         semanticSubType: undefined,
         isNew: true,
       };
@@ -348,7 +348,11 @@ function adaptFieldToTableField(field: DataModelField, index: number): TableFiel
     unicityConstraint: field.unicityConstraint,
     ftmProperty: field.ftmProperty ?? '',
     semanticType:
-      field.name === 'object_id' ? 'unique_id' : field.name === 'updated_at' ? 'last_update' : field.semanticType,
+      field.name === 'object_id'
+        ? 'unique_id'
+        : field.name === 'updated_at'
+          ? 'last_update'
+          : (field.semanticType ?? ('text' as const)),
     semanticSubType: field.name === 'object_id' ? 'opaque_id' : field.semanticSubType,
     currencyExponent: field.currencyExponent,
     decimalPrecision: field.decimalPrecision,
@@ -360,12 +364,12 @@ function adaptFieldToTableField(field: DataModelField, index: number): TableFiel
   };
 }
 
-function resolveMainTimestampFieldId(tableModel: TableModel): string {
-  if (tableModel.mainTimestampFieldId) return tableModel.mainTimestampFieldId;
+function resolveMainTimestampFieldName(tableModel: TableModel): string {
+  if (tableModel.mainTimestampFieldName) return tableModel.mainTimestampFieldName;
   const updatedAt = tableModel.fields.find((f) => f.name === 'updated_at');
-  if (updatedAt) return updatedAt.id;
+  if (updatedAt) return updatedAt.name;
   const lastUpdate = tableModel.fields.find((f) => f.semanticType === 'last_update');
-  return lastUpdate?.id ?? '';
+  return lastUpdate?.name ?? '';
 }
 
 function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormValues {
@@ -377,7 +381,7 @@ function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormV
     subEntity: tableModel.subEntity ?? 'moral',
     belongsToTableId: tableModel.belongsToTableId ?? '',
     fields: tableModel.fields.map(adaptFieldToTableField),
-    mainTimestampFieldId: resolveMainTimestampFieldId(tableModel),
+    mainTimestampFieldName: resolveMainTimestampFieldName(tableModel),
     links: [],
     metaData: {},
     isCanceled: false,

@@ -1,11 +1,12 @@
+import {
+  semanticTypeField,
+  semanticTypeTable,
+} from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
 import z from 'zod/v4';
-
-const fieldEntities = ['person', 'company', 'account', 'transaction', 'event', 'partner', 'other'] as const;
-export type FieldEntity = (typeof fieldEntities)[number];
 
 const createFieldValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
@@ -19,6 +20,7 @@ const createFieldValuesSchema = z.object({
   is_unique: z.boolean().optional(),
   ftm_property: z.string().optional(),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).optional()).optional(),
+  semantic_type: z.enum(semanticTypeField),
 });
 
 const createLinksValuesSchema = z.object({
@@ -39,7 +41,7 @@ export const createTableValueSchema = z.object({
   }),
   description: z.string().optional(),
   alias: z.string().optional(),
-  semantic_type: z.enum(fieldEntities),
+  semantic_type: z.enum(semanticTypeTable),
   ftm_entity: z.string().optional(),
   metadata: z.record(z.string(), z.string().optional()).optional(),
   fields: z.array(createFieldValuesSchema),
