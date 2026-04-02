@@ -187,6 +187,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
 
   useEffect(() => {
     setColumnList(getColumnList(table));
+    setColumnPinning({ left: [], right: [] });
   }, [table]);
 
   const columns = useMemo(() => {
