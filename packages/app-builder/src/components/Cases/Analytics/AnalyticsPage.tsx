@@ -1,7 +1,6 @@
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
 import { Spinner } from '@app-builder/components/Spinner';
-import type { TimeBucket } from '@app-builder/models/analytics/case-analytics';
 import type { Inbox } from '@app-builder/models/inbox';
 import type { User } from '@app-builder/models/user';
 import { useCaseAnalytics } from '@app-builder/queries/cases/case-analytics';
@@ -14,7 +13,6 @@ import { Button } from 'ui-design-system';
 import { AlertMetricsChart } from './AlertMetricsChart';
 import { AlertProcessingChart } from './AlertProcessingChart';
 import { CaseAnalyticsFilters } from './CaseAnalyticsFilters';
-import { CasesAboveSlaChart } from './CasesAboveSlaChart';
 import { SarDelayChart } from './SarDelayChart';
 import { SarReportsGauge } from './SarReportsGauge';
 
@@ -26,7 +24,6 @@ interface AnalyticsPageProps {
 export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
   const { t } = useTranslation(['cases', 'common']);
 
-  const [timeBucket, setTimeBucket] = useState<TimeBucket>('month');
   const [startDate, setStartDate] = useState(subMonths(new Date(), 6).toISOString().slice(0, 10));
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
   const [inboxId, setInboxId] = useState<string | undefined>(undefined);
@@ -35,7 +32,6 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
   const query = useCaseAnalytics({
     startDate,
     endDate,
-    timeBucket,
     inboxId,
     userId,
   });
@@ -47,8 +43,6 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
           <CasesNavigationTabs />
 
           <CaseAnalyticsFilters
-            timeBucket={timeBucket}
-            onTimeBucketChange={setTimeBucket}
             startDate={startDate}
             onStartDateChange={setStartDate}
             endDate={endDate}
@@ -102,8 +96,6 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
                     caseDurationByPeriod={data.caseDurationByPeriod}
                     openCasesByAge={data.openCasesByAge}
                   />
-
-                  <CasesAboveSlaChart casesAboveSla={data.casesAboveSla} />
                 </div>
               );
             })
