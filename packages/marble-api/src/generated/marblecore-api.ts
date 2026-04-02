@@ -1787,6 +1787,45 @@ export type CaseStatusByInboxResponseDto = {
     closed: number;
     snoozed: number;
 };
+export type CaseAnalyticsQueryDto = {
+    start: string;
+    end: string;
+    timezone: string;
+    inbox_id?: string;
+    assigned_user_id?: string;
+};
+export type SarCompletedResponseDto = {
+    count: number;
+};
+export type SarDelayResponseDto = {
+    date: string;
+    avg_days: number;
+    max_days: number;
+};
+export type AnalyticsBracketDto = "0-2" | "3-10" | "11-30" | "31+";
+export type SarDelayDistributionResponseDto = {
+    bracket: AnalyticsBracketDto;
+    count: number;
+};
+export type CasesCreatedResponseDto = {
+    date: string;
+    count: number;
+};
+export type CasesFalsePositiveRateResponseDto = {
+    date: string;
+    total_closed: number;
+    false_positives: number;
+    rate: number;
+};
+export type CasesDurationResponseDto = {
+    date: string;
+    avg_days: number;
+    max_days: number;
+};
+export type OpenCasesByAgeResponseDto = {
+    bracket: AnalyticsBracketDto;
+    count: number;
+};
 export type AvailableFiltersRequestDto = {
     scenario_id: string;
     start: string;
@@ -6420,6 +6459,160 @@ export function getCaseStatusByInbox(opts?: Oazapfts.RequestOpts) {
         ...opts,
         method: "POST"
     }));
+}
+/**
+ * Get SAR completed count
+ */
+export function getCasesAnalyticsSarCompleted(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SarCompletedResponseDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/analytics/cases/sar_completed", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
+}
+/**
+ * Get SAR delay metrics by time bucket
+ */
+export function getCasesAnalyticsSarDelay(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SarDelayResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/analytics/cases/sar_delay", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
+}
+/**
+ * Get SAR delay distribution
+ */
+export function getCasesAnalyticsSarDelayDistribution(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SarDelayDistributionResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/analytics/cases/sar_delay_distribution", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
+}
+/**
+ * Get cases created by time bucket
+ */
+export function getCasesAnalyticsCasesCreated(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CasesCreatedResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/analytics/cases/cases_created", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
+}
+/**
+ * Get false positive rate by time bucket
+ */
+export function getCasesAnalyticsFalsePositiveRate(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CasesFalsePositiveRateResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/analytics/cases/cases_false_positive_rate", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
+}
+/**
+ * Get case duration metrics by time bucket
+ */
+export function getCasesAnalyticsCasesDuration(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CasesDurationResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/analytics/cases/cases_duration", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
+}
+/**
+ * Get open cases by age bracket
+ */
+export function getCasesAnalyticsOpenCasesByAge(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: OpenCasesByAgeResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/analytics/cases/open_cases_by_age", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
 }
 /**
  * Get available filters
