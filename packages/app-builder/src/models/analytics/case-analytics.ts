@@ -1,11 +1,16 @@
 import type { BarDatum } from '@nivo/bar';
-
-export type TimeBucket = 'week' | 'month' | 'quarter' | 'year';
+import type {
+  CasesCreatedResponseDto,
+  CasesDurationResponseDto,
+  CasesFalsePositiveRateResponseDto,
+  OpenCasesByAgeResponseDto,
+  SarDelayDistributionResponseDto,
+  SarDelayResponseDto,
+} from 'marble-api';
 
 export interface CaseAnalyticsFilters {
   startDate: string;
   endDate: string;
-  timeBucket: TimeBucket;
   inboxId?: string;
   userId?: string;
 }
@@ -33,25 +38,62 @@ export interface FalsePositiveRate {
   closedCount: number;
 }
 
-export interface SlaViolation {
-  period: string;
-  aboveCount: number;
-  totalCount: number;
-}
-
 export interface CaseAnalyticsResponse {
-  // SAR
   sarTotalCompleted: number;
   sarDelayByPeriod: PeriodDelay[];
   sarDelayDistribution: BucketCount[];
-  // Alerts
   alertCountByPeriod: PeriodCount[];
   falsePositiveRateByPeriod: FalsePositiveRate[];
-  // Processing
   caseDurationByPeriod: PeriodDelay[];
   openCasesByAge: BucketCount[];
-  // SLA (mocked)
-  casesAboveSla: SlaViolation[];
+}
+
+// Adapters
+
+export function adaptSarDelay(dto: SarDelayResponseDto): PeriodDelay {
+  return {
+    period: dto.date,
+    avgDays: dto.avg_days,
+    maxDays: dto.max_days,
+  };
+}
+
+export function adaptSarDelayDistribution(dto: SarDelayDistributionResponseDto): BucketCount {
+  return {
+    bucket: dto.bracket,
+    count: dto.count,
+  };
+}
+
+export function adaptCasesCreated(dto: CasesCreatedResponseDto): PeriodCount {
+  return {
+    period: dto.date,
+    count: dto.count,
+  };
+}
+
+export function adaptFalsePositiveRate(dto: CasesFalsePositiveRateResponseDto): FalsePositiveRate {
+  return {
+    period: dto.date,
+    rate: dto.rate,
+    fpCount: dto.false_positives,
+    closedCount: dto.total_closed,
+  };
+}
+
+export function adaptCasesDuration(dto: CasesDurationResponseDto): PeriodDelay {
+  return {
+    period: dto.date,
+    avgDays: dto.avg_days,
+    maxDays: dto.max_days,
+  };
+}
+
+export function adaptOpenCasesByAge(dto: OpenCasesByAgeResponseDto): BucketCount {
+  return {
+    bucket: dto.bracket,
+    count: dto.count,
+  };
 }
 
 /**
