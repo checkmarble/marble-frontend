@@ -10,6 +10,8 @@
 
   "rule_edit.cancel": "Cancel",
   "rule_edit.model_type.aggregate": "Aggregate",
+  "rule_edit.model_type.entity_tags": "Entity tags",
+  "rule_edit.model_type.screening_tags": "Screening tags",
   "rule_edit.model_type.user_attribute": "User attributes",
   "rule_edit.name_placeholder": "Rule name...",
   "rule_edit.risk_type_placeholder": "Risk type *",
@@ -26,6 +28,10 @@
   "ruleset.risk_level": "Level of risk:",
   "ruleset.risk_types_column": "Risk types",
   "ruleset.rule_type_heading": "Type of rule",
+  "ruleset.rule_type.aggregate": "Agregates (transaction, event, ...)",
+  "ruleset.rule_type.entity_tags": "Tags",
+  "ruleset.rule_type.screening_tags": "Screening (PEP, Sanction, ...)",
+  "ruleset.rule_type.user_attribute": "User attribute",
   "ruleset.rules_column": "Rules",
   "ruleset.score_renew": "Score renew:",
 
@@ -67,6 +73,7 @@
 
   "switch.description.if_value_lte": "If value ≤ {{value}}",
   "switch.else": "Else",
+  "switch.entity_tags.depending_on": "Depending on entity tags",
   "switch.floor_label": "floor =",
   "switch.no_condition": "No condition defined",
   "switch.number.and": "and",
@@ -75,6 +82,10 @@
   "switch.number.first": "if value ≤ to",
   "switch.number.middle": "if value is between",
   "switch.number.then": "then",
+  "switch.screening_tags.add_branch": "Add branch",
+  "switch.screening_tags.depending_on": "Depending on screening tags",
+  "switch.screening_tags.if_tags_include": "If tags include",
+  "switch.screening_tags.tags_placeholder": "Add...",
   "switch.string.else": "otherwise",
   "switch.string.op.contains": "contains",
   "switch.string.op.ends_with": "ends with",

@@ -1,72 +1,11 @@
-import { AggregationEditContent } from '@app-builder/components/AstBuilder/edition/EditModal/modals/Aggregation/Aggregation';
-import { useRoot } from '@app-builder/components/AstBuilder/edition/hooks/useRoot';
-import { AstBuilderNodeSharpFactory } from '@app-builder/components/AstBuilder/edition/node-store';
-import { type AggregationAstNode, NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
-import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { type DataModel, getDataTypeIcon } from '@app-builder/models/data-model';
-import {
-  type AllowedScoringRuleSourceType,
-  type BoolSwitch,
-  getAggregationReturnType,
-  isAllowedScoringRuleType,
-  type NumberSwitch,
-  type RuleModel,
-  type StringSwitch,
-  transformSwitchAstNodeToModel,
-} from '@app-builder/models/scoring';
-import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { clone } from 'remeda';
+import { type DataModel } from '@app-builder/models/data-model';
+import { type RuleModel, transformSwitchAstNodeToModel } from '@app-builder/models/scoring';
 import { match } from 'ts-pattern';
-import { type SelectOption, SelectV2 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-import { BoolSwitchEdit } from './BoolSwitchEdit';
-import { NumberSwitchEdit } from './NumberSwitchEdit';
-import { StringSwitchEdit } from './StringSwitchEdit';
-
-function createDefaultConditions(fieldType: AllowedScoringRuleSourceType): NumberSwitch | StringSwitch | BoolSwitch {
-  switch (fieldType) {
-    case 'Int':
-    case 'Float':
-      return {
-        type: 'number',
-        branches: [{ value: 0, impact: { modifier: 0 } }],
-        default: { modifier: 0 },
-      };
-    case 'String':
-      return {
-        type: 'string',
-        branches: [{ value: { op: '=', value: '' }, impact: { modifier: 0 } }],
-        default: { modifier: 0 },
-      };
-    case 'Bool':
-      return { type: 'bool', ifTrue: { modifier: 0 }, ifFalse: { modifier: 0 } };
-  }
-}
-
-function InlineAggregationEditorContent({ onChange }: { onChange: (node: AggregationAstNode) => void }) {
-  const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-
-  return <AggregationEditContent onChange={() => onChange(clone(nodeSharp.value.node) as AggregationAstNode)} />;
-}
-
-function InlineAggregationEditor({
-  node,
-  onChange,
-}: {
-  node: AggregationAstNode;
-  onChange: (node: AggregationAstNode) => void;
-}) {
-  const nodeSharp = useRoot({ node, validation: { errors: [], evaluation: [] } }, false);
-
-  return (
-    <AstBuilderNodeSharpFactory.Provider value={nodeSharp}>
-      <InlineAggregationEditorContent onChange={onChange} />
-    </AstBuilderNodeSharpFactory.Provider>
-  );
-}
+import { AggregateRuleEdit } from './AggregateRuleEdit';
+import { TagsRuleEdit } from './TagsRuleEdit';
+import { UserAttributeRuleEdit } from './UserAttributeRuleEdit';
 
 interface SwitchNodeEditProps {
   node: SwitchAstNode;
@@ -85,127 +24,35 @@ export function SwitchNodeEdit({
   customLists,
   onModelChange,
 }: SwitchNodeEditProps) {
-  const { t } = useTranslation(['user-scoring']);
   const model = transformSwitchAstNodeToModel(node, entityType, dataModel);
-  const [conditions, setConditions] = useState<NumberSwitch | StringSwitch | BoolSwitch | null>(
-    model ? model.conditions : null,
-  );
-  const [selectedField, setSelectedField] = useState<string | null>(() => {
-    if (model?.type !== 'user_attribute' || !model.field) return null;
-    return model.field.children[0].constant;
-  });
-
-  const [aggregationNode, setAggregationNode] = useState<AggregationAstNode | null>(() =>
-    model?.type === 'aggregate' ? (model.field ?? null) : null,
-  );
-
-  const handleFieldChange = (newField: string | null) => {
-    setSelectedField(newField);
-
-    const entityTable = dataModel.find((t) => t.name === entityType);
-    const fieldDef = newField ? entityTable?.fields.find((f) => f.name === newField) : undefined;
-    const fieldType = fieldDef && isAllowedScoringRuleType(fieldDef.dataType) ? fieldDef.dataType : null;
-
-    const newConditions = fieldType ? createDefaultConditions(fieldType) : null;
-    setConditions(newConditions);
-
-    if (!model || !onModelChange) return;
-    onModelChange({
-      type: model.type,
-      field: newField ? NewPayloadAstNode(newField) : null,
-      conditions: newConditions,
-    } as RuleModel);
-  };
-
-  const handleAggregationChange = (updatedNode: AggregationAstNode) => {
-    const newReturnType = getAggregationReturnType(updatedNode, dataModel);
-    const prevReturnType = aggregationNode ? getAggregationReturnType(aggregationNode, dataModel) : null;
-
-    let newConditions = conditions;
-    if (!newConditions || newReturnType !== prevReturnType) {
-      newConditions =
-        newReturnType && isAllowedScoringRuleType(newReturnType) ? createDefaultConditions(newReturnType) : null;
-      setConditions(newConditions);
-    }
-    setAggregationNode(updatedNode);
-    onModelChange?.({ type: 'aggregate', field: updatedNode, conditions: newConditions } as RuleModel);
-  };
-
-  const handleConditionsChange = (next: NumberSwitch | StringSwitch | BoolSwitch) => {
-    setConditions(next);
-    if (!model || !onModelChange) return;
-    const field =
-      model.type === 'user_attribute' ? (selectedField ? NewPayloadAstNode(selectedField) : null) : aggregationNode;
-    onModelChange({ type: model.type, field, conditions: next } as RuleModel);
-  };
-
-  const isAttributeType = model?.type === 'user_attribute';
-
-  const fieldOptions = useMemo((): SelectOption<string>[] => {
-    const entityTable = dataModel.find((t) => t.name === entityType);
-    if (!entityTable) return [];
-    return entityTable.fields
-      .filter((f) => isAllowedScoringRuleType(f.dataType))
-      .map((f) => ({
-        label: (
-          <span className="flex items-center gap-v2-xs">
-            {getDataTypeIcon(f.dataType) ? (
-              <Icon icon={getDataTypeIcon(f.dataType)!} className="size-4 shrink-0" />
-            ) : null}
-            <span>{f.name}</span>
-          </span>
-        ),
-        value: f.name,
-      }));
-  }, [dataModel, entityType]);
-
   if (!model) return null;
 
   return (
     <div className="flex flex-col gap-v2-sm text-s text-grey-secondary">
-      {isAttributeType ? (
-        <div className="flex flex-wrap items-center gap-v2-sm">
-          <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
-          <SelectV2
-            value={selectedField}
-            placeholder="—"
-            options={fieldOptions}
-            onChange={handleFieldChange}
-            className="w-[164px]"
+      {match(model)
+        .with({ type: 'user_attribute' }, (m) => (
+          <UserAttributeRuleEdit
+            model={m}
+            maxRiskLevel={maxRiskLevel}
+            dataModel={dataModel}
+            entityType={entityType}
+            customLists={customLists}
+            onModelChange={onModelChange}
           />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-v2-sm">
-          <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
-          <div className="p-v2-md bg-grey-background-light border border-grey-border rounded-v2-md flex flex-col gap-v2-lg">
-            <InlineAggregationEditor
-              node={aggregationNode ?? NewAggregatorAstNode('SUM')}
-              onChange={handleAggregationChange}
-            />
-          </div>
-        </div>
-      )}
-      {conditions ? (
-        <>
-          <span className="font-medium">{t('user-scoring:switch.apply_conditions')}</span>
-          {match(conditions)
-            .with({ type: 'number' }, (c) => (
-              <NumberSwitchEdit conditions={c} maxRiskLevel={maxRiskLevel} onChange={handleConditionsChange} />
-            ))
-            .with({ type: 'bool' }, (c) => (
-              <BoolSwitchEdit conditions={c} maxRiskLevel={maxRiskLevel} onChange={handleConditionsChange} />
-            ))
-            .with({ type: 'string' }, (c) => (
-              <StringSwitchEdit
-                conditions={c}
-                maxRiskLevel={maxRiskLevel}
-                customLists={customLists}
-                onChange={handleConditionsChange}
-              />
-            ))
-            .exhaustive()}
-        </>
-      ) : null}
+        ))
+        .with({ type: 'aggregate' }, (m) => (
+          <AggregateRuleEdit
+            model={m}
+            maxRiskLevel={maxRiskLevel}
+            dataModel={dataModel}
+            customLists={customLists}
+            onModelChange={onModelChange}
+          />
+        ))
+        .with({ type: 'screening_tags' }, { type: 'entity_tags' }, (m) => (
+          <TagsRuleEdit model={m} maxRiskLevel={maxRiskLevel} onModelChange={onModelChange} />
+        ))
+        .exhaustive()}
     </div>
   );
 }

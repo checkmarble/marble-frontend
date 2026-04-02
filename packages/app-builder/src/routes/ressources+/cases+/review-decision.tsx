@@ -131,6 +131,7 @@ function ReviewDecisionContent({
     // Stop React synthetic events from bubbling through the portal to the parent AlertCard
     <form
       onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();

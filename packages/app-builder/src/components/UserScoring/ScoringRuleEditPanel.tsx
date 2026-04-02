@@ -4,15 +4,16 @@ import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   buildSwitchAstNodeFromModel,
-  isCompleteRuleModel,
+  type DraftRuleModel,
+  isCompleteRule,
   RISK_TYPES,
-  type RuleModel,
   type ScoringRule,
   transformSwitchAstNodeToModel,
 } from '@app-builder/models/scoring';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, type SelectOption, SelectV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelContainer, PanelContent, PanelFooter } from '../Panel';
@@ -58,7 +59,7 @@ export function ScoringRuleEditPanel({
   );
   const [name, setName] = useState(rule.name);
   const [riskType, setRiskType] = useState(rule.riskType);
-  const [currentModel, setCurrentModel] = useState<RuleModel | null>(() =>
+  const [currentModel, setCurrentModel] = useState<DraftRuleModel | null>(() =>
     isSwitchAstNode(rule.ast) ? transformSwitchAstNodeToModel(rule.ast, entityType, dataModel) : null,
   );
 
@@ -67,10 +68,10 @@ export function ScoringRuleEditPanel({
     label: t(`user-scoring:risk_type.${v}`),
   }));
 
-  const isValid = !!name.trim() && !!riskType && !!currentModel && isCompleteRuleModel(currentModel);
+  const isValid = !!name.trim() && !!riskType && !!currentModel && isCompleteRule(currentModel);
 
   const handleValidate = () => {
-    if (isValid && currentModel && isCompleteRuleModel(currentModel)) {
+    if (isValid && currentModel && isCompleteRule(currentModel)) {
       onChange?.({ ...rule, name, riskType, ast: buildSwitchAstNodeFromModel(currentModel) });
     }
     sharp.actions.close();
@@ -106,9 +107,12 @@ export function ScoringRuleEditPanel({
           <Tag color="grey">{entityType}</Tag>
           {currentModel ? (
             <Tag color="grey">
-              {currentModel.type === 'user_attribute'
-                ? t('user-scoring:rule_edit.model_type.user_attribute')
-                : t('user-scoring:rule_edit.model_type.aggregate')}
+              {match(currentModel)
+                .with({ type: 'user_attribute' }, () => t('user-scoring:rule_edit.model_type.user_attribute'))
+                .with({ type: 'aggregate' }, () => t('user-scoring:rule_edit.model_type.aggregate'))
+                .with({ type: 'screening_tags' }, () => t('user-scoring:rule_edit.model_type.screening_tags'))
+                .with({ type: 'entity_tags' }, () => t('user-scoring:rule_edit.model_type.entity_tags'))
+                .exhaustive()}
             </Tag>
           ) : null}
           <SelectV2
@@ -130,7 +134,7 @@ export function ScoringRuleEditPanel({
                 entityType={entityType}
                 maxRiskLevel={maxRiskLevel}
                 customLists={customLists}
-                onModelChange={setCurrentModel}
+                onModelChange={(model) => setCurrentModel(model)}
               />
             ) : null}
           </div>
