@@ -52,67 +52,6 @@ packages/
 - **Zod** - Schema validation
 - **Biome** - Linting and formatting
 
-## Skills Reference
-
-For coding patterns and best practices, use the skills system:
-
-| Topic | Skill |
-|-------|-------|
-| React components, queries, routing, styling | `frontend-dev-guidelines` |
-| Creating/managing skills and hooks | `skill-developer` |
-
-Skills auto-activate based on your prompts. A `UserPromptSubmit` hook enforces skill evaluation on every prompt.
-
-**Plan mode fallback**: When in plan mode (Skill tool unavailable), read the relevant resources directly from `.claude/skills/frontend-dev-guidelines/resources/` before planning any frontend work.
-
-## Task Management
-
-### Starting Large Tasks
-
-After planning, use `/dev-docs` to create persistent task documentation:
-
-```
-dev/active/[task-name]/
-  [task-name]-plan.md      # The approved plan
-  [task-name]-context.md   # Key files, decisions, dependencies
-  [task-name]-tasks.md     # Checklist for tracking progress
-```
-
-### Continuing Tasks
-
-1. Check `dev/active/` for existing tasks
-2. Read all three files before proceeding
-3. Update progress and context as you work
-4. Use `/dev-docs-update` before context compaction
-
-## Hooks (Auto-Running)
-
-| Hook | Event | Purpose |
-|------|-------|---------|
-| SessionStart | Session start/resume/compact/clear | Show branch, restore context |
-| UserPromptSubmit | Every user prompt | Force skill evaluation and activation before responding |
-| PreToolUse | Edit/Write/MultiEdit | Block file edits on main/master branch |
-| PreToolUse | Bash | Block dangerous commands (rm -rf, git push --force, git reset --hard) |
-| Notification | Permission/idle prompt | macOS desktop notification when Claude needs attention |
-| Stop | End of response | Auto-format with Biome + type-check modified TS files |
-
-The Stop hook runs `biome format` and `bun run type-check` automatically. If type-check fails, Claude is blocked from stopping and shown the errors to fix. Use `auto-error-resolver` agent for complex multi-error situations.
-
-## App-Builder Architecture
-
-```
-packages/app-builder/src/
-  routes/           # Remix flat routes (_builder+, _auth+)
-  components/       # Feature components (Cases/, Decisions/, etc.)
-  queries/          # TanStack Query hooks (one file per query)
-  repositories/     # Data access layer
-  services/         # Business logic
-  models/           # Types with adapters
-  hooks/            # Custom React hooks
-  schemas/          # Zod schemas
-  utils/            # Utilities (routes/, i18n/, etc.)
-```
-
 ## Common Patterns
 
 ### Imports
@@ -134,38 +73,14 @@ import { match } from 'ts-pattern';
 - Use `handle` for breadcrumbs
 - Loaders for data fetching
 
-### Resource Routes (Server)
-- Use `createServerFn` + `authMiddleware` from `core/requests.ts` — NOT legacy `initServerServices`/`ActionFunctionArgs`/`json()`
-- **`ressources+/` routes MUST include `handleRedirectMiddleware`** — these routes are called via React Query/useFetcher from the client; the middleware intercepts auth redirects (3xx to `/sign-in`) and converts them to `{ redirectTo }` so the client can navigate properly. Use `[handleRedirectMiddleware, authMiddleware]` as the middleware array.
-- `_builder+/` page loaders do NOT need `handleRedirectMiddleware` — the browser handles redirects natively during full page loads
-- Access auth context via `context.authInfo` (repositories, user) and services via `context.services`
-- Use `data()` from `core/requests.ts` instead of Remix's `json()` for responses with headers
-- `apiClient` on `context.authInfo` is deprecated — add repository methods instead
-- Reference: `routes/ressources+/data+/deleteTable.tsx` (action), `routes/_builder+/settings+/data-display.tsx` (loader + action)
+## Task Management
 
-### i18n
-- Three locale files: `locales/en/`, `locales/fr/`, `locales/ar/`
-- All three must have matching keys — missing keys cause TS errors in `resources.server.ts`
-
-### Styling
-- Use `cn` from `ui-design-system` instead of `clsx` for class merging
-- Prefer `CalloutV2` over `Callout` for new callout/banner components
+After planning, use `/dev-docs` to create persistent task documentation in `dev/active/[task-name]/`. Use `/dev-docs-update` before context compaction.
 
 ## Troubleshooting
 
-### TypeScript Errors After Edit
-Run type-check manually after edits:
-1. Run: `cd packages/app-builder && bun run type-check`
-2. Use `auto-error-resolver` agent for multiple errors
-
-### Skill Not Activating
-The `UserPromptSubmit` hook forces skill evaluation on every prompt. If a skill still doesn't activate:
-1. Check the description in `.claude/skills/[skill-name]/SKILL.md` includes keywords matching your prompt
-2. In plan mode, the Skill tool is unavailable — read resource files directly from `.claude/skills/*/resources/`
-
 ### Build Issues
 ```bash
-# Clear and rebuild
 rm -rf packages/app-builder/build
 cd packages/app-builder && bun run build
 ```
