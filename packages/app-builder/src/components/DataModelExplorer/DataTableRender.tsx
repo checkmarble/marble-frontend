@@ -9,14 +9,19 @@ import {
 } from '@app-builder/models';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  type ColumnPinningState,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
 import { Button, cn, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { FormatData } from '../FormatData';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
 import { type DataModelExplorerNavigationTab } from './types';
@@ -55,44 +60,8 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
     );
   }
 
-  const sourceTableModel = dataModel.find((tm) => tm.name === item.sourceTableName);
-  const pivotTableModel = dataModel.find((tm) => tm.name === item.pivotObject.pivotObjectName);
-
   return (
-    <div className="mt-3 flex flex-col gap-3">
-      <div className="grid grid-cols-2 gap-3">
-        {sourceTableModel ? (
-          <div className="flex flex-col gap-2">
-            <span className="text-s font-semibold">{item.sourceTableName}</span>
-            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-v2-sm">
-              <DataFields
-                table={sourceTableModel.name}
-                object={{
-                  data: item.sourceObject,
-                  metadata: { validFrom: (item.sourceObject['updated_at'] as string) ?? '' },
-                }}
-                options={{ hideMetadata: true, hideLinks: true }}
-              />
-            </div>
-          </div>
-        ) : null}
-        {filterFieldValue !== item.pivotObject.pivotValue && pivotTableModel ? (
-          <div className="col-start-2 flex flex-col gap-2">
-            <span className="text-s font-semibold">{item.pivotObject.pivotObjectName}</span>
-            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-v2-sm">
-              <DataFields
-                table={pivotTableModel.name}
-                object={{
-                  data: item.sourceObject,
-                  metadata: { validFrom: (item.sourceObject['updated_at'] as string) ?? '' },
-                }}
-                options={{ hideMetadata: true, hideLinks: true }}
-              />
-            </div>
-          </div>
-        ) : null}
-      </div>
-      <div className="bg-grey-border h-px" />
+    <div className="mt-3 flex min-h-0 flex-1 flex-col">
       {match(dataListQuery)
         .with({ isError: true }, () => {
           return (
@@ -189,13 +158,17 @@ type DataTableProps = {
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
 };
 
+const ROW_NUMBER_COL_WIDTH = 50;
+const DEFAULT_PINNED_COL_WIDTH = 150;
+const INITIAL_COLUMN_PINNING: ColumnPinningState = { left: [], right: [] };
+const columnHelper = createColumnHelper<Record<string, unknown>>();
+
 function DataTable({ caseId, pivotObject, table, list, metadata, pagination, navigateTo }: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
-
-  const columnHelper = createColumnHelper<Record<string, unknown>>();
   const [columnList, setColumnList] = useState(() => {
     return getColumnList(table);
   });
+  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(INITIAL_COLUMN_PINNING);
   const tableData = useMemo(() => list.map((d) => d.data), [list]);
   const fieldOrder = useMemo(() => {
     return R.pipe(
@@ -205,7 +178,9 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
     );
   }, [table]);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLTableElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const headerRefs = useRef<Map<string, HTMLTableCellElement>>(new Map());
+  const rowNumberColRef = useRef<HTMLTableCellElement>(null);
   const intersection = useIntersection(sentinelRef, {
     root: wrapperRef.current,
     rootMargin: '1px',
@@ -214,6 +189,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
 
   useEffect(() => {
     setColumnList(getColumnList(table));
+    setColumnPinning(INITIAL_COLUMN_PINNING);
   }, [table]);
 
   const columns = useMemo(() => {
@@ -234,20 +210,48 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
         },
       });
     });
-  }, [columnHelper, columnList]);
+  }, [columnList, table]);
 
   const reactTable = useReactTable({
     state: {
       columnOrder: fieldOrder,
+      columnPinning,
     },
+    onColumnPinningChange: setColumnPinning,
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const pinnedLeft = columnPinning.left ?? [];
+
+  const getPinnedColumnOffset = (columnId: string): number => {
+    const idx = pinnedLeft.indexOf(columnId);
+    if (idx < 0) return 0;
+
+    const rowNumWidth = rowNumberColRef.current?.getBoundingClientRect().width ?? ROW_NUMBER_COL_WIDTH;
+    let offset = rowNumWidth;
+    for (let i = 0; i < idx; i++) {
+      const pinnedColId = pinnedLeft[i];
+      if (!pinnedColId) continue;
+      const el = headerRefs.current.get(pinnedColId);
+      offset += el?.getBoundingClientRect().width ?? DEFAULT_PINNED_COL_WIDTH;
+    }
+    return offset;
+  };
+
+  const isLastPinnedColumn = (columnId: string): boolean => {
+    return pinnedLeft[pinnedLeft.length - 1] === columnId;
+  };
+
   const handleToggleColumn = (colName: string) => {
     setColumnList((cl) => {
       if (cl.includes(colName)) {
+        // Also unpin the column when hiding it to prevent phantom offsets
+        setColumnPinning((prev) => ({
+          ...prev,
+          left: (prev.left ?? []).filter((c) => c !== colName),
+        }));
         const idx = cl.indexOf(colName);
         return [...cl.slice(0, idx), ...cl.slice(idx + 1)];
       } else {
@@ -256,8 +260,20 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
     });
   };
 
+  const handleTogglePin = (colName: string) => {
+    setColumnPinning((prev) => {
+      const left = prev.left ?? [];
+      if (left.includes(colName)) {
+        return { ...prev, left: left.filter((c) => c !== colName) };
+      }
+      return { ...prev, left: [...left, colName] };
+    });
+  };
+
+  const hasPinnedColumns = pinnedLeft.length > 0;
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex min-h-0 flex-1 flex-col gap-2">
       <div className="flex items-center gap-3">
         <div className="text-m font-semibold">{table.name}</div>
         {list.length > 0 ? (
@@ -271,10 +287,35 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
             <MenuCommand.Content sideOffset={4} align="start" sameWidth>
               <MenuCommand.List>
                 {fieldOrder.map((fieldName) => {
+                  const isPinned = pinnedLeft.includes(fieldName);
                   return (
                     <MenuCommand.Item key={fieldName} onSelect={() => handleToggleColumn(fieldName)}>
-                      {fieldName}
-                      {columnList.includes(fieldName) ? <Icon icon="tick" className="size-5" /> : null}
+                      <div className="flex w-full items-center justify-between">
+                        <span>{fieldName}</span>
+                        <div className="flex items-center gap-1">
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            className={cn(
+                              'flex items-center justify-center rounded p-0.5 hover:bg-grey-background-light',
+                              isPinned ? 'text-purple-primary' : 'text-grey-secondary',
+                            )}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTogglePin(fieldName);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.stopPropagation();
+                                handleTogglePin(fieldName);
+                              }
+                            }}
+                          >
+                            <Icon icon="map-pin" className="size-3.5" />
+                          </span>
+                          {columnList.includes(fieldName) ? <Icon icon="tick" className="size-5" /> : null}
+                        </div>
+                      </div>
                     </MenuCommand.Item>
                   );
                 })}
@@ -283,7 +324,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
           </MenuCommand.Menu>
         ) : null}
       </div>
-      <div className="flex max-h-[480px] overflow-auto" ref={wrapperRef}>
+      <div className="flex min-h-0 flex-1 overflow-auto" ref={wrapperRef}>
         <div ref={sentinelRef} className="w-0" />
         {list.length > 0 ? (
           <table className="mb-4 border-separate border-spacing-0">
@@ -294,23 +335,60 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                   className="text-grey-secondary border-grey-border bg-surface-card sticky top-0 z-20 h-10 text-left"
                 >
                   <th
+                    ref={rowNumberColRef}
                     className={cn(
-                      'border-grey-border bg-surface-card sticky left-0 z-10 border-y border-r p-2 font-normal',
+                      'border-grey-border bg-surface-card sticky left-0 z-30 border-y border-r p-2 font-normal',
                       {
-                        'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
+                        'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
                       },
                     )}
                   ></th>
                   {headerGroup.headers.map((header) => {
                     const fieldStatistic = metadata?.fieldStatistics[header.getContext().column.id];
+                    const isPinned = header.column.getIsPinned();
 
                     return (
                       <th
                         key={header.id}
-                        className="border-grey-border border-y px-2 font-normal not-last:border-r box-border"
-                        style={getHeaderStyle(fieldStatistic)}
+                        ref={(el) => {
+                          if (el) headerRefs.current.set(header.column.id, el);
+                          else headerRefs.current.delete(header.column.id);
+                        }}
+                        className={cn(
+                          'border-grey-border border-y px-2 font-normal not-last:border-r box-border group/th',
+                          {
+                            'sticky z-30 bg-surface-card border-r': isPinned,
+                            'shadow-sticky-left':
+                              isPinned && isLastPinnedColumn(header.column.id) && !intersection?.isIntersecting,
+                          },
+                        )}
+                        style={{
+                          left: isPinned ? `${getPinnedColumnOffset(header.column.id)}px` : undefined,
+                          ...getHeaderStyle(fieldStatistic),
+                        }}
                       >
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="truncate">
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(header.column.columnDef.header, header.getContext())}
+                          </span>
+                          <button
+                            type="button"
+                            aria-label={
+                              isPinned ? t('cases:data_explorer.unpin_column') : t('cases:data_explorer.pin_column')
+                            }
+                            className={cn(
+                              'shrink-0 transition-opacity',
+                              isPinned
+                                ? 'text-purple-primary opacity-100'
+                                : 'opacity-0 group-hover/th:opacity-100 text-grey-secondary',
+                            )}
+                            onClick={() => handleTogglePin(header.column.id)}
+                          >
+                            <Icon icon="map-pin" className="size-3" />
+                          </button>
+                        </div>
                       </th>
                     );
                   })}
@@ -331,7 +409,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                       className={cn(
                         'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky left-0 z-10 h-full border-b border-r p-2',
                         {
-                          'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
+                          'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
                         },
                       )}
                     >
@@ -347,14 +425,27 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                         />
                       </div>
                     </td>
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        className="border-grey-border group-hover:bg-grey-background-light border-b not-last:border-r"
-                        key={cell.id}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
+                    {row.getVisibleCells().map((cell) => {
+                      const isPinned = cell.column.getIsPinned();
+                      return (
+                        <td
+                          className={cn(
+                            'border-grey-border group-hover:bg-grey-background-light border-b not-last:border-r',
+                            {
+                              'sticky z-10 bg-surface-card border-r': isPinned,
+                              'shadow-sticky-left':
+                                isPinned && isLastPinnedColumn(cell.column.id) && !intersection?.isIntersecting,
+                            },
+                          )}
+                          style={{
+                            left: isPinned ? `${getPinnedColumnOffset(cell.column.id)}px` : undefined,
+                          }}
+                          key={cell.id}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
