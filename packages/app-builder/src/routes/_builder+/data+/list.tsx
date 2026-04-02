@@ -4,24 +4,16 @@ import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { ImportOrg } from '@app-builder/components/Data/ImportOrg';
 import { SelectArchetype } from '@app-builder/components/Data/SelectArchetype';
 import { CreateTableDrawer } from '@app-builder/components/Data/SemanticTables/CreateTable/CreateTableDrawer';
-import {
-  adaptCreateTableValue,
-  type SemanticTableFormValues,
-} from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
+import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
 import {
   UploadDataDrawer,
   UploadDataDrawerContent,
 } from '@app-builder/components/Data/SemanticTables/UploadData/UploadDataDrawer';
-import { CREATE_TABLE_SELF_LINK_TARGET_ID } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { TableDetails } from '@app-builder/components/Data/TableDetails';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type DataModel, type TableModel } from '@app-builder/models/data-model';
-import { useCreateLinkMutation } from '@app-builder/queries/data/create-link';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
-import { dataModelQueryOptions } from '@app-builder/queries/data/get-data-model';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
-import { useQueryClient } from '@tanstack/react-query';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,47 +24,6 @@ export const handle = {
   i18n: dataI18n satisfies Namespace,
 };
 
-function getObjectIdField(table: Pick<TableModel, 'fields'>) {
-  return table.fields.find((field) => field.name === 'object_id');
-}
-
-function buildCreateLinkPayloads({
-  values,
-  dataModel,
-  createdTable,
-}: {
-  values: SemanticTableFormValues;
-  dataModel: DataModel;
-  createdTable: TableModel;
-}) {
-  const childFieldNames = new Map(values.fields.map((field) => [field.id, field.name]));
-
-  return values.links.flatMap((link) => {
-    if (!link.name.trim() || !link.tableFieldId || !link.targetTableId) return [];
-
-    const parentTable =
-      link.targetTableId === CREATE_TABLE_SELF_LINK_TARGET_ID
-        ? createdTable
-        : dataModel.find((table) => table.id === link.targetTableId);
-    if (!parentTable) return [];
-
-    const childFieldName = childFieldNames.get(link.tableFieldId);
-    const childField = createdTable.fields.find((field) => field.name === childFieldName);
-    const parentField = getObjectIdField(parentTable);
-    if (!childField || !parentField) return [];
-
-    return [
-      {
-        name: link.name,
-        childTableId: createdTable.id,
-        childFieldId: childField.id,
-        parentTableId: parentTable.id,
-        parentFieldId: parentField.id,
-      },
-    ];
-  });
-}
-
 export default function DataList() {
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
@@ -80,8 +31,6 @@ export default function DataList() {
   const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
   const exportOrgMutation = useExportOrgMutation();
   const createTableMutation = useCreateTableMutation();
-  const createLinkMutation = useCreateLinkMutation();
-  const queryClient = useQueryClient();
   const [uploadDrawerData, setUploadDrawerData] = useState<unknown>(null);
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const isUploadDrawerOpen = uploadDrawerData !== null;
@@ -144,32 +93,11 @@ export default function DataList() {
         open={isCreateDrawerOpen}
         onClose={() => setIsCreateDrawerOpen(false)}
         onSave={async (values) => {
+          console.log('values', values);
           const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
+          console.log('result', result);
           if (!result.success) return;
-
-          const hasLinksToCreate = values.links.some((link) => link.name && link.tableFieldId && link.targetTableId);
-          if (!hasLinksToCreate) {
-            revalidate();
-            return;
-          }
-
-          await queryClient.invalidateQueries({ queryKey: dataModelQueryOptions.queryKey });
-          const { dataModel: refreshedDataModel } = await queryClient.fetchQuery({
-            ...dataModelQueryOptions,
-            staleTime: 0,
-          });
-          const createdTable = refreshedDataModel.find((table) => table.id === result.data.id);
-          if (!createdTable) {
-            revalidate();
-            return;
-          }
-
-          const createLinkPayloads = buildCreateLinkPayloads({
-            values,
-            dataModel: refreshedDataModel,
-            createdTable,
-          });
-          await Promise.all(createLinkPayloads.map((payload) => createLinkMutation.mutateAsync(payload)));
+          setIsCreateDrawerOpen(false);
           revalidate();
         }}
       />

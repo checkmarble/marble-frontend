@@ -1,10 +1,11 @@
 import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
-import { getDataTypeIcon, linkRelationTypes } from '@app-builder/models';
+import { linkRelationTypes } from '@app-builder/models';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { DatatypeIcon } from './DatatypeOption';
 
 export function LinkForm({
   compact,
@@ -60,7 +61,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         .map((field) => ({
           label: (
             <span className="flex items-center gap-v2-sm">
-              <Icon icon={getDataTypeIcon(field.dataType) ?? 'minus'} className="size-4" />
+              <DatatypeIcon dataType={field.dataType} />
               <span>{field.alias || field.name}</span>
             </span>
           ),

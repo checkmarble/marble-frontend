@@ -125,7 +125,6 @@ export function EditTableDrawer({
         hidden: false,
         order: table.fields.length,
         unicityConstraint: 'no_unicity_constraint',
-        ftmProperty: '',
         semanticType: 'text' as const,
         semanticSubType: undefined,
         isNew: true,
@@ -346,7 +345,7 @@ function adaptFieldToTableField(field: DataModelField, index: number): TableFiel
     hidden: field.hidden ?? false,
     order: field.order ?? index,
     unicityConstraint: field.unicityConstraint,
-    ftmProperty: field.ftmProperty ?? '',
+    ftmProperty: field.ftmProperty,
     semanticType:
       field.name === 'object_id'
         ? 'unique_id'

@@ -39,7 +39,6 @@ export const defaultCreateTableFields: TableField[] = [
     hidden: false,
     order: 0,
     unicityConstraint: 'no_unicity_constraint',
-    ftmProperty: '',
     semanticType: 'unique_id',
     semanticSubType: 'opaque_id',
     isNew: false,
@@ -57,7 +56,6 @@ export const defaultCreateTableFields: TableField[] = [
     hidden: false,
     order: 1,
     unicityConstraint: 'no_unicity_constraint',
-    ftmProperty: '',
     semanticType: 'last_update',
     semanticSubType: undefined,
     isNew: false,
@@ -80,7 +78,6 @@ export const defaultCreateTableFormValues: SemanticTableFormValues = {
   isVisited: false,
 };
 
-const entityTypesWithSubEntity = ['person'] as const;
 const entityTypesRequiringLink = ['transaction', 'event'] as const;
 
 export const createTableEntityStepSchema = z
@@ -113,10 +110,6 @@ export const createTableEntityStepSchema = z
     { error: 'Please select a destination table', path: ['belongsToTableId'] },
   );
 
-export function hasSubEntityOptions(entityType: FtmEntityV2 | ''): entityType is 'person' {
-  return entityTypesWithSubEntity.includes(entityType as (typeof entityTypesWithSubEntity)[number]);
-}
-
 export function requiresLink(entityType: FtmEntityV2 | ''): entityType is 'transaction' | 'event' {
   return entityTypesRequiringLink.includes(entityType as (typeof entityTypesRequiringLink)[number]);
 }
@@ -133,6 +126,8 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
     description: '',
     fields: values.fields.map(adaptTableField),
     links: values.links.map(adaptLink),
+    ftm_entity: values.ftmEntity,
+    primary_ordering_field: values.mainTimestampFieldName || 'updated_at',
     metadata: {
       belongsToTableId: values.belongsToTableId || undefined,
       mainTimestampFieldName: values.mainTimestampFieldName || undefined,

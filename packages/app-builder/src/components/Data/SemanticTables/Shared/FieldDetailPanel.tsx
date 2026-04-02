@@ -1,4 +1,3 @@
-import { getDataTypeIcon, type PrimitiveTypes } from '@app-builder/models';
 import { useDeleteFieldMutation } from '@app-builder/queries/data/delete-field';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
@@ -8,6 +7,7 @@ import { Icon } from 'ui-icons';
 import { DataField } from '../../DataVisualisation/DataField';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
+import { useDatatypeOptions } from './DatatypeOption';
 import {
   type DataTypeKey,
   type EnumColors,
@@ -19,16 +19,6 @@ import {
   semanticTypesByDataType,
   type TableField,
 } from './semanticData-types';
-
-const dataTypeOptions: { value: PrimitiveTypes; labelKey: string }[] = [
-  { value: 'String', labelKey: 'String' },
-  { value: 'Timestamp', labelKey: 'Timestamp' },
-  { value: 'Int', labelKey: 'Integer' },
-  { value: 'Float', labelKey: 'Float' },
-  { value: 'Bool', labelKey: 'Boolean' },
-  { value: 'Coords', labelKey: 'GPS Coords' },
-  { value: 'IpAddress', labelKey: 'IP Address' },
-];
 
 export function FieldDetailPanel({
   fieldId,
@@ -55,19 +45,7 @@ export function FieldDetailPanel({
     return fields.some((f) => f.id !== fieldId && f.name === field.name);
   }, [field, fieldId, fields]);
 
-  const typeSelectOptions = useMemo(
-    () =>
-      dataTypeOptions.map((opt) => ({
-        label: (
-          <span className="flex items-center gap-v2-sm">
-            <Icon icon={getDataTypeIcon(opt.value) ?? 'minus'} className="size-4" />
-            <span>{opt.labelKey}</span>
-          </span>
-        ),
-        value: opt.value,
-      })),
-    [],
-  );
+  const typeSelectOptions = useDatatypeOptions();
 
   const resolvedTableOptions = useMemo(() => {
     const dataModelTableOptions = dataModel.map((table) => ({

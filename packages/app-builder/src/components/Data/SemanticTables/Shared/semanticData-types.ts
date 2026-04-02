@@ -1,4 +1,5 @@
 import { FtmEntityPersonOption, FtmEntityV2, LinkRelationType, type PrimitiveTypes } from '@app-builder/models';
+import { FtmEntity } from 'marble-api';
 import { match } from 'ts-pattern';
 
 export type LinkValue = {
@@ -66,7 +67,7 @@ export type TableField = {
   hidden: boolean;
   order: number;
   unicityConstraint: string;
-  ftmProperty: string;
+  ftmProperty?: string;
   semanticType: SemanticTypeField;
   semanticSubType?: SemanticSubTypeField;
   currencyExponent?: number;
@@ -162,7 +163,6 @@ export const semanticTypesByDataType = {
 } as const satisfies Record<string, SemanticOption[]>;
 
 export type DataTypeKey = keyof typeof semanticTypesByDataType;
-// export type SemanticType = (typeof semanticTypesByDataType)[DataTypeKey][number]['value'];
 
 type AllSemanticOptions = (typeof semanticTypesByDataType)[DataTypeKey][number];
 type OptionsWithSubOptions = Extract<AllSemanticOptions, { subOptions: readonly unknown[] }>;
@@ -196,6 +196,7 @@ export type SemanticTableFormValues = {
   metaData: Record<string, unknown>;
   isCanceled: boolean;
   isVisited: boolean;
+  ftmEntity?: FtmEntity;
 };
 
 export function getMockValue(

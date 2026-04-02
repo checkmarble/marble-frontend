@@ -1,4 +1,3 @@
-import { getDataTypeIcon } from '@app-builder/models';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
@@ -6,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
+import { DatatypeIcon } from './DatatypeOption';
 import type { TableField } from './semanticData-types';
 
 export function FieldsForm({
@@ -103,7 +103,6 @@ function FieldRow({
   hasError?: boolean;
 }) {
   const { t } = useTranslation(['data']);
-  const typeIcon = getDataTypeIcon(field.dataType) ?? 'minus';
 
   const semanticLabel = field.semanticSubType
     ? t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`)
@@ -130,7 +129,7 @@ function FieldRow({
           field.hidden && 'opacity-50',
         )}
       >
-        <Icon icon={typeIcon} className="size-4 shrink-0 text-grey-secondary" />
+        <DatatypeIcon dataType={field.dataType} />
         <span className="text-s font-medium">{field.alias || field.name}</span>
         <div className="ml-auto flex items-center gap-v2-sm">
           {semanticLabel ? (

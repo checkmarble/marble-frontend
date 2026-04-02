@@ -20,7 +20,7 @@ const createFieldValuesSchema = z.object({
   is_unique: z.boolean().optional(),
   ftm_property: z.string().optional(),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).optional()).optional(),
-  semantic_type: z.enum(semanticTypeField),
+  semantic_type: z.enum(semanticTypeField).optional(),
 });
 
 const createLinksValuesSchema = z.object({
@@ -46,6 +46,7 @@ export const createTableValueSchema = z.object({
   metadata: z.record(z.string(), z.string().optional()).optional(),
   fields: z.array(createFieldValuesSchema),
   links: z.array(createLinksValuesSchema),
+  primary_ordering_field: z.string(),
 });
 
 export type CreateTableValue = z.infer<typeof createTableValueSchema>;
