@@ -378,3 +378,5 @@ export function validateValues(values: SemanticTableFormValues, scope: Validatio
   if (errors.length > 0) return { ok: false, errors };
   return { ok: true };
 }
+
+export { apiSemanticTypeToFormEntity } from '@app-builder/models';

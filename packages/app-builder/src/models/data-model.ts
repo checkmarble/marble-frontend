@@ -65,21 +65,78 @@ export interface DataModelField {
   currencyFieldId?: string;
   booleanDisplay?: 'yes_no' | 'checkbox';
   foreignkeyTable?: string;
+  hidden?: boolean;
+}
+
+function readMetadataString(m: Record<string, unknown>, ...keys: string[]): string | undefined {
+  for (const k of keys) {
+    const v = m[k];
+    if (typeof v === 'string') return v;
+  }
+  return undefined;
+}
+
+function readMetadataNumber(m: Record<string, unknown>, ...keys: string[]): number | undefined {
+  for (const k of keys) {
+    const v = m[k];
+    if (typeof v === 'number' && !Number.isNaN(v)) return v;
+  }
+  return undefined;
+}
+
+function readMetadataBoolean(m: Record<string, unknown>, key: string): boolean | undefined {
+  const v = m[key];
+  return typeof v === 'boolean' ? v : undefined;
 }
 
 function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
+  const raw = dataModelFieldDto as FieldDto & {
+    alias?: string;
+    order?: number;
+    metadata?: Record<string, unknown> | null;
+    semantic_type?: string;
+    semantic_sub_type?: string;
+  };
+  const meta =
+    raw.metadata && typeof raw.metadata === 'object' && !Array.isArray(raw.metadata)
+      ? (raw.metadata as Record<string, unknown>)
+      : {};
+  const alias = typeof raw.alias === 'string' ? raw.alias : readMetadataString(meta, 'alias');
+  const order = typeof raw.order === 'number' ? raw.order : readMetadataNumber(meta, 'order');
+  const semanticType = (readMetadataString(meta, 'semanticType') ??
+    (typeof raw.semantic_type === 'string' ? raw.semantic_type : undefined)) as SemanticType | undefined;
+  const semanticSubType = (readMetadataString(meta, 'semanticSubType', 'semantic_sub_type') ??
+    (typeof raw.semantic_sub_type === 'string' ? raw.semantic_sub_type : undefined)) as SemanticSubType | undefined;
+  const currencyExponent = readMetadataNumber(meta, 'currencyExponent');
+  const decimalPrecision = readMetadataNumber(meta, 'decimalPrecision');
+  const currencyFieldId = readMetadataString(meta, 'currencyFieldId');
+  const booleanDisplayRaw = readMetadataString(meta, 'booleanDisplay');
+  const booleanDisplay =
+    booleanDisplayRaw === 'yes_no' || booleanDisplayRaw === 'checkbox' ? booleanDisplayRaw : undefined;
+  const foreignkeyTable = readMetadataString(meta, 'foreignkeyTable', 'foreignkey_table');
+  const hidden = readMetadataBoolean(meta, 'hidden');
+
   return {
-    id: dataModelFieldDto.id,
-    dataType: dataModelFieldDto.data_type,
-    description: dataModelFieldDto.description,
-    isEnum: dataModelFieldDto.is_enum,
-    name: dataModelFieldDto.name,
-    nullable: dataModelFieldDto.nullable,
-    tableId: dataModelFieldDto.table_id,
-    values: dataModelFieldDto.values,
-    unicityConstraint: dataModelFieldDto.unicity_constraint,
-    ftmProperty: dataModelFieldDto.ftm_property,
-    // TODO: add alias, visible, order, semanticType, semanticSubType
+    id: raw.id,
+    dataType: raw.data_type,
+    description: raw.description,
+    isEnum: raw.is_enum,
+    name: raw.name,
+    nullable: raw.nullable,
+    tableId: raw.table_id,
+    values: raw.values,
+    unicityConstraint: raw.unicity_constraint,
+    ftmProperty: raw.ftm_property,
+    alias,
+    order,
+    semanticType,
+    semanticSubType,
+    currencyExponent,
+    decimalPrecision,
+    currencyFieldId,
+    booleanDisplay,
+    foreignkeyTable,
+    hidden,
   };
 }
 
@@ -146,31 +203,82 @@ export interface TableModel {
   name: string;
   description: string;
   semanticType: FtmEntityV2;
+  /** Present when `semanticType` is `person`; maps API `semantic_type` (company/person/partner) to UI sub-entity. */
+  subEntity?: FtmEntityPersonOption;
   alias: string;
   captionField: string;
   fields: DataModelField[];
   linksToSingle: LinkToSingle[];
   navigationOptions?: NavigationOption[];
   ftmEntity?: FtmEntity;
+  /** Field id of the main ordering timestamp (from table `metadata` on create / GET). */
+  mainTimestampFieldId?: string;
+  belongsToTableId?: string;
+}
+
+/**
+ * Maps API `semantic_type` (create table / data model) back to UI entity type + person sub-entity.
+ * Inverse of `getEntityType` in create-table-types.
+ */
+export function apiSemanticTypeToFormEntity(apiType: string): {
+  entityType: FtmEntityV2;
+  subEntity: FtmEntityPersonOption;
+} {
+  return match(apiType)
+    .with('company', () => ({ entityType: 'person' as const, subEntity: 'moral' as const }))
+    .with('person', () => ({ entityType: 'person' as const, subEntity: 'natural' as const }))
+    .with('partner', () => ({ entityType: 'person' as const, subEntity: 'generic' as const }))
+    .with('account', () => ({ entityType: 'account' as const, subEntity: 'moral' as const }))
+    .with('transaction', () => ({ entityType: 'transaction' as const, subEntity: 'moral' as const }))
+    .with('event', () => ({ entityType: 'event' as const, subEntity: 'moral' as const }))
+    .with('other', () => ({ entityType: 'other' as const, subEntity: 'moral' as const }))
+    .otherwise(() => ({ entityType: 'other' as const, subEntity: 'moral' as const }));
 }
 
 function adaptTableModel(tableDto: TableDto): TableModel {
+  const raw = tableDto as TableDto & {
+    alias?: string;
+    semantic_type?: string;
+    caption_field?: string;
+    metadata?: Record<string, unknown> | null;
+  };
+  const meta =
+    raw.metadata && typeof raw.metadata === 'object' && !Array.isArray(raw.metadata)
+      ? (raw.metadata as Record<string, unknown>)
+      : {};
+  const { entityType, subEntity } = apiSemanticTypeToFormEntity(
+    typeof raw.semantic_type === 'string' ? raw.semantic_type : 'other',
+  );
+  const mainTimestampFieldId = readMetadataString(meta, 'mainTimestampFieldId');
+  const belongsToTableId = readMetadataString(meta, 'belongsToTableId');
+
+  const fields = R.pipe(raw.fields, R.values(), R.map(adaptDataModelField), (arr) =>
+    [...arr].sort((a, b) => {
+      const ao = a.order ?? 0;
+      const bo = b.order ?? 0;
+      if (ao !== bo) return ao - bo;
+      return a.name.localeCompare(b.name);
+    }),
+  );
+
   return {
-    id: tableDto.id,
-    name: tableDto.name,
-    description: tableDto.description,
-    // TODO: get from tableDto when updated
-    alias: '',
-    captionField: 'captionField',
-    semanticType: 'person',
-    fields: R.pipe(tableDto.fields, R.values(), R.map(adaptDataModelField)),
+    id: raw.id,
+    name: raw.name,
+    description: raw.description,
+    alias: typeof raw.alias === 'string' ? raw.alias : '',
+    captionField: typeof raw.caption_field === 'string' ? raw.caption_field : '',
+    semanticType: entityType,
+    subEntity,
+    mainTimestampFieldId,
+    belongsToTableId,
+    fields,
     linksToSingle: R.pipe(
-      tableDto.links_to_single ?? {},
+      raw.links_to_single ?? {},
       R.entries(),
       R.map(([linkName, linkDto]) => adaptLinkToSingle(linkName, linkDto)),
     ),
-    navigationOptions: tableDto.navigation_options?.map(adaptNavigationOptions),
-    ftmEntity: tableDto.ftm_entity,
+    navigationOptions: raw.navigation_options?.map(adaptNavigationOptions),
+    ftmEntity: raw.ftm_entity,
   };
 }
 

@@ -343,7 +343,7 @@ function adaptFieldToTableField(field: DataModelField, index: number): TableFiel
     isEnum: field.isEnum,
     nullable: field.nullable,
     alias: field.alias ?? field.name,
-    hidden: false,
+    hidden: field.hidden ?? false,
     order: field.order ?? index,
     unicityConstraint: field.unicityConstraint,
     ftmProperty: field.ftmProperty ?? '',
@@ -360,16 +360,24 @@ function adaptFieldToTableField(field: DataModelField, index: number): TableFiel
   };
 }
 
+function resolveMainTimestampFieldId(tableModel: TableModel): string {
+  if (tableModel.mainTimestampFieldId) return tableModel.mainTimestampFieldId;
+  const updatedAt = tableModel.fields.find((f) => f.name === 'updated_at');
+  if (updatedAt) return updatedAt.id;
+  const lastUpdate = tableModel.fields.find((f) => f.semanticType === 'last_update');
+  return lastUpdate?.id ?? '';
+}
+
 function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormValues {
   return {
     tableId: tableModel.id,
     name: tableModel.name,
     alias: tableModel.alias || tableModel.name,
     entityType: tableModel.semanticType,
-    subEntity: 'moral',
-    belongsToTableId: '',
+    subEntity: tableModel.subEntity ?? 'moral',
+    belongsToTableId: tableModel.belongsToTableId ?? '',
     fields: tableModel.fields.map(adaptFieldToTableField),
-    mainTimestampFieldId: '',
+    mainTimestampFieldId: resolveMainTimestampFieldId(tableModel),
     links: [],
     metaData: {},
     isCanceled: false,
