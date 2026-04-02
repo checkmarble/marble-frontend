@@ -30,12 +30,7 @@ export const loader = createServerFn(
 
     const { analytics } = context.authInfo;
 
-    const logCatch = (name: string) => (err: unknown) => {
-      console.error(`[case-analytics] ${name} failed:`, err);
-      return name === 'sarCompleted' ? 0 : [];
-    };
-
-    // TODO: remove .catch() fallbacks once all backend endpoints are stable
+    // TODO: remove .catch() fallbacks once all backend endpoints return 200
     const [
       sarTotalCompleted,
       sarDelayByPeriod,
@@ -45,28 +40,14 @@ export const loader = createServerFn(
       caseDurationByPeriod,
       openCasesByAge,
     ] = await Promise.all([
-      analytics.getCasesSarCompleted(query).catch(logCatch('sarCompleted')),
-      analytics.getCasesSarDelay(query).catch(logCatch('sarDelay')),
-      analytics.getCasesSarDelayDistribution(query).catch(logCatch('sarDelayDistribution')),
-      analytics.getCasesCreated(query).catch(logCatch('casesCreated')),
-      analytics.getCasesFalsePositiveRate(query).catch(logCatch('falsePositiveRate')),
-      analytics.getCasesDuration(query).catch(logCatch('casesDuration')),
-      analytics.getOpenCasesByAge(query).catch(logCatch('openCasesByAge')),
+      analytics.getCasesSarCompleted(query).catch(() => 0),
+      analytics.getCasesSarDelay(query).catch(() => []),
+      analytics.getCasesSarDelayDistribution(query).catch(() => []),
+      analytics.getCasesCreated(query).catch(() => []),
+      analytics.getCasesFalsePositiveRate(query).catch(() => []),
+      analytics.getCasesDuration(query).catch(() => []),
+      analytics.getOpenCasesByAge(query).catch(() => []),
     ]);
-
-    console.log('[case-analytics] query:', JSON.stringify(query));
-    console.log(
-      '[case-analytics] results:',
-      JSON.stringify({
-        sarTotalCompleted,
-        sarDelayByPeriod: Array.isArray(sarDelayByPeriod) ? sarDelayByPeriod.length : 0,
-        sarDelayDistribution: Array.isArray(sarDelayDistribution) ? sarDelayDistribution.length : 0,
-        alertCountByPeriod: Array.isArray(alertCountByPeriod) ? alertCountByPeriod.length : 0,
-        falsePositiveRateByPeriod: Array.isArray(falsePositiveRateByPeriod) ? falsePositiveRateByPeriod.length : 0,
-        caseDurationByPeriod: Array.isArray(caseDurationByPeriod) ? caseDurationByPeriod.length : 0,
-        openCasesByAge: Array.isArray(openCasesByAge) ? openCasesByAge.length : 0,
-      }),
-    );
 
     return {
       caseAnalytics: {

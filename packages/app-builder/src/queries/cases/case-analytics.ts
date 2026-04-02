@@ -37,5 +37,7 @@ export const useCaseAnalytics = (filters: CaseAnalyticsFilters) => {
       return result.caseAnalytics;
     },
     placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000, // 5 minutes — avoid refetching on tab switches
+    refetchOnWindowFocus: false,
   });
 };
