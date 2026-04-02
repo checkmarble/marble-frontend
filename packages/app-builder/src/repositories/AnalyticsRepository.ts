@@ -20,12 +20,24 @@ import {
   adaptAvailableFiltersResponse,
   transformAvailableFiltersRequest,
 } from '@app-builder/models/analytics/available-filters';
+import {
+  adaptCasesCreated,
+  adaptCasesDuration,
+  adaptFalsePositiveRate,
+  adaptOpenCasesByAge,
+  adaptSarDelay,
+  adaptSarDelayDistribution,
+  type BucketCount,
+  type FalsePositiveRate,
+  type PeriodCount,
+  type PeriodDelay,
+} from '@app-builder/models/analytics/case-analytics';
 import { adaptCaseStatusByInbox, CaseStatusByInboxResponse } from '@app-builder/models/analytics/case-status-by-inbox';
 import { adaptCaseStatusByDate, CaseStatusByDateResponse } from '@app-builder/models/analytics/cases-status-by-date';
 import { adaptRuleHitTable, RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { adaptScreeningHitTable, ScreeningHitTableResponse } from '@app-builder/models/analytics/screening-hit';
-
 import { compareAsc, compareDesc, differenceInDays } from 'date-fns';
+import type { CaseAnalyticsQueryDto } from 'marble-api';
 
 type DateRangeLimits = {
   startDate: LimitDate;
@@ -77,6 +89,13 @@ export interface AnalyticsRepository {
   getCaseStatusByDate(): Promise<CaseStatusByDateResponse[] | null>;
   getCaseStatusByInbox(): Promise<CaseStatusByInboxResponse[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
+  getCasesSarCompleted(query: CaseAnalyticsQueryDto): Promise<number>;
+  getCasesSarDelay(query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]>;
+  getCasesSarDelayDistribution(query: CaseAnalyticsQueryDto): Promise<BucketCount[]>;
+  getCasesCreated(query: CaseAnalyticsQueryDto): Promise<PeriodCount[]>;
+  getCasesFalsePositiveRate(query: CaseAnalyticsQueryDto): Promise<FalsePositiveRate[]>;
+  getCasesDuration(query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]>;
+  getOpenCasesByAge(query: CaseAnalyticsQueryDto): Promise<BucketCount[]>;
 }
 
 export function makeGetAnalyticsRepository() {
@@ -168,6 +187,41 @@ export function makeGetAnalyticsRepository() {
       return client
         .getAvailableFilters(transformAvailableFiltersRequest(args))
         .then((response) => adaptAvailableFiltersResponse(response));
+    },
+
+    getCasesSarCompleted: async (query: CaseAnalyticsQueryDto): Promise<number> => {
+      const result = await client.getCasesAnalyticsSarCompleted(query);
+      return result.count;
+    },
+
+    getCasesSarDelay: async (query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]> => {
+      const result = await client.getCasesAnalyticsSarDelay(query);
+      return result.map(adaptSarDelay);
+    },
+
+    getCasesSarDelayDistribution: async (query: CaseAnalyticsQueryDto): Promise<BucketCount[]> => {
+      const result = await client.getCasesAnalyticsSarDelayDistribution(query);
+      return result.map(adaptSarDelayDistribution);
+    },
+
+    getCasesCreated: async (query: CaseAnalyticsQueryDto): Promise<PeriodCount[]> => {
+      const result = await client.getCasesAnalyticsCasesCreated(query);
+      return result.map(adaptCasesCreated);
+    },
+
+    getCasesFalsePositiveRate: async (query: CaseAnalyticsQueryDto): Promise<FalsePositiveRate[]> => {
+      const result = await client.getCasesAnalyticsFalsePositiveRate(query);
+      return result.map(adaptFalsePositiveRate);
+    },
+
+    getCasesDuration: async (query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]> => {
+      const result = await client.getCasesAnalyticsCasesDuration(query);
+      return result.map(adaptCasesDuration);
+    },
+
+    getOpenCasesByAge: async (query: CaseAnalyticsQueryDto): Promise<BucketCount[]> => {
+      const result = await client.getCasesAnalyticsOpenCasesByAge(query);
+      return result.map(adaptOpenCasesByAge);
     },
   });
 }

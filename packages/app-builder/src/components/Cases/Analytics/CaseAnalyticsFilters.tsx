@@ -1,17 +1,12 @@
-import type { TimeBucket } from '@app-builder/models/analytics/case-analytics';
 import type { Inbox } from '@app-builder/models/inbox';
 import type { User } from '@app-builder/models/user';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type SelectOption, SelectV2 } from 'ui-design-system';
 
-import { TimeBucketToggle } from './TimeBucketToggle';
-
 const ALL_VALUE = '__all__';
 
 interface CaseAnalyticsFiltersProps {
-  timeBucket: TimeBucket;
-  onTimeBucketChange: (bucket: TimeBucket) => void;
   startDate: string;
   onStartDateChange: (date: string) => void;
   endDate: string;
@@ -25,8 +20,6 @@ interface CaseAnalyticsFiltersProps {
 }
 
 export function CaseAnalyticsFilters({
-  timeBucket,
-  onTimeBucketChange,
   startDate,
   onStartDateChange,
   endDate,
@@ -70,8 +63,6 @@ export function CaseAnalyticsFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-v2-md">
-      <TimeBucketToggle value={timeBucket} onChange={onTimeBucketChange} />
-
       <div className="flex items-center gap-v2-xs">
         <label className="text-s text-grey-secondary">{t('cases:analytics.filters.from')}</label>
         <input

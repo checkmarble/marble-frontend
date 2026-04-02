@@ -12,7 +12,7 @@ export const useCaseAnalytics = (filters: CaseAnalyticsFilters) => {
   const params = new URLSearchParams({
     startDate: filters.startDate,
     endDate: filters.endDate,
-    timeBucket: filters.timeBucket,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
   if (filters.inboxId) {
     params.set('inboxId', filters.inboxId);
