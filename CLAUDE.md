@@ -52,6 +52,25 @@ packages/
 - **Zod** - Schema validation
 - **Biome** - Linting and formatting
 
+## App-Builder Architecture
+
+```
+packages/app-builder/src/
+  routes/           # Remix flat routes (_builder+, _auth+, ressources+)
+  components/       # Feature components (Cases/, Decisions/, etc.)
+  core/             # createServerFn, data(), request utilities
+  middlewares/      # authMiddleware, handleRedirectMiddleware
+  contexts/         # React contexts
+  queries/          # TanStack Query hooks (one file per query)
+  repositories/     # Data access layer
+  services/         # Business logic
+  models/           # Types with adapters
+  hooks/            # Custom React hooks
+  schemas/          # Zod schemas
+  locales/          # i18n (en/, fr/, ar/)
+  utils/            # Utilities (routes/, format, etc.)
+```
+
 ## Common Patterns
 
 ### Imports

@@ -1,6 +1,6 @@
 ---
 name: frontend-dev-guidelines
-description: Deep reference for Marble frontend patterns. Use when building tables, forms, modals, complex components, or working with TanStack Query/Form, Radix UI, virtual tables, MenuCommand dropdowns, or Tailwind color tokens. NOT needed for simple edits, styling tweaks, or route changes — rules handle those.
+description: Use when writing, editing, or creating components, pages, routes, forms, tables, modals, queries, hooks, loaders, or actions in packages/app-builder or packages/ui-design-system. Covers React patterns, TanStack Query/Form, Radix UI, virtual tables, MenuCommand, Tailwind color tokens, file organization, and TypeScript standards. Basic conventions (imports, styling, i18n, resource route middleware) are in .claude/rules/ — this skill provides the deep reference patterns and code examples.
 ---
 
 # Frontend Development Guidelines
