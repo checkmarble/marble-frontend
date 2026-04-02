@@ -446,6 +446,20 @@ paths:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1case_status_by_date
   /analytics/query/case_status_by_inbox:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1case_status_by_inbox
+  /analytics/cases/sar_completed:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1sar_completed
+  /analytics/cases/sar_delay:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1sar_delay
+  /analytics/cases/sar_delay_distribution:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1sar_delay_distribution
+  /analytics/cases/cases_created:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1cases_created
+  /analytics/cases/cases_false_positive_rate:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1cases_false_positive_rate
+  /analytics/cases/cases_duration:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1cases_duration
+  /analytics/cases/open_cases_by_age:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1cases~1open_cases_by_age
   /analytics/available-filters:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 
