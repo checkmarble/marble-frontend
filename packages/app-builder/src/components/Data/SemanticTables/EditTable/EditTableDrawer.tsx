@@ -165,7 +165,7 @@ export function EditTableDrawer({
   );
 
   const destinationTableOptions = useMemo(
-    () => dataModel.map((t) => ({ tableId: t.id, label: t.alias && t.alias !== 'alias' ? t.alias : t.name })),
+    () => dataModel.map((t) => ({ tableId: t.id, label: t.alias || t.name })),
     [dataModel],
   );
 
@@ -364,7 +364,7 @@ function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormV
   return {
     tableId: tableModel.id,
     name: tableModel.name,
-    alias: tableModel.alias && tableModel.alias !== 'alias' ? tableModel.alias : tableModel.name,
+    alias: tableModel.alias || tableModel.name,
     entityType: tableModel.semanticType,
     subEntity: 'moral',
     belongsToTableId: '',
@@ -385,7 +385,7 @@ function adaptLinksToLinkState(links: LinkToSingle[], tableId: string): Record<s
         linkId: link.id,
         name: link.name,
         sourceTableId: tableId,
-        tableFieldId: link.childFieldId,
+        tableFieldId: link.childFieldName,
         relationType: 'belongs_to' as const,
         targetTableId: link.parentTableId,
       } satisfies LinkValue,

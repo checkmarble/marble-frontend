@@ -1,4 +1,5 @@
 import {
+  LinkValue,
   type SemanticSubType,
   type SemanticTableFormValues,
   type SemanticType,
@@ -15,7 +16,7 @@ export type { SemanticTableFormValues };
 
 export type TablePropertyError = {
   kind: 'table';
-  field: 'name' | 'entityType' | 'subEntity' | 'belongsToTableId';
+  field: 'name' | 'entityType' | 'subEntity' | 'belongsToTableId' | 'mainTimestampFieldId';
   message: string;
 };
 export type FieldValidationError = { kind: 'field'; fieldId: string; message: string };
@@ -71,7 +72,7 @@ export const defaultCreateTableFormValues: SemanticTableFormValues = {
   subEntity: 'moral',
   belongsToTableId: '',
   fields: defaultCreateTableFields,
-  mainTimestampFieldId: '',
+  mainTimestampFieldId: 'updated_at',
   links: [],
   metaData: {},
   isCanceled: false,
@@ -130,9 +131,10 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
     semantic_type: getEntityType(values.entityType, values.subEntity),
     description: '',
     fields: values.fields.map(adaptTableField),
+    links: values.links.map(adaptLink),
     metadata: {
-      belongsToTableId: values.belongsToTableId,
-      mainTimestampFieldId: values.mainTimestampFieldId,
+      belongsToTableId: values.belongsToTableId || undefined,
+      mainTimestampFieldId: values.mainTimestampFieldId || undefined,
     },
   };
 }
@@ -156,6 +158,15 @@ function adaptTableField(field: TableField): CreateTableValue['fields'][number] 
       hidden: field.hidden,
       order: field.order,
     },
+  };
+}
+
+function adaptLink(link: LinkValue): CreateTableValue['links'][number] {
+  return {
+    name: link.name,
+    child_field_name: link.tableFieldId,
+    link_type: link.relationType,
+    parent_table_id: link.targetTableId,
   };
 }
 
@@ -327,7 +338,18 @@ function getLinkErrors(values: SemanticTableFormValues): LinkValidationError[] {
 
 export function validateValues(values: SemanticTableFormValues, scope: ValidationScope = 'all'): ValidationResult {
   if (scope === 'table') {
+    // enforce 'updated_at' to be the default sort order if there is no other
+    if (!values.mainTimestampFieldId && values.fields.some((f) => f.name === 'updated_at')) {
+      values.mainTimestampFieldId = 'updated_at';
+    }
     const errors = getTablePropertyErrors(values);
+    if (!values.mainTimestampFieldId) {
+      errors.push({
+        kind: 'table',
+        field: 'mainTimestampFieldId',
+        message: 'One Timestamp field should be selected as the main ordering field',
+      });
+    }
     return errors.length > 0 ? { ok: false, errors } : { ok: true };
   }
 

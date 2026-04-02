@@ -160,7 +160,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     name: tableDto.name,
     description: tableDto.description,
     // TODO: get from tableDto when updated
-    alias: 'alias',
+    alias: '',
     captionField: 'captionField',
     semanticType: 'person',
     fields: R.pipe(tableDto.fields, R.values(), R.map(adaptDataModelField)),

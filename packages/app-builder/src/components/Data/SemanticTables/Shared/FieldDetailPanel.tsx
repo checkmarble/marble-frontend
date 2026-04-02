@@ -197,12 +197,14 @@ export function FieldDetailPanel({
           </div>
 
           {/* Required */}
-          {!isLocked ? (
-            <label className="flex items-center gap-v2-sm cursor-pointer">
-              <Switch checked={!field.nullable} onCheckedChange={(checked) => update({ nullable: !checked })} />
-              <span className="text-s">{t('data:upload_data.field_required')}</span>
-            </label>
-          ) : null}
+          <label className="flex items-center gap-v2-sm cursor-pointer">
+            <Switch
+              checked={!field.nullable}
+              onCheckedChange={(checked) => update({ nullable: !checked })}
+              disabled={isLocked}
+            />
+            <span className="text-s">{t('data:upload_data.field_required')}</span>
+          </label>
 
           {/* Hidden */}
           <label className="flex items-center gap-v2-sm cursor-pointer">
@@ -212,7 +214,7 @@ export function FieldDetailPanel({
         </div>
 
         {/* Semantic type */}
-        {!isLocked && semanticOptions.length > 0 ? (
+        {semanticOptions.length > 0 ? (
           <div className="flex flex-col gap-v2-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_type')}</label>
             <SelectV2
@@ -220,12 +222,13 @@ export function FieldDetailPanel({
               placeholder={t('data:upload_data.field_semantic_placeholder')}
               onChange={(value) => update({ semanticType: value as SemanticType })}
               options={semanticOptions}
+              disabled={isLocked}
             />
           </div>
         ) : null}
 
         {/* Semantic sub-type */}
-        {!isLocked && semanticSubOptions.length > 0 ? (
+        {semanticSubOptions.length > 0 ? (
           <div className="flex flex-col gap-v2-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_sub_type')}</label>
             <SelectV2
@@ -233,40 +236,48 @@ export function FieldDetailPanel({
               placeholder=""
               onChange={(value) => update({ semanticSubType: value as SemanticSubType })}
               options={semanticSubOptions}
+              disabled={isLocked}
             />
           </div>
         ) : null}
 
         {/* ForeignKey-specific: destination table */}
-        {!isLocked && field.semanticType === 'foreign_key' ? (
+        {field.semanticType === 'foreign_key' ? (
           <ForeignKeySettings
             foreignkeyTable={field.foreignkeyTable}
             onChange={update}
             tableOptions={resolvedTableOptions}
+            disabled={isLocked}
           />
         ) : null}
 
         {/* Currency-specific: currency exponent (only when semantic type is number and sub type is currency) */}
-        {!isLocked && field.semanticType === 'monetary_amount' ? (
-          <CurrencySettings field={field} currencyFieldOptions={currencyFieldOptions} onChange={update} />
+        {field.semanticType === 'monetary_amount' ? (
+          <CurrencySettings
+            field={field}
+            currencyFieldOptions={currencyFieldOptions}
+            onChange={update}
+            disabled={isLocked}
+          />
         ) : null}
 
         {/* Enum-specific: key/color/value list */}
-        {!isLocked && field.semanticType === 'enum' && field.semanticSubType === 'key_color_value' ? (
-          <EnumValuesSettings field={field} onChange={update} />
+        {field.semanticType === 'enum' && field.semanticSubType === 'key_color_value' ? (
+          <EnumValuesSettings field={field} onChange={update} disabled={isLocked} />
         ) : null}
 
         {/* Boolean-specific: display as switch or yes/no */}
-        {!isLocked && field.dataType === 'Bool' ? (
-          <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} />
+        {field.dataType === 'Bool' ? (
+          <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} disabled={isLocked} />
         ) : null}
 
         {/* Timestamp-specific: main ordering timestamp (only one per table) */}
-        {!isLocked && field.dataType === 'Timestamp' ? (
+        {field.dataType === 'Timestamp' ? (
           <TimestampSettings
             fieldId={fieldId}
             mainTimestampFieldId={mainTimestampFieldId}
             setMainTimestampFieldId={setMainTimestampFieldId}
+            disabled={isLocked}
           />
         ) : null}
 
@@ -310,10 +321,12 @@ function CurrencySettings({
   field,
   currencyFieldOptions,
   onChange,
+  disabled,
 }: {
   field: TableField;
   currencyFieldOptions: { label: string; value: string }[];
   onChange: (values: Partial<TableField>) => void;
+  disabled: boolean;
 }) {
   const { t } = useTranslation(['data']);
   return (
@@ -327,6 +340,7 @@ function CurrencySettings({
             placeholder={t('data:upload_data.field_currency_field_placeholder')}
             onChange={(value) => onChange({ currencyFieldId: value })}
             options={currencyFieldOptions}
+            disabled={disabled}
           />
         </div>
       ) : null}
@@ -337,6 +351,7 @@ function CurrencySettings({
           max={10}
           value={field.currencyExponent ?? 0}
           onChange={(value) => onChange({ currencyExponent: Math.min(10, Math.max(0, value)) })}
+          disabled={disabled}
         />
       </div>
       <div className="flex flex-col gap-v2-xs">
@@ -346,6 +361,7 @@ function CurrencySettings({
           max={10}
           value={field.decimalPrecision ?? 2}
           onChange={(value) => onChange({ decimalPrecision: Math.min(10, Math.max(0, value)) })}
+          disabled={disabled}
         />
       </div>
     </div>
@@ -355,9 +371,11 @@ function CurrencySettings({
 function BooleanSettings({
   booleanDisplay,
   onChange,
+  disabled,
 }: {
   booleanDisplay?: 'yes_no' | 'checkbox';
   onChange: (values: Partial<TableField>) => void;
+  disabled: boolean;
 }) {
   const { t } = useTranslation(['data']);
   const options = [
@@ -378,6 +396,7 @@ function BooleanSettings({
                 ? 'border-purple-primary bg-purple-10 text-purple-primary'
                 : 'border-grey-border text-grey-secondary hover:bg-grey-border'
             }`}
+            disabled={disabled}
           >
             {opt.label}
           </button>
@@ -391,10 +410,12 @@ function ForeignKeySettings({
   foreignkeyTable,
   onChange,
   tableOptions,
+  disabled,
 }: {
   foreignkeyTable?: string;
   onChange: (values: Partial<TableField>) => void;
   tableOptions: { label: string; value: string }[];
+  disabled: boolean;
 }) {
   const { t } = useTranslation(['data']);
 
@@ -406,6 +427,7 @@ function ForeignKeySettings({
         placeholder={t('data:upload_data.field_foreign_key_placeholder')}
         onChange={(value) => onChange({ foreignkeyTable: value })}
         options={tableOptions}
+        disabled={disabled}
       />
       {!foreignkeyTable ? (
         <p className="text-xs text-red-primary">{t('data:upload_data.field_foreign_key_required_error')}</p>
@@ -425,9 +447,11 @@ function toSnakeCase(str: string): string {
 function EnumValuesSettings({
   field,
   onChange,
+  disabled,
 }: {
   field: TableField;
   onChange: (values: Partial<TableField>) => void;
+  disabled: boolean;
 }) {
   const { t } = useTranslation(['data']);
   const enumValues = field.enumValues ?? [];
@@ -482,6 +506,7 @@ function EnumValuesSettings({
                     placeholder=""
                     onChange={(value) => updateValue(index, { color: value as EnumColors })}
                     options={colorOptions}
+                    disabled={disabled}
                   />
                 </div>
                 <Input
@@ -489,11 +514,13 @@ function EnumValuesSettings({
                   value={enumValue.value}
                   placeholder={t('data:upload_data.field_enum_value_placeholder')}
                   onChange={(e) => updateValue(index, { value: e.currentTarget.value })}
+                  disabled={disabled}
                 />
                 <button
                   type="button"
                   onClick={() => removeValue(index)}
                   className="shrink-0 rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+                  disabled={disabled}
                 >
                   <Icon icon="delete" className="size-4" />
                 </button>
@@ -505,7 +532,7 @@ function EnumValuesSettings({
           );
         })}
       </div>
-      <Button variant="secondary" appearance="stroked" onClick={addValue}>
+      <Button variant="secondary" appearance="stroked" onClick={addValue} disabled={disabled}>
         <Icon icon="plus" className="size-4" />
         {t('data:upload_data.field_enum_add_value')}
       </Button>
@@ -517,10 +544,12 @@ function TimestampSettings({
   fieldId,
   mainTimestampFieldId,
   setMainTimestampFieldId,
+  disabled,
 }: {
   fieldId: string;
   mainTimestampFieldId: string;
   setMainTimestampFieldId: (id: string) => void;
+  disabled: boolean;
 }) {
   const { t } = useTranslation(['data']);
   return (
@@ -530,6 +559,7 @@ function TimestampSettings({
         <Switch
           checked={mainTimestampFieldId === fieldId}
           onCheckedChange={(checked) => setMainTimestampFieldId(checked ? fieldId : '')}
+          disabled={disabled}
         />
         <span className="text-s">{t('data:upload_data.field_main_ordering_timestamp')}</span>
       </label>

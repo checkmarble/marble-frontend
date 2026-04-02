@@ -38,7 +38,7 @@ export function CreateTableLinksStep({
         return {
           linkId: crypto.randomUUID(),
           name: f.foreignkeyTable!,
-          tableFieldId: f.id,
+          tableFieldId: f.name,
           relationType: f.isDefaultBelongsTo ? 'belongs_to' : 'related',
           targetTableId,
           sourceTableId: '',

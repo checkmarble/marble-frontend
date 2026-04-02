@@ -64,7 +64,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
               <span>{field.alias || field.name}</span>
             </span>
           ),
-          value: field.id,
+          value: field.name,
         })),
     [sourceTableFields],
   );

@@ -1,5 +1,5 @@
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
-import { primitiveTypes } from '@app-builder/models';
+import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
 import z from 'zod/v4';
@@ -29,7 +29,8 @@ const createLinksValuesSchema = z.object({
     error: 'Only lower case alphanumeric and _, must start with a letter',
   }),
   parent_table_id: z.uuid(),
-  parent_field_id: z.uuid(),
+  parent_field_id: z.uuid().optional(),
+  link_type: z.enum(linkRelationTypes),
 });
 
 export const createTableValueSchema = z.object({
@@ -40,9 +41,9 @@ export const createTableValueSchema = z.object({
   alias: z.string().optional(),
   semantic_type: z.enum(fieldEntities),
   ftm_entity: z.string().optional(),
-  metadata: z.record(z.string(), z.string()).optional(),
+  metadata: z.record(z.string(), z.string().optional()).optional(),
   fields: z.array(createFieldValuesSchema),
-  links: z.array(createLinksValuesSchema).optional(),
+  links: z.array(createLinksValuesSchema),
 });
 
 export type CreateTableValue = z.infer<typeof createTableValueSchema>;
