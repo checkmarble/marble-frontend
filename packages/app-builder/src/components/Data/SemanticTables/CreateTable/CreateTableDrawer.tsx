@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Stepper, type StepperStep } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext';
 import { CreateTableEntityStep } from './CreateTableEntityStep';
 import { CreateTableFieldsStep } from './CreateTableFieldsStep';
@@ -30,6 +31,7 @@ export function CreateTableDrawer({
   const { t } = useTranslation(['data', 'common']);
   const [currentStep, setCurrentStep] = useState(0);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
 
   const form = useCreateTableForm(async (value) => {
     console.log('value', value);
@@ -47,6 +49,7 @@ export function CreateTableDrawer({
   });
 
   const handleClose = useCallback(() => {
+    setIsUnsavedChangesDialogOpen(false);
     setValidationErrors([]);
     form.reset();
     setCurrentStep(0);
@@ -63,11 +66,24 @@ export function CreateTableDrawer({
   );
 
   const formValues = useStore(form.store, (state) => state.values);
+  const isDirty = useStore(form.store, (state) => state.isDirty);
   const currentValidationScope = useMemo<ValidationScope>(() => {
     if (currentStep === 0) return 'table';
     if (currentStep === 1) return 'fields';
     return 'links';
   }, [currentStep]);
+
+  const handleBackdropClose = useCallback(() => {
+    if (!isDirty) {
+      handleClose();
+      return;
+    }
+    setIsUnsavedChangesDialogOpen(true);
+  }, [handleClose, isDirty]);
+
+  const handleConfirmDiscardChanges = useCallback(() => {
+    handleClose();
+  }, [handleClose]);
 
   const tableErrorFields = useMemo(
     () =>
@@ -127,7 +143,7 @@ export function CreateTableDrawer({
       {/* Backdrop */}
       <div
         className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs"
-        onClick={handleClose}
+        onClick={handleBackdropClose}
       />
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
@@ -191,6 +207,11 @@ export function CreateTableDrawer({
           </footer>
         </form>
       </aside>
+      <UnsavedChangesDialog
+        open={isUnsavedChangesDialogOpen}
+        onOpenChange={setIsUnsavedChangesDialogOpen}
+        onConfirm={handleConfirmDiscardChanges}
+      />
     </CreateTableFormContext.Provider>
   );
 }

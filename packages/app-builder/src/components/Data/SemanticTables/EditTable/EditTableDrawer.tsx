@@ -1,13 +1,14 @@
 import { Callout } from '@app-builder/components/Callout';
 import { type DataModelField, type FtmEntityV2 } from '@app-builder/models';
 import { type DataModel, ftmEntities, type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
 import type { LinkValue, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 import { FormTable } from '../Shared/TableForm';
+import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 import { UploadDataDrawerContext } from '../UploadData/UploadDataDrawer';
 
 export function EditTableDrawer({
@@ -25,15 +26,46 @@ export function EditTableDrawer({
 }) {
   const { t } = useTranslation(['data', 'common']);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const [tablesState, setTablesState] = useState<Record<string, SemanticTableFormValues>>(() => ({
+  const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
+  const initialTableStateRef = useRef<Record<string, SemanticTableFormValues>>({
     [tableModel.id]: adaptTableModelToFormValues(tableModel),
-  }));
-  const [linksState, setLinksState] = useState<Record<string, LinkValue>>(() =>
+  });
+  const initialLinksStateRef = useRef<Record<string, LinkValue>>(
     adaptLinksToLinkState(tableModel.linksToSingle, tableModel.id),
   );
+  const wasOpenRef = useRef(open);
+
+  const [tablesState, setTablesState] = useState<Record<string, SemanticTableFormValues>>(
+    () => initialTableStateRef.current,
+  );
+  const [linksState, setLinksState] = useState<Record<string, LinkValue>>(() => initialLinksStateRef.current);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [entityTypeMenuOpen, setEntityTypeMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (open && !wasOpenRef.current) {
+      const nextInitialTableState = {
+        [tableModel.id]: adaptTableModelToFormValues(tableModel),
+      };
+      const nextInitialLinksState = adaptLinksToLinkState(tableModel.linksToSingle, tableModel.id);
+      initialTableStateRef.current = nextInitialTableState;
+      initialLinksStateRef.current = nextInitialLinksState;
+      setTablesState(nextInitialTableState);
+      setLinksState(nextInitialLinksState);
+      setValidationErrors([]);
+      setIsUnsavedChangesDialogOpen(false);
+    }
+    wasOpenRef.current = open;
+  }, [open, tableModel]);
+
+  const isDirty = useMemo(
+    () =>
+      JSON.stringify(normalizeTablesStateForDirtyCheck(tablesState)) !==
+        JSON.stringify(normalizeTablesStateForDirtyCheck(initialTableStateRef.current)) ||
+      JSON.stringify(normalizeLinksStateForDirtyCheck(linksState)) !==
+        JSON.stringify(normalizeLinksStateForDirtyCheck(initialLinksStateRef.current)),
+    [linksState, tablesState],
+  );
 
   const tableIds = useMemo(() => [tableModel.id], [tableModel.id]);
 
@@ -191,6 +223,22 @@ export function EditTableDrawer({
     await onSave(tableState, links);
   }
 
+  const handleBackdropClose = useCallback(() => {
+    if (!isDirty) {
+      onClose();
+      return;
+    }
+    setIsUnsavedChangesDialogOpen(true);
+  }, [isDirty, onClose]);
+
+  const handleConfirmDiscardChanges = useCallback(() => {
+    setIsUnsavedChangesDialogOpen(false);
+    setTablesState(initialTableStateRef.current);
+    setLinksState(initialLinksStateRef.current);
+    setValidationErrors([]);
+    onClose();
+  }, [onClose]);
+
   if (!open) return null;
 
   return (
@@ -214,7 +262,10 @@ export function EditTableDrawer({
       }}
     >
       {/* Backdrop */}
-      <div className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs" onClick={onClose} />
+      <div
+        className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs"
+        onClick={handleBackdropClose}
+      />
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
         <div ref={containerRef} className="bg-surface-card flex h-full flex-col overflow-y-auto">
@@ -288,6 +339,11 @@ export function EditTableDrawer({
           </footer>
         </div>
       </aside>
+      <UnsavedChangesDialog
+        open={isUnsavedChangesDialogOpen}
+        onOpenChange={setIsUnsavedChangesDialogOpen}
+        onConfirm={handleConfirmDiscardChanges}
+      />
     </UploadDataDrawerContext.Provider>
   );
 }
@@ -402,4 +458,14 @@ function adaptLinksToLinkState(links: LinkToSingle[], tableId: string): Record<s
       } satisfies LinkValue,
     ]),
   );
+}
+
+function normalizeTablesStateForDirtyCheck(state: Record<string, SemanticTableFormValues>) {
+  return Object.values(state)
+    .map(({ isVisited: _isVisited, ...table }) => table)
+    .sort((a, b) => a.tableId.localeCompare(b.tableId));
+}
+
+function normalizeLinksStateForDirtyCheck(state: Record<string, LinkValue>) {
+  return Object.values(state).sort((a, b) => a.linkId.localeCompare(b.linkId));
 }

@@ -7,6 +7,7 @@ import { Icon } from 'ui-icons';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
 import type { LinkValue, RawField, RawLink, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 import { FormTable, SummaryView } from '../Shared/TableForm';
+import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 
 /**
  * Get table IDs with canceled last.
@@ -47,16 +48,44 @@ export type UploadDataDrawerProps = {
 
 export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDrawerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
 
   const [tablesState, setTablesState] = useState<Record<string, SemanticTableFormValues>>(() =>
     buildInitialTablesState(data),
   );
   const [linksState, setLinksState] = useState<Record<string, LinkValue>>(() => buildInitialLinksState(data));
 
+  const initialTablesSnapshot = useMemo(() => normalizeTablesStateForDirtyCheck(buildInitialTablesState(data)), [data]);
+  const initialLinksSnapshot = useMemo(() => normalizeLinksStateForDirtyCheck(buildInitialLinksState(data)), [data]);
+
   useEffect(() => {
+    setIsUnsavedChangesDialogOpen(false);
     setTablesState(buildInitialTablesState(data));
     setLinksState(buildInitialLinksState(data));
   }, [data]);
+
+  const normalizedTablesState = useMemo(() => normalizeTablesStateForDirtyCheck(tablesState), [tablesState]);
+  const normalizedLinksState = useMemo(() => normalizeLinksStateForDirtyCheck(linksState), [linksState]);
+
+  const isDirty = useMemo(
+    () =>
+      JSON.stringify(normalizedTablesState) !== JSON.stringify(initialTablesSnapshot) ||
+      JSON.stringify(normalizedLinksState) !== JSON.stringify(initialLinksSnapshot),
+    [initialLinksSnapshot, initialTablesSnapshot, normalizedLinksState, normalizedTablesState],
+  );
+
+  const handleBackdropClose = useCallback(() => {
+    if (!isDirty) {
+      onClose();
+      return;
+    }
+    setIsUnsavedChangesDialogOpen(true);
+  }, [isDirty, onClose]);
+
+  const handleConfirmDiscardChanges = useCallback(() => {
+    setIsUnsavedChangesDialogOpen(false);
+    onClose();
+  }, [onClose]);
 
   const updateTableState = useCallback((tableId: string, values: Partial<SemanticTableFormValues>) => {
     setTablesState((prev) => ({
@@ -202,15 +231,33 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
       }}
     >
       {/* Backdrop */}
-      <div className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs" onClick={onClose} />
+      <div
+        className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs"
+        onClick={handleBackdropClose}
+      />
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
         <div ref={containerRef} className="bg-surface-card h-full overflow-y-auto">
           {children}
         </div>
       </aside>
+      <UnsavedChangesDialog
+        open={isUnsavedChangesDialogOpen}
+        onOpenChange={setIsUnsavedChangesDialogOpen}
+        onConfirm={handleConfirmDiscardChanges}
+      />
     </UploadDataDrawerContext.Provider>
   );
+}
+
+function normalizeTablesStateForDirtyCheck(state: Record<string, SemanticTableFormValues>) {
+  return Object.values(state)
+    .map(({ isVisited: _isVisited, ...table }) => table)
+    .sort((a, b) => a.tableId.localeCompare(b.tableId));
+}
+
+function normalizeLinksStateForDirtyCheck(state: Record<string, LinkValue>) {
+  return Object.values(state).sort((a, b) => a.linkId.localeCompare(b.linkId));
 }
 
 function buildInitialTablesState(data: unknown): Record<string, SemanticTableFormValues> {
