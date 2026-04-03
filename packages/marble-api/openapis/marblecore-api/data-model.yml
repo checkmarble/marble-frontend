@@ -86,6 +86,12 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+      '409':
+        description: Conflict — field deletion has conflicts or resource creation has conflicts
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DestroyDataModelReport'
   delete:
     tags:
       - Data Model
@@ -755,6 +761,35 @@ components:
         - name
         - description
         - fields
+    FieldSemanticType:
+      type: string
+      enum:
+        - name
+        - first_name
+        - middle_name
+        - last_name
+        - enum
+        - currency
+        - country
+        - address
+        - id
+        - registration_number
+        - tax_id
+        - account_number
+        - iban
+        - bic
+        - foreign_key
+        - url
+        - email
+        - phone_number
+        - date_of_birth
+        - last_update
+        - creation_date
+        - deletion_date
+        - initiation_date
+        - validation_date
+        - monetary_amount
+        - percentage
     FtmEntity:
       type: string
       enum:
@@ -778,7 +813,6 @@ components:
       required:
         - name
         - semantic_type
-        - fields
       properties:
         name:
           type: string
@@ -799,9 +833,9 @@ components:
           additionalProperties: {}
         primary_ordering_field:
           type: string
+          description: Name of the field used as default ordering
         fields:
           type: array
-          minItems: 1
           items:
             $ref: '#/components/schemas/CreateTableBodyField'
         links:
@@ -834,9 +868,9 @@ components:
         alias:
           type: string
         semantic_type:
-          type: string
-          enum: 
-            [name, first_name, middle_name, last_name, enum, currency, foreign_key, country, address, id, registration_number, tax_id, account_number, iban, bic, url, email, phone_number, date_of_birth, last_update, creation_date, deletion_date, initiation_date, validation_date, monetary_amount, percentage]
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/FieldSemanticType'
         nullable:
           type: boolean
         is_enum:
@@ -845,6 +879,7 @@ components:
           type: boolean
         ftm_property:
           type: string
+          nullable: true
         metadata:
           type: object
           nullable: true
@@ -853,38 +888,52 @@ components:
       type: object
       required:
         - name
+        - link_type
         - child_field_name
         - parent_table_id
-        - parent_field_id
       properties:
         name:
           type: string
+        link_type:
+          type: string
+          enum: [related, belongs_to]
         child_field_name:
           type: string
           description: Name of a field defined in the 'fields' array
         parent_table_id:
           type: string
           format: uuid
-        parent_field_id:
-          type: string
-          format: uuid
-        link_type:
-          type: string
-          enum: [belongs_to, related]
     UpdateTableBodyDto:
       type: object
       properties:
         description:
           type: string
+          nullable: true
         semantic_type:
           type: string
+          nullable: true
           enum: [person, company, account, transaction, event, partner, other]
         caption_field:
           type: string
+          nullable: true
         alias:
           type: string
+          nullable: true
         ftm_entity:
-          $ref: '#/components/schemas/FtmEntity'
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/FtmEntity'
+        primary_ordering_field:
+          type: string
+          nullable: true
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldOperationDto'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkOperationDto'
     CreateTableFieldDto:
       type: object
       required:
@@ -921,6 +970,126 @@ components:
           type: boolean
         ftm_property:
           type: string
+          nullable: true
+        alias:
+          type: string
+        semantic_type:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/FieldSemanticType'
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: {}
+    FieldOperationDto:
+      oneOf:
+        - $ref: '#/components/schemas/AddFieldOperationDto'
+        - $ref: '#/components/schemas/ModFieldOperationDto'
+        - $ref: '#/components/schemas/DelFieldOperationDto'
+    AddFieldOperationDto:
+      type: object
+      required:
+        - op
+        - data
+      properties:
+        op:
+          type: string
+          enum: [ADD]
+        data:
+          $ref: '#/components/schemas/CreateTableBodyField'
+    ModFieldOperationDto:
+      type: object
+      required:
+        - op
+        - data
+      properties:
+        op:
+          type: string
+          enum: [MOD]
+        data:
+          $ref: '#/components/schemas/ModFieldDataDto'
+    DelFieldOperationDto:
+      type: object
+      required:
+        - op
+        - data
+      properties:
+        op:
+          type: string
+          enum: [DEL]
+        data:
+          $ref: '#/components/schemas/DelFieldDataDto'
+    DelFieldDataDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    ModFieldDataDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        is_enum:
+          type: boolean
+        is_unique:
+          type: boolean
+        is_nullable:
+          type: boolean
+        ftm_property:
+          type: string
+          nullable: true
+        alias:
+          type: string
+        semantic_type:
+          nullable: true
+          allOf:
+            - $ref: '#/components/schemas/FieldSemanticType'
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: {}
+    LinkOperationDto:
+      oneOf:
+        - $ref: '#/components/schemas/AddLinkOperationDto'
+        - $ref: '#/components/schemas/DelLinkOperationDto'
+    AddLinkOperationDto:
+      type: object
+      required:
+        - op
+        - data
+      properties:
+        op:
+          type: string
+          enum: [ADD]
+        data:
+          $ref: '#/components/schemas/CreateTableBodyLink'
+    DelLinkOperationDto:
+      type: object
+      required:
+        - op
+        - data
+      properties:
+        op:
+          type: string
+          enum: [DEL]
+        data:
+          $ref: '#/components/schemas/DelLinkDataDto'
+    DelLinkDataDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
     CreateTableLinkBody:
       type: object
       required:

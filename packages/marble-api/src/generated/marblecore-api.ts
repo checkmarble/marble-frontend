@@ -1269,27 +1269,27 @@ export type DataModelDto = {
         [key: string]: TableDto;
     };
 };
+export type FieldSemanticType = "name" | "first_name" | "middle_name" | "last_name" | "enum" | "currency" | "country" | "address" | "id" | "registration_number" | "tax_id" | "account_number" | "iban" | "bic" | "foreign_key" | "url" | "email" | "phone_number" | "date_of_birth" | "last_update" | "creation_date" | "deletion_date" | "initiation_date" | "validation_date" | "monetary_amount" | "percentage";
 export type CreateTableBodyField = {
     name: string;
     description?: string;
     "type": "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords";
     alias?: string;
-    semantic_type?: "name" | "first_name" | "middle_name" | "last_name" | "enum" | "currency" | "foreign_key" | "country" | "address" | "id" | "registration_number" | "tax_id" | "account_number" | "iban" | "bic" | "url" | "email" | "phone_number" | "date_of_birth" | "last_update" | "creation_date" | "deletion_date" | "initiation_date" | "validation_date" | "monetary_amount" | "percentage";
+    semantic_type?: (FieldSemanticType) | null;
     nullable?: boolean;
     is_enum?: boolean;
     is_unique?: boolean;
-    ftm_property?: string;
+    ftm_property?: string | null;
     metadata?: {
         [key: string]: any;
     } | null;
 };
 export type CreateTableBodyLink = {
     name: string;
+    link_type: "related" | "belongs_to";
     /** Name of a field defined in the 'fields' array */
     child_field_name: string;
     parent_table_id: string;
-    parent_field_id: string;
-    link_type?: "belongs_to" | "related";
 };
 export type CreateTableBody = {
     /** snake_case table name */
@@ -1302,20 +1302,65 @@ export type CreateTableBody = {
     metadata?: {
         [key: string]: any;
     } | null;
+    /** Name of the field used as default ordering */
     primary_ordering_field?: string;
-    fields: CreateTableBodyField[];
+    fields?: CreateTableBodyField[];
     links?: CreateTableBodyLink[];
 };
 export type CreateTableResponseDto = {
     /** ID of the newly created table */
     id: string;
 };
-export type UpdateTableBodyDto = {
+export type AddFieldOperationDto = {
+    op: "ADD";
+    data: CreateTableBodyField;
+};
+export type ModFieldDataDto = {
+    id: string;
     description?: string;
-    semantic_type?: "person" | "company" | "account" | "transaction" | "event" | "partner" | "other";
-    caption_field?: string;
+    is_enum?: boolean;
+    is_unique?: boolean;
+    is_nullable?: boolean;
+    ftm_property?: string | null;
     alias?: string;
-    ftm_entity?: FtmEntity;
+    semantic_type?: (FieldSemanticType) | null;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+};
+export type ModFieldOperationDto = {
+    op: "MOD";
+    data: ModFieldDataDto;
+};
+export type DelFieldDataDto = {
+    id: string;
+};
+export type DelFieldOperationDto = {
+    op: "DEL";
+    data: DelFieldDataDto;
+};
+export type FieldOperationDto = AddFieldOperationDto | ModFieldOperationDto | DelFieldOperationDto;
+export type AddLinkOperationDto = {
+    op: "ADD";
+    data: CreateTableBodyLink;
+};
+export type DelLinkDataDto = {
+    id: string;
+};
+export type DelLinkOperationDto = {
+    op: "DEL";
+    data: DelLinkDataDto;
+};
+export type LinkOperationDto = AddLinkOperationDto | DelLinkOperationDto;
+export type UpdateTableBodyDto = {
+    description?: string | null;
+    semantic_type?: ("person" | "company" | "account" | "transaction" | "event" | "partner" | "other") | null;
+    caption_field?: string | null;
+    alias?: string | null;
+    ftm_entity?: (FtmEntity) | null;
+    primary_ordering_field?: string | null;
+    fields?: FieldOperationDto[];
+    links?: LinkOperationDto[];
 };
 export type Items = {
     id?: string;
@@ -1371,7 +1416,12 @@ export type UpdateTableFieldDto = {
     is_enum?: boolean;
     is_unique?: boolean;
     is_nullable?: boolean;
-    ftm_property?: string;
+    ftm_property?: string | null;
+    alias?: string;
+    semantic_type?: (FieldSemanticType) | null;
+    metadata?: {
+        [key: string]: any;
+    } | null;
 };
 export type CreateTableLinkBody = {
     name: string;
@@ -4525,6 +4575,9 @@ export function patchDataModelTable(tableId: string, updateTableBodyDto: UpdateT
     } | {
         status: 404;
         data: string;
+    } | {
+        status: 409;
+        data: Schema;
     }>(`/data-model/tables/${encodeURIComponent(tableId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",

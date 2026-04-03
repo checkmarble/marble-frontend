@@ -10,7 +10,8 @@ import {
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { CREATE_TABLE_SELF_LINK_TARGET_ID } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { FtmEntityPersonOption, FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
-import { CreateTableValue, SemanticFieldForBack } from '@app-builder/queries/data/create-table';
+import { CreateTableValue } from '@app-builder/queries/data/create-table';
+import { FieldSemanticType } from 'marble-api';
 import { match } from 'ts-pattern';
 import z from 'zod/v4';
 
@@ -122,7 +123,7 @@ export function canProceedToStep2(values: SemanticTableFormValues): boolean {
 function adaptSemanticField(
   semanticType: SemanticTypeField,
   subType?: SemanticSubTypeField,
-): SemanticFieldForBack | undefined {
+): FieldSemanticType | undefined {
   return match(semanticType)
     .with('text', () => undefined)
     .with('name', () =>

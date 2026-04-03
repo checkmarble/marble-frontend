@@ -4,11 +4,11 @@ import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
 import { formatTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
-import { CreateTableBodyField, CreateTableResponseDto } from 'marble-api';
+import { CreateTableResponseDto, FieldSemanticType } from 'marble-api';
 import toast from 'react-hot-toast';
 import z from 'zod/v4';
 
-export const semanticFieldForBack = [
+export const semanticFieldForBack: FieldSemanticType[] = [
   'name',
   'first_name',
   'middle_name',
@@ -35,8 +35,8 @@ export const semanticFieldForBack = [
   'validation_date',
   'monetary_amount',
   'percentage',
-] as const;
-export type SemanticFieldForBack = CreateTableBodyField['semantic_type'];
+];
+export type SemanticFieldForBack = FieldSemanticType;
 
 const createFieldValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
