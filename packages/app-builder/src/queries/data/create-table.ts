@@ -1,15 +1,42 @@
-import {
-  semanticTypeField,
-  semanticTypeTable,
-} from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
+import { semanticTypeTable } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
 import { formatTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
-import { CreateTableResponseDto } from 'marble-api';
+import { CreateTableBodyField, CreateTableResponseDto } from 'marble-api';
 import toast from 'react-hot-toast';
 import z from 'zod/v4';
+
+export const semanticFieldForBack = [
+  'name',
+  'first_name',
+  'middle_name',
+  'last_name',
+  'enum',
+  'currency',
+  'foreign_key',
+  'country',
+  'address',
+  'id',
+  'registration_number',
+  'tax_id',
+  'account_number',
+  'iban',
+  'bic',
+  'url',
+  'email',
+  'phone_number',
+  'date_of_birth',
+  'last_update',
+  'creation_date',
+  'deletion_date',
+  'initiation_date',
+  'validation_date',
+  'monetary_amount',
+  'percentage',
+] as const;
+export type SemanticFieldForBack = CreateTableBodyField['semantic_type'];
 
 const createFieldValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
@@ -23,7 +50,7 @@ const createFieldValuesSchema = z.object({
   is_unique: z.boolean().optional(),
   ftm_property: z.string().optional(),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).optional()).optional(),
-  semantic_type: z.enum(semanticTypeField).optional(),
+  semantic_type: z.enum(semanticFieldForBack).optional(),
 });
 
 const createLinksValuesSchema = z.object({

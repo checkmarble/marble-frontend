@@ -106,7 +106,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
       : {};
   const alias = typeof raw.alias === 'string' ? raw.alias : readMetadataString(meta, 'alias');
   const order = typeof raw.order === 'number' ? raw.order : readMetadataNumber(meta, 'order');
-  const semanticType = (readMetadataString(meta, 'semanticType') ??
+  const semanticType = (readMetadataString(meta, 'semanticTypeForFront') ??
     (typeof raw.semantic_type === 'string' ? raw.semantic_type : undefined)) as SemanticTypeField | undefined;
   const semanticSubType = (readMetadataString(meta, 'semanticSubType', 'semantic_sub_type') ??
     (typeof raw.semantic_sub_type === 'string' ? raw.semantic_sub_type : undefined)) as

@@ -1274,7 +1274,7 @@ export type CreateTableBodyField = {
     description?: string;
     "type": "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords";
     alias?: string;
-    semantic_type?: "text" | "name" | "enum" | "currency_code" | "foreign_key" | "country" | "address" | "unique_id" | "link" | "account_identifier" | "timestamp" | "date_of_birth" | "last_update" | "creation_date" | "deletion_date" | "initiation_date" | "validation_date" | "number" | "monetary_amount" | "percentage" | "unique_id" | "number" | "monetary_amount" | "percentage" | "unique_id";
+    semantic_type?: "name" | "first_name" | "middle_name" | "last_name" | "enum" | "currency" | "foreign_key" | "country" | "address" | "id" | "registration_number" | "tax_id" | "account_number" | "iban" | "bic" | "url" | "email" | "phone_number" | "date_of_birth" | "last_update" | "creation_date" | "deletion_date" | "initiation_date" | "validation_date" | "monetary_amount" | "percentage";
     nullable?: boolean;
     is_enum?: boolean;
     is_unique?: boolean;
