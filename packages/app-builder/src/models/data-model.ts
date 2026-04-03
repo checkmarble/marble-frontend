@@ -207,9 +207,9 @@ export interface TableModel {
   id: string;
   name: string;
   description: string;
-  semanticType: FtmEntityV2;
+  semanticType: FtmEntityV2 | null;
   /** Present when `semanticType` is `person`; maps API `semantic_type` (company/person/partner) to UI sub-entity. */
-  subEntity?: FtmEntityPersonOption;
+  subEntity?: FtmEntityPersonOption | null;
   alias: string;
   captionField: string;
   fields: DataModelField[];
@@ -226,18 +226,18 @@ export interface TableModel {
  * Inverse of `getEntityType` in create-table-types.
  */
 export function apiSemanticTypeToFormEntity(apiType: string): {
-  entityType: FtmEntityV2;
-  subEntity: FtmEntityPersonOption;
+  entityType: FtmEntityV2 | null;
+  subEntity: FtmEntityPersonOption | null;
 } {
   return match(apiType)
     .with('company', () => ({ entityType: 'person' as const, subEntity: 'moral' as const }))
     .with('person', () => ({ entityType: 'person' as const, subEntity: 'natural' as const }))
     .with('partner', () => ({ entityType: 'person' as const, subEntity: 'generic' as const }))
-    .with('account', () => ({ entityType: 'account' as const, subEntity: 'moral' as const }))
-    .with('transaction', () => ({ entityType: 'transaction' as const, subEntity: 'moral' as const }))
-    .with('event', () => ({ entityType: 'event' as const, subEntity: 'moral' as const }))
-    .with('other', () => ({ entityType: 'other' as const, subEntity: 'moral' as const }))
-    .otherwise(() => ({ entityType: 'other' as const, subEntity: 'moral' as const }));
+    .with('account', () => ({ entityType: 'account' as const, subEntity: null }))
+    .with('transaction', () => ({ entityType: 'transaction' as const, subEntity: null }))
+    .with('event', () => ({ entityType: 'event' as const, subEntity: null }))
+    .with('other', () => ({ entityType: 'other' as const, subEntity: null }))
+    .otherwise(() => ({ entityType: null, subEntity: null }));
 }
 
 function adaptTableModel(tableDto: TableDto): TableModel {

@@ -5,20 +5,23 @@ import { ImportOrg } from '@app-builder/components/Data/ImportOrg';
 import { SelectArchetype } from '@app-builder/components/Data/SelectArchetype';
 import { CreateTableDrawer } from '@app-builder/components/Data/SemanticTables/CreateTable/CreateTableDrawer';
 import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
+import { dataModelFlowStyles, TableFlow } from '@app-builder/components/Data/SemanticTables/Flow/TableFlow';
 import {
   UploadDataDrawer,
   UploadDataDrawerContent,
 } from '@app-builder/components/Data/SemanticTables/UploadData/UploadDataDrawer';
-import { TableDetails } from '@app-builder/components/Data/TableDetails';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
+import { LinksFunction } from '@remix-run/server-runtime';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+export const links: LinksFunction = () => [{ rel: 'stylesheet', href: dataModelFlowStyles }];
 
 export const handle = {
   i18n: dataI18n satisfies Namespace,
@@ -41,7 +44,7 @@ export default function DataList() {
   const handleOpenCreateDrawer = () => setIsCreateDrawerOpen(true);
 
   return (
-    <div className="h-full">
+    <div className="flex h-full min-h-0 flex-1 flex-col">
       <Page.Container>
         <Page.Content>
           {isEmpty ? (
@@ -78,10 +81,8 @@ export default function DataList() {
           {isEmpty ? (
             <DataListEmptyState onImportSuccess={handleImportSuccess} onCreateTable={handleOpenCreateDrawer} />
           ) : (
-            <div className="grid grid-rows-3 auto-cols-[360px] gap-x-[80px] gap-y-[40px] grid-flow-col place-content-center">
-              {dataModel.map((table) => (
-                <TableDetails key={table.name} tableModel={table} dataModel={dataModel} />
-              ))}
+            <div className="flex w-full min-h-[min(600px,75vh)] flex-1 flex-col">
+              <TableFlow dataModel={dataModel} />
             </div>
           )}
         </Page.Content>

@@ -172,7 +172,7 @@
   "select_archetype.button_accept": "تطبيق النموذج",
   "select_archetype.title": "اختيار نموذج أولي",
   "table_details.numser_of_fields": "الحقول {{number}}.",
-  "table_details.other_table": "أخرى - التحديثات المتاحة",
+  "table_details.other_table": "غير محدد - التحديثات المتاحة",
   "table_relationship": "العلاقة",
   "unique.col_header": "فريد",
   "unsaved_changes.confirm": "تجاهل التغييرات",

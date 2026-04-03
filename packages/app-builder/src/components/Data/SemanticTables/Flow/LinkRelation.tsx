@@ -1,8 +1,6 @@
 import { type LinkToSingle } from '@app-builder/models';
 import { BaseEdge, type DefaultEdgeOptions, type Edge, type EdgeProps, getBezierPath, MarkerType } from '@xyflow/react';
 
-import { useSelectedPivot } from './SelectedPivot';
-
 export type LinkToSingleData = {
   original: LinkToSingle;
 } & Record<string, unknown>;
@@ -41,7 +39,7 @@ export function getLinkToSingleDataEdge(linkToSingleData: LinkToSingleData) {
   };
 }
 
-export function LinkToSingleEdge({
+export function LinkRelation({
   id,
   sourceX,
   sourceY,
@@ -61,7 +59,6 @@ export function LinkToSingleEdge({
   labelBgBorderRadius,
   data,
 }: EdgeProps<Edge<LinkToSingleData>>) {
-  const { displayPivot, isLinkPartOfPivot } = useSelectedPivot();
   if (!data) return null;
 
   const [path, labelX, labelY] = getBezierPath({
@@ -74,8 +71,6 @@ export function LinkToSingleEdge({
     curvature: 0.75,
   });
 
-  const opacity = displayPivot && !isLinkPartOfPivot(data?.original.id) ? 0.2 : 1;
-
   return (
     <BaseEdge
       id={id}
@@ -84,10 +79,10 @@ export function LinkToSingleEdge({
       labelY={labelY}
       markerStart={markerStart}
       markerEnd={markerEnd}
-      style={{ ...style, opacity }}
+      style={style}
       interactionWidth={interactionWidth}
       label={label ?? data?.original.name}
-      labelStyle={{ ...labelStyle, opacity }}
+      labelStyle={labelStyle}
       labelShowBg={labelShowBg}
       labelBgStyle={labelBgStyle}
       labelBgPadding={labelBgPadding}

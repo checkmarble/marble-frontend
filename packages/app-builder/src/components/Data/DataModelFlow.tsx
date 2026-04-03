@@ -2,8 +2,6 @@ import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import Dagre from '@dagrejs/dagre';
-import * as React from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   applyEdgeChanges,
   applyNodeChanges,
@@ -16,8 +14,10 @@ import {
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
-} from 'reactflow';
-import reactflowStyles from 'reactflow/dist/style.css?url';
+} from '@xyflow/react';
+import reactflowStyles from '@xyflow/react/dist/style.css?url';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -44,7 +44,7 @@ import {
 type CommonData<T extends string, D> = D & {
   type: T;
   state: 'initialized' | 'laid_out' | 'visible';
-};
+} & Record<string, unknown>;
 
 type DataModelNodeData = CommonData<'table_model', TableModelNodeData>;
 
@@ -58,7 +58,15 @@ const edgeTypes = {
   link_to_single_edge: LinkToSingleEdge,
 };
 
-const useDataModelReactFlow = useReactFlow<DataModelNodeData, DataModelEdgeData>;
+const useDataModelReactFlow = useReactFlow<Node<DataModelNodeData>, Edge<DataModelEdgeData>>;
+
+function nodeMeasuredWidth(nd: Node<DataModelNodeData>) {
+  return nd.measured?.width ?? nd.width;
+}
+
+function nodeMeasuredHeight(nd: Node<DataModelNodeData>) {
+  return nd.measured?.height ?? nd.height;
+}
 
 interface DataModelFlowProps {
   dataModel: DataModel;
@@ -86,11 +94,11 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
   const [nodes, setNodes] = React.useState<Array<Node<DataModelNodeData>>>([]);
   const [edges, setEdges] = React.useState<Array<Edge<DataModelEdgeData>>>([]);
 
-  const onNodesChange = React.useCallback((changes: NodeChange[]) => {
+  const onNodesChange = React.useCallback((changes: NodeChange<Node<DataModelNodeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
     setNodes((nds) => applyNodeChanges(allowedChanges, nds));
   }, []);
-  const onEdgesChange = React.useCallback((changes: EdgeChange[]) => {
+  const onEdgesChange = React.useCallback((changes: EdgeChange<Edge<DataModelEdgeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
     setEdges((eds) => applyEdgeChanges(allowedChanges, eds));
   }, []);
@@ -105,8 +113,10 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
           const nodeId = getTableModelNodeDataId(tableModelNodeData);
           const existingNode = currentNodes.find((nd) => nd.id === nodeId);
           if (existingNode) {
-            existingNode.data = { ...existingNode.data, ...tableModelNodeData };
-            return existingNode;
+            return {
+              ...existingNode,
+              data: { ...existingNode.data, ...tableModelNodeData },
+            };
           }
           return {
             id: nodeId,
@@ -132,11 +142,13 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
           const existingEdge = currentEdges.find((ed) => ed.id === edgeId);
           if (existingEdge) {
             if (existingEdge.data === undefined) return existingEdge;
-            existingEdge.data = {
-              ...existingEdge.data,
-              ...linkToSingleData,
+            return {
+              ...existingEdge,
+              data: {
+                ...existingEdge.data,
+                ...linkToSingleData,
+              },
             };
-            return existingEdge;
           }
           return {
             id: edgeId,
@@ -156,7 +168,7 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
 
   React.useEffect(() => {
     // Wait first render of each node to have dynamic width before layouting
-    if (nodes.some((nd) => nd.width === undefined)) return;
+    if (nodes.some((nd) => nodeMeasuredWidth(nd) === undefined)) return;
 
     if (nodes.some((nd) => nd.data.state === 'initialized') || edges.some((ed) => ed.data?.state === 'initialized')) {
       const layout = layoutElements(nodes, edges);
@@ -228,7 +240,8 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
   }, [edges, fitView, nodes]);
 
   return (
-    <ReactFlow
+    <ReactFlow<Node<DataModelNodeData>, Edge<DataModelEdgeData>>
+      className="size-full"
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
@@ -297,8 +310,8 @@ function layoutElements(nodes: Array<Node<DataModelNodeData>>, edges: Array<Edge
   edges.forEach((edge) => g.setEdge(edge.source, edge.target));
   nodes.forEach((node) =>
     g.setNode(node.id, {
-      width: node.width ?? undefined,
-      height: node.height ?? undefined,
+      width: nodeMeasuredWidth(node) ?? undefined,
+      height: nodeMeasuredHeight(node) ?? undefined,
     }),
   );
 
@@ -311,8 +324,8 @@ function layoutElements(nodes: Array<Node<DataModelNodeData>>, edges: Array<Edge
     nodes: nodes.map((nd) => {
       const { x, y } = g.node(nd.id);
       const position = {
-        x: x - (nd.width ?? 0) / 2,
-        y: y - (nd.height ?? 0) / 2,
+        x: x - (nodeMeasuredWidth(nd) ?? 0) / 2,
+        y: y - (nodeMeasuredHeight(nd) ?? 0) / 2,
       };
 
       if (position.x === nd.position.x && position.y === nd.position.y) {

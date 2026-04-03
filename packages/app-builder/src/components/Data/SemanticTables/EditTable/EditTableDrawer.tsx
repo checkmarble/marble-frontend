@@ -1,7 +1,8 @@
 import { Callout } from '@app-builder/components/Callout';
 import { DeleteTable } from '@app-builder/components/Data/DeleteDataModel/DeleteTable';
 import { type DataModelField, type FtmEntityV2 } from '@app-builder/models';
-import { type DataModel, ftmEntities, type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
+import { ftmEntities, type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
@@ -17,13 +18,11 @@ export function EditTableDrawer({
   onClose,
   onSave,
   tableModel,
-  dataModel,
 }: {
   open: boolean;
   onClose: () => void;
   onSave: (tableState: SemanticTableFormValues, links: LinkValue[]) => Promise<void>;
   tableModel: TableModel;
-  dataModel: DataModel;
 }) {
   const { t } = useTranslation(['data', 'common']);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,6 +34,7 @@ export function EditTableDrawer({
     adaptLinksToLinkState(tableModel.linksToSingle, tableModel.id),
   );
   const wasOpenRef = useRef(open);
+  const dataModel = useDataModel();
 
   const [tablesState, setTablesState] = useState<Record<string, SemanticTableFormValues>>(
     () => initialTableStateRef.current,
@@ -439,7 +439,7 @@ function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormV
     tableId: tableModel.id,
     name: tableModel.name,
     alias: tableModel.alias || tableModel.name,
-    entityType: tableModel.semanticType,
+    entityType: tableModel.semanticType ?? 'other',
     subEntity: tableModel.subEntity ?? 'moral',
     belongsToTableId: tableModel.belongsToTableId ?? '',
     fields: tableModel.fields.map(adaptFieldToTableField),

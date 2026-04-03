@@ -172,7 +172,7 @@
   "select_archetype.button_accept": "Apply archetype",
   "select_archetype.title": "Select an archetype",
   "table_details.numser_of_fields": "{{number}} fields",
-  "table_details.other_table": "Other - available updates",
+  "table_details.other_table": "Unset - available updates",
   "table_relationship": "Relationship",
   "unique.col_header": "Unique",
   "unsaved_changes.confirm": "Discard changes",

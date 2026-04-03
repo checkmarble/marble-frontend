@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   type Connection,
   ControlButton,
@@ -8,23 +7,24 @@ import {
   type Node,
   useNodesInitialized,
   useReactFlow,
-} from 'reactflow';
+} from '@xyflow/react';
+import * as React from 'react';
 import { Icon } from 'ui-icons';
 
-type LayoutElements<NodeData, EdgeData> = (
-  nodes: Node<NodeData>[],
-  edges: Edge<EdgeData>[],
+type LayoutElements<NodeType extends Node, EdgeType extends Edge> = (
+  nodes: NodeType[],
+  edges: EdgeType[],
 ) => {
-  nodes: Node<NodeData>[];
-  edges: Edge<EdgeData>[];
+  nodes: NodeType[];
+  edges: EdgeType[];
 };
 
-export function useLayoutElements<NodeData, EdgeData>({
+export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>({
   layoutElements,
 }: {
-  layoutElements: LayoutElements<NodeData, EdgeData>;
+  layoutElements: LayoutElements<NodeType, EdgeType>;
 }) {
-  const { fitView, getEdges, getNodes, setEdges, setNodes } = useReactFlow();
+  const { fitView, getEdges, getNodes, setEdges, setNodes } = useReactFlow<NodeType, EdgeType>();
   const layoutElementsRef = React.useRef(layoutElements);
   return React.useCallback(
     (options: { fitView?: boolean }) => {
@@ -41,12 +41,12 @@ export function useLayoutElements<NodeData, EdgeData>({
   );
 }
 
-export function useLayoutInitializedNodes<NodeData, EdgeData>({
+export function useLayoutInitializedNodes<NodeType extends Node, EdgeType extends Edge>({
   mode,
   layoutElements,
 }: {
   mode: 'onMount' | 'onNodesInitialized';
-  layoutElements: LayoutElements<NodeData, EdgeData>;
+  layoutElements: LayoutElements<NodeType, EdgeType>;
 }) {
   const nodesInitialized = useNodesInitialized();
   const layoutElem = useLayoutElements({ layoutElements });
@@ -62,10 +62,10 @@ export function useLayoutInitializedNodes<NodeData, EdgeData>({
   }, [layoutElem, mode, nodesInitialized]);
 }
 
-export function AutoLayoutControlButton<NodeData, EdgeData>({
+export function AutoLayoutControlButton<NodeType extends Node, EdgeType extends Edge>({
   layoutElements,
 }: {
-  layoutElements: LayoutElements<NodeData, EdgeData>;
+  layoutElements: LayoutElements<NodeType, EdgeType>;
 }) {
   const layoutElem = useLayoutElements({ layoutElements });
   return (
