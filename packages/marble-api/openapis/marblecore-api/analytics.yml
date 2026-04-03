@@ -669,16 +669,19 @@ components:
       type: object
       required:
         - date
-        - avg_days
+        - sum_days
         - max_days
+        - count_sars
       properties:
         date:
           type: string
           format: date
-        avg_days:
+        sum_days:
           type: number
         max_days:
           type: number
+        count_sars:
+          type: integer
     AnalyticsBracketDto:
       type: string
       enum:
@@ -713,7 +716,6 @@ components:
         - date
         - total_closed
         - false_positives
-        - rate
       properties:
         date:
           type: string
@@ -722,22 +724,23 @@ components:
           type: integer
         false_positives:
           type: integer
-        rate:
-          type: number
     CasesDurationResponseDto:
       type: object
       required:
         - date
-        - avg_days
+        - sum_days
         - max_days
+        - count_cases
       properties:
         date:
           type: string
           format: date
-        avg_days:
+        sum_days:
           type: number
         max_days:
           type: number
+        count_cases:
+          type: integer
     OpenCasesByAgeResponseDto:
       type: object
       required:

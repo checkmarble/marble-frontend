@@ -30,7 +30,6 @@ export const loader = createServerFn(
 
     const { analytics } = context.authInfo;
 
-    // TODO: remove .catch() fallbacks once all backend endpoints return 200
     const [
       sarTotalCompleted,
       sarDelayByPeriod,
@@ -40,13 +39,13 @@ export const loader = createServerFn(
       caseDurationByPeriod,
       openCasesByAge,
     ] = await Promise.all([
-      analytics.getCasesSarCompleted(query).catch(() => 0),
-      analytics.getCasesSarDelay(query).catch(() => []),
-      analytics.getCasesSarDelayDistribution(query).catch(() => []),
-      analytics.getCasesCreated(query).catch(() => []),
-      analytics.getCasesFalsePositiveRate(query).catch(() => []),
-      analytics.getCasesDuration(query).catch(() => []),
-      analytics.getOpenCasesByAge(query).catch(() => []),
+      analytics.getCasesSarCompleted(query),
+      analytics.getCasesSarDelay(query),
+      analytics.getCasesSarDelayDistribution(query),
+      analytics.getCasesCreated(query),
+      analytics.getCasesFalsePositiveRate(query),
+      analytics.getCasesDuration(query),
+      analytics.getOpenCasesByAge(query),
     ]);
 
     return {

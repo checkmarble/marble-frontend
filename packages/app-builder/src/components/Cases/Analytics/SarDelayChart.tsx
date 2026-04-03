@@ -1,11 +1,11 @@
-import type { BarData, BucketCount, PeriodDelay } from '@app-builder/models/analytics/case-analytics';
+import type { BarData, BucketCount, PeriodDuration } from '@app-builder/models/analytics/case-analytics';
 import { ResponsiveBar } from '@nivo/bar';
 import { useTranslation } from 'react-i18next';
 
 import { CASE_ANALYTICS_COLORS, nivoTheme, tooltipStyle } from './chart-theme';
 
 interface SarDelayChartProps {
-  delayByPeriod: PeriodDelay[];
+  delayByPeriod: PeriodDuration[];
   delayDistribution: BucketCount[];
 }
 
@@ -20,15 +20,19 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
         <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.sar.delay_by_period')}</span>
           <div className="flex-1">
-            <ResponsiveBar<BarData<PeriodDelay>>
-              data={delayByPeriod as BarData<PeriodDelay>[]}
-              keys={['avgDays', 'maxDays']}
+            <ResponsiveBar<BarData<PeriodDuration>>
+              data={delayByPeriod as BarData<PeriodDuration>[]}
+              keys={['sumDays', 'maxDays', 'count']}
               indexBy="period"
               groupMode="grouped"
               enableLabel={false}
               padding={0.3}
               margin={{ top: 5, right: 5, bottom: 40, left: 50 }}
-              colors={[CASE_ANALYTICS_COLORS.primary, CASE_ANALYTICS_COLORS.primaryLight]}
+              colors={[
+                CASE_ANALYTICS_COLORS.primary,
+                CASE_ANALYTICS_COLORS.primaryLight,
+                CASE_ANALYTICS_COLORS.secondary,
+              ]}
               valueScale={{ type: 'linear' }}
               axisBottom={{
                 tickRotation: -30,
@@ -39,7 +43,7 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
                 <div className={tooltipStyle}>
                   <span className="text-s text-grey-secondary">{indexValue}</span>
                   <span className="text-s font-semibold">
-                    {String(id)}: {value} {t('cases:analytics.chart.days')}
+                    {t(`cases:analytics.chart.${String(id)}`)}: {value}
                   </span>
                 </div>
               )}

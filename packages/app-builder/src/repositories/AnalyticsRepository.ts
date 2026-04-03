@@ -30,7 +30,7 @@ import {
   type BucketCount,
   type FalsePositiveRate,
   type PeriodCount,
-  type PeriodDelay,
+  type PeriodDuration,
 } from '@app-builder/models/analytics/case-analytics';
 import { adaptCaseStatusByInbox, CaseStatusByInboxResponse } from '@app-builder/models/analytics/case-status-by-inbox';
 import { adaptCaseStatusByDate, CaseStatusByDateResponse } from '@app-builder/models/analytics/cases-status-by-date';
@@ -90,11 +90,11 @@ export interface AnalyticsRepository {
   getCaseStatusByInbox(): Promise<CaseStatusByInboxResponse[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
   getCasesSarCompleted(query: CaseAnalyticsQueryDto): Promise<number>;
-  getCasesSarDelay(query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]>;
+  getCasesSarDelay(query: CaseAnalyticsQueryDto): Promise<PeriodDuration[]>;
   getCasesSarDelayDistribution(query: CaseAnalyticsQueryDto): Promise<BucketCount[]>;
   getCasesCreated(query: CaseAnalyticsQueryDto): Promise<PeriodCount[]>;
   getCasesFalsePositiveRate(query: CaseAnalyticsQueryDto): Promise<FalsePositiveRate[]>;
-  getCasesDuration(query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]>;
+  getCasesDuration(query: CaseAnalyticsQueryDto): Promise<PeriodDuration[]>;
   getOpenCasesByAge(query: CaseAnalyticsQueryDto): Promise<BucketCount[]>;
 }
 
@@ -191,37 +191,37 @@ export function makeGetAnalyticsRepository() {
 
     getCasesSarCompleted: async (query: CaseAnalyticsQueryDto): Promise<number> => {
       const result = await client.getCasesAnalyticsSarCompleted(query);
-      return result.count;
+      return result?.count ?? 0;
     },
 
-    getCasesSarDelay: async (query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]> => {
+    getCasesSarDelay: async (query: CaseAnalyticsQueryDto): Promise<PeriodDuration[]> => {
       const result = await client.getCasesAnalyticsSarDelay(query);
-      return result.map(adaptSarDelay);
+      return (result ?? []).map(adaptSarDelay);
     },
 
     getCasesSarDelayDistribution: async (query: CaseAnalyticsQueryDto): Promise<BucketCount[]> => {
       const result = await client.getCasesAnalyticsSarDelayDistribution(query);
-      return result.map(adaptSarDelayDistribution);
+      return (result ?? []).map(adaptSarDelayDistribution);
     },
 
     getCasesCreated: async (query: CaseAnalyticsQueryDto): Promise<PeriodCount[]> => {
       const result = await client.getCasesAnalyticsCasesCreated(query);
-      return result.map(adaptCasesCreated);
+      return (result ?? []).map(adaptCasesCreated);
     },
 
     getCasesFalsePositiveRate: async (query: CaseAnalyticsQueryDto): Promise<FalsePositiveRate[]> => {
       const result = await client.getCasesAnalyticsFalsePositiveRate(query);
-      return result.map(adaptFalsePositiveRate);
+      return (result ?? []).map(adaptFalsePositiveRate);
     },
 
-    getCasesDuration: async (query: CaseAnalyticsQueryDto): Promise<PeriodDelay[]> => {
+    getCasesDuration: async (query: CaseAnalyticsQueryDto): Promise<PeriodDuration[]> => {
       const result = await client.getCasesAnalyticsCasesDuration(query);
-      return result.map(adaptCasesDuration);
+      return (result ?? []).map(adaptCasesDuration);
     },
 
     getOpenCasesByAge: async (query: CaseAnalyticsQueryDto): Promise<BucketCount[]> => {
       const result = await client.getCasesAnalyticsOpenCasesByAge(query);
-      return result.map(adaptOpenCasesByAge);
+      return (result ?? []).map(adaptOpenCasesByAge);
     },
   });
 }
