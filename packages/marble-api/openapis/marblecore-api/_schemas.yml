@@ -351,6 +351,28 @@ CreateTableFieldDto:
   $ref: data-model.yml#/components/schemas/CreateTableFieldDto
 UpdateTableFieldDto:
   $ref: data-model.yml#/components/schemas/UpdateTableFieldDto
+FieldSemanticType:
+  $ref: data-model.yml#/components/schemas/FieldSemanticType
+FieldOperationDto:
+  $ref: data-model.yml#/components/schemas/FieldOperationDto
+AddFieldOperationDto:
+  $ref: data-model.yml#/components/schemas/AddFieldOperationDto
+ModFieldOperationDto:
+  $ref: data-model.yml#/components/schemas/ModFieldOperationDto
+DelFieldOperationDto:
+  $ref: data-model.yml#/components/schemas/DelFieldOperationDto
+ModFieldDataDto:
+  $ref: data-model.yml#/components/schemas/ModFieldDataDto
+DelFieldDataDto:
+  $ref: data-model.yml#/components/schemas/DelFieldDataDto
+LinkOperationDto:
+  $ref: data-model.yml#/components/schemas/LinkOperationDto
+AddLinkOperationDto:
+  $ref: data-model.yml#/components/schemas/AddLinkOperationDto
+DelLinkOperationDto:
+  $ref: data-model.yml#/components/schemas/DelLinkOperationDto
+DelLinkDataDto:
+  $ref: data-model.yml#/components/schemas/DelLinkDataDto
 CreateTableLinkBody:
   $ref: data-model.yml#/components/schemas/CreateTableLinkBody
 OpenAPISpec:
