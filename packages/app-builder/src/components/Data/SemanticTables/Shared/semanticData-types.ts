@@ -204,6 +204,8 @@ export function getMockValue(
   semanticType?: SemanticTypeField,
   semanticSubType?: SemanticSubTypeField | undefined,
 ) {
+  if (dataType === 'Coords') return '48.8566, 2.3522';
+  if (dataType === 'IpAddress') return '127.0.0.1';
   if (!semanticType) {
     return match(dataType)
       .with('String', () => 'Welcome to Marble')
@@ -211,8 +213,6 @@ export function getMockValue(
       .with('Int', () => 42)
       .with('Float', () => 1234567890)
       .with('Bool', () => true)
-      .with('Coords', () => '48.8566, 2.3522')
-      .with('IpAddress', () => '127.0.0.1')
       .exhaustive();
   }
   const value = match(semanticType)

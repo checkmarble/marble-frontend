@@ -1,4 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
+import { DeleteTable } from '@app-builder/components/Data/DeleteDataModel/DeleteTable';
 import { type DataModelField, type FtmEntityV2 } from '@app-builder/models';
 import { type DataModel, ftmEntities, type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -314,9 +315,9 @@ export function EditTableDrawer({
             />
           </div>
 
-          <footer className="flex justify-between shrink-0 gap-v2-md border-t border-grey-border p-v2-lg">
+          <footer className="flex shrink-0 items-start justify-between gap-v2-md border-t border-grey-border p-v2-lg">
             {validationErrors.length > 0 || isSemanticTypeChanged ? (
-              <Callout color="red" icon="lightbulb" iconColor="red">
+              <Callout color="red" icon="lightbulb" iconColor="red" className="min-w-0 flex-1">
                 <ul className="flex flex-col gap-v2-xs pl-3">
                   {validationErrors.map((error, index) => (
                     <li key={`${error.kind}-${index}`}>{error.message}</li>
@@ -325,10 +326,16 @@ export function EditTableDrawer({
                 </ul>
               </Callout>
             ) : (
-              <div />
+              <div className="min-w-0 flex-1" />
             )}
 
-            <div className="flex justify-end gap-v2-md">
+            <div className="flex shrink-0 items-center gap-v2-md self-center">
+              <DeleteTable
+                table={tableModel}
+                onDeleted={onClose}
+                triggerVariant="destructive"
+                triggerAppearance="icon-text"
+              />
               <Button variant="secondary" appearance="stroked" onClick={onClose}>
                 {t('common:cancel')}
               </Button>

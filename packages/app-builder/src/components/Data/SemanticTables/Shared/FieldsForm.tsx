@@ -103,6 +103,8 @@ function FieldRow({
   hasError?: boolean;
 }) {
   const { t } = useTranslation(['data']);
+  const { mainTimestampFieldName: orderingFieldName } = FieldsEditorContext.useValue();
+  const isOrderingField = orderingFieldName !== '' && field.name === orderingFieldName;
 
   const semanticLabel = field.semanticSubType
     ? t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`)
@@ -135,6 +137,11 @@ function FieldRow({
           {semanticLabel ? (
             <span className="rounded-sm border border-grey-border bg-grey-98 px-v2-sm py-0.5 text-xs text-grey-secondary">
               {semanticLabel}
+            </span>
+          ) : null}
+          {isOrderingField ? (
+            <span title={t('data:upload_data.field_main_ordering_timestamp')}>
+              <Icon icon="filters" className="size-4 text-grey-secondary" />
             </span>
           ) : null}
           {field.locked ? <Icon icon="lock" className="size-4 text-grey-secondary" /> : null}

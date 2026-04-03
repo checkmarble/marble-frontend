@@ -105,6 +105,7 @@ export function DataField({ field, value, linkedTo, metaData, currency }: DataFi
     field?.semanticSubType,
     field?.booleanDisplay,
   );
+
   const resolvedMetaData = options?.hideMetadata ? undefined : metaData;
 
   const contextValue = useMemo(
@@ -150,6 +151,11 @@ function adaptFieldType(
 ): VALID_DATA_TYPE {
   if (!dataType || !name) return 'string-free';
 
+  // forced from datatype
+  if (dataType === 'Coords' || dataType === 'Coords[]') return 'data-gps_coords';
+  if (dataType === 'IpAddress' || dataType === 'IpAddress[]') return 'data-ip_address';
+
+  // from semantic type
   if (semanticType) {
     switch (semanticType) {
       case 'account_identifier':
@@ -228,16 +234,10 @@ function adaptFieldType(
       if (/vpn/i.test(name)) return 'string-vpn';
       if (/status/i.test(name)) return 'enum-values';
       return 'string-free';
-    case 'IpAddress':
-    case 'IpAddress[]':
-      return 'data-ip_address';
     case 'Timestamp':
     case 'Timestamp[]':
       if (/birthdate/i.test(name)) return 'date-birthdate';
       return 'date-datetime';
-    case 'Coords':
-    case 'Coords[]':
-      return 'data-gps_coords';
     case 'Int':
     case 'Int[]':
       return 'number-integer';
