@@ -1799,8 +1799,9 @@ export type SarCompletedResponseDto = {
 };
 export type SarDelayResponseDto = {
     date: string;
-    avg_days: number;
+    sum_days: number;
     max_days: number;
+    count_sars: number;
 };
 export type AnalyticsBracketDto = "0-2" | "3-10" | "11-30" | "31+";
 export type SarDelayDistributionResponseDto = {
@@ -1815,12 +1816,12 @@ export type CasesFalsePositiveRateResponseDto = {
     date: string;
     total_closed: number;
     false_positives: number;
-    rate: number;
 };
 export type CasesDurationResponseDto = {
     date: string;
-    avg_days: number;
+    sum_days: number;
     max_days: number;
+    count_cases: number;
 };
 export type OpenCasesByAgeResponseDto = {
     bracket: AnalyticsBracketDto;
