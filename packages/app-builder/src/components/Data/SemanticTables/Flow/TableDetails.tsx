@@ -1,8 +1,10 @@
 import { type TableModel } from '@app-builder/models/data-model';
-import { type Node, type NodeProps } from '@xyflow/react';
+import { useDataModel } from '@app-builder/services/data/data-model';
+import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Tag } from 'ui-design-system';
+import { Button, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
@@ -10,6 +12,7 @@ import { LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types
 
 export interface TableDetailsProps {
   tableModel: TableModel;
+  relationFieldNames: string[];
 }
 
 type TableDetailsFlowNode = Node<
@@ -20,11 +23,46 @@ type TableDetailsFlowNode = Node<
 export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   const { t } = useTranslation(dataI18n);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const dataModel = useDataModel();
+  const relationFields = data.tableModel.fields.filter((field) => data.relationFieldNames.includes(field.name));
+  const belongsToField = (fieldName: string) =>
+    !!dataModel
+      .flatMap((table) => table.linksToSingle)
+      .find(
+        (link) =>
+          link.relationType === 'belongs_to' &&
+          ((link.parentTableName === data.tableModel.name && link.parentFieldName === fieldName) ||
+            (link.childTableName === data.tableModel.name && link.childFieldName === fieldName)),
+      );
+
+  const drawer = (
+    <EditTableDrawer
+      open={isEditOpen}
+      onClose={() => setIsEditOpen(false)}
+      tableModel={data.tableModel}
+      onSave={async (tableState: SemanticTableFormValues, links: LinkValue[]) => {
+        // TODO: implement save mutations
+        console.log(tableState, links);
+        setIsEditOpen(false);
+      }}
+    />
+  );
 
   return (
     <>
-      <div className="border border-grey-border rounded-lg px-v2-md py-v2-xl">
-        <div className="flex items-center gap-v2-sm">
+      <div className="relative border border-grey-border rounded-lg px-v2-md py-v2-xl">
+        <div className="relative flex items-center gap-v2-sm">
+          <Handle
+            type="target"
+            id="belongs_to:header"
+            position={Position.Left}
+            isConnectable={false}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              left: 'calc(-1 * var(--spacing-v2-md))',
+            }}
+          />
           <div className="flex-1 flex flex-col gap-v2-xs">
             <h4 className="font-semibold">{data.tableModel.name}</h4>
             <div className="flex gap-v2-xs">
@@ -46,18 +84,59 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           <Button variant="secondary" appearance="stroked" onClick={() => setIsEditOpen(true)}>
             <Icon icon="eye" className="size-5" />
           </Button>
+          <Handle
+            type="source"
+            id="belongs_to:header"
+            position={Position.Right}
+            isConnectable={false}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              right: 'calc(-1 * var(--spacing-v2-md))',
+            }}
+          />
         </div>
+        {relationFields.length > 0 ? (
+          <div className="mt-v2-md grid gap-v2-sm">
+            {relationFields.map((field) => (
+              <div
+                key={field.id}
+                className={cn(
+                  '  bg-surface-card relative rounded-md px-v2-md py-v2-sm text-s',
+                  belongsToField(field.name)
+                    ? 'border-purple-primary border-2 text-purple-primary'
+                    : 'border-grey-secondary borde text-grey-secondary',
+                )}
+              >
+                <Handle
+                  type="target"
+                  id={`related:${field.name}`}
+                  position={Position.Left}
+                  isConnectable={false}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    left: 'calc(-1 * var(--spacing-v2-md))',
+                  }}
+                />
+                <span>{field.name}</span>
+                <Handle
+                  type="source"
+                  id={`related:${field.name}`}
+                  position={Position.Right}
+                  isConnectable={false}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    right: 'calc(-1 * var(--spacing-v2-md))',
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
-      <EditTableDrawer
-        open={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        tableModel={data.tableModel}
-        onSave={async (tableState: SemanticTableFormValues, links: LinkValue[]) => {
-          // TODO: implement save mutations
-          console.log(tableState, links);
-          setIsEditOpen(false);
-        }}
-      />
+      {typeof document !== 'undefined' ? createPortal(drawer, document.body) : drawer}
     </>
   );
 }

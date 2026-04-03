@@ -46,6 +46,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -94,6 +95,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -130,6 +132,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -151,6 +154,7 @@ describe('getLinksPivotOptions', () => {
             childTableId: '2',
             childFieldName: 'field1',
             childFieldId: '1',
+            relationType: 'belongs_to',
           },
         ],
       }),
@@ -197,6 +201,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -218,6 +223,7 @@ describe('getLinksPivotOptions', () => {
             childTableId: '2',
             childFieldName: 'field1',
             childFieldId: '1',
+            relationType: 'belongs_to',
           },
           {
             id: '3',
@@ -230,6 +236,7 @@ describe('getLinksPivotOptions', () => {
             childTableId: '2',
             childFieldName: 'field1',
             childFieldId: '1',
+            relationType: 'belongs_to',
           },
         ],
       }),

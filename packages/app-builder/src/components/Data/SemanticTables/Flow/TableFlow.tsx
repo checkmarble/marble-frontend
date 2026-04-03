@@ -1,8 +1,13 @@
+import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
+import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '@app-builder/components/Schema/SchemaMenu';
 import { type DataModel } from '@app-builder/models/data-model';
 import Dagre from '@dagrejs/dagre';
 import {
+  applyEdgeChanges,
   applyNodeChanges,
+  Controls,
   type Edge,
+  type EdgeChange,
   type Node,
   type NodeChange,
   ReactFlow,
@@ -12,16 +17,17 @@ import {
 import reactflowStyles from '@xyflow/react/dist/style.css?url';
 import * as React from 'react';
 import * as R from 'remeda';
-// import {
-//   adaptLinkToSingleData,
-//   defaultDataModelEdgeOptions,
-//   getLinkToSingleDataEdge,
-//   getLinkToSingleDataEdgeId,
-//   type LinkToSingleData,
-//   LinkToSingleEdge,
-// } from './LinkToSingleEdge';
-// import { SelectedPivotProvider } from './SelectedPivot';
-import { LinkRelation, LinkToSingleData } from './LinkRelation';
+import { MenuButton } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+
+import {
+  adaptLinkToSingleData,
+  defaultDataModelEdgeOptions,
+  getLinkToSingleDataEdge,
+  getLinkToSingleDataEdgeId,
+  LinkRelation,
+  type LinkToSingleData,
+} from './LinkRelation';
 import { TableDetails, TableDetailsProps } from './TableDetails';
 
 type CommonData<T extends string, D> = D & {
@@ -51,117 +57,115 @@ function nodeMeasuredHeight(nd: Node<DataModelNodeData>) {
   return nd.measured?.height ?? nd.height;
 }
 
+function getRelationFieldNames(tableModel: DataModel[number], dataModel: DataModel) {
+  const relationFieldNames = new Set([
+    ...tableModel.linksToSingle.map((link) => link.childFieldName),
+    ...dataModel.flatMap((table) =>
+      table.linksToSingle.filter((link) => link.parentTableId === tableModel.id).map((link) => link.parentFieldName),
+    ),
+  ]);
+
+  return tableModel.fields.filter((field) => relationFieldNames.has(field.name)).map((field) => field.name);
+}
+
 interface TableFlowProps {
   dataModel: DataModel;
-  //   pivots: Pivot[];
   children?: React.ReactNode;
 }
 
 export const dataModelFlowStyles = reactflowStyles;
 
-export function TableFlow({
-  dataModel,
-  // pivots,
-  children,
-}: TableFlowProps) {
+export function TableFlow({ dataModel, children }: TableFlowProps) {
   return (
     <ReactFlowProvider>
-      {/* <SelectedPivotProvider dataModel={dataModel}> */}
-      <DataModelFlowImpl
-        dataModel={dataModel}
-        //   pivots={pivots}
-      >
-        {children}
-      </DataModelFlowImpl>
-      {/* </SelectedPivotProvider> */}
+      <DataModelFlowImpl dataModel={dataModel}>{children}</DataModelFlowImpl>
     </ReactFlowProvider>
   );
 }
 
-function DataModelFlowImpl({
-  dataModel,
-  // pivots,
-  children,
-}: TableFlowProps) {
+function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   const [nodes, setNodes] = React.useState<Array<Node<DataModelNodeData>>>([]);
   const [edges, setEdges] = React.useState<Array<Edge<DataModelEdgeData>>>([]);
 
-  const onNodesChange = React.useCallback((changes: NodeChange[]) => {
+  const onNodesChange = React.useCallback((changes: NodeChange<Node<DataModelNodeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
-    setNodes((nds) => applyNodeChanges(allowedChanges, nds) as Node<DataModelNodeData>[]);
+    setNodes((nds) => applyNodeChanges(allowedChanges, nds));
   }, []);
-  //   const onEdgesChange = React.useCallback((changes: EdgeChange[]) => {
-  //     const allowedChanges = changes.filter((change) => change.type !== 'remove');
-  //     setEdges((eds) => applyEdgeChanges(allowedChanges, eds));
-  //   }, []);
+  const onEdgesChange = React.useCallback((changes: EdgeChange<Edge<DataModelEdgeData>>[]) => {
+    const allowedChanges = changes.filter((change) => change.type !== 'remove');
+    setEdges((eds) => applyEdgeChanges(allowedChanges, eds));
+  }, []);
 
-  // Update nodes and edges when dataModel changes
   React.useEffect(() => {
     setNodes((currentNodes) =>
       R.pipe(
         dataModel,
         R.map((tableModel) => {
-          const nodeId = tableModel.id;
+          const nodeId = tableModel.name;
           const existingNode = currentNodes.find((nd) => nd.id === nodeId);
-          if (existingNode) return existingNode;
-
+          if (existingNode) {
+            return {
+              ...existingNode,
+              data: {
+                ...existingNode.data,
+                tableModel,
+                relationFieldNames: getRelationFieldNames(tableModel, dataModel),
+              },
+            };
+          }
           return {
             id: nodeId,
             type: 'table_model',
             position: { x: 0, y: 0 },
             data: {
               tableModel,
+              relationFieldNames: getRelationFieldNames(tableModel, dataModel),
               type: 'table_model',
               state: 'initialized',
             },
-            // style: { opacity: 0 },
+            style: { opacity: 0 },
           } satisfies Node<DataModelNodeData>;
         }),
       ),
     );
-    // setEdges((currentEdges) =>
-    //   R.pipe(
-    //     dataModel,
-    //     R.flatMap((tableModel) => tableModel.linksToSingle),
-    //     R.map(adaptLinkToSingleData),
-    //     R.map((linkToSingleData) => {
-    //       const edgeId = getLinkToSingleDataEdgeId(linkToSingleData);
-    //       const existingEdge = currentEdges.find((ed) => ed.id === edgeId);
-    //       if (existingEdge) {
-    //         if (existingEdge.data === undefined) return existingEdge;
-    //         existingEdge.data = {
-    //           ...existingEdge.data,
-    //           ...linkToSingleData,
-    //         };
-    //         return existingEdge;
-    //       }
-    //       return {
-    //         id: edgeId,
-    //         type: 'link_to_single_edge',
-    //         ...getLinkToSingleDataEdge(linkToSingleData),
-    //         data: {
-    //           ...linkToSingleData,
-    //           type: 'link_to_single_edge',
-    //           state: 'initialized',
-    //         },
-    //         hidden: true,
-    //       } satisfies Edge<DataModelEdgeData>;
-    //     }),
-    //   ),
-    // );
-  }, [
-    dataModel,
-    // , pivots
-  ]);
+    setEdges((currentEdges) =>
+      R.pipe(
+        dataModel,
+        R.flatMap((tableModel) => tableModel.linksToSingle),
+        R.map(adaptLinkToSingleData),
+        R.map((linkToSingleData) => {
+          const edgeId = getLinkToSingleDataEdgeId(linkToSingleData);
+          const existingEdge = currentEdges.find((ed) => ed.id === edgeId);
+          if (existingEdge) {
+            if (existingEdge.data === undefined) return existingEdge;
+            return {
+              ...existingEdge,
+              data: {
+                ...existingEdge.data,
+                ...linkToSingleData,
+              },
+            };
+          }
+          return {
+            id: edgeId,
+            type: 'link_to_single_edge',
+            ...getLinkToSingleDataEdge(linkToSingleData),
+            data: {
+              ...linkToSingleData,
+              type: 'link_to_single_edge',
+              state: 'initialized',
+            },
+            hidden: true,
+          } satisfies Edge<DataModelEdgeData>;
+        }),
+      ),
+    );
+  }, [dataModel]);
 
   React.useEffect(() => {
-    // Wait first render of each node to have dynamic width before layouting
     if (nodes.some((nd) => nodeMeasuredWidth(nd) === undefined)) return;
 
-    if (
-      nodes.some((nd) => nd.data.state === 'initialized')
-      // || edges.some((ed) => ed.data?.state === 'initialized')
-    ) {
+    if (nodes.some((nd) => nd.data.state === 'initialized') || edges.some((ed) => ed.data?.state === 'initialized')) {
       const layout = layoutElements(nodes, edges);
       setNodes(
         R.pipe(
@@ -175,23 +179,20 @@ function DataModelFlowImpl({
           }),
         ),
       );
-      //   setEdges(
-      //     R.pipe(
-      //       layout.edges,
-      //       R.map((ed) => {
-      //         if (ed.data?.state !== 'initialized') return ed;
-      //         return {
-      //           ...ed,
-      //           data: { ...ed.data, state: 'laid_out' },
-      //         } satisfies Edge<DataModelEdgeData>;
-      //       }),
-      //     ),
-      //   );
+      setEdges(
+        R.pipe(
+          layout.edges,
+          R.map((ed) => {
+            if (ed.data?.state !== 'initialized') return ed;
+            return {
+              ...ed,
+              data: { ...ed.data, state: 'laid_out' },
+            } satisfies Edge<DataModelEdgeData>;
+          }),
+        ),
+      );
     }
-  }, [
-    // edges,
-    nodes,
-  ]);
+  }, [edges, nodes]);
 
   const { fitView } = useDataModelReactFlow();
   React.useEffect(() => {
@@ -242,12 +243,43 @@ function DataModelFlowImpl({
       edgeTypes={edgeTypes}
       minZoom={0.3}
       onNodesChange={onNodesChange}
-      //   onEdgesChange={onEdgesChange}
-      //   defaultEdgeOptions={defaultDataModelEdgeOptions}
-      //   connectionLineStyle={defaultDataModelEdgeOptions.style}
+      onEdgesChange={onEdgesChange}
+      defaultEdgeOptions={defaultDataModelEdgeOptions}
+      connectionLineStyle={defaultDataModelEdgeOptions.style}
     >
+      <Controls position="bottom-left" className="z-10">
+        <CustomControls />
+      </Controls>
       {children}
     </ReactFlow>
+  );
+}
+
+function CustomControls() {
+  const { getNodes, fitView } = useDataModelReactFlow();
+
+  return (
+    <>
+      <SchemaMenuRoot>
+        <MenuButton render={<button className="react-flow__controls-button" title="Focus table" type="button" />}>
+          <Icon icon="center-focus" />
+        </MenuButton>
+        <SchemaMenuMenuPopover>
+          {getNodes().map((node) => (
+            <SchemaMenuMenuItem
+              key={node.id}
+              onClick={() => {
+                fitView({ nodes: [node], duration: 1000 });
+              }}
+            >
+              {node.data?.tableModel.name ?? node.id}
+            </SchemaMenuMenuItem>
+          ))}
+        </SchemaMenuMenuPopover>
+      </SchemaMenuRoot>
+
+      <AutoLayoutControlButton layoutElements={layoutElements} />
+    </>
   );
 }
 

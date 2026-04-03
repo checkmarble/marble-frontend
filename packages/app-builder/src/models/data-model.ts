@@ -156,9 +156,11 @@ export interface LinkToSingle {
   childTableId: string;
   childFieldName: string;
   childFieldId: string;
+  relationType: LinkRelationType;
 }
 
 function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto): LinkToSingle {
+  const dto = linksToSingleDto as LinkToSingleDto & { link_type?: LinkRelationType };
   return {
     id: linksToSingleDto.id,
     name: linkName,
@@ -170,6 +172,7 @@ function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto):
     childTableId: linksToSingleDto.child_table_id,
     childFieldName: linksToSingleDto.child_field_name,
     childFieldId: linksToSingleDto.child_field_id,
+    relationType: dto.link_type ?? 'belongs_to',
   };
 }
 
