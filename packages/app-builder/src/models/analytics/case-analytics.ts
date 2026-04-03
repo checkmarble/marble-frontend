@@ -15,10 +15,11 @@ export interface CaseAnalyticsFilters {
   userId?: string;
 }
 
-export interface PeriodDelay {
+export interface PeriodDuration {
   period: string;
-  avgDays: number;
+  sumDays: number;
   maxDays: number;
+  count: number;
 }
 
 export interface BucketCount {
@@ -40,21 +41,22 @@ export interface FalsePositiveRate {
 
 export interface CaseAnalyticsResponse {
   sarTotalCompleted: number;
-  sarDelayByPeriod: PeriodDelay[];
+  sarDelayByPeriod: PeriodDuration[];
   sarDelayDistribution: BucketCount[];
   alertCountByPeriod: PeriodCount[];
   falsePositiveRateByPeriod: FalsePositiveRate[];
-  caseDurationByPeriod: PeriodDelay[];
+  caseDurationByPeriod: PeriodDuration[];
   openCasesByAge: BucketCount[];
 }
 
 // Adapters
 
-export function adaptSarDelay(dto: SarDelayResponseDto): PeriodDelay {
+export function adaptSarDelay(dto: SarDelayResponseDto): PeriodDuration {
   return {
     period: dto.date,
-    avgDays: dto.avg_days,
+    sumDays: dto.sum_days,
     maxDays: dto.max_days,
+    count: dto.count_sars,
   };
 }
 
@@ -83,11 +85,12 @@ export function adaptFalsePositiveRate(dto: CasesFalsePositiveRateResponseDto): 
   };
 }
 
-export function adaptCasesDuration(dto: CasesDurationResponseDto): PeriodDelay {
+export function adaptCasesDuration(dto: CasesDurationResponseDto): PeriodDuration {
   return {
     period: dto.date,
-    avgDays: dto.avg_days,
+    sumDays: dto.sum_days,
     maxDays: dto.max_days,
+    count: dto.count_cases,
   };
 }
 
@@ -100,6 +103,6 @@ export function adaptOpenCasesByAge(dto: OpenCasesByAgeResponseDto): BucketCount
 
 /**
  * Helper type to satisfy nivo's BarDatum constraint at call sites.
- * Use: `data={items as BarData<PeriodDelay>[]}`
+ * Use: `data={items as BarData<PeriodDuration>[]}`
  */
 export type BarData<T> = T & BarDatum;
