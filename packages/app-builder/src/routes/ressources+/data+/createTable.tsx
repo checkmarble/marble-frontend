@@ -1,18 +1,20 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { type ServerFnResult } from '@app-builder/core/middleware-types';
-import { createServerFn, data } from '@app-builder/core/requests';
+import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { createTableValueSchema } from '@app-builder/queries/data/create-table';
+import { formatTableMutationError, getTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { z } from 'zod/v4';
 
-type CreateTableActionData = { success: true; data: { id: string } } | { success: false; errors: unknown };
+type CreateTableActionData =
+  | { success: true; data: { id: string } }
+  | { success: false; errors: unknown; status: number; message?: string };
 
 export const action = createServerFn(
   [handleRedirectMiddleware, authMiddleware],
-  async function createTableAction({ request, context }): ServerFnResult<CreateTableActionData> {
+  async function createTableAction({ request, context }) {
     const { toastSessionService, i18nextService } = context.services;
     const { dataModelRepository } = context.authInfo;
 
@@ -24,7 +26,14 @@ export const action = createServerFn(
 
     const parsed = createTableValueSchema.safeParse(raw);
     if (!parsed.success) {
-      return { success: false, errors: z.treeifyError(parsed.error) };
+      return Response.json(
+        {
+          success: false,
+          errors: z.treeifyError(parsed.error),
+          status: 400,
+        } satisfies CreateTableActionData,
+        { status: 400 },
+      );
     }
 
     const result = await tryCatch(() => dataModelRepository.createTable(parsed.data));
@@ -32,15 +41,30 @@ export const action = createServerFn(
       return { success: true, data: { id: result.value.id } };
     }
 
-    setToastMessage(toastSession, {
-      type: 'error',
-      message: isStatusConflictHttpError(result.error)
+    const { status, message } = getTableMutationError(result.error, t, {
+      conflictMessage: isStatusConflictHttpError(result.error)
         ? t('common:errors.data.duplicate_table_name')
-        : t('common:errors.unknown'),
+        : undefined,
     });
 
-    return data({ success: false, errors: [] }, [
-      ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
-    ]);
+    setToastMessage(toastSession, {
+      type: 'error',
+      message: formatTableMutationError({ status, message }),
+    });
+
+    return Response.json(
+      {
+        success: false,
+        errors: [],
+        status,
+        message,
+      } satisfies CreateTableActionData,
+      {
+        status,
+        headers: {
+          'Set-Cookie': await toastSessionService.commitSession(toastSession),
+        },
+      },
+    );
   },
 );

@@ -1,30 +1,68 @@
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { editTablePayloadSchema } from '@app-builder/queries/data/edit-table';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { formatTableMutationError, getTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { z } from 'zod/v4';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = initServerServices(request);
+type EditTableActionData =
+  | { success: true; errors: [] }
+  | { success: false; errors: unknown; status: number; message?: string };
 
-  const [raw, { apiClient }] = await Promise.all([
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function editTableAction({ request, context }) {
+    const { toastSessionService, i18nextService } = context.services;
+    const { dataModelRepository } = context.authInfo;
 
-  const { success, error, data } = editTablePayloadSchema.safeParse(raw);
+    const [t, toastSession, raw] = await Promise.all([
+      i18nextService.getFixedT(request, ['common']),
+      toastSessionService.getSession(request),
+      request.json(),
+    ]);
 
-  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
+    const parsed = editTablePayloadSchema.safeParse(raw);
 
-  try {
-    await apiClient.patchDataModelTable(data.tableId, {
-      description: data.description,
-    });
+    if (!parsed.success) {
+      return Response.json(
+        {
+          success: false,
+          errors: z.treeifyError(parsed.error),
+          status: 400,
+        } satisfies EditTableActionData,
+        { status: 400 },
+      );
+    }
 
-    return json({ success: 'true', errors: [] });
-  } catch (_error) {
-    return json({ success: 'false', errors: [] });
-  }
-}
+    try {
+      await dataModelRepository.patchDataModelTable(parsed.data.tableId, {
+        description: parsed.data.description,
+      });
+
+      return { success: true, errors: [] };
+    } catch (error) {
+      const { status, message } = getTableMutationError(error, t);
+
+      setToastMessage(toastSession, {
+        type: 'error',
+        message: formatTableMutationError({ status, message }),
+      });
+
+      return Response.json(
+        {
+          success: false,
+          errors: [],
+          status,
+          message,
+        } satisfies EditTableActionData,
+        {
+          status,
+          headers: {
+            'Set-Cookie': await toastSessionService.commitSession(toastSession),
+          },
+        },
+      );
+    }
+  },
+);

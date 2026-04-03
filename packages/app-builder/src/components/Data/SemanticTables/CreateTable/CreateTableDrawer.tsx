@@ -26,7 +26,7 @@ export function CreateTableDrawer({
 }: {
   open: boolean;
   onClose: () => void;
-  onSave: (values: SemanticTableFormValues) => Promise<void>;
+  onSave: (values: SemanticTableFormValues) => Promise<boolean>;
 }) {
   const { t } = useTranslation(['data', 'common']);
   const [currentStep, setCurrentStep] = useState(0);
@@ -41,7 +41,8 @@ export function CreateTableDrawer({
       return;
     }
     setValidationErrors([]);
-    await onSave(value);
+    const saved = await onSave(value);
+    if (!saved) return;
     form.reset();
     setCurrentStep(0);
   });

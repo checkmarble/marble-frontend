@@ -95,9 +95,10 @@ export default function DataList() {
         onClose={() => setIsCreateDrawerOpen(false)}
         onSave={async (values) => {
           const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
-          if (!result.success) return;
+          if (!result.success) return false;
           setIsCreateDrawerOpen(false);
           revalidate();
+          return true;
         }}
       />
     </div>

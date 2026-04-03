@@ -4,8 +4,11 @@ import {
 } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
+import { formatTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
+import { CreateTableResponseDto } from 'marble-api';
+import toast from 'react-hot-toast';
 import z from 'zod/v4';
 
 const createFieldValuesSchema = z.object({
@@ -50,7 +53,9 @@ export const createTableValueSchema = z.object({
 });
 
 export type CreateTableValue = z.infer<typeof createTableValueSchema>;
-export type CreateTableResponse = { success: true; data: { id: string } } | { success: false; errors: unknown };
+export type CreateTableResponse =
+  | { success: true; data: CreateTableResponseDto }
+  | { success: false; errors: unknown; status: number; message?: string };
 
 const endpoint = getRoute('/ressources/data/createTable');
 
@@ -63,7 +68,18 @@ export const useCreateTableMutation = () => {
         body: JSON.stringify(table),
       });
 
-      return response.json() as Promise<CreateTableResponse>;
+      const result = (await response.json()) as CreateTableResponse;
+
+      if (!response.ok && !result.success) {
+        toast.error(
+          formatTableMutationError({
+            status: result.status,
+            message: (result.message ?? response.statusText) || 'Request failed',
+          }),
+        );
+      }
+
+      return result;
     },
   });
 };
