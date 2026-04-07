@@ -15,14 +15,18 @@ export const loader = createServerFn([authMiddleware], async function casesAnaly
   const [inboxes, users] = await Promise.all([inboxRepository.listInboxes(), organization.listUsers()]);
 
   const canViewAdminSections = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
-  if (!canViewAdminSections || !isAccessible(entitlements.analytics)) {
+  if (!canViewAdminSections) {
     throw new Response(null, { status: 403 });
   }
 
-  return { inboxes, users };
+  return {
+    inboxes,
+    users,
+    isAnalyticsAvailable: isAccessible(entitlements.analytics),
+  };
 });
 
 export default function CasesAnalytics() {
-  const { inboxes, users } = useLoaderData<typeof loader>();
-  return <AnalyticsPage inboxes={inboxes} users={users} />;
+  const { inboxes, users, isAnalyticsAvailable } = useLoaderData<typeof loader>();
+  return <AnalyticsPage inboxes={inboxes} users={users} isAnalyticsAvailable={isAnalyticsAvailable} />;
 }

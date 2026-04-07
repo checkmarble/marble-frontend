@@ -14,6 +14,7 @@ import { type AnalyticsFiltersQuery, analyticsFiltersQuery, FilterSource } from 
 import { type Scenario } from '@app-builder/models/scenario';
 import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
 import { useAnalyticsDataQuery } from '@app-builder/queries/analytics/get-data';
+import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -35,6 +36,7 @@ interface LoaderData {
     version: number;
     createdAt: string;
   }>;
+  isAnalyticsAvailable: boolean;
 }
 
 export const handle = {
@@ -43,7 +45,7 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs): Promise<Response> {
   const { authService } = initServerServices(request);
-  const { scenario } = await authService.isAuthenticated(request, {
+  const { scenario, user, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -63,11 +65,12 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<R
         version,
         createdAt,
       })),
+    isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
   });
 }
 
 export default function Analytics() {
-  const { scenarios, scenarioVersions } = useLoaderData<LoaderData>();
+  const { scenarios, scenarioVersions, isAnalyticsAvailable: hasAnalyticsLicense } = useLoaderData<LoaderData>();
 
   const scenarioId = useParam('scenarioId');
   const [searchParams] = useSearchParams();
@@ -319,7 +322,6 @@ export default function Analytics() {
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
           <DetectionNavigationTabs
-            showAnalytics
             actions={
               <Link
                 to={getRoute('/analytics-legacy')}
@@ -358,31 +360,37 @@ export default function Analytics() {
                   </div>
                 </div>
                 <div className="flex flex-col lg-analytics:flex-row gap-v2-md w-full items-stretch h-auto">
-                  <div className="lg-analytics:basis-2/3 min-w-0">
+                  <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
                     <Decisions
                       data={decisionsOutcomesPerDayQuery.data ?? null}
                       scenarioVersions={scenarioVersions}
                       isLoading={decisionsOutcomesPerDayQuery.isFetching}
                     />
                   </div>
-                  <div className="lg-analytics:basis-1/3 min-w-0">
-                    <DecisionsScoreDistribution query={decisionsScoreDistributionQuery} />
-                  </div>
+                  {hasAnalyticsLicense ? (
+                    <div className="lg-analytics:basis-1/3 min-w-0">
+                      <DecisionsScoreDistribution query={decisionsScoreDistributionQuery} />
+                    </div>
+                  ) : null}
                 </div>
 
-                <RulesHit
-                  isComparingRanges={effectiveRanges.length > 1}
-                  data={ruleHitTableQuery.data ?? []}
-                  isLoading={ruleHitTableQuery.isFetching}
-                />
-                <RuleVsDecisionOutcomes
-                  data={ruleVsDecisionOutcomeQuery.data ?? null}
-                  isLoading={ruleVsDecisionOutcomeQuery.isFetching}
-                />
-                <ScreeningHits
-                  data={screeningHitsTableQuery.data ?? []}
-                  isLoading={screeningHitsTableQuery.isFetching}
-                />
+                {hasAnalyticsLicense ? (
+                  <>
+                    <RulesHit
+                      isComparingRanges={effectiveRanges.length > 1}
+                      data={ruleHitTableQuery.data ?? []}
+                      isLoading={ruleHitTableQuery.isFetching}
+                    />
+                    <RuleVsDecisionOutcomes
+                      data={ruleVsDecisionOutcomeQuery.data ?? null}
+                      isLoading={ruleVsDecisionOutcomeQuery.isFetching}
+                    />
+                    <ScreeningHits
+                      data={screeningHitsTableQuery.data ?? []}
+                      isLoading={screeningHitsTableQuery.isFetching}
+                    />
+                  </>
+                ) : null}
               </div>
             </I18nProvider>
           </FormattingProvider>

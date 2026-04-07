@@ -3,13 +3,7 @@ import { NavLink } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Tabs, tabClassName } from 'ui-design-system';
 
-export function DetectionNavigationTabs({
-  actions,
-  showAnalytics = false,
-}: {
-  actions?: React.ReactNode;
-  showAnalytics?: boolean;
-}) {
+export function DetectionNavigationTabs({ actions }: { actions?: React.ReactNode }) {
   const { t } = useTranslation(['navigation']);
 
   return (
@@ -23,11 +17,9 @@ export function DetectionNavigationTabs({
           <NavLink to={getRoute('/detection/lists')} className={tabClassName}>
             {t('navigation:lists')}
           </NavLink>
-          {showAnalytics ? (
-            <NavLink to={getRoute('/detection/analytics')} className={tabClassName}>
-              {t('navigation:analytics')}
-            </NavLink>
-          ) : null}
+          <NavLink to={getRoute('/detection/analytics')} className={tabClassName}>
+            {t('navigation:analytics')}
+          </NavLink>
           <NavLink to={getRoute('/detection/decisions')} className={tabClassName}>
             {t('navigation:decisions')}
           </NavLink>

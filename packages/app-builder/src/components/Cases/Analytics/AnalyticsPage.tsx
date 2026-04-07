@@ -26,9 +26,10 @@ import { TimeBucketToggle } from './TimeBucketToggle';
 interface AnalyticsPageProps {
   inboxes: Inbox[];
   users: User[];
+  isAnalyticsAvailable: boolean;
 }
 
-export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
+export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: AnalyticsPageProps) {
   const { t } = useTranslation(['cases', 'common']);
 
   const [startDate, setStartDate] = useState(subMonths(new Date(), 6).toISOString().slice(0, 10));
@@ -61,7 +62,7 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
     <Page.Main>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
-          <CasesNavigationTabs showAnalytics />
+          <CasesNavigationTabs />
 
           <div className="flex flex-wrap items-center justify-between gap-v2-md">
             <CaseAnalyticsFilters
@@ -110,15 +111,19 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
                     </div>
                   </div>
 
-                  <AlertMetricsChart
-                    alertCountByPeriod={aggregated.alertCountByPeriod}
-                    falsePositiveRateByPeriod={aggregated.falsePositiveRateByPeriod}
-                  />
+                  {isAnalyticsAvailable ? (
+                    <>
+                      <AlertMetricsChart
+                        alertCountByPeriod={aggregated.alertCountByPeriod}
+                        falsePositiveRateByPeriod={aggregated.falsePositiveRateByPeriod}
+                      />
 
-                  <AlertProcessingChart
-                    caseDurationByPeriod={aggregated.caseDurationByPeriod}
-                    openCasesByAge={aggregated.openCasesByAge}
-                  />
+                      <AlertProcessingChart
+                        caseDurationByPeriod={aggregated.caseDurationByPeriod}
+                        openCasesByAge={aggregated.openCasesByAge}
+                      />
+                    </>
+                  ) : null}
                 </div>
               );
             })

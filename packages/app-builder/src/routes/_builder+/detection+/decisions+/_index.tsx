@@ -23,7 +23,6 @@ import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginated
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { type Decision } from '@app-builder/models/decision';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -71,13 +70,9 @@ export const buildQueryParams = (filters: DecisionFilters, offsetId: string | nu
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { decision, scenario, dataModelRepository, inbox, user, entitlements } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
-  const showAnalytics = isAnalyticsAvailable(user, entitlements);
+  const { decision, scenario, dataModelRepository, inbox } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const parsedFilterQuery = await parseQuerySafe(request, decisionFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
@@ -105,7 +100,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     filters: parsedFilterQuery.data,
     hasPivots: pivots.length > 0,
     inboxes,
-    showAnalytics,
   });
 }
 
@@ -116,7 +110,6 @@ export default function DetectionDecisions() {
     scenarios,
     hasPivots,
     inboxes,
-    showAnalytics,
   } = useLoaderData<typeof loader>();
 
   const { data, next, previous, reset, hasPreviousPage, pageNb } = useCursorPaginatedFetcher<
@@ -167,7 +160,7 @@ export default function DetectionDecisions() {
       <Page.Main>
         <Page.Container>
           <Page.ContentV2 className="gap-v2-md">
-            <DetectionNavigationTabs showAnalytics={showAnalytics} />
+            <DetectionNavigationTabs />
             <div className="flex flex-col gap-4">
               <DecisionFiltersProvider
                 scenarios={scenarios}

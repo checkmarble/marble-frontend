@@ -4,7 +4,7 @@ import { CreateListModal } from '@app-builder/components/Lists/CreateListModal';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { hasAnyEntitlement, isAnalyticsAvailable, isCreateListAvailable } from '@app-builder/services/feature-access';
+import { hasAnyEntitlement, isCreateListAvailable } from '@app-builder/services/feature-access';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
@@ -24,7 +24,6 @@ export const loader = createServerFn([authMiddleware], async ({ context }) => {
     customLists,
     isCreateListAvailable: isCreateListAvailable(user),
     isIpGpsAvailable: hasAnyEntitlement(entitlements),
-    showAnalytics: isAnalyticsAvailable(user, entitlements),
   };
 });
 
@@ -36,7 +35,7 @@ const columnHelper = createColumnHelper<CustomList>();
 
 export default function DetectionListsPage() {
   const { t } = useTranslation(handle.i18n);
-  const { customLists, isCreateListAvailable, isIpGpsAvailable, showAnalytics } = useLoaderData<typeof loader>();
+  const { customLists, isCreateListAvailable, isIpGpsAvailable } = useLoaderData<typeof loader>();
 
   const columns = useMemo(
     () => [
@@ -99,7 +98,6 @@ export default function DetectionListsPage() {
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
           <DetectionNavigationTabs
-            showAnalytics={showAnalytics}
             actions={isCreateListAvailable ? <CreateListModal isIpGpsAvailable={isIpGpsAvailable} /> : undefined}
           />
           <div className="flex flex-col gap-4">
