@@ -903,6 +903,24 @@ components:
         parent_table_id:
           type: string
           format: uuid
+    UpdateTableBodyLink:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        link_type:
+          type: string
+          enum: [related, belongs_to]
+        child_field_name:
+          type: string
+          description: Name of a field defined in the 'fields' array
+        parent_table_id:
+          type: string
+          format: uuid
     UpdateTableBodyDto:
       type: object
       properties:
@@ -1059,6 +1077,7 @@ components:
     LinkOperationDto:
       oneOf:
         - $ref: '#/components/schemas/AddLinkOperationDto'
+        - $ref: '#/components/schemas/ModLinkOperationDto'
         - $ref: '#/components/schemas/DelLinkOperationDto'
     AddLinkOperationDto:
       type: object
@@ -1071,6 +1090,17 @@ components:
           enum: [ADD]
         data:
           $ref: '#/components/schemas/CreateTableBodyLink'
+    ModLinkOperationDto:
+      type: object
+      required:
+        - op
+        - data
+      properties:
+        op:
+          type: string
+          enum: [MOD]
+        data:
+          $ref: '#/components/schemas/UpdateTableBodyLink'
     DelLinkOperationDto:
       type: object
       required:

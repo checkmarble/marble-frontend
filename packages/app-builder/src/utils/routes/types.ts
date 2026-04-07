@@ -148,6 +148,7 @@ export type RoutePath =
   | '/ressources/data/deleteTable'
   | '/ressources/data/editField'
   | '/ressources/data/editTable'
+  | '/ressources/data/editSemanticTable'
   | '/ressources/data/export-org'
   | '/ressources/data/get-annotations/:objectType/:objectId'
   | '/ressources/data/get-hierarchy/:objectType/:objectId'

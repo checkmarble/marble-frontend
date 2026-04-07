@@ -1,4 +1,5 @@
 import { type TableModel } from '@app-builder/models/data-model';
+import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import { useState } from 'react';
@@ -9,7 +10,8 @@ import { Icon } from 'ui-icons';
 import { DeleteTableModal } from '../../DeleteDataModel/DeleteTableModal';
 import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
-import { LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
+import { adaptUpdateTableValue } from '../EditTable/updateTable-adapter';
+import { ChangeRecord, SemanticTableFormValues } from '../Shared/semanticData-types';
 import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
 
 export interface TableDetailsProps {
@@ -40,15 +42,18 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             (link.childTableName === data.tableModel.name && link.childFieldName === fieldName)),
       );
 
+  const updateTableMutation = useEditSemanticTableMutation();
+
   const drawer = (
     <>
       <EditTableDrawer
         open={isEditOpen}
         onClose={() => setIsEditOpen(false)}
         tableModel={data.tableModel}
-        onSave={async (tableState: SemanticTableFormValues, links: LinkValue[]) => {
-          // TODO: implement save mutations
-          console.log(tableState, links);
+        onSave={async (tableState: SemanticTableFormValues, changeSet: ChangeRecord[]) => {
+          console.log({ tableState, changeSet });
+          const result = updateTableMutation.mutate(adaptUpdateTableValue(tableState, changeSet));
+          console.log({ result });
           setIsEditOpen(false);
         }}
       />

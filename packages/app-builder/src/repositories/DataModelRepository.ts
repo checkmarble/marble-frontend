@@ -15,7 +15,6 @@ import {
   adaptPivot,
   adaptSetDataModelTableOptionBodyDto,
   adaptUpdateFieldDto,
-  adaptUpdateTableBodyDto,
   type ClientDataListRequestBody,
   type ClientDataListResponse,
   type CreateAnnotationBody,
@@ -31,19 +30,18 @@ import {
   type Pivot,
   type SetDataModelTableOptionsBody,
   type UpdateFieldInput,
-  UpdateTableBody,
 } from '@app-builder/models';
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { type CreateTableValue } from '@app-builder/queries/data/create-table';
-import { GroupedAnnotations, type OpenApiSpec } from 'marble-api';
+import { GroupedAnnotations, type OpenApiSpec, UpdateTableBodyDto } from 'marble-api';
 
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
   getOpenApiSpec(): Promise<OpenApiSpec>;
   getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
   createTable(body: CreateTableValue): Promise<{ id: string }>;
-  patchDataModelTable(tableId: string, body: UpdateTableBody): Promise<void>;
+  patchDataModelTable(tableId: string, body: UpdateTableBodyDto): Promise<void>;
   postDataModelTableField(tableId: string, createFieldInput: CreateFieldInput): Promise<void>;
   patchDataModelField(tableId: string, updateFieldInput: UpdateFieldInput): Promise<void>;
   listPivots(args: { tableId?: string }): Promise<Pivot[]>;
@@ -88,7 +86,7 @@ export function makeGetDataModelRepository() {
       return marbleCoreApiClient.getDataModelOpenApiOfVersion(version);
     },
     patchDataModelTable: async (tableId, body) => {
-      await marbleCoreApiClient.patchDataModelTable(tableId, adaptUpdateTableBodyDto(body));
+      await marbleCoreApiClient.patchDataModelTable(tableId, body);
     },
     postDataModelTableField: async (tableId, createFieldInput) => {
       await marbleCoreApiClient.postDataModelTableField(tableId, adaptCreateTableFieldDto(createFieldInput));

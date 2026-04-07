@@ -7,10 +7,16 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
-import type { LinkValue, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
+import { DrawerContext } from '../Shared/DrawerContext';
+import type {
+  ChangeRecord,
+  LinkValue,
+  SemanticTableChangedProperty,
+  SemanticTableFormValues,
+  TableField,
+} from '../Shared/semanticData-types';
 import { FormTable } from '../Shared/TableForm';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
-import { UploadDataDrawerContext } from '../UploadData/UploadDataDrawer';
 
 export function EditTableDrawer({
   open,
@@ -20,7 +26,7 @@ export function EditTableDrawer({
 }: {
   open: boolean;
   onClose: () => void;
-  onSave: (tableState: SemanticTableFormValues, links: LinkValue[]) => Promise<void>;
+  onSave: (tableState: SemanticTableFormValues, changeSet: ChangeRecord[]) => Promise<void>;
   tableModel: TableModel;
 }) {
   const { t } = useTranslation(['data', 'common']);
@@ -58,6 +64,17 @@ export function EditTableDrawer({
     wasOpenRef.current = open;
   }, [open, tableModel]);
 
+  const changeSet = useMemo(
+    () =>
+      computeChangeSet(
+        initialTableStateRef.current[tableModel.id]!,
+        tablesState[tableModel.id]!,
+        initialLinksStateRef.current,
+        linksState,
+      ),
+    [linksState, tablesState, tableModel.id],
+  );
+
   const isDirty = useMemo(
     () =>
       JSON.stringify(normalizeTablesStateForDirtyCheck(tablesState)) !==
@@ -85,13 +102,14 @@ export function EditTableDrawer({
 
   const addLink = useCallback((sourceTableId: string) => {
     const linkId = crypto.randomUUID();
+    const hasBelongsTo = Object.values(linksState).some((link) => link.relationType === 'belongs_to');
     setLinksState((prev) => ({
       ...prev,
       [linkId]: {
         linkId,
         name: '',
         tableFieldId: '',
-        relationType: 'belongs_to',
+        relationType: hasBelongsTo ? 'related' : 'belongs_to',
         targetTableId: '',
         sourceTableId,
       },
@@ -220,7 +238,7 @@ export function EditTableDrawer({
       return;
     }
     setValidationErrors([]);
-    await onSave(tableState, links);
+    await onSave(tableState, changeSet);
   }
 
   const handleBackdropClose = useCallback(() => {
@@ -242,7 +260,7 @@ export function EditTableDrawer({
   if (!open) return null;
 
   return (
-    <UploadDataDrawerContext.Provider
+    <DrawerContext.Provider
       value={{
         container: containerRef,
         data: null,
@@ -347,7 +365,7 @@ export function EditTableDrawer({
         onOpenChange={setIsUnsavedChangesDialogOpen}
         onConfirm={handleConfirmDiscardChanges}
       />
-    </UploadDataDrawerContext.Provider>
+    </DrawerContext.Provider>
   );
 }
 
@@ -471,4 +489,62 @@ function normalizeTablesStateForDirtyCheck(state: Record<string, SemanticTableFo
 
 function normalizeLinksStateForDirtyCheck(state: Record<string, LinkValue>) {
   return Object.values(state).sort((a, b) => a.linkId.localeCompare(b.linkId));
+}
+
+function computeChangeSet(
+  initialTableState: SemanticTableFormValues,
+  currentTableState: SemanticTableFormValues,
+  initialLinksState: Record<string, LinkValue>,
+  currentLinksState: Record<string, LinkValue>,
+): ChangeRecord[] {
+  const changes: ChangeRecord[] = [];
+
+  // Table-level MOD: compare properties excluding fields, links, isVisited
+  const { fields: _if, links: _il, isVisited: _iv1, ...initTableProps } = initialTableState;
+  const { fields: _cf, links: _cl, isVisited: _iv2, ...currTableProps } = currentTableState;
+  const changedProperties: SemanticTableChangedProperty[] = [];
+  for (const key of Object.keys(currTableProps) as SemanticTableChangedProperty[]) {
+    if (JSON.stringify(initTableProps[key]) !== JSON.stringify(currTableProps[key])) {
+      changedProperties.push(key);
+    }
+  }
+  if (changedProperties.length > 0) {
+    changes.push({ type: 'table', operation: 'MOD', changedProperties });
+  }
+
+  // Field changes
+  const initialFieldMap = new Map(initialTableState.fields.map((f) => [f.id, f]));
+  const currentFieldMap = new Map(currentTableState.fields.map((f) => [f.id, f]));
+
+  for (const field of currentTableState.fields) {
+    if (field.isNew) {
+      changes.push({ type: 'field', operation: 'ADD', objectName: field.name });
+    } else {
+      const initialField = initialFieldMap.get(field.id);
+      if (initialField && JSON.stringify(initialField) !== JSON.stringify(field)) {
+        changes.push({ type: 'field', operation: 'MOD', objectId: field.id });
+      }
+    }
+  }
+  for (const initialField of initialTableState.fields) {
+    if (!initialField.isNew && !currentFieldMap.has(initialField.id)) {
+      changes.push({ type: 'field', operation: 'DEL', objectId: initialField.id });
+    }
+  }
+
+  // Link changes
+  for (const [linkId, link] of Object.entries(currentLinksState)) {
+    if (!initialLinksState[linkId]) {
+      changes.push({ type: 'link', operation: 'ADD', objectName: link.name });
+    } else if (JSON.stringify(initialLinksState[linkId]) !== JSON.stringify(link)) {
+      changes.push({ type: 'link', operation: 'MOD', objectId: linkId });
+    }
+  }
+  for (const linkId of Object.keys(initialLinksState)) {
+    if (!currentLinksState[linkId]) {
+      changes.push({ type: 'link', operation: 'DEL', objectId: linkId });
+    }
+  }
+
+  return changes;
 }

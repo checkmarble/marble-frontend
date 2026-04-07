@@ -184,7 +184,7 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
   };
 }
 
-function adaptTableField(field: TableField): CreateTableValue['fields'][number] {
+export function adaptTableField(field: TableField): CreateTableValue['fields'][number] {
   return {
     name: field.name,
     description: field.description,
@@ -207,7 +207,7 @@ function adaptTableField(field: TableField): CreateTableValue['fields'][number] 
   };
 }
 
-function adaptLink(link: LinkValue): CreateTableValue['links'][number] {
+export function adaptLink(link: LinkValue): CreateTableValue['links'][number] {
   return {
     name: link.name,
     child_field_name: link.tableFieldId,

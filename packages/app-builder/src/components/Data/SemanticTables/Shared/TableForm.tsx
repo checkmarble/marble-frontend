@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
-import { UploadDataDrawerContext } from '../UploadData/UploadDataDrawer';
+import { DrawerContext } from './DrawerContext';
 import { FieldDetailPanel } from './FieldDetailPanel';
 import { FieldsForm } from './FieldsForm';
 import { LinkForm } from './LinkForm';
@@ -31,7 +31,7 @@ export function FormTable({
     reorderFields,
     addField,
     removeField,
-  } = UploadDataDrawerContext.useValue();
+  } = DrawerContext.useValue();
   const { t } = useTranslation(['data']);
   const tableState = tablesState[tableId]!;
 
@@ -172,7 +172,7 @@ export function FormTable({
 }
 
 export function SummaryView() {
-  const { tableIds } = UploadDataDrawerContext.useValue();
+  const { tableIds } = DrawerContext.useValue();
   const { t } = useTranslation(['data']);
 
   return (
@@ -188,7 +188,7 @@ export function SummaryView() {
 }
 
 function SummaryTableRow({ tableId }: { tableId: string }) {
-  const { tablesState, updateTableState } = UploadDataDrawerContext.useValue();
+  const { tablesState, updateTableState } = DrawerContext.useValue();
   const { t } = useTranslation(['data']);
   const tableState = tablesState[tableId]!;
 

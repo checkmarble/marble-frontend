@@ -8,6 +8,7 @@ import { CreateTableResponseDto, FieldSemanticType } from 'marble-api';
 import toast from 'react-hot-toast';
 import z from 'zod/v4';
 
+// need it as an array from the backend enum for zod validation
 export const semanticFieldForBack: FieldSemanticType[] = [
   'name',
   'first_name',
@@ -38,7 +39,7 @@ export const semanticFieldForBack: FieldSemanticType[] = [
 ];
 export type SemanticFieldForBack = FieldSemanticType;
 
-const createFieldValuesSchema = z.object({
+export const createFieldValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
     error: 'Only lower case alphanumeric and _, must start with a letter',
   }),
@@ -53,7 +54,7 @@ const createFieldValuesSchema = z.object({
   semantic_type: z.enum(semanticFieldForBack).optional(),
 });
 
-const createLinksValuesSchema = z.object({
+export const createLinksValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
     error: 'Only lower case alphanumeric and _, must start with a letter',
   }),

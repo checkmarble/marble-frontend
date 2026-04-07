@@ -199,6 +199,15 @@ export type SemanticTableFormValues = {
   ftmEntity?: FtmEntity;
 };
 
+export type SemanticTableChangedProperty = Exclude<keyof SemanticTableFormValues, 'fields' | 'links' | 'isVisited'>;
+
+export type ChangeRecord =
+  | { type: 'table'; operation: 'MOD'; changedProperties: SemanticTableChangedProperty[] }
+  | { type: 'field'; operation: 'MOD' | 'DEL'; objectId: string }
+  | { type: 'field'; operation: 'ADD'; objectName: string }
+  | { type: 'link'; operation: 'MOD' | 'DEL'; objectId: string }
+  | { type: 'link'; operation: 'ADD'; objectName: string };
+
 export function getMockValue(
   dataType: PrimitiveTypes,
   semanticType?: SemanticTypeField,

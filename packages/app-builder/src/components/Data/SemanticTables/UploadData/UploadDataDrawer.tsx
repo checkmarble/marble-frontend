@@ -1,10 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
-import { createSimpleContext } from '@marble/shared';
-import { type ReactNode, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
+import { DrawerContext } from '../Shared/DrawerContext';
 import type { LinkValue, RawField, RawLink, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 import { FormTable, SummaryView } from '../Shared/TableForm';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
@@ -20,24 +20,6 @@ function sortedTableIds(tablesState: Record<string, SemanticTableFormValues>): s
     })
     .map((t) => t.tableId);
 }
-
-export const UploadDataDrawerContext = createSimpleContext<{
-  container: RefObject<HTMLDivElement>;
-  data: unknown;
-  close: () => void;
-  tablesState: Record<string, SemanticTableFormValues>;
-  updateTableState: (tableId: string, values: Partial<SemanticTableFormValues>) => void;
-  tableIds: string[];
-  linksState: Record<string, LinkValue>;
-  updateLinkState: (linkId: string, values: Partial<LinkValue>) => void;
-  addLink: (sourceTableId: string) => void;
-  removeLink: (linkId: string) => void;
-  getLinksForTable: (tableId: string) => LinkValue[];
-  updateField: (tableId: string, fieldId: string, values: Partial<TableField>) => void;
-  reorderFields: (tableId: string, startIndex: number, endIndex: number) => void;
-  addField: (tableId: string, name: string) => string;
-  removeField: (tableId: string, fieldId: string) => void;
-}>('UploadDataDrawer');
 
 export type UploadDataDrawerProps = {
   open: boolean;
@@ -211,7 +193,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
   if (!open) return null;
 
   return (
-    <UploadDataDrawerContext.Provider
+    <DrawerContext.Provider
       value={{
         container: containerRef,
         data,
@@ -246,7 +228,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         onOpenChange={setIsUnsavedChangesDialogOpen}
         onConfirm={handleConfirmDiscardChanges}
       />
-    </UploadDataDrawerContext.Provider>
+    </DrawerContext.Provider>
   );
 }
 
@@ -386,7 +368,7 @@ function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
 }
 
 export function UploadDataDrawerContent() {
-  const { close, tablesState, updateTableState, tableIds, getLinksForTable } = UploadDataDrawerContext.useValue();
+  const { close, tablesState, updateTableState, tableIds, getLinksForTable } = DrawerContext.useValue();
   const { t } = useTranslation(['data']);
 
   const isSingleTable = tableIds.length === 1;

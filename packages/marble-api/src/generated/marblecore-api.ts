@@ -1351,7 +1351,17 @@ export type DelLinkOperationDto = {
     op: "DEL";
     data: DelLinkDataDto;
 };
-export type LinkOperationDto = AddLinkOperationDto | DelLinkOperationDto;
+export type LinkOperationDto = AddLinkOperationDto | {
+    op: "MOD";
+    data: {
+        id: string;
+        name?: string;
+        link_type?: "related" | "belongs_to";
+        /** Name of a field defined in the 'fields' array */
+        child_field_name?: string;
+        parent_table_id?: string;
+    };
+} | DelLinkOperationDto;
 export type UpdateTableBodyDto = {
     description?: string | null;
     semantic_type?: ("person" | "company" | "account" | "transaction" | "event" | "partner" | "other") | null;

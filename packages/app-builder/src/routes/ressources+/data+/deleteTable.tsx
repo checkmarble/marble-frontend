@@ -32,7 +32,6 @@ export const action = createServerFn([authMiddleware], async function deleteTabl
     const result = await dataModelRepository.deleteTable(parsed.data.tableId, {
       perform: parsed.data.perform,
     });
-
     if (result.performed) {
       setToastMessage(toastSession, {
         type: 'success',

@@ -891,6 +891,11 @@ export const routes = [
         "file": "routes/ressources+/data+/editTable.tsx"
       },
       {
+        "id": "routes/ressources+/data+/editSemanticTable",
+        "path": "ressources/data/editSemanticTable",
+        "file": "routes/ressources+/data+/editSemanticTable.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/export-org",
         "path": "ressources/data/export-org",
         "file": "routes/ressources+/data+/export-org.tsx"
