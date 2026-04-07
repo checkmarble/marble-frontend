@@ -2,7 +2,7 @@ import { OverviewPage } from '@app-builder/components/Cases/Overview/OverviewPag
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
-import { isInboxAdmin } from '@app-builder/services/feature-access';
+import { isAccessible, isInboxAdmin } from '@app-builder/services/feature-access';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 
@@ -18,11 +18,13 @@ export const loader = createServerFn([authMiddleware], async function casesOverv
     inboxRepository.listInboxesMetadata(),
   ]);
   const canViewAdminSections = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
+  const showAnalytics = canViewAdminSections && isAccessible(entitlements.analytics);
 
   return {
     currentUserId: user.actorIdentity.userId,
     isGlobalAdmin: isAdmin(user),
     canViewAdminSections,
+    showAnalytics,
     allInboxesMetadata,
     entitlements: {
       autoAssignment: entitlements.autoAssignment,

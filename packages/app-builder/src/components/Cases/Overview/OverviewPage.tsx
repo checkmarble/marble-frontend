@@ -14,6 +14,7 @@ interface OverviewPageProps {
   currentUserId?: string;
   isGlobalAdmin: boolean;
   canViewAdminSections: boolean;
+  showAnalytics: boolean;
   allInboxesMetadata: InboxMetadata[];
   entitlements: {
     autoAssignment: FeatureAccessLevelDto;
@@ -25,6 +26,7 @@ export const OverviewPage = ({
   currentUserId,
   isGlobalAdmin,
   canViewAdminSections,
+  showAnalytics,
   allInboxesMetadata,
   entitlements,
 }: OverviewPageProps) => {
@@ -36,7 +38,7 @@ export const OverviewPage = ({
         <Page.ContentV2 className="gap-v2-md">
           <div className="grid grid-cols-[1fr_calc(var(--spacing-v2-xs)_*_90)] gap-v2-lg">
             <div className="flex flex-col gap-v2-md">
-              <CasesNavigationTabs />
+              <CasesNavigationTabs showAnalytics={showAnalytics} />
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-v2-md">
                 <CaseByDateGraph />
                 <CaseByInboxGraph />

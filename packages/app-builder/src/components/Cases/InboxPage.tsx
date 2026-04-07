@@ -44,6 +44,7 @@ type InboxPageProps = {
   inboxes: InboxWithCasesCount[];
   inboxUsersIds: string[];
   canViewNavigationTabs: boolean;
+  showAnalytics: boolean;
   query: string;
   limit: number;
   order: 'ASC' | 'DESC';
@@ -57,6 +58,7 @@ export const InboxPage = ({
   inboxes,
   inboxUsersIds,
   canViewNavigationTabs,
+  showAnalytics,
   query,
   limit,
   order,
@@ -138,7 +140,7 @@ export const InboxPage = ({
       <Page.Main className="flex flex-col">
         <Page.Container>
           <Page.ContentV2 className="gap-v2-md">
-            {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
+            {canViewNavigationTabs ? <CasesNavigationTabs showAnalytics={showAnalytics} /> : null}
             <InboxEmptyState canManageInboxes={canViewNavigationTabs} />
           </Page.ContentV2>
         </Page.Container>
@@ -159,7 +161,7 @@ export const InboxPage = ({
       <CaseRightPanel.Root className="overflow-hidden">
         <Page.Container ref={wrapperRef}>
           <Page.ContentV2 className="gap-v2-md">
-            {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
+            {canViewNavigationTabs ? <CasesNavigationTabs showAnalytics={showAnalytics} /> : null}
             <div className="flex flex-col gap-v2-md relative">
               <MultiSelect.Root id={inboxId}>
                 <div className="flex justify-between">
