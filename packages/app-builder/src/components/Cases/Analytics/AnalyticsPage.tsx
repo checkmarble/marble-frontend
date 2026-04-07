@@ -40,7 +40,7 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
     <Page.Main>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
-          <CasesNavigationTabs />
+          <CasesNavigationTabs showAnalytics />
 
           <CaseAnalyticsFilters
             startDate={startDate}

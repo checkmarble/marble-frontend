@@ -5,7 +5,7 @@ import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
 import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
-import { isInboxAdmin } from '@app-builder/services/feature-access';
+import { isAccessible, isInboxAdmin } from '@app-builder/services/feature-access';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -26,9 +26,10 @@ const pageQueryStringSchema = z.object({
 });
 
 export const loader = createServerFn([authMiddleware], async function casesInboxesLoader({ request, params, context }) {
-  const { user, inbox: inboxRepository } = context.authInfo;
+  const { user, entitlements, inbox: inboxRepository } = context.authInfo;
   const inboxes = await inboxRepository.listInboxesWithCaseCount();
   const canViewNavigationTabs = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
+  const showAnalytics = canViewNavigationTabs && isAccessible(entitlements.analytics);
   const inboxIdParam = params['inboxId'];
 
   invariant(inboxIdParam, 'inboxId is required');
@@ -52,6 +53,7 @@ export const loader = createServerFn([authMiddleware], async function casesInbox
     inboxes,
     inboxUsersIds,
     canViewNavigationTabs,
+    showAnalytics,
     query: parsedSearchParams.q,
     limit: parsedSearchParams.limit,
     order: parsedSearchParams.order,
@@ -61,8 +63,17 @@ export const loader = createServerFn([authMiddleware], async function casesInbox
 
 export default function CasesInboxesPage() {
   const navigate = useAgnosticNavigation();
-  const { inboxId, inboxes, inboxUsersIds, canViewNavigationTabs, query, limit, order, favoriteInboxId } =
-    useLoaderData<typeof loader>();
+  const {
+    inboxId,
+    inboxes,
+    inboxUsersIds,
+    canViewNavigationTabs,
+    showAnalytics,
+    query,
+    limit,
+    order,
+    favoriteInboxId,
+  } = useLoaderData<typeof loader>();
   const updatePage = (newQuery: string, newLimit: number, newOrder: 'ASC' | 'DESC') => {
     const qs = QueryString.stringify(
       {
@@ -86,6 +97,7 @@ export default function CasesInboxesPage() {
       inboxes={inboxes}
       inboxUsersIds={inboxUsersIds}
       canViewNavigationTabs={canViewNavigationTabs}
+      showAnalytics={showAnalytics}
       query={query}
       limit={limit}
       order={order}
