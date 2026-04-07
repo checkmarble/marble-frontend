@@ -68,11 +68,11 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
         } ${isRuleModified ? 'drop-shadow-2xl' : ''}`}
       >
         {/* Conditions and Actions Boxes */}
-        <div className="flex items-center w-full">
-          <div className="flex-none items-stretch relative w-[800px] bg-surface-card">
+        <div className="flex items-stretch w-full">
+          <div className="flex flex-col relative min-w-0 w-[min(800px,60vw)]">
             {/* Unified bordered wrapper for title + content */}
             <div
-              className={`rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+              className={`flex-1 rounded-lg overflow-hidden border-2 bg-surface-card transition-all duration-200 ${
                 snapshot.isDragging
                   ? 'border-purple-hover shadow-xl'
                   : isRuleModified
@@ -193,28 +193,26 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             </div>
           </div>
 
-          {/* "Then" arrow */}
-          <div className="flex items-center justify-center">
+          {/* "Then" arrow + Actions Box — grouped so the arrow aligns to the action box center */}
+          <div className="flex items-center self-start">
             <div className="w-28 h-0.5 bg-grey-disabled relative">
               <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-disabled"></div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-border px-3 py-1 rounded-sm z-10">
                 <span className="text-sm font-bold text-white uppercase tracking-wide">{t('common:then')}</span>
               </div>
             </div>
-          </div>
-
-          {/* Actions Box */}
-          <div
-            className={`flex-none rounded-lg border-2 border-grey-border bg-surface-card p-4 transition-all duration-200 w-auto max-w-full bg-surface-card ${
-              snapshot.isDragging
-                ? 'border-purple-hover shadow-xl'
-                : isRuleModified
-                  ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
-                  : 'border-grey-20'
-            }`}
-          >
-            <div className="bg-grey-05 rounded-md">
-              <ActionSelector action={displayRule.actions?.[0]} onChange={(action) => updateAction(action)} />
+            <div
+              className={`flex-none rounded-lg border-2 border-grey-border bg-surface-card p-4 transition-all duration-200 w-auto max-w-full ${
+                snapshot.isDragging
+                  ? 'border-purple-hover shadow-xl'
+                  : isRuleModified
+                    ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
+                    : 'border-grey-20'
+              }`}
+            >
+              <div className="bg-grey-05 rounded-md">
+                <ActionSelector action={displayRule.actions?.[0]} onChange={(action) => updateAction(action)} />
+              </div>
             </div>
           </div>
         </div>

@@ -179,12 +179,10 @@ export function ConditionSelector({
                   key={option.value}
                   value={option.value}
                   onSelect={() => handleConditionSelect(option.value)}
-                  className="flex flex-col items-start gap-1 p-3 hover:bg-grey-05 rounded-md cursor-pointer"
+                  className="h-auto flex-col items-start gap-1 p-3"
                 >
-                  <div className="flex items-center">
-                    <span className="font-medium text-grey-primary">{option.label}</span>
-                  </div>
-                  <span className="text-sm text-grey-secondary">{option.description}</span>
+                  <span className="font-medium text-grey-primary">{option.label}</span>
+                  <span className="text-s text-grey-secondary">{option.description}</span>
                 </MenuCommand.Item>
               ))}
             </MenuCommand.List>
