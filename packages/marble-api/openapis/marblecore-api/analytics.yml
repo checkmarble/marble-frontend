@@ -145,7 +145,7 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/analytics/query/case_status_by_date:
+/analytics/cases/case_status_by_date:
   post:
     tags:
       - Analytics
@@ -153,6 +153,12 @@
     operationId: getCaseStatusByDate
     security:
       - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
     responses:
       '200':
         description: The case status by date
@@ -170,7 +176,7 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/analytics/query/case_status_by_inbox:
+/analytics/cases/case_status_by_inbox:
   post:
     tags:
       - Analytics
@@ -178,6 +184,12 @@
     operationId: getCaseStatusByInbox
     security:
       - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CaseAnalyticsQueryDto'
     responses:
       '200':
         description: The case status by inbox

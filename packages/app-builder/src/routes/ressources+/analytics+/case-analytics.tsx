@@ -20,9 +20,12 @@ export const loader = createServerFn(
       });
     }
 
+    const endDateMidnight = new Date(endDate);
+    endDateMidnight.setUTCDate(endDateMidnight.getUTCDate() + 1);
+
     const query: CaseAnalyticsQueryDto = {
       start: new Date(startDate).toISOString(),
-      end: new Date(endDate).toISOString(),
+      end: endDateMidnight.toISOString(),
       timezone,
       ...(inboxId ? { inbox_id: inboxId } : {}),
       ...(userId ? { assigned_user_id: userId } : {}),
