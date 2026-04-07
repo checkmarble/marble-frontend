@@ -35,6 +35,7 @@
   "analytics.alerts.title": "مقاييس التنبيهات",
   "analytics.chart.count": "حالات",
   "analytics.chart.days": "أيام",
+  "analytics.chart.empty_state": "لا توجد بيانات متاحة للفلاتر المحددة",
   "analytics.chart.maxDays": "أقصى أيام",
   "analytics.chart.sumDays": "إجمالي أيام",
   "analytics.filters.all_inboxes": "جميع صناديق الوارد",

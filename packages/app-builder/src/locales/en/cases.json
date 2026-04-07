@@ -35,6 +35,7 @@
   "analytics.alerts.title": "Alert metrics",
   "analytics.chart.count": "Cases",
   "analytics.chart.days": "days",
+  "analytics.chart.empty_state": "No data available for the selected filters",
   "analytics.chart.maxDays": "Max days",
   "analytics.chart.sumDays": "Total days",
   "analytics.filters.all_inboxes": "All inboxes",
