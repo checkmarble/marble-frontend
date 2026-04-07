@@ -86,8 +86,8 @@ export interface AnalyticsRepository {
   getScreeningHitsTable(args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null>;
   getDecisionsScoreDistribution(args: AnalyticsQuery): Promise<DecisionsScoreDistribution>;
   getRuleVsDecisionOutcome(args: AnalyticsQuery): Promise<RuleVsDecisionOutcome[] | null>;
-  getCaseStatusByDate(): Promise<CaseStatusByDateResponse[] | null>;
-  getCaseStatusByInbox(): Promise<CaseStatusByInboxResponse[] | null>;
+  getCaseStatusByDate(query: CaseAnalyticsQueryDto): Promise<CaseStatusByDateResponse[] | null>;
+  getCaseStatusByInbox(query: CaseAnalyticsQueryDto): Promise<CaseStatusByInboxResponse[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
   getCasesSarCompleted(query: CaseAnalyticsQueryDto): Promise<number>;
   getCasesSarDelay(query: CaseAnalyticsQueryDto): Promise<PeriodDuration[]>;
@@ -175,12 +175,12 @@ export function makeGetAnalyticsRepository() {
       return adaptRuleVsDecisionOutcome(await client.getRuleVsDecisionOutcome(parsed[0]!));
     },
 
-    getCaseStatusByDate: async (): Promise<CaseStatusByDateResponse[] | null> => {
-      return (await client.getCaseStatusByDate()).map(adaptCaseStatusByDate);
+    getCaseStatusByDate: async (query: CaseAnalyticsQueryDto): Promise<CaseStatusByDateResponse[] | null> => {
+      return (await client.getCaseStatusByDate(query)).map(adaptCaseStatusByDate);
     },
 
-    getCaseStatusByInbox: async (): Promise<CaseStatusByInboxResponse[] | null> => {
-      return (await client.getCaseStatusByInbox()).map(adaptCaseStatusByInbox);
+    getCaseStatusByInbox: async (query: CaseAnalyticsQueryDto): Promise<CaseStatusByInboxResponse[] | null> => {
+      return (await client.getCaseStatusByInbox(query)).map(adaptCaseStatusByInbox);
     },
 
     getAvailableFilters: async (args: AvailableFiltersRequest): Promise<AvailableFiltersResponse> => {
