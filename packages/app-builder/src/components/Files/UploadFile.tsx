@@ -1,6 +1,6 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';

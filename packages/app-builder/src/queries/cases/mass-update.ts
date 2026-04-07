@@ -1,56 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { type MassUpdateCasesPayload, massUpdateCasesPayloadSchema } from '@app-builder/schemas/cases';
+import { massUpdateCasesFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const massUpdateCasesPayloadSchema = z.union([
-  z
-    .object({
-      action: z.enum(['close', 'reopen']),
-      caseIds: protectArray(z.array(z.string())),
-    })
-    .transform((data) => ({ case_ids: data.caseIds, action: data.action })),
-  z
-    .object({
-      action: z.enum(['assign']),
-      caseIds: protectArray(z.array(z.string())),
-      assigneeId: z.string(),
-    })
-    .transform((data) => ({
-      case_ids: data.caseIds,
-      action: data.action,
-      assign: { assignee_id: data.assigneeId },
-    })),
-  z
-    .object({
-      action: z.enum(['move_to_inbox']),
-      caseIds: protectArray(z.array(z.string())),
-      inboxId: z.string(),
-    })
-    .transform((data) => ({
-      case_ids: data.caseIds,
-      action: data.action,
-      move_to_inbox: { inbox_id: data.inboxId },
-    })),
-]);
-
-export type MassUpdateCasesPayload = z.input<typeof massUpdateCasesPayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/mass-update');
+export { massUpdateCasesPayloadSchema, type MassUpdateCasesPayload };
 
 export const useMassUpdateCasesMutation = () => {
+  const massUpdateCases = useServerFn(massUpdateCasesFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'mass-update'],
-    mutationFn: async (payload: MassUpdateCasesPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (payload: MassUpdateCasesPayload) => massUpdateCases({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

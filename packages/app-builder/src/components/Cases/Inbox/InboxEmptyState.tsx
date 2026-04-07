@@ -1,6 +1,5 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -16,7 +15,7 @@ export function InboxEmptyState({ canManageInboxes }: { canManageInboxes: boolea
       {canManageInboxes ? (
         <>
           <p className="text-grey-secondary text-center text-s font-medium">{t('cases:inbox.need_first_inbox')}</p>
-          <Link to={getRoute('/settings/inboxes')} className={CtaV2ClassName({ variant: 'primary', size: 'default' })}>
+          <Link to="/settings/inboxes" className={CtaV2ClassName({ variant: 'primary', size: 'default' })}>
             <Icon icon="settings" className="size-4" />
             {t('cases:inbox.go_to_inbox_settings')}
           </Link>

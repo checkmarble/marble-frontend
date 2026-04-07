@@ -1,0 +1,191 @@
+import { CollapsiblePaper, Page } from '@app-builder/components';
+import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
+import { DeleteUser } from '@app-builder/components/Settings/Users/DeleteUser';
+import { UpdateUser } from '@app-builder/components/Settings/Users/UpdateUser';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { type User } from '@app-builder/models';
+import { tKeyForUserRole } from '@app-builder/models/user';
+import {
+  getUserRoles,
+  isCreateUserAvailable,
+  isDeleteUserAvailable,
+  isEditUserAvailable,
+  isReadUserAvailable,
+} from '@app-builder/services/feature-access';
+import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
+import { Table, useTable } from 'ui-design-system';
+
+const usersLoader = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async function usersLoader({ context }) {
+    const { user, inbox, entitlements } = context.authInfo;
+
+    if (!isReadUserAvailable(user)) throw redirect({ to: '/' });
+
+    const inboxUsers = await inbox.listAllInboxUsers();
+
+    const inboxUsersByUserId = R.pipe(
+      inboxUsers,
+      R.groupBy(({ userId }) => userId),
+      R.mapValues((value) =>
+        R.pipe(
+          value,
+          R.groupBy((v) => v.role),
+          R.mapValues((v) => v.length),
+          R.entries(),
+        ),
+      ),
+    );
+
+    return {
+      inboxUsersByUserId,
+      user,
+      entitlements,
+      userRoles: getUserRoles(entitlements),
+      isCreateUserAvailable: isCreateUserAvailable(user),
+      isEditUserAvailable: isEditUserAvailable(user),
+      isDeleteUserAvailable: isDeleteUserAvailable(user),
+    };
+  });
+
+export const Route = createFileRoute('/_app/_builder/settings/users')({
+  loader: () => usersLoader(),
+  component: Users,
+});
+
+const columnHelper = createColumnHelper<User>();
+
+function Users() {
+  const { t } = useTranslation(['settings', 'cases']);
+  const {
+    inboxUsersByUserId,
+    user,
+    entitlements,
+    userRoles,
+    isCreateUserAvailable,
+    isEditUserAvailable,
+    isDeleteUserAvailable,
+  } = Route.useLoaderData();
+  const { orgUsers } = useOrganizationUsers();
+
+  const columns = useMemo(() => {
+    return [
+      columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
+        id: 'name',
+        header: t('settings:users.name'),
+        size: 150,
+      }),
+      columnHelper.accessor((row) => row.email, {
+        id: 'email',
+        header: t('settings:users.email'),
+        size: 150,
+        cell: ({ getValue }) => <div className="overflow-hidden text-ellipsis">{getValue()}</div>,
+      }),
+      columnHelper.accessor((row) => row.role, {
+        id: 'role',
+        header: t('settings:users.role'),
+        size: 150,
+        cell: ({ getValue }) => t(tKeyForUserRole(getValue())),
+      }),
+      columnHelper.accessor((row) => row.userId, {
+        id: 'inbox_user_role',
+        header: t('settings:users.inbox_user_role'),
+        size: 200,
+        cell: ({ getValue }) => {
+          const inboxUsers = inboxUsersByUserId[getValue()];
+          if (!inboxUsers) return null;
+
+          return (
+            <ul>
+              {inboxUsers.map(([role, count]) => {
+                return <li key={role}>{t(tKeyForInboxUserRole(role), { count })}</li>;
+              })}
+            </ul>
+          );
+        },
+      }),
+      ...(isDeleteUserAvailable || isEditUserAvailable
+        ? [
+            columnHelper.display({
+              id: 'actions',
+              size: 50,
+              cell: ({ cell }) => {
+                return (
+                  <div className="flex gap-2">
+                    {isEditUserAvailable ? (
+                      <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
+                        <UpdateUser user={cell.row.original} userRoles={userRoles} access={entitlements.userRoles} />
+                      </div>
+                    ) : null}
+                    {isDeleteUserAvailable ? (
+                      <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
+                        <DeleteUser userId={cell.row.original.userId} currentUserId={user.actorIdentity.userId} />
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              },
+            }),
+          ]
+        : []),
+    ];
+  }, [
+    inboxUsersByUserId,
+    isDeleteUserAvailable,
+    isEditUserAvailable,
+    t,
+    user.actorIdentity.userId,
+    userRoles,
+    entitlements.userRoles,
+  ]);
+
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
+    data: orgUsers,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    enableSorting: false,
+  });
+
+  return (
+    <Page.Container>
+      <Page.Content className="max-w-(--breakpoint-xl)">
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">{t('settings:users')}</span>
+            {isCreateUserAvailable ? (
+              <CreateUser orgId={user.organizationId} access={entitlements.userRoles} userRoles={userRoles} />
+            ) : null}
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <Table.Container {...getContainerProps()} className="max-h-96">
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => {
+                  return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
+                })}
+              </Table.Body>
+            </Table.Container>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
+      </Page.Content>
+    </Page.Container>
+  );
+}
+
+const tKeyForInboxUserRole = (role: string) => {
+  switch (role) {
+    case 'admin':
+      return 'settings:users.inbox_user_role.admin_count';
+    case 'member':
+      return 'settings:users.inbox_user_role.member_count';
+    default:
+      return 'settings:users.inbox_user_role.unknown';
+  }
+};

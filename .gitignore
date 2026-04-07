@@ -27,6 +27,7 @@ node_modules
 !.vscode/.user-settings.sample.json
 
 # misc
+/.gitnexus
 /.sass-cache
 /connect.lock
 /coverage

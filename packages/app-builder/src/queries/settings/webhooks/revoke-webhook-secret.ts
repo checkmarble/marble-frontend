@@ -1,25 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type RevokeWebhookSecretPayload, revokeWebhookSecretPayloadSchema } from '@app-builder/schemas/settings';
+import { revokeWebhookSecretFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const revokeWebhookSecretPayloadSchema = z.object({
-  webhookId: z.string(),
-  secretId: z.string(),
-});
-
-export type RevokeWebhookSecretPayload = z.infer<typeof revokeWebhookSecretPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/webhooks/revoke-secret');
+export { revokeWebhookSecretPayloadSchema, type RevokeWebhookSecretPayload };
 
 export const useRevokeWebhookSecretMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: RevokeWebhookSecretPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const revokeWebhookSecret = useServerFn(revokeWebhookSecretFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: RevokeWebhookSecretPayload) => revokeWebhookSecret({ data: payload }),
   });
 };

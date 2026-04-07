@@ -3,7 +3,7 @@ import { type TableModel } from '@app-builder/models/data-model';
 import { type CustomPivotOption, type LinkPivotOption } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { handleSubmit } from '@app-builder/utils/form';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';

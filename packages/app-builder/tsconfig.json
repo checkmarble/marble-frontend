@@ -1,8 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["src/routeTree.gen.ts"],
   "compilerOptions": {
-    "types": ["@remix-run/node", "vite/client", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals"],
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "module": "ESNext",

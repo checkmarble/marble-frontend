@@ -14,21 +14,21 @@
         schema:
           type: string
     requestBody:
-      description: 'Data that needs to be added to the database. The `objectType` is used to determine the type of the data'
+      description: "Data that needs to be added to the database. The `objectType` is used to determine the type of the data"
       content:
         application/json:
           schema:
             type: object
       required: true
     responses:
-      '201':
+      "201":
         description: Data created
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '422':
-        $ref: 'components.yml#/responses/422'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "422":
+        $ref: "components.yml#/responses/422"
 /ingestion/{objectType}/upload-logs:
   get:
     tags:
@@ -45,20 +45,20 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: Ingestion upload logs
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/UploadLog'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                $ref: "#/components/schemas/UploadLog"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /client_data/{tableName}/{objectId}:
   get:
     tags:
@@ -80,18 +80,18 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The ingested object wanted
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DataModelObjectDto'
-      '404':
-        $ref: 'components.yml#/responses/404'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+              $ref: "#/components/schemas/DataModelObjectDto"
+      "404":
+        $ref: "components.yml#/responses/404"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /client_data/{objectType}/{objectId}/cases:
   get:
     tags:
@@ -115,22 +115,22 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The cases for the object
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: 'cases.yml#/components/schemas/CaseDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
-      '422':
-        $ref: 'components.yml#/responses/422'
+                $ref: "cases.yml#/components/schemas/CaseDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+      "422":
+        $ref: "components.yml#/responses/422"
 
 /client_data/{tableName}/list:
   post:
@@ -148,29 +148,29 @@
         schema:
           type: string
     requestBody:
-      description: 'Data that needs to be added to the database. The `objectType` is used to determine the type of the data'
+      description: "Data that needs to be added to the database. The `objectType` is used to determine the type of the data"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ClientDataListRequestBody'
+            $ref: "#/components/schemas/ClientDataListRequestBody"
       required: true
     responses:
-      '200':
+      "200":
         description: The ingested object wanted
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientDataListResponseDto'
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
-      '422':
-        $ref: 'components.yml#/responses/422'
+              $ref: "#/components/schemas/ClientDataListResponseDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+      "422":
+        $ref: "components.yml#/responses/422"
 /annotations/{annotationId}:
   delete:
     tags:
@@ -187,18 +187,18 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: Annotation deleted
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
-      '422':
-        $ref: 'components.yml#/responses/422'
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+      "422":
+        $ref: "components.yml#/responses/422"
 
 components:
   schemas:
@@ -219,7 +219,7 @@ components:
           format: date-time
         status:
           type: string
-          enum: ['success', 'failure', 'progressing', 'pending']
+          enum: ["success", "failure", "progressing", "pending"]
         lines_processed:
           type: integer
         num_rows_ingested:
@@ -298,7 +298,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/ClientObjectDetailDto'
+            $ref: "#/components/schemas/ClientObjectDetailDto"
         metadata:
           type: object
           required:
@@ -307,7 +307,7 @@ components:
             field_statistics:
               type: object
               additionalProperties:
-                $ref: '#/components/schemas/FieldStatisticsDto'
+                $ref: "#/components/schemas/FieldStatisticsDto"
         pagination:
           type: object
           required:
@@ -328,15 +328,15 @@ components:
       discriminator:
         propertyName: type
         mapping:
-          String: '#/components/schemas/StringFieldStatisticsDto'
-          Bool: '#/components/schemas/BoolFieldStatisticsDto'
-          Float: '#/components/schemas/FloatFieldStatisticsDto'
-          Timestamp: '#/components/schemas/TimestampFieldStatisticsDto'
-          IpAddress: '#/components/schemas/IpAddressFieldStatisticsDto'
-          Coords: '#/components/schemas/CoordsFieldStatisticsDto'
+          String: "#/components/schemas/StringFieldStatisticsDto"
+          Bool: "#/components/schemas/BoolFieldStatisticsDto"
+          Float: "#/components/schemas/FloatFieldStatisticsDto"
+          Timestamp: "#/components/schemas/TimestampFieldStatisticsDto"
+          IpAddress: "#/components/schemas/IpAddressFieldStatisticsDto"
+          Coords: "#/components/schemas/CoordsFieldStatisticsDto"
     StringFieldStatisticsDto:
       allOf:
-        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - $ref: "#/components/schemas/FieldStatisticsDto"
         - type: object
           properties:
             max_length:
@@ -345,23 +345,23 @@ components:
               type: string
     BoolFieldStatisticsDto:
       allOf:
-        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - $ref: "#/components/schemas/FieldStatisticsDto"
     FloatFieldStatisticsDto:
       allOf:
-        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - $ref: "#/components/schemas/FieldStatisticsDto"
         - type: object
           properties:
             max_length:
               type: number
     TimestampFieldStatisticsDto:
       allOf:
-        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - $ref: "#/components/schemas/FieldStatisticsDto"
     IpAddressFieldStatisticsDto:
       allOf:
-        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - $ref: "#/components/schemas/FieldStatisticsDto"
     CoordsFieldStatisticsDto:
       allOf:
-        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - $ref: "#/components/schemas/FieldStatisticsDto"
     ClientObjectDetailDto:
       description: ->
         Nested object containing the details of an ingested client object. "data" holds the data of the object as described in the client data model.
@@ -392,6 +392,7 @@ components:
         data:
           type: object
           description: The actual data of the object, as described in the client data model.
+          required: ["object_id", "updated_at"]
           properties:
             object_id:
               type: string
@@ -408,6 +409,6 @@ components:
                 type: string
                 description: The name of the link pointing to the object
               related_object_detail:
-                $ref: '#/components/schemas/ClientObjectDetailDto'
+                $ref: "#/components/schemas/ClientObjectDetailDto"
         annotations:
-          $ref: 'components.yml#/schemas/GroupedAnnotations'
+          $ref: "components.yml#/schemas/GroupedAnnotations"

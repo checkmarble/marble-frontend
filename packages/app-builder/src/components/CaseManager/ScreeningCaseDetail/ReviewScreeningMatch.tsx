@@ -36,10 +36,8 @@ export const ReviewScreeningMatch = ({
       comment: '',
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
-      reviewScreeningMatchMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
-          setOpen(false);
-        }
+      reviewScreeningMatchMutation.mutateAsync(value).then(() => {
+        setOpen(false);
         revalidate();
       });
     },

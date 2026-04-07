@@ -11,6 +11,7 @@ import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationC
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useDataModel } from '@app-builder/services/data/data-model';
+import { isTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
@@ -548,17 +549,16 @@ export function UploadDataDrawerContent() {
           belongsToTableId: translateBelongsTo(tableState),
           links: allLinks.map(translateLink),
         };
-        const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
-        if (!result.success) {
-          errors.push(result.message ?? `Failed to create table "${tableState.name}"`);
+
+        try {
+          const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
+          rawToBackend.set(rawId, result.id);
+        } catch (error) {
+          errors.push(isTableMutationError(error) ? error.message : `Failed to create table "${tableState.name}"`);
+        } finally {
           pending.splice(pending.indexOf(rawId), 1);
           progress = true;
-          continue;
         }
-
-        rawToBackend.set(rawId, result.data.id);
-        pending.splice(pending.indexOf(rawId), 1);
-        progress = true;
       }
 
       if (!progress && pending.length > 0) {
@@ -577,16 +577,18 @@ export function UploadDataDrawerContent() {
           belongsToTableId: translateBelongsTo(tableState),
           links: resolved.map(translateLink),
         };
-        const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
-        if (!result.success) {
-          errors.push(result.message ?? `Failed to create table "${tableState.name}"`);
-        } else {
-          rawToBackend.set(rawId, result.data.id);
+
+        try {
+          const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
+          rawToBackend.set(rawId, result.id);
           if (unresolved.length > 0) {
             needsLinkEdit.set(rawId, unresolved);
           }
+        } catch (err) {
+          errors.push(isTableMutationError(err) ? err.message : `Failed to create table "${tableState.name}"`);
+        } finally {
+          pending.splice(pending.indexOf(rawId), 1);
         }
-        pending.splice(pending.indexOf(rawId), 1);
       }
     }
 
@@ -598,14 +600,20 @@ export function UploadDataDrawerContent() {
     // Edit phase: add deferred links whose targets are now all resolved
     for (const [rawId, links] of needsLinkEdit) {
       const backendId = rawToBackend.get(rawId);
-      if (!backendId) continue;
-      const result = await editTableMutation.mutateAsync({
-        tableId: backendId,
-        links: links.map(translateLink).map((link) => ({ op: 'ADD' as const, data: adaptLink(link) })),
-      });
-      if (!result.success) {
-        errors.push(result.message ?? `Failed to add links for table "${tablesState[rawId]!.name}"`);
+      if (!backendId) {
+        continue;
       }
+
+      await editTableMutation
+        .mutateAsync({
+          tableId: backendId,
+          links: links.map(translateLink).map((link) => ({ op: 'ADD' as const, data: adaptLink(link) })),
+        })
+        .catch((error) => {
+          errors.push(
+            isTableMutationError(error) ? error.message : `Failed to add links for table "${tablesState[rawId]!.name}"`,
+          );
+        });
     }
 
     if (errors.length > 0) {

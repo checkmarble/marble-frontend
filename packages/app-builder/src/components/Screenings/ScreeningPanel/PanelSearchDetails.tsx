@@ -5,6 +5,7 @@ import {
   type ScreeningMatchPayload,
   type ScreeningQuery,
 } from '@app-builder/models/screening';
+import { type RefineSearchInput } from '@app-builder/server-fns/screenings';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -19,7 +20,7 @@ export function PanelSearchDetails({
 }: {
   screening: Screening;
   onRefineSuccess: (screeningId: string) => void;
-  onSearchComplete: (results: ScreeningMatchPayload[], formData: FormData) => void;
+  onSearchComplete: (results: ScreeningMatchPayload[], formValues: RefineSearchInput) => void;
 }) {
   const { t } = useTranslation(screeningsI18n);
   const [isRefining, setIsRefining] = useState(false);

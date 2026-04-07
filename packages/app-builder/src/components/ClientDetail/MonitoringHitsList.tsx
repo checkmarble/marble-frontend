@@ -1,10 +1,9 @@
 import { Case } from '@app-builder/models/cases';
 import { useGetCaseDetailQuery } from '@app-builder/queries/cases/get-detail';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
 import { UseQueryResult } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, CtaV2ClassName } from 'ui-design-system';
@@ -60,7 +59,8 @@ export const MonitoringHitsList = ({ monitoringHitsQuery, showAll = false }: Mon
                   </div>
                   <span>
                     <Link
-                      to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseItem.id) })}
+                      to="/cases/$caseId"
+                      params={{ caseId: fromUUIDtoSUUID(caseItem.id) }}
                       className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}
                     >
                       {t('common:open')}

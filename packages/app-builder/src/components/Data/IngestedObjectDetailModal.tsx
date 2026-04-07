@@ -1,7 +1,5 @@
 import { type DataModelObject, type TableModel } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
-import { useFetcher } from '@remix-run/react';
-import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 import { DataFields } from './DataVisualisation/DataFields';
@@ -18,18 +16,15 @@ export function IngestedObjectDetailModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation(['data']);
-  const { load: fetcherLoad, data, state: fetchState } = useFetcher<{ object: DataModelObject | null }>();
+  const { data, isPending } = useQuery<{ object: DataModelObject | null }>({
+    queryKey: ['data', 'view', tableName, objectId],
+    queryFn: async () => {
+      const response = await fetch(`/data/view/${tableName}/${objectId}`);
+      return response.json();
+    },
+  });
 
-  useEffect(() => {
-    fetcherLoad(
-      getRoute('/data/view/:tableName/:objectId', {
-        tableName,
-        objectId,
-      }),
-    );
-  }, [fetcherLoad, tableName, objectId]);
-
-  if (fetchState === 'loading' || !data) {
+  if (isPending || !data) {
     return null;
   }
 

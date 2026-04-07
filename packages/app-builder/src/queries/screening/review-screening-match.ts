@@ -1,26 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type ReviewScreeningMatchPayload, reviewScreeningMatchPayloadSchema } from '@app-builder/schemas/cases';
+import { reviewScreeningMatchFn } from '@app-builder/server-fns/cases';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const reviewScreeningMatchPayloadSchema = z.object({
-  matchId: z.string(),
-  status: z.union([z.literal('confirmed_hit'), z.literal('no_hit')]),
-  comment: z.string().optional(),
-  whitelist: z.boolean().optional(),
-});
-
-export type ReviewScreeningMatchPayload = z.infer<typeof reviewScreeningMatchPayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/review-screening-match');
+export { reviewScreeningMatchPayloadSchema, type ReviewScreeningMatchPayload };
 
 export const useReviewScreeningMatchMutation = () => {
+  const reviewScreeningMatch = useServerFn(reviewScreeningMatchFn);
+
   return useMutation({
-    mutationFn: async (payload: ReviewScreeningMatchPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return response.json();
-    },
+    mutationFn: async (payload: ReviewScreeningMatchPayload) => reviewScreeningMatch({ data: payload }),
   });
 };

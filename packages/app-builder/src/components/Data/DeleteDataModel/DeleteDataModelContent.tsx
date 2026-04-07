@@ -4,8 +4,8 @@ import {
   type DestroyDataModelReportRef,
   hasBlockingConflicts,
 } from '@app-builder/models/data-model';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { Link } from '@tanstack/react-router';
 import { type TFunction } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -175,15 +175,16 @@ function BlockedDeletionContent({
               return (
                 <li key={iterationId} className="flex items-center gap-2">
                   <span>{iteration.name}</span>
-                  <a
-                    href={getRoute('/detection/scenarios/:scenarioId', { scenarioId: shortId })}
+                  <Link
+                    to="/detection/scenarios/$scenarioId"
+                    params={{ scenarioId: shortId }}
                     className="text-purple-primary text-s flex items-center gap-1 hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {t('data:delete.view')}
                     <Icon icon="openinnew" className="size-4" />
-                  </a>
+                  </Link>
                 </li>
               );
             })}
@@ -205,15 +206,16 @@ function BlockedDeletionContent({
               return (
                 <li key={iterationId} className="flex items-center gap-2">
                   <span>{iteration.name}</span>
-                  <a
-                    href={getRoute('/detection/scenarios/:scenarioId', { scenarioId: shortId })}
+                  <Link
+                    to="/detection/scenarios/$scenarioId"
+                    params={{ scenarioId: shortId }}
                     className="text-purple-primary text-s flex items-center gap-1 hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     {t('data:delete.view')}
                     <Icon icon="openinnew" className="size-4" />
-                  </a>
+                  </Link>
                 </li>
               );
             })}
@@ -315,14 +317,15 @@ function ScenarioLink({ item }: { item: DestroyDataModelReportRef }) {
   const shortId = fromUUIDtoSUUID(item.id);
 
   return (
-    <a
-      href={getRoute('/detection/scenarios/:scenarioId', { scenarioId: shortId })}
+    <Link
+      to="/detection/scenarios/$scenarioId"
+      params={{ scenarioId: shortId }}
       className="text-purple-primary text-s flex items-center gap-1 hover:underline"
       target="_blank"
       rel="noopener noreferrer"
     >
       {t('data:delete.view')}
       <Icon icon="openinnew" className="size-4" />
-    </a>
+    </Link>
   );
 }

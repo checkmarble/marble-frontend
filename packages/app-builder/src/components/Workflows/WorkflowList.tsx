@@ -1,3 +1,4 @@
+import { Scenario } from '@app-builder/models/scenario';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
@@ -6,7 +7,11 @@ import { WorkflowRule } from './Rule';
 import { RuleProvider } from './RuleProvider';
 import { useWorkflow } from './WorkflowProvider';
 
-export function WorkflowList() {
+type WorkflowListProps = {
+  scenario: Scenario;
+};
+
+export function WorkflowList({ scenario }: WorkflowListProps) {
   const { t } = useTranslation(['workflows']);
   const {
     rules,
@@ -68,7 +73,7 @@ export function WorkflowList() {
                         className={`${isOtherRuleEditing ? 'opacity-40 pointer-events-none blur-xs' : ''}`}
                       >
                         <RuleProvider rule={rule} setEditingRuleId={setEditingRuleId} scenarioId={scenarioId}>
-                          <WorkflowRule rule={rule} provided={provided} snapshot={snapshot} />
+                          <WorkflowRule scenario={scenario} rule={rule} provided={provided} snapshot={snapshot} />
                         </RuleProvider>
                         {/* Else arrow - appears after each rule except the last one */}
                         {index < rules.length - 1 && (

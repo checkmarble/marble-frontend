@@ -1,7 +1,6 @@
 import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { type ValidTimestampExtractParts } from '@app-builder/models/astNode/time';
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { type TFunction } from 'i18next';
 import { Trans } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
@@ -16,7 +15,7 @@ export function getNoTimezoneSetupWarning(currentUser: CurrentUser, t: TFunction
           SettingsLink: (
             <Link
               className="text-m hover:text-purple-hover focus:text-purple-hover text-purple-primary relative font-normal hover:underline focus:underline"
-              to={getRoute('/settings/scenarios')}
+              to="/settings/scenarios"
             />
           ),
         }}

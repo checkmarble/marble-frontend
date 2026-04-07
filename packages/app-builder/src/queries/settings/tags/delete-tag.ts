@@ -1,24 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type DeleteTagPayload, deleteTagPayloadSchema } from '@app-builder/schemas/settings';
+import { deleteTagFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const deleteTagPayloadSchema = z.object({
-  tagId: z.uuid(),
-});
-
-export type DeleteTagPayload = z.infer<typeof deleteTagPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/tags/delete');
+export { deleteTagPayloadSchema, type DeleteTagPayload };
 
 export const useDeleteTagMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: DeleteTagPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const deleteTag = useServerFn(deleteTagFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: DeleteTagPayload) => deleteTag({ data: payload }),
   });
 };

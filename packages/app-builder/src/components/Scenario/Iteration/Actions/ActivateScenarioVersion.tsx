@@ -1,12 +1,12 @@
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import {
   activateIterationPayloadSchema,
   useActivateIterationMutation,
 } from '@app-builder/queries/scenarios/activate-iteration';
 import { useRuleSnoozesQuery } from '@app-builder/queries/scenarios/rule-snoozes';
-import { useScenarioIterationRulesMetadata } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
@@ -18,9 +18,10 @@ import { Icon } from 'ui-icons';
 type ActivateScenarioVersionProps = {
   scenario: { id: string; isLive: boolean };
   iteration: { id: string; isValid: boolean };
+  rulesMetadata: ScenarioIterationRuleMetadata[];
 };
 
-export function ActivateScenarioVersion({ scenario, iteration }: ActivateScenarioVersionProps) {
+export function ActivateScenarioVersion({ scenario, iteration, rulesMetadata }: ActivateScenarioVersionProps) {
   const { t } = useTranslation(['common', 'scenarios']);
   const [open, setOpen] = React.useState(false);
 
@@ -43,7 +44,7 @@ export function ActivateScenarioVersion({ scenario, iteration }: ActivateScenari
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>{button}</Modal.Trigger>
       <Modal.Content>
-        <ActivateScenarioVersionContent scenario={scenario} iterationId={iteration.id} />
+        <ActivateScenarioVersionContent scenario={scenario} iterationId={iteration.id} rulesMetadata={rulesMetadata} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -52,12 +53,14 @@ export function ActivateScenarioVersion({ scenario, iteration }: ActivateScenari
 function ActivateScenarioVersionContent({
   scenario,
   iterationId,
+  rulesMetadata,
 }: {
   scenario: {
     id: string;
     isLive: boolean;
   };
   iterationId: string;
+  rulesMetadata: ScenarioIterationRuleMetadata[];
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const activateIterationMutation = useActivateIterationMutation(scenario.id, iterationId);
@@ -135,7 +138,7 @@ function ActivateScenarioVersionContent({
             )}
           </form.Field>
           <div className="min-h-6 w-full">
-            <RuleSnoozeDetail scenarioId={scenario.id} iterationId={iterationId} />
+            <RuleSnoozeDetail scenarioId={scenario.id} iterationId={iterationId} rulesMetadata={rulesMetadata} />
           </div>
         </div>
       </div>
@@ -154,9 +157,16 @@ function ActivateScenarioVersionContent({
   );
 }
 
-function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
+function RuleSnoozeDetail({
+  scenarioId,
+  iterationId,
+  rulesMetadata,
+}: {
+  scenarioId: string;
+  iterationId: string;
+  rulesMetadata: ScenarioIterationRuleMetadata[];
+}) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const rulesMetadata = useScenarioIterationRulesMetadata();
   const ruleSnoozesQuery = useRuleSnoozesQuery(scenarioId, iterationId);
 
   if (ruleSnoozesQuery.isPending) return <Spinner className="size-5 shrink-0" />;

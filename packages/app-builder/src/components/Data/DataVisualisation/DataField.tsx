@@ -7,10 +7,9 @@ import {
   type SemanticSubTypeFieldMap,
   type SemanticTypeField,
 } from '@app-builder/models';
-import { objectDetailsQueryOptions } from '@app-builder/queries/data/get-object-details';
+import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { formatAge, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
-import { useQuery } from '@tanstack/react-query';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
@@ -568,12 +567,11 @@ function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
 function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const options = useOptions();
-  const DetailsQueryOptions = useQuery({
-    ...objectDetailsQueryOptions(linkedTo ?? '', value ?? ''),
-    enabled: isOpen && !!linkedTo && !!value,
-  });
+  const objectDetailQuery = useObjectDetailsQuery(linkedTo, value, isOpen);
 
-  if (!linkedTo || !value) return <EmptyValue className={codeClassName} />;
+  if (!linkedTo || !value) {
+    return <EmptyValue className={codeClassName} />;
+  }
 
   return (
     <div className="grid gap-1">
@@ -586,7 +584,7 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
       </button>
       {isOpen && (
         <div className={subClassName}>
-          {match(DetailsQueryOptions)
+          {match(objectDetailQuery)
             .with({ isFetching: true }, () => <Spinner className="size-4" />)
             .with({ data: P.not(undefined) }, ({ data }) => (
               <DataFields

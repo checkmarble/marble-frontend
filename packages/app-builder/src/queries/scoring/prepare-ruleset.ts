@@ -1,23 +1,19 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { useRevalidator } from '@remix-run/react';
+import { prepareScoringRulesetFn } from '@app-builder/server-fns/scoring';
 import { useMutation } from '@tanstack/react-query';
-
-const endpoint = getRoute('/ressources/scoring/prepare-ruleset');
+import { useRouter } from '@tanstack/react-router';
+import { useServerFn } from '@tanstack/react-start';
 
 export const usePrepareScoringRulesetMutation = () => {
-  const revalidator = useRevalidator();
+  const prepareScoringRuleset = useServerFn(prepareScoringRulesetFn);
+  const router = useRouter();
 
   return useMutation({
     mutationKey: ['scoring', 'prepare-ruleset'],
     mutationFn: async (recordType: string) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify({ recordType }),
-      });
-      return response.json();
+      await prepareScoringRuleset({ data: { recordType } });
     },
     onSuccess: () => {
-      revalidator.revalidate();
+      router.invalidate();
     },
   });
 };

@@ -42,9 +42,8 @@ const DeleteUserContent = ({ userId, onSuccess }: { userId: string; onSuccess: (
 
   const handleDeleteUser = () => {
     deleteUserMutation.mutateAsync({ userId }).then((res) => {
-      if (res.success) {
-        onSuccess();
-      }
+      onSuccess();
+
       revalidate();
     });
   };

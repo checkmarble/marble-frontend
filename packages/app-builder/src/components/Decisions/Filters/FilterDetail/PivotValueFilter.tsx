@@ -1,8 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink, linkClasses } from '@app-builder/components/ExternalLink';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { type KeyboardEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
@@ -62,7 +61,7 @@ export function PivotValueFilter() {
             t={t}
             i18nKey="decisions:pivot_detail.missing_pivot_definition"
             components={{
-              DataModelLink: <Link to={getRoute('/data/schema')} className={linkClasses} />,
+              DataModelLink: <Link to="/data/schema" className={linkClasses} />,
               DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />

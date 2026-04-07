@@ -64,9 +64,8 @@ function UpdateUserContent({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         updateUserMutation.mutateAsync(value).then((res) => {
-          if (res.success) {
-            onSuccess();
-          }
+          onSuccess();
+
           revalidate();
         });
       }

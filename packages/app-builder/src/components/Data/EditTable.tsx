@@ -1,13 +1,9 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type TableModel } from '@app-builder/models';
-import {
-  type EditTablePayload,
-  editTablePayloadSchema,
-  useEditTableMutation,
-} from '@app-builder/queries/data/edit-table';
+import { useEditTableMutation } from '@app-builder/queries/data/edit-table';
+import { EditTablePayload, editTablePayloadSchema } from '@app-builder/schemas/data';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
@@ -17,7 +13,6 @@ import { Button, Modal } from 'ui-design-system';
 export function EditTable({ table, children }: { table: TableModel; children: React.ReactNode }) {
   const { t } = useTranslation(['data', 'navigation', 'common']);
   const editTableMutation = useEditTableMutation();
-  const revalidate = useLoaderRevalidator();
 
   const form = useForm({
     defaultValues: {
@@ -26,10 +21,7 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
     } as EditTablePayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        editTableMutation.mutateAsync(value).then((result) => {
-          if (!result.success) return;
-          revalidate();
-        });
+        editTableMutation.mutateAsync(value);
       }
     },
     validators: {

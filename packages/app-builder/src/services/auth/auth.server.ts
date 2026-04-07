@@ -1,10 +1,8 @@
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type GetFeatureAccessAPIClientWithAuth } from '@app-builder/infra/feature-access-api';
 import { type GetMarbleCoreAPIClientWithAuth, type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { type AuthData, type AuthFlashData, adaptAuthErrors, type CurrentUser } from '@app-builder/models';
+import { adaptAuthErrors, type CurrentUser } from '@app-builder/models';
 import { AppConfig } from '@app-builder/models/app-config';
 import { emptyFeatureAccesses, type FeatureAccesses } from '@app-builder/models/feature-access';
-import { ToastFlashData } from '@app-builder/models/toast-session';
 import { type AiAssistRepository } from '@app-builder/repositories/AiAssistRepository';
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
@@ -30,18 +28,22 @@ import { type TestRunRepository } from '@app-builder/repositories/TestRunReposit
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { type UserScoringRepository } from '@app-builder/repositories/UserScoringRepository';
 import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
-import { Tokens } from '@app-builder/routes/oidc+/auth';
+import { Tokens } from '@app-builder/routes/oidc/auth';
+import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { setToast } from '@app-builder/services/toast.server';
+import { CsrfError, validateCsrf } from '@app-builder/utils/csrf.server';
 import { getServerEnv } from '@app-builder/utils/environment';
-import { parseForm } from '@app-builder/utils/input-validation';
-import { json, redirect } from '@remix-run/node';
-import { captureRemixServerException } from '@sentry/remix';
+import * as Sentry from '@sentry/node';
 import { BackendGlobalError, marblecoreApi, TokenService, TokenServiceUpdate } from 'marble-api';
-import { type CSRF, CSRFError } from 'remix-utils/csrf/server';
 import * as z from 'zod/v4';
-import { getRoute } from '../../utils/routes';
-import { captureUnexpectedRemixError } from '../monitoring';
-import { MarbleOidcStrategy } from './oidc.server';
-import { type SessionService } from './session.server';
+import { captureUnexpectedError } from '../monitoring';
+import { makeOidcService } from './oidc.server';
+
+function redirect(url: string, init?: { status?: number; headers?: HeadersInit }): Response {
+  const headers = new Headers(init?.headers);
+  headers.set('Location', url);
+  return new Response(null, { status: init?.status ?? 302, headers });
+}
 
 interface AuthenticatedInfo {
   /**
@@ -78,16 +80,17 @@ interface AuthenticatedInfo {
 export interface AuthenticationServerService {
   authenticate(
     request: Request,
+    payload: { idToken: string; csrf: string },
     options: {
       successRedirect: string;
       failureRedirect: string;
     },
-  ): Promise<void>;
+  ): Promise<{ redirectTo: string }>;
 
   refresh(
     request: Request,
+    payload: { idToken: string; csrf: string },
     options: {
-      successRedirect: string;
       failureRedirect: string;
     },
   ): Promise<void>;
@@ -102,6 +105,8 @@ export interface AuthenticationServerService {
     options: { successRedirect?: never; failureRedirect: string },
   ): Promise<AuthenticatedInfo>;
   isAuthenticated(request: Request, options: { successRedirect: string; failureRedirect: string }): Promise<null>;
+
+  logout(request: Request, options: { redirectTo: string }): Promise<{ redirectTo: string }>;
 }
 
 const schema = z.object({
@@ -139,14 +144,11 @@ interface MakeAuthenticationServerServiceArgs {
   getClient360TablesRepository: (marbleCoreApiClient: MarbleCoreApi) => Client360Repository;
   getAuditEventsRepository: (marbleCoreApiClient: MarbleCoreApi) => AuditEventsRepository;
   getUserScoringRepository: (marbleCoreApiClient: MarbleCoreApi) => UserScoringRepository;
-  authSessionService: SessionService<AuthData, AuthFlashData>;
-  toastSessionService: SessionService<void, ToastFlashData>;
-  csrfService: CSRF;
-  makeOidcService: (appConfig: AppConfig) => Promise<MarbleOidcStrategy<Tokens>>;
+  makeOidcService: (appConfig: AppConfig) => ReturnType<typeof makeOidcService>;
 }
 
 function expectedErrors(error: unknown) {
-  return error instanceof CSRFError || error instanceof z.ZodError;
+  return error instanceof CsrfError || error instanceof z.ZodError;
 }
 
 export function makeAuthenticationServerService({
@@ -173,9 +175,6 @@ export function makeAuthenticationServerService({
   getRuleSnoozeRepository,
   getFeatureAccessRepository,
   getPersonalSettingsRepository,
-  authSessionService,
-  toastSessionService,
-  csrfService,
   getAiAssistSettingsRepository,
   getClient360TablesRepository,
   getAuditEventsRepository,
@@ -201,7 +200,7 @@ export function makeAuthenticationServerService({
           const oidc = await makeOidcService(appConfig);
 
           if (request) {
-            const authSession = await authSessionService.getSession(request);
+            const authSession = await useAuthSession();
 
             if (authSession.data.refreshToken) {
               const response = await oidc.refreshToken(authSession.data.refreshToken);
@@ -229,49 +228,47 @@ export function makeAuthenticationServerService({
         }
 
         // We don't handle refresh for now, force a logout when 401 is returned instead
-        throw redirect(getRoute('/ressources/auth/logout'));
+        const authSession = await useAuthSession();
+        await authSession.clear();
+        throw redirect('/sign-in');
       },
     };
   }
 
   async function authenticate(
     request: Request,
+    payload: { idToken: string; csrf: string },
     options: {
       successRedirect: string;
       failureRedirect: string;
     },
-  ) {
-    const authSession = await authSessionService.getSession(request);
+  ): Promise<{ redirectTo: string }> {
+    const authSession = await useAuthSession();
 
     let redirectUrl = options.failureRedirect;
 
     try {
-      const { idToken } = await parseForm(request, schema);
-      await csrfService.validate(request);
+      await validateCsrf(request, payload.csrf);
 
       const marbleToken = await marblecoreApi.postToken(
         {
-          authorization: `Bearer ${idToken}`,
+          authorization: `Bearer ${payload.idToken}`,
         },
         { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
 
-      authSession.set('authToken', marbleToken);
+      await authSession.update({ authToken: marbleToken, authError: undefined });
       redirectUrl = options.successRedirect;
     } catch (error) {
-      authSession.flash('authError', { message: adaptAuthErrors(error) });
+      await authSession.update({ authError: { message: adaptAuthErrors(error) } });
       redirectUrl = options.failureRedirect;
 
       if (!expectedErrors(error)) {
-        captureUnexpectedRemixError(error, 'auth.server@authenticate', request);
+        captureUnexpectedError(error, 'auth.server@authenticate', request);
       }
     }
 
-    throw redirect(redirectUrl, {
-      headers: {
-        'Set-Cookie': await authSessionService.commitSession(authSession),
-      },
-    });
+    return { redirectTo: redirectUrl };
   }
 
   async function authenticateOidc(
@@ -282,7 +279,7 @@ export function makeAuthenticationServerService({
       failureRedirect: string;
     },
   ): Promise<never> {
-    const authSession = await authSessionService.getSession(request);
+    const authSession = await useAuthSession();
 
     let redirectUrl = options.failureRedirect;
 
@@ -297,77 +294,50 @@ export function makeAuthenticationServerService({
         { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
 
-      authSession.set('authToken', marbleToken);
-
-      if (refreshToken) {
-        authSession.set('refreshToken', refreshToken);
-      }
+      await authSession.update({
+        authToken: marbleToken,
+        authError: undefined,
+        ...(refreshToken ? { refreshToken } : {}),
+      });
 
       redirectUrl = options.successRedirect;
     } catch (error) {
-      authSession.flash('authError', { message: adaptAuthErrors(error) });
+      await authSession.update({ authError: { message: adaptAuthErrors(error) } });
       redirectUrl = options.failureRedirect;
 
       if (!expectedErrors(error)) {
-        captureUnexpectedRemixError(error, 'auth.server@authenticate', request);
+        captureUnexpectedError(error, 'auth.server@authenticate', request);
       }
     }
 
-    const session = await authSessionService.commitSession(authSession);
-
-    throw redirect(redirectUrl, {
-      headers: {
-        'Set-Cookie': session,
-      },
-    });
+    throw redirect(redirectUrl);
   }
 
   async function refresh(
     request: Request,
+    payload: { idToken: string; csrf: string },
     options: {
-      successRedirect?: string;
       failureRedirect: string;
     },
-  ) {
-    const authSession = await authSessionService.getSession(request);
+  ): Promise<void> {
+    const authSession = await useAuthSession();
 
     try {
-      const { idToken } = await parseForm(
-        request,
-        z.object({
-          idToken: z.string(),
-        }),
-      );
-      await csrfService.validate(request);
+      await validateCsrf(request, payload.csrf);
 
       const marbleToken = await marblecoreApi.postToken(
         {
-          authorization: `Bearer ${idToken}`,
+          authorization: `Bearer ${payload.idToken}`,
         },
         { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
 
-      authSession.set('authToken', marbleToken);
-
-      if (options?.successRedirect) {
-        throw redirect(options.successRedirect, {
-          headers: {
-            'Set-Cookie': await authSessionService.commitSession(authSession),
-          },
-        });
-      }
-      return json(
-        {},
-        {
-          headers: {
-            'Set-Cookie': await authSessionService.commitSession(authSession),
-          },
-        },
-      );
+      await authSession.update({ authToken: marbleToken });
     } catch (error) {
       if (!expectedErrors(error)) {
-        captureUnexpectedRemixError(error, 'auth.server@refresh', request);
+        captureUnexpectedError(error, 'auth.server@refresh', request);
       }
+      await authSession.clear();
       throw redirect(options.failureRedirect);
     }
   }
@@ -396,10 +366,9 @@ export function makeAuthenticationServerService({
       | { successRedirect?: never; failureRedirect: string }
       | { successRedirect: string; failureRedirect: string } = {},
   ): Promise<AuthenticatedInfo | null> {
-    const authSession = await authSessionService.getSession(request);
-    const toastSession = await toastSessionService.getSession(request);
+    const authSession = await useAuthSession();
 
-    const marbleToken = authSession.get('authToken');
+    const marbleToken = authSession.data.authToken;
 
     if (!marbleToken || marbleToken.expires_at < new Date().toISOString()) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
@@ -420,18 +389,15 @@ export function makeAuthenticationServerService({
         ? await getFeatureAccessRepository(featureAccessApiClient).getEntitlements()
         : emptyFeatureAccesses();
     } catch (err) {
-      let headers = new Headers();
       if (err instanceof BackendGlobalError) {
-        setToastMessage(toastSession, {
+        await setToast({
           type: 'error',
           messageKey: `common:errors.backend_global_error.${err.code}`,
         });
-
-        headers.set('Set-Cookie', await toastSessionService.commitSession(toastSession));
       }
 
-      captureRemixServerException(err, 'remix.server', request);
-      if (options.failureRedirect) throw redirect(options.failureRedirect, { headers });
+      Sentry.captureException(err);
+      if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
     }
 
@@ -467,14 +433,10 @@ export function makeAuthenticationServerService({
     };
   }
 
-  async function logout(request: Request, options: { redirectTo: string }): Promise<never> {
-    const authSession = await authSessionService.getSession(request);
-
-    throw redirect(options.redirectTo, {
-      headers: {
-        'Set-Cookie': await authSessionService.destroySession(authSession),
-      },
-    });
+  async function logout(_request: Request, options: { redirectTo: string }): Promise<{ redirectTo: string }> {
+    const authSession = await useAuthSession();
+    await authSession.clear();
+    return { redirectTo: options.redirectTo };
   }
 
   return {

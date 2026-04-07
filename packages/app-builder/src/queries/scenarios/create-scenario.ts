@@ -1,37 +1,15 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
+import { type CreateScenarioPayload, createScenarioPayloadSchema } from '@app-builder/schemas/scenarios';
+import { createScenarioFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const createScenarioPayloadSchema = z.object({
-  name: z.string().min(1),
-  description: z.string(),
-  triggerObjectType: z.string().min(1),
-});
-
-export type CreateScenarioPayload = z.infer<typeof createScenarioPayloadSchema>;
-
-const endpoint = getRoute('/ressources/scenarios/create');
+export { createScenarioPayloadSchema, type CreateScenarioPayload };
 
 export const useCreateScenarioMutation = () => {
-  const navigate = useAgnosticNavigation();
+  const createScenario = useServerFn(createScenarioFn);
 
   return useMutation({
     mutationKey: ['scenarios', 'create'],
-    mutationFn: async (data: CreateScenarioPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
-    },
+    mutationFn: async (data: CreateScenarioPayload) => createScenario({ data }),
   });
 };

@@ -1,7 +1,7 @@
 import { type AstNode } from '@app-builder/models';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type ReturnValueType } from '@app-builder/models/node-evaluation';
-import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatAstValidation } from '@app-builder/server-fns/scenarios';
 import { type TFunction } from 'i18next';
 import { type InferSharpApi } from 'sharpstate';
 

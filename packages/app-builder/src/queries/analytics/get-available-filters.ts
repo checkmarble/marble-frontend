@@ -1,38 +1,16 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { DateRangeFilter } from '@app-builder/models/analytics';
 import { AvailableFiltersResponse } from '@app-builder/models/analytics/available-filters';
-import { getRoute } from '@app-builder/utils/routes';
+import { getAvailableFiltersFn } from '@app-builder/server-fns/analytics';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 export const useGetAvailableFilters = ({ scenarioId, ranges }: { scenarioId: string; ranges: DateRangeFilter[] }) => {
-  const navigate = useAgnosticNavigation();
+  const getAvailableFilters = useServerFn(getAvailableFiltersFn);
 
-  const endpoint = getRoute('/ressources/analytics/:scenarioId/available_filters', {
-    scenarioId,
-  });
   return useQuery({
     queryKey: ['analytics', 'available-filters', scenarioId, ranges],
     enabled: Array.isArray(ranges) && ranges.length > 0,
     placeholderData: keepPreviousData,
-    queryFn: async () => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ scenarioId, ranges }),
-      });
-      const result = await response.json();
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      if (!result.success) {
-        throw new Error(result.errors?.join(', ') ?? 'Failed to fetch available filters');
-      }
-
-      return result.data as AvailableFiltersResponse;
-    },
+    queryFn: async () => getAvailableFilters({ data: { scenarioId, ranges } }) as Promise<AvailableFiltersResponse>,
   });
 };

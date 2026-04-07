@@ -1,7 +1,7 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { CaseStatusByInboxResponse } from '@app-builder/models/analytics/case-status-by-inbox';
-import { getRoute } from '@app-builder/utils/routes';
+import { getCaseStatusByInboxFn } from '@app-builder/server-fns/analytics';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 function buildCaseStatusDateRange() {
   const now = new Date();
@@ -16,27 +16,13 @@ function buildCaseStatusDateRange() {
 }
 
 export const useCaseStatusByInbox = () => {
-  const navigate = useAgnosticNavigation();
+  const getCaseStatusByInbox = useServerFn(getCaseStatusByInboxFn);
 
   return useQuery({
     queryKey: ['case-status-by-inbox'],
     queryFn: async () => {
-      const endpoint = getRoute('/ressources/analytics/case-status-by-inbox');
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildCaseStatusDateRange()),
-      });
-      const result = (await response.json()) as
-        | { redirectTo: string }
-        | { caseStatusByInbox: CaseStatusByInboxResponse[] };
-
-      if ('redirectTo' in result) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result.caseStatusByInbox;
+      const result = await getCaseStatusByInbox({ data: buildCaseStatusDateRange() });
+      return result.caseStatusByInbox as CaseStatusByInboxResponse[];
     },
     placeholderData: keepPreviousData,
   });

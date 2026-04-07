@@ -1,36 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { type UpdateInboxEscalationPayload, updateInboxEscalationPayloadSchema } from '@app-builder/schemas/cases';
+import { updateInboxEscalationFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const updateInboxEscalationPayloadSchema = z.object({
-  updates: protectArray(
-    z.array(
-      z.object({
-        inboxId: z.uuid(),
-        escalationInboxId: z.union([z.uuid(), z.null()]),
-      }),
-    ),
-  ),
-});
-
-export type UpdateInboxEscalationPayload = z.infer<typeof updateInboxEscalationPayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/update-inbox-escalation');
+export { updateInboxEscalationPayloadSchema, type UpdateInboxEscalationPayload };
 
 export const useUpdateInboxEscalationMutation = () => {
+  const updateInboxEscalation = useServerFn(updateInboxEscalationFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'inboxes', 'update-escalation'],
-    mutationFn: async (payload: UpdateInboxEscalationPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (payload: UpdateInboxEscalationPayload) => updateInboxEscalation({ data: payload }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
     },

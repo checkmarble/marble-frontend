@@ -1,17 +1,15 @@
-import { type PivotRelatedCasesResource } from '@app-builder/routes/ressources+/cases+/pivot+/related+/$pivotValue._index';
-import { getRoute } from '@app-builder/utils/routes';
+import { type Case } from '@app-builder/models/cases';
+import { getPivotRelatedCasesFn } from '@app-builder/server-fns/cases';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = (pivotValue: string) =>
-  getRoute('/ressources/cases/pivot/related/:pivotValue', {
-    pivotValue,
-  });
+import { useServerFn } from '@tanstack/react-start';
 
 export function usePivotRelatedCasesQuery(pivotValue: string) {
+  const getPivotRelatedCases = useServerFn(getPivotRelatedCasesFn);
+
   return useQuery({
     queryKey: ['pivot', 'relatedCases', pivotValue],
     queryFn: async () => {
-      return (await fetch(endpoint(pivotValue))).json() as Promise<PivotRelatedCasesResource>;
+      return getPivotRelatedCases({ data: { pivotValue } }) as Promise<{ cases: Case[] }>;
     },
   });
 }

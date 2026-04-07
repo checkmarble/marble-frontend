@@ -1,23 +1,23 @@
-import { AstNode } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
+import { type AstNode } from '@app-builder/models';
+import { getRuleDescriptionFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 export type RuleDescriptionPayload = {
   scenarioId: string;
   astNode: AstNode;
 };
 
-const endpoint = getRoute('/ressources/scenarios/rule-description');
-
 export const useRuleDescriptionMutation = (identifier?: string) => {
+  const getRuleDescription = useServerFn(getRuleDescriptionFn);
+
   return useMutation({
     mutationKey: ['scenario-iteration-rule', 'rule-description', identifier],
     mutationFn: async (payload: RuleDescriptionPayload) => {
-      const response = await fetch(endpoint, { method: 'POST', body: JSON.stringify(payload) });
-      return response.json() as Promise<{
-        success: true;
-        data: { description: string; isRuleValid: boolean };
-      }>;
+      const result = await getRuleDescription({
+        data: { scenarioId: payload.scenarioId, astNode: payload.astNode },
+      });
+      return { success: true as const, data: result };
     },
   });
 };

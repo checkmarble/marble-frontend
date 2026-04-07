@@ -14,8 +14,8 @@ export interface AuditEvent {
   operation: AuditEventOperation | null;
   table: string | null;
   entityId: string | null;
-  oldData: Record<string, unknown> | null;
-  newData: Record<string, unknown> | null;
+  oldData: Record<string, any> | null;
+  newData: Record<string, any> | null;
   createdAt: string | null;
 }
 

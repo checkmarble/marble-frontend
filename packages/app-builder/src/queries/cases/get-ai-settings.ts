@@ -1,15 +1,16 @@
 import { type AiSettingSchema } from '@app-builder/models/ai-settings';
-import { getRoute } from '@app-builder/utils/routes';
+import { getAiSettingsFn } from '@app-builder/server-fns/cases';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = getRoute('/ressources/cases/get-ai-settings');
+import { useServerFn } from '@tanstack/react-start';
 
 export const useGetAiSettingsQuery = () => {
+  const getAiSettings = useServerFn(getAiSettingsFn);
+
   return useQuery({
     queryKey: ['cases', 'ai-settings'],
     queryFn: async () => {
-      const response = await fetch(endpoint);
-      return response.json() as Promise<{ settings: AiSettingSchema }>;
+      const result = await getAiSettings();
+      return result as { settings: AiSettingSchema };
     },
   });
 };

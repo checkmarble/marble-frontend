@@ -1,17 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { uploadScreeningFileFn } from '@app-builder/server-fns/screenings';
 import { useMutation } from '@tanstack/react-query';
-
-const uploadScreeningFileEndpoint = (screeningId: string) => {
-  return getRoute('/ressources/screenings/upload/:screeningId', { screeningId });
-};
+import { useServerFn } from '@tanstack/react-start';
 
 export const useUploadScreeningFile = (screeningId: string) => {
+  const uploadScreeningFile = useServerFn(uploadScreeningFileFn);
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      return fetch(uploadScreeningFileEndpoint(screeningId), {
-        body: formData,
-        method: 'POST',
-      });
+      const enriched = new FormData();
+      for (const [key, value] of formData.entries()) {
+        enriched.append(key, value);
+      }
+      enriched.append('screeningId', screeningId);
+      return uploadScreeningFile({ data: enriched });
     },
   });
 };

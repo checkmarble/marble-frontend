@@ -7,7 +7,6 @@ import {
   useUpdateAllowedNetworks,
 } from '@app-builder/queries/settings/organization/update-allowed-networks';
 import { handleSubmit } from '@app-builder/utils/form';
-import { isMutationSuccess } from '@app-builder/utils/http/mutation';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -32,9 +31,9 @@ export const IpWhitelistingSettingsPage = ({
     },
     onSubmit: ({ value }) => {
       updateAllowedNetworksMutation.mutateAsync(value).then((res) => {
-        if (isMutationSuccess(res)) {
+        if (res?.subnets) {
           // Manually update the form value as the backend registers normalized values of cidr/ips
-          form.setFieldValue('allowedNetworks', res.data.subnets);
+          form.setFieldValue('allowedNetworks', res.subnets);
         }
         revalidate();
       });

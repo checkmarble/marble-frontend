@@ -1,5 +1,5 @@
 import { i18nConfig } from '@app-builder/services/i18n/i18n-config';
-import { resources } from '@app-builder/services/i18n/resources/resources.server';
+import { resources } from '@app-builder/services/i18n/resources/resources';
 import i18next, { type TFunction } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 

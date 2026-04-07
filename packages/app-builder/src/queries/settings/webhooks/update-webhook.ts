@@ -1,28 +1,14 @@
-import { eventTypes } from '@app-builder/models/webhook';
-import { getRoute } from '@app-builder/utils/routes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { type UpdateWebhookPayload, updateWebhookPayloadSchema } from '@app-builder/schemas/settings';
+import { updateWebhookFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import z from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const updateWebhookPayloadSchema = z.object({
-  id: z.string().nonempty(),
-  eventTypes: protectArray(z.array(z.enum(eventTypes))),
-  httpTimeout: z.int().positive().optional(),
-});
-
-export type UpdateWebhookPayload = z.infer<typeof updateWebhookPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/webhooks/update');
+export { updateWebhookPayloadSchema, type UpdateWebhookPayload };
 
 export const useUpdateWebhookMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: UpdateWebhookPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const updateWebhook = useServerFn(updateWebhookFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: UpdateWebhookPayload) => updateWebhook({ data: payload }),
   });
 };

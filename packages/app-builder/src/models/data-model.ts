@@ -1,3 +1,4 @@
+import { CreateTableValue } from '@app-builder/schemas/data';
 import { type ParseKeys } from 'i18next';
 import {
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
@@ -6,6 +7,7 @@ import {
   type CreateAnnotationDto,
   type CreateNavigationOptionDto,
   type CreatePivotInputDto,
+  CreateTableBody,
   type CreateTableFieldDto,
   type DataModelDto,
   type DataModelObjectDto,
@@ -48,6 +50,9 @@ export type FtmEntityPersonOption = (typeof ftmEntityPersonOptions)[number];
 
 export const linkRelationTypes = ['belongs_to', 'related'] as const;
 export type LinkRelationType = (typeof linkRelationTypes)[number];
+
+type PrimitiveValue = number | string | boolean;
+export type DataModelObjectValue = PrimitiveValue | Record<string, PrimitiveValue>;
 
 export type EnumValue = string | number;
 export interface DataModelField {
@@ -554,7 +559,7 @@ export function getConstantDataTypeTKey(dataType?: DataType): ParseKeys<'scenari
 }
 
 export type DataModelObject = {
-  data: Record<string, unknown>;
+  data: Record<string, DataModelObjectValue>;
   metadata: {
     validFrom: string;
   };
@@ -578,9 +583,9 @@ export type ClientObjectDetail = {
   };
   /** The actual data of the object, as described in the client data model. */
   data: {
-    object_id?: string;
-    updated_at?: string;
-    [key: string]: unknown;
+    object_id: string;
+    updated_at: string;
+    [key: string]: DataModelObjectValue;
   };
   relatedObjects: {
     /** The name of the link pointing to the object */
@@ -1025,4 +1030,41 @@ export function hasBlockingConflicts(report: DestroyDataModelReport): boolean {
     conflicts.pivots.length > 0 ||
     conflicts.analyticsSettings > 0
   );
+}
+
+const ftmEntityValues: readonly FtmEntity[] = ['Person', 'Company', 'Organization', 'Vessel', 'Airplane'];
+
+export function createTableValueToCreateTableBody(value: CreateTableValue): CreateTableBody {
+  const ftmEntity =
+    value.ftm_entity !== undefined && (ftmEntityValues as readonly string[]).includes(value.ftm_entity)
+      ? (value.ftm_entity as FtmEntity)
+      : undefined;
+
+  return {
+    name: value.name,
+    description: value.description,
+    alias: value.alias,
+    semantic_type: value.semantic_type,
+    ftm_entity: ftmEntity,
+    metadata: value.metadata ?? null,
+    primary_ordering_field: value.primary_ordering_field,
+    fields: value.fields.map((f) => ({
+      name: f.name,
+      description: f.description,
+      type: f.type,
+      alias: f.alias,
+      nullable: f.nullable,
+      is_enum: f.is_enum,
+      is_unique: f.is_unique,
+      ftm_property: f.ftm_property,
+      metadata: f.metadata ?? null,
+      semantic_type: f.semantic_type,
+    })),
+    links: value.links.map((l) => ({
+      name: l.name,
+      link_type: l.link_type,
+      child_field_name: l.child_field_name,
+      parent_table_id: l.parent_table_id,
+    })),
+  };
 }

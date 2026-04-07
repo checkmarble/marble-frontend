@@ -1,4 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
+import { Scenario } from '@app-builder/models/scenario';
 import { type Rule } from '@app-builder/models/scenario/workflow';
 import { type DraggableProvided, type DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { useState } from 'react';
@@ -11,12 +12,13 @@ import { useRule } from './RuleProvider';
 import { useWorkflow } from './WorkflowProvider';
 
 interface RuleProps {
+  scenario: Scenario;
   rule: Rule;
   provided: DraggableProvided;
   snapshot: DraggableStateSnapshot;
 }
 
-export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
+export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) {
   const { t } = useTranslation(['common', 'workflows']);
   const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
   const [editingRuleName, setEditingRuleName] = useState<string>('');
@@ -155,6 +157,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                             <div className="flex items-center gap-2 flex-1">
                               <div>
                                 <ConditionSelector
+                                  scenario={scenario}
                                   condition={condition}
                                   isFirst={conditionIndex === 0}
                                   triggerObjectType={triggerObjectType}
@@ -183,6 +186,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   )}
                   <div className="mt-5 flex items-center justify-between">
                     <ConditionSelector
+                      scenario={scenario}
                       triggerObjectType={triggerObjectType}
                       dataModel={dataModel}
                       onChange={(newCondition) => addCondition(newCondition)}
@@ -201,18 +205,24 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                 <span className="text-sm font-bold text-white uppercase tracking-wide">{t('common:then')}</span>
               </div>
             </div>
-            <div
-              className={`flex-none rounded-lg border-2 border-grey-border bg-surface-card p-4 transition-all duration-200 w-auto max-w-full ${
-                snapshot.isDragging
-                  ? 'border-purple-hover shadow-xl'
-                  : isRuleModified
-                    ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
-                    : 'border-grey-20'
-              }`}
-            >
-              <div className="bg-grey-05 rounded-md">
-                <ActionSelector action={displayRule.actions?.[0]} onChange={(action) => updateAction(action)} />
-              </div>
+          </div>
+
+          {/* Actions Box */}
+          <div
+            className={`flex-none rounded-lg border-2 border-grey-border bg-surface-card p-4 transition-all duration-200 w-auto max-w-full ${
+              snapshot.isDragging
+                ? 'border-purple-hover shadow-xl'
+                : isRuleModified
+                  ? 'border-purple-hover shadow-xl ring-2 ring-blue-200'
+                  : 'border-grey-20'
+            }`}
+          >
+            <div className="bg-grey-05 rounded-md">
+              <ActionSelector
+                scenario={scenario}
+                action={displayRule.actions?.[0]}
+                onChange={(action) => updateAction(action)}
+              />
             </div>
           </div>
         </div>

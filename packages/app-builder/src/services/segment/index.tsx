@@ -1,7 +1,6 @@
 import { type CurrentUser } from '@app-builder/models';
-import { useLocation, useMatches } from '@remix-run/react';
+import { useHydrated, useLocation, useMatches } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { useHydrated } from 'remix-utils/use-hydrated';
 
 import { getPageViewNameAndProps } from './getPageviewNameAndProps';
 
@@ -30,7 +29,7 @@ export function useSegmentPageTracking() {
     if (!tracking) return;
     const { name, properties } = tracking;
     void window.analytics?.page(name, properties);
-  }, [location, thisPage?.id, isHydrated]);
+  }, [location.href, thisPage?.id, isHydrated]);
 
   return null;
 }

@@ -1,4 +1,4 @@
-import { type TableModel } from '@app-builder/models';
+import { DataModelObjectValue, type TableModel } from '@app-builder/models';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import clsx from 'clsx';
 import { Fragment, useMemo } from 'react';
@@ -18,7 +18,7 @@ export function DecisionDetailTriggerObject({
   triggerObject,
 }: {
   table: string;
-  triggerObject: Record<string, unknown>;
+  triggerObject: Record<string, DataModelObjectValue>;
 }) {
   const { t } = useTranslation(decisionsI18n);
   // const parsedTriggerObject = useParsedTriggerObject(triggerObject);

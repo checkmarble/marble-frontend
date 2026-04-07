@@ -1,8 +1,8 @@
 import { FiltersDropdownMenu } from '@app-builder/components/Filters';
+import { ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
-
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey, type TestRunFilterName } from './filters';
 import { useTestRunsFiltersContext } from './TestRunsFiltersContext';
@@ -10,9 +10,11 @@ import { useTestRunsFiltersContext } from './TestRunsFiltersContext';
 export function TestRunsFiltersMenu({
   children,
   filterNames,
+  scenarioIterations,
 }: {
   children: React.ReactNode;
   filterNames: readonly TestRunFilterName[];
+  scenarioIterations: ScenarioIterationSummaryWithType[];
 }) {
   const { onTestRunsFilterClose: onCasesFilterClose } = useTestRunsFiltersContext();
 
@@ -29,7 +31,7 @@ export function TestRunsFiltersMenu({
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
       <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
-        <FilterContent filterNames={filterNames} />
+        <FilterContent filterNames={filterNames} scenarioIterations={scenarioIterations} />
       </FiltersDropdownMenu.Content>
     </FiltersDropdownMenu.Root>
   );
@@ -54,11 +56,17 @@ const FiltersMenuItem = forwardRef<
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({ filterNames }: { filterNames: readonly TestRunFilterName[] }) {
+function FilterContent({
+  filterNames,
+  scenarioIterations,
+}: {
+  filterNames: readonly TestRunFilterName[];
+  scenarioIterations: ScenarioIterationSummaryWithType[];
+}) {
   const [selectedFilter, setSelectedFilter] = useState<TestRunFilterName>();
 
   if (selectedFilter) {
-    return <FilterDetail filterName={selectedFilter} />;
+    return <FilterDetail filterName={selectedFilter} scenarioIterations={scenarioIterations} />;
   }
 
   return (

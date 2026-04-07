@@ -5,9 +5,8 @@ import { useDownloadFile } from '@app-builder/services/DownloadFilesService';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
+import { Link, useRouter } from '@tanstack/react-router';
 import { formatDistanceToNow } from 'date-fns';
 import { FileEntityAnnotationDto } from 'marble-api';
 import { useState } from 'react';
@@ -92,11 +91,16 @@ const FileItem = ({
   const { t } = useTranslation(['client360']);
   const language = useFormatLanguage();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileEndpoint = getRoute('/ressources/annotations/download-file/:annotationId/:fileId', {
-    annotationId: document.id,
-    fileId: file.id,
+  const router = useRouter();
+  const fileEndpoint = router.buildLocation({
+    to: '/ressources/annotations/download-file/$annotationId/$fileId',
+    params: {
+      annotationId: document.id,
+      fileId: file.id,
+    },
   });
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(fileEndpoint, {});
+
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(fileEndpoint.href, {});
 
   const fetchFile = async (endpoint: string) => {
     const response = await fetch(endpoint);
@@ -110,14 +114,18 @@ const FileItem = ({
     annotation: FileEntityAnnotationDto,
     file: FileEntityAnnotationDto['payload']['files'][number],
   ) => {
-    const fileEndpoint = getRoute('/ressources/annotations/download-file/:annotationId/:fileId', {
-      annotationId: annotation.id,
-      fileId: file.id,
+    const router = useRouter();
+    const fileEndpoint = router.buildLocation({
+      to: '/ressources/annotations/download-file/$annotationId/$fileId',
+      params: {
+        annotationId: annotation.id,
+        fileId: file.id,
+      },
     });
 
     const contentType = file.content_type;
     if (contentType?.startsWith('image/')) {
-      const url = await fetchFile(fileEndpoint);
+      const url = await fetchFile(fileEndpoint.href);
       if (!url) {
         return;
       }
@@ -204,11 +212,14 @@ const FileItem = ({
 
 const CaseLink = ({ caseId }: { caseId: string }) => {
   const { t } = useTranslation(['common', 'client360']);
-  const link = getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseId) });
   const caseQuery = useGetCaseNameQuery(caseId);
 
   return (
-    <Link to={link} className="text-purple-primary hover:text-purple-hover truncate">
+    <Link
+      to="/cases/$caseId"
+      params={{ caseId: fromUUIDtoSUUID(caseId) }}
+      className="text-purple-primary hover:text-purple-hover truncate"
+    >
       {match(caseQuery)
         .with({ isPending: true }, () => <Spinner className="size-4" />)
         .with({ isError: true }, () => t('common:unknown'))

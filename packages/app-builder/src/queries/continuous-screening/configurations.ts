@@ -1,29 +1,20 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { Inbox } from '@app-builder/models/inbox';
-import { getRoute } from '@app-builder/utils/routes';
+import { listContinuousScreeningConfigurationsFn } from '@app-builder/server-fns/continuous-screening';
 import { useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 type ContinuousScreeningConfiguration = ContinuousScreeningConfig & {
   inbox: Inbox | undefined;
 };
 
-const endpoint = getRoute('/ressources/continuous-screening/configurations');
-
 export const useContinuousScreeningConfigurationsQuery = () => {
-  const navigate = useAgnosticNavigation();
+  const listContinuousScreeningConfigurations = useServerFn(listContinuousScreeningConfigurationsFn);
 
   return useQuery({
     queryKey: ['continuous-screening', 'configurations'],
     queryFn: async () => {
-      const response = await fetch(endpoint);
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
+      const result = await listContinuousScreeningConfigurations();
       return result.configurations as ContinuousScreeningConfiguration[];
     },
   });

@@ -1,6 +1,6 @@
 import { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { CaseReviewSetting, KYCEnrichmentSetting, transformCaseReviewSetting } from '@app-builder/models/ai-settings';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 
 export interface AiAssistRepository {
   getAiAssistSettings(): Promise<{

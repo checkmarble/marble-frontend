@@ -1,5 +1,5 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { cva, VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';

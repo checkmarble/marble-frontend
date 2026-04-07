@@ -7,7 +7,7 @@ import {
   STRING_TEMPLATE_VARIABLE_REGEXP,
   type StringTemplateAstNode,
 } from '@app-builder/models/astNode/strings';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
+import { Scenario } from '@app-builder/models/scenario';
 import { Fragment, type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDefaultCaseName } from './CaseNameEditor.hook';
@@ -16,13 +16,13 @@ export type CaseNameEditorProps = {
   label: string;
   value: StringTemplateAstNode | null | undefined;
   onChange: (astNode: StringTemplateAstNode | null) => void;
+  scenario: Scenario;
 };
 
-export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) => {
+export const CaseNameEditor = ({ label, value, onChange, scenario }: CaseNameEditorProps) => {
   const { t } = useTranslation(['common']);
-  const currentScenario = useCurrentScenario();
   const [isEditing, setIsEditing] = useState(false);
-  const { defaultCaseNameNode } = useDefaultCaseName(currentScenario.triggerObjectType);
+  const { defaultCaseNameNode } = useDefaultCaseName(scenario.triggerObjectType);
 
   const caseNameContent = value ? getAstNodeDisplayElement(value) : '';
 
@@ -50,7 +50,7 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
           {caseNameContent}
         </button>
         {isEditing ? (
-          <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit" renderLoading={() => null}>
+          <AstBuilder.Provider scenarioId={scenario.id} mode="edit">
             <AstBuilder.EditModal
               node={value ?? NewStringTemplateAstNode()}
               onSave={handleAstNodeChange}

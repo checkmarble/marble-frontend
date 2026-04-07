@@ -1,7 +1,7 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { CaseStatusByDateResponse } from '@app-builder/models/analytics/cases-status-by-date';
-import { getRoute } from '@app-builder/utils/routes';
+import { getCaseStatusByDateFn } from '@app-builder/server-fns/analytics';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 function buildCaseStatusDateRange() {
   const now = new Date();
@@ -16,27 +16,13 @@ function buildCaseStatusDateRange() {
 }
 
 export const useCaseStatusByDate = () => {
-  const navigate = useAgnosticNavigation();
+  const getCaseStatusByDate = useServerFn(getCaseStatusByDateFn);
 
   return useQuery({
     queryKey: ['case-status-by-date'],
     queryFn: async () => {
-      const endpoint = getRoute('/ressources/analytics/case-status-by-date');
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildCaseStatusDateRange()),
-      });
-      const result = (await response.json()) as
-        | { redirectTo: string }
-        | { casesStatusByDate: CaseStatusByDateResponse[] };
-
-      if ('redirectTo' in result) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result.casesStatusByDate;
+      const result = await getCaseStatusByDate({ data: buildCaseStatusDateRange() });
+      return result.casesStatusByDate as CaseStatusByDateResponse[];
     },
     placeholderData: keepPreviousData,
   });

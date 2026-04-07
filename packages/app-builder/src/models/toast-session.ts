@@ -1,4 +1,3 @@
-import { type Session } from '@remix-run/node';
 import * as z from 'zod/v4';
 
 /**
@@ -43,9 +42,3 @@ export function isNewToastMessage(message: ToastMessage): message is NewToastMes
 }
 
 export type ToastMessage = z.infer<typeof toastMessageSchema>;
-
-export type ToastSessionData = void;
-export type ToastFlashData = {
-  toastMessage: ToastMessage;
-};
-export type ToastSession = Session<ToastSessionData, ToastFlashData>;

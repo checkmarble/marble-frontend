@@ -1,29 +1,38 @@
-import { createMiddlewareWithGlobalContext } from '@app-builder/core/requests';
-import { getRoute } from '@app-builder/utils/routes';
+import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { redirect } from '@tanstack/react-router';
+import { createMiddleware } from '@tanstack/react-start';
+import { getRequest } from '@tanstack/react-start/server';
+import { servicesMiddleware } from './services-middleware';
 
-export const authMiddleware = createMiddlewareWithGlobalContext(
-  [],
-  async function authMiddleware({ request, context }, next) {
-    const { authSessionService } = context.services;
-    const authSession = await authSessionService.getSession(request);
+export const authMiddleware = createMiddleware({ type: 'function' })
+  .middleware([servicesMiddleware])
+  .server(async ({ next, context }) => {
+    const request = getRequest();
+    const { authService } = context.services;
 
-    const authInfo = await context.services.authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+    let authInfo;
+    try {
+      authInfo = await authService.isAuthenticated(request, {
+        failureRedirect: '/sign-in',
+      });
+    } catch (error) {
+      if (error instanceof Response && error.status >= 300 && error.status < 400) {
+        throw redirect({ href: error.headers.get('Location')!, statusCode: error.status });
+      }
+      throw error;
+    }
 
-    const res = await next({ context: { authInfo } });
+    const result = await next({ context: { authInfo } });
 
-    // Updating the token in the cookies if it has been updated
     const tokenUpdate = authInfo.tokenService.getUpdate();
     if (tokenUpdate.status) {
       const { marbleToken, refreshToken } = tokenUpdate;
-      authSession.set('authToken', marbleToken);
-      if (refreshToken) {
-        authSession.set('refreshToken', refreshToken);
-      }
-      res.pushHeader('Set-Cookie', await authSessionService.commitSession(authSession));
+      const authSession = await useAuthSession();
+      await authSession.update({
+        authToken: marbleToken ?? undefined,
+        ...(refreshToken ? { refreshToken } : {}),
+      });
     }
 
-    return res;
-  },
-);
+    return result;
+  });

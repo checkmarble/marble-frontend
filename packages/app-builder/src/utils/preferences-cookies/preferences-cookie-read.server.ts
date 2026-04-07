@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 
 import { COOKIE_NAME, type PreferencesCookie, PreferencesCookieSchema } from './config';
 

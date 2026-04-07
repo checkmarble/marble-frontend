@@ -1,41 +1,16 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { type ActivateIterationPayload, activateIterationPayloadSchema } from '@app-builder/schemas/scenarios';
+import { activateIterationFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const activateIterationPayloadSchema = z.object({
-  willBeLive: z.boolean().pipe(z.literal(true)),
-  changeIsImmediate: z.boolean().pipe(z.literal(true)),
-});
-
-export type ActivateIterationPayload = z.infer<typeof activateIterationPayloadSchema>;
-
-const endpoint = (scenarioId: string, iterationId: string) =>
-  getRoute('/ressources/scenarios/:scenarioId/:iterationId/activate', {
-    scenarioId: fromUUIDtoSUUID(scenarioId),
-    iterationId: fromUUIDtoSUUID(iterationId),
-  });
+export { activateIterationPayloadSchema, type ActivateIterationPayload };
 
 export const useActivateIterationMutation = (scenarioId: string, iterationId: string) => {
-  const navigate = useAgnosticNavigation();
+  const activateIteration = useServerFn(activateIterationFn);
 
   return useMutation({
     mutationKey: ['scenarios', 'iterations', 'activate', scenarioId, iterationId],
-    mutationFn: async (payload: ActivateIterationPayload) => {
-      const response = await fetch(endpoint(scenarioId, iterationId), {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
-    },
+    mutationFn: async (payload: ActivateIterationPayload) =>
+      activateIteration({ data: { ...payload, scenarioId, iterationId } }),
   });
 };

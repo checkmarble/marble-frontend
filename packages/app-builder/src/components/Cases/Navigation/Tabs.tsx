@@ -1,4 +1,4 @@
-import { NavLink } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Tabs, tabClassName } from 'ui-design-system';
 
@@ -10,15 +10,15 @@ export function CasesNavigationTabs({ actions }: { actions?: React.ReactNode }) 
       <h1 className="text-xl font-bold">{t('navigation:case_manager')}</h1>
       <div className="flex items-center justify-between">
         <Tabs>
-          <NavLink to="/cases/overview" className={tabClassName}>
+          <Link to="/cases/overview" className={tabClassName}>
             {t('cases:overview.navigation.overview')}
-          </NavLink>
-          <NavLink to="/cases/analytics" className={tabClassName}>
+          </Link>
+          <Link to="/cases/analytics" className={tabClassName}>
             {t('cases:overview.navigation.analytics')}
-          </NavLink>
-          <NavLink to="/cases/inboxes" className={tabClassName}>
+          </Link>
+          <Link to="/cases/inboxes" className={tabClassName}>
             {t('cases:overview.navigation.cases')}
-          </NavLink>
+          </Link>
         </Tabs>
         {actions}
       </div>

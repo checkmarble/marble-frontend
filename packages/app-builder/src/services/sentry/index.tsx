@@ -1,9 +1,8 @@
 import { type CurrentUser } from '@app-builder/models';
-import { useLocation } from '@remix-run/react';
-import * as Sentry from '@sentry/remix';
-import { type replayIntegration } from '@sentry/remix';
+import * as Sentry from '@sentry/react';
+import { type replayIntegration } from '@sentry/react';
+import { useHydrated, useLocation } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { useHydrated } from 'remix-utils/use-hydrated';
 
 declare global {
   interface Window {
@@ -41,7 +40,7 @@ export function useSentryReplay(sentryReplayEnabled: boolean) {
       const replay = getSentryReplay();
       // start() is a no-op if replay is already running, but will restart if session ended
       replay?.start();
-      // flushing the replay makes it switch to session mode (buffer mode will never send unless an error is sampled or manual flush).
+      // flushing the replay makes it switch to session mode
       replay?.flush({ continueRecording: true });
     }
   }, [isHydrated, sentryReplayEnabled, location.pathname]);

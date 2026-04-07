@@ -14,7 +14,7 @@ import {
   SemanticSubTypeFieldMap,
   SemanticTypeField,
 } from '@app-builder/models';
-import { CreateTableValue } from '@app-builder/queries/data/create-table';
+import { CreateTableValue } from '@app-builder/schemas/data';
 import { TFunction } from 'i18next';
 import { FieldSemanticType } from 'marble-api';
 import { match } from 'ts-pattern';

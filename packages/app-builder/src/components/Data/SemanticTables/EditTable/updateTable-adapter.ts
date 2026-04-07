@@ -1,8 +1,4 @@
-import {
-  EditSemanticFieldPayload,
-  EditSemanticLinkPayload,
-  EditSemanticTablePayload,
-} from '@app-builder/queries/data/edit-semantic-table';
+import { EditSemanticFieldPayload, EditSemanticLinkPayload, EditSemanticTablePayload } from '@app-builder/schemas/data';
 import { ifChanged, omitUndefined } from '@app-builder/utils/omit-undefined';
 import { adaptLink, adaptSemanticField, adaptTableField } from '../CreateTable/createTable-types';
 import { ChangeRecord, LinkValue, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';

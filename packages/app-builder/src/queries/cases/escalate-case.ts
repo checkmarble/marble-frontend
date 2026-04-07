@@ -1,30 +1,17 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
+import { type EscalateCasePayload, escalateCasePayloadSchema } from '@app-builder/schemas/cases';
+import { escalateCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const escalateCasePayloadSchema = z.object({ caseId: z.string(), inboxId: z.string() });
+export { escalateCasePayloadSchema };
 
 export const useEscalateCaseMutation = () => {
-  const navigate = useAgnosticNavigation();
+  const escalateCase = useServerFn(escalateCaseFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'escalate-case'],
-    mutationFn: async (payload: z.infer<typeof escalateCasePayloadSchema>) => {
-      const response = await fetch(getRoute('/ressources/cases/escalate-case'), {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-      }
-
-      return result;
-    },
+    mutationFn: async (payload: EscalateCasePayload) => escalateCase({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

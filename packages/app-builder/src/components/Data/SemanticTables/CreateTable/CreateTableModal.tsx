@@ -2,11 +2,8 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import {
-  CreateTableValue,
-  createTableValueSchema,
-  useCreateTableMutation,
-} from '@app-builder/queries/data/create-table';
+import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
+import { CreateTableValue, createTableValueSchema } from '@app-builder/schemas/data';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
@@ -26,14 +23,15 @@ export function CreateTableModal({ children }: { children: React.ReactNode }) {
     } as CreateTableValue,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createTableMutation.mutateAsync(value).then((result) => {
-          revalidate();
-
-          if (result.success) {
+        createTableMutation
+          .mutateAsync(value)
+          .then((result) => {
             setIsOpen(false);
             form.reset();
-          }
-        });
+          })
+          .finally(() => {
+            revalidate();
+          });
       }
     },
     validators: {

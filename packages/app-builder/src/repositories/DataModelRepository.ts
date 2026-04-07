@@ -21,6 +21,7 @@ import {
   type CreateFieldInput,
   type CreateNavigationOption,
   type CreatePivotInput,
+  createTableValueToCreateTableBody,
   type DataModel,
   type DataModelObject,
   type DataModelTableOptions,
@@ -33,7 +34,7 @@ import {
 } from '@app-builder/models';
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
-import { type CreateTableValue, createTableValueToCreateTableBody } from '@app-builder/queries/data/create-table';
+import { CreateTableValue } from '@app-builder/schemas/data';
 import { GroupedAnnotations, type OpenApiSpec, UpdateTableBodyDto } from 'marble-api';
 
 export interface DataModelRepository {

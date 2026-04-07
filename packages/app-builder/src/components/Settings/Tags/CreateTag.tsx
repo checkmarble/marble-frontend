@@ -49,9 +49,8 @@ const CreateTagContent = ({ onSuccess }: { onSuccess: () => void }) => {
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         createTagMutation.mutateAsync(value).then((res) => {
-          if (res.success) {
-            onSuccess();
-          }
+          onSuccess();
+
           revalidate();
         });
       }

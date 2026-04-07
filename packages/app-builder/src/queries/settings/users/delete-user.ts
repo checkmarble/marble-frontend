@@ -1,24 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type DeleteUserPayload, deleteUserPayloadSchema } from '@app-builder/schemas/settings';
+import { deleteUserFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const deleteUserPayloadSchema = z.object({
-  userId: z.uuid(),
-});
-
-export type DeleteUserPayload = z.infer<typeof deleteUserPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/users/delete');
+export { deleteUserPayloadSchema, type DeleteUserPayload };
 
 export const useDeleteUserMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: DeleteUserPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const deleteUser = useServerFn(deleteUserFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: DeleteUserPayload) => deleteUser({ data: payload }),
   });
 };

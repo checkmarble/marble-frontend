@@ -1,10 +1,10 @@
 import { type ApiKey } from '@app-builder/models/api-keys';
-import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
+import type { AuditEventsFilterName } from '@app-builder/queries/audit-events/get-audit-events';
+import { AuditEventsFilters } from '@app-builder/schemas/settings';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Input, MenuCommand } from 'ui-design-system';
-
 import { ApiKeyFilterMenu } from './ApiKeyFilter';
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
 import { DateRangeFilterMenu } from './DateRangeFilterMenu';

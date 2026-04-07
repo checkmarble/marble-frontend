@@ -1,6 +1,7 @@
 import { type AstNode } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
+import { generateAstFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 export interface GenerateRuleResult {
   success: boolean;
@@ -8,26 +9,12 @@ export interface GenerateRuleResult {
   validation?: { isValid: boolean; errors: string[]; warnings: string[] };
 }
 
-const endpoint = (scenarioId: string) =>
-  getRoute('/ressources/scenarios/:scenarioId/generate-ast', {
-    scenarioId,
-  });
-
 export function useGenerateRuleMutation(scenarioId: string) {
+  const generateAst = useServerFn(generateAstFn);
+
   return useMutation({
     mutationKey: ['scenario', 'generate-ast', scenarioId],
-    mutationFn: async ({ ruleId, instruction }: { ruleId: string; instruction: string }) => {
-      const response = await fetch(endpoint(scenarioId), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rule_id: ruleId, instruction }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate rule');
-      }
-
-      return (await response.json()) as GenerateRuleResult;
-    },
+    mutationFn: async ({ ruleId, instruction }: { ruleId: string; instruction: string }) =>
+      generateAst({ data: { scenarioId, ruleId, instruction } }) as Promise<GenerateRuleResult>,
   });
 }

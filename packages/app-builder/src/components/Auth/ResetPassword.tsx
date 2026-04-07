@@ -2,10 +2,10 @@ import {
   NetworkRequestFailed,
   TooManyRequest,
   useSendPasswordResetEmail,
-} from '@app-builder/services/auth/auth.client';
-import { useClientServices } from '@app-builder/services/init.client';
+} from '@app-builder/services/auth/auth-client';
+import { useClientServices } from '@app-builder/services/init-client';
 import { getFieldErrors } from '@app-builder/utils/form';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';

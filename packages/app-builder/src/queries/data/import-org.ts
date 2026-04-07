@@ -1,45 +1,25 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { importOrgFileFn, importOrgFn } from '@app-builder/server-fns/data';
 import { useMutation } from '@tanstack/react-query';
-
-const fileEndpoint = getRoute('/ressources/data/import-org-file');
-const bodyEndpoint = getRoute('/ressources/data/import-org');
+import { useServerFn } from '@tanstack/react-start';
 
 export const useImportOrgFromFileMutation = () => {
+  const importOrgFile = useServerFn(importOrgFileFn);
+
   return useMutation({
     mutationKey: ['data', 'import-org-file'],
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-
-      const response = await fetch(fileEndpoint, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Import failed');
-      }
-
-      return response.json();
+      return importOrgFile({ data: formData });
     },
   });
 };
 
 export const useImportOrgMutation = () => {
+  const importOrg = useServerFn(importOrgFn);
+
   return useMutation({
     mutationKey: ['data', 'import-org'],
-    mutationFn: async (fileContent: unknown) => {
-      const response = await fetch(bodyEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fileContent),
-      });
-
-      if (!response.ok) {
-        throw new Error('Import failed');
-      }
-
-      return response.json();
-    },
+    mutationFn: async (fileContent: unknown) => importOrg({ data: { body: fileContent } }),
   });
 };

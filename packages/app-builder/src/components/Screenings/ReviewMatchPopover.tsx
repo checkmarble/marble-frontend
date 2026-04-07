@@ -35,10 +35,8 @@ export function ReviewMatchPopover({
       whitelist: false,
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
-      const res = await reviewScreeningMatchMutation.mutateAsync(value);
-      if (res.success) {
-        onOpenChange(false);
-      }
+      await reviewScreeningMatchMutation.mutateAsync(value);
+      onOpenChange(false);
       revalidate();
     },
     validators: {

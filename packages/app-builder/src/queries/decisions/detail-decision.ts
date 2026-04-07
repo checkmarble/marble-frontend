@@ -1,19 +1,13 @@
 import { DecisionDetails } from '@app-builder/models/decision';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { getDecisionFn } from '@app-builder/server-fns/decisions';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = (decisionId: string) =>
-  getRoute('/ressources/decisions/:decisionId', {
-    decisionId: fromUUIDtoSUUID(decisionId),
-  });
+import { useServerFn } from '@tanstack/react-start';
 
 export const useDetailDecisionQuery = (decisionId: string) => {
+  const getDecision = useServerFn(getDecisionFn);
+
   return useQuery({
     queryKey: ['decisions', decisionId],
-    queryFn: async () => {
-      const response = await fetch(endpoint(decisionId));
-      return response.json() as Promise<{ decision: DecisionDetails }>;
-    },
+    queryFn: async () => getDecision({ data: { decisionId } }) as Promise<{ decision: DecisionDetails }>,
   });
 };

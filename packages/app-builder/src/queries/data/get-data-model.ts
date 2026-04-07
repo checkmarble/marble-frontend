@@ -1,18 +1,15 @@
-import { DataModel } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
+import { type DataModel } from '@app-builder/models/data-model';
+import { getDataModelFn } from '@app-builder/server-fns/data';
 import { useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
-const endpoint = getRoute('/ressources/data/data-model');
-
-export const dataModelQueryOptions = {
-  queryKey: ['data-model'],
-  queryFn: async () => {
-    const response = await fetch(endpoint);
-
-    return response.json() as Promise<{ dataModel: DataModel }>;
-  },
-};
+export const DATA_MODEL_QUERY_KEY = ['data-model'] as const;
 
 export const useDataModelQuery = () => {
-  return useQuery(dataModelQueryOptions);
+  const getDataModel = useServerFn(getDataModelFn);
+
+  return useQuery({
+    queryKey: DATA_MODEL_QUERY_KEY,
+    queryFn: async () => getDataModel({}) as Promise<{ dataModel: DataModel }>,
+  });
 };

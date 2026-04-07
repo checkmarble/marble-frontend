@@ -1,8 +1,7 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { type Screening } from '@app-builder/models/screening';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { getScreeningDetailFn } from '@app-builder/server-fns/screenings';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 import { useCallback } from 'react';
 
 const getScreeningDetailQueryKey = (decisionId: string, screeningId: string) => [
@@ -12,30 +11,14 @@ const getScreeningDetailQueryKey = (decisionId: string, screeningId: string) => 
   screeningId,
 ];
 
-const endpoint = (decisionId: string, screeningId: string) =>
-  getRoute('/ressources/screenings/detail/:decisionId/:screeningId', {
-    decisionId: fromUUIDtoSUUID(decisionId),
-    screeningId: fromUUIDtoSUUID(screeningId),
-  });
-
 export function useScreeningDetailQuery(decisionId: string, screeningId: string, enabled: boolean) {
-  const navigate = useAgnosticNavigation();
+  const getScreeningDetail = useServerFn(getScreeningDetailFn);
 
   return useQuery({
     queryKey: getScreeningDetailQueryKey(decisionId, screeningId),
-    queryFn: async () => {
-      const response = await fetch(endpoint(decisionId, screeningId));
-      if (!response.ok) {
-        throw new Error(`Failed to fetch screening detail: ${response.status}`);
-      }
-      const result: { screening: Screening } | { redirectTo: string } = await response.json();
-
-      if ('redirectTo' in result) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result.screening;
+    queryFn: async (): Promise<Screening> => {
+      const result = await getScreeningDetail({ data: { decisionId, screeningId } });
+      return result.screening as Screening;
     },
     enabled,
   });

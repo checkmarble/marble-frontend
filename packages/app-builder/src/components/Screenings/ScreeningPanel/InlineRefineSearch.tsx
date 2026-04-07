@@ -1,13 +1,11 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
-import { refineSearchSchema, type action as searchAction } from '@app-builder/routes/ressources+/screenings+/search';
+import { useSearchScreeningMatchesMutation } from '@app-builder/queries/screening/search-screening-matches';
+import { type RefineSearchInput, refineSearchSchema } from '@app-builder/server-fns/screenings';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { getRoute } from '@app-builder/utils/routes';
-import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { serialize as objectToFormData } from 'object-to-formdata';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -22,16 +20,16 @@ export function InlineRefineSearch({
 }: {
   screening: Screening;
   onBack: () => void;
-  onSearchComplete: (results: ScreeningMatchPayload[], formData: FormData) => void;
+  onSearchComplete: (results: ScreeningMatchPayload[], formValues: RefineSearchInput) => void;
 }) {
   const { t } = useTranslation(screeningsI18n);
-  const searchFetcher = useFetcher<typeof searchAction>();
-  const formDataRef = useRef<FormData | null>(null);
   const onBack = useCallbackRef(_onBack);
   const onSearchComplete = useCallbackRef(_onSearchComplete);
 
   const [mainFieldsOpen, setMainFieldsOpen] = useState(true);
   const [additionalFieldsOpen, setAdditionalFieldsOpen] = useState(true);
+
+  const searchMutation = useSearchScreeningMatchesMutation();
 
   const form = useForm({
     defaultValues: {
@@ -42,22 +40,11 @@ export function InlineRefineSearch({
       onChange: refineSearchSchema,
     },
     onSubmit: ({ value }) => {
-      formDataRef.current = objectToFormData(value, {
-        dotsForObjectNotation: true,
-      });
-
-      searchFetcher.submit(formDataRef.current, {
-        method: 'POST',
-        action: getRoute('/ressources/screenings/search'),
+      searchMutation.mutateAsync(value).then((data) => {
+        onSearchComplete(data, value);
       });
     },
   });
-
-  useEffect(() => {
-    if (searchFetcher.data?.success && formDataRef.current) {
-      onSearchComplete(searchFetcher.data.data, formDataRef.current);
-    }
-  }, [searchFetcher.data, onSearchComplete]);
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const additionalFields = entityType ? SEARCH_ENTITIES[entityType].fields : [];
@@ -79,7 +66,7 @@ export function InlineRefineSearch({
       <div className="flex flex-col gap-4 rounded-lg border border-purple-primary bg-purple-background-light p-4">
         <span className="text-s font-medium">{t('screenings:refine_inline.edit_search_label')}</span>
 
-        <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
+        <form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex flex-col gap-4">
             {/* Main fields section */}
             <div className="flex flex-col gap-2">
@@ -144,7 +131,7 @@ export function InlineRefineSearch({
               )}
             </form.Subscribe>
           </div>
-        </searchFetcher.Form>
+        </form>
       </div>
     </div>
   );

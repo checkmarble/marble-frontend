@@ -1,13 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
-
-const endpoint = getRoute('/ressources/data/export-org');
+import { useRouter } from '@tanstack/react-router';
 
 export const useExportOrgMutation = () => {
+  const router = useRouter();
+
   return useMutation({
     mutationKey: ['data', 'export-org'],
     mutationFn: async () => {
-      const response = await fetch(endpoint);
+      const endpoint = router.buildLocation({ to: '/ressources/data/export-org' });
+      const response = await fetch(endpoint.href);
 
       if (!response.ok) {
         throw new Error('Export failed');

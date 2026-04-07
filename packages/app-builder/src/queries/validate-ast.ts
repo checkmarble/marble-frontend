@@ -1,33 +1,32 @@
 import {
   type AstValidationPayload,
   type AstValidationReturnType,
-} from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+  validateAstFn,
+} from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
-const endpoint = (scenarioId: string) =>
-  getRoute('/ressources/scenarios/:scenarioId/validate-ast', {
-    scenarioId,
-  });
+export type { AstValidationPayload, AstValidationReturnType };
 
 type UseValidateAstMutationParams = {
   scenarioId: string | undefined;
 };
 export function useValidateAstMutation(params: UseValidateAstMutationParams) {
-  const scenarioNanoId = params.scenarioId ? fromUUIDtoSUUID(params.scenarioId) : '';
+  const validateAst = useServerFn(validateAstFn);
 
   return useMutation({
     mutationFn: async (payload: AstValidationPayload & { ac: AbortController }) => {
-      if (!scenarioNanoId) {
+      if (!params.scenarioId) {
         return { errors: [], evaluation: [] };
       }
-      const response = await fetch(endpoint(scenarioNanoId), {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        signal: payload.ac.signal,
+      const result = await validateAst({
+        data: {
+          scenarioId: params.scenarioId,
+          node: payload.node,
+          expectedReturnType: payload.expectedReturnType,
+        },
       });
-      return ((await response.json()) as AstValidationReturnType).flat;
+      return (result as AstValidationReturnType).flat;
     },
   });
 }

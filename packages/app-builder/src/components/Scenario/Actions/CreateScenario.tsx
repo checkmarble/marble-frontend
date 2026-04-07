@@ -16,9 +16,9 @@ import { scenarioObjectDocHref } from '@app-builder/services/documentation-href'
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import * as Ariakit from '@ariakit/react';
 import { useForm } from '@tanstack/react-form';
+import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 

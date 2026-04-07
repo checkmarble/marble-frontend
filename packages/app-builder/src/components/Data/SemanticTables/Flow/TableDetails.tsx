@@ -122,14 +122,15 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           initialLinks: LinkValue[],
         ) => {
           const tableNameById = new Map(dataModel.map((t) => [t.id, t.name]));
-          const result = await updateTableMutation.mutateAsync(
-            adaptUpdateTableValue(tableState, changeSet, initialTableState.fields, initialLinks, tableNameById),
-          );
-          if (result.success) {
-            toast.success(t('data:table_details.table_updated', { name: tableState.alias || tableState.name }));
-            revalidate();
-            setIsEditOpen(false);
-          }
+          await updateTableMutation
+            .mutateAsync(
+              adaptUpdateTableValue(tableState, changeSet, initialTableState.fields, initialLinks, tableNameById),
+            )
+            .then(() => {
+              toast.success(t('data:table_details.table_updated', { name: tableState.alias || tableState.name }));
+              revalidate();
+              setIsEditOpen(false);
+            });
         }}
       />
       <DeleteTableModal table={data.tableModel} open={isDeleteOpen} onOpenChange={setIsDeleteOpen} />

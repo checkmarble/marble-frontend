@@ -1,9 +1,7 @@
-import { Link, useMatches } from '@remix-run/react';
-import clsx from 'clsx';
-import { select } from 'radash';
-import { type FunctionComponent, type PropsWithChildren, useMemo } from 'react';
-
-import { Page } from './Page';
+import { Page } from '@app-builder/components/Page';
+import { createLink, type LinkComponent, useMatches } from '@tanstack/react-router';
+import React, { type FunctionComponent, useMemo } from 'react';
+import { cn } from 'ui-design-system';
 
 export type BreadCrumbProps<T = unknown> = {
   isLast: boolean;
@@ -14,41 +12,50 @@ export type HandleWithBreadCrumbs = {
   BreadCrumbs?: FunctionComponent<BreadCrumbProps>[];
 };
 
-export const BreadCrumbLink = ({
-  isLast,
-  children,
-  to,
-  className,
-}: PropsWithChildren<{
+type BreadCrumbEntry = {
+  Elements: FunctionComponent<BreadCrumbProps>[] | undefined;
+  pathname: string;
+  data: unknown;
+};
+
+interface BreadCrumbLinkInnerProps extends React.ComponentPropsWithRef<'a'> {
   isLast: boolean;
-  to: string;
-  className?: string;
-}>) => (
-  <Link
-    to={to}
-    className={clsx(
-      'text-s flex items-center font-bold transition-colors',
-      { 'text-grey-secondary hover:text-grey-primary': !isLast },
-      className,
-    )}
-  >
-    {children}
-  </Link>
+}
+
+const BreadCrumbLinkInner = React.forwardRef<HTMLAnchorElement, BreadCrumbLinkInnerProps>(
+  ({ isLast, className, children, ...props }, ref) => (
+    <a
+      ref={ref}
+      {...props}
+      className={cn(
+        'text-s flex items-center font-bold transition-colors',
+        { 'text-grey-secondary hover:text-grey-primary': !isLast },
+        className,
+      )}
+    >
+      {children}
+    </a>
+  ),
+);
+BreadCrumbLinkInner.displayName = 'BreadCrumbLinkInner';
+
+const CreatedBreadCrumbLink = createLink(BreadCrumbLinkInner);
+
+export const BreadCrumbLink: LinkComponent<typeof BreadCrumbLinkInner> = (props) => (
+  <CreatedBreadCrumbLink preload="intent" {...props} />
 );
 
 export const BreadCrumbs = ({ back }: { back?: string }) => {
   const matches = useMatches();
-  const links = useMemo(
+  const links = useMemo<BreadCrumbEntry[]>(
     () =>
-      select(
-        matches,
-        ({ pathname, handle, data }) => ({
-          Elements: (handle as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(Boolean),
-          pathname,
-          data,
-        }),
-        ({ handle }) => Boolean((handle as HandleWithBreadCrumbs)?.BreadCrumbs),
-      ),
+      (matches as { staticData: unknown; pathname: string; loaderData: unknown }[])
+        .filter((match) => Boolean((match.staticData as HandleWithBreadCrumbs)?.BreadCrumbs))
+        .map((match) => ({
+          Elements: (match.staticData as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(Boolean),
+          pathname: match.pathname,
+          data: match.loaderData,
+        })),
     [matches],
   );
 
@@ -77,19 +84,21 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
   );
 };
 
+type BackButtonEntry = {
+  Elements: FunctionComponent<BreadCrumbProps>[] | undefined;
+  pathname: string;
+};
+
 export const BackButton = ({ back }: { back?: string }) => {
   const matches = useMatches();
-  const links = useMemo(
+  const links = useMemo<BackButtonEntry[]>(
     () =>
-      select(
-        matches,
-        ({ pathname, handle, data }) => ({
-          Elements: (handle as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(Boolean),
-          pathname,
-          data,
-        }),
-        ({ handle }) => Boolean((handle as HandleWithBreadCrumbs)?.BreadCrumbs),
-      ),
+      (matches as { staticData: unknown; pathname: string }[])
+        .filter((match) => Boolean((match.staticData as HandleWithBreadCrumbs)?.BreadCrumbs))
+        .map((match) => ({
+          Elements: (match.staticData as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(Boolean),
+          pathname: match.pathname,
+        })),
     [matches],
   );
   return (

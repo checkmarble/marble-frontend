@@ -529,8 +529,8 @@ export type ClientObjectDetailDto = {
     };
     /** The actual data of the object, as described in the client data model. */
     data: {
-        object_id?: string;
-        updated_at?: string;
+        object_id: string;
+        updated_at: string;
         [key: string]: any;
     };
     related_objects: {

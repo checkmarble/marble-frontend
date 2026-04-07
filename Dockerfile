@@ -1,4 +1,4 @@
-ARG BUN_IMAGE=oven/bun:1.3-alpine
+ARG BUN_IMAGE=oven/bun:1.3
 ARG RUNTIME_IMAGE=gcr.io/distroless/nodejs22-debian12:nonroot
 # ---- Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-dev
@@ -27,6 +27,13 @@ WORKDIR /usr/src/app
 COPY . .
 # Reuse cached node_modules from deps stage
 COPY --from=deps-dev /usr/src/app/node_modules ./node_modules
+COPY --from=deps-dev /usr/src/app/packages/app-builder/node_modules ./packages/app-builder/node_modules
+COPY --from=deps-dev /usr/src/app/packages/marble-api/node_modules ./packages/marble-api/node_modules
+COPY --from=deps-dev /usr/src/app/packages/shared/node_modules ./packages/shared/node_modules
+COPY --from=deps-dev /usr/src/app/packages/tailwind-preset/node_modules ./packages/tailwind-preset/node_modules
+COPY --from=deps-dev /usr/src/app/packages/typescript-utils/node_modules ./packages/typescript-utils/node_modules
+COPY --from=deps-dev /usr/src/app/packages/ui-design-system/node_modules ./packages/ui-design-system/node_modules
+COPY --from=deps-dev /usr/src/app/packages/ui-icons/node_modules ./packages/ui-icons/node_modules
 
 # Build-time configuration
 ARG SENTRY_ORG
@@ -44,7 +51,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
 
 # Collect build artifacts and dependencies for runtime
 RUN mkdir -p /prod/app-builder && \
-    cp -R packages/app-builder/build /prod/app-builder/build
+    cp -R packages/app-builder/.output /prod/app-builder/.output
 
 # ---- Production Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-prod
@@ -66,10 +73,10 @@ RUN --mount=type=cache,target=/root/.bun \
     bun install --production --frozen-lockfile
 
 # ---- Runtime stage ---- (uses prod deps)
-FROM ${RUNTIME_IMAGE} AS app-builder
+FROM ${BUN_IMAGE} AS app-builder
 WORKDIR /prod/app-builder
 
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ARG PORT=8080
 ENV PORT=${PORT:-8080}
 
@@ -81,10 +88,10 @@ ARG SEGMENT_WRITE_KEY=""
 ENV SEGMENT_WRITE_KEY=${SEGMENT_WRITE_KEY_OPENSOURCE:-""}
 
 # Copy build output
-COPY --from=build /usr/src/app/packages/app-builder/build ./build
+COPY --from=build /usr/src/app/packages/app-builder/.output ./.output
 
 # Copy ONLY production dependencies
 COPY --from=deps-prod /usr/src/app/node_modules ./node_modules
 
 EXPOSE $PORT
-CMD ["./node_modules/@remix-run/serve/dist/cli.js", "./build/server/index.js"]
+CMD ["bun", ".output/server/index.mjs"]
