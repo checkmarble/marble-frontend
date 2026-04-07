@@ -50,7 +50,7 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
           {caseNameContent}
         </button>
         {isEditing ? (
-          <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit">
+          <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit" renderLoading={() => null}>
             <AstBuilder.EditModal
               node={value ?? NewStringTemplateAstNode()}
               onSave={handleAstNodeChange}
