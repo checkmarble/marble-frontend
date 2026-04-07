@@ -35,6 +35,7 @@
   "analytics.alerts.title": "Métriques des alertes",
   "analytics.chart.count": "Cas",
   "analytics.chart.days": "jours",
+  "analytics.chart.empty_state": "Aucune donnée disponible pour les filtres sélectionnés",
   "analytics.chart.maxDays": "Max jours",
   "analytics.chart.sumDays": "Total jours",
   "analytics.filters.all_inboxes": "Toutes les boîtes",
