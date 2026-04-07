@@ -112,6 +112,7 @@ export function ScoringRuleEditPanel({
                 .with({ type: 'aggregate' }, () => t('user-scoring:rule_edit.model_type.aggregate'))
                 .with({ type: 'screening_tags' }, () => t('user-scoring:rule_edit.model_type.screening_tags'))
                 .with({ type: 'entity_tags' }, () => t('user-scoring:rule_edit.model_type.entity_tags'))
+                .with({ type: 'past_alerts' }, () => t('user-scoring:rule_edit.model_type.past_alerts'))
                 .exhaustive()}
             </Tag>
           ) : null}
