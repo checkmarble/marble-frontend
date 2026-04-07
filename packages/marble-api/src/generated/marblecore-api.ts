@@ -1773,6 +1773,13 @@ export type RuleVsDecisionOutcomeResponseDto = {
     outcome: OutcomeDto;
     decisions: number;
 };
+export type CaseAnalyticsQueryDto = {
+    start: string;
+    end: string;
+    timezone: string;
+    inbox_id?: string;
+    assigned_user_id?: string;
+};
 export type CaseStatusByDateResponseDto = {
     date: string;
     pending: number;
@@ -1786,13 +1793,6 @@ export type CaseStatusByInboxResponseDto = {
     investigating: number;
     closed: number;
     snoozed: number;
-};
-export type CaseAnalyticsQueryDto = {
-    start: string;
-    end: string;
-    timezone: string;
-    inbox_id?: string;
-    assigned_user_id?: string;
 };
 export type SarCompletedResponseDto = {
     count: number;
@@ -6416,7 +6416,7 @@ export function getRuleVsDecisionOutcome(analyticsQueryDto: AnalyticsQueryDto, o
 /**
  * Get case status by date
  */
-export function getCaseStatusByDate(opts?: Oazapfts.RequestOpts) {
+export function getCaseStatusByDate(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: CaseStatusByDateResponseDto[];
@@ -6432,15 +6432,16 @@ export function getCaseStatusByDate(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 404;
         data: string;
-    }>("/analytics/query/case_status_by_date", {
+    }>("/analytics/cases/case_status_by_date", oazapfts.json({
         ...opts,
-        method: "POST"
-    }));
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
 }
 /**
  * Get case status by inbox
  */
-export function getCaseStatusByInbox(opts?: Oazapfts.RequestOpts) {
+export function getCaseStatusByInbox(caseAnalyticsQueryDto: CaseAnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: CaseStatusByInboxResponseDto[];
@@ -6456,10 +6457,11 @@ export function getCaseStatusByInbox(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 404;
         data: string;
-    }>("/analytics/query/case_status_by_inbox", {
+    }>("/analytics/cases/case_status_by_inbox", oazapfts.json({
         ...opts,
-        method: "POST"
-    }));
+        method: "POST",
+        body: caseAnalyticsQueryDto
+    })));
 }
 /**
  * Get SAR completed count
