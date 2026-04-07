@@ -87,6 +87,7 @@
   "delete_pivot.confirm": "Are you sure you want to delete the decision group \"{{name}}\"? This action cannot be undone.",
   "delete_pivot.title": "Delete decision group {{name}}",
   "delete_table.confirm": "Are you sure you want to delete the table \"{{name}}\"? This action cannot be undone.",
+  "delete_table.menu_label": "Delete table",
   "delete_table.title": "Delete table {{name}}",
   "delete-table": "Delete table",
   "delete.active_scenarios_linked": "The element \"{{name}}\" is used in the active version of the scenario. You must deactivate it before deleting.",

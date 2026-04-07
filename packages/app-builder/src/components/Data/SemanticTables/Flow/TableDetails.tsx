@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { DeleteTableModal } from '../../DeleteDataModel/DeleteTableModal';
 import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
 import { LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
@@ -24,6 +25,7 @@ type TableDetailsFlowNode = Node<
 export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   const { t } = useTranslation(dataI18n);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dataModel = useDataModel();
@@ -50,6 +52,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           setIsEditOpen(false);
         }}
       />
+      <DeleteTableModal table={data.tableModel} open={isDeleteOpen} onOpenChange={setIsDeleteOpen} />
       <TableRecordPreviewDrawer open={isPreviewOpen} onOpenChange={setIsPreviewOpen} tableName={data.tableModel.name} />
     </>
   );
@@ -99,6 +102,12 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                   <div className="flex items-center gap-v2-xs">
                     <Icon icon="edit-square" className="size-4" />
                     {t('data:edit_table.menu_label')}
+                  </div>
+                </MenuCommand.Item>
+                <MenuCommand.Item onSelect={() => setIsDeleteOpen(true)}>
+                  <div className="flex items-center gap-v2-xs">
+                    <Icon icon="delete" className="size-4" />
+                    {t('data:delete_table.menu_label')}
                   </div>
                 </MenuCommand.Item>
                 <MenuCommand.Item disabled>

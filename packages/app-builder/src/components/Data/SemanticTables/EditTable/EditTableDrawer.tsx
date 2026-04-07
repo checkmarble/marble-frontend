@@ -1,5 +1,4 @@
 import { Callout } from '@app-builder/components/Callout';
-import { DeleteTable } from '@app-builder/components/Data/DeleteDataModel/DeleteTable';
 import { type DataModelField, type FtmEntityV2 } from '@app-builder/models';
 import { ftmEntities, type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
 import { useDataModel } from '@app-builder/services/data/data-model';
@@ -333,12 +332,6 @@ export function EditTableDrawer({
             )}
 
             <div className="flex shrink-0 items-center gap-v2-md self-center">
-              <DeleteTable
-                table={tableModel}
-                onDeleted={onClose}
-                triggerVariant="destructive"
-                triggerAppearance="icon-text"
-              />
               <Button variant="secondary" appearance="stroked" onClick={onClose}>
                 {t('common:cancel')}
               </Button>
