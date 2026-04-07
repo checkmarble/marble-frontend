@@ -10,7 +10,7 @@ import { createServerFn } from '@app-builder/core/requests';
 import { useMediaQuery } from '@app-builder/hooks/useMediaQuery';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type Scenario } from '@app-builder/models/scenario';
-import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
+import { isAnalyticsAvailable, isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -46,6 +46,7 @@ export const loader = createServerFn([authMiddleware], async function scenariosL
 
   return {
     isEditScenarioAvailable: isEditScenarioAvailable(context.authInfo.user),
+    showAnalytics: isAnalyticsAvailable(context.authInfo.user, context.authInfo.entitlements),
     scenarios,
     scenarioMetadataMap,
   };
@@ -55,7 +56,7 @@ const columnHelper = createColumnHelper<Scenario>();
 
 export default function DetectionScenariosPage() {
   const { t } = useTranslation(handle.i18n);
-  const { scenarios, isEditScenarioAvailable, scenarioMetadataMap } = useLoaderData<typeof loader>();
+  const { scenarios, isEditScenarioAvailable, scenarioMetadataMap, showAnalytics } = useLoaderData<typeof loader>();
   const hydrated = useHydrated();
   const formatDateTime = useFormatDateTime();
   const isLargeScreen = useMediaQuery('xl');
@@ -199,6 +200,7 @@ export default function DetectionScenariosPage() {
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
           <DetectionNavigationTabs
+            showAnalytics={showAnalytics}
             actions={
               <CreateScenario>
                 <Button size="default">

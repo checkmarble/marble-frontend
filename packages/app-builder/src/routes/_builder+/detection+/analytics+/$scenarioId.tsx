@@ -319,6 +319,7 @@ export default function Analytics() {
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
           <DetectionNavigationTabs
+            showAnalytics
             actions={
               <Link
                 to={getRoute('/analytics-legacy')}

@@ -1,11 +1,17 @@
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
 import { Spinner } from '@app-builder/components/Spinner';
+import {
+  aggregateFalsePositiveRate,
+  aggregatePeriodCount,
+  aggregatePeriodDuration,
+  type TimeBucket,
+} from '@app-builder/models/analytics/case-analytics';
 import type { Inbox } from '@app-builder/models/inbox';
 import type { User } from '@app-builder/models/user';
 import { useCaseAnalytics } from '@app-builder/queries/cases/case-analytics';
 import { subMonths } from 'date-fns';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
@@ -15,6 +21,7 @@ import { AlertProcessingChart } from './AlertProcessingChart';
 import { CaseAnalyticsFilters } from './CaseAnalyticsFilters';
 import { SarDelayChart } from './SarDelayChart';
 import { SarReportsGauge } from './SarReportsGauge';
+import { TimeBucketToggle } from './TimeBucketToggle';
 
 interface AnalyticsPageProps {
   inboxes: Inbox[];
@@ -28,6 +35,7 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
   const [inboxId, setInboxId] = useState<string | undefined>(undefined);
   const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [timeBucket, setTimeBucket] = useState<TimeBucket>('month');
 
   const query = useCaseAnalytics({
     startDate,
@@ -36,24 +44,40 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
     userId,
   });
 
+  const aggregated = useMemo(() => {
+    if (!query.data) return null;
+    return {
+      sarTotalCompleted: query.data.sarTotalCompleted,
+      sarDelayByPeriod: aggregatePeriodDuration(query.data.sarDelayByPeriod, timeBucket),
+      sarDelayDistribution: query.data.sarDelayDistribution,
+      alertCountByPeriod: aggregatePeriodCount(query.data.alertCountByPeriod, timeBucket),
+      falsePositiveRateByPeriod: aggregateFalsePositiveRate(query.data.falsePositiveRateByPeriod, timeBucket),
+      caseDurationByPeriod: aggregatePeriodDuration(query.data.caseDurationByPeriod, timeBucket),
+      openCasesByAge: query.data.openCasesByAge,
+    };
+  }, [query.data, timeBucket]);
+
   return (
     <Page.Main>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
           <CasesNavigationTabs showAnalytics />
 
-          <CaseAnalyticsFilters
-            startDate={startDate}
-            onStartDateChange={setStartDate}
-            endDate={endDate}
-            onEndDateChange={setEndDate}
-            inboxId={inboxId}
-            onInboxIdChange={setInboxId}
-            inboxes={inboxes}
-            userId={userId}
-            onUserIdChange={setUserId}
-            users={users}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-v2-md">
+            <CaseAnalyticsFilters
+              startDate={startDate}
+              onStartDateChange={setStartDate}
+              endDate={endDate}
+              onEndDateChange={setEndDate}
+              inboxId={inboxId}
+              onInboxIdChange={setInboxId}
+              inboxes={inboxes}
+              userId={userId}
+              onUserIdChange={setUserId}
+              users={users}
+            />
+            <TimeBucketToggle value={timeBucket} onChange={setTimeBucket} />
+          </div>
 
           {match(query)
             .with({ isPending: true }, () => (
@@ -71,30 +95,29 @@ export function AnalyticsPage({ inboxes, users }: AnalyticsPageProps) {
                 </div>
               </div>
             ))
-            .with({ isSuccess: true }, (q) => {
-              if (!q.data) return null;
-              const data = q.data;
+            .with({ isSuccess: true }, () => {
+              if (!aggregated) return null;
 
               return (
                 <div className="flex flex-col gap-v2-md">
                   <div className="grid grid-cols-1 gap-v2-md xl:grid-cols-3">
-                    <SarReportsGauge total={data.sarTotalCompleted} />
+                    <SarReportsGauge total={aggregated.sarTotalCompleted} />
                     <div className="xl:col-span-2">
                       <SarDelayChart
-                        delayByPeriod={data.sarDelayByPeriod}
-                        delayDistribution={data.sarDelayDistribution}
+                        delayByPeriod={aggregated.sarDelayByPeriod}
+                        delayDistribution={aggregated.sarDelayDistribution}
                       />
                     </div>
                   </div>
 
                   <AlertMetricsChart
-                    alertCountByPeriod={data.alertCountByPeriod}
-                    falsePositiveRateByPeriod={data.falsePositiveRateByPeriod}
+                    alertCountByPeriod={aggregated.alertCountByPeriod}
+                    falsePositiveRateByPeriod={aggregated.falsePositiveRateByPeriod}
                   />
 
                   <AlertProcessingChart
-                    caseDurationByPeriod={data.caseDurationByPeriod}
-                    openCasesByAge={data.openCasesByAge}
+                    caseDurationByPeriod={aggregated.caseDurationByPeriod}
+                    openCasesByAge={aggregated.openCasesByAge}
                   />
                 </div>
               );
