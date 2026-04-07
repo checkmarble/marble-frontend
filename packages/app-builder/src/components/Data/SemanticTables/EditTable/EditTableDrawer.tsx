@@ -270,7 +270,7 @@ export function EditTableDrawer({
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
         <div ref={containerRef} className="bg-surface-card flex h-full flex-col overflow-y-auto">
-          <header className="flex shrink-0 items-center gap-v2-md p-v2-lg border-b border-grey-border">
+          <header className="flex shrink-0 items-center gap-v2-md border-b border-grey-border p-v2-lg">
             <button type="button" onClick={onClose} className="rounded-lg p-2 hover:bg-grey-border">
               <Icon icon="x" className="size-5" />
             </button>
@@ -296,7 +296,10 @@ export function EditTableDrawer({
                     <MenuCommand.Item
                       key={option.value}
                       onSelect={() =>
-                        updateTableState(tableModel.id, { entityType: option.value as FtmEntityV2, subEntity: 'moral' })
+                        updateTableState(tableModel.id, {
+                          entityType: option.value as FtmEntityV2,
+                          subEntity: 'moral',
+                        })
                       }
                     >
                       {option.label}

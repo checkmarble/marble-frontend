@@ -134,6 +134,7 @@
   "edit_table.button_accept": "Save changes",
   "edit_table.entity_type_change_warning": "You're doing changes that will have an impact on the display of your data in Marble.",
   "edit_table.header_prefix": "Edit",
+  "edit_table.menu_label": "Edit table",
   "edit_table.title": "Edit description",
   "empty_description": "No description",
   "empty_state.create_table.description": "Start from scratch and define your own data model",
@@ -171,6 +172,7 @@
   "parent_table": "Related table",
   "select_archetype.button_accept": "Apply archetype",
   "select_archetype.title": "Select an archetype",
+  "table_details.actions": "Table actions",
   "table_details.numser_of_fields": "{{number}} fields",
   "table_details.other_table": "Unset - available updates",
   "table_relationship": "Relationship",
@@ -302,6 +304,7 @@
   "viewer.no_object_found": "No object found for id \"{{objectId}}\" in {{tableName}}",
   "viewer.object_id": "Object ID",
   "viewer.object_type": "Object type",
+  "viewer.view_ingested_data": "View ingested data",
   "vpn": "Yes",
   "yes": "Yes"
 }

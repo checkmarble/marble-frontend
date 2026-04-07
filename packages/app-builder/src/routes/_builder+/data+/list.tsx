@@ -1,19 +1,18 @@
 import { CalloutV2, Page } from '@app-builder/components';
-import { DataTabs } from '@app-builder/components/Data/DataTabs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { ImportOrg } from '@app-builder/components/Data/ImportOrg';
 import { SelectArchetype } from '@app-builder/components/Data/SelectArchetype';
 import { CreateTableDrawer } from '@app-builder/components/Data/SemanticTables/CreateTable/CreateTableDrawer';
 import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
 import { dataModelFlowStyles, TableFlow } from '@app-builder/components/Data/SemanticTables/Flow/TableFlow';
+import { DataPageHeader } from '@app-builder/components/Data/SemanticTables/Shared/DataPageHeader';
 import {
   UploadDataDrawer,
   UploadDataDrawerContent,
 } from '@app-builder/components/Data/SemanticTables/UploadData/UploadDataDrawer';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
-import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
-import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { LinksFunction } from '@remix-run/server-runtime';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
@@ -31,8 +30,6 @@ export default function DataList() {
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
   const revalidate = useLoaderRevalidator();
-  const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
-  const exportOrgMutation = useExportOrgMutation();
   const createTableMutation = useCreateTableMutation();
   const [uploadDrawerData, setUploadDrawerData] = useState<unknown>(null);
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
@@ -50,31 +47,7 @@ export default function DataList() {
           {isEmpty ? (
             <EmptyHeader onImportSuccess={handleImportSuccess} onCreateTable={handleOpenCreateDrawer} />
           ) : (
-            <DataTabs
-              actions={
-                <div className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    appearance="stroked"
-                    onClick={() => exportOrgMutation.mutate()}
-                    disabled={exportOrgMutation.isPending}
-                  >
-                    {exportOrgMutation.isPending ? (
-                      <Icon icon="spinner" className="size-5 animate-spin" />
-                    ) : (
-                      <Icon icon="download" className="size-5" />
-                    )}
-                    {t('data:export_org.button')}
-                  </Button>
-                  {isCreateDataModelTableAvailable ? (
-                    <Button variant="primary" onClick={handleOpenCreateDrawer}>
-                      <Icon icon="plus" className="size-5" />
-                      {t('data:create_table.title')}
-                    </Button>
-                  ) : null}
-                </div>
-              }
-            />
+            <DataPageHeader handleOpenCreateDrawer={handleOpenCreateDrawer} />
           )}
           <CalloutV2>{t('data:callout')}</CalloutV2>
 

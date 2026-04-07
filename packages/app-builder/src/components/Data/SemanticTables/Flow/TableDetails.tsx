@@ -4,11 +4,12 @@ import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Tag } from 'ui-design-system';
+import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
 import { LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
+import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
 
 export interface TableDetailsProps {
   tableModel: TableModel;
@@ -23,6 +24,8 @@ type TableDetailsFlowNode = Node<
 export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   const { t } = useTranslation(dataI18n);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dataModel = useDataModel();
   const relationFields = data.tableModel.fields.filter((field) => data.relationFieldNames.includes(field.name));
   const belongsToField = (fieldName: string) =>
@@ -36,16 +39,19 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
       );
 
   const drawer = (
-    <EditTableDrawer
-      open={isEditOpen}
-      onClose={() => setIsEditOpen(false)}
-      tableModel={data.tableModel}
-      onSave={async (tableState: SemanticTableFormValues, links: LinkValue[]) => {
-        // TODO: implement save mutations
-        console.log(tableState, links);
-        setIsEditOpen(false);
-      }}
-    />
+    <>
+      <EditTableDrawer
+        open={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        tableModel={data.tableModel}
+        onSave={async (tableState: SemanticTableFormValues, links: LinkValue[]) => {
+          // TODO: implement save mutations
+          console.log(tableState, links);
+          setIsEditOpen(false);
+        }}
+      />
+      <TableRecordPreviewDrawer open={isPreviewOpen} onOpenChange={setIsPreviewOpen} tableName={data.tableModel.name} />
+    </>
   );
 
   return (
@@ -81,9 +87,35 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
               </Tag>
             </div>
           </div>
-          <Button variant="secondary" appearance="stroked" onClick={() => setIsEditOpen(true)}>
-            <Icon icon="eye" className="size-5" />
-          </Button>
+          <MenuCommand.Menu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <MenuCommand.Trigger>
+              <Button variant="secondary" appearance="stroked" aria-label={t('data:table_details.actions')}>
+                <Icon icon="more-menu" className="size-4" />
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content align="end" sideOffset={4} size="small">
+              <MenuCommand.List>
+                <MenuCommand.Item onSelect={() => setIsEditOpen(true)}>
+                  <div className="flex items-center gap-v2-xs">
+                    <Icon icon="edit-square" className="size-4" />
+                    {t('data:edit_table.menu_label')}
+                  </div>
+                </MenuCommand.Item>
+                <MenuCommand.Item disabled>
+                  <div className="flex items-center gap-v2-xs">
+                    <Icon icon="upload" className="size-4" />
+                    {t('data:upload_data.title')}
+                  </div>
+                </MenuCommand.Item>
+                <MenuCommand.Item onSelect={() => setIsPreviewOpen(true)}>
+                  <div className="flex items-center gap-v2-xs">
+                    <Icon icon="visibility" className="size-4" />
+                    {t('data:viewer.view_ingested_data')}
+                  </div>
+                </MenuCommand.Item>
+              </MenuCommand.List>
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
           <Handle
             type="source"
             id="belongs_to:header"

@@ -134,6 +134,7 @@
   "edit_table.button_accept": "حفظ التغييرات",
   "edit_table.entity_type_change_warning": "أنت تُجري تغييرات ستؤثر على عرض بياناتك في Marble.",
   "edit_table.header_prefix": "تعديل",
+  "edit_table.menu_label": "تعديل الجدول",
   "edit_table.title": "تعديل الوصف",
   "empty_description": "لا يوجد وصف",
   "empty_state.create_table.description": "ابدأ من الصفر وحدد نموذج بياناتك الخاص",
@@ -171,6 +172,7 @@
   "parent_table": "جدول ذو صلة",
   "select_archetype.button_accept": "تطبيق النموذج",
   "select_archetype.title": "اختيار نموذج أولي",
+  "table_details.actions": "إجراءات الجدول",
   "table_details.numser_of_fields": "الحقول {{number}}.",
   "table_details.other_table": "غير محدد - التحديثات المتاحة",
   "table_relationship": "العلاقة",
@@ -302,6 +304,7 @@
   "viewer.no_object_found": "لم يتم العثور على كائن بالمعرف \"{{objectId}}\" في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
   "viewer.object_type": "نوع الكائن",
+  "viewer.view_ingested_data": "عرض البيانات المستوردة",
   "vpn": "نعم",
   "yes": "نعم"
 }

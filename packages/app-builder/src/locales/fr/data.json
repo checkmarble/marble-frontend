@@ -134,6 +134,7 @@
   "edit_table.button_accept": "Enregistrer les modifications",
   "edit_table.entity_type_change_warning": "Vous êtes en train d'effectuer des modifications qui auront un impact sur l'affichage de vos données dans Marble.",
   "edit_table.header_prefix": "Modifier",
+  "edit_table.menu_label": "Modifier la table",
   "edit_table.title": "Modifier la description",
   "empty_description": "Aucune description",
   "empty_state.create_table.description": "Partez de zéro et définissez votre propre modèle de données",
@@ -171,6 +172,7 @@
   "parent_table": "Table associée",
   "select_archetype.button_accept": "Appliquer l'archétype",
   "select_archetype.title": "Sélectionner un archétype",
+  "table_details.actions": "Actions de la table",
   "table_details.numser_of_fields": "{{number}} champs",
   "table_details.other_table": "Non défini - mises à jour disponibles",
   "table_relationship": "Relation",
@@ -302,6 +304,7 @@
   "viewer.no_object_found": "Aucun objet trouvé avec l'ID \"{{objectId}}\" dans {{tableName}}",
   "viewer.object_id": "ID de l'objet",
   "viewer.object_type": "Type d'objet",
+  "viewer.view_ingested_data": "Voir les données ingérées",
   "vpn": "Oui",
   "yes": "Oui"
 }
