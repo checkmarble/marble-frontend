@@ -2,7 +2,7 @@ import { useDeleteFieldMutation } from '@app-builder/queries/data/delete-field';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, NumberInput, SelectV2, Switch } from 'ui-design-system';
+import { Button, Input, NumberInput, type SelectOption, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../../DataVisualisation/DataField';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
@@ -63,21 +63,25 @@ export function FieldDetailPanel({
     const options = semanticTypesByDataType[field.dataType as keyof typeof semanticTypesByDataType];
     if (!options) return [];
     return options
-      .filter((opt: { value: string }) => opt.value !== 'foreign_key' || resolvedTableOptions.length > 0)
-      .map((opt: { value: string }) => ({
-        label: t(`data:upload_data.field_semantic.${opt.value}`),
-        value: opt.value,
-      }));
+      .filter((opt) => opt.value !== 'foreign_key' || resolvedTableOptions.length > 0)
+      .map(
+        (opt): SelectOption<SemanticTypeField> => ({
+          label: t(`data:upload_data.field_semantic.${opt.value}`),
+          value: opt.value,
+        }),
+      );
   }, [field, resolvedTableOptions.length, t]);
 
   const semanticSubOptions = useMemo(() => {
     if (!field || !field.semanticType) return [];
     const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, field.semanticType as SemanticTypeField);
     if (!subOpts) return [];
-    return subOpts.map((opt) => ({
-      label: t(`data:upload_data.field_semantic_sub.${opt.value}`),
-      value: opt.value,
-    }));
+    return subOpts.map(
+      (opt): SelectOption<SemanticSubTypeField> => ({
+        label: t(`data:upload_data.field_semantic_sub.${opt.value}`),
+        value: opt.value as SemanticSubTypeField,
+      }),
+    );
   }, [field, t]);
 
   const currencyFieldOptions = useMemo(
