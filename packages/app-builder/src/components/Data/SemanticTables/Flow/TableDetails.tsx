@@ -12,6 +12,7 @@ import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
 import { adaptUpdateTableValue } from '../EditTable/updateTable-adapter';
 import { ChangeRecord, SemanticTableFormValues } from '../Shared/semanticData-types';
+import { UploadTableDrawer } from '../UploadData/UploadTableDrawer';
 import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
 
 export interface TableDetailsProps {
@@ -29,6 +30,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dataModel = useDataModel();
   const { isIngestDataAvailable } = useDataModelFeatureAccess();
@@ -53,14 +55,18 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
         onClose={() => setIsEditOpen(false)}
         tableModel={data.tableModel}
         onSave={async (tableState: SemanticTableFormValues, changeSet: ChangeRecord[]) => {
-          console.log({ tableState, changeSet });
-          const result = updateTableMutation.mutate(adaptUpdateTableValue(tableState, changeSet));
-          console.log({ result });
+          updateTableMutation.mutate(adaptUpdateTableValue(tableState, changeSet));
           setIsEditOpen(false);
         }}
       />
       <DeleteTableModal table={data.tableModel} open={isDeleteOpen} onOpenChange={setIsDeleteOpen} />
       <TableRecordPreviewDrawer open={isPreviewOpen} onOpenChange={setIsPreviewOpen} tableName={data.tableModel.name} />
+      <UploadTableDrawer
+        open={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
+        tableName={data.tableModel.name}
+        tableModel={data.tableModel}
+      />
     </>
   );
 
@@ -117,7 +123,8 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                     {t('data:delete_table.menu_label')}
                   </div>
                 </MenuCommand.Item>
-                <MenuCommand.Item disabled={!isIngestDataAvailable}>
+                <MenuCommand.Separator />
+                <MenuCommand.Item disabled={!isIngestDataAvailable} onSelect={() => setIsUploadOpen(true)}>
                   <div className="flex items-center gap-v2-xs">
                     <Icon icon="upload" className="size-4" />
                     {t('data:upload_data.title')}

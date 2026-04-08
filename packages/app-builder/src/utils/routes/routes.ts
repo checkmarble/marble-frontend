@@ -941,6 +941,11 @@ export const routes = [
         "file": "routes/ressources+/decisions+/list-scheduled-execution.tsx"
       },
       {
+        "id": "routes/ressources+/ingestion+/upload-logs.$objectType",
+        "path": "ressources/ingestion/upload-logs/:objectType",
+        "file": "routes/ressources+/ingestion+/upload-logs.$objectType.tsx"
+      },
+      {
         "id": "routes/ressources+/ingestion+/upload.$objectType",
         "path": "ressources/ingestion/upload/:objectType",
         "file": "routes/ressources+/ingestion+/upload.$objectType.tsx"

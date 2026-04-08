@@ -33,7 +33,6 @@ export function adaptUpdateTableValue(
       tableState.links,
     ),
   };
-  console.log({ adaptedTable });
   return adaptedTable;
 }
 
@@ -47,7 +46,6 @@ function adaptLinksOperations(changeSet: LinkChange[], links: LinkValue[]): Edit
       linkOps.push(adaptLinkOperation(change, linkValues));
     }
   }
-  console.log({ linkOps });
   return linkOps.length > 0 ? linkOps : undefined;
 }
 
@@ -71,7 +69,6 @@ function adaptFieldsOperations(changeSet: FieldChange[], fields: TableField[]): 
       fieldOps.push(adaptFieldOperation(change, fieldValues));
     }
   }
-  console.log({ fieldOps });
   return fieldOps.length > 0 ? fieldOps : undefined;
 }
 

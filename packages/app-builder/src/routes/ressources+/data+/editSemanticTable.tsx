@@ -26,7 +26,6 @@ export const action = createServerFn(
 
     const parsed = EditSemanticTablePayloadSchema.safeParse(raw);
 
-    console.log({ parsed });
     if (!parsed.success) {
       return Response.json(
         {
@@ -50,7 +49,6 @@ export const action = createServerFn(
         links: parsed.data.links,
       } satisfies UpdateTableBodyDto);
 
-      console.log({ patchBody });
       await dataModelRepository.patchDataModelTable(parsed.data.tableId, patchBody);
 
       return { success: true, errors: [] };
