@@ -1,5 +1,5 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import { type AstNode, stripIdFromNode } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import {
   isStringTemplateAstNode,
   NewStringTemplateAstNode,
@@ -8,11 +8,8 @@ import {
   type StringTemplateAstNode,
 } from '@app-builder/models/astNode/strings';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
-import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
-import { Button } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { useDefaultCaseName } from './CaseNameEditor.hook';
 
 export type CaseNameEditorProps = {
@@ -26,24 +23,8 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
   const currentScenario = useCurrentScenario();
   const [isEditing, setIsEditing] = useState(false);
   const { defaultCaseNameNode } = useDefaultCaseName(currentScenario.triggerObjectType);
-  // const { validate, validation } = useAstValidationFetcher(currentScenario.id);
-  const initialValueRef = useRef(value);
-  // const handleValidation = useMemo(() => {
-  //   return R.debounce((astNode: AstNode) => validate(astNode, 'string'), {
-  //     waitMs: 300,
-  //   }).call;
-  // }, [validate]);
 
   const caseNameContent = value ? getAstNodeDisplayElement(value) : '';
-  const isDefaultCaseName = useMemo(() => {
-    if (!value) return true;
-
-    const strippedValue = stripIdFromNode(value);
-    const strippedInitial = stripIdFromNode(initialValueRef.current ?? defaultCaseNameNode);
-    const isEqual = R.isDeepEqual(strippedValue, strippedInitial);
-
-    return isEqual;
-  }, [value, initialValueRef, defaultCaseNameNode]);
 
   const handleAstNodeChange = (newAstNode: AstNode) => {
     if (isStringTemplateAstNode(newAstNode)) {
@@ -68,17 +49,8 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
         >
           {caseNameContent}
         </button>
-        {!isDefaultCaseName ? (
-          <Button
-            variant="secondary"
-            onClick={() => onChange(initialValueRef.current ?? defaultCaseNameNode)}
-            className="self-stretch"
-          >
-            <Icon icon="restart-alt" className="size-5" />
-          </Button>
-        ) : null}
         {isEditing ? (
-          <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit">
+          <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit" renderLoading={() => null}>
             <AstBuilder.EditModal
               node={value ?? NewStringTemplateAstNode()}
               onSave={handleAstNodeChange}
