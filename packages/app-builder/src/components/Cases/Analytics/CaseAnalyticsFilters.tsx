@@ -1,16 +1,17 @@
 import type { Inbox } from '@app-builder/models/inbox';
 import type { User } from '@app-builder/models/user';
+import { type DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type SelectOption, SelectV2 } from 'ui-design-system';
 
+import { CaseAnalyticsDateRangeMenu } from './CaseAnalyticsDateRangeMenu';
+
 const ALL_VALUE = '__all__';
 
 interface CaseAnalyticsFiltersProps {
-  startDate: string;
-  onStartDateChange: (date: string) => void;
-  endDate: string;
-  onEndDateChange: (date: string) => void;
+  dateRange: DateRangeFilterType;
+  onDateRangeChange: (dateRange: NonNullable<DateRangeFilterType>) => void;
   inboxId: string | undefined;
   onInboxIdChange: (inboxId: string | undefined) => void;
   inboxes: Inbox[];
@@ -20,10 +21,8 @@ interface CaseAnalyticsFiltersProps {
 }
 
 export function CaseAnalyticsFilters({
-  startDate,
-  onStartDateChange,
-  endDate,
-  onEndDateChange,
+  dateRange,
+  onDateRangeChange,
   inboxId,
   onInboxIdChange,
   inboxes,
@@ -63,27 +62,7 @@ export function CaseAnalyticsFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-v2-md">
-      <div className="flex items-center gap-v2-xs">
-        <label className="text-s text-grey-secondary">{t('cases:analytics.filters.from')}</label>
-        <input
-          type="date"
-          value={startDate}
-          max={endDate}
-          onChange={(e) => onStartDateChange(e.target.value)}
-          className="border-grey-border bg-surface-card text-s rounded-v2-sm border px-v2-sm py-v2-xs"
-        />
-      </div>
-
-      <div className="flex items-center gap-v2-xs">
-        <label className="text-s text-grey-secondary">{t('cases:analytics.filters.to')}</label>
-        <input
-          type="date"
-          value={endDate}
-          min={startDate}
-          onChange={(e) => onEndDateChange(e.target.value)}
-          className="border-grey-border bg-surface-card text-s rounded-v2-sm border px-v2-sm py-v2-xs"
-        />
-      </div>
+      <CaseAnalyticsDateRangeMenu value={dateRange} onChange={onDateRangeChange} />
 
       <SelectV2
         options={inboxOptions}

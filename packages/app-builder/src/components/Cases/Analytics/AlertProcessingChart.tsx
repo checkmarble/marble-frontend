@@ -1,9 +1,19 @@
 import type { BarData, BucketCount, PeriodDuration } from '@app-builder/models/analytics/case-analytics';
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { ResponsiveBar } from '@nivo/bar';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChartEmptyState } from './ChartEmptyState';
-import { CASE_ANALYTICS_COLORS, nivoTheme, tooltipStyle } from './chart-theme';
+import {
+  CASE_ANALYTICS_COLORS,
+  formatPeriodTick,
+  formatPeriodTooltip,
+  getXTickValues,
+  isSamePeriodYear,
+  nivoTheme,
+  tooltipStyle,
+} from './chart-theme';
 
 interface AlertProcessingChartProps {
   caseDurationByPeriod: PeriodDuration[];
@@ -12,6 +22,10 @@ interface AlertProcessingChartProps {
 
 export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: AlertProcessingChartProps) {
   const { t } = useTranslation(['cases']);
+  const language = useFormatLanguage();
+
+  const sameYear = useMemo(() => isSamePeriodYear(caseDurationByPeriod.map((d) => d.period)), [caseDurationByPeriod]);
+  const xTickValues = useMemo(() => getXTickValues(caseDurationByPeriod, 'period'), [caseDurationByPeriod]);
 
   return (
     <div className="bg-surface-card border-grey-border flex flex-col gap-v2-md rounded-v2-lg border p-v2-md">
@@ -38,11 +52,17 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                   CASE_ANALYTICS_COLORS.secondary,
                 ]}
                 valueScale={{ type: 'linear' }}
-                axisBottom={{ tickRotation: -30 }}
+                axisBottom={{
+                  tickRotation: -30,
+                  tickValues: xTickValues,
+                  format: (value: string) => formatPeriodTick(value, language, sameYear),
+                }}
                 axisLeft={{}}
                 tooltip={({ id, value, indexValue }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s text-grey-secondary">{indexValue}</span>
+                    <span className="text-s text-grey-secondary">
+                      {formatPeriodTooltip(String(indexValue), language)}
+                    </span>
                     <span className="text-s font-semibold">
                       {t(`cases:analytics.chart.${String(id)}`)}: {value}
                     </span>

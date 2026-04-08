@@ -41,5 +41,10 @@
   "screening_hits.title": "Filtrages de listes",
   "time_granularity.day": "Jour",
   "time_granularity.month": "Mois",
-  "time_granularity.week": "Semaine"
+  "time_granularity.week": "Semaine",
+  "upsell.benefit_1": "Distribution des scores et répartition des décisions",
+  "upsell.benefit_2": "Analyse des règles déclenchées et comparaison",
+  "upsell.benefit_3": "Analyse des hits de screening et sanctions",
+  "upsell.description": "Accédez à la suite complète d'analytics pour obtenir des insights détaillés sur vos décisions, règles et activités de screening.",
+  "upsell.title": "Passez à la version supérieure pour accéder aux analytics avancés"
 }

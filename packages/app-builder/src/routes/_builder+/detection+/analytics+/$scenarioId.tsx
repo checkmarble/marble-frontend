@@ -4,6 +4,7 @@ import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/De
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVsDecisionOutcomes';
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
+import { UpsellCard } from '@app-builder/components/Analytics/UpsellCard';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import type {
@@ -390,7 +391,17 @@ export default function Analytics() {
                       isLoading={screeningHitsTableQuery.isFetching}
                     />
                   </>
-                ) : null}
+                ) : (
+                  <UpsellCard
+                    title={t('analytics:upsell.title')}
+                    description={t('analytics:upsell.description')}
+                    benefits={[
+                      t('analytics:upsell.benefit_1'),
+                      t('analytics:upsell.benefit_2'),
+                      t('analytics:upsell.benefit_3'),
+                    ]}
+                  />
+                )}
               </div>
             </I18nProvider>
           </FormattingProvider>
