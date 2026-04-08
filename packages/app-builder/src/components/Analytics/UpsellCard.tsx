@@ -10,7 +10,7 @@ interface UpsellCardProps {
 }
 
 export function UpsellCard({ title, description, benefits = [], className }: UpsellCardProps) {
-  const { t } = useTranslation(['cases', 'common']);
+  const { t } = useTranslation(['common']);
 
   return (
     <div

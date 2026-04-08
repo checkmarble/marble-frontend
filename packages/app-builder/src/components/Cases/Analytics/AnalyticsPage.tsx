@@ -12,12 +12,12 @@ import type { Inbox } from '@app-builder/models/inbox';
 import type { User } from '@app-builder/models/user';
 import { useCaseAnalytics } from '@app-builder/queries/cases/case-analytics';
 import { add, subMonths } from 'date-fns';
-import { type DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
+import { type DateRangeFilterType } from 'ui-design-system/src/FiltersBar/types';
 
 import { AlertMetricsChart } from './AlertMetricsChart';
 import { AlertProcessingChart } from './AlertProcessingChart';
@@ -51,8 +51,18 @@ function resolveDateRange(range: DateRangeFilterType): { startDate: string; endD
     };
   }
 
-  // Dynamic: ISO 8601 duration with sign prefix (e.g. '-P6M', '-P30D')
-  const start = add(now, Temporal.Duration.from(range.fromNow));
+  // Dynamic: ISO 8601 duration with sign prefix (e.g. '-P6M', '-P30D').
+  // Spread Temporal.Duration fields into a plain object for date-fns `add`.
+  const duration = Temporal.Duration.from(range.fromNow);
+  const start = add(now, {
+    years: duration.years,
+    months: duration.months,
+    weeks: duration.weeks,
+    days: duration.days,
+    hours: duration.hours,
+    minutes: duration.minutes,
+    seconds: duration.seconds,
+  });
   return { startDate: start.toISOString().slice(0, 10), endDate: today };
 }
 
@@ -126,7 +136,15 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
               </div>
             ))
             .with({ isSuccess: true }, () => {
-              if (!aggregated) return null;
+              // Query returned undefined (e.g. session expired → redirect in flight):
+              // show a spinner rather than a blank page while the navigation settles.
+              if (!aggregated) {
+                return (
+                  <div className="grid h-96 place-items-center">
+                    <Spinner className="size-12" />
+                  </div>
+                );
+              }
 
               return (
                 <div className="flex flex-col gap-v2-md">

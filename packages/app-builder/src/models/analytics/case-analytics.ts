@@ -22,6 +22,27 @@ export interface PeriodDuration {
   count: number;
 }
 
+/**
+ * Derived from PeriodDuration for chart display: the frontend computes the
+ * average from the aggregated raw sums so that weighted averages are correct
+ * across any time bucket (day/month/quarter).
+ */
+export interface PeriodAverage {
+  period: string;
+  avgDays: number;
+  maxDays: number;
+  count: number;
+}
+
+export function toPeriodAverage(item: PeriodDuration): PeriodAverage {
+  return {
+    period: item.period,
+    avgDays: item.count > 0 ? Math.round((item.sumDays / item.count) * 10) / 10 : 0,
+    maxDays: item.maxDays,
+    count: item.count,
+  };
+}
+
 export interface BucketCount {
   bucket: string;
   count: number;

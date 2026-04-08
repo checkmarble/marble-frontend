@@ -41,7 +41,7 @@ interface LoaderData {
 }
 
 export const handle = {
-  i18n: ['navigation', 'filters', 'analytics', 'decisions'] satisfies Namespace,
+  i18n: ['navigation', 'filters', 'analytics', 'decisions', 'common'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs): Promise<Response> {

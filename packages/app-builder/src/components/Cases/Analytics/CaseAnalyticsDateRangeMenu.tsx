@@ -1,9 +1,9 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
 import { formatDuration, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { type DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Separator } from 'ui-design-system';
+import { type DateRangeFilterType } from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
 
 interface CaseAnalyticsDateRangeMenuProps {

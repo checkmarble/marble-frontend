@@ -1,9 +1,9 @@
 import type { Inbox } from '@app-builder/models/inbox';
 import type { User } from '@app-builder/models/user';
-import { type DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type SelectOption, SelectV2 } from 'ui-design-system';
+import { type DateRangeFilterType } from 'ui-design-system/src/FiltersBar/types';
 
 import { CaseAnalyticsDateRangeMenu } from './CaseAnalyticsDateRangeMenu';
 
