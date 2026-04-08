@@ -1,6 +1,6 @@
 import { type TableModel } from '@app-builder/models/data-model';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
-import { useDataModel } from '@app-builder/services/data/data-model';
+import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -31,6 +31,8 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dataModel = useDataModel();
+  const { isIngestDataAvailable } = useDataModelFeatureAccess();
+
   const relationFields = data.tableModel.fields.filter((field) => data.relationFieldNames.includes(field.name));
   const belongsToField = (fieldName: string) =>
     !!dataModel
@@ -115,7 +117,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                     {t('data:delete_table.menu_label')}
                   </div>
                 </MenuCommand.Item>
-                <MenuCommand.Item disabled>
+                <MenuCommand.Item disabled={!isIngestDataAvailable}>
                   <div className="flex items-center gap-v2-xs">
                     <Icon icon="upload" className="size-4" />
                     {t('data:upload_data.title')}

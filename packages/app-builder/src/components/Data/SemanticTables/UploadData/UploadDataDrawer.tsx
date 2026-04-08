@@ -1,4 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
+import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
+import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
+import { useNavigate } from '@remix-run/react';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
@@ -370,6 +373,8 @@ function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
 export function UploadDataDrawerContent() {
   const { close, tablesState, updateTableState, tableIds, getLinksForTable } = DrawerContext.useValue();
   const { t } = useTranslation(['data']);
+  const createTableMutation = useCreateTableMutation();
+  const navigate = useNavigate();
 
   const isSingleTable = tableIds.length === 1;
 
@@ -391,6 +396,7 @@ export function UploadDataDrawerContent() {
   const [selectedTableId, setSelectedTableId] = useState<string>(() => (isSingleTable ? tableIds[0]! : ''));
   const [showSummary, setShowSummary] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [saveErrors, setSaveErrors] = useState<string[]>([]);
 
   // Mark selected table as visited
   useEffect(() => {
@@ -399,9 +405,10 @@ export function UploadDataDrawerContent() {
     }
   }, [selectedTableId, tablesState, updateTableState]);
 
-  // Clear validation errors when switching tables
+  // Clear validation/save errors when switching tables
   useEffect(() => {
     setValidationErrors([]);
+    setSaveErrors([]);
   }, [selectedTableId]);
 
   const errorFieldIds = useMemo(
@@ -409,8 +416,31 @@ export function UploadDataDrawerContent() {
     [validationErrors],
   );
 
-  function handleSave() {
-    // TODO: implement save logic
+  async function handleSave() {
+    const nonCanceledTableIds = tableIds.filter((id) => !tablesState[id]!.isCanceled);
+
+    const results = await Promise.allSettled(
+      nonCanceledTableIds.map(async (tableId) => {
+        const tableState = tablesState[tableId]!;
+        const values: SemanticTableFormValues = {
+          ...tableState,
+          links: getLinksForTable(tableId),
+        };
+        const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
+        if (!result.success) {
+          throw new Error(result.message ?? `Failed to create table "${tableState.name}"`);
+        }
+        return result;
+      }),
+    );
+
+    const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+    if (failures.length > 0) {
+      setSaveErrors(failures.map((r) => (r.reason instanceof Error ? r.reason.message : 'Unknown error')));
+      return;
+    }
+
+    navigate('/data/list');
   }
 
   function handleNextOrSummary() {
@@ -475,13 +505,26 @@ export function UploadDataDrawerContent() {
         <div className="flex-1 overflow-auto px-v2-lg">
           <SummaryView />
         </div>
-        <footer className="flex shrink-0 justify-end gap-v2-md p-v2-lg border-t border-grey-border">
-          <Button variant="secondary" appearance="stroked" onClick={close}>
-            {t('data:upload_data.button_cancel')}
-          </Button>
-          <Button variant="primary" onClick={handleSave}>
-            {t('data:upload_data.button_save')}
-          </Button>
+        <footer className="flex shrink-0 justify-between gap-v2-md p-v2-lg border-t border-grey-border">
+          {saveErrors.length > 0 ? (
+            <Callout color="red" icon="lightbulb" iconColor="red">
+              <ul className="flex flex-col gap-v2-xs pl-3">
+                {saveErrors.map((msg, i) => (
+                  <li key={i}>{msg}</li>
+                ))}
+              </ul>
+            </Callout>
+          ) : (
+            <div />
+          )}
+          <div className="flex justify-end gap-v2-md">
+            <Button variant="secondary" appearance="stroked" onClick={close}>
+              {t('data:upload_data.button_cancel')}
+            </Button>
+            <Button variant="primary" onClick={handleSave}>
+              {t('data:upload_data.button_save')}
+            </Button>
+          </div>
         </footer>
       </div>
     );
@@ -512,7 +555,15 @@ export function UploadDataDrawerContent() {
         ) : null}
       </div>
       <footer className="flex shrink-0 justify-between gap-v2-md p-v2-lg border-t border-grey-border">
-        {validationErrors.length > 0 ? (
+        {saveErrors.length > 0 ? (
+          <Callout color="red" icon="lightbulb" iconColor="red">
+            <ul className="flex flex-col gap-v2-xs pl-3">
+              {saveErrors.map((msg, i) => (
+                <li key={i}>{msg}</li>
+              ))}
+            </ul>
+          </Callout>
+        ) : validationErrors.length > 0 ? (
           <Callout color="red" icon="lightbulb" iconColor="red">
             <ul className="flex flex-col gap-v2-xs pl-3">
               {validationErrors.map((e, i) => (

@@ -72,8 +72,11 @@ export function DataFields({ table, object, preset, customFields, className, opt
 
     // Search for explicit currency field (semantic)
     let currencyField = tableModel.fields.find((f) => f.semanticType === 'currency_code');
-    // fallback search from field name
-    if (!currencyField) currencyField = tableModel.fields.find((f) => /currency|curr_/i.test(f.name));
+    // fallback search from field name (only if there is only one of them)
+    if (!currencyField) {
+      const currencyFields = tableModel.fields.filter((f) => /currency|curr_/i.test(f.name));
+      currencyField = currencyFields.length === 1 ? currencyFields[0] : undefined;
+    }
     const rawCurrency = currencyField ? object.data?.[currencyField.name] : undefined;
     if (typeof rawCurrency === 'string' && rawCurrency.length > 0) {
       return { currency: rawCurrency, country, preset, options, table: tableModel, tableOptions };

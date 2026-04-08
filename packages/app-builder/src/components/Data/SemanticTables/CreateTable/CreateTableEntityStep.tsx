@@ -33,7 +33,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
     [dataModel],
   );
 
-  const canSelectTransactionOrEvent = personOrOtherTables.length > 0;
+  const canSelectTypeThatNeedsAPerson = personOrOtherTables.length > 0;
   const hasNameError = errorFields?.has('name') ?? false;
   const hasEntityTypeError = errorFields?.has('entityType') ?? false;
   const hasSubEntityError = errorFields?.has('subEntity') ?? false;
@@ -59,7 +59,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
   }
 
   function isEntityDisabled(entity: FtmEntityV2): boolean {
-    return (entity === 'transaction' || entity === 'event') && !canSelectTransactionOrEvent;
+    return requiresLink(entity) && !canSelectTypeThatNeedsAPerson;
   }
 
   return (

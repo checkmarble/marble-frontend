@@ -16,7 +16,7 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import reactflowStyles from '@xyflow/react/dist/style.css?url';
-import * as React from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, MenuButton } from 'ui-design-system';
@@ -71,7 +71,7 @@ function nodeMeasuredHeight(nd: Node<DataModelNodeData>) {
 interface DataModelFlowProps {
   dataModel: DataModel;
   pivots: Pivot[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const dataModelFlowStyles = reactflowStyles;
@@ -91,20 +91,20 @@ export function DataModelFlow({ dataModel, pivots, children }: DataModelFlowProp
 function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) {
   const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
   const { t } = useTranslation(dataI18n);
-  const [nodes, setNodes] = React.useState<Array<Node<DataModelNodeData>>>([]);
-  const [edges, setEdges] = React.useState<Array<Edge<DataModelEdgeData>>>([]);
+  const [nodes, setNodes] = useState<Array<Node<DataModelNodeData>>>([]);
+  const [edges, setEdges] = useState<Array<Edge<DataModelEdgeData>>>([]);
 
-  const onNodesChange = React.useCallback((changes: NodeChange<Node<DataModelNodeData>>[]) => {
+  const onNodesChange = useCallback((changes: NodeChange<Node<DataModelNodeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
     setNodes((nds) => applyNodeChanges(allowedChanges, nds));
   }, []);
-  const onEdgesChange = React.useCallback((changes: EdgeChange<Edge<DataModelEdgeData>>[]) => {
+  const onEdgesChange = useCallback((changes: EdgeChange<Edge<DataModelEdgeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
     setEdges((eds) => applyEdgeChanges(allowedChanges, eds));
   }, []);
 
   // Update nodes and edges when dataModel changes
-  React.useEffect(() => {
+  useEffect(() => {
     setNodes((currentNodes) =>
       R.pipe(
         dataModel,
@@ -166,7 +166,7 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
     );
   }, [dataModel, pivots]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Wait first render of each node to have dynamic width before layouting
     if (nodes.some((nd) => nodeMeasuredWidth(nd) === undefined)) return;
 
@@ -200,7 +200,7 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
   }, [edges, nodes]);
 
   const { fitView } = useDataModelReactFlow();
-  React.useEffect(() => {
+  useEffect(() => {
     const hasLaidOutNode = nodes.some((nd) => nd.data.state === 'laid_out');
     const hasLaidOutEdge = edges.some((ed) => ed.data?.state === 'laid_out');
     if (!hasLaidOutNode && !hasLaidOutEdge) return;

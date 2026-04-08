@@ -25,11 +25,7 @@ export function FieldsForm({
   errorFieldIds?: ReadonlySet<string>;
   hasError?: boolean;
 }) {
-  const {
-    isCreateDataModelFieldAvailable,
-    // isIngestDataAvailable,
-    // TODO: add ingest data feature access
-  } = useDataModelFeatureAccess();
+  const { isCreateDataModelFieldAvailable } = useDataModelFeatureAccess();
   const { fields, reorderFields, addField } = FieldsEditorContext.useValue();
   const { t } = useTranslation(['data']);
 

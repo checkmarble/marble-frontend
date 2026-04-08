@@ -15,11 +15,10 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 import reactflowStyles from '@xyflow/react/dist/style.css?url';
-import * as React from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import * as R from 'remeda';
 import { MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import {
   adaptLinkToSingleData,
   defaultDataModelEdgeOptions,
@@ -70,7 +69,7 @@ function getRelationFieldNames(tableModel: DataModel[number], dataModel: DataMod
 
 interface TableFlowProps {
   dataModel: DataModel;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const dataModelFlowStyles = reactflowStyles;
@@ -84,19 +83,19 @@ export function TableFlow({ dataModel, children }: TableFlowProps) {
 }
 
 function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
-  const [nodes, setNodes] = React.useState<Array<Node<DataModelNodeData>>>([]);
-  const [edges, setEdges] = React.useState<Array<Edge<DataModelEdgeData>>>([]);
+  const [nodes, setNodes] = useState<Array<Node<DataModelNodeData>>>([]);
+  const [edges, setEdges] = useState<Array<Edge<DataModelEdgeData>>>([]);
 
-  const onNodesChange = React.useCallback((changes: NodeChange<Node<DataModelNodeData>>[]) => {
+  const onNodesChange = useCallback((changes: NodeChange<Node<DataModelNodeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
     setNodes((nds) => applyNodeChanges(allowedChanges, nds));
   }, []);
-  const onEdgesChange = React.useCallback((changes: EdgeChange<Edge<DataModelEdgeData>>[]) => {
+  const onEdgesChange = useCallback((changes: EdgeChange<Edge<DataModelEdgeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
     setEdges((eds) => applyEdgeChanges(allowedChanges, eds));
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setNodes((currentNodes) =>
       R.pipe(
         dataModel,
@@ -162,7 +161,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     );
   }, [dataModel]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (nodes.some((nd) => nodeMeasuredWidth(nd) === undefined)) return;
 
     if (nodes.some((nd) => nd.data.state === 'initialized') || edges.some((ed) => ed.data?.state === 'initialized')) {
@@ -195,7 +194,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   }, [edges, nodes]);
 
   const { fitView } = useDataModelReactFlow();
-  React.useEffect(() => {
+  useEffect(() => {
     const hasLaidOutNode = nodes.some((nd) => nd.data.state === 'laid_out');
     const hasLaidOutEdge = edges.some((ed) => ed.data?.state === 'laid_out');
     if (!hasLaidOutNode && !hasLaidOutEdge) return;

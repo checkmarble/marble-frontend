@@ -80,7 +80,8 @@ export const defaultCreateTableFormValues: SemanticTableFormValues = {
   isVisited: false,
 };
 
-const entityTypesRequiringLink = ['transaction', 'event'] as const;
+const entityTypesRequiringLink = ['transaction', 'event', 'account'] as const;
+type EntityTypeRequiringLink = (typeof entityTypesRequiringLink)[number];
 
 export const createTableEntityStepSchema = z
   .object({
@@ -104,7 +105,7 @@ export const createTableEntityStepSchema = z
   )
   .refine(
     (data) => {
-      if (data.entityType === 'transaction' || data.entityType === 'event') {
+      if (requiresLink(data.entityType)) {
         return data.belongsToTableId.length > 0;
       }
       return true;
@@ -112,8 +113,8 @@ export const createTableEntityStepSchema = z
     { error: 'Please select a destination table', path: ['belongsToTableId'] },
   );
 
-export function requiresLink(entityType: FtmEntityV2 | ''): entityType is 'transaction' | 'event' {
-  return entityTypesRequiringLink.includes(entityType as (typeof entityTypesRequiringLink)[number]);
+export function requiresLink(entityType: FtmEntityV2 | ''): entityType is EntityTypeRequiringLink {
+  return entityTypesRequiringLink.includes(entityType as EntityTypeRequiringLink);
 }
 
 export function canProceedToStep2(values: SemanticTableFormValues): boolean {
@@ -248,7 +249,7 @@ const specificTableConstraints: Record<FtmEntityV2, SemanticTableConstraints> = 
   person: [{ fieldExist: { type: 'name' } }],
   transaction: [{ linkExist: { dataType: 'person' } }],
   event: [{ linkExist: { dataType: 'person' } }],
-  account: [],
+  account: [{ linkExist: { dataType: 'person' } }],
   other: [],
 } as const;
 

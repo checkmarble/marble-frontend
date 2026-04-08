@@ -8,7 +8,7 @@ import {
   useNodesInitialized,
   useReactFlow,
 } from '@xyflow/react';
-import * as React from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Icon } from 'ui-icons';
 
 type LayoutElements<NodeType extends Node, EdgeType extends Edge> = (
@@ -25,8 +25,8 @@ export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>(
   layoutElements: LayoutElements<NodeType, EdgeType>;
 }) {
   const { fitView, getEdges, getNodes, setEdges, setNodes } = useReactFlow<NodeType, EdgeType>();
-  const layoutElementsRef = React.useRef(layoutElements);
-  return React.useCallback(
+  const layoutElementsRef = useRef(layoutElements);
+  return useCallback(
     (options: { fitView?: boolean }) => {
       const { nodes, edges } = layoutElementsRef.current(getNodes(), getEdges());
       setNodes(nodes);
@@ -51,8 +51,8 @@ export function useLayoutInitializedNodes<NodeType extends Node, EdgeType extend
   const nodesInitialized = useNodesInitialized();
   const layoutElem = useLayoutElements({ layoutElements });
 
-  const firstLayout = React.useRef(false);
-  React.useEffect(() => {
+  const firstLayout = useRef(false);
+  useEffect(() => {
     if (mode === 'onMount' && firstLayout.current) return;
 
     if (nodesInitialized) {
@@ -90,7 +90,7 @@ export function useIsValidConnection({
   noCycle: boolean;
 }) {
   const { getNodes, getEdges } = useReactFlow();
-  return React.useCallback(
+  return useCallback(
     (connection: Connection): boolean => {
       const nodes = getNodes();
       const edges = getEdges();
