@@ -131,6 +131,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
       R.pipe(
         dataModel,
         R.flatMap((tableModel) => tableModel.linksToSingle),
+        R.filter((link) => link.parentTableId !== link.childTableId),
         R.map(adaptLinkToSingleData),
         R.map((linkToSingleData) => {
           const edgeId = getLinkToSingleDataEdgeId(linkToSingleData);

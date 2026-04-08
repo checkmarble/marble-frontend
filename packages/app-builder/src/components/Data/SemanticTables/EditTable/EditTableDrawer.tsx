@@ -294,6 +294,9 @@ export function EditTableDrawer({
             </button>
             <span className="text-l">{t('data:edit_table.header_prefix')}</span>
             <EditableAlias alias={tableState.alias} onChange={(alias) => updateTableState(tableModel.id, { alias })} />
+            {tableState.alias && tableState.alias !== tableState.name && (
+              <span className="text-s text-grey-secondary">({tableState.name})</span>
+            )}
 
             <MenuCommand.Menu open={entityTypeMenuOpen} onOpenChange={setEntityTypeMenuOpen}>
               <MenuCommand.Trigger>

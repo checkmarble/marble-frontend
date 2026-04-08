@@ -91,7 +91,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             }}
           />
           <div className="flex-1 flex flex-col gap-v2-xs">
-            <h4 className="font-semibold">{data.tableModel.name}</h4>
+            <h4 className="font-semibold">{data.tableModel.alias || data.tableModel.name}</h4>
             <div className="flex gap-v2-xs">
               {data.tableModel.semanticType == null ? (
                 <Tag color="red">{t('data:table_details.other_table')}</Tag>
