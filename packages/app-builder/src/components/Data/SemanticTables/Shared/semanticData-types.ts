@@ -9,6 +9,7 @@ export type LinkValue = {
   tableFieldId: string;
   relationType: LinkRelationType;
   targetTableId: string;
+  isNew?: boolean;
 };
 
 export type RawLink = {
@@ -205,7 +206,8 @@ export type ChangeRecord =
   | { type: 'table'; operation: 'MOD'; changedProperties: SemanticTableChangedProperty[] }
   | { type: 'field'; operation: 'MOD' | 'DEL'; objectId: string }
   | { type: 'field'; operation: 'ADD'; objectName: string }
-  | { type: 'link'; operation: 'MOD' | 'DEL'; objectId: string }
+  | { type: 'link'; operation: 'DEL'; objectId: string }
+  | { type: 'link'; operation: 'MOD'; relationshipType: LinkRelationType }
   | { type: 'link'; operation: 'ADD'; objectName: string };
 
 export function getMockValue(

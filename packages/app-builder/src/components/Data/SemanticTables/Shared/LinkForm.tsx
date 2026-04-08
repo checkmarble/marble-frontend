@@ -117,6 +117,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         placeholder={t('data:upload_data.link_name_placeholder')}
         borderColor={hasError ? 'redfigma-47' : undefined}
         className="w-36 min-w-fit"
+        disabled={link.isNew === false}
       />
       <SelectV2
         value={link.tableFieldId}
@@ -124,6 +125,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         onChange={(value) => updateLink(linkId, { tableFieldId: value })}
         options={fieldOptions}
         className={cn('flex-1 min-w-fit', hasError && 'border-red-primary')}
+        disabled={link.isNew === false}
       />
       <SelectV2
         value={link.relationType}
@@ -138,6 +140,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         onChange={(value) => updateLink(linkId, { targetTableId: value })}
         options={destinationOptions}
         className={cn('flex-1 min-w-fit', hasError && 'border-red-primary')}
+        disabled={link.isNew === false}
       />
       {isDeleteDataModelLinkAvailable && (
         <button

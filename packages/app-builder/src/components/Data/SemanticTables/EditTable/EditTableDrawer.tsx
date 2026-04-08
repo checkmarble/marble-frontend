@@ -112,6 +112,7 @@ export function EditTableDrawer({
         relationType: hasBelongsTo ? 'related' : 'belongs_to',
         targetTableId: '',
         sourceTableId,
+        isNew: true,
       },
     }));
   }, []);
@@ -238,7 +239,7 @@ export function EditTableDrawer({
       return;
     }
     setValidationErrors([]);
-    await onSave(tableState, changeSet);
+    await onSave(values, changeSet);
   }
 
   const handleBackdropClose = useCallback(() => {
@@ -474,8 +475,9 @@ function adaptLinksToLinkState(links: LinkToSingle[], tableId: string): Record<s
         name: link.name,
         sourceTableId: tableId,
         tableFieldId: link.childFieldName,
-        relationType: 'belongs_to' as const,
+        relationType: link.relationType,
         targetTableId: link.parentTableId,
+        isNew: false,
       } satisfies LinkValue,
     ]),
   );
@@ -536,8 +538,8 @@ function computeChangeSet(
   for (const [linkId, link] of Object.entries(currentLinksState)) {
     if (!initialLinksState[linkId]) {
       changes.push({ type: 'link', operation: 'ADD', objectName: link.name });
-    } else if (JSON.stringify(initialLinksState[linkId]) !== JSON.stringify(link)) {
-      changes.push({ type: 'link', operation: 'MOD', objectId: linkId });
+    } else if (initialLinksState[linkId].relationType !== link.relationType) {
+      changes.push({ type: 'link', operation: 'MOD', relationshipType: link.relationType });
     }
   }
   for (const linkId of Object.keys(initialLinksState)) {

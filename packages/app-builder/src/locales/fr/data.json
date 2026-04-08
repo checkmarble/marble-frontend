@@ -81,6 +81,7 @@
   "create.button_accept": "Créer",
   "data-model": "Modèle de données",
   "delete_field.confirm": "Êtes-vous sûr de vouloir supprimer le champ \"{{name}}\" ? Cette action est irréversible.",
+  "delete_field.confirm_with_links": "La suppression de ce champ entraînera également la suppression du lien \"{{linkNames}}\" qui le référence. Cette action est irréversible.",
   "delete_field.title": "Supprimer le champ {{name}}",
   "delete_link.confirm": "Êtes-vous sûr de vouloir supprimer le lien \"{{name}}\" ? Cette action est irréversible.",
   "delete_link.title": "Supprimer le lien {{name}}",

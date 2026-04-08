@@ -39,9 +39,15 @@ export function adaptUpdateTableValue(
 function adaptLinksOperations(changeSet: LinkChange[], links: LinkValue[]): EditSemanticLinkPayload[] | undefined {
   const linkOps: EditSemanticTablePayload['links'] = [];
   for (const change of changeSet) {
-    const linkValues = links.find((link) =>
-      change.operation === 'ADD' ? change.objectName === link.name : change.objectId === link.linkId,
-    );
+    if (change.operation === 'DEL') {
+      linkOps.push({ op: 'DEL', data: { id: change.objectId } });
+      continue;
+    }
+    const linkValues = links.find((link) => {
+      if (change.operation === 'ADD' && change.objectName === link.name) return true;
+      if (change.operation === 'MOD' && change.relationshipType === link.relationType) return true;
+      return false;
+    });
     if (linkValues) {
       linkOps.push(adaptLinkOperation(change, linkValues));
     }
@@ -53,7 +59,7 @@ function adaptLinkOperation(change: LinkChange, linkValues: LinkValue): EditSema
   if (change.operation === 'MOD')
     return {
       op: 'MOD',
-      data: { id: linkValues.linkId, ...adaptLink(linkValues) },
+      data: { id: linkValues.linkId, link_type: linkValues.relationType },
     };
   if (change.operation === 'DEL') return { op: 'DEL', data: { id: linkValues.linkId } };
   return { op: 'ADD', data: adaptLink(linkValues) };
@@ -62,6 +68,10 @@ function adaptLinkOperation(change: LinkChange, linkValues: LinkValue): EditSema
 function adaptFieldsOperations(changeSet: FieldChange[], fields: TableField[]): EditSemanticFieldPayload[] | undefined {
   const fieldOps: EditSemanticTablePayload['fields'] = [];
   for (const change of changeSet) {
+    if (change.operation === 'DEL') {
+      fieldOps.push({ op: 'DEL', data: { id: change.objectId } });
+      continue;
+    }
     const fieldValues = fields.find((field) =>
       change.operation === 'ADD' ? change.objectName === field.name : change.objectId === field.id,
     );

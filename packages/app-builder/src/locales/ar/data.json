@@ -81,6 +81,7 @@
   "create.button_accept": "إنشاء الحقل",
   "data-model": "نموذج البيانات",
   "delete_field.confirm": "هل أنت متأكد من أنك تريد حذف الحقل \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+  "delete_field.confirm_with_links": "حذف هذا الحقل سيؤدي أيضاً إلى حذف الرابط \"{{linkNames}}\" الذي يشير إليه. لا يمكن التراجع عن هذا الإجراء.",
   "delete_field.title": "حذف الحقل {{name}}",
   "delete_link.confirm": "هل أنت متأكد من أنك تريد حذف الرابط \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
   "delete_link.title": "حذف الرابط {{name}}",

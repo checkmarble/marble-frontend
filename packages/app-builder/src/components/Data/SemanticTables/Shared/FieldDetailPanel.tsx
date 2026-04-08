@@ -1,8 +1,7 @@
-import { useDeleteFieldMutation } from '@app-builder/queries/data/delete-field';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, NumberInput, type SelectOption, SelectV2, Switch } from 'ui-design-system';
+import { Button, Input, Modal, NumberInput, type SelectOption, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../../DataVisualisation/DataField';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
@@ -14,6 +13,7 @@ import {
   enumColors,
   getMockValue,
   getSemanticSubOptions,
+  type LinkValue,
   type SemanticSubTypeField,
   SemanticTypeField,
   semanticTypesByDataType,
@@ -25,19 +25,23 @@ export function FieldDetailPanel({
   onClose,
   title,
   tableOptions,
+  links,
+  removeLink,
 }: {
   fieldId: string;
   onClose: () => void;
   title?: string;
   tableOptions?: { label: string; value: string }[];
+  links?: LinkValue[];
+  removeLink?: (linkId: string) => void;
 }) {
   const { fields, updateField, removeField, mainTimestampFieldName, setMainTimestampFieldName } =
     FieldsEditorContext.useValue();
   const dataModel = useDataModel();
   const { isEditDataModelInfoAvailable, isDeleteDataModelFieldAvailable } = useDataModelFeatureAccess();
 
-  const deleteFieldMutation = useDeleteFieldMutation();
-  const { t } = useTranslation(['data']);
+  const { t } = useTranslation(['data', 'common']);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const field = fields.find((f) => f.id === fieldId);
 
   const isNameDuplicate = useMemo(() => {
@@ -91,211 +95,255 @@ export function FieldDetailPanel({
         .map((f) => ({ label: f.alias || f.name, value: f.id })),
     [fields, fieldId],
   );
+  const linkedLinks = useMemo(
+    () => (links ?? []).filter((l) => l.tableFieldId === field?.name || l.tableFieldId === fieldId),
+    [links, field?.name, fieldId],
+  );
 
   if (!field) return null;
 
   const isLocked = field.locked ?? false;
+  const canDeleteField = (field.isNew || isDeleteDataModelFieldAvailable) && !field.locked;
 
   function update(values: Partial<TableField>) {
     if (isEditDataModelInfoAvailable) updateField(fieldId, values);
   }
 
+  function handleDeleteClick() {
+    if (linkedLinks.length > 0) {
+      setConfirmDeleteOpen(true);
+    } else {
+      performDelete();
+    }
+  }
+
+  function performDelete() {
+    console.log('canDeleteField', canDeleteField);
+    if (!canDeleteField) return;
+    removeField(fieldId);
+    for (const link of linkedLinks) {
+      removeLink?.(link.linkId);
+    }
+    onClose();
+  }
+
   const mockedValue = getMockValue(field.dataType, field.semanticType, field.semanticSubType);
 
   return (
-    <div className="flex w-1/2 shrink-0 flex-col border-l border-grey-border overflow-y-auto">
-      <div className="flex items-center justify-between p-v2-md border-b border-grey-border">
-        <div className="flex items-center gap-v2-sm">
-          <button type="button" onClick={onClose} className="rounded-lg p-1 hover:bg-grey-border">
-            <Icon icon="x" className="size-4" />
-          </button>
-          <h4 className="text-m font-semibold">{title ?? t('data:upload_data.field_detail_title')}</h4>
-        </div>
-        {(field.isNew || isDeleteDataModelFieldAvailable) && !field.locked ? (
-          <button
-            type="button"
-            onClick={() => {
-              if (field.isNew) removeField(fieldId);
-              if (isDeleteDataModelFieldAvailable) deleteFieldMutation.mutate({ fieldId, perform: true });
-              onClose();
-            }}
-            className="rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
-          >
-            <Icon icon="delete" className="size-4" />
-          </button>
-        ) : null}
-      </div>
-
-      <div className="flex flex-col gap-v2-lg p-v2-lg">
-        {/* Type of the field */}
-        <div className="flex flex-col gap-v2-xs">
-          <label className="text-s text-grey-secondary">{t('data:upload_data.field_type_label')}</label>
-          <SelectV2
-            value={field.dataType}
-            placeholder=""
-            onChange={(value) => update({ dataType: value, semanticType: undefined, semanticSubType: undefined })}
-            options={typeSelectOptions}
-            disabled={isLocked || !field.isNew}
-          />
-        </div>
-
-        {/* Name of the field */}
-        <div className="flex flex-col gap-v2-xs">
-          <label className="text-s text-grey-secondary">{t('data:upload_data.field_name_label')}</label>
-          <Input
-            value={field.name}
-            onChange={(e) => update({ name: e.currentTarget.value })}
-            disabled={isLocked || !field.isNew}
-          />
-          {isNameDuplicate ? (
-            <p className="text-xs text-red-primary">{t('data:upload_data.field_name_unique_error')}</p>
-          ) : null}
-          {!field.name ? (
-            <p className="text-xs text-red-primary">{t('data:upload_data.field_name_required_error')}</p>
-          ) : null}
-          {field.name && !isValidDataModelName(field.name) ? (
-            <p className="text-xs text-red-primary">{t('data:create_field.name_regex_error')}</p>
-          ) : null}
-        </div>
-
-        {/* Alias */}
-        <div className="flex flex-col gap-v2-xs">
-          <label className="text-s text-grey-secondary">{t('data:upload_data.field_alias')}</label>
-          <Input value={field.alias} onChange={(e) => update({ alias: e.currentTarget.value })} />
-        </div>
-
-        {/* Advanced settings */}
-        <div className="flex flex-col gap-v2-md">
-          <h5 className="text-s font-medium text-grey-secondary">{t('data:upload_data.field_advanced_settings')}</h5>
-
-          {/* Description */}
-          <div className="flex flex-col gap-v2-xs">
-            <label className="text-s text-grey-secondary">{t('data:upload_data.field_description_label')}</label>
-            <Input
-              value={field.description}
-              onChange={(e) => update({ description: e.currentTarget.value })}
-              placeholder={t('data:upload_data.field_description_placeholder')}
-            />
+    <>
+      <div className="flex w-1/2 shrink-0 flex-col border-l border-grey-border overflow-y-auto">
+        <div className="flex items-center justify-between p-v2-md border-b border-grey-border">
+          <div className="flex items-center gap-v2-sm">
+            <button type="button" onClick={onClose} className="rounded-lg p-1 hover:bg-grey-border">
+              <Icon icon="x" className="size-4" />
+            </button>
+            <h4 className="text-m font-semibold">{title ?? t('data:upload_data.field_detail_title')}</h4>
           </div>
-
-          {/* Required */}
-          <label className="flex items-center gap-v2-sm cursor-pointer">
-            <Switch
-              checked={!field.nullable}
-              onCheckedChange={(checked) => update({ nullable: !checked })}
-              disabled={isLocked}
-            />
-            <span className="text-s">{t('data:upload_data.field_required')}</span>
-          </label>
-
-          {/* Hidden */}
-          <label className="flex items-center gap-v2-sm cursor-pointer">
-            <Switch checked={field.hidden} onCheckedChange={(checked) => update({ hidden: checked })} />
-            <span className="text-s">{t('data:upload_data.field_hidden')}</span>
-          </label>
+          {canDeleteField ? (
+            <button
+              type="button"
+              onClick={handleDeleteClick}
+              className="rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+            >
+              <Icon icon="delete" className="size-4" />
+            </button>
+          ) : null}
         </div>
 
-        {/* Semantic type */}
-        {semanticOptions.length > 0 ? (
+        <div className="flex flex-col gap-v2-lg p-v2-lg">
+          {/* Type of the field */}
           <div className="flex flex-col gap-v2-xs">
-            <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_type')}</label>
+            <label className="text-s text-grey-secondary">{t('data:upload_data.field_type_label')}</label>
             <SelectV2
-              value={field.semanticType}
-              placeholder={t('data:upload_data.field_semantic_placeholder')}
-              onChange={(value) => update({ semanticType: value as SemanticTypeField })}
-              options={semanticOptions}
-              disabled={isLocked}
-            />
-          </div>
-        ) : null}
-
-        {/* Semantic sub-type */}
-        {semanticSubOptions.length > 0 ? (
-          <div className="flex flex-col gap-v2-xs">
-            <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_sub_type')}</label>
-            <SelectV2
-              value={field.semanticSubType}
+              value={field.dataType}
               placeholder=""
-              onChange={(value) => update({ semanticSubType: value as SemanticSubTypeField })}
-              options={semanticSubOptions}
-              disabled={isLocked}
+              onChange={(value) => update({ dataType: value, semanticType: undefined, semanticSubType: undefined })}
+              options={typeSelectOptions}
+              disabled={isLocked || !field.isNew}
             />
           </div>
-        ) : null}
 
-        {/* ForeignKey-specific: destination table */}
-        {field.semanticType === 'foreign_key' ? (
-          <ForeignKeySettings
-            foreignkeyTable={field.foreignkeyTable}
-            onChange={update}
-            tableOptions={resolvedTableOptions}
-            disabled={isLocked}
-          />
-        ) : null}
+          {/* Name of the field */}
+          <div className="flex flex-col gap-v2-xs">
+            <label className="text-s text-grey-secondary">{t('data:upload_data.field_name_label')}</label>
+            <Input
+              value={field.name}
+              onChange={(e) => update({ name: e.currentTarget.value })}
+              disabled={isLocked || !field.isNew}
+            />
+            {isNameDuplicate ? (
+              <p className="text-xs text-red-primary">{t('data:upload_data.field_name_unique_error')}</p>
+            ) : null}
+            {!field.name ? (
+              <p className="text-xs text-red-primary">{t('data:upload_data.field_name_required_error')}</p>
+            ) : null}
+            {field.name && !isValidDataModelName(field.name) ? (
+              <p className="text-xs text-red-primary">{t('data:create_field.name_regex_error')}</p>
+            ) : null}
+          </div>
 
-        {/* Currency-specific: currency exponent (only when semantic type is number and sub type is currency) */}
-        {field.semanticType === 'monetary_amount' ? (
-          <CurrencySettings
-            field={field}
-            currencyFieldOptions={currencyFieldOptions}
-            onChange={update}
-            disabled={isLocked}
-          />
-        ) : null}
+          {/* Alias */}
+          <div className="flex flex-col gap-v2-xs">
+            <label className="text-s text-grey-secondary">{t('data:upload_data.field_alias')}</label>
+            <Input value={field.alias} onChange={(e) => update({ alias: e.currentTarget.value })} />
+          </div>
 
-        {/* Enum-specific: key/color/value list */}
-        {field.semanticType === 'enum' && field.semanticSubType === 'key_color_value' ? (
-          <EnumValuesSettings field={field} onChange={update} disabled={isLocked} />
-        ) : null}
+          {/* Advanced settings */}
+          <div className="flex flex-col gap-v2-md">
+            <h5 className="text-s font-medium text-grey-secondary">{t('data:upload_data.field_advanced_settings')}</h5>
 
-        {/* Boolean-specific: display as switch or yes/no */}
-        {field.dataType === 'Bool' ? (
-          <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} disabled={isLocked} />
-        ) : null}
-
-        {/* Timestamp-specific: main ordering timestamp (only one per table) */}
-        {field.dataType === 'Timestamp' ? (
-          <TimestampSettings
-            fieldName={field.name}
-            mainTimestampFieldName={mainTimestampFieldName}
-            setMainTimestampFieldName={setMainTimestampFieldName}
-            disabled={isLocked}
-          />
-        ) : null}
-
-        {/* Example of visual in Marble */}
-        <div className="flex flex-col gap-v2-xs">
-          <label className="text-s text-grey-secondary italic">{t('data:upload_data.field_visual_example')}</label>
-          <div className="rounded-lg border border-grey-border bg-grey-98 p-v2-md">
-            <div className="flex flex-col gap-v2-md">
-              <div className="p-v2-xs rounded border border-grey-border font-mono w-full text-xs text-grey-secondary">
-                <span>{`${t('data:upload_data.raw_data')} { "${field.name}": ${typeof mockedValue === 'string' ? '"' : ''}${mockedValue}${typeof mockedValue === 'string' ? '"' : ''}}`}</span>
-              </div>
-              <DataField
-                field={{
-                  id: field.id,
-                  dataType: field.dataType,
-                  description: field.description,
-                  isEnum: false,
-                  name: field.alias || field.name,
-                  nullable: field.nullable,
-                  tableId: 'id',
-                  unicityConstraint: 'no_unicity_constraint',
-                  semanticType: field.semanticType,
-                  semanticSubType: field.semanticSubType,
-                  currencyExponent: field.currencyExponent,
-                  decimalPrecision: field.decimalPrecision,
-                  currencyFieldId: field.currencyFieldId,
-                  booleanDisplay: field.booleanDisplay,
-                  foreignkeyTable: field.foreignkeyTable,
-                }}
-                value={mockedValue}
+            {/* Description */}
+            <div className="flex flex-col gap-v2-xs">
+              <label className="text-s text-grey-secondary">{t('data:upload_data.field_description_label')}</label>
+              <Input
+                value={field.description}
+                onChange={(e) => update({ description: e.currentTarget.value })}
+                placeholder={t('data:upload_data.field_description_placeholder')}
               />
+            </div>
+
+            {/* Required */}
+            <label className="flex items-center gap-v2-sm cursor-pointer">
+              <Switch
+                checked={!field.nullable}
+                onCheckedChange={(checked) => update({ nullable: !checked })}
+                disabled={isLocked}
+              />
+              <span className="text-s">{t('data:upload_data.field_required')}</span>
+            </label>
+
+            {/* Hidden */}
+            <label className="flex items-center gap-v2-sm cursor-pointer">
+              <Switch checked={field.hidden} onCheckedChange={(checked) => update({ hidden: checked })} />
+              <span className="text-s">{t('data:upload_data.field_hidden')}</span>
+            </label>
+          </div>
+
+          {/* Semantic type */}
+          {semanticOptions.length > 0 ? (
+            <div className="flex flex-col gap-v2-xs">
+              <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_type')}</label>
+              <SelectV2
+                value={field.semanticType}
+                placeholder={t('data:upload_data.field_semantic_placeholder')}
+                onChange={(value) => update({ semanticType: value as SemanticTypeField })}
+                options={semanticOptions}
+                disabled={isLocked}
+              />
+            </div>
+          ) : null}
+
+          {/* Semantic sub-type */}
+          {semanticSubOptions.length > 0 ? (
+            <div className="flex flex-col gap-v2-xs">
+              <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_sub_type')}</label>
+              <SelectV2
+                value={field.semanticSubType}
+                placeholder=""
+                onChange={(value) => update({ semanticSubType: value as SemanticSubTypeField })}
+                options={semanticSubOptions}
+                disabled={isLocked}
+              />
+            </div>
+          ) : null}
+
+          {/* ForeignKey-specific: destination table */}
+          {field.semanticType === 'foreign_key' ? (
+            <ForeignKeySettings
+              foreignkeyTable={field.foreignkeyTable}
+              onChange={update}
+              tableOptions={resolvedTableOptions}
+              disabled={isLocked}
+            />
+          ) : null}
+
+          {/* Currency-specific: currency exponent (only when semantic type is number and sub type is currency) */}
+          {field.semanticType === 'monetary_amount' ? (
+            <CurrencySettings
+              field={field}
+              currencyFieldOptions={currencyFieldOptions}
+              onChange={update}
+              disabled={isLocked}
+            />
+          ) : null}
+
+          {/* Enum-specific: key/color/value list */}
+          {field.semanticType === 'enum' && field.semanticSubType === 'key_color_value' ? (
+            <EnumValuesSettings field={field} onChange={update} disabled={isLocked} />
+          ) : null}
+
+          {/* Boolean-specific: display as switch or yes/no */}
+          {field.dataType === 'Bool' ? (
+            <BooleanSettings booleanDisplay={field.booleanDisplay} onChange={update} disabled={isLocked} />
+          ) : null}
+
+          {/* Timestamp-specific: main ordering timestamp (only one per table) */}
+          {field.dataType === 'Timestamp' ? (
+            <TimestampSettings
+              fieldName={field.name}
+              mainTimestampFieldName={mainTimestampFieldName}
+              setMainTimestampFieldName={setMainTimestampFieldName}
+              disabled={isLocked}
+            />
+          ) : null}
+
+          {/* Example of visual in Marble */}
+          <div className="flex flex-col gap-v2-xs">
+            <label className="text-s text-grey-secondary italic">{t('data:upload_data.field_visual_example')}</label>
+            <div className="rounded-lg border border-grey-border bg-grey-98 p-v2-md">
+              <div className="flex flex-col gap-v2-md">
+                <div className="p-v2-xs rounded border border-grey-border font-mono w-full text-xs text-grey-secondary">
+                  <span>{`${t('data:upload_data.raw_data')} { "${field.name}": ${typeof mockedValue === 'string' ? '"' : ''}${mockedValue}${typeof mockedValue === 'string' ? '"' : ''}}`}</span>
+                </div>
+                <DataField
+                  field={{
+                    id: field.id,
+                    dataType: field.dataType,
+                    description: field.description,
+                    isEnum: false,
+                    name: field.alias || field.name,
+                    nullable: field.nullable,
+                    tableId: 'id',
+                    unicityConstraint: 'no_unicity_constraint',
+                    semanticType: field.semanticType,
+                    semanticSubType: field.semanticSubType,
+                    currencyExponent: field.currencyExponent,
+                    decimalPrecision: field.decimalPrecision,
+                    currencyFieldId: field.currencyFieldId,
+                    booleanDisplay: field.booleanDisplay,
+                    foreignkeyTable: field.foreignkeyTable,
+                  }}
+                  value={mockedValue}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <Modal.Root open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+        <Modal.Content>
+          <Modal.Title>{t('data:delete_field.title', { name: field.alias || field.name })}</Modal.Title>
+          <div className="p-6">
+            <p className="text-s text-grey-primary">
+              {t('data:delete_field.confirm_with_links', {
+                linkNames: linkedLinks.map((l) => l.name).join(', '),
+              })}
+            </p>
+          </div>
+          <Modal.Footer>
+            <Modal.Close asChild>
+              <Button variant="secondary" appearance="stroked">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
+            <Button variant="primary" onClick={performDelete}>
+              {t('common:delete')}
+            </Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
+    </>
   );
 }
 

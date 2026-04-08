@@ -81,6 +81,7 @@
   "create.button_accept": "Create",
   "data-model": "Data model",
   "delete_field.confirm": "Are you sure you want to delete the field \"{{name}}\"? This action cannot be undone.",
+  "delete_field.confirm_with_links": "Deleting this field will also delete the link \"{{linkNames}}\" that references it. This action cannot be undone.",
   "delete_field.title": "Delete field {{name}}",
   "delete_link.confirm": "Are you sure you want to delete the link \"{{name}}\"? This action cannot be undone.",
   "delete_link.title": "Delete link {{name}}",

@@ -96,7 +96,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         linkId,
         name: '',
         tableFieldId: '',
-        relationType: 'belongs_to',
+        relationType: 'related',
         targetTableId: '',
         sourceTableId,
       },
