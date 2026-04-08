@@ -41,5 +41,10 @@
   "screening_hits.title": "عمليات فحص القوائم",
   "time_granularity.day": "يوم",
   "time_granularity.month": "شهر",
-  "time_granularity.week": "أسبوع"
+  "time_granularity.week": "أسبوع",
+  "upsell.benefit_1": "توزيع الدرجات وتحليل نتائج القرارات",
+  "upsell.benefit_2": "تحليل القواعد المفعلة والمقارنة",
+  "upsell.benefit_3": "تحليل نتائج الفحص والعقوبات",
+  "upsell.description": "احصل على الوصول الكامل إلى مجموعة التحليلات للحصول على رؤى أعمق حول قراراتك وقواعدك ونشاط الفحص.",
+  "upsell.title": "الترقية للوصول إلى التحليلات المتقدمة"
 }
