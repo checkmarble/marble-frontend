@@ -14,6 +14,7 @@ import { ChartEmptyState } from './ChartEmptyState';
 import {
   CASE_ANALYTICS_COLORS,
   CHART_LEGEND_OFFSET,
+  formatChartNumber,
   formatPeriodTick,
   formatPeriodTooltip,
   getXTickValues,
@@ -53,7 +54,7 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                 groupMode="grouped"
                 enableLabel={false}
                 padding={0.3}
-                margin={{ top: 5, right: 5, bottom: CHART_LEGEND_OFFSET, left: 50 }}
+                margin={{ top: 5, right: 5, bottom: CHART_LEGEND_OFFSET + 20, left: 50 }}
                 colors={[CASE_ANALYTICS_COLORS.success, CASE_ANALYTICS_COLORS.secondaryLight]}
                 valueScale={{ type: 'linear' }}
                 axisBottom={{
@@ -61,17 +62,23 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                   tickValues: xTickValues,
                   format: (value: string) => formatPeriodTick(value, language, sameYear),
                 }}
-                axisLeft={{}}
+                axisLeft={{
+                  format: (v: number) => formatChartNumber(v, language),
+                }}
+                legendLabel={(datum) => t(`cases:analytics.chart.${String(datum.id)}`)}
                 tooltip={({ id, value, indexValue, data }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s text-grey-secondary">
+                    <span className="text-s text-grey-primary font-semibold">
                       {formatPeriodTooltip(String(indexValue), language)}
                     </span>
-                    <span className="text-s font-semibold">
-                      {t(`cases:analytics.chart.${String(id)}`)}: {value} {t('cases:analytics.chart.days')}
-                    </span>
+                    <div className="flex items-center justify-between gap-v2-md">
+                      <span className="text-s text-grey-secondary">{t(`cases:analytics.chart.${String(id)}`)}</span>
+                      <span className="text-s text-grey-primary font-semibold">
+                        {formatChartNumber(value, language)} {t('cases:analytics.chart.days')}
+                      </span>
+                    </div>
                     <span className="text-xs text-grey-secondary">
-                      {data.count} {t('cases:analytics.chart.cases_lower')}
+                      {formatChartNumber(data.count, language)} {t('cases:analytics.chart.cases_lower')}
                     </span>
                   </div>
                 )}
@@ -81,9 +88,11 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                     dataFrom: 'keys',
                     anchor: 'bottom',
                     direction: 'row',
-                    itemWidth: 100,
+                    itemWidth: 110,
                     itemHeight: 20,
-                    translateY: CHART_LEGEND_OFFSET,
+                    translateY: CHART_LEGEND_OFFSET + 20,
+                    symbolShape: 'circle',
+                    symbolSize: 10,
                   },
                 ]}
               />
@@ -107,14 +116,21 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                 margin={{ top: 5, right: 20, bottom: 24, left: 90 }}
                 colors={[CASE_ANALYTICS_COLORS.secondary]}
                 valueScale={{ type: 'linear' }}
+                axisBottom={{
+                  format: (v: number) => formatChartNumber(v, language),
+                }}
                 axisLeft={{
                   format: (v: string) => v,
                 }}
                 tooltip={({ indexValue, value }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s">
-                      {indexValue}: <strong>{value}</strong>
-                    </span>
+                    <span className="text-s text-grey-primary font-semibold">{indexValue}</span>
+                    <div className="flex items-center justify-between gap-v2-md">
+                      <span className="text-s text-grey-secondary">{t('cases:analytics.chart.cases_lower')}</span>
+                      <span className="text-s text-grey-primary font-semibold">
+                        {formatChartNumber(value, language)}
+                      </span>
+                    </div>
                   </div>
                 )}
                 theme={nivoTheme}

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ChartEmptyState } from './ChartEmptyState';
 import {
   CASE_ANALYTICS_COLORS,
+  formatChartNumber,
   formatPeriodTick,
   formatPeriodTooltip,
   getXTickValues,
@@ -58,15 +59,20 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                   tickValues: alertXTickValues,
                   format: (value: string) => formatPeriodTick(value, language, alertSameYear),
                 }}
-                axisLeft={{}}
+                axisLeft={{
+                  format: (v: number) => formatChartNumber(v, language),
+                }}
                 tooltip={({ indexValue, value }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s text-grey-secondary">
+                    <span className="text-s text-grey-primary font-semibold">
                       {formatPeriodTooltip(String(indexValue), language)}
                     </span>
-                    <span className="text-s font-semibold">
-                      {t('cases:analytics.alerts.count_label')}: {value}
-                    </span>
+                    <div className="flex items-center justify-between gap-v2-md">
+                      <span className="text-s text-grey-secondary">{t('cases:analytics.alerts.count_label')}</span>
+                      <span className="text-s text-grey-primary font-semibold">
+                        {formatChartNumber(value, language)}
+                      </span>
+                    </div>
                   </div>
                 )}
                 theme={nivoTheme}
@@ -102,12 +108,18 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                 }}
                 tooltip={({ data }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s text-grey-secondary">{formatPeriodTooltip(data.period, language)}</span>
-                    <span className="text-s font-semibold">
-                      {t('cases:analytics.alerts.fp_rate')}: {data.rate}%
+                    <span className="text-s text-grey-primary font-semibold">
+                      {formatPeriodTooltip(data.period, language)}
                     </span>
+                    <div className="flex items-center justify-between gap-v2-md">
+                      <span className="text-s text-grey-secondary">{t('cases:analytics.alerts.fp_rate')}</span>
+                      <span className="text-s text-grey-primary font-semibold">
+                        {formatChartNumber(data.rate, language)}%
+                      </span>
+                    </div>
                     <span className="text-xs text-grey-secondary">
-                      {data.fpCount} / {data.closedCount} {t('cases:analytics.alerts.closed')}
+                      {formatChartNumber(data.fpCount, language)} / {formatChartNumber(data.closedCount, language)}{' '}
+                      {t('cases:analytics.alerts.closed')}
                     </span>
                   </div>
                 )}

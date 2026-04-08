@@ -12,7 +12,17 @@ export const nivoTheme = {
 };
 
 export const tooltipStyle =
-  'flex flex-col gap-v2-xs bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm';
+  'flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap';
+
+/**
+ * Locale-aware formatter for numeric values in chart tooltips and axes.
+ * Uses the user's language for thousand separators and decimal points.
+ */
+export function formatChartNumber(value: number, language: string): string {
+  return new Intl.NumberFormat(language, {
+    maximumFractionDigits: 1,
+  }).format(value);
+}
 
 /**
  * Vertical space (in px) reserved at the bottom of a bar chart to fit the
