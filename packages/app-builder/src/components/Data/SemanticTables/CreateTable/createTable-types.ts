@@ -201,6 +201,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
       currencyExponent: field.currencyExponent,
       decimalPrecision: field.decimalPrecision,
       currencyFieldId: field.currencyFieldId,
+      foreignkeyTable: field.foreignkeyTable,
       hidden: field.hidden,
     },
   };

@@ -13,7 +13,7 @@ import { DeleteTableModal } from '../../DeleteDataModel/DeleteTableModal';
 import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
 import { adaptUpdateTableValue } from '../EditTable/updateTable-adapter';
-import { ChangeRecord, SemanticTableFormValues } from '../Shared/semanticData-types';
+import { ChangeRecord, LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
 import { UploadTableDrawer } from '../UploadData/UploadTableDrawer';
 import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
 
@@ -119,9 +119,11 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           tableState: SemanticTableFormValues,
           changeSet: ChangeRecord[],
           initialTableState: SemanticTableFormValues,
+          initialLinks: LinkValue[],
         ) => {
+          const tableNameById = new Map(dataModel.map((t) => [t.id, t.name]));
           const result = await updateTableMutation.mutateAsync(
-            adaptUpdateTableValue(tableState, changeSet, initialTableState.fields),
+            adaptUpdateTableValue(tableState, changeSet, initialTableState.fields, initialLinks, tableNameById),
           );
           if (result.success) {
             toast.success(t('data:table_details.table_updated', { name: tableState.alias || tableState.name }));

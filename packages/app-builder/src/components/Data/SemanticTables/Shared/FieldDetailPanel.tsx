@@ -129,8 +129,10 @@ export function FieldDetailPanel({
   }
 
   function performDelete() {
-    console.log('canDeleteField', canDeleteField);
     if (!canDeleteField) return;
+    if (field?.name === mainTimestampFieldName) {
+      setMainTimestampFieldName('updated_at');
+    }
     removeField(fieldId);
     for (const link of linkedLinks) {
       removeLink?.(link.linkId);

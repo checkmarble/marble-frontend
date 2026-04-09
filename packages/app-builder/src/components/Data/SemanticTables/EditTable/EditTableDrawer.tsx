@@ -30,6 +30,7 @@ export function EditTableDrawer({
     tableState: SemanticTableFormValues,
     changeSet: ChangeRecord[],
     initialTableState: SemanticTableFormValues,
+    initialLinks: LinkValue[],
   ) => Promise<void>;
   tableModel: TableModel;
 }) {
@@ -242,7 +243,12 @@ export function EditTableDrawer({
       return;
     }
     setValidationErrors([]);
-    await onSave(values, changeSet, initialTableStateRef.current[tableModel.id]!);
+    await onSave(
+      values,
+      changeSet,
+      initialTableStateRef.current[tableModel.id]!,
+      Object.values(initialLinksStateRef.current),
+    );
   }
 
   const handleBackdropClose = useCallback(() => {

@@ -10,11 +10,15 @@ import { ChangeRecord, LinkValue, SemanticTableFormValues, TableField } from '..
 type TableChange = Extract<ChangeRecord, { type: 'table' }>;
 type FieldChange = Extract<ChangeRecord, { type: 'field' }>;
 type LinkChange = Extract<ChangeRecord, { type: 'link' }>;
+type LinkAddChange = Extract<LinkChange, { operation: 'ADD' }>;
+type LinkDelChange = Extract<LinkChange, { operation: 'DEL' }>;
 
 export function adaptUpdateTableValue(
   tableState: SemanticTableFormValues,
   changeSet: ChangeRecord[],
   originalFields: TableField[],
+  originalLinks: LinkValue[],
+  tableNameById: Map<string, string>,
 ): EditSemanticTablePayload {
   const tableChange = changeSet.find((change): change is TableChange => change.type === 'table');
   const changedProperties = tableChange?.changedProperties ?? [];
@@ -22,6 +26,19 @@ export function adaptUpdateTableValue(
   const currentFieldOrder = tableState.fields.map((f) => f.name).join(',');
   const originalFieldOrder = originalFields.map((f) => f.name).join(',');
   const fieldOrderChanged = currentFieldOrder !== originalFieldOrder;
+
+  const newLinkValues = changeSet
+    .filter((c): c is LinkAddChange => c.type === 'link' && c.operation === 'ADD')
+    .flatMap((c) => tableState.links.find((l) => l.name === c.objectName) ?? []);
+
+  const deletedLinkValues = changeSet
+    .filter((c): c is LinkDelChange => c.type === 'link' && c.operation === 'DEL')
+    .flatMap((c) => {
+      const link = originalLinks.find((l) => l.linkId === c.objectId);
+      if (!link) return [];
+      const stillUsed = tableState.links.some((l) => l.tableFieldId === link.tableFieldId);
+      return stillUsed ? [] : [link];
+    });
 
   const adaptedTable: EditSemanticTablePayload = {
     tableId: tableState.tableId,
@@ -34,6 +51,9 @@ export function adaptUpdateTableValue(
       changeSet.filter((change) => change.type === 'field'),
       tableState.fields,
       originalFields,
+      newLinkValues,
+      deletedLinkValues,
+      tableNameById,
     ),
     links: adaptLinksOperations(
       changeSet.filter((change) => change.type === 'link'),
@@ -77,9 +97,14 @@ function adaptFieldsOperations(
   changeSet: FieldChange[],
   fields: TableField[],
   originalFields: TableField[],
+  newLinkValues: LinkValue[] = [],
+  deletedLinkValues: LinkValue[] = [],
+  tableNameById: Map<string, string> = new Map(),
 ): EditSemanticFieldPayload[] | undefined {
   const originalFieldsById = new Map(originalFields.map((f) => [f.id, f]));
   const fieldOps: EditSemanticTablePayload['fields'] = [];
+  const processedFieldNames = new Set<string>();
+
   for (const change of changeSet) {
     if (change.operation === 'DEL') {
       fieldOps.push({ op: 'DEL', data: { id: change.objectId } });
@@ -89,9 +114,55 @@ function adaptFieldsOperations(
       change.operation === 'ADD' ? change.objectName === field.name : change.objectId === field.id,
     );
     if (fieldValues) {
-      fieldOps.push(adaptFieldOperation(change, fieldValues, originalFieldsById.get(fieldValues.id)));
+      const fkLink = newLinkValues.find((l) => l.tableFieldId === fieldValues.name);
+      const effectiveField = fkLink
+        ? {
+            ...fieldValues,
+            semanticType: 'foreign_key' as const,
+            foreignkeyTable: tableNameById.get(fkLink.targetTableId),
+          }
+        : fieldValues;
+      fieldOps.push(adaptFieldOperation(change, effectiveField, originalFieldsById.get(effectiveField.id)));
+      processedFieldNames.add(fieldValues.name);
     }
   }
+
+  // Inject MOD for fields referenced by a new link but not already in the changeSet
+  for (const link of newLinkValues) {
+    if (processedFieldNames.has(link.tableFieldId)) continue;
+    const field = fields.find((f) => f.name === link.tableFieldId);
+    if (!field) continue;
+    const fkField = {
+      ...field,
+      semanticType: 'foreign_key' as const,
+      foreignkeyTable: tableNameById.get(link.targetTableId),
+    };
+    fieldOps.push(
+      adaptFieldOperation(
+        { type: 'field', operation: 'MOD', objectId: field.id },
+        fkField,
+        originalFieldsById.get(field.id),
+      ),
+    );
+    processedFieldNames.add(link.tableFieldId);
+  }
+
+  // Inject MOD to revert fields whose link was deleted (already filtered to fields not still used by another link)
+  for (const deletedLink of deletedLinkValues) {
+    if (processedFieldNames.has(deletedLink.tableFieldId)) continue;
+    const field = fields.find((f) => f.name === deletedLink.tableFieldId);
+    if (!field) continue;
+    const revertedField = { ...field, semanticType: 'text' as const, foreignkeyTable: undefined };
+    fieldOps.push(
+      adaptFieldOperation(
+        { type: 'field', operation: 'MOD', objectId: field.id },
+        revertedField,
+        originalFieldsById.get(field.id),
+      ),
+    );
+    processedFieldNames.add(deletedLink.tableFieldId);
+  }
+
   return fieldOps.length > 0 ? fieldOps : undefined;
 }
 
@@ -124,6 +195,7 @@ const metadataKeys = [
   'currencyExponent',
   'decimalPrecision',
   'currencyFieldId',
+  'foreignkeyTable',
   'hidden',
 ] as const satisfies (keyof TableField)[];
 
@@ -151,6 +223,7 @@ function adaptTableFieldUpdate(current: TableField, original: TableField) {
           currencyExponent: current.currencyExponent,
           decimalPrecision: current.decimalPrecision,
           currencyFieldId: current.currencyFieldId,
+          foreignkeyTable: current.foreignkeyTable,
           hidden: current.hidden,
         }
       : undefined,
