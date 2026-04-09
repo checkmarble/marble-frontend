@@ -1,4 +1,4 @@
-import { type DataModelField, type DataModelTableOptions, type TableModel } from '@app-builder/models';
+import { type DataModelField, type TableModel } from '@app-builder/models';
 import { createContext, useContext } from 'react';
 import { DataFieldsProps } from './DataFields';
 import { type MetadataType, type TYPE_DATA_TABLE_VISUALISATION_PRESET, type VALID_DATA_TYPE } from './data-type';
@@ -13,7 +13,6 @@ type DataVisualisationContext = {
   preset: POSSIBLE_PRESET;
   options: DataVisualisationOptions | undefined;
   table: TableModel | undefined;
-  tableOptions: DataModelTableOptions | undefined;
 };
 
 const DataVisualisationContext = createContext<DataVisualisationContext>({
@@ -22,7 +21,6 @@ const DataVisualisationContext = createContext<DataVisualisationContext>({
   preset: undefined,
   options: undefined,
   table: undefined,
-  tableOptions: undefined,
 });
 DataVisualisationContext.displayName = 'DataVisualisationContext';
 
@@ -46,10 +44,6 @@ export function useOptions() {
 
 export function useTable() {
   return useContext(DataVisualisationContext).table;
-}
-
-export function useTableOptions() {
-  return useContext(DataVisualisationContext).tableOptions;
 }
 
 // Per-field context — set by DataField, consumed by render functions
