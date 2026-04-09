@@ -165,43 +165,4 @@ function DataListEmptyState({
       </div>
     </section>
   );
-
-  // return (
-  //   <div className="flex items-center justify-center py-16">
-  //     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-  //       <SelectArchetype>
-  //         <button
-  //           type="button"
-  //           className="border-grey-border hover:border-purple-primary hover:bg-purple-background dark:hover:bg-purple-border flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
-  //         >
-  //           <Icon icon="category" className="text-purple-primary size-10" />
-  //           <span className="text-l font-semibold text-grey-primary">
-  //             {t('data:empty_state.select_archetype.title')}
-  //           </span>
-  //           <span className="text-s text-grey-secondary">{t('data:empty_state.select_archetype.description')}</span>
-  //         </button>
-  //       </SelectArchetype>
-  //       <CreateTable>
-  //         <button
-  //           type="button"
-  //           className="border-grey-border hover:border-purple-primary hover:bg-purple-background dark:hover:bg-purple-border flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
-  //         >
-  //           <Icon icon="plus" className="text-purple-primary size-10" />
-  //           <span className="text-l font-semibold text-grey-primary">{t('data:empty_state.create_table.title')}</span>
-  //           <span className="text-s text-grey-secondary">{t('data:empty_state.create_table.description')}</span>
-  //         </button>
-  //       </CreateTable>
-  //       <ImportOrg>
-  //         <button
-  //           type="button"
-  //           className="border-grey-border hover:border-purple-primary hover:bg-purple-background dark:hover:bg-purple-border flex flex-col items-center gap-3 rounded-lg border-2 border-dashed p-8 text-center transition-colors"
-  //         >
-  //           <Icon icon="upload" className="text-purple-primary size-10" />
-  //           <span className="text-l font-semibold text-grey-primary">{t('data:empty_state.import_org.title')}</span>
-  //           <span className="text-s text-grey-secondary">{t('data:empty_state.import_org.description')}</span>
-  //         </button>
-  //       </ImportOrg>
-  //     </div>
-  //   </div>
-  // );
 }

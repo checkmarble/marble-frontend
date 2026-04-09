@@ -115,8 +115,14 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
         open={isEditOpen}
         onClose={() => setIsEditOpen(false)}
         tableModel={data.tableModel}
-        onSave={async (tableState: SemanticTableFormValues, changeSet: ChangeRecord[]) => {
-          const result = await updateTableMutation.mutateAsync(adaptUpdateTableValue(tableState, changeSet));
+        onSave={async (
+          tableState: SemanticTableFormValues,
+          changeSet: ChangeRecord[],
+          initialTableState: SemanticTableFormValues,
+        ) => {
+          const result = await updateTableMutation.mutateAsync(
+            adaptUpdateTableValue(tableState, changeSet, initialTableState.fields),
+          );
           if (result.success) {
             toast.success(t('data:table_details.table_updated', { name: tableState.alias || tableState.name }));
             revalidate();

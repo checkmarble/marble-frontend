@@ -47,6 +47,7 @@ export const action = createServerFn(
         primary_ordering_field: parsed.data.primary_ordering_field,
         fields: parsed.data.fields,
         links: parsed.data.links,
+        metadata: parsed.data.metadata,
       } satisfies UpdateTableBodyDto);
 
       await dataModelRepository.patchDataModelTable(parsed.data.tableId, patchBody);

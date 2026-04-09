@@ -1263,6 +1263,11 @@ export type TableDto = {
     };
     navigation_options?: NavigationOptionDto[];
     ftm_entity?: FtmEntity;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+    /** Name of the field used as default ordering */
+    primary_ordering_field?: string;
 };
 export type DataModelDto = {
     tables: {
@@ -1371,6 +1376,9 @@ export type UpdateTableBodyDto = {
     primary_ordering_field?: string | null;
     fields?: FieldOperationDto[];
     links?: LinkOperationDto[];
+    metadata?: {
+        [key: string]: any;
+    } | null;
 };
 export type Items = {
     id?: string;
@@ -1420,6 +1428,9 @@ export type CreateTableFieldDto = {
     is_enum?: boolean;
     is_unique?: boolean;
     ftm_property?: string;
+    metadata?: {
+        [key: string]: any;
+    } | null;
 };
 export type UpdateTableFieldDto = {
     description?: string;

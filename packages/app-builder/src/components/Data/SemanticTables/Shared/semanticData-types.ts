@@ -66,7 +66,6 @@ export type TableField = {
   nullable: boolean;
   alias: string;
   hidden: boolean;
-  order: number;
   unicityConstraint: string;
   ftmProperty?: string;
   semanticType: SemanticTypeField;

@@ -756,6 +756,13 @@ components:
             $ref: '#/components/schemas/NavigationOptionDto'
         ftm_entity:
           $ref: '#/components/schemas/FtmEntity'
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: {}
+        primary_ordering_field:
+          type: string
+          description: Name of the field used as default ordering
       required:
         - id
         - name
@@ -952,6 +959,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LinkOperationDto'
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: {}
     CreateTableFieldDto:
       type: object
       required:
@@ -975,6 +986,11 @@ components:
           type: boolean
         ftm_property:
           type: string
+        metadata:
+          type: object
+          nullable: true
+          additionalProperties: {}
+
     UpdateTableFieldDto:
       type: object
       properties:

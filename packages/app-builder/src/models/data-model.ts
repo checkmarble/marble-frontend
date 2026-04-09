@@ -257,16 +257,32 @@ function adaptTableModel(tableDto: TableDto): TableModel {
   const { entityType, subEntity } = apiSemanticTypeToFormEntity(
     typeof raw.semantic_type === 'string' ? raw.semantic_type : 'other',
   );
-  const mainTimestampFieldName = readMetadataString(meta, 'mainTimestampFieldName');
   const belongsToTableId = readMetadataString(meta, 'belongsToTableId');
 
+  const fieldOrderNames: string[] = (() => {
+    const raw = meta['fieldOrder'];
+    if (typeof raw === 'string' && raw.length > 0) {
+      return raw.split(',');
+    }
+    return [];
+  })();
+
   const fields = R.pipe(raw.fields, R.values(), R.map(adaptDataModelField), (arr) =>
-    [...arr].sort((a, b) => {
-      const ao = a.order ?? 0;
-      const bo = b.order ?? 0;
-      if (ao !== bo) return ao - bo;
-      return a.name.localeCompare(b.name);
-    }),
+    fieldOrderNames.length > 0
+      ? [...arr].sort((a, b) => {
+          const ai = fieldOrderNames.indexOf(a.name);
+          const bi = fieldOrderNames.indexOf(b.name);
+          if (ai === -1 && bi === -1) return a.name.localeCompare(b.name);
+          if (ai === -1) return 1;
+          if (bi === -1) return -1;
+          return ai - bi;
+        })
+      : [...arr].sort((a, b) => {
+          const ao = a.order ?? 0;
+          const bo = b.order ?? 0;
+          if (ao !== bo) return ao - bo;
+          return a.name.localeCompare(b.name);
+        }),
   );
 
   return {
@@ -277,7 +293,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     captionField: typeof raw.caption_field === 'string' ? raw.caption_field : '',
     semanticType: entityType,
     subEntity,
-    mainTimestampFieldName,
+    mainTimestampFieldName: raw.primary_ordering_field,
     belongsToTableId,
     fields,
     linksToSingle: R.pipe(

@@ -142,10 +142,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
       fields.splice(endIndex, 0, moved);
       return {
         ...prev,
-        [tableId]: {
-          ...table,
-          fields: fields.map((f, i) => ({ ...f, order: i })),
-        },
+        [tableId]: { ...table, fields },
       };
     });
   }, []);
@@ -165,7 +162,6 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         nullable: true,
         alias: name,
         hidden: false,
-        order: table.fields.length,
         unicityConstraint: 'no_unicity_constraint',
         semanticType: 'text' as const,
         semanticSubType: undefined,
@@ -187,7 +183,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
         ...prev,
         [tableId]: {
           ...table,
-          fields: table.fields.filter((f) => f.id !== fieldId).map((f, i) => ({ ...f, order: i })),
+          fields: table.fields.filter((f) => f.id !== fieldId),
         },
       };
     });
@@ -265,7 +261,7 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           : Object.entries(table.fields).map(([key, field]) => ({ key, field }))
         : [];
 
-      const fields: TableField[] = rawFields.map(({ key, field }, i) => ({
+      const fields: TableField[] = rawFields.map(({ key, field }) => ({
         id: field.id,
         name: key,
         description: field.description || '',
@@ -275,7 +271,6 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
         nullable: field.nullable ?? true,
         alias: field.name,
         hidden: false,
-        order: i,
         unicityConstraint: field.unicity_constraint ?? 'no_unicity_constraint',
         ftmProperty: field.ftm_property,
         semanticType: key === 'object_id' ? 'unique_id' : key === 'updated_at' ? 'last_update' : ('text' as const),
@@ -296,7 +291,6 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           nullable: false,
           alias: 'object_id',
           hidden: false,
-          order: -1,
           unicityConstraint: 'no_unicity_constraint',
           semanticType: 'unique_id',
           semanticSubType: 'opaque_id',
@@ -316,7 +310,6 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           nullable: false,
           alias: 'updated_at',
           hidden: false,
-          order: -1,
           unicityConstraint: 'no_unicity_constraint',
           semanticType: 'last_update',
           semanticSubType: undefined,
@@ -324,10 +317,6 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           locked: true,
         });
       }
-
-      fields.forEach((f, i) => {
-        f.order = i;
-      });
 
       return [
         table.id,
@@ -450,7 +439,7 @@ export function UploadDataDrawerContent() {
       ...tableState,
       links: getLinksForTable(selectedTableId),
     };
-    const result = validateValues(values);
+    const result = validateValues(values, 'all', t);
     if (!result.ok) {
       setValidationErrors(result.errors);
       return;

@@ -39,7 +39,6 @@ export const defaultCreateTableFields: TableField[] = [
     nullable: false,
     alias: 'object_id',
     hidden: false,
-    order: 0,
     unicityConstraint: 'no_unicity_constraint',
     semanticType: 'unique_id',
     semanticSubType: 'opaque_id',
@@ -56,7 +55,6 @@ export const defaultCreateTableFields: TableField[] = [
     nullable: false,
     alias: 'updated_at',
     hidden: false,
-    order: 1,
     unicityConstraint: 'no_unicity_constraint',
     semanticType: 'last_update',
     semanticSubType: undefined,
@@ -121,7 +119,7 @@ export function canProceedToStep2(values: SemanticTableFormValues): boolean {
   return createTableEntityStepSchema.safeParse(values).success;
 }
 
-function adaptSemanticField(
+export function adaptSemanticField(
   semanticType: SemanticTypeField | undefined,
   subType?: SemanticSubTypeField,
 ): FieldSemanticType | undefined {
@@ -181,7 +179,7 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
     primary_ordering_field: values.mainTimestampFieldName || 'updated_at',
     metadata: {
       belongsToTableId: values.belongsToTableId || undefined,
-      mainTimestampFieldName: values.mainTimestampFieldName || undefined,
+      fieldOrder: values.fields.map((f) => f.name).join(','),
     },
   };
 }
@@ -204,7 +202,6 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
       decimalPrecision: field.decimalPrecision,
       currencyFieldId: field.currencyFieldId,
       hidden: field.hidden,
-      order: field.order,
     },
   };
 }

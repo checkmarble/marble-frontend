@@ -49,7 +49,6 @@ export function CreateTableFieldsStep({
         nullable: true,
         alias: fieldName,
         hidden: false,
-        order: prev.length,
         unicityConstraint: 'no_unicity_constraint',
         semanticType: 'foreign_key',
         foreignkeyTable: belongsToTableName,
@@ -74,7 +73,7 @@ export function CreateTableFieldsStep({
         const next = [...prev];
         const [moved] = next.splice(startIndex, 1);
         next.splice(endIndex, 0, moved!);
-        return next.map((f, i) => ({ ...f, order: i }));
+        return next;
       });
     },
     [form],
@@ -94,7 +93,6 @@ export function CreateTableFieldsStep({
           nullable: true,
           alias: name,
           hidden: false,
-          order: prev.length,
           unicityConstraint: 'no_unicity_constraint',
           isNew: true,
           semanticType: 'text' as const,
@@ -108,7 +106,7 @@ export function CreateTableFieldsStep({
 
   const removeField = useCallback(
     (fieldId: string) => {
-      form.setFieldValue('fields', (prev) => prev.filter((f) => f.id !== fieldId).map((f, i) => ({ ...f, order: i })));
+      form.setFieldValue('fields', (prev) => prev.filter((f) => f.id !== fieldId));
       if (selectedFieldId === fieldId) setSelectedFieldId(null);
     },
     [form, selectedFieldId],

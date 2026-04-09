@@ -26,7 +26,11 @@ export function EditTableDrawer({
 }: {
   open: boolean;
   onClose: () => void;
-  onSave: (tableState: SemanticTableFormValues, changeSet: ChangeRecord[]) => Promise<void>;
+  onSave: (
+    tableState: SemanticTableFormValues,
+    changeSet: ChangeRecord[],
+    initialTableState: SemanticTableFormValues,
+  ) => Promise<void>;
   tableModel: TableModel;
 }) {
   const { t } = useTranslation(['data', 'common']);
@@ -154,7 +158,7 @@ export function EditTableDrawer({
       fields.splice(endIndex, 0, moved);
       return {
         ...prev,
-        [tableId]: { ...table, fields: fields.map((f, i) => ({ ...f, order: i })) },
+        [tableId]: { ...table, fields },
       };
     });
   }, []);
@@ -174,7 +178,6 @@ export function EditTableDrawer({
         nullable: true,
         alias: name,
         hidden: false,
-        order: table.fields.length,
         unicityConstraint: 'no_unicity_constraint',
         semanticType: 'text' as const,
         semanticSubType: undefined,
@@ -196,7 +199,7 @@ export function EditTableDrawer({
         ...prev,
         [tableId]: {
           ...table,
-          fields: table.fields.filter((f) => f.id !== fieldId).map((f, i) => ({ ...f, order: i })),
+          fields: table.fields.filter((f) => f.id !== fieldId),
         },
       };
     });
@@ -239,7 +242,7 @@ export function EditTableDrawer({
       return;
     }
     setValidationErrors([]);
-    await onSave(values, changeSet);
+    await onSave(values, changeSet, initialTableStateRef.current[tableModel.id]!);
   }
 
   const handleBackdropClose = useCallback(() => {
@@ -412,7 +415,7 @@ function EditableAlias({ alias, onChange }: EditableAliasProps) {
   );
 }
 
-function adaptFieldToTableField(field: DataModelField, index: number): TableField {
+function adaptFieldToTableField(field: DataModelField): TableField {
   const isSystemField = field.name === 'object_id' || field.name === 'updated_at';
   return {
     id: field.id,
@@ -424,7 +427,6 @@ function adaptFieldToTableField(field: DataModelField, index: number): TableFiel
     nullable: field.nullable,
     alias: field.alias ?? field.name,
     hidden: field.hidden ?? false,
-    order: field.order ?? index,
     unicityConstraint: field.unicityConstraint,
     ftmProperty: field.ftmProperty,
     semanticType:
