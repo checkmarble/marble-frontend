@@ -57,7 +57,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
   const fieldOptions = useMemo(
     () =>
       sourceTableFields
-        .filter((field) => field.dataType === 'String')
+        .filter((field) => field.dataType === 'String' && field.name !== 'object_id')
         .map((field) => ({
           label: (
             <span className="flex items-center gap-v2-sm">

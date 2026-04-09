@@ -228,8 +228,8 @@ export function EditTableDrawer({
     const links = getLinksForTable(tableModel.id);
     const values: SemanticTableFormValues = { ...tableState, links };
 
-    const fieldResult = validateValues(values, 'fields');
-    const linkResult = validateValues(values, 'links');
+    const fieldResult = validateValues(values, 'fields', t);
+    const linkResult = validateValues(values, 'links', t);
     const errors: ValidationError[] = [
       ...(!fieldResult.ok ? fieldResult.errors : []),
       ...(!linkResult.ok ? linkResult.errors : []),

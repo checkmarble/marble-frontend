@@ -8,9 +8,9 @@ import {
   type TableField,
 } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
-import { CREATE_TABLE_SELF_LINK_TARGET_ID } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { FtmEntityPersonOption, FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { CreateTableValue } from '@app-builder/queries/data/create-table';
+import { TFunction } from 'i18next';
 import { FieldSemanticType } from 'marble-api';
 import { match } from 'ts-pattern';
 import z from 'zod/v4';
@@ -271,7 +271,11 @@ function getTablePropertyErrors(values: SemanticTableFormValues): TablePropertyE
   return [];
 }
 
-function getConstraintErrors(values: SemanticTableFormValues, scope: Exclude<ValidationScope, 'all' | 'table'>) {
+function getConstraintErrors(
+  values: SemanticTableFormValues,
+  scope: Exclude<ValidationScope, 'all' | 'table'>,
+  t: TFunction<['data']>,
+) {
   const errors: ValidationError[] = [];
   const constraints: SemanticTableConstraints = [
     ...defaultTableConstraints,
@@ -291,7 +295,7 @@ function getConstraintErrors(values: SemanticTableFormValues, scope: Exclude<Val
         errors.push({
           kind: 'table',
           field: 'name',
-          message: `Missing required field: ${name ?? type}`,
+          message: t('data:create_table.missing_required_field', { field: name ?? type }),
         });
       }
     }
@@ -302,7 +306,7 @@ function getConstraintErrors(values: SemanticTableFormValues, scope: Exclude<Val
         errors.push({
           kind: 'table',
           field: 'belongsToTableId',
-          message: 'A link to a related table is required for this entity type',
+          message: t('data:create_table.link_to_related_table_required'),
         });
       }
     }
@@ -311,7 +315,7 @@ function getConstraintErrors(values: SemanticTableFormValues, scope: Exclude<Val
   return errors;
 }
 
-function getFieldErrors(values: SemanticTableFormValues): FieldValidationError[] {
+function getFieldErrors(values: SemanticTableFormValues, t: TFunction<['data']>): FieldValidationError[] {
   const errors: FieldValidationError[] = [];
   const nameCounts = new Map<string, string[]>();
 
@@ -320,13 +324,13 @@ function getFieldErrors(values: SemanticTableFormValues): FieldValidationError[]
       errors.push({
         kind: 'field',
         fieldId: field.id,
-        message: `Field "${field.alias || field.id}": name is required`,
+        message: t('data:create_table.field_name_required', { field: field.alias || field.id }),
       });
     } else if (!dataModelNameRegex.test(field.name)) {
       errors.push({
         kind: 'field',
         fieldId: field.id,
-        message: `Field "${field.name}": only lower case alphanumeric and _, must start with a letter`,
+        message: t('data:create_table.field_name_regex_error', { field: field.name }),
       });
     } else {
       const ids = nameCounts.get(field.name) ?? [];
@@ -338,7 +342,7 @@ function getFieldErrors(values: SemanticTableFormValues): FieldValidationError[]
   for (const [name, ids] of nameCounts) {
     if (ids.length > 1) {
       for (const fieldId of ids) {
-        errors.push({ kind: 'field', fieldId, message: `Duplicate field name: "${name}"` });
+        errors.push({ kind: 'field', fieldId, message: t('data:create_table.duplicate_field_name', { name }) });
       }
     }
   }
@@ -346,37 +350,36 @@ function getFieldErrors(values: SemanticTableFormValues): FieldValidationError[]
   return errors;
 }
 
-function getLinkErrors(values: SemanticTableFormValues): LinkValidationError[] {
+function getLinkErrors(values: SemanticTableFormValues, t: TFunction<['data']>): LinkValidationError[] {
   const errors: LinkValidationError[] = [];
 
   for (const link of values.links) {
     const linkField = values.fields.find((field) => field.id === link.tableFieldId);
-    const isSelfLink =
-      link.targetTableId === CREATE_TABLE_SELF_LINK_TARGET_ID ||
-      (values.tableId !== '' && link.targetTableId === values.tableId);
 
     if (!link.name.trim()) {
-      errors.push({ kind: 'link', linkId: link.linkId, message: 'A link is missing a name' });
+      errors.push({ kind: 'link', linkId: link.linkId, message: t('data:create_table.link_missing_name') });
     }
     if (!link.targetTableId) {
       errors.push({
         kind: 'link',
         linkId: link.linkId,
-        message: `Link "${link.name || '(unnamed)'}": target table is required`,
+        message: t('data:create_table.link_target_table_required', { link: link.name || '(unnamed)' }),
       });
     }
     if (!link.tableFieldId) {
       errors.push({
         kind: 'link',
         linkId: link.linkId,
-        message: `Link "${link.name || '(unnamed)'}": field is required`,
+        message: t('data:create_table.link_field_required', { link: link.name || '(unnamed)' }),
       });
     }
-    if (isSelfLink && linkField?.name === 'object_id') {
+    if (linkField?.name === 'object_id') {
       errors.push({
         kind: 'link',
         linkId: link.linkId,
-        message: `Link "${link.name || '(unnamed)'}": object_id cannot point to the current table`,
+        message: t('data:create_table.link_object_id_cannot_point_to_current_table', {
+          link: link.name || '(unnamed)',
+        }),
       });
     }
   }
@@ -384,7 +387,11 @@ function getLinkErrors(values: SemanticTableFormValues): LinkValidationError[] {
   return errors;
 }
 
-export function validateValues(values: SemanticTableFormValues, scope: ValidationScope = 'all'): ValidationResult {
+export function validateValues(
+  values: SemanticTableFormValues,
+  scope: ValidationScope = 'all',
+  t: TFunction<['data']>,
+): ValidationResult {
   if (scope === 'table') {
     // enforce 'updated_at' to be the default sort order if there is no other
     if (!values.mainTimestampFieldName && values.fields.some((f) => f.name === 'updated_at')) {
@@ -395,19 +402,19 @@ export function validateValues(values: SemanticTableFormValues, scope: Validatio
       errors.push({
         kind: 'table',
         field: 'mainTimestampFieldName',
-        message: 'One Timestamp field should be selected as the main ordering field',
+        message: t('data:create_table.one_timestamp_field_should_be_selected_as_the_main_ordering_field'),
       });
     }
     return errors.length > 0 ? { ok: false, errors } : { ok: true };
   }
 
   if (scope === 'fields') {
-    const errors = [...getConstraintErrors(values, 'fields'), ...getFieldErrors(values)];
+    const errors = [...getConstraintErrors(values, 'fields', t), ...getFieldErrors(values, t)];
     return errors.length > 0 ? { ok: false, errors } : { ok: true };
   }
 
   if (scope === 'links') {
-    const errors = [...getConstraintErrors(values, 'links'), ...getLinkErrors(values)];
+    const errors = [...getConstraintErrors(values, 'links', t), ...getLinkErrors(values, t)];
     return errors.length > 0 ? { ok: false, errors } : { ok: true };
   }
 
@@ -417,10 +424,10 @@ export function validateValues(values: SemanticTableFormValues, scope: Validatio
   }
 
   const errors: ValidationError[] = [
-    ...getConstraintErrors(values, 'fields'),
-    ...getFieldErrors(values),
-    ...getConstraintErrors(values, 'links'),
-    ...getLinkErrors(values),
+    ...getConstraintErrors(values, 'fields', t),
+    ...getFieldErrors(values, t),
+    ...getConstraintErrors(values, 'links', t),
+    ...getLinkErrors(values, t),
   ];
 
   if (errors.length > 0) return { ok: false, errors };
