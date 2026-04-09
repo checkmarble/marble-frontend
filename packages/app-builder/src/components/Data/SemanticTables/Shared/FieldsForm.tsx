@@ -1,6 +1,7 @@
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
+import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -101,12 +102,7 @@ function FieldRow({
   const { t } = useTranslation(['data']);
   const { mainTimestampFieldName: orderingFieldName } = FieldsEditorContext.useValue();
   const isOrderingField = orderingFieldName !== '' && field.name === orderingFieldName;
-
-  const semanticLabel = field.semanticSubType
-    ? t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`)
-    : field.semanticType
-      ? t(`data:upload_data.field_semantic.${field.semanticType}`)
-      : null;
+  const semanticLabel = getSemanticLabel(field, t);
 
   return (
     <div className="flex items-center gap-v2-md">
@@ -149,3 +145,12 @@ function FieldRow({
     </div>
   );
 }
+
+const getSemanticLabel = (field: TableField, t: TFunction) => {
+  if (field.dataType === 'Bool') return t('data:upload_data.field_semantic.boolean');
+  if (field.dataType === 'IpAddress') return t('data:upload_data.field_semantic.ip_address');
+  if (field.dataType === 'Coords') return t('data:upload_data.field_semantic.coords');
+  if (field.semanticSubType) return t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`);
+  if (field.semanticType) return t(`data:upload_data.field_semantic.${field.semanticType}`);
+  return null;
+};

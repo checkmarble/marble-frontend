@@ -122,10 +122,11 @@ export function canProceedToStep2(values: SemanticTableFormValues): boolean {
 }
 
 function adaptSemanticField(
-  semanticType: SemanticTypeField,
+  semanticType: SemanticTypeField | undefined,
   subType?: SemanticSubTypeField,
 ): FieldSemanticType | undefined {
   return match(semanticType)
+    .with(undefined, () => undefined)
     .with('text', () => undefined)
     .with('name', () =>
       match(subType as SemanticSubTypeFieldMap['name'])

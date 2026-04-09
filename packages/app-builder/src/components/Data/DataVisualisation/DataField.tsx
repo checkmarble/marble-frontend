@@ -154,6 +154,7 @@ function adaptFieldType(
   // forced from datatype
   if (dataType === 'Coords' || dataType === 'Coords[]') return 'data-gps_coords';
   if (dataType === 'IpAddress' || dataType === 'IpAddress[]') return 'data-ip_address';
+  if (dataType === 'Bool' || dataType === 'Bool[]') return `boolean-${booleanDisplay ?? 'checkbox'}`;
 
   // from semantic type
   if (semanticType) {
@@ -245,11 +246,6 @@ function adaptFieldType(
     case 'Float[]':
       if (/amount/i.test(name)) return 'number-currency';
       return 'number-float';
-    case 'Bool':
-    case 'Bool[]':
-      if (booleanDisplay) return `boolean-${booleanDisplay}`;
-      if (/vpn/i.test(name)) return 'boolean-yes_no';
-      return 'boolean-checkbox';
     default:
       throw new Error(`Unhandled data type: ${dataType satisfies never}`);
   }

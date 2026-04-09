@@ -1,5 +1,5 @@
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal, NumberInput, type SelectOption, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -43,6 +43,17 @@ export function FieldDetailPanel({
   const { t } = useTranslation(['data', 'common']);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const field = fields.find((f) => f.id === fieldId);
+
+  const typeSelectRef = useRef<HTMLButtonElement>(null);
+  const aliasInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (field?.isNew) {
+      typeSelectRef.current?.focus();
+    } else {
+      aliasInputRef.current?.focus();
+    }
+  }, [fieldId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isNameDuplicate = useMemo(() => {
     if (!field) return false;
@@ -155,6 +166,7 @@ export function FieldDetailPanel({
           <div className="flex flex-col gap-v2-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_type_label')}</label>
             <SelectV2
+              ref={typeSelectRef}
               value={field.dataType}
               placeholder=""
               onChange={(value) => update({ dataType: value, semanticType: undefined, semanticSubType: undefined })}
@@ -185,7 +197,7 @@ export function FieldDetailPanel({
           {/* Alias */}
           <div className="flex flex-col gap-v2-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_alias')}</label>
-            <Input value={field.alias} onChange={(e) => update({ alias: e.currentTarget.value })} />
+            <Input ref={aliasInputRef} value={field.alias} onChange={(e) => update({ alias: e.currentTarget.value })} />
           </div>
 
           {/* Advanced settings */}
@@ -226,7 +238,16 @@ export function FieldDetailPanel({
               <SelectV2
                 value={field.semanticType}
                 placeholder={t('data:upload_data.field_semantic_placeholder')}
-                onChange={(value) => update({ semanticType: value as SemanticTypeField })}
+                onChange={(value) => {
+                  const newSemanticType = value as SemanticTypeField;
+                  const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, newSemanticType);
+                  const isCurrentSubTypeValid = subOpts?.some((opt) => opt.value === field.semanticSubType) ?? false;
+                  const firstSubType = subOpts?.[0]?.value as SemanticSubTypeField | undefined;
+                  update({
+                    semanticType: newSemanticType,
+                    semanticSubType: isCurrentSubTypeValid ? field.semanticSubType : firstSubType,
+                  });
+                }}
                 options={semanticOptions}
                 disabled={isLocked}
               />

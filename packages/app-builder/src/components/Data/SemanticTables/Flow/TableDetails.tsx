@@ -5,6 +5,7 @@ import { useRevalidator } from '@remix-run/react';
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -47,6 +48,64 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             (link.childTableName === data.tableModel.name && link.childFieldName === fieldName)),
       );
 
+  const selfRefLinks = data.tableModel.linksToSingle.filter(
+    (link) => link.parentTableId === link.childTableId && link.relationType === 'belongs_to',
+  );
+  const selfRefPartner = new Map<string, string>();
+  for (const link of selfRefLinks) {
+    selfRefPartner.set(link.parentFieldName, link.childFieldName);
+    selfRefPartner.set(link.childFieldName, link.parentFieldName);
+  }
+
+  type FieldGroup =
+    | { type: 'single'; field: (typeof relationFields)[0] }
+    | { type: 'pair'; fields: [(typeof relationFields)[0], (typeof relationFields)[0]] };
+  const fieldGroups: FieldGroup[] = [];
+  const consumed = new Set<string>();
+  for (const field of relationFields) {
+    if (consumed.has(field.name)) continue;
+    const partnerName = selfRefPartner.get(field.name);
+    if (partnerName) {
+      const partner = relationFields.find((f) => f.name === partnerName);
+      if (partner) {
+        fieldGroups.push({ type: 'pair', fields: [field, partner] });
+        consumed.add(field.name);
+        consumed.add(partnerName);
+        continue;
+      }
+    }
+    fieldGroups.push({ type: 'single', field });
+    consumed.add(field.name);
+  }
+
+  const renderField = (field: (typeof relationFields)[0]) => (
+    <div
+      key={field.id}
+      className={cn(
+        'bg-surface-card relative rounded-md px-v2-md py-v2-sm text-s',
+        belongsToField(field.name)
+          ? 'border-purple-primary border-2 text-purple-primary'
+          : 'border-grey-secondary border text-grey-secondary',
+      )}
+    >
+      <Handle
+        type="target"
+        id={`related:${field.name}`}
+        position={Position.Left}
+        isConnectable={false}
+        style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-v2-md))' }}
+      />
+      <span>{field.name}</span>
+      <Handle
+        type="source"
+        id={`related:${field.name}`}
+        position={Position.Right}
+        isConnectable={false}
+        style={{ background: 'transparent', border: 'none', right: 'calc(-1 * var(--spacing-v2-md))' }}
+      />
+    </div>
+  );
+
   const updateTableMutation = useEditSemanticTableMutation();
   const { revalidate } = useRevalidator();
 
@@ -59,6 +118,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
         onSave={async (tableState: SemanticTableFormValues, changeSet: ChangeRecord[]) => {
           const result = await updateTableMutation.mutateAsync(adaptUpdateTableValue(tableState, changeSet));
           if (result.success) {
+            toast.success(t('data:table_details.table_updated', { name: tableState.alias || tableState.name }));
             revalidate();
           }
           setIsEditOpen(false);
@@ -157,42 +217,18 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           />
         </div>
         {relationFields.length > 0 ? (
-          <div className="mt-v2-md grid gap-v2-sm">
-            {relationFields.map((field) => (
-              <div
-                key={field.id}
-                className={cn(
-                  '  bg-surface-card relative rounded-md px-v2-md py-v2-sm text-s',
-                  belongsToField(field.name)
-                    ? 'border-purple-primary border-2 text-purple-primary'
-                    : 'border-grey-secondary borde text-grey-secondary',
-                )}
-              >
-                <Handle
-                  type="target"
-                  id={`related:${field.name}`}
-                  position={Position.Left}
-                  isConnectable={false}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    left: 'calc(-1 * var(--spacing-v2-md))',
-                  }}
-                />
-                <span>{field.name}</span>
-                <Handle
-                  type="source"
-                  id={`related:${field.name}`}
-                  position={Position.Right}
-                  isConnectable={false}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    right: 'calc(-1 * var(--spacing-v2-md))',
-                  }}
-                />
-              </div>
-            ))}
+          <div className="mt-v2-md flex flex-col gap-v2-sm">
+            {fieldGroups.map((group) => {
+              if (group.type === 'pair') {
+                return (
+                  <div key={`${group.fields[0].id}-${group.fields[1].id}`} className="relative flex flex-col gap-v2-sm">
+                    <div className="absolute -left-2 top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l border-purple-primary" />
+                    {group.fields.map((field) => renderField(field))}
+                  </div>
+                );
+              }
+              return renderField(group.field);
+            })}
           </div>
         ) : null}
       </div>

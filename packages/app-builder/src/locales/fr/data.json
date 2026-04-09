@@ -177,6 +177,7 @@
   "table_details.actions": "Actions de la table",
   "table_details.numser_of_fields": "{{number}} champs",
   "table_details.other_table": "Non défini - mises à jour disponibles",
+  "table_details.table_updated": "la table {{name}} a été mise à jour avec succès",
   "table_relationship": "Relation",
   "unique.col_header": "Unique",
   "unsaved_changes.confirm": "Ignorer les modifications",

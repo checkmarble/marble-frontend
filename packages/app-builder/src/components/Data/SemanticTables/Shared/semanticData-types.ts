@@ -217,13 +217,13 @@ export function getMockValue(
 ) {
   if (dataType === 'Coords') return '48.8566, 2.3522';
   if (dataType === 'IpAddress') return '127.0.0.1';
+  if (dataType === 'Bool') return true;
   if (!semanticType) {
     return match(dataType)
       .with('String', () => 'Welcome to Marble')
       .with('Timestamp', () => '2021-01-01T14:20:00.000Z')
       .with('Int', () => 42)
       .with('Float', () => 1234567890)
-      .with('Bool', () => true)
       .exhaustive();
   }
   const value = match(semanticType)

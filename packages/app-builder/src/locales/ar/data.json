@@ -177,6 +177,7 @@
   "table_details.actions": "إجراءات الجدول",
   "table_details.numser_of_fields": "الحقول {{number}}.",
   "table_details.other_table": "غير محدد - التحديثات المتاحة",
+  "table_details.table_updated": "تم تحديث الجدول {{name}} بنجاح",
   "table_relationship": "العلاقة",
   "unique.col_header": "فريد",
   "unsaved_changes.confirm": "تجاهل التغييرات",
