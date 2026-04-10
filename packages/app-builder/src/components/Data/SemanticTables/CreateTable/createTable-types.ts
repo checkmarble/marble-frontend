@@ -171,7 +171,10 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
   return {
     name: values.name,
     alias: values.alias,
-    semantic_type: getEntityType(values.entityType, values.subEntity),
+    semantic_type: getEntityType(
+      values.entityType === 'unset' ? 'other' : values.entityType,
+      values.subEntity === 'unset' ? 'moral' : values.subEntity,
+    ),
     description: '',
     fields: values.fields.map(adaptTableField),
     links: values.links.map(adaptLink),
@@ -244,12 +247,13 @@ const defaultTableConstraints = [
   { fieldExist: { name: 'updated_at', type: 'last_update' } },
 ] as const satisfies SemanticTableConstraints;
 
-const specificTableConstraints: Record<FtmEntityV2, SemanticTableConstraints> = {
+const specificTableConstraints: Record<FtmEntityV2 | 'unset', SemanticTableConstraints> = {
   person: [{ fieldExist: { type: 'name' } }],
   transaction: [{ linkExist: { dataType: 'person' } }],
   event: [{ linkExist: { dataType: 'person' } }],
   account: [{ linkExist: { dataType: 'person' } }],
   other: [],
+  unset: [],
 } as const;
 
 const knownTableFields = ['name', 'entityType', 'subEntity', 'belongsToTableId'] as const;
