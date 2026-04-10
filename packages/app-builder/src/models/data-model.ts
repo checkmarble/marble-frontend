@@ -278,8 +278,8 @@ function adaptTableModel(tableDto: TableDto): TableModel {
           return ai - bi;
         })
       : [...arr].sort((a, b) => {
-          const ao = a.order ?? 0;
-          const bo = b.order ?? 0;
+          const ao = a.order ?? Number.POSITIVE_INFINITY;
+          const bo = b.order ?? Number.POSITIVE_INFINITY;
           if (ao !== bo) return ao - bo;
           return a.name.localeCompare(b.name);
         }),

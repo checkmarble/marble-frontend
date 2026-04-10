@@ -185,7 +185,7 @@
   "select_archetype.button_accept": "Appliquer l'archétype",
   "select_archetype.title": "Sélectionner un archétype",
   "table_details.actions": "Actions de la table",
-  "table_details.numser_of_fields": "{{number}} champs",
+  "table_details.number_of_fields": "{{number}} champs",
   "table_details.other_table": "Inconnu",
   "table_details.table_updated": "la table {{name}} a été mise à jour avec succès",
   "table_relationship": "Relation",

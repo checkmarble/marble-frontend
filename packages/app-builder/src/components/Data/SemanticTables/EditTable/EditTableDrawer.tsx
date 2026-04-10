@@ -106,19 +106,21 @@ export function EditTableDrawer({
 
   const addLink = useCallback((sourceTableId: string) => {
     const linkId = crypto.randomUUID();
-    const hasBelongsTo = Object.values(linksState).some((link) => link.relationType === 'belongs_to');
-    setLinksState((prev) => ({
-      ...prev,
-      [linkId]: {
-        linkId,
-        name: '',
-        tableFieldId: '',
-        relationType: hasBelongsTo ? 'related' : 'belongs_to',
-        targetTableId: '',
-        sourceTableId,
-        isNew: true,
-      },
-    }));
+    setLinksState((prev) => {
+      const hasBelongsTo = Object.values(prev).some((link) => link.relationType === 'belongs_to');
+      return {
+        ...prev,
+        [linkId]: {
+          linkId,
+          name: '',
+          tableFieldId: '',
+          relationType: hasBelongsTo ? 'related' : 'belongs_to',
+          targetTableId: '',
+          sourceTableId,
+          isNew: true,
+        },
+      };
+    });
   }, []);
 
   const removeLink = useCallback((linkId: string) => {
@@ -514,7 +516,7 @@ function computeChangeSet(
     if (!initialLinksState[linkId]) {
       changes.push({ type: 'link', operation: 'ADD', objectName: link.name });
     } else if (initialLinksState[linkId].relationType !== link.relationType) {
-      changes.push({ type: 'link', operation: 'MOD', relationshipType: link.relationType });
+      changes.push({ type: 'link', operation: 'MOD', objectId: linkId, relationshipType: link.relationType });
     }
   }
   for (const linkId of Object.keys(initialLinksState)) {

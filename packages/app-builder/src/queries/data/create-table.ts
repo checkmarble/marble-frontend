@@ -4,7 +4,7 @@ import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
 import { formatTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
-import { CreateTableResponseDto, FieldSemanticType } from 'marble-api';
+import { type CreateTableBody, CreateTableResponseDto, FieldSemanticType, type FtmEntity } from 'marble-api';
 import toast from 'react-hot-toast';
 import z from 'zod/v4';
 
@@ -81,6 +81,44 @@ export const createTableValueSchema = z.object({
 });
 
 export type CreateTableValue = z.infer<typeof createTableValueSchema>;
+
+const ftmEntityValues: readonly FtmEntity[] = ['Person', 'Company', 'Organization', 'Vessel', 'Airplane'];
+
+export function createTableValueToCreateTableBody(value: CreateTableValue): CreateTableBody {
+  const ftmEntity =
+    value.ftm_entity !== undefined && (ftmEntityValues as readonly string[]).includes(value.ftm_entity)
+      ? (value.ftm_entity as FtmEntity)
+      : undefined;
+
+  return {
+    name: value.name,
+    description: value.description,
+    alias: value.alias,
+    semantic_type: value.semantic_type,
+    ftm_entity: ftmEntity,
+    metadata: value.metadata ?? null,
+    primary_ordering_field: value.primary_ordering_field,
+    fields: value.fields.map((f) => ({
+      name: f.name,
+      description: f.description,
+      type: f.type,
+      alias: f.alias,
+      nullable: f.nullable,
+      is_enum: f.is_enum,
+      is_unique: f.is_unique,
+      ftm_property: f.ftm_property,
+      metadata: f.metadata ?? null,
+      semantic_type: f.semantic_type,
+    })),
+    links: value.links.map((l) => ({
+      name: l.name,
+      link_type: l.link_type,
+      child_field_name: l.child_field_name,
+      parent_table_id: l.parent_table_id,
+    })),
+  };
+}
+
 export type CreateTableResponse =
   | { success: true; data: CreateTableResponseDto }
   | { success: false; errors: unknown; status: number; message?: string };

@@ -44,6 +44,7 @@
   "errors.forbidden.title": "Forbidden",
   "errors.forms.duplicate_value": "This value is already used",
   "errors.forms.invalid_domain": "The domain is invalid",
+  "errors.invalid_request": "Invalid request",
   "errors.list.duplicate_email": "This email is already used",
   "errors.list.duplicate_list_name": "A list with this name already exist",
   "errors.not_found": "This page could not be found.",

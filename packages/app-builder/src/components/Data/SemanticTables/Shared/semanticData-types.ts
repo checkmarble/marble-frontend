@@ -212,7 +212,7 @@ export type ChangeRecord =
   | { type: 'field'; operation: 'MOD' | 'DEL'; objectId: string }
   | { type: 'field'; operation: 'ADD'; objectName: string }
   | { type: 'link'; operation: 'DEL'; objectId: string }
-  | { type: 'link'; operation: 'MOD'; relationshipType: LinkRelationType }
+  | { type: 'link'; operation: 'MOD'; objectId: string; relationshipType: LinkRelationType }
   | { type: 'link'; operation: 'ADD'; objectName: string };
 
 export function getMockValue(

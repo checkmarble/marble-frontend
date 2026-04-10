@@ -33,7 +33,7 @@ import {
 } from '@app-builder/models';
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
-import { type CreateTableValue } from '@app-builder/queries/data/create-table';
+import { type CreateTableValue, createTableValueToCreateTableBody } from '@app-builder/queries/data/create-table';
 import { GroupedAnnotations, type OpenApiSpec, UpdateTableBodyDto } from 'marble-api';
 
 export interface DataModelRepository {
@@ -70,9 +70,7 @@ export interface DataModelRepository {
 export function makeGetDataModelRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): DataModelRepository => ({
     createTable: async (body) => {
-      return marbleCoreApiClient.postDataModelTable(
-        body as unknown as Parameters<typeof marbleCoreApiClient.postDataModelTable>[0],
-      );
+      return marbleCoreApiClient.postDataModelTable(createTableValueToCreateTableBody(body));
     },
     getDataModel: async () => {
       const { data_model } = await marbleCoreApiClient.getDataModel();

@@ -147,6 +147,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
           type="button"
           onClick={() => removeLink(linkId)}
           className="shrink-0 rounded-lg p-2 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+          title={t('data:upload_data.link_delete')}
         >
           <Icon icon="delete" className="size-4" />
         </button>

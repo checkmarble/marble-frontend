@@ -44,6 +44,7 @@
   "errors.forbidden.title": "ممنوع",
   "errors.forms.duplicate_value": "هذه القيمة موجودة مسبقًا.",
   "errors.forms.invalid_domain": "النطاق غير صالح.",
+  "errors.invalid_request": "طلب غير صالح",
   "errors.list.duplicate_email": "هذا البريد الإلكتروني موجود مسبقًا.",
   "errors.list.duplicate_list_name": "هذا الاسم موجود مسبقًا.",
   "errors.not_found": "لم يتم العثور على هذه الصفحة.",

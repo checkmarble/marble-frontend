@@ -75,7 +75,7 @@ function adaptLinksOperations(changeSet: LinkChange[], links: LinkValue[]): Edit
     }
     const linkValues = links.find((link) => {
       if (change.operation === 'ADD' && change.objectName === link.name) return true;
-      if (change.operation === 'MOD' && change.relationshipType === link.relationType) return true;
+      if (change.operation === 'MOD' && change.objectId === link.linkId) return true;
       return false;
     });
     if (linkValues) {

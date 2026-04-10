@@ -17,6 +17,12 @@ export const loader = createServerFn(
       `${getServerEnv('MARBLE_API_URL')}/ingestion/${encodeURIComponent(objectType)}/upload-logs`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
+    if (!res.ok) {
+      throw new Response(await res.text(), {
+        status: res.status,
+        statusText: res.statusText,
+      });
+    }
     const uploadLogs = (await res.json()) as UploadLog[];
     return data(uploadLogs);
   },

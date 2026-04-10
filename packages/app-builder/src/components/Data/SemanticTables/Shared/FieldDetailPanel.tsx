@@ -171,7 +171,19 @@ export function FieldDetailPanel({
               ref={typeSelectRef}
               value={field.dataType}
               placeholder=""
-              onChange={(value) => update({ dataType: value, semanticType: undefined, semanticSubType: undefined })}
+              onChange={(value) =>
+                update({
+                  dataType: value,
+                  semanticType: undefined,
+                  semanticSubType: undefined,
+                  foreignkeyTable: undefined,
+                  currencyFieldId: undefined,
+                  currencyExponent: undefined,
+                  decimalPrecision: undefined,
+                  booleanDisplay: undefined,
+                  enumValues: undefined,
+                })
+              }
               options={typeSelectOptions}
               disabled={isLocked || !field.isNew}
             />
@@ -548,8 +560,9 @@ function EnumValuesSettings({
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_enum_settings')}</span>
       <div className="flex flex-col gap-v2-sm">
         {enumValues.map((enumValue, index) => {
+          const candidateKey = toSnakeCase(enumValue.value);
           const isDuplicate =
-            enumValue.value !== '' && enumValues.some((v, i) => i !== index && v.value === enumValue.value);
+            enumValue.value !== '' && enumValues.some((v, i) => i !== index && toSnakeCase(v.value) === candidateKey);
           return (
             <div key={index} className="flex flex-col gap-v2-xs">
               <div className="flex items-center gap-v2-sm">

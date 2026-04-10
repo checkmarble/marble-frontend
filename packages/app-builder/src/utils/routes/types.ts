@@ -415,6 +415,7 @@ export type RouteID =
   | 'routes/ressources+/data+/deleteTable'
   | 'routes/ressources+/data+/editField'
   | 'routes/ressources+/data+/editTable'
+  | 'routes/ressources+/data+/editSemanticTable'
   | 'routes/ressources+/data+/export-org'
   | 'routes/ressources+/data+/get-annotations.$objectType.$objectId'
   | 'routes/ressources+/data+/get-hierarchy.$objectType.$objectId'

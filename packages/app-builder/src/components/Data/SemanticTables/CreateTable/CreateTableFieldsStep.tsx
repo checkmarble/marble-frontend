@@ -30,14 +30,17 @@ export function CreateTableFieldsStep({
   );
 
   useEffect(() => {
-    if (!belongsToTableName) return;
-
-    const fieldName = `${belongsToTableName}_id`;
     form.setFieldValue('fields', (prev) => {
-      const hasDefaultForeignKeyField = prev.some(
+      // Remove any previously auto-added FK field
+      const withoutDefault = prev.filter((field) => !field.isDefaultBelongsTo);
+
+      if (!belongsToTableName) return withoutDefault;
+
+      const fieldName = `${belongsToTableName}_id`;
+      const hasExistingForeignKeyField = withoutDefault.some(
         (field) => field.name === fieldName || field.foreignkeyTable === belongsToTableName,
       );
-      if (hasDefaultForeignKeyField) return prev;
+      if (hasExistingForeignKeyField) return withoutDefault;
 
       const defaultForeignKeyField: TableField = {
         id: crypto.randomUUID(),
@@ -56,7 +59,7 @@ export function CreateTableFieldsStep({
         isNew: true,
       };
 
-      return [...prev, defaultForeignKeyField];
+      return [...withoutDefault, defaultForeignKeyField];
     });
   }, [belongsToTableName, form]);
 

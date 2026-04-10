@@ -85,7 +85,7 @@ function EmptyHeader({
   onImportSuccess: (data: unknown) => void;
   onCreateTable: () => void;
 }) {
-  const { t } = useTranslation(['navigation']);
+  const { t } = useTranslation(['navigation', 'data']);
 
   return (
     <>

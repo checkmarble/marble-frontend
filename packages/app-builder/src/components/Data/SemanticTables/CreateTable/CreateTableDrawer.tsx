@@ -155,7 +155,12 @@ export function CreateTableDrawer({
           className="bg-surface-card flex h-full flex-col overflow-y-auto"
         >
           <header className="flex shrink-0 items-center gap-v2-md p-v2-lg">
-            <button type="button" onClick={handleClose} className="rounded-lg p-2 hover:bg-grey-border">
+            <button
+              type="button"
+              onClick={handleBackdropClose}
+              className="rounded-lg p-2 hover:bg-grey-border"
+              title={t('common:close')}
+            >
               <Icon icon="x" className="size-5" />
             </button>
             <h3 className="text-l flex-1 font-semibold">{t('data:create_table.title')}</h3>
@@ -185,7 +190,7 @@ export function CreateTableDrawer({
               <div />
             )}
             <div className="flex justify-end gap-v2-md">
-              <Button variant="secondary" appearance="stroked" onClick={handleClose}>
+              <Button variant="secondary" appearance="stroked" onClick={handleBackdropClose}>
                 {t('common:cancel')}
               </Button>
               {currentStep > 0 ? (

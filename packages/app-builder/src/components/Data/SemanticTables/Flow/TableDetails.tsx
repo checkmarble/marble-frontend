@@ -174,7 +174,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                 </>
               )}
               <Tag color="grey">
-                {t('data:table_details.numser_of_fields', { number: data.tableModel.fields.length })}
+                {t('data:table_details.number_of_fields', { number: data.tableModel.fields.length })}
               </Tag>
             </div>
           </div>

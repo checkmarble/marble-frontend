@@ -44,6 +44,7 @@
   "errors.forbidden.title": "Accès non autorisé",
   "errors.forms.duplicate_value": "Cette valeur est déjà utilisée",
   "errors.forms.invalid_domain": "Le domaine n'est pas valide",
+  "errors.invalid_request": "Demande invalide",
   "errors.list.duplicate_email": "Cette adresse e-mail est déjà utilisée",
   "errors.list.duplicate_list_name": "Une liste avec ce nom existe déjà",
   "errors.not_found": "Cette page n'existe pas",

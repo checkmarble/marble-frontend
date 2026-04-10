@@ -9,11 +9,17 @@ export const action = createServerFn([authMiddleware], async function deleteTabl
   const { toastSessionService, i18nextService } = context.services;
   const { dataModelRepository } = context.authInfo;
 
-  const [t, toastSession, raw] = await Promise.all([
+  const [t, toastSession] = await Promise.all([
     i18nextService.getFixedT(request, ['common']),
     toastSessionService.getSession(request),
-    request.json(),
   ]);
+
+  let raw: unknown;
+  try {
+    raw = JSON.parse(await request.text());
+  } catch {
+    return Response.json({ success: false, status: 400 }, { status: 400 });
+  }
 
   const parsed = deleteTablePayloadSchema.safeParse(raw);
 

@@ -20,6 +20,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
 
   const selectedEntityType = useStore(form.store, (state) => state.values.entityType);
   const selectedSubEntity = useStore(form.store, (state) => state.values.subEntity);
+  const selectedBelongsToTableId = useStore(form.store, (state) => state.values.belongsToTableId);
 
   // Tables that qualify as "person" or "other" for the transaction/event link requirement
   const personOrOtherTables = useMemo(() => dataModel.filter(isLinkableTable), [dataModel]);
@@ -160,7 +161,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
                   <div className="ml-7 mt-1 flex items-center gap-v2-sm">
                     <span className="text-xs text-grey-secondary">{t('data:create_table.belongs_to')}</span>
                     <SelectV2
-                      value={form.getFieldValue('belongsToTableId')}
+                      value={selectedBelongsToTableId}
                       placeholder={t('data:create_table.select_destination_table')}
                       onChange={(value) => form.setFieldValue('belongsToTableId', value)}
                       options={linkTargetOptions}
