@@ -1,13 +1,19 @@
 import { Callout } from '@app-builder/components/Callout';
-import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
+import {
+  adaptCreateTableValue,
+  adaptLink,
+} from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
+import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useNavigate } from '@remix-run/react';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
 import { DrawerContext } from '../Shared/DrawerContext';
+import { EntityTypeMenu } from '../Shared/EntityTypeMenu';
 import type { LinkValue, RawField, RawLink, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 import { FormTable, SummaryView } from '../Shared/TableForm';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
@@ -250,9 +256,17 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
         description?: string;
         fields?: Record<string, RawField> | RawField[];
       }>;
+      links?: RawLink[];
     };
   };
   const tables = raw?.data_model?.tables ?? [];
+
+  // Build a lookup from child_field_id → parent_table_id for foreign key detection
+  const foreignKeyMap = new Map<string, string>();
+  for (const link of raw?.data_model?.links ?? []) {
+    foreignKeyMap.set(link.child_field_id, link.parent_table_id);
+  }
+
   return Object.fromEntries(
     tables.map((table) => {
       const rawFields = table.fields
@@ -261,23 +275,35 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           : Object.entries(table.fields).map(([key, field]) => ({ key, field }))
         : [];
 
-      const fields: TableField[] = rawFields.map(({ key, field }) => ({
-        id: field.id,
-        name: key,
-        description: field.description || '',
-        dataType: field.data_type,
-        tableId: field.table_id || table.id,
-        isEnum: field.is_enum ?? false,
-        nullable: field.nullable ?? true,
-        alias: field.name,
-        hidden: false,
-        unicityConstraint: field.unicity_constraint ?? 'no_unicity_constraint',
-        ftmProperty: field.ftm_property,
-        semanticType: key === 'object_id' ? 'unique_id' : key === 'updated_at' ? 'last_update' : ('text' as const),
-        semanticSubType: key === 'object_id' ? 'opaque_id' : undefined,
-        isNew: key !== 'object_id' && key !== 'updated_at',
-        locked: key === 'object_id' || key === 'updated_at',
-      }));
+      const fields: TableField[] = rawFields.map(({ key, field }) => {
+        const foreignkeyTable = foreignKeyMap.get(field.id);
+        const isForeignKey = foreignkeyTable !== undefined;
+        const { semanticType, semanticSubType } = inferSemanticTypeFromName(key, field.data_type);
+        return {
+          id: field.id,
+          name: key,
+          description: field.description || '',
+          dataType: field.data_type,
+          tableId: field.table_id || table.id,
+          isEnum: field.is_enum ?? false,
+          nullable: field.nullable ?? true,
+          alias: field.name,
+          hidden: false,
+          unicityConstraint: field.unicity_constraint ?? 'no_unicity_constraint',
+          ftmProperty: field.ftm_property,
+          semanticType: isForeignKey
+            ? 'foreign_key'
+            : key === 'object_id'
+              ? 'unique_id'
+              : key === 'updated_at'
+                ? 'last_update'
+                : semanticType,
+          semanticSubType: key === 'object_id' ? 'opaque_id' : semanticSubType,
+          foreignkeyTable,
+          isNew: key !== 'object_id' && key !== 'updated_at',
+          locked: key === 'object_id' || key === 'updated_at',
+        };
+      });
 
       // Ensure required system fields are always present
       if (!fields.some((f) => f.name === 'object_id')) {
@@ -324,8 +350,8 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
           tableId: table.id,
           name: table.name,
           alias: table.description || table.name.charAt(0).toUpperCase() + table.name.slice(1),
-          entityType: 'other',
-          subEntity: 'moral',
+          entityType: 'unset',
+          subEntity: 'unset',
           belongsToTableId: '',
           metaData: {},
           isCanceled: false,
@@ -350,7 +376,7 @@ function buildInitialLinksState(data: unknown): Record<string, LinkValue> {
       {
         linkId: link.id,
         name: link.name,
-        tableFieldId: link.child_field_id,
+        tableFieldId: link.child_field_name,
         relationType: 'related',
         targetTableId: link.parent_table_id,
         sourceTableId: link.child_table_id,
@@ -363,6 +389,7 @@ export function UploadDataDrawerContent() {
   const { close, tablesState, updateTableState, tableIds, getLinksForTable } = DrawerContext.useValue();
   const { t } = useTranslation(['data']);
   const createTableMutation = useCreateTableMutation();
+  const editTableMutation = useEditSemanticTableMutation();
   const navigate = useNavigate();
 
   const isSingleTable = tableIds.length === 1;
@@ -373,8 +400,11 @@ export function UploadDataDrawerContent() {
     () =>
       Object.values(tablesState).map((table) => ({
         label: (
-          <span className={cn(table.isCanceled && 'line-through opacity-50', table.isVisited && 'text-purple-primary')}>
-            {table.name}
+          <span
+            className={cn(table.isCanceled && 'line-through opacity-50', table.isVisited && 'text-purple-primary')}
+            title={table.name !== table.alias ? table.name : undefined}
+          >
+            {table.alias || table.name}
           </span>
         ),
         value: table.tableId,
@@ -408,24 +438,56 @@ export function UploadDataDrawerContent() {
   async function handleSave() {
     const nonCanceledTableIds = tableIds.filter((id) => !tablesState[id]!.isCanceled);
 
-    const results = await Promise.allSettled(
+    // Phase 1: create all tables without links so every table gets a real backend ID first
+    const createResults = await Promise.allSettled(
       nonCanceledTableIds.map(async (tableId) => {
         const tableState = tablesState[tableId]!;
-        const values: SemanticTableFormValues = {
-          ...tableState,
-          links: getLinksForTable(tableId),
-        };
+        const values: SemanticTableFormValues = { ...tableState, links: [] };
         const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
         if (!result.success) {
           throw new Error(result.message ?? `Failed to create table "${tableState.name}"`);
         }
-        return result;
+        return { rawId: tableId, backendId: result.data.id };
       }),
     );
 
-    const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-    if (failures.length > 0) {
-      setSaveErrors(failures.map((r) => (r.reason instanceof Error ? r.reason.message : 'Unknown error')));
+    const createFailures = createResults.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+    if (createFailures.length > 0) {
+      setSaveErrors(createFailures.map((r) => (r.reason instanceof Error ? r.reason.message : 'Unknown error')));
+      return;
+    }
+
+    // Phase 2: add links using real backend IDs (raw JSON IDs → backend IDs)
+    const rawIdToBackendId = new Map(
+      (createResults as PromiseFulfilledResult<{ rawId: string; backendId: string }>[]).map((r) => [
+        r.value.rawId,
+        r.value.backendId,
+      ]),
+    );
+
+    const linkResults = await Promise.allSettled(
+      nonCanceledTableIds.map(async (rawTableId) => {
+        const links = getLinksForTable(rawTableId);
+        if (links.length === 0) return;
+        const backendTableId = rawIdToBackendId.get(rawTableId);
+        if (!backendTableId) return;
+        const translatedLinks = links.map((link) => ({
+          ...link,
+          targetTableId: rawIdToBackendId.get(link.targetTableId) ?? link.targetTableId,
+        }));
+        const result = await editTableMutation.mutateAsync({
+          tableId: backendTableId,
+          links: translatedLinks.map((link) => ({ op: 'ADD' as const, data: adaptLink(link) })),
+        });
+        if (!result.success) {
+          throw new Error(result.message ?? `Failed to create links for table "${tablesState[rawTableId]!.name}"`);
+        }
+      }),
+    );
+
+    const linkFailures = linkResults.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+    if (linkFailures.length > 0) {
+      setSaveErrors(linkFailures.map((r) => (r.reason instanceof Error ? r.reason.message : 'Unknown error')));
       return;
     }
 
@@ -537,11 +599,20 @@ export function UploadDataDrawerContent() {
             className="w-60"
           />
         )}
+        {selectedTableId && tablesState[selectedTableId] ? (
+          <EntityTypeMenu
+            entityType={tablesState[selectedTableId].entityType}
+            isChanged={tablesState[selectedTableId].entityType === 'unset'}
+            onSelect={(entityType) => updateTableState(selectedTableId, { entityType, subEntity: 'moral' })}
+          />
+        ) : null}
       </header>
       <div className="flex-1 overflow-auto px-v2-lg">
         {selectedTableId && tablesState[selectedTableId] ? (
           <FormTable key={selectedTableId} tableId={selectedTableId} errorFieldIds={errorFieldIds} />
-        ) : null}
+        ) : (
+          <p className="text-s text-grey-secondary">{t('data:upload_data.no_table_selected')}</p>
+        )}
       </div>
       <footer className="flex shrink-0 justify-between gap-v2-md p-v2-lg border-t border-grey-border">
         {saveErrors.length > 0 ? (

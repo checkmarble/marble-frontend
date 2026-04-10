@@ -22,7 +22,7 @@ import {
 } from '../SemanticTables/Shared/semanticData-types';
 import { DataFields } from './DataFields';
 import type { MetadataType, VALID_DATA_TYPE } from './data-type';
-import { hasMetadataContent, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
+import { hasMetadataContent, inferDataTypeFromName, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';
 import {
   DataFieldProvider,
   useCurrency,
@@ -215,40 +215,7 @@ function adaptFieldType(
         return 'string-free';
     }
   }
-
-  switch (dataType) {
-    case 'String':
-    case 'String[]':
-    case 'DerivedData':
-    case 'unknown':
-      if (/name/i.test(name)) return 'string-main';
-      if (/email/i.test(name)) return 'string-email';
-      if (/phone/i.test(name)) return 'string-phone';
-      if (/city/i.test(name)) return 'string-city';
-      if (/country/i.test(name)) return 'string-country';
-      if (/_id/i.test(name)) return 'string-id';
-      if (/iban/i.test(name)) return 'string-iban';
-      if (/currency/i.test(name)) return 'string-currency';
-      if (/curr_/i.test(name)) return 'string-currency';
-      if (/url/i.test(name)) return 'string-link';
-      if (/code/i.test(name)) return 'string-code';
-      if (/vpn/i.test(name)) return 'string-vpn';
-      if (/status/i.test(name)) return 'enum-values';
-      return 'string-free';
-    case 'Timestamp':
-    case 'Timestamp[]':
-      if (/birthdate/i.test(name)) return 'date-birthdate';
-      return 'date-datetime';
-    case 'Int':
-    case 'Int[]':
-      return 'number-integer';
-    case 'Float':
-    case 'Float[]':
-      if (/amount/i.test(name)) return 'number-currency';
-      return 'number-float';
-    default:
-      throw new Error(`Unhandled data type: ${dataType satisfies never}`);
-  }
+  return inferDataTypeFromName(name, dataType);
 }
 
 function useStringValue(): string | undefined {

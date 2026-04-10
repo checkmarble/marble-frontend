@@ -60,7 +60,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         .filter((field) => field.dataType === 'String' && field.name !== 'object_id')
         .map((field) => ({
           label: (
-            <span className="flex items-center gap-v2-sm">
+            <span className="flex items-center gap-v2-sm" title={field.alias !== field.name ? field.name : undefined}>
               <DatatypeIcon dataType={field.dataType} />
               <span>{field.alias || field.name}</span>
             </span>

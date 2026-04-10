@@ -1,13 +1,14 @@
 import { Callout } from '@app-builder/components/Callout';
-import { type DataModelField, type FtmEntityV2 } from '@app-builder/models';
-import { ftmEntities, type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
+import { type DataModelField } from '@app-builder/models';
+import { type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
 import { DrawerContext } from '../Shared/DrawerContext';
+import { EntityTypeMenu } from '../Shared/EntityTypeMenu';
 import type {
   ChangeRecord,
   LinkValue,
@@ -51,8 +52,6 @@ export function EditTableDrawer({
   );
   const [linksState, setLinksState] = useState<Record<string, LinkValue>>(() => initialLinksStateRef.current);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
-  const [entityTypeMenuOpen, setEntityTypeMenuOpen] = useState(false);
-
   useEffect(() => {
     if (open && !wasOpenRef.current) {
       const nextInitialTableState = {
@@ -209,15 +208,6 @@ export function EditTableDrawer({
   const tableState = tablesState[tableModel.id]!;
   const isSemanticTypeChanged = tableState.entityType !== tableModel.semanticType;
 
-  const ftmEntityOptions = useMemo(
-    () =>
-      ftmEntities.map((entity) => ({
-        label: t(`data:upload_data.ftm_entity.${entity}`),
-        value: entity,
-      })),
-    [t],
-  );
-
   const destinationTableOptions = useMemo(
     () => dataModel.map((t) => ({ tableId: t.id, label: t.alias || t.name })),
     [dataModel],
@@ -307,37 +297,11 @@ export function EditTableDrawer({
               <span className="text-s text-grey-secondary">({tableState.name})</span>
             )}
 
-            <MenuCommand.Menu open={entityTypeMenuOpen} onOpenChange={setEntityTypeMenuOpen}>
-              <MenuCommand.Trigger>
-                <Tag color={isSemanticTypeChanged ? 'red' : 'grey'} className="cursor-pointer gap-1">
-                  {isSemanticTypeChanged && <Icon icon="tip" className="size-3" />}
-                  {tableState.entityType
-                    ? t(`data:upload_data.ftm_entity.${tableState.entityType}`)
-                    : t('data:upload_data.object_placeholder')}
-                  <Icon
-                    icon="caret-down"
-                    className={cn('size-3 transition-transform', entityTypeMenuOpen && 'rotate-180')}
-                  />
-                </Tag>
-              </MenuCommand.Trigger>
-              <MenuCommand.Content sideOffset={4}>
-                <MenuCommand.List>
-                  {ftmEntityOptions.map((option) => (
-                    <MenuCommand.Item
-                      key={option.value}
-                      onSelect={() =>
-                        updateTableState(tableModel.id, {
-                          entityType: option.value as FtmEntityV2,
-                          subEntity: 'moral',
-                        })
-                      }
-                    >
-                      {option.label}
-                    </MenuCommand.Item>
-                  ))}
-                </MenuCommand.List>
-              </MenuCommand.Content>
-            </MenuCommand.Menu>
+            <EntityTypeMenu
+              entityType={tableState.entityType}
+              isChanged={isSemanticTypeChanged}
+              onSelect={(entityType) => updateTableState(tableModel.id, { entityType, subEntity: 'moral' })}
+            />
           </header>
 
           <div className="flex-1 overflow-auto px-v2-lg py-v2-lg">

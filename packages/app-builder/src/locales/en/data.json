@@ -300,6 +300,7 @@
   "upload_data.links_show_more": "+{{count}} more",
   "upload_data.main_table": "Main table",
   "upload_data.name_placeholder": "Name of the table...",
+  "upload_data.no_table_selected": "Select a table to review. Please review all the links and fields attentively, as some changes may be difficult to make later.",
   "upload_data.object_placeholder": "Select an object...",
   "upload_data.raw_data": "Raw data",
   "upload_data.select_table_placeholder": "Select a table",

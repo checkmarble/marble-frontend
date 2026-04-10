@@ -300,6 +300,7 @@
   "upload_data.links_show_more": "+{{count}} إضافي",
   "upload_data.main_table": "الجدول الرئيسي",
   "upload_data.name_placeholder": "اسم الجدول...",
+  "upload_data.no_table_selected": "حدد جدولاً للمراجعة. \nيرجى مراجعة جميع الروابط والحقول بعناية، حيث قد يكون من الصعب إجراء بعض التغييرات لاحقًا.",
   "upload_data.object_placeholder": "اختر كائنًا...",
   "upload_data.raw_data": "البيانات الخام",
   "upload_data.select_table_placeholder": "اختر جدولاً",

@@ -164,8 +164,6 @@ export function FormTable({
             fieldId={selectedFieldId}
             onClose={() => setSelectedFieldId(null)}
             tableOptions={tableOptions}
-            links={links}
-            removeLink={removeLink}
           />
         ) : null}
       </FieldsEditorContext.Provider>
