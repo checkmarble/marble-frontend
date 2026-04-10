@@ -43,7 +43,9 @@ export function adaptUpdateTableValue(
   const adaptedTable: EditSemanticTablePayload = {
     tableId: tableState.tableId,
     ...(changedProperties.includes('alias') ? { alias: tableState.alias } : {}),
-    ...(changedProperties.includes('entityType') ? { semantic_type: tableState.entityType } : {}),
+    ...(changedProperties.includes('entityType')
+      ? { semantic_type: tableState.entityType === 'unset' ? 'other' : tableState.entityType }
+      : {}),
     ...(changedProperties.includes('mainTimestampFieldName')
       ? { primary_ordering_field: tableState.mainTimestampFieldName }
       : {}),

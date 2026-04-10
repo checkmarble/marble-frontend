@@ -95,7 +95,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
         isConnectable={false}
         style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-v2-md))' }}
       />
-      <span>{field.name}</span>
+      <span title={field.name}>{field.alias || field.name}</span>
       <Handle
         type="source"
         id={`related:${field.name}`}
@@ -145,7 +145,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
 
   return (
     <>
-      <div className="relative border border-grey-border rounded-lg px-v2-md py-v2-xl">
+      <div className="relative border border-purple-border-light bg-purple-background-light rounded-lg px-v2-md py-v2-xl">
         <div className="relative flex items-center gap-v2-sm">
           <Handle
             type="target"
@@ -159,7 +159,9 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             }}
           />
           <div className="flex-1 flex flex-col gap-v2-xs">
-            <h4 className="font-semibold">{data.tableModel.alias || data.tableModel.name}</h4>
+            <h4 className="font-semibold text-purple-primary" title={data.tableModel.name}>
+              {data.tableModel.alias || data.tableModel.name}
+            </h4>
             <div className="flex gap-v2-xs">
               {data.tableModel.semanticType == null ? (
                 <Tag color="red">{t('data:table_details.other_table')}</Tag>
@@ -179,7 +181,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           <MenuCommand.Menu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <MenuCommand.Trigger>
               <Button variant="secondary" appearance="stroked" aria-label={t('data:table_details.actions')}>
-                <Icon icon="more-menu" className="size-4" />
+                <Icon icon="more-menu" className="text-purple-primary size-4" />
               </Button>
             </MenuCommand.Trigger>
             <MenuCommand.Content align="end" sideOffset={4} size="small">

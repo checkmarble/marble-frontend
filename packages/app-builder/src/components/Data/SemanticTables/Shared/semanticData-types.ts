@@ -187,8 +187,8 @@ export type SemanticTableFormValues = {
   tableId: string;
   name: string;
   alias: string;
-  entityType: FtmEntityV2;
-  subEntity: FtmEntityPersonOption;
+  entityType: FtmEntityV2 | 'unset';
+  subEntity: FtmEntityPersonOption | 'unset';
   belongsToTableId: string;
   fields: TableField[];
   mainTimestampFieldName: string;
