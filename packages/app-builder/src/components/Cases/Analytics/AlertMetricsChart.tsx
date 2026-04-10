@@ -1,9 +1,20 @@
 import type { BarData, FalsePositiveRate, PeriodCount } from '@app-builder/models/analytics/case-analytics';
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { ResponsiveBar } from '@nivo/bar';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChartEmptyState } from './ChartEmptyState';
-import { CASE_ANALYTICS_COLORS, nivoTheme, tooltipStyle } from './chart-theme';
+import {
+  CASE_ANALYTICS_COLORS,
+  formatChartNumber,
+  formatPeriodTick,
+  formatPeriodTooltip,
+  getXTickValues,
+  isSamePeriodYear,
+  nivoTheme,
+  tooltipStyle,
+} from './chart-theme';
 
 interface AlertMetricsChartProps {
   alertCountByPeriod: PeriodCount[];
@@ -12,6 +23,16 @@ interface AlertMetricsChartProps {
 
 export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPeriod }: AlertMetricsChartProps) {
   const { t } = useTranslation(['cases']);
+  const language = useFormatLanguage();
+
+  const alertSameYear = useMemo(() => isSamePeriodYear(alertCountByPeriod.map((d) => d.period)), [alertCountByPeriod]);
+  const alertXTickValues = useMemo(() => getXTickValues(alertCountByPeriod, 'period'), [alertCountByPeriod]);
+
+  const fpSameYear = useMemo(
+    () => isSamePeriodYear(falsePositiveRateByPeriod.map((d) => d.period)),
+    [falsePositiveRateByPeriod],
+  );
+  const fpXTickValues = useMemo(() => getXTickValues(falsePositiveRateByPeriod, 'period'), [falsePositiveRateByPeriod]);
 
   return (
     <div className="bg-surface-card border-grey-border flex flex-col gap-v2-md rounded-v2-lg border p-v2-md">
@@ -33,14 +54,25 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                 margin={{ top: 5, right: 5, bottom: 40, left: 50 }}
                 colors={[CASE_ANALYTICS_COLORS.secondary]}
                 valueScale={{ type: 'linear' }}
-                axisBottom={{ tickRotation: -30 }}
-                axisLeft={{}}
+                axisBottom={{
+                  tickRotation: -30,
+                  tickValues: alertXTickValues,
+                  format: (value: string) => formatPeriodTick(value, language, alertSameYear),
+                }}
+                axisLeft={{
+                  format: (v: number) => formatChartNumber(v, language),
+                }}
                 tooltip={({ indexValue, value }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s text-grey-secondary">{indexValue}</span>
-                    <span className="text-s font-semibold">
-                      {t('cases:analytics.alerts.count_label')}: {value}
+                    <span className="text-s text-grey-primary font-semibold">
+                      {formatPeriodTooltip(String(indexValue), language)}
                     </span>
+                    <div className="flex items-center justify-between gap-v2-md">
+                      <span className="text-s text-grey-secondary">{t('cases:analytics.alerts.count_label')}</span>
+                      <span className="text-s text-grey-primary font-semibold">
+                        {formatChartNumber(value, language)}
+                      </span>
+                    </div>
                   </div>
                 )}
                 theme={nivoTheme}
@@ -65,19 +97,29 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                 colors={[CASE_ANALYTICS_COLORS.warning]}
                 valueScale={{ type: 'linear', min: 0, max: 100 }}
                 gridYValues={[0, 25, 50, 75, 100]}
-                axisBottom={{ tickRotation: -30 }}
+                axisBottom={{
+                  tickRotation: -30,
+                  tickValues: fpXTickValues,
+                  format: (value: string) => formatPeriodTick(value, language, fpSameYear),
+                }}
                 axisLeft={{
                   tickValues: [0, 25, 50, 75, 100],
                   format: (v: number) => `${v}%`,
                 }}
                 tooltip={({ data }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s text-grey-secondary">{data.period}</span>
-                    <span className="text-s font-semibold">
-                      {t('cases:analytics.alerts.fp_rate')}: {data.rate}%
+                    <span className="text-s text-grey-primary font-semibold">
+                      {formatPeriodTooltip(data.period, language)}
                     </span>
+                    <div className="flex items-center justify-between gap-v2-md">
+                      <span className="text-s text-grey-secondary">{t('cases:analytics.alerts.fp_rate')}</span>
+                      <span className="text-s text-grey-primary font-semibold">
+                        {formatChartNumber(data.rate, language)}%
+                      </span>
+                    </div>
                     <span className="text-xs text-grey-secondary">
-                      {data.fpCount} / {data.closedCount} {t('cases:analytics.alerts.closed')}
+                      {formatChartNumber(data.fpCount, language)} / {formatChartNumber(data.closedCount, language)}{' '}
+                      {t('cases:analytics.alerts.closed')}
                     </span>
                   </div>
                 )}

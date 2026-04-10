@@ -41,5 +41,10 @@
   "screening_hits.title": "Screening hits",
   "time_granularity.day": "Day",
   "time_granularity.month": "Month",
-  "time_granularity.week": "Week"
+  "time_granularity.week": "Week",
+  "upsell.benefit_1": "Score distribution and decision outcome breakdown",
+  "upsell.benefit_2": "Rule hit analytics and comparison",
+  "upsell.benefit_3": "Screening hits and sanctions analysis",
+  "upsell.description": "Unlock the full analytics suite to get deeper insights into your decisions, rules, and screening activity.",
+  "upsell.title": "Upgrade to access advanced analytics"
 }
