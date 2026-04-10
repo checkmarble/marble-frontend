@@ -250,6 +250,7 @@ function SummaryTableRow({ tableId }: { tableId: string }) {
         type="button"
         variant="secondary"
         onClick={() => updateTableState(tableId, { isCanceled: !tableState.isCanceled })}
+        title={tableState.isCanceled ? t('data:upload_data.button_restore') : t('data:upload_data.button_cancel')}
       >
         <Icon icon={tableState.isCanceled ? 'restart-alt' : 'delete'} className="size-4" />
       </Button>

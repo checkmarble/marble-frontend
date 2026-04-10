@@ -226,6 +226,7 @@ function useStringValue(): string | undefined {
 function useNumberValue(): number | undefined {
   const value = useFieldValue();
   if (value === undefined || value === null) return undefined;
+  if (typeof value === 'string' && value.trim() === '') return undefined;
   return typeof value === 'number' ? value : Number(value);
 }
 
@@ -527,7 +528,7 @@ function DataIpAddress() {
 }
 
 function MetaData({ metaData }: { metaData?: MetadataType }) {
-  if (!metaData || !hasMetadataContent(metaData)) return <StringFree />;
+  if (!metaData || !hasMetadataContent(metaData)) return <EmptyValue />;
   if (metaData.type === 'number')
     return <RenderFieldComponent fieldType="number-integer" value={metaData.value as number} />;
   if (metaData.type === 'url') return <RenderFieldComponent fieldType="string-link" value={metaData.value as string} />;

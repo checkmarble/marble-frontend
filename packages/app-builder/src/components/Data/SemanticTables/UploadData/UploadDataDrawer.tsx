@@ -213,7 +213,7 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
       value={{
         container: containerRef,
         data,
-        close: onClose,
+        close: handleBackdropClose,
         tablesState,
         updateTableState,
         tableIds,
@@ -432,8 +432,21 @@ export function UploadDataDrawerContent() {
       })),
     [tablesState],
   );
-
   const [selectedTableId, setSelectedTableId] = useState<string>(() => (isSingleTable ? tableIds[0]! : ''));
+
+  const belongsToTableOptions = useMemo(
+    () => [
+      ...dataModel.filter(isLinkableTable).map((t) => ({ value: t.id, label: t.alias || t.name })),
+      ...Object.values(tablesState)
+        .filter(
+          (t) =>
+            !t.isCanceled && t.entityType !== 'unset' && !requiresLink(t.entityType) && t.tableId !== selectedTableId,
+        )
+        .map((t) => ({ value: t.tableId, label: t.alias || t.name })),
+    ],
+    [dataModel, tablesState, selectedTableId],
+  );
+
   const [showSummary, setShowSummary] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [saveErrors, setSaveErrors] = useState<string[]>([]);
@@ -689,12 +702,31 @@ export function UploadDataDrawerContent() {
           />
         )}
         {selectedTableId && tablesState[selectedTableId] ? (
-          <EntityTypeMenu
-            entityType={tablesState[selectedTableId].entityType}
-            isChanged={tablesState[selectedTableId].entityType === 'unset'}
-            onSelect={(entityType) => updateTableState(selectedTableId, { entityType, subEntity: 'moral' })}
-            canSelectTypeThatNeedsAPerson={canSelectTypeThatNeedsAPerson}
-          />
+          <>
+            <EntityTypeMenu
+              entityType={tablesState[selectedTableId].entityType}
+              isChanged={tablesState[selectedTableId].entityType === 'unset'}
+              onSelect={(entityType) =>
+                updateTableState(selectedTableId, {
+                  entityType,
+                  subEntity: 'moral',
+                  ...(!requiresLink(entityType) && { belongsToTableId: '' }),
+                })
+              }
+              canSelectTypeThatNeedsAPerson={canSelectTypeThatNeedsAPerson}
+            />
+            {requiresLink(
+              tablesState[selectedTableId].entityType === 'unset' ? '' : tablesState[selectedTableId].entityType,
+            ) ? (
+              <SelectV2
+                value={tablesState[selectedTableId].belongsToTableId || ''}
+                placeholder={t('data:upload_data.belongs_to_table_placeholder')}
+                onChange={(value) => updateTableState(selectedTableId, { belongsToTableId: value })}
+                options={belongsToTableOptions}
+                className="w-60"
+              />
+            ) : null}
+          </>
         ) : null}
       </header>
       <div className="flex-1 overflow-auto px-v2-lg">

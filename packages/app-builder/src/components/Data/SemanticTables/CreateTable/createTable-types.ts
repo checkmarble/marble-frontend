@@ -127,7 +127,8 @@ export function adaptSemanticField(
     .with(undefined, () => undefined)
     .with('text', () => undefined)
     .with('name', () =>
-      match(subType as SemanticSubTypeFieldMap['name'])
+      match(subType as SemanticSubTypeFieldMap['name'] | undefined)
+        .with(undefined, () => undefined)
         .with('first_name', () => 'first_name' as const)
         .with('middle_name', () => 'middle_name' as const)
         .with('last_name', () => 'last_name' as const)
@@ -141,14 +142,16 @@ export function adaptSemanticField(
     .with('address', () => 'address' as const)
     .with('unique_id', () => 'id' as const)
     .with('link', () =>
-      match(subType as SemanticSubTypeFieldMap['link'])
+      match(subType as SemanticSubTypeFieldMap['link'] | undefined)
+        .with(undefined, () => undefined)
         .with('url', () => 'url' as const)
         .with('email', () => 'email' as const)
         .with('phone', () => 'phone_number' as const)
         .exhaustive(),
     )
     .with('account_identifier', () =>
-      match(subType as SemanticSubTypeFieldMap['account_identifier'])
+      match(subType as SemanticSubTypeFieldMap['account_identifier'] | undefined)
+        .with(undefined, () => undefined)
         .with('account_number', () => 'account_number' as const)
         .with('iban', () => 'iban' as const)
         .with('bic', () => 'bic' as const)

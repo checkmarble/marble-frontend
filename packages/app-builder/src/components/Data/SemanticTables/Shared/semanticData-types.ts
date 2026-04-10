@@ -95,8 +95,8 @@ export const semanticTypeField = [
   'foreign_key',
   'country',
   'address',
-  'unique_id',
   'link',
+  'unique_id',
   'account_identifier',
   'timestamp',
   'date_of_birth',
@@ -108,11 +108,6 @@ export const semanticTypeField = [
   'number',
   'monetary_amount',
   'percentage',
-  'unique_id',
-  'number',
-  'monetary_amount',
-  'percentage',
-  'unique_id',
 ] as const;
 export type SemanticTypeField = (typeof semanticTypeField)[number];
 

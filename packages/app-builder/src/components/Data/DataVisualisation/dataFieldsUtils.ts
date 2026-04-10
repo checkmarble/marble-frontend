@@ -98,7 +98,7 @@ export function inferDataTypeFromName(name: string, dataType: DataType): VALID_D
       return 'string-free';
     case 'Timestamp':
     case 'Timestamp[]':
-      if (/birthdate/i.test(name)) return 'date-birthdate';
+      if (/birth(?:_| )?date|date_of_birth/i.test(name)) return 'date-birthdate';
       return 'date-datetime';
     case 'Int':
     case 'Int[]':
@@ -136,7 +136,7 @@ export function inferSemanticTypeFromName(
       return { semanticType: 'text' };
     case 'Timestamp':
     case 'Timestamp[]':
-      if (/birthdate/i.test(name)) return { semanticType: 'date_of_birth' };
+      if (/birth(?:_| )?date|date_of_birth/i.test(name)) return { semanticType: 'date_of_birth' };
       if (/deletion|delete/i.test(name)) return { semanticType: 'deletion_date' };
       if (/creat/i.test(name)) return { semanticType: 'creation_date' };
       if (/updat/i.test(name)) return { semanticType: 'last_update' };

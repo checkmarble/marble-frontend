@@ -45,7 +45,9 @@ export function EntityTypeMenu({
       <MenuCommand.Trigger>
         <Tag color={isChanged ? 'red' : 'grey'} className="cursor-pointer gap-1">
           {isChanged && <Icon icon="tip" className="size-3" />}
-          {entityType ? t(`data:upload_data.ftm_entity.${entityType}`) : t('data:upload_data.object_placeholder')}
+          {entityType && entityType !== 'unset'
+            ? t(`data:upload_data.ftm_entity.${entityType}`)
+            : t('data:upload_data.object_placeholder')}
           <Icon icon="caret-down" className={cn('size-3 transition-transform', open && 'rotate-180')} />
         </Tag>
       </MenuCommand.Trigger>
