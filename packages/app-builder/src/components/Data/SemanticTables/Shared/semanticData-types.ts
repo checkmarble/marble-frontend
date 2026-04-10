@@ -1,4 +1,10 @@
-import { FtmEntityPersonOption, FtmEntityV2, LinkRelationType, type PrimitiveTypes } from '@app-builder/models';
+import {
+  FtmEntityPersonOption,
+  FtmEntityV2,
+  LinkRelationType,
+  type PrimitiveTypes,
+  type TableModel,
+} from '@app-builder/models';
 import { FtmEntity } from 'marble-api';
 import { match } from 'ts-pattern';
 
@@ -291,4 +297,17 @@ export function getMockValue(
     .with('percentage', () => 0.34)
     .exhaustive();
   return value;
+}
+
+/**
+ * Returns true if a table can serve as the target of a link (transaction/event/account "belongs to" link).
+ * Tables of type Person, Company, Organization, or with no entity type qualify.
+ */
+export function isLinkableTable(table: TableModel): boolean {
+  return (
+    table.ftmEntity === 'Person' ||
+    table.ftmEntity === 'Company' ||
+    table.ftmEntity === 'Organization' ||
+    !table.ftmEntity
+  );
 }

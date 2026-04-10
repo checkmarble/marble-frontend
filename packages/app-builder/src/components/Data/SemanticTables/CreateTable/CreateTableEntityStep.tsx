@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, SelectV2 } from 'ui-design-system';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
+import { isLinkableTable } from '../Shared/semanticData-types';
 import { useCreateTableFormContext } from './CreateTableContext';
 import { requiresLink, type TablePropertyError } from './createTable-types';
 
@@ -21,17 +22,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
   const selectedSubEntity = useStore(form.store, (state) => state.values.subEntity);
 
   // Tables that qualify as "person" or "other" for the transaction/event link requirement
-  const personOrOtherTables = useMemo(
-    () =>
-      dataModel.filter(
-        (table) =>
-          table.ftmEntity === 'Person' ||
-          table.ftmEntity === 'Company' ||
-          table.ftmEntity === 'Organization' ||
-          !table.ftmEntity,
-      ),
-    [dataModel],
-  );
+  const personOrOtherTables = useMemo(() => dataModel.filter(isLinkableTable), [dataModel]);
 
   const canSelectTypeThatNeedsAPerson = personOrOtherTables.length > 0;
   const hasNameError = errorFields?.has('name') ?? false;

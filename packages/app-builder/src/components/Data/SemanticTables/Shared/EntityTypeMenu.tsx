@@ -1,26 +1,43 @@
 import { type FtmEntityV2, ftmEntities } from '@app-builder/models/data-model';
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { requiresLink } from '../CreateTable/createTable-types';
+import { isLinkableTable } from './semanticData-types';
 
 interface EntityTypeMenuProps {
   entityType: FtmEntityV2 | 'unset' | null | undefined;
   isChanged?: boolean;
   onSelect: (entityType: FtmEntityV2) => void;
+  /** Override whether entities requiring a link (transaction/event/account) are selectable.
+   * Defaults to checking the persisted data model for linkable tables. */
+  canSelectTypeThatNeedsAPerson?: boolean;
 }
 
-export function EntityTypeMenu({ entityType, isChanged = false, onSelect }: EntityTypeMenuProps) {
+export function EntityTypeMenu({
+  entityType,
+  isChanged = false,
+  onSelect,
+  canSelectTypeThatNeedsAPerson: canSelectProp,
+}: EntityTypeMenuProps) {
   const { t } = useTranslation(['data']);
   const [open, setOpen] = useState(false);
+  const dataModel = useDataModel();
+
+  const canSelectFromDataModel = useMemo(() => dataModel.some(isLinkableTable), [dataModel]);
+  const canSelectTypeThatNeedsAPerson = canSelectProp ?? canSelectFromDataModel;
 
   const options = useMemo(
     () =>
-      ftmEntities.map((entity) => ({
-        label: t(`data:upload_data.ftm_entity.${entity}`),
-        value: entity,
-      })),
-    [t],
+      ftmEntities
+        .filter((entity) => !requiresLink(entity) || canSelectTypeThatNeedsAPerson)
+        .map((entity) => ({
+          label: t(`data:upload_data.ftm_entity.${entity}`),
+          value: entity,
+        })),
+    [t, canSelectTypeThatNeedsAPerson],
   );
 
   return (

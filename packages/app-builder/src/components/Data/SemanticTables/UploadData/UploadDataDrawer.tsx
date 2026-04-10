@@ -2,19 +2,30 @@ import { Callout } from '@app-builder/components/Callout';
 import {
   adaptCreateTableValue,
   adaptLink,
+  type FieldValidationError,
+  requiresLink,
+  type ValidationError,
+  validateValues,
 } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { useNavigate } from '@remix-run/react';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
-import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
 import { DrawerContext } from '../Shared/DrawerContext';
 import { EntityTypeMenu } from '../Shared/EntityTypeMenu';
-import type { LinkValue, RawField, RawLink, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
+import {
+  isLinkableTable,
+  type LinkValue,
+  type RawField,
+  type RawLink,
+  type SemanticTableFormValues,
+  type TableField,
+} from '../Shared/semanticData-types';
 import { FormTable, SummaryView } from '../Shared/TableForm';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 
@@ -391,10 +402,20 @@ export function UploadDataDrawerContent() {
   const createTableMutation = useCreateTableMutation();
   const editTableMutation = useEditSemanticTableMutation();
   const navigate = useNavigate();
+  const dataModel = useDataModel();
 
   const isSingleTable = tableIds.length === 1;
 
   const allVisited = tableIds.length > 0 && tableIds.every((id) => tablesState[id]!.isVisited);
+
+  // A table can be the target of a transaction/event/account link if it is a person/other table
+  // (or has no entity type yet). Check both already-persisted tables and tables being configured.
+  const canSelectTypeThatNeedsAPerson = useMemo(
+    () =>
+      dataModel.some(isLinkableTable) ||
+      Object.values(tablesState).some((t) => t.entityType !== 'unset' && !requiresLink(t.entityType)),
+    [dataModel, tablesState],
+  );
 
   const tableOptions = useMemo(
     () =>
@@ -438,56 +459,124 @@ export function UploadDataDrawerContent() {
   async function handleSave() {
     const nonCanceledTableIds = tableIds.filter((id) => !tablesState[id]!.isCanceled);
 
-    // Phase 1: create all tables without links so every table gets a real backend ID first
-    const createResults = await Promise.allSettled(
-      nonCanceledTableIds.map(async (tableId) => {
-        const tableState = tablesState[tableId]!;
-        const values: SemanticTableFormValues = { ...tableState, links: [] };
+    // rawToBackend maps raw JSON table IDs → real backend IDs as tables are created
+    const rawToBackend = new Map<string, string>();
+    // creatingIds is the set of raw IDs we are about to create (used to detect internal links)
+    const creatingIds = new Set(nonCanceledTableIds);
+    // deferred links per table that couldn't be included at creation time (circular refs)
+    const needsLinkEdit = new Map<string, LinkValue[]>();
+
+    const translateLink = (link: LinkValue): LinkValue => ({
+      ...link,
+      targetTableId: rawToBackend.get(link.targetTableId) ?? link.targetTableId,
+    });
+
+    const errors: string[] = [];
+
+    // Person/other tables must be saved before transaction/event/account tables so that
+    // belongsToTableId references resolve correctly on the backend.
+    const requiresLinkEntity = (rawId: string) => {
+      const et = tablesState[rawId]!.entityType;
+      return requiresLink(et === 'unset' ? '' : et);
+    };
+    const pending = [...nonCanceledTableIds].sort((a, b) => {
+      const aNeeds = requiresLinkEntity(a);
+      const bNeeds = requiresLinkEntity(b);
+      if (aNeeds === bNeeds) return 0;
+      return aNeeds ? 1 : -1; // tables that need a link go last
+    });
+
+    // Returns true if the table's belongsToTableId dependency (if any) is not yet resolved
+    const hasPendingBelongsTo = (rawId: string) => {
+      const belongsToId = tablesState[rawId]!.belongsToTableId;
+      return !!belongsToId && creatingIds.has(belongsToId) && !rawToBackend.has(belongsToId);
+    };
+
+    // Translates belongsToTableId from raw JSON ID → backend ID
+    const translateBelongsTo = (tableState: SemanticTableFormValues): string =>
+      rawToBackend.get(tableState.belongsToTableId) ?? tableState.belongsToTableId;
+
+    while (pending.length > 0) {
+      let progress = false;
+      const snapshot = [...pending];
+
+      for (const rawId of snapshot) {
+        const allLinks = getLinksForTable(rawId);
+        const internalLinks = allLinks.filter((l) => creatingIds.has(l.targetTableId));
+        const unresolvedLinks = internalLinks.filter((l) => !rawToBackend.has(l.targetTableId));
+
+        // Also wait for the belongsToTableId target to be created first
+        if (unresolvedLinks.length > 0 || hasPendingBelongsTo(rawId)) continue;
+
+        // All dependencies resolved — create with full translated links and belongsToTableId
+        const tableState = tablesState[rawId]!;
+        const values: SemanticTableFormValues = {
+          ...tableState,
+          belongsToTableId: translateBelongsTo(tableState),
+          links: allLinks.map(translateLink),
+        };
         const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
         if (!result.success) {
-          throw new Error(result.message ?? `Failed to create table "${tableState.name}"`);
+          errors.push(result.message ?? `Failed to create table "${tableState.name}"`);
+          pending.splice(pending.indexOf(rawId), 1);
+          progress = true;
+          continue;
         }
-        return { rawId: tableId, backendId: result.data.id };
-      }),
-    );
 
-    const createFailures = createResults.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-    if (createFailures.length > 0) {
-      setSaveErrors(createFailures.map((r) => (r.reason instanceof Error ? r.reason.message : 'Unknown error')));
+        rawToBackend.set(rawId, result.data.id);
+        pending.splice(pending.indexOf(rawId), 1);
+        progress = true;
+      }
+
+      if (!progress && pending.length > 0) {
+        // Deadlock: circular link references — pick the first table whose belongsToTableId
+        // is already resolved (person/other tables never have one, so they go first)
+        const rawId = pending.find((id) => !hasPendingBelongsTo(id)) ?? pending[0]!;
+        const allLinks = getLinksForTable(rawId);
+        const resolved = allLinks.filter((l) => !creatingIds.has(l.targetTableId) || rawToBackend.has(l.targetTableId));
+        const unresolved = allLinks.filter(
+          (l) => creatingIds.has(l.targetTableId) && !rawToBackend.has(l.targetTableId),
+        );
+
+        const tableState = tablesState[rawId]!;
+        const values: SemanticTableFormValues = {
+          ...tableState,
+          belongsToTableId: translateBelongsTo(tableState),
+          links: resolved.map(translateLink),
+        };
+        const result = await createTableMutation.mutateAsync(adaptCreateTableValue(values));
+        if (!result.success) {
+          errors.push(result.message ?? `Failed to create table "${tableState.name}"`);
+        } else {
+          rawToBackend.set(rawId, result.data.id);
+          if (unresolved.length > 0) {
+            needsLinkEdit.set(rawId, unresolved);
+          }
+        }
+        pending.splice(pending.indexOf(rawId), 1);
+      }
+    }
+
+    if (errors.length > 0) {
+      setSaveErrors(errors);
       return;
     }
 
-    // Phase 2: add links using real backend IDs (raw JSON IDs → backend IDs)
-    const rawIdToBackendId = new Map(
-      (createResults as PromiseFulfilledResult<{ rawId: string; backendId: string }>[]).map((r) => [
-        r.value.rawId,
-        r.value.backendId,
-      ]),
-    );
+    // Edit phase: add deferred links whose targets are now all resolved
+    for (const [rawId, links] of needsLinkEdit) {
+      const backendId = rawToBackend.get(rawId);
+      if (!backendId) continue;
+      const result = await editTableMutation.mutateAsync({
+        tableId: backendId,
+        links: links.map(translateLink).map((link) => ({ op: 'ADD' as const, data: adaptLink(link) })),
+      });
+      if (!result.success) {
+        errors.push(result.message ?? `Failed to add links for table "${tablesState[rawId]!.name}"`);
+      }
+    }
 
-    const linkResults = await Promise.allSettled(
-      nonCanceledTableIds.map(async (rawTableId) => {
-        const links = getLinksForTable(rawTableId);
-        if (links.length === 0) return;
-        const backendTableId = rawIdToBackendId.get(rawTableId);
-        if (!backendTableId) return;
-        const translatedLinks = links.map((link) => ({
-          ...link,
-          targetTableId: rawIdToBackendId.get(link.targetTableId) ?? link.targetTableId,
-        }));
-        const result = await editTableMutation.mutateAsync({
-          tableId: backendTableId,
-          links: translatedLinks.map((link) => ({ op: 'ADD' as const, data: adaptLink(link) })),
-        });
-        if (!result.success) {
-          throw new Error(result.message ?? `Failed to create links for table "${tablesState[rawTableId]!.name}"`);
-        }
-      }),
-    );
-
-    const linkFailures = linkResults.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
-    if (linkFailures.length > 0) {
-      setSaveErrors(linkFailures.map((r) => (r.reason instanceof Error ? r.reason.message : 'Unknown error')));
+    if (errors.length > 0) {
+      setSaveErrors(errors);
       return;
     }
 
@@ -604,6 +693,7 @@ export function UploadDataDrawerContent() {
             entityType={tablesState[selectedTableId].entityType}
             isChanged={tablesState[selectedTableId].entityType === 'unset'}
             onSelect={(entityType) => updateTableState(selectedTableId, { entityType, subEntity: 'moral' })}
+            canSelectTypeThatNeedsAPerson={canSelectTypeThatNeedsAPerson}
           />
         ) : null}
       </header>

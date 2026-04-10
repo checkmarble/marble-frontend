@@ -178,7 +178,6 @@ export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTa
     description: '',
     fields: values.fields.map(adaptTableField),
     links: values.links.map(adaptLink),
-    ftm_entity: values.ftmEntity,
     primary_ordering_field: values.mainTimestampFieldName || 'updated_at',
     metadata: {
       belongsToTableId: values.belongsToTableId || undefined,
@@ -196,7 +195,6 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
     nullable: field.nullable,
     is_enum: field.isEnum,
     is_unique: field.unicityConstraint === 'active_unique_constraint',
-    ftm_property: field.ftmProperty,
     semantic_type: adaptSemanticField(field.semanticType, field.semanticSubType),
     metadata: {
       semanticTypeForFront: field.semanticType,
