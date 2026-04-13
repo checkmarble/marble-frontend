@@ -7,10 +7,10 @@ import {
   type ValidationError,
   validateValues,
 } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { useNavigate } from '@remix-run/react';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, SelectV2 } from 'ui-design-system';
@@ -401,7 +401,7 @@ export function UploadDataDrawerContent() {
   const { t } = useTranslation(['data']);
   const createTableMutation = useCreateTableMutation();
   const editTableMutation = useEditSemanticTableMutation();
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const dataModel = useDataModel();
 
   const isSingleTable = tableIds.length === 1;

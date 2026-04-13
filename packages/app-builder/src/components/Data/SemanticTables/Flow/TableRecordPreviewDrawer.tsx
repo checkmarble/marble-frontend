@@ -3,7 +3,7 @@ import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '@app-build
 import { Spinner } from '@app-builder/components/Spinner';
 import { type DataModelObject } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
-import { useFetcher } from '@remix-run/react';
+import { useQuery } from '@tanstack/react-query';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Tag } from 'ui-design-system';
@@ -16,7 +16,6 @@ interface TableRecordPreviewDrawerProps {
 
 export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: TableRecordPreviewDrawerProps) {
   const { t } = useTranslation(['data', 'common']);
-  const fetcher = useFetcher<{ object: DataModelObject | null }>();
   const [objectId, setObjectId] = useState('');
   const [searchedObjectId, setSearchedObjectId] = useState<string | null>(null);
 
@@ -27,19 +26,29 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
   }, [open]);
 
   const trimmedObjectId = useMemo(() => objectId.trim(), [objectId]);
-  const isLoading = fetcher.state !== 'idle';
+
+  const query = useQuery({
+    queryKey: ['data', 'ingested-object', tableName, searchedObjectId],
+    queryFn: async () => {
+      const response = await fetch(
+        getRoute('/ressources/data/object/:objectType/:objectId', {
+          objectType: tableName,
+          objectId: searchedObjectId!,
+        }),
+      );
+      if (!response.ok) return null;
+      const result = await response.json();
+      return result.objectDetails as DataModelObject;
+    },
+    enabled: !!searchedObjectId,
+  });
+
+  const isLoading = query.isFetching;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!trimmedObjectId) return;
-
     setSearchedObjectId(trimmedObjectId);
-    fetcher.load(
-      getRoute('/data/view/:tableName/:objectId', {
-        tableName,
-        objectId: trimmedObjectId,
-      }),
-    );
   };
 
   return (
@@ -76,14 +85,10 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
               <div className="flex min-h-32 items-center justify-center">
                 <Spinner className="size-5" />
               </div>
-            ) : searchedObjectId && fetcher.data ? (
-              fetcher.data.object ? (
+            ) : searchedObjectId && query.data !== undefined ? (
+              query.data ? (
                 <div className="rounded-md border border-grey-border bg-grey-background-light p-4">
-                  <DataFields
-                    table={tableName}
-                    object={fetcher.data.object}
-                    options={{ hideLinks: true, showHeader: true }}
-                  />
+                  <DataFields table={tableName} object={query.data} options={{ hideLinks: true, showHeader: true }} />
                 </div>
               ) : (
                 <div className="rounded-sm border border-grey-border bg-surface-card p-4 text-center">

@@ -2,9 +2,8 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
-import { useFetcher } from '@remix-run/react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { type UploadLog } from 'marble-api';
-import { useEffect } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -22,22 +21,25 @@ export function UploadTableDrawer({
   tableModel: TableModel;
 }) {
   const { t } = useTranslation(['data', 'upload', 'common']);
-  const fetcher = useFetcher<UploadLog[]>();
-
-  useEffect(() => {
-    if (open) {
-      fetcher.load(getRoute('/ressources/ingestion/upload-logs/:objectType', { objectType: tableName }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, tableName]);
+  const queryClient = useQueryClient();
+  const uploadLogsQuery = useQuery({
+    queryKey: ['ingestion', 'upload-logs', tableName],
+    queryFn: async () => {
+      const response = await fetch(
+        getRoute('/ressources/ingestion/upload-logs/:objectType', { objectType: tableName }),
+      );
+      return response.json() as Promise<UploadLog[]>;
+    },
+    enabled: open,
+  });
 
   const handleUploadSuccess = (_uploadLog: UploadLog) => {
-    fetcher.load(getRoute('/ressources/ingestion/upload-logs/:objectType', { objectType: tableName }));
+    queryClient.invalidateQueries({ queryKey: ['ingestion', 'upload-logs', tableName] });
   };
 
   if (!open) return null;
 
-  const uploadLogs = fetcher.data ?? [];
+  const uploadLogs = uploadLogsQuery.data ?? [];
 
   return (
     <>

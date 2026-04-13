@@ -1,7 +1,7 @@
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type TableModel } from '@app-builder/models/data-model';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
-import { useRevalidator } from '@remix-run/react';
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -107,7 +107,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   );
 
   const updateTableMutation = useEditSemanticTableMutation();
-  const { revalidate } = useRevalidator();
+  const revalidate = useLoaderRevalidator();
 
   const drawer = (
     <>
