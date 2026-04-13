@@ -13,11 +13,19 @@ const queryParamsSchema = z.object({
   ranges: protectArray(z.array(dateRangeFilterSchema).min(1)),
 });
 
+// LOCAL MOCK: matches the USE_MOCK flag in query.$queryName.ts
+const USE_MOCK = false;
+
 export const action = createServerFn(
   [handleRedirectMiddleware, authMiddleware],
   async function createAnalyticsAvailableFiltersAction({ params, request, context }) {
     try {
       const urlParams = urlParamsSchema.parse(params);
+
+      if (USE_MOCK) {
+        return { success: true, data: [] };
+      }
+
       const body = await request.json();
       const queryParams = queryParamsSchema.parse(body);
       const availableFilters = await context.authInfo.analytics.getAvailableFilters({

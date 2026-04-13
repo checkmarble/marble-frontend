@@ -5,7 +5,7 @@ import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redire
 // LOCAL MOCK: disable real backend calls and return fixture data so the design
 // pass can be reviewed without a running marblecore backend. Flip this to
 // `false` (or remove the `if (USE_MOCK)` branch) to restore live data.
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /**
  * Deterministic pseudo-random generator seeded on a string (so reloads are stable).

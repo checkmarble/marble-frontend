@@ -196,11 +196,14 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
               return null;
             }
             return (
-              <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
-                <div className="flex items-center gap-v2-sm">
-                  <strong className="text-grey-primary font-semibold">{`Score: ${point.data.x.toFixed(0)}->${(point.data.x + bucketSize).toFixed(0)}`}</strong>
+              <div className="flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
+                <span className="text-s text-grey-primary font-semibold">{`Score: ${point.data.x.toFixed(0)} → ${(point.data.x + bucketSize).toFixed(0)}`}</span>
+                <div className="flex items-center justify-between gap-v2-md">
+                  <span className="text-s text-grey-secondary">
+                    {t('analytics:decisions_score_distribution.left-axis-legend')}
+                  </span>
+                  <span className="text-s text-grey-primary font-semibold">{`${point.data.y.toFixed(2)}%`}</span>
                 </div>
-                <div className="text-s text-grey-60">{`${point.data.y.toFixed(2)} %`}</div>
               </div>
             );
           }}

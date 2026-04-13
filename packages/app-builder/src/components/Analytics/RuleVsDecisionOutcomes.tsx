@@ -140,6 +140,20 @@ const RulesVsDecisionsOutcomesGraph = ({
           padding={0.6}
           margin={{ top: 0, right: 20, bottom: 42, left: 240 }}
           colors={getBarColors}
+          borderRadius={4}
+          borderWidth={1}
+          borderColor={{ from: 'color' }}
+          defs={[
+            {
+              id: 'ruleGradient',
+              type: 'linearGradient',
+              colors: [
+                { offset: 0, color: 'inherit', opacity: 0.85 },
+                { offset: 100, color: 'inherit', opacity: 0.2 },
+              ],
+            },
+          ]}
+          fill={[{ match: '*', id: 'ruleGradient' }]}
           layout="horizontal"
           valueScale={{ type: 'linear', min: 0, max: maxValueScale }}
           theme={{
@@ -172,13 +186,15 @@ const RulesVsDecisionsOutcomesGraph = ({
             tickValues: [0, 25, 50, 75, 100],
           }}
           tooltip={({ id, value, data }) => (
-            <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
-              <div className="flex items-center gap-v2-sm">
-                <strong className="text-grey-primary font-semibold">
-                  {String(id)}: {Number(value).toFixed(1)}%
-                </strong>
+            <div className="flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
+              <span className="text-s text-grey-primary font-semibold">{data.rule}</span>
+              <div className="flex items-center justify-between gap-v2-md">
+                <span className="text-s text-grey-secondary">{String(id)}</span>
+                <span className="text-s text-grey-primary font-semibold">{Number(value).toFixed(1)}%</span>
               </div>
-              <div className="text-s text-grey-60">{data.rule}</div>
+              <span className="text-xs text-grey-secondary">
+                {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}: {data.total}
+              </span>
             </div>
           )}
           motionConfig={{
