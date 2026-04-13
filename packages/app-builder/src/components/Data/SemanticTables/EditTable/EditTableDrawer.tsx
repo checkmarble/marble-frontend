@@ -435,7 +435,10 @@ function adaptTableModelToFormValues(tableModel: TableModel): SemanticTableFormV
     alias: tableModel.alias || tableModel.name,
     entityType: tableModel.semanticType ?? 'unset',
     subEntity: tableModel.subEntity ?? 'unset',
-    belongsToTableId: tableModel.belongsToTableId ?? '',
+    belongsToTableId:
+      tableModel.belongsToTableId ??
+      tableModel.linksToSingle.find((l) => l.relationType === 'belongs_to')?.parentTableId ??
+      '',
     fields: tableModel.fields.map(adaptFieldToTableField),
     mainTimestampFieldName: resolveMainTimestampFieldName(tableModel),
     links: [],

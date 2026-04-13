@@ -62,7 +62,7 @@ export function DeleteDataModelContent({
           )}
 
           {!isBlocked ? (
-            <div className="flex flex-col gap-2">
+            <form id="delete-confirmation-form" className="flex flex-col gap-2">
               <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
                 {t('data:delete.type_to_confirm', { text: requiredConfirmText })}
               </label>
@@ -74,7 +74,7 @@ export function DeleteDataModelContent({
                 placeholder={requiredConfirmText}
                 autoComplete="off"
               />
-            </div>
+            </form>
           ) : null}
         </div>
 
@@ -89,7 +89,12 @@ export function DeleteDataModelContent({
               {t('data:delete.understood')}
             </Button>
           ) : (
-            <Button variant="destructive" onClick={onConfirm} disabled={isPending || !isConfirmed}>
+            <Button
+              variant="destructive"
+              type="submit"
+              form="delete-confirmation-form"
+              disabled={isPending || !isConfirmed}
+            >
               <Icon icon="delete" className="size-5" />
               {t('common:delete')}
             </Button>
