@@ -1,9 +1,3 @@
-import {
-  isSemanticSubTypeField,
-  isSemanticTypeField,
-  SemanticSubTypeField,
-  SemanticTypeField,
-} from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { type ParseKeys } from 'i18next';
 import {
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
@@ -33,6 +27,12 @@ import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 import { ScreeningCategory } from './screening';
+import {
+  isSemanticSubTypeField,
+  isSemanticTypeField,
+  type SemanticSubTypeField,
+  type SemanticTypeField,
+} from './semantic-types';
 
 export const primitiveTypes = ['Bool', 'Int', 'Float', 'String', 'Timestamp', 'IpAddress', 'Coords'] as const;
 export type PrimitiveTypes = (typeof primitiveTypes)[number];

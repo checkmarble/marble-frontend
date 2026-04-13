@@ -1,3 +1,9 @@
+import {
+  type DataTypeKey,
+  type SemanticSubTypeField,
+  SemanticTypeField,
+  semanticTypesByDataType,
+} from '@app-builder/models';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,15 +15,11 @@ import { isValidDataModelName } from '../../shared/dataModelNameValidation';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { useDatatypeOptions } from './DatatypeOption';
 import {
-  type DataTypeKey,
   type EnumColors,
   enumColors,
   getMockValue,
   getSemanticSubOptions,
   type LinkValue,
-  type SemanticSubTypeField,
-  SemanticTypeField,
-  semanticTypesByDataType,
   type TableField,
 } from './semanticData-types';
 
@@ -575,7 +577,7 @@ function EnumValuesSettings({
           const isDuplicate =
             enumValue.value !== '' && enumValues.some((v, i) => i !== index && toSnakeCase(v.value) === candidateKey);
           return (
-            <div key={index} className="flex flex-col gap-v2-xs">
+            <div key={`enum-value-${index}`} className="flex flex-col gap-v2-xs">
               <div className="flex items-center gap-v2-sm">
                 <div className="w-max shrink-0">
                   <SelectV2

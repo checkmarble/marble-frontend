@@ -472,6 +472,26 @@ export function UploadDataDrawerContent() {
   async function handleSave() {
     const nonCanceledTableIds = tableIds.filter((id) => !tablesState[id]!.isCanceled);
 
+    // Validate all non-canceled tables before proceeding with any mutations
+    const preErrors: string[] = [];
+    for (const rawId of nonCanceledTableIds) {
+      const tableState = tablesState[rawId]!;
+      const values: SemanticTableFormValues = {
+        ...tableState,
+        links: getLinksForTable(rawId),
+      };
+      const result = validateValues(values, 'all', t);
+      if (!result.ok) {
+        for (const error of result.errors) {
+          preErrors.push(`${tableState.name}: ${error.message}`);
+        }
+      }
+    }
+    if (preErrors.length > 0) {
+      setSaveErrors(preErrors);
+      return;
+    }
+
     // rawToBackend maps raw JSON table IDs → real backend IDs as tables are created
     const rawToBackend = new Map<string, string>();
     // creatingIds is the set of raw IDs we are about to create (used to detect internal links)

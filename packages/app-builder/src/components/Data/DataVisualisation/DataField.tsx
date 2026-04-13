@@ -1,6 +1,12 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { Spinner } from '@app-builder/components/Spinner';
-import { type DataModelField, DataType } from '@app-builder/models';
+import {
+  type DataModelField,
+  DataType,
+  type SemanticSubTypeField,
+  type SemanticSubTypeFieldMap,
+  type SemanticTypeField,
+} from '@app-builder/models';
 import { objectDetailsQueryOptions } from '@app-builder/queries/data/get-object-details';
 import { formatAge, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
@@ -15,11 +21,6 @@ import { match, P } from 'ts-pattern';
 import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
-import {
-  SemanticSubTypeField,
-  SemanticSubTypeFieldMap,
-  SemanticTypeField,
-} from '../SemanticTables/Shared/semanticData-types';
 import { DataFields } from './DataFields';
 import type { MetadataType, VALID_DATA_TYPE } from './data-type';
 import { hasMetadataContent, inferDataTypeFromName, MAP_HEIGHT, parseCoords } from './dataFieldsUtils';

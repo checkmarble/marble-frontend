@@ -21,7 +21,14 @@ export const action = createServerFn(
     try {
       raw = JSON.parse(await request.text());
     } catch {
-      return Response.json({ success: false, status: 400 }, { status: 400 });
+      return Response.json(
+        {
+          success: false,
+          errors: [],
+          status: 400,
+        },
+        { status: 400 },
+      );
     }
 
     const parsed = deleteTablePayloadSchema.safeParse(raw);

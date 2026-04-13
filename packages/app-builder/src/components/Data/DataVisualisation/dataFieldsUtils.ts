@@ -1,7 +1,6 @@
-import { DataType, TableModel } from '@app-builder/models';
+import { DataType, type SemanticSubTypeField, type SemanticTypeField, TableModel } from '@app-builder/models';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import * as R from 'remeda';
-import { SemanticSubTypeField, SemanticTypeField } from '../SemanticTables/Shared/semanticData-types';
 import { VALID_DATA_TYPE } from './data-type';
 
 export const CARTO_BASEMAP = {

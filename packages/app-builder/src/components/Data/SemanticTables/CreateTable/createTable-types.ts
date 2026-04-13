@@ -1,14 +1,19 @@
 import {
   LinkValue,
-  type SemanticSubTypeField,
-  SemanticSubTypeFieldMap,
   type SemanticTableFormValues,
-  SemanticTypeField,
   SemanticTypeTable,
   type TableField,
 } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
-import { FtmEntityPersonOption, FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
+import {
+  FtmEntityPersonOption,
+  FtmEntityV2,
+  ftmEntities,
+  ftmEntityPersonOptions,
+  type SemanticSubTypeField,
+  SemanticSubTypeFieldMap,
+  SemanticTypeField,
+} from '@app-builder/models';
 import { CreateTableValue } from '@app-builder/queries/data/create-table';
 import { TFunction } from 'i18next';
 import { FieldSemanticType } from 'marble-api';
@@ -355,13 +360,26 @@ function getFieldErrors(values: SemanticTableFormValues, t: TFunction<['data']>)
 
 function getLinkErrors(values: SemanticTableFormValues, t: TFunction<['data']>): LinkValidationError[] {
   const errors: LinkValidationError[] = [];
+  const nameCounts = new Map<string, string[]>();
 
   for (const link of values.links) {
     const linkField = values.fields.find((field) => field.id === link.tableFieldId);
+    const trimmedName = link.name.trim();
 
-    if (!link.name.trim()) {
+    if (!trimmedName) {
       errors.push({ kind: 'link', linkId: link.linkId, message: t('data:create_table.link_missing_name') });
+    } else if (!dataModelNameRegex.test(trimmedName)) {
+      errors.push({
+        kind: 'link',
+        linkId: link.linkId,
+        message: t('data:create_table.link_name_regex_error', { link: link.name }),
+      });
+    } else {
+      const ids = nameCounts.get(trimmedName) ?? [];
+      ids.push(link.linkId);
+      nameCounts.set(trimmedName, ids);
     }
+
     if (!link.targetTableId) {
       errors.push({
         kind: 'link',
@@ -384,6 +402,14 @@ function getLinkErrors(values: SemanticTableFormValues, t: TFunction<['data']>):
           link: link.name || '(unnamed)',
         }),
       });
+    }
+  }
+
+  for (const [name, ids] of nameCounts) {
+    if (ids.length > 1) {
+      for (const linkId of ids) {
+        errors.push({ kind: 'link', linkId, message: t('data:create_table.duplicate_link_name', { name }) });
+      }
     }
   }
 

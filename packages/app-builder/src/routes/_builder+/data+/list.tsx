@@ -102,10 +102,10 @@ function EmptyHeader({
             <MenuCommand.List>
               <MenuCommand.Item>
                 <ImportOrg onImportSuccess={onImportSuccess}>
-                  <button className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 cursor-pointer">
                     <Icon icon="upload" className="size-4" />
                     {t('data:create_new_table.from_file')}
-                  </button>
+                  </div>
                 </ImportOrg>
               </MenuCommand.Item>
               <MenuCommand.Item>

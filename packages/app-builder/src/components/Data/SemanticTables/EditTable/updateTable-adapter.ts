@@ -117,13 +117,20 @@ function adaptFieldsOperations(
     );
     if (fieldValues) {
       const fkLink = newLinkValues.find((l) => l.tableFieldId === fieldValues.name);
+      const deletedLink = deletedLinkValues.find((l) => l.tableFieldId === fieldValues.name);
       const effectiveField = fkLink
         ? {
             ...fieldValues,
             semanticType: 'foreign_key' as const,
             foreignkeyTable: tableNameById.get(fkLink.targetTableId),
           }
-        : fieldValues;
+        : deletedLink
+          ? {
+              ...fieldValues,
+              semanticType: 'text' as const,
+              foreignkeyTable: undefined,
+            }
+          : fieldValues;
       fieldOps.push(adaptFieldOperation(change, effectiveField, originalFieldsById.get(effectiveField.id)));
       processedFieldNames.add(fieldValues.name);
     }
