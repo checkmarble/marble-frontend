@@ -210,7 +210,8 @@ function adaptTableFieldUpdate(current: TableField, original: TableField) {
     id: current.id,
     description: ifChanged(current.description, original.description),
     alias: ifChanged(current.alias, original.alias),
-    is_enum: ifChanged(current.isEnum, original.isEnum),
+    is_enum:
+      current.semanticType === 'enum' ? ifChanged(true, original.isEnum) : ifChanged(current.isEnum, original.isEnum),
     is_nullable: ifChanged(current.nullable, original.nullable),
     is_unique: ifChanged(
       current.unicityConstraint === 'active_unique_constraint',

@@ -126,11 +126,11 @@ export const semanticTypesByDataType = {
     {
       value: 'enum',
       subOptions: [
+        { value: 'autocomplete' },
         { value: 'currency' },
         { value: 'country' },
         { value: 'key_color_value' },
         { value: 'mcc_code' },
-        { value: 'autocomplete' },
       ],
     },
     { value: 'currency_code' },
@@ -159,8 +159,20 @@ export const semanticTypesByDataType = {
     { value: 'initiation_date' },
     { value: 'validation_date' },
   ],
-  Int: [{ value: 'number' }, { value: 'monetary_amount' }, { value: 'percentage' }, { value: 'unique_id' }],
-  Float: [{ value: 'number' }, { value: 'monetary_amount' }, { value: 'percentage' }, { value: 'unique_id' }],
+  Int: [
+    { value: 'number' },
+    { value: 'monetary_amount' },
+    { value: 'percentage' },
+    { value: 'unique_id' },
+    { value: 'enum' },
+  ],
+  Float: [
+    { value: 'number' },
+    { value: 'monetary_amount' },
+    { value: 'percentage' },
+    { value: 'unique_id' },
+    { value: 'enum' },
+  ],
 } as const satisfies Record<string, SemanticOption[]>;
 
 export type DataTypeKey = keyof typeof semanticTypesByDataType;
@@ -173,6 +185,20 @@ export type SemanticSubTypeFieldMap = {
 };
 
 export type SemanticSubTypeField = SemanticSubTypeFieldMap[keyof SemanticSubTypeFieldMap];
+
+export function isSemanticTypeField(v: string): v is SemanticTypeField {
+  return (semanticTypeField as readonly string[]).includes(v);
+}
+
+const _semanticSubTypeValues = new Set<string>(
+  Object.values(semanticTypesByDataType)
+    .flat()
+    .flatMap((o) => ('subOptions' in o && o.subOptions ? o.subOptions.map((s) => s.value) : [])),
+);
+
+export function isSemanticSubTypeField(v: string): v is SemanticSubTypeField {
+  return _semanticSubTypeValues.has(v);
+}
 
 export function getSemanticSubOptions(
   dataType: DataTypeKey,

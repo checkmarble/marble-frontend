@@ -1,4 +1,6 @@
 import {
+  isSemanticSubTypeField,
+  isSemanticTypeField,
   SemanticSubTypeField,
   SemanticTypeField,
 } from '@app-builder/components/Data/SemanticTables/Shared/semanticData-types';
@@ -106,12 +108,17 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
       : {};
   const alias = typeof raw.alias === 'string' ? raw.alias : readMetadataString(meta, 'alias');
   const order = typeof raw.order === 'number' ? raw.order : readMetadataNumber(meta, 'order');
-  const semanticType = (readMetadataString(meta, 'semanticTypeForFront') ??
-    (typeof raw.semantic_type === 'string' ? raw.semantic_type : undefined)) as SemanticTypeField | undefined;
-  const semanticSubType = (readMetadataString(meta, 'semanticSubType', 'semantic_sub_type') ??
-    (typeof raw.semantic_sub_type === 'string' ? raw.semantic_sub_type : undefined)) as
-    | SemanticSubTypeField
-    | undefined;
+  const semanticTypeRaw =
+    readMetadataString(meta, 'semanticTypeForFront') ??
+    (typeof raw.semantic_type === 'string' ? raw.semantic_type : undefined);
+  const semanticType =
+    semanticTypeRaw !== undefined && isSemanticTypeField(semanticTypeRaw) ? semanticTypeRaw : undefined;
+
+  const semanticSubTypeRaw =
+    readMetadataString(meta, 'semanticSubType', 'semantic_sub_type') ??
+    (typeof raw.semantic_sub_type === 'string' ? raw.semantic_sub_type : undefined);
+  const semanticSubType =
+    semanticSubTypeRaw !== undefined && isSemanticSubTypeField(semanticSubTypeRaw) ? semanticSubTypeRaw : undefined;
   const currencyExponent = readMetadataNumber(meta, 'currencyExponent');
   const decimalPrecision = readMetadataNumber(meta, 'decimalPrecision');
   const currencyFieldId = readMetadataString(meta, 'currencyFieldId');

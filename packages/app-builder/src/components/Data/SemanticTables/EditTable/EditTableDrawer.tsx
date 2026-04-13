@@ -224,9 +224,11 @@ export function EditTableDrawer({
     const links = getLinksForTable(tableModel.id);
     const values: SemanticTableFormValues = { ...tableState, links };
 
+    const tableResult = validateValues(values, 'table', t);
     const fieldResult = validateValues(values, 'fields', t);
     const linkResult = validateValues(values, 'links', t);
     const errors: ValidationError[] = [
+      ...(!tableResult.ok ? tableResult.errors : []),
       ...(!fieldResult.ok ? fieldResult.errors : []),
       ...(!linkResult.ok ? linkResult.errors : []),
     ];
@@ -243,7 +245,7 @@ export function EditTableDrawer({
     );
   }
 
-  const handleBackdropClose = useCallback(() => {
+  const requestClose = useCallback(() => {
     if (!isDirty) {
       onClose();
       return;
@@ -266,7 +268,7 @@ export function EditTableDrawer({
       value={{
         container: containerRef,
         data: null,
-        close: onClose,
+        close: requestClose,
         tablesState,
         updateTableState,
         tableIds,
@@ -284,13 +286,13 @@ export function EditTableDrawer({
       {/* Backdrop */}
       <div
         className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs"
-        onClick={handleBackdropClose}
+        onClick={requestClose}
       />
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
         <div ref={containerRef} className="bg-surface-card flex h-full flex-col overflow-y-auto">
           <header className="flex shrink-0 items-center gap-v2-md border-b border-grey-border p-v2-lg">
-            <button type="button" onClick={onClose} className="rounded-lg p-2 hover:bg-grey-border">
+            <button type="button" onClick={requestClose} className="rounded-lg p-2 hover:bg-grey-border">
               <Icon icon="x" className="size-5" />
             </button>
             <span className="text-l">{t('data:edit_table.header_prefix')}</span>
@@ -329,7 +331,7 @@ export function EditTableDrawer({
             )}
 
             <div className="flex shrink-0 items-center gap-v2-md self-center">
-              <Button variant="secondary" appearance="stroked" onClick={onClose}>
+              <Button variant="secondary" appearance="stroked" onClick={requestClose}>
                 {t('common:cancel')}
               </Button>
               <Button variant="primary" onClick={handleSave}>

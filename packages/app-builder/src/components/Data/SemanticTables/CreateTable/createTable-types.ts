@@ -196,7 +196,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
     type: field.dataType,
     alias: field.alias,
     nullable: field.nullable,
-    is_enum: field.isEnum,
+    is_enum: field.isEnum || field.semanticType === 'enum',
     is_unique: field.unicityConstraint === 'active_unique_constraint',
     semantic_type: adaptSemanticField(field.semanticType, field.semanticSubType),
     metadata: {
@@ -397,7 +397,9 @@ export function validateValues(
 ): ValidationResult {
   if (scope === 'table') {
     // enforce 'updated_at' to be the default sort order if there is no other
-    if (!values.mainTimestampFieldName && values.fields.some((f) => f.name === 'updated_at')) {
+    const mainTimestampFieldName =
+      values.mainTimestampFieldName || (values.fields.some((f) => f.name === 'updated_at') ? 'updated_at' : '');
+    if (!mainTimestampFieldName && values.fields.some((f) => f.name === 'updated_at')) {
       values.mainTimestampFieldName = 'updated_at';
     }
     const errors = getTablePropertyErrors(values);

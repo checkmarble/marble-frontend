@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal, NumberInput, type SelectOption, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../../DataVisualisation/DataField';
+import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
 import { isValidDataModelName } from '../../shared/dataModelNameValidation';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { useDatatypeOptions } from './DatatypeOption';
@@ -140,6 +141,15 @@ export function FieldDetailPanel({
     onClose();
   }
 
+  function inferTypeFromName(field: TableField) {
+    if (!field.isNew) return;
+    const { semanticType, semanticSubType } = inferSemanticTypeFromName(field.name, field.dataType, field.isEnum);
+    update({
+      semanticType,
+      semanticSubType,
+    });
+  }
+
   const mockedValue = getMockValue(field.dataType, field.semanticType, field.semanticSubType);
 
   return (
@@ -196,6 +206,7 @@ export function FieldDetailPanel({
               value={field.name}
               onChange={(e) => update({ name: e.currentTarget.value })}
               disabled={isLocked || !field.isNew}
+              onBlur={() => inferTypeFromName(field)}
             />
             {isNameDuplicate ? (
               <p className="text-xs text-red-primary">{t('data:upload_data.field_name_unique_error')}</p>

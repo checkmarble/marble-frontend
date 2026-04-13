@@ -156,7 +156,7 @@
   "empty_state.import_org.title": "Upload data",
   "empty_state.select_archetype.description": "Choose a pre-built data model template to get started quickly",
   "empty_state.select_archetype.title": "Select an archetype",
-  "empty_state.title": "You d'ont have any table created in Marble yet.",
+  "empty_state.title": "You don't have any table created in Marble yet.",
   "example_usage": "Usage",
   "export_org.button": "Export data",
   "export_org.success": "Data exported successfully",

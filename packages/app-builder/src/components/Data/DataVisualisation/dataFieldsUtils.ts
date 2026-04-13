@@ -115,7 +115,9 @@ export function inferDataTypeFromName(name: string, dataType: DataType): VALID_D
 export function inferSemanticTypeFromName(
   name: string,
   dataType: DataType,
+  isEnum?: boolean,
 ): { semanticType: SemanticTypeField; semanticSubType?: SemanticSubTypeField } {
+  if (isEnum) return { semanticType: 'enum', semanticSubType: dataType === 'String' ? 'autocomplete' : undefined };
   switch (dataType) {
     case 'String':
     case 'String[]':

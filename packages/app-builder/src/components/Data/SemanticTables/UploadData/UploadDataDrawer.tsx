@@ -289,7 +289,7 @@ function buildInitialTablesState(data: unknown): Record<string, SemanticTableFor
       const fields: TableField[] = rawFields.map(({ key, field }) => {
         const foreignkeyTable = foreignKeyMap.get(field.id);
         const isForeignKey = foreignkeyTable !== undefined;
-        const { semanticType, semanticSubType } = inferSemanticTypeFromName(key, field.data_type);
+        const { semanticType, semanticSubType } = inferSemanticTypeFromName(key, field.data_type, field.is_enum);
         return {
           id: field.id,
           name: key,

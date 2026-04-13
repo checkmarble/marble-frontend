@@ -128,8 +128,8 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           if (result.success) {
             toast.success(t('data:table_details.table_updated', { name: tableState.alias || tableState.name }));
             revalidate();
+            setIsEditOpen(false);
           }
-          setIsEditOpen(false);
         }}
       />
       <DeleteTableModal table={data.tableModel} open={isDeleteOpen} onOpenChange={setIsDeleteOpen} />

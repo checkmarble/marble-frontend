@@ -1,5 +1,5 @@
 import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
-import { FtmEntityV2, ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
+import { ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectV2 } from 'ui-design-system';
@@ -128,9 +128,13 @@ export function FormTable({
               <SelectV2
                 value={tableState.entityType}
                 placeholder={t('data:upload_data.object_placeholder')}
-                onChange={(value) =>
-                  updateTableState(tableId, { entityType: value as FtmEntityV2, subEntity: 'moral' })
-                }
+                onChange={(value) => {
+                  const nextEntityType = value;
+                  updateTableState(tableId, {
+                    entityType: nextEntityType,
+                    subEntity: nextEntityType === 'person' ? 'moral' : 'unset',
+                  });
+                }}
                 options={ftmEntityOptions}
                 className="flex-1"
               />
@@ -231,7 +235,13 @@ function SummaryTableRow({ tableId }: { tableId: string }) {
         <SelectV2
           value={tableState.entityType}
           placeholder={t('data:upload_data.object_placeholder')}
-          onChange={(value) => updateTableState(tableId, { entityType: value as FtmEntityV2, subEntity: 'moral' })}
+          onChange={(value) => {
+            const nextEntityType = value;
+            updateTableState(tableId, {
+              entityType: nextEntityType,
+              subEntity: nextEntityType === 'person' ? 'moral' : 'unset',
+            });
+          }}
           options={ftmEntityOptions}
           disabled={tableState.isCanceled}
           className={cn(!hasSubEntity && 'col-span-2')}
