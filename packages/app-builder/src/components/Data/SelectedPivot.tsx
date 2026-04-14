@@ -1,9 +1,9 @@
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
 import { getLinksToSingleMap } from '@app-builder/services/data/data-model';
 import { createSimpleContext } from '@app-builder/utils/create-context';
+import { Panel } from '@xyflow/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Panel } from 'reactflow';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { DeletePivot } from './DeleteDataModel/DeletePivot';

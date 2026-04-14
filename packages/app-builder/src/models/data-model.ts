@@ -27,12 +27,27 @@ import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 import { ScreeningCategory } from './screening';
+import {
+  isSemanticSubTypeField,
+  isSemanticTypeField,
+  type SemanticSubTypeField,
+  type SemanticTypeField,
+} from './semantic-types';
 
-type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
+export const primitiveTypes = ['Bool', 'Int', 'Float', 'String', 'Timestamp', 'IpAddress', 'Coords'] as const;
+export type PrimitiveTypes = (typeof primitiveTypes)[number];
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'DerivedData' | 'unknown';
 export const EnumDataTypes = ['Float', 'Int', 'String'];
 export const UniqueDataTypes = ['Float', 'Int', 'String'];
 export type UnicityConstraintType = 'no_unicity_constraint' | 'pending_unique_constraint' | 'active_unique_constraint';
+export const ftmEntities = ['person', 'account', 'transaction', 'event', 'other'] as const;
+export const ftmEntityPersonOptions = ['moral', 'natural', 'generic'] as const;
+
+export type FtmEntityV2 = (typeof ftmEntities)[number];
+export type FtmEntityPersonOption = (typeof ftmEntityPersonOptions)[number];
+
+export const linkRelationTypes = ['belongs_to', 'related'] as const;
+export type LinkRelationType = (typeof linkRelationTypes)[number];
 
 export type EnumValue = string | number;
 export interface DataModelField {
@@ -46,20 +61,94 @@ export interface DataModelField {
   values?: EnumValue[];
   unicityConstraint: UnicityConstraintType;
   ftmProperty?: string;
+  alias?: string;
+  order?: number;
+  semanticType?: SemanticTypeField;
+  semanticSubType?: SemanticSubTypeField;
+  currencyExponent?: number;
+  decimalPrecision?: number;
+  currencyFieldId?: string;
+  booleanDisplay?: 'yes_no' | 'checkbox';
+  foreignkeyTable?: string;
+  hidden?: boolean;
+}
+
+function readMetadataString(m: Record<string, unknown>, ...keys: string[]): string | undefined {
+  for (const k of keys) {
+    const v = m[k];
+    if (typeof v === 'string') return v;
+  }
+  return undefined;
+}
+
+function readMetadataNumber(m: Record<string, unknown>, ...keys: string[]): number | undefined {
+  for (const k of keys) {
+    const v = m[k];
+    if (typeof v === 'number' && !Number.isNaN(v)) return v;
+  }
+  return undefined;
+}
+
+function readMetadataBoolean(m: Record<string, unknown>, key: string): boolean | undefined {
+  const v = m[key];
+  return typeof v === 'boolean' ? v : undefined;
 }
 
 function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
+  const raw = dataModelFieldDto as FieldDto & {
+    alias?: string;
+    order?: number;
+    metadata?: Record<string, unknown> | null;
+    semantic_type?: string;
+    semantic_sub_type?: string;
+  };
+  const meta =
+    raw.metadata && typeof raw.metadata === 'object' && !Array.isArray(raw.metadata)
+      ? (raw.metadata as Record<string, unknown>)
+      : {};
+  const alias = typeof raw.alias === 'string' ? raw.alias : readMetadataString(meta, 'alias');
+  const order = typeof raw.order === 'number' ? raw.order : readMetadataNumber(meta, 'order');
+  const semanticTypeRaw =
+    readMetadataString(meta, 'semanticTypeForFront') ??
+    (typeof raw.semantic_type === 'string' ? raw.semantic_type : undefined);
+  const semanticType =
+    semanticTypeRaw !== undefined && isSemanticTypeField(semanticTypeRaw) ? semanticTypeRaw : undefined;
+
+  const semanticSubTypeRaw =
+    readMetadataString(meta, 'semanticSubType', 'semantic_sub_type') ??
+    (typeof raw.semantic_sub_type === 'string' ? raw.semantic_sub_type : undefined);
+  const semanticSubType =
+    semanticSubTypeRaw !== undefined && isSemanticSubTypeField(semanticSubTypeRaw) ? semanticSubTypeRaw : undefined;
+  const currencyExponent = readMetadataNumber(meta, 'currencyExponent');
+  const decimalPrecision = readMetadataNumber(meta, 'decimalPrecision');
+  const currencyFieldId = readMetadataString(meta, 'currencyFieldId');
+  const booleanDisplayRaw = readMetadataString(meta, 'booleanDisplay');
+  const booleanDisplay =
+    booleanDisplayRaw === 'yes_no' || booleanDisplayRaw === 'checkbox' ? booleanDisplayRaw : undefined;
+  const foreignkeyTable = readMetadataString(meta, 'foreignkeyTable', 'foreignkey_table');
+  const hidden = readMetadataBoolean(meta, 'hidden');
+
   return {
-    id: dataModelFieldDto.id,
-    dataType: dataModelFieldDto.data_type,
-    description: dataModelFieldDto.description,
-    isEnum: dataModelFieldDto.is_enum,
-    name: dataModelFieldDto.name,
-    nullable: dataModelFieldDto.nullable,
-    tableId: dataModelFieldDto.table_id,
-    values: dataModelFieldDto.values,
-    unicityConstraint: dataModelFieldDto.unicity_constraint,
-    ftmProperty: dataModelFieldDto.ftm_property,
+    id: raw.id,
+    dataType: raw.data_type,
+    description: raw.description,
+    isEnum: raw.is_enum,
+    name: raw.name,
+    nullable: raw.nullable,
+    tableId: raw.table_id,
+    values: raw.values,
+    unicityConstraint: raw.unicity_constraint,
+    ftmProperty: raw.ftm_property,
+    alias,
+    order,
+    semanticType,
+    semanticSubType,
+    currencyExponent,
+    decimalPrecision,
+    currencyFieldId,
+    booleanDisplay,
+    foreignkeyTable,
+    hidden,
   };
 }
 
@@ -74,9 +163,11 @@ export interface LinkToSingle {
   childTableId: string;
   childFieldName: string;
   childFieldId: string;
+  relationType: LinkRelationType;
 }
 
 function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto): LinkToSingle {
+  const dto = linksToSingleDto as LinkToSingleDto & { link_type?: LinkRelationType };
   return {
     id: linksToSingleDto.id,
     name: linkName,
@@ -88,6 +179,7 @@ function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto):
     childTableId: linksToSingleDto.child_table_id,
     childFieldName: linksToSingleDto.child_field_name,
     childFieldId: linksToSingleDto.child_field_id,
+    relationType: dto.link_type ?? 'belongs_to',
   };
 }
 
@@ -125,25 +217,99 @@ export interface TableModel {
   id: string;
   name: string;
   description: string;
+  semanticType: FtmEntityV2 | null;
+  /** Present when `semanticType` is `person`; maps API `semantic_type` (company/person/partner) to UI sub-entity. */
+  subEntity?: FtmEntityPersonOption | null;
+  alias: string;
+  captionField: string;
   fields: DataModelField[];
   linksToSingle: LinkToSingle[];
   navigationOptions?: NavigationOption[];
   ftmEntity?: FtmEntity;
+  /** Field id of the main ordering timestamp (from table `metadata` on create / GET). */
+  mainTimestampFieldName?: string;
+  belongsToTableId?: string;
+}
+
+/**
+ * Maps API `semantic_type` (create table / data model) back to UI entity type + person sub-entity.
+ * Inverse of `getEntityType` in create-table-types.
+ */
+export function apiSemanticTypeToFormEntity(apiType: string): {
+  entityType: FtmEntityV2 | null;
+  subEntity: FtmEntityPersonOption | null;
+} {
+  return match(apiType)
+    .with('company', () => ({ entityType: 'person' as const, subEntity: 'moral' as const }))
+    .with('person', () => ({ entityType: 'person' as const, subEntity: 'natural' as const }))
+    .with('partner', () => ({ entityType: 'person' as const, subEntity: 'generic' as const }))
+    .with('account', () => ({ entityType: 'account' as const, subEntity: null }))
+    .with('transaction', () => ({ entityType: 'transaction' as const, subEntity: null }))
+    .with('event', () => ({ entityType: 'event' as const, subEntity: null }))
+    .with('other', () => ({ entityType: 'other' as const, subEntity: null }))
+    .otherwise(() => ({ entityType: null, subEntity: null }));
 }
 
 function adaptTableModel(tableDto: TableDto): TableModel {
+  const raw = tableDto as TableDto & {
+    alias?: string;
+    semantic_type?: string;
+    caption_field?: string;
+    metadata?: Record<string, unknown> | null;
+  };
+  const meta =
+    raw.metadata && typeof raw.metadata === 'object' && !Array.isArray(raw.metadata)
+      ? (raw.metadata as Record<string, unknown>)
+      : {};
+  const { entityType, subEntity } = apiSemanticTypeToFormEntity(
+    typeof raw.semantic_type === 'string' ? raw.semantic_type : 'other',
+  );
+  const belongsToTableId = readMetadataString(meta, 'belongsToTableId');
+
+  const fieldOrderNames: string[] = (() => {
+    const raw = meta['fieldOrder'];
+    if (typeof raw === 'string' && raw.length > 0) {
+      return raw.split(',');
+    }
+    return [];
+  })();
+
+  const fields = R.pipe(raw.fields, R.values(), R.map(adaptDataModelField), (arr) =>
+    fieldOrderNames.length > 0
+      ? [...arr].sort((a, b) => {
+          const ai = fieldOrderNames.indexOf(a.name);
+          const bi = fieldOrderNames.indexOf(b.name);
+          if (ai === -1 && bi === -1) return a.name.localeCompare(b.name);
+          if (ai === -1) return 1;
+          if (bi === -1) return -1;
+          return ai - bi;
+        })
+      : [...arr].sort((a, b) => {
+          const ao = a.order ?? Number.POSITIVE_INFINITY;
+          const bo = b.order ?? Number.POSITIVE_INFINITY;
+          if (ao !== bo) return ao - bo;
+          return a.name.localeCompare(b.name);
+        }),
+  );
+
   return {
-    id: tableDto.id,
-    name: tableDto.name,
-    description: tableDto.description,
-    fields: R.pipe(tableDto.fields, R.values(), R.map(adaptDataModelField)),
+    id: raw.id,
+    name: raw.name,
+    description: raw.description,
+    alias: typeof raw.alias === 'string' ? raw.alias : '',
+    captionField: typeof raw.caption_field === 'string' ? raw.caption_field : '',
+    semanticType: entityType,
+    subEntity,
+    mainTimestampFieldName: raw.primary_ordering_field,
+    belongsToTableId,
+    fields,
     linksToSingle: R.pipe(
-      tableDto.links_to_single ?? {},
+      raw.links_to_single ?? {},
       R.entries(),
       R.map(([linkName, linkDto]) => adaptLinkToSingle(linkName, linkDto)),
     ),
-    navigationOptions: tableDto.navigation_options?.map(adaptNavigationOptions),
-    ftmEntity: tableDto.ftm_entity,
+    navigationOptions: raw.navigation_options?.map(adaptNavigationOptions),
+    ftmEntity: raw.ftm_entity,
   };
 }
 
@@ -231,7 +397,7 @@ export function adaptCreatePivotInputDto(createPivotInput: CreatePivotInput): Cr
 export interface CreateFieldInput {
   name: string;
   description: string;
-  type: 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp' | 'IpAddress' | 'Coords';
+  type: PrimitiveTypes;
   nullable: boolean;
   isEnum?: boolean;
   isUnique?: boolean;

@@ -891,6 +891,11 @@ export const routes = [
         "file": "routes/ressources+/data+/editTable.tsx"
       },
       {
+        "id": "routes/ressources+/data+/editSemanticTable",
+        "path": "ressources/data/editSemanticTable",
+        "file": "routes/ressources+/data+/editSemanticTable.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/export-org",
         "path": "ressources/data/export-org",
         "file": "routes/ressources+/data+/export-org.tsx"
@@ -934,6 +939,11 @@ export const routes = [
         "id": "routes/ressources+/decisions+/list-scheduled-execution",
         "path": "ressources/decisions/list-scheduled-execution",
         "file": "routes/ressources+/decisions+/list-scheduled-execution.tsx"
+      },
+      {
+        "id": "routes/ressources+/ingestion+/upload-logs.$objectType",
+        "path": "ressources/ingestion/upload-logs/:objectType",
+        "file": "routes/ressources+/ingestion+/upload-logs.$objectType.tsx"
       },
       {
         "id": "routes/ressources+/ingestion+/upload.$objectType",

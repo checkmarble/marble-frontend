@@ -1,43 +1,83 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { createTableValueSchema } from '@app-builder/queries/data/create-table';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { formatTableMutationError, getTableMutationError } from '@app-builder/services/data/table-mutation-errors';
+import { tryCatch } from '@app-builder/utils/tryCatch';
 import { z } from 'zod/v4';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    i18nextService: { getFixedT },
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
+type CreateTableActionData =
+  | { success: true; data: { id: string } }
+  | { success: false; errors: unknown; status: number; message?: string };
 
-  const [session, t, raw, { apiClient }] = await Promise.all([
-    getSession(request),
-    getFixedT(request, ['common', 'data']),
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function createTableAction({ request, context }) {
+    const { toastSessionService, i18nextService } = context.services;
+    const { dataModelRepository } = context.authInfo;
 
-  const { success, error, data } = createTableValueSchema.safeParse(raw);
+    const [t, toastSession] = await Promise.all([
+      i18nextService.getFixedT(request, ['common', 'data']),
+      toastSessionService.getSession(request),
+    ]);
 
-  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
-
-  try {
-    await apiClient.postDataModelTable(data);
-
-    return json({ success: 'true', errors: [] });
-  } catch (error) {
-    if (isStatusConflictHttpError(error)) {
-      setToastMessage(session, {
-        type: 'error',
-        message: t('common:errors.data.duplicate_table_name'),
-      });
+    let raw: unknown;
+    try {
+      raw = await request.json();
+    } catch {
+      return Response.json(
+        {
+          success: false,
+          errors: [],
+          status: 400,
+          message: t('common:errors.invalid_request'),
+        } satisfies CreateTableActionData,
+        { status: 400 },
+      );
+    }
+    const parsed = createTableValueSchema.safeParse(raw);
+    if (!parsed.success) {
+      return Response.json(
+        {
+          success: false,
+          errors: z.treeifyError(parsed.error),
+          status: 400,
+        } satisfies CreateTableActionData,
+        { status: 400 },
+      );
     }
 
-    return json({ success: 'false', errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  }
-}
+    const result = await tryCatch(() => dataModelRepository.createTable(parsed.data));
+    if (result.ok) {
+      return { success: true, data: { id: result.value.id } };
+    }
+
+    const { status, message } = getTableMutationError(result.error, t, {
+      conflictMessage: isStatusConflictHttpError(result.error)
+        ? t('common:errors.data.duplicate_table_name')
+        : undefined,
+    });
+
+    setToastMessage(toastSession, {
+      type: 'error',
+      message: formatTableMutationError({ status, message }),
+    });
+
+    return Response.json(
+      {
+        success: false,
+        errors: [],
+        status,
+        message,
+      } satisfies CreateTableActionData,
+      {
+        status,
+        headers: {
+          'Set-Cookie': await toastSessionService.commitSession(toastSession),
+        },
+      },
+    );
+  },
+);

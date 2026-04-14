@@ -117,7 +117,7 @@
     "react-dropzone-esm": "^15.2.0",
     "react-hot-toast": "^2.5.2",
     "react-i18next": "^15.4.1",
-    "reactflow": "^11.11.4",
+    "@xyflow/react": "^12.10.2",
     "remeda": "^2.21.2",
     "remix-auth-oauth2": "^3.4.1",
     "remix-auth-openid": "^0.3.0",

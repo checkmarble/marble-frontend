@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   type Connection,
   ControlButton,
@@ -8,25 +7,26 @@ import {
   type Node,
   useNodesInitialized,
   useReactFlow,
-} from 'reactflow';
+} from '@xyflow/react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Icon } from 'ui-icons';
 
-type LayoutElements<NodeData, EdgeData> = (
-  nodes: Node<NodeData>[],
-  edges: Edge<EdgeData>[],
+type LayoutElements<NodeType extends Node, EdgeType extends Edge> = (
+  nodes: NodeType[],
+  edges: EdgeType[],
 ) => {
-  nodes: Node<NodeData>[];
-  edges: Edge<EdgeData>[];
+  nodes: NodeType[];
+  edges: EdgeType[];
 };
 
-export function useLayoutElements<NodeData, EdgeData>({
+export function useLayoutElements<NodeType extends Node, EdgeType extends Edge>({
   layoutElements,
 }: {
-  layoutElements: LayoutElements<NodeData, EdgeData>;
+  layoutElements: LayoutElements<NodeType, EdgeType>;
 }) {
-  const { fitView, getEdges, getNodes, setEdges, setNodes } = useReactFlow();
-  const layoutElementsRef = React.useRef(layoutElements);
-  return React.useCallback(
+  const { fitView, getEdges, getNodes, setEdges, setNodes } = useReactFlow<NodeType, EdgeType>();
+  const layoutElementsRef = useRef(layoutElements);
+  return useCallback(
     (options: { fitView?: boolean }) => {
       const { nodes, edges } = layoutElementsRef.current(getNodes(), getEdges());
       setNodes(nodes);
@@ -41,18 +41,18 @@ export function useLayoutElements<NodeData, EdgeData>({
   );
 }
 
-export function useLayoutInitializedNodes<NodeData, EdgeData>({
+export function useLayoutInitializedNodes<NodeType extends Node, EdgeType extends Edge>({
   mode,
   layoutElements,
 }: {
   mode: 'onMount' | 'onNodesInitialized';
-  layoutElements: LayoutElements<NodeData, EdgeData>;
+  layoutElements: LayoutElements<NodeType, EdgeType>;
 }) {
   const nodesInitialized = useNodesInitialized();
   const layoutElem = useLayoutElements({ layoutElements });
 
-  const firstLayout = React.useRef(false);
-  React.useEffect(() => {
+  const firstLayout = useRef(false);
+  useEffect(() => {
     if (mode === 'onMount' && firstLayout.current) return;
 
     if (nodesInitialized) {
@@ -62,10 +62,10 @@ export function useLayoutInitializedNodes<NodeData, EdgeData>({
   }, [layoutElem, mode, nodesInitialized]);
 }
 
-export function AutoLayoutControlButton<NodeData, EdgeData>({
+export function AutoLayoutControlButton<NodeType extends Node, EdgeType extends Edge>({
   layoutElements,
 }: {
-  layoutElements: LayoutElements<NodeData, EdgeData>;
+  layoutElements: LayoutElements<NodeType, EdgeType>;
 }) {
   const layoutElem = useLayoutElements({ layoutElements });
   return (
@@ -90,7 +90,7 @@ export function useIsValidConnection({
   noCycle: boolean;
 }) {
   const { getNodes, getEdges } = useReactFlow();
-  return React.useCallback(
+  return useCallback(
     (connection: Connection): boolean => {
       const nodes = getNodes();
       const edges = getEdges();

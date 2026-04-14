@@ -1,11 +1,11 @@
 import { type LinkToSingle } from '@app-builder/models';
-import { BaseEdge, type DefaultEdgeOptions, type EdgeProps, getBezierPath, MarkerType } from 'reactflow';
+import { BaseEdge, type DefaultEdgeOptions, type Edge, type EdgeProps, getBezierPath, MarkerType } from '@xyflow/react';
 
 import { useSelectedPivot } from './SelectedPivot';
 
-export interface LinkToSingleData {
+export type LinkToSingleData = {
   original: LinkToSingle;
-}
+} & Record<string, unknown>;
 
 export function adaptLinkToSingleData(linkToSingle: LinkToSingle): LinkToSingleData {
   return {
@@ -60,7 +60,7 @@ export function LinkToSingleEdge({
   labelBgPadding,
   labelBgBorderRadius,
   data,
-}: EdgeProps<LinkToSingleData>) {
+}: EdgeProps<Edge<LinkToSingleData>>) {
   const { displayPivot, isLinkPartOfPivot } = useSelectedPivot();
   if (!data) return null;
 

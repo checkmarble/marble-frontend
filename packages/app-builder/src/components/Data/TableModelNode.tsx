@@ -18,11 +18,11 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import clsx from 'clsx';
 import * as React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -59,6 +59,11 @@ export interface TableModelNodeData {
     hasLink: boolean;
   }[];
 }
+
+export type TableModelFlowNode = Node<
+  TableModelNodeData & { type: 'table_model'; state: 'initialized' | 'laid_out' | 'visible' } & Record<string, unknown>,
+  'table_model'
+>;
 
 export function adaptTableModelNodeData(
   tableModel: TableModel,
@@ -110,7 +115,7 @@ export function getTableModelNodeDataId(data: TableModelNodeData): string {
 
 const columnHelper = createColumnHelper<TableModelNodeData['columns'][number]>();
 
-export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
+export function TableModelNode({ data }: NodeProps<TableModelFlowNode>) {
   const { t } = useTranslation(dataI18n);
   const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } = useSelectedPivot();
   const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
@@ -372,7 +377,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
         }
       >
         <Icon icon="upload" className="size-6" />
-        {t('data:upload_data')}
+        {t('data:upload_data.title')}
       </SchemaMenuMenuItem>,
     );
   }

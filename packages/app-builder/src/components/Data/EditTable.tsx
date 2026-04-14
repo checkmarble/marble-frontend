@@ -27,6 +27,7 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         editTableMutation.mutateAsync(value).then((result) => {
+          if (!result.success) return;
           revalidate();
         });
       }
