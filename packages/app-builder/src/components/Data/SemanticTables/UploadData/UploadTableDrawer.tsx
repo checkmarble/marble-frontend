@@ -1,8 +1,8 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
+import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
-import { getRoute } from '@app-builder/utils/routes';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { type UploadLog } from 'marble-api';
 import { Trans, useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
@@ -22,16 +22,7 @@ export function UploadTableDrawer({
 }) {
   const { t } = useTranslation(['data', 'upload', 'common']);
   const queryClient = useQueryClient();
-  const uploadLogsQuery = useQuery({
-    queryKey: ['ingestion', 'upload-logs', tableName],
-    queryFn: async () => {
-      const response = await fetch(
-        getRoute('/ressources/ingestion/upload-logs/:objectType', { objectType: tableName }),
-      );
-      return response.json() as Promise<UploadLog[]>;
-    },
-    enabled: open,
-  });
+  const uploadLogsQuery = useUploadTableQuery(tableName, open);
 
   const handleUploadSuccess = (_uploadLog: UploadLog) => {
     queryClient.invalidateQueries({ queryKey: ['ingestion', 'upload-logs', tableName] });

@@ -33,6 +33,7 @@
   "errors.backend_global_error.disallowed-network": "Vous n'êtes pas autorisé à accéder à cette page depuis ce réseau",
   "errors.backend_global_error.unknown": "Une erreur inconnue s'est produite",
   "errors.backend_unvailable": "L'application ne peut pas communiquer avec le backend Marble. Vérifiez votre configuration ou réessayez plus tard.",
+  "errors.conflict": "Des conflits ont été détectés",
   "errors.data.duplicate_field_name": "Un champ avec ce nom existe déjà",
   "errors.data.duplicate_link_name": "Un lien avec ce nom existe déjà",
   "errors.data.duplicate_table_name": "Une table avec ce nom existe déjà",

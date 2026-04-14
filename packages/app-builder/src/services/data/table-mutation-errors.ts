@@ -1,7 +1,7 @@
-import { isHttpError, isMarbleError } from '@app-builder/models';
+import { isHttpError, isStatusConflictHttpError } from '@app-builder/models';
 import type { TFunction } from 'i18next';
 
-export interface TableMutationError {
+interface TableMutationError {
   status: number;
   message: string;
 }
@@ -13,10 +13,10 @@ export function getTableMutationError(
     conflictMessage?: string;
   },
 ): TableMutationError {
-  if (isHttpError(error) && isMarbleError(error)) {
+  if (isHttpError(error) && isStatusConflictHttpError(error)) {
     return {
       status: error.status,
-      message: options?.conflictMessage ?? error.data.message,
+      message: error.data?.error ?? error.data?.message ?? t('common:errors.conflict'),
     };
   }
 

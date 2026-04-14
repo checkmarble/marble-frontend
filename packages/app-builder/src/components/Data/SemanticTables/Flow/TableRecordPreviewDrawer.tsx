@@ -1,9 +1,7 @@
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
-import { type DataModelObject } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
-import { useQuery } from '@tanstack/react-query';
+import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Tag } from 'ui-design-system';
@@ -27,21 +25,7 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
 
   const trimmedObjectId = useMemo(() => objectId.trim(), [objectId]);
 
-  const query = useQuery({
-    queryKey: ['data', 'ingested-object', tableName, searchedObjectId],
-    queryFn: async () => {
-      const response = await fetch(
-        getRoute('/ressources/data/object/:objectType/:objectId', {
-          objectType: tableName,
-          objectId: searchedObjectId!,
-        }),
-      );
-      if (!response.ok) return null;
-      const result = await response.json();
-      return result.objectDetails as DataModelObject;
-    },
-    enabled: !!searchedObjectId,
-  });
+  const query = useObjectDetailsQuery(tableName, searchedObjectId!);
 
   const isLoading = query.isFetching;
 

@@ -117,7 +117,8 @@ export function FieldDetailPanel({
   if (!field) return null;
 
   const isLocked = field.locked ?? false;
-  const canDeleteField = (field.isNew || isDeleteDataModelFieldAvailable) && !field.locked;
+  const hasLinks = linkedLinks.length > 0;
+  const canDeleteField = (field.isNew || isDeleteDataModelFieldAvailable) && !field.locked && !hasLinks;
 
   function update(values: Partial<TableField>) {
     if (isEditDataModelInfoAvailable) updateField(fieldId, values);
@@ -165,14 +166,11 @@ export function FieldDetailPanel({
             <h4 className="text-m font-semibold">{title ?? t('data:upload_data.field_detail_title')}</h4>
           </div>
           {canDeleteField ? (
-            <button
-              type="button"
-              onClick={handleDeleteClick}
-              className="rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
-            >
+            <Button variant="destructive" onClick={handleDeleteClick}>
               <Icon icon="delete" className="size-4" />
-            </button>
+            </Button>
           ) : null}
+          {hasLinks && <Icon icon="linked-services" className="size-4" />}
         </div>
 
         <div className="flex flex-col gap-v2-lg p-v2-lg">

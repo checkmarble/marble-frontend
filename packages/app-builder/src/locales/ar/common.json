@@ -33,6 +33,7 @@
   "errors.backend_global_error.disallowed-network": "لا تملك صلاحيات الوصول إلى هذه الصفحة من هذه الشبكة",
   "errors.backend_global_error.unknown": "حدث خطأ غير معروف.",
   "errors.backend_unvailable": "لا يمكن لتطبيق Marble التواصل مع الواجهة الخلفية لـ Marble.\nيرجى التحقق من التكوين الخاص بك أو المحاولة مرة أخرى لاحقًا.",
+  "errors.conflict": "تم الكشف عن تعارضات",
   "errors.data.duplicate_field_name": "هذا الحقل موجود مسبقًا.",
   "errors.data.duplicate_link_name": "هذا الرابط موجود مسبقًا.",
   "errors.data.duplicate_table_name": "هذا الجدول موجود مسبقًا.",
