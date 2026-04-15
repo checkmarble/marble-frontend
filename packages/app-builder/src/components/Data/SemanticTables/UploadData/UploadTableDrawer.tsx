@@ -31,6 +31,7 @@ export function UploadTableDrawer({
   if (!open) return null;
 
   const uploadLogs = uploadLogsQuery.data ?? [];
+  console.log('uploadLogs', uploadLogs);
 
   return (
     <>
