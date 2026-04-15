@@ -98,5 +98,6 @@ const createTable = async (apiUrl: string, apiKey: string, table: Table) => {
     body: JSON.stringify(bodyValues),
   });
 
-  if (tableResponse.status != 200) throw new Error('failed to create data model table');
+  if (tableResponse.status != 200)
+    throw new Error(`failed to create data model table ${tableResponse.status} ${await tableResponse.json()}`);
 };
