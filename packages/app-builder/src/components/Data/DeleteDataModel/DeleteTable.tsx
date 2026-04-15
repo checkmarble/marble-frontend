@@ -3,10 +3,10 @@ import { type DestroyDataModelReport, type TableModel } from '@app-builder/model
 import { useDeleteTableMutation } from '@app-builder/queries/data/delete-table';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { dataI18n } from '../data-i18n';
 import { DeleteDataModelContent } from './DeleteDataModelContent';
 
@@ -35,24 +35,24 @@ export function DeleteTable({
   }
 
   const handleOpenModal = async () => {
-    const result = await deleteTableMutation.mutateAsync({
+    const report = await deleteTableMutation.mutateAsync({
       tableId: table.id,
       perform: false,
     });
 
-    if (result.success) {
-      setReport(result.data);
-      setOpen(true);
-    }
+    setReport(report);
+    setOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    const result = await deleteTableMutation.mutateAsync({
+    const report = await deleteTableMutation.mutateAsync({
       tableId: table.id,
       perform: true,
     });
 
-    if (result.success && result.data.performed) {
+    if (report.performed) {
+      toast.success(t('common:success.deleted'));
+
       setOpen(false);
       revalidate();
       onDeleted?.();

@@ -1,13 +1,11 @@
 import { type User } from '@app-builder/models';
+import { Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { type TestRun } from '@app-builder/models/testrun';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import clsx from 'clsx';
 import { Avatar } from 'ui-design-system';
-
 import { TestRunPeriod } from './TestRunPeriod';
 import { TestRunStatus } from './TestRunStatus';
 import { TestRunVersions } from './TestRunVersions';
@@ -22,18 +20,19 @@ export const TestRunSelector = ({
   endDate,
   users,
   iterations,
+  scenario,
 }: TestRun & {
   users: Record<string, Pick<User, 'firstName' | 'lastName'>>;
   iterations: Record<string, Pick<ScenarioIterationWithType, 'version' | 'type'>>;
+  scenario: Scenario;
 }) => {
-  const currentScenario = useCurrentScenario();
-
   return (
     <Link
-      to={getRoute('/detection/scenarios/:scenarioId/test-run/:testRunId', {
-        scenarioId: fromUUIDtoSUUID(currentScenario.id),
+      to="/detection/scenarios/$scenarioId/test-run/$testRunId"
+      params={{
+        scenarioId: fromUUIDtoSUUID(scenario.id),
         testRunId: fromUUIDtoSUUID(id),
-      })}
+      }}
       className={clsx(
         'grid cursor-pointer grid-cols-[30%_30%_8%_auto] items-center rounded-lg border py-4 transition-colors',
         {

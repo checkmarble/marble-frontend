@@ -1,30 +1,19 @@
 import { type DestroyDataModelReport } from '@app-builder/models/data-model';
-import { getRoute } from '@app-builder/utils/routes';
+import { type DeleteLinkPayload, deleteLinkPayloadSchema } from '@app-builder/schemas/data';
+import { deleteLinkFn } from '@app-builder/server-fns/data';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const deleteLinkPayloadSchema = z.object({
-  linkId: z.uuid(),
-  perform: z.boolean(),
-});
-
-export type DeleteLinkPayload = z.infer<typeof deleteLinkPayloadSchema>;
+export { deleteLinkPayloadSchema, type DeleteLinkPayload };
 
 export type DeleteLinkResponse = { success: true; data: DestroyDataModelReport } | { success: false; errors: string[] };
 
-const endpoint = getRoute('/ressources/data/deleteLink');
-
 export const useDeleteLinkMutation = () => {
+  const deleteLink = useServerFn(deleteLinkFn);
+
   return useMutation({
     mutationKey: ['data', 'delete-link'],
-    mutationFn: async (payload: DeleteLinkPayload): Promise<DeleteLinkResponse> => {
-      const response = await fetch(endpoint, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (payload: DeleteLinkPayload): Promise<DeleteLinkResponse> =>
+      deleteLink({ data: payload }) as Promise<DeleteLinkResponse>,
   });
 };

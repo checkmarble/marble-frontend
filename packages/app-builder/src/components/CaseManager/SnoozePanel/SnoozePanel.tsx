@@ -3,13 +3,13 @@ import { AddRuleSnooze } from '@app-builder/components/Cases/AddRuleSnooze';
 import { Nudge } from '@app-builder/components/Nudge';
 import { RuleGroup } from '@app-builder/components/Scenario/Rules/RuleGroup';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
-import { type PivotObject } from '@app-builder/models/cases';
+import { DataModelWithTableOptions } from '@app-builder/models';
+import { CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { isRuleExecutionHit } from '@app-builder/models/decision';
+import { FeatureAccesses } from '@app-builder/models/feature-access';
 import { useRulesByPivotQuery } from '@app-builder/queries/cases/rules-by-pivot';
-import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
 import { useEffect, useState } from 'react';
@@ -23,15 +23,24 @@ const findDataFromPivotValue = (pivots: PivotObject[], pivotValue: string) => {
   return pivots.find((p) => p.pivotValue === pivotValue);
 };
 
+type SnoozePanelProps = {
+  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
+  caseDetail: CaseDetail;
+  dataModelWithTableOptions: DataModelWithTableOptions;
+  pivotObjects: PivotObject[];
+  entitlements: FeatureAccesses;
+};
+
 export const SnoozePanel = ({
   setDrawerContentMode,
-}: {
-  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
-}) => {
+  caseDetail,
+  dataModelWithTableOptions,
+  pivotObjects,
+  entitlements,
+}: SnoozePanelProps) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
-  const { case: caseDetail, dataModelWithTableOptions, pivotObjects, entitlements } = useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
   const rulesByPivotQuery = useRulesByPivotQuery(caseDetail.id);
 

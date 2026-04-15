@@ -1,36 +1,15 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
+import { type CopyScenarioPayload, copyScenarioPayloadSchema } from '@app-builder/schemas/scenarios';
+import { copyScenarioFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const copyScenarioPayloadSchema = z.object({
-  scenarioId: z.uuid(),
-  name: z.string().optional(),
-});
-
-export type CopyScenarioPayload = z.infer<typeof copyScenarioPayloadSchema>;
-
-const endpoint = getRoute('/ressources/scenarios/copy');
+export { copyScenarioPayloadSchema, type CopyScenarioPayload };
 
 export const useCopyScenarioMutation = () => {
-  const navigate = useAgnosticNavigation();
+  const copyScenario = useServerFn(copyScenarioFn);
 
   return useMutation({
     mutationKey: ['scenarios', 'copy'],
-    mutationFn: async (data: CopyScenarioPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
-    },
+    mutationFn: async (data: CopyScenarioPayload) => copyScenario({ data }),
   });
 };

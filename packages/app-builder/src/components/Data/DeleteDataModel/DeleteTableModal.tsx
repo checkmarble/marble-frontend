@@ -3,6 +3,8 @@ import { type DestroyDataModelReport, type TableModel } from '@app-builder/model
 import { useDeleteTableMutation } from '@app-builder/queries/data/delete-table';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 import { DeleteDataModelContent } from './DeleteDataModelContent';
 
@@ -15,6 +17,7 @@ interface DeleteTableModalProps {
 }
 
 export function DeleteTableModal({ table, onDeleted, children, open, onOpenChange }: DeleteTableModalProps) {
+  const { t } = useTranslation(['common']);
   const { isDeleteDataModelTableAvailable } = useDataModelFeatureAccess();
   const [report, setReport] = useState<DestroyDataModelReport | null>(null);
   const deleteTableMutation = useDeleteTableMutation();
@@ -30,27 +33,29 @@ export function DeleteTableModal({ table, onDeleted, children, open, onOpenChang
   };
 
   const handleOpenModal = async () => {
-    const result = await deleteTableMutation.mutateAsync({
-      tableId: table.id,
-      perform: false,
-    });
+    try {
+      const report = await deleteTableMutation.mutateAsync({
+        tableId: table.id,
+        perform: false,
+      });
 
-    if (result.success) {
-      setReport(result.data);
+      setReport(report);
       onOpenChange(true);
       return;
+    } catch {
+      onOpenChange(false);
     }
-
-    onOpenChange(false);
   };
 
   const handleConfirmDelete = async () => {
-    const result = await deleteTableMutation.mutateAsync({
+    const report = await deleteTableMutation.mutateAsync({
       tableId: table.id,
       perform: true,
     });
 
-    if (result.success && result.data.performed) {
+    if (report.performed) {
+      toast.success(t('common:success.deleted'));
+
       handleOpenChange(false);
       revalidate();
       onDeleted?.();

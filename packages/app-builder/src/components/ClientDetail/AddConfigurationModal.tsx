@@ -41,11 +41,9 @@ export const AddConfigurationModal = ({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        addConfigurationMutation.mutateAsync(value).then((result) => {
-          if (result.success) {
-            setOpen(false);
-            form.reset();
-          }
+        addConfigurationMutation.mutateAsync(value).then(() => {
+          setOpen(false);
+          form.reset();
           revalidate();
         });
       }

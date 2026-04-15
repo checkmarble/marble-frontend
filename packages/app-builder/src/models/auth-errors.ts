@@ -1,11 +1,11 @@
-import { CSRFError } from 'remix-utils/csrf/server';
+import { CsrfError } from '@app-builder/utils/csrf';
 
 import { isMarbleError, isUnauthorizedHttpError } from './http-errors';
 
 export type AuthErrors = 'NoAccount' | 'CSRFError' | 'BackendUnavailable' | 'Unknown';
 
 export function adaptAuthErrors(error: unknown): AuthErrors {
-  if (error instanceof CSRFError) {
+  if (error instanceof CsrfError) {
     return 'CSRFError';
   }
   if (isUnauthorizedHttpError(error) && isMarbleError(error)) {

@@ -1,35 +1,15 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
+import { type ArchiveScenarioPayload, archiveScenarioPayloadSchema } from '@app-builder/schemas/scenarios';
+import { archiveScenarioFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const archiveScenarioPayloadSchema = z.object({
-  scenarioId: z.uuid(),
-});
-
-export type ArchiveScenarioPayload = z.infer<typeof archiveScenarioPayloadSchema>;
-
-const endpoint = getRoute('/ressources/scenarios/archive');
+export { archiveScenarioPayloadSchema, type ArchiveScenarioPayload };
 
 export const useArchiveScenarioMutation = () => {
-  const navigate = useAgnosticNavigation();
+  const archiveScenario = useServerFn(archiveScenarioFn);
 
   return useMutation({
     mutationKey: ['scenarios', 'archive'],
-    mutationFn: async (data: ArchiveScenarioPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
-    },
+    mutationFn: async (data: ArchiveScenarioPayload) => archiveScenario({ data }),
   });
 };

@@ -1,21 +1,13 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { setAllMatchesToNoHitFn } from '@app-builder/server-fns/cases';
 import { useMutation } from '@tanstack/react-query';
-
-const endpoint = getRoute('/ressources/cases/review-screening-match');
+import { useServerFn } from '@tanstack/react-start';
 
 export const useBulkReviewMatchesMutation = () => {
+  const setAllMatchesToNoHit = useServerFn(setAllMatchesToNoHitFn);
+
   return useMutation({
     mutationFn: async (matchIds: string[]) => {
-      const results = await Promise.all(
-        matchIds.map(async (matchId) => {
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            body: JSON.stringify({ matchId, status: 'no_hit' }),
-          });
-          return response.json();
-        }),
-      );
-      return results;
+      return setAllMatchesToNoHit({ data: { matchIds } });
     },
   });
 };

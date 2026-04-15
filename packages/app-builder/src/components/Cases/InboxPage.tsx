@@ -14,7 +14,6 @@ import { PaginatedResponse } from '@app-builder/models/pagination';
 import { filtersSchema, useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { useMassUpdateCasesMutation } from '@app-builder/queries/cases/mass-update';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -128,7 +127,7 @@ export const InboxPage = ({
 
   const handleNavigate = (caseId: string) => {
     navigate({
-      pathname: getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseId) }),
+      pathname: `/cases/${fromUUIDtoSUUID(caseId)}`,
       search: inboxId === MY_INBOX_ID ? undefined : `?fromInbox=${fromUUIDtoSUUID(inboxId)}`,
     });
   };

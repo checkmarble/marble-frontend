@@ -11,9 +11,8 @@ import {
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { cva } from 'class-variance-authority';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +68,7 @@ export function PivotsPanelContent({
               : t('cases:case_detail.pivot_panel.missing_pivot')}
           </span>
           {isAdmin(currentUser) ? (
-            <Link to={getRoute('/data')} className={CtaClassName({ variant: 'secondary', size: 'small' })}>
+            <Link to="/data" className={CtaClassName({ variant: 'secondary', size: 'small' })}>
               {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
             </Link>
           ) : null}
@@ -292,7 +291,8 @@ function RelatedCases({ currentCase, pivotValue }: { currentCase: CaseDetail; pi
                   </div>
                   <div className={cellVariants({ isLast, className: 'shrink-0' })}>
                     <Link
-                      to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseObj.id) })}
+                      to="/cases/$caseId"
+                      params={{ caseId: fromUUIDtoSUUID(caseObj.id) }}
                       className={CtaV2ClassName({ variant: 'secondary' })}
                     >
                       Open

@@ -1,31 +1,17 @@
-import { finalOutcomes } from '@app-builder/models/cases';
-import { getRoute } from '@app-builder/utils/routes';
+import { type CloseCasePayload, closeCasePayloadSchema } from '@app-builder/schemas/cases';
+import { closeCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import z from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const closeCasePayloadSchema = z.object({
-  caseId: z.uuid(),
-  outcome: z.enum(finalOutcomes).optional(),
-  comment: z.string(),
-});
-
-export type CloseCasePayload = z.infer<typeof closeCasePayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/close-case');
+export { closeCasePayloadSchema, type CloseCasePayload };
 
 export const useCloseCaseMutation = () => {
+  const closeCase = useServerFn(closeCaseFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'close-case'],
-    mutationFn: async (payload: CloseCasePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (payload: CloseCasePayload) => closeCase({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

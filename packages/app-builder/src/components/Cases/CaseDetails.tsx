@@ -1,15 +1,14 @@
 import { AddComment } from '@app-builder/components/Cases/AddComment';
 import { CloseCase } from '@app-builder/components/Cases/CloseCase';
 import { OpenCase } from '@app-builder/components/Cases/OpenCase';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser, isAdmin } from '@app-builder/models';
-import { CaseReview, DetailedCaseDecision } from '@app-builder/models/cases';
+import { type CurrentUser, DataModelWithTableOptions, isAdmin } from '@app-builder/models';
+import { CaseDetail, CaseReview, DetailedCaseDecision, SuspiciousActivityReport } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
-import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
-import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Markdown } from 'ui-design-system';
@@ -32,14 +31,19 @@ export const CaseDetails = ({
   drawerContentMode,
   setDrawerContentMode,
   caseReview,
+  caseDetail,
+  dataModel,
+  reports,
 }: {
   currentUser: CurrentUser;
   selectDecision: (decision: DetailedCaseDecision) => void;
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   caseReview: CaseReview | null;
+  caseDetail: CaseDetail;
+  dataModel: DataModelWithTableOptions;
+  reports: SuspiciousActivityReport[];
 }) => {
-  const { case: detail, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(['common', 'cases']);
   const formatDateTime = useFormatDateTime();
   const getCopyToClipboardProps = useGetCopyToClipboard();
@@ -49,16 +53,16 @@ export const CaseDetails = ({
     root: containerRef.current,
     threshold: 1,
   });
-  const reviewReactionMutation = useCaseReviewFeedbackMutation(detail.id, caseReview?.id);
-  const addReviewToCaseCommentsMutation = useAddReviewToCaseCommentsMutation(detail.id, caseReview?.id);
+  const reviewReactionMutation = useCaseReviewFeedbackMutation(caseDetail.id, caseReview?.id);
+  const addReviewToCaseCommentsMutation = useAddReviewToCaseCommentsMutation(caseDetail.id, caseReview?.id);
 
   const [selectedTab, setSelectedTab] = useState<'caseDetails' | 'review'>('caseDetails');
-  const revalidator = useRevalidator();
+  const revalidate = useLoaderRevalidator();
   const handleReviewReaction = (reaction: 'ok' | 'ko') => {
-    reviewReactionMutation.mutateAsync(reaction).then(() => revalidator.revalidate());
+    reviewReactionMutation.mutateAsync(reaction).then(() => revalidate());
   };
   const handleAddCommentReview = () => {
-    addReviewToCaseCommentsMutation.mutateAsync().then(() => revalidator.revalidate());
+    addReviewToCaseCommentsMutation.mutateAsync().then(() => revalidate());
   };
 
   return (
@@ -107,13 +111,13 @@ export const CaseDetails = ({
             <div />
           )}
           <div className="flex shrink-0 items-center gap-2">
-            {detail.status !== 'closed' ? (
+            {caseDetail.status !== 'closed' ? (
               <>
-                <EscalateCase id={detail.id} inboxId={detail.inboxId} isAdminUser={isAdmin(currentUser)} />
-                <SnoozeCase caseId={detail.id} snoozeUntil={detail.snoozedUntil} />
+                <EscalateCase id={caseDetail.id} inboxId={caseDetail.inboxId} isAdminUser={isAdmin(currentUser)} />
+                <SnoozeCase caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
               </>
             ) : null}
-            {detail.status !== 'closed' ? <CloseCase id={detail.id} /> : <OpenCase id={detail.id} />}
+            {caseDetail.status !== 'closed' ? <CloseCase id={caseDetail.id} /> : <OpenCase id={caseDetail.id} />}
           </div>
         </div>
       </div>
@@ -131,7 +135,7 @@ export const CaseDetails = ({
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.name_of_case')}
                     </span>
-                    <EditCaseName name={detail.name} id={detail.id} />
+                    <EditCaseName name={caseDetail.name} id={caseDetail.id} />
                   </div>
                   <div className="flex h-6 items-center gap-2">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
@@ -139,10 +143,10 @@ export const CaseDetails = ({
                     </span>
                     <button
                       className="border-grey-border flex h-6 w-fit shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded border py-1 pl-2 pr-1"
-                      {...getCopyToClipboardProps(detail.id)}
+                      {...getCopyToClipboardProps(caseDetail.id)}
                     >
                       <code className="font-['Menlo',monospace] text-[10px] whitespace-nowrap overflow-hidden text-ellipsis">
-                        {detail.id}
+                        {caseDetail.id}
                       </code>
                       <Icon icon="copy" className="size-4 shrink-0 text-grey-primary" />
                     </button>
@@ -152,11 +156,11 @@ export const CaseDetails = ({
                       {t('cases:case.status')}
                     </span>
                     <span className="flex items-center gap-2">
-                      <CaseStatusBadgeV2 status={detail.status} outcome={detail.outcome} variant="semi-full" />
-                      {detail.snoozedUntil ? (
+                      <CaseStatusBadgeV2 status={caseDetail.status} outcome={caseDetail.outcome} variant="semi-full" />
+                      {caseDetail.snoozedUntil ? (
                         <span className="font-medium text-grey-primary">
                           {t('cases:case.snoozed_until', {
-                            date: formatDateTime(detail.snoozedUntil, { dateStyle: 'short' }),
+                            date: formatDateTime(caseDetail.snoozedUntil, { dateStyle: 'short' }),
                           })}
                         </span>
                       ) : null}
@@ -166,8 +170,8 @@ export const CaseDetails = ({
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:creation_date')}
                     </span>
-                    <time className="font-medium" dateTime={detail.createdAt}>
-                      {formatDateTime(detail.createdAt, { dateStyle: 'short' })}
+                    <time className="font-medium" dateTime={caseDetail.createdAt}>
+                      {formatDateTime(caseDetail.createdAt, { dateStyle: 'short' })}
                     </time>
                   </div>
                 </div>
@@ -177,30 +181,30 @@ export const CaseDetails = ({
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.inbox')}
                     </span>
-                    <EditCaseInbox id={detail.id} inboxId={detail.inboxId} />
+                    <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.tags')}
                     </span>
-                    <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
+                    <EditCaseTags id={caseDetail.id} tagIds={caseDetail.tags.map(({ tagId }) => tagId)} />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:assigned_to')}
                     </span>
                     <EditCaseAssignee
-                      disabled={detail.status === 'closed'}
-                      assigneeId={detail.assignedTo}
+                      disabled={caseDetail.status === 'closed'}
+                      assigneeId={caseDetail.assignedTo}
                       currentUser={currentUser}
-                      id={detail.id}
+                      id={caseDetail.id}
                     />
                   </div>
                   <div className="flex h-6 items-center gap-2">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:sar.title')}
                     </span>
-                    <EditCaseSuspicion id={detail.id} reports={reports} />
+                    <EditCaseSuspicion id={caseDetail.id} reports={reports} />
                   </div>
                 </div>
               </div>
@@ -211,9 +215,9 @@ export const CaseDetails = ({
               <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:investigation')}</span>
               <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border">
                 <div className="p-4">
-                  <CaseEvents events={detail.events} root={containerRef} />
+                  <CaseEvents events={caseDetail.events} root={containerRef} />
                 </div>
-                <AddComment caseId={detail.id} />
+                <AddComment caseId={caseDetail.id} />
               </div>
             </div>
             {/* Alerts */}
@@ -229,10 +233,12 @@ export const CaseDetails = ({
                 selectDecision={selectDecision}
                 setDrawerContentMode={setDrawerContentMode}
                 drawerContentMode={drawerContentMode}
+                caseDetail={caseDetail}
+                dataModel={dataModel}
               />
             </div>
             {/* Documents */}
-            {detail.files.length > 0 ? (
+            {caseDetail.files.length > 0 ? (
               <div className="flex flex-col justify-start gap-1.5">
                 <div className="flex items-center justify-between px-1">
                   <span className="text-grey-primary text-h2 font-medium">{t('common:documents')}</span>
@@ -245,7 +251,7 @@ export const CaseDetails = ({
                 </div>
 
                 <div className="border-grey-border bg-surface-card flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
-                  {detail.files.map((file) => (
+                  {caseDetail.files.map((file) => (
                     <CaseFileButton key={file.id} file={file} />
                   ))}
                 </div>

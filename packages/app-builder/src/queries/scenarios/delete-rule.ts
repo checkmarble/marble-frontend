@@ -1,40 +1,15 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { type DeleteRulePayload, deleteRulePayloadSchema } from '@app-builder/schemas/scenarios';
+import { deleteRuleFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const deleteRulePayloadSchema = z.object({
-  ruleId: z.string(),
-});
-
-export type DeleteRulePayload = z.infer<typeof deleteRulePayloadSchema>;
-
-const endpoint = (scenarioId: string, iterationId: string) =>
-  getRoute('/ressources/scenarios/:scenarioId/:iterationId/rules/delete', {
-    scenarioId: fromUUIDtoSUUID(scenarioId),
-    iterationId: fromUUIDtoSUUID(iterationId),
-  });
+export { deleteRulePayloadSchema, type DeleteRulePayload };
 
 export const useDeleteRuleMutation = (scenarioId: string, iterationId: string) => {
-  const navigate = useAgnosticNavigation();
+  const deleteRule = useServerFn(deleteRuleFn);
 
   return useMutation({
     mutationKey: ['scenarios', 'iteration', 'delete-rule', scenarioId],
-    mutationFn: async (payload: DeleteRulePayload) => {
-      const response = await fetch(endpoint(scenarioId, iterationId), {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
-    },
+    mutationFn: async (payload: DeleteRulePayload) => deleteRule({ data: { ...payload, scenarioId, iterationId } }),
   });
 };

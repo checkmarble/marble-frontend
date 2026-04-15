@@ -1,29 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type OpenCasePayload, openCasePayloadSchema } from '@app-builder/schemas/cases';
+import { openCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const openCasePayloadSchema = z.object({
-  caseId: z.string(),
-  comment: z.string(),
-});
-
-export type OpenCasePayload = z.infer<typeof openCasePayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/open-case');
+export { openCasePayloadSchema, type OpenCasePayload };
 
 export const useOpenCaseMutation = () => {
+  const openCase = useServerFn(openCaseFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'open-case'],
-    mutationFn: async (payload: OpenCasePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (payload: OpenCasePayload) => openCase({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

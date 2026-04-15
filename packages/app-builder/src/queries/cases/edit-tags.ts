@@ -1,29 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { type EditTagsPayload, editTagsPayloadSchema } from '@app-builder/schemas/cases';
+import { editTagsFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const editTagsPayloadSchema = z.object({
-  caseId: z.string(),
-  tagIds: protectArray(z.array(z.string())),
-});
-
-export type EditTagsPayload = z.infer<typeof editTagsPayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/edit-tags');
+export { editTagsPayloadSchema, type EditTagsPayload };
 
 export const useEditTagsMutation = () => {
+  const editTags = useServerFn(editTagsFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'edit-tags'],
-    mutationFn: async (payload: EditTagsPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PATCH',
-        body: JSON.stringify(payload),
-      });
-      return response.json();
-    },
+    mutationFn: async (payload: EditTagsPayload) => editTags({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

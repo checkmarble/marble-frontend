@@ -1,4 +1,4 @@
-import { type ClientObjectDetail } from '@app-builder/models';
+import { DataModelObjectValue } from '@app-builder/models';
 
 export type DataModelExplorerNavigationTab = {
   pivotObject: {
@@ -6,7 +6,7 @@ export type DataModelExplorerNavigationTab = {
     pivotObjectName: string;
     isIngested: boolean;
   };
-  sourceObject: ClientObjectDetail['data'];
+  sourceObject: Record<string, DataModelObjectValue>;
   sourceTableName: string;
   sourceFieldName: string;
   targetTableName: string;

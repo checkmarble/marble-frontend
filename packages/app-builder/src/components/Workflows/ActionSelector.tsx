@@ -7,6 +7,7 @@ import {
   NewStringTemplateAstNode,
   type StringTemplateAstNode,
 } from '@app-builder/models/astNode/strings';
+import { Scenario } from '@app-builder/models/scenario';
 import { WorkflowAction } from '@app-builder/models/scenario/workflow';
 import { useListInboxesQuery } from '@app-builder/queries/Workflows/list-inboxes';
 import { useRef, useState } from 'react';
@@ -20,9 +21,10 @@ import { useWorkflowDataFeatureAccess } from './WorkflowProvider';
 interface ActionSelectorProps {
   action?: WorkflowAction;
   onChange?: (action: WorkflowAction) => void;
+  scenario: Scenario;
 }
 
-export function ActionSelector({ action, onChange }: ActionSelectorProps) {
+export function ActionSelector({ action, onChange, scenario }: ActionSelectorProps) {
   const { t } = useTranslation(['workflows']);
   const workflowFeatureAccess = useWorkflowDataFeatureAccess();
   const isCreateInboxAvailable = workflowFeatureAccess.isCreateInboxAvailable;
@@ -263,6 +265,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
             <div>
               <CaseNameEditor
                 label=""
+                scenario={scenario}
                 value={getTitleTemplateAsStringTemplate()}
                 onChange={handleTitleTemplateChange}
               />

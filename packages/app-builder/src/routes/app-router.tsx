@@ -1,64 +1,62 @@
 import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
-import { createServerFn } from '@app-builder/core/requests';
-import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models';
+import { logoutFn } from '@app-builder/server-fns/auth';
 import { segment } from '@app-builder/services/segment';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
-import { getRoute } from '@app-builder/utils/routes';
-import { Form, isRouteErrorResponse, redirect, useRouteError } from '@remix-run/react';
-import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
+import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { authMiddleware } from '../middlewares/auth-middleware';
 
-export const handle = {
-  i18n: authI18n,
-};
+const appRouterLoader = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async function appRouterLoader({ context }) {
+    if (isAnalyst(context.authInfo.user)) {
+      throw redirect({ to: '/cases' });
+    }
 
-export const loader = createServerFn([authMiddleware], async function appRouterLoader({ context }) {
-  if (isAnalyst(context.authInfo.user)) {
-    return redirect(getRoute('/cases'));
-  }
+    const dataModel = await context.authInfo.dataModelRepository.getDataModel();
+    if (dataModel.length === 0) {
+      throw redirect({ to: '/data/list' });
+    }
 
-  const dataModel = await context.authInfo.dataModelRepository.getDataModel();
-  if (dataModel.length === 0) {
-    return redirect(getRoute('/data/list'));
-  }
+    throw redirect({ to: '/detection' });
+  });
 
-  return redirect(getRoute('/detection'));
+export const Route = createFileRoute('/app-router')({
+  loader: () => appRouterLoader(),
+  errorComponent: AppRouterError,
 });
 
-export function ErrorBoundary() {
-  const error = useRouteError();
-  const { t } = useTranslation(handle.i18n);
+function AppRouterError({ error }: { error: unknown }) {
+  const { t } = useTranslation(authI18n);
 
   let errorComponent;
-  // Handle Marble Admins, do not capture error in Sentry
-  if (isRouteErrorResponse(error) && error.status === FORBIDDEN) {
+  if (error instanceof Response && error.status === FORBIDDEN) {
     errorComponent = (
       <div className="m-auto flex flex-col items-center gap-4">
         <h1 className="text-l text-purple-hover font-semibold">{t('common:error_boundary.marble_admin.title')}</h1>
         <p className="text-s mb-6">{t('common:error_boundary.marble_admin.subtitle')}</p>
         <div className="mb-1">
-          <Form action={getRoute('/ressources/auth/logout')} method="post">
-            <Button
-              type="submit"
-              variant="primary"
-              onClick={() => {
-                void segment.reset();
-              }}
-            >
-              <Icon icon="logout" className="size-5" />
-              {t('common:auth.logout')}
-            </Button>
-          </Form>
+          <Button
+            variant="primary"
+            onClick={() => {
+              void segment.reset();
+              void logoutFn({ data: {} });
+            }}
+          >
+            <Icon icon="logout" className="size-5" />
+            {t('common:auth.logout')}
+          </Button>
         </div>
       </div>
     );
-  } else {
-    captureRemixErrorBoundaryError(error);
-
+  } else if (!isRedirect(error)) {
+    Sentry.captureException(error);
     errorComponent = <ErrorComponent error={error} />;
   }
 

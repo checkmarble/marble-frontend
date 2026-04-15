@@ -3,9 +3,8 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { Case } from '@app-builder/models/cases';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { cva } from 'class-variance-authority';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -84,7 +83,8 @@ export function ObjectRelatedCases({
                     </div>
                     <div className={cellVariants({ isLast, className: 'shrink-0' })}>
                       <Link
-                        to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseObj.id) })}
+                        to="/cases/$caseId"
+                        params={{ caseId: fromUUIDtoSUUID(caseObj.id) }}
                         className={CtaV2ClassName({ variant: 'secondary' })}
                       >
                         {t('common:open')}

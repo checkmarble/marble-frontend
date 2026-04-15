@@ -3,8 +3,7 @@ import { type Pivot } from '@app-builder/models';
 import { type DataModelObject } from '@app-builder/models/data-model';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -65,7 +64,7 @@ export function PivotDetail({ pivotValues, existingPivotDefinition }: PivotDetai
             t={t}
             i18nKey="decisions:pivot_detail.missing_pivot_definition"
             components={{
-              DataModelLink: <Link to={getRoute('/data/schema')} className={linkClasses} />,
+              DataModelLink: <Link to="/data/schema" className={linkClasses} />,
               DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />
@@ -155,7 +154,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
 
 function getDecisionRoute(decisionFilters: Pick<DecisionFilters, 'pivotValue'>) {
   const searchParams = new URLSearchParams(decisionFilters);
-  return `${getRoute('/detection/decisions')}?${searchParams.toString()}`;
+  return `/detection/decisions?${searchParams.toString()}`;
 }
 
 function PivotDetails({ value, table, object }: { value: string; table: string; object: DataModelObject | null }) {

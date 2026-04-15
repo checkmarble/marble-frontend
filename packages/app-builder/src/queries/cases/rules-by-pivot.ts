@@ -1,19 +1,15 @@
-import { RuleWithSnoozeData } from '@app-builder/routes/ressources+/cases+/$caseId.rules-by-pivot';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { type RuleWithSnoozeData } from '@app-builder/models/decision';
+import { getRulesByPivotFn } from '@app-builder/server-fns/cases';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = (caseId: string) =>
-  getRoute('/ressources/cases/:caseId/rules-by-pivot', {
-    caseId: fromUUIDtoSUUID(caseId),
-  });
+import { useServerFn } from '@tanstack/react-start';
 
 export const useRulesByPivotQuery = (caseId: string) => {
+  const getRulesByPivot = useServerFn(getRulesByPivotFn);
+
   return useQuery({
     queryKey: ['cases', 'rulesByPivot', caseId],
     queryFn: async () => {
-      const response = await fetch(endpoint(caseId));
-      return response.json() as Promise<{ rulesByPivot: Record<string, RuleWithSnoozeData[]> }>;
+      return getRulesByPivot({ data: { caseId } }) as Promise<{ rulesByPivot: Record<string, RuleWithSnoozeData[]> }>;
     },
   });
 };

@@ -1,64 +1,78 @@
-import { type LngStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/LngStorageRepository';
-import { type EntryContext } from '@remix-run/node';
-import { createInstance, type FlatNamespace, type InitOptions } from 'i18next';
+import { i18nConfig, supportedLngs } from '@app-builder/services/i18n/i18n-config';
+import { useLngSession } from '@app-builder/services/i18n/lng-session.server';
+import { resources } from '@app-builder/services/i18n/resources/resources';
+import { createInstance, type FlatNamespace, type InitOptions, type i18n } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { RemixI18Next } from 'remix-i18next/server';
+import { ALL_NAMESPACES } from './all-namespaces';
 
-import { i18nConfig } from './i18n-config';
-import { resources } from './resources/resources.server';
-
-export function makeI18nextServerService({ lngStorage }: LngStorageRepository) {
-  const remixI18next = new RemixI18Next({
-    detection: {
-      supportedLanguages: i18nConfig.supportedLngs,
-      fallbackLanguage: i18nConfig.fallbackLng,
-      sessionStorage: lngStorage,
-    },
-    // This is the configuration for i18next used
-    // when translating messages server-side only
-    i18next: {
-      ...i18nConfig,
-      resources,
-    },
-  });
-
-  async function getI18nextServerInstance(request: Request, remixContext: EntryContext) {
-    // First, we create a new instance of i18next so every request will have a
-    // completely unique instance and not share any state
-    const instance = createInstance();
-
-    // Then we could detect locale from the request
-    const lng = await remixI18next.getLocale(request);
-    // And here we detect what namespaces the routes about to render want to use
-    const ns = remixI18next.getRouteNamespaces(remixContext);
-
-    await instance.use(initReactI18next).init({
-      ...i18nConfig,
-      resources,
-      lng,
-      ns,
-    });
-
-    return instance;
+/**
+ * Detect the user's preferred locale from the request.
+ * Priority: lng session cookie → Accept-Language header → fallback 'en-GB'.
+ */
+export async function getLocale(request: Request): Promise<string> {
+  const session = await useLngSession();
+  const sessionLng = session.data.lng;
+  if (sessionLng && (supportedLngs as readonly string[]).includes(sessionLng)) {
+    return sessionLng;
   }
 
-  async function setLanguage(request: Request, language: string) {
-    const session = await lngStorage.getSession(request.headers.get('cookie'));
-    session.set('lng', language);
-    const cookie = await lngStorage.commitSession(session);
-    return { cookie };
+  const acceptLanguage = request.headers.get('Accept-Language');
+  if (acceptLanguage) {
+    for (const entry of acceptLanguage.split(',')) {
+      const lang = entry.trim().split(';')[0]?.trim() ?? '';
+      if ((supportedLngs as readonly string[]).includes(lang)) {
+        return lang;
+      }
+      // Try language prefix: "en" → "en-GB"
+      const prefix = lang.split('-')[0] ?? '';
+      const match = supportedLngs.find((s) => s === prefix || s.startsWith(prefix + '-'));
+      if (match) return match;
+    }
+  }
+
+  return i18nConfig.fallbackLng as string;
+}
+
+/**
+ * Create a fresh i18next instance for SSR with all bundled namespaces.
+ * Uses initImmediate: false for synchronous initialization (resources are in memory).
+ */
+export function makeI18nextServerInstance(locale: string): i18n {
+  const instance = createInstance();
+  instance.use(initReactI18next).init({
+    ...i18nConfig,
+    resources,
+    lng: locale,
+    ns: ALL_NAMESPACES,
+    initImmediate: false,
+  });
+  return instance;
+}
+
+/**
+ * Factory for the i18n server service.
+ * Used by middlewares (e.g. caseDetailMiddleware) that call context.services.i18nextService.getFixedT().
+ */
+export function makeI18nextServerService() {
+  async function setLanguage(language: string) {
+    const session = await useLngSession();
+    await session.update({ lng: language });
   }
 
   return {
-    getLocale: (request: Request) => remixI18next.getLocale(request),
-    getFixedT: <N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]]>(
+    getLocale,
+    getFixedT: async <N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]]>(
       request: Request,
       namespaces: N,
       options?: Omit<InitOptions, 'react'>,
-    ) => remixI18next.getFixedT(request, namespaces, options),
-    getI18nextServerInstance,
+    ) => {
+      const locale = await getLocale(request);
+      const instance = makeI18nextServerInstance(locale);
+      return instance.getFixedT(locale, namespaces as string | string[], options);
+    },
+    makeI18nextServerInstance,
     setLanguage,
   };
 }
 
-export type SessionService = ReturnType<typeof makeI18nextServerService>;
+export type I18nextServerService = ReturnType<typeof makeI18nextServerService>;

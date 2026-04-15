@@ -1,26 +1,16 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { type CaseReviewResource } from '@app-builder/routes/ressources+/cases+/$caseId+/review.$reviewId';
-import { getRoute } from '@app-builder/utils/routes';
+import { type CaseReview } from '@app-builder/models/cases';
+import { getCaseReviewFn } from '@app-builder/server-fns/cases';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = (caseId: string, reviewId: string) =>
-  getRoute('/ressources/cases/:caseId/review/:reviewId', { caseId, reviewId });
+import { useServerFn } from '@tanstack/react-start';
 
 export function useCaseReviewQuery(caseId: string, reviewId: string) {
-  const navigate = useAgnosticNavigation();
+  const getCaseReview = useServerFn(getCaseReviewFn);
 
   return useQuery({
     queryKey: ['cases', caseId, 'review', reviewId],
     queryFn: async () => {
-      const res = await fetch(endpoint(caseId, reviewId));
-      const result = await res.json();
-
-      if ('redirectTo' in result) {
-        navigate(result.redirectTo);
-        return null;
-      }
-
-      return (result as CaseReviewResource).review;
+      const result = await (getCaseReview({ data: { caseId, reviewId } }) as Promise<{ review: CaseReview }>);
+      return result.review;
     },
     enabled: !!caseId && !!reviewId,
   });

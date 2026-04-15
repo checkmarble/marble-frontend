@@ -42,7 +42,7 @@ export default defineConfig({
     env: {
       ENV: 'development',
       NODE_ENV: 'development',
-      SESSION_SECRET: 'secret',
+      SESSION_SECRET: 'SOMETHING_LIKE_A_LONG_SESSION_SECRET_KEY',
       SESSION_MAX_AGE: '43200',
       MARBLE_API_URL: `http://localhost:${process.env['API_PORT']}`,
       TEST_FIREBASE_AUTH_EMULATOR_HOST: `localhost:${process.env['FIREBASE_PORT']}`,

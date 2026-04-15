@@ -1,11 +1,8 @@
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { EnumDataTypes, PrimitiveTypes, UniqueDataTypes } from '@app-builder/models';
-import {
-  CreateFieldValue,
-  createFieldValueSchema,
-  useCreateFieldMutation,
-} from '@app-builder/queries/data/create-field';
+import { useCreateFieldMutation } from '@app-builder/queries/data/create-field';
+import { CreateFieldValue, createFieldValueSchema } from '@app-builder/schemas/data';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import {
   type CreateFieldValidationErrorCode,

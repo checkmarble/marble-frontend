@@ -1,14 +1,9 @@
 import { isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } from '@app-builder/models';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 
-export function captureUnexpectedRemixError(error: unknown, name: string, request: Request) {
+export function captureUnexpectedError(error: unknown, name: string, request: Request) {
   if (isUnauthorizedHttpError(error) || isForbiddenHttpError(error) || isNotFoundHttpError(error)) {
     return;
   }
-  if (error instanceof Error) {
-    void Sentry.captureRemixServerException(error, name, request);
-  } else {
-    // Optionally capture non-Error objects
-    Sentry.captureException(error);
-  }
+  void Sentry.captureException(error);
 }

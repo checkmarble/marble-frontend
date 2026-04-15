@@ -1,13 +1,8 @@
-import { DetailedCaseDecision } from '@app-builder/models/cases';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { type DetailedCaseDecision } from '@app-builder/models/cases';
+import { listCaseDecisionsFn } from '@app-builder/server-fns/cases';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 import { useCallback } from 'react';
-
-const endpoint = (caseId: string, qs: string) =>
-  getRoute('/ressources/cases/:caseId/decisions', {
-    caseId: fromUUIDtoSUUID(caseId),
-  }) + qs;
 
 const caseDecisionsQueryKey = ['cases', 'list-decisions'] as const;
 
@@ -19,22 +14,20 @@ export function useInvalidateCaseDecisions() {
 }
 
 export function useCaseDecisionsQuery(caseId: string) {
+  const listCaseDecisions = useServerFn(listCaseDecisionsFn);
   const queryKey = [...caseDecisionsQueryKey, caseId] as const;
 
   return useInfiniteQuery({
     queryKey,
     queryFn: async ({ pageParam }) => {
-      const qsWithPageParam = pageParam ? `?cursorId=${pageParam}` : '';
-      const response = await fetch(endpoint(caseId, qsWithPageParam), {
-        method: 'GET',
-      });
-
-      return response.json() as Promise<{
+      return listCaseDecisions({
+        data: { caseId, cursorId: pageParam ?? undefined },
+      }) as Promise<{
         decisions: DetailedCaseDecision[];
         pagination: { hasMore: boolean; cursorId: string | null };
       }>;
     },
-    initialPageParam: null as string | number | null,
+    initialPageParam: null as string | null,
     getNextPageParam: (lastPage, _pages) => {
       return lastPage.pagination.hasMore ? lastPage.pagination.cursorId : null;
     },

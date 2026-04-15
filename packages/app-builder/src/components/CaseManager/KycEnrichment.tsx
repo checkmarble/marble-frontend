@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useAddCommentMutation } from '@app-builder/queries/cases/add-comment';
 import { useCreateKycEnrichmentQuery } from '@app-builder/queries/cases/create-kyc-enrichment';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { Icon } from 'ui-icons';
 import { Callout } from '../Callout';
 import { Spinner } from '../Spinner';
 
+// TODO: Rewrite this component to change the data flow
 export function KycEnrichment({ caseId }: { caseId: string }) {
   const [open, setOpen] = useState(false);
   const [isCommentAdded, setIsCommentAdded] = useState(false);
@@ -18,6 +19,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
 
   const { data, isPending, error, refetch, isSuccess, status } = useCreateKycEnrichmentQuery(caseId);
   const addCommentMutation = useAddCommentMutation();
+  const kycCaseEnrichment = data?.kycCaseEnrichments[0];
 
   useEffect(() => {
     if ((error || (isSuccess && !data.success)) && open) {
@@ -27,10 +29,14 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
   }, [error, isSuccess, data?.success, open]);
 
   const handleAddComment = async () => {
+    if (!kycCaseEnrichment) {
+      return;
+    }
+
     const comment =
-      data?.kycCaseEnrichments[0].analysis +
+      kycCaseEnrichment.analysis +
       '\n\n' +
-      data?.kycCaseEnrichments[0].citations
+      kycCaseEnrichment.citations
         .map(
           (citation: { title: string; url: string }, index: number) =>
             `\[${index + 1}\] [${citation.title}](${citation.url} "${citation.title}")`,
@@ -73,6 +79,10 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
     </div>
   );
 
+  if (!kycCaseEnrichment) {
+    return null;
+  }
+
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
@@ -96,13 +106,13 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
           {isSuccess && data.success ? (
             <div className="flex flex-col gap-4 flex-1 min-h-0">
               <Callout variant="outlined">
-                {t('cases:kyc_enrichment.for')} <strong>{data.kycCaseEnrichments[0].entityName}</strong>
+                {t('cases:kyc_enrichment.for')} <strong>{kycCaseEnrichment.entityName}</strong>
               </Callout>
               <ScrollAreaV2 orientation="vertical" className="flex-1 min-h-0">
                 <div className="p-4">
-                  <Markdown>{data.kycCaseEnrichments[0].analysis}</Markdown>
+                  <Markdown>{kycCaseEnrichment.analysis}</Markdown>
                   <div className="mt-4">
-                    {data.kycCaseEnrichments[0].citations.map((citation: any, index: number) => (
+                    {kycCaseEnrichment.citations.map((citation: any, index: number) => (
                       <div key={`citation.${index}`} className="mb-2">
                         <span>[{index + 1}]</span>
                         <span>

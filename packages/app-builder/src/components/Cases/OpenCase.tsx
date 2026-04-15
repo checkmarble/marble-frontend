@@ -20,10 +20,8 @@ export const OpenCase = ({ id }: { id: string }) => {
   const form = useForm({
     defaultValues: { caseId: id, comment: '' } as OpenCasePayload,
     onSubmit: ({ value }) => {
-      openCaseMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
-          setOpen(false);
-        }
+      openCaseMutation.mutateAsync(value).then(() => {
+        setOpen(false);
         revalide();
       });
     },

@@ -1,9 +1,23 @@
+import { getDataModelFn, getObjectDetailsFn } from '@app-builder/server-fns/data';
 import { useQueries } from '@tanstack/react-query';
-import { dataModelQueryOptions } from '../data/get-data-model';
-import { objectDetailsQueryOptions } from '../data/get-object-details';
+import { useServerFn } from '@tanstack/react-start';
 
 export const useContinuousScreeningObjectDetailsQuery = (objectType: string, objectId: string) => {
+  const getDataModel = useServerFn(getDataModelFn);
+  const getObjectDetails = useServerFn(getObjectDetailsFn);
+
   return useQueries({
-    queries: [dataModelQueryOptions, objectDetailsQueryOptions(objectType, objectId)],
+    queries: [
+      {
+        queryKey: ['data-model'],
+        queryFn: async () => getDataModel({}),
+      },
+      {
+        queryKey: ['object-details', objectType, objectId],
+        queryFn: async () => {
+          return getObjectDetails({ data: { objectType, objectId } });
+        },
+      },
+    ],
   });
 };

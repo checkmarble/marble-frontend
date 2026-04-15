@@ -21,13 +21,7 @@ import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleR
 import { makeGetScenarioIterationScreeningRepository } from './ScenarioIterationScreeningRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
 import { makeGetScreeningRepository } from './ScreeningRepository';
-import {
-  getAuthStorageRepository,
-  getCsrfCookie,
-  getLngStorageRepository,
-  getToastStorageRepository,
-  type SessionStorageRepositoryOptions,
-} from './SessionStorageRepositories';
+import { getCsrfCookie, type SessionStorageRepositoryOptions } from './SessionStorageRepositories';
 import { makeGetTestRunRepository } from './TestRunRepository';
 import { makeGetUserRepository } from './UserRepository';
 import { makeGetUserScoringRepository } from './UserScoringRepository';
@@ -47,10 +41,7 @@ export function makeServerRepositories({
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
 }) {
   return {
-    authStorageRepository: getAuthStorageRepository(sessionStorageRepositoryOptions),
     csrfCookie: getCsrfCookie(sessionStorageRepositoryOptions),
-    toastStorageRepository: getToastStorageRepository(sessionStorageRepositoryOptions),
-    lngStorageRepository: getLngStorageRepository(sessionStorageRepositoryOptions),
     getFeatureAccessApiClientWithoutAuth,
     getFeatureAccessAPIClientWithAuth,
     marbleCoreApiClient,

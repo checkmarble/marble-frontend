@@ -1,19 +1,19 @@
-import { DataModelObject } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
+import { getObjectDetailsFn } from '@app-builder/server-fns/data';
 import { useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
-const endpoint = (objectType: string, objectId: string) =>
-  getRoute('/ressources/data/object/:objectType/:objectId', { objectType, objectId });
+export const useObjectDetailsQuery = (
+  objectType: string | undefined,
+  objectId: string | undefined,
+  enabled: boolean = true,
+) => {
+  const getObjectDetails = useServerFn(getObjectDetailsFn);
 
-export const objectDetailsQueryOptions = (objectType: string, objectId: string) => ({
-  queryKey: ['object-details', objectType, objectId],
-  queryFn: async () => {
-    const response = await fetch(endpoint(objectType, objectId));
-    const result = await response.json();
-    return result.objectDetails as DataModelObject;
-  },
-});
-
-export const useObjectDetailsQuery = (objectType: string, objectId: string) => {
-  return useQuery(objectDetailsQueryOptions(objectType, objectId));
+  return useQuery({
+    queryKey: ['object-details', objectType ?? '', objectId ?? ''] as const,
+    queryFn: async ({ queryKey: [_, objectType, objectId] }) => {
+      return getObjectDetails({ data: { objectType, objectId } });
+    },
+    enabled: enabled && !!objectType && !!objectId,
+  });
 };

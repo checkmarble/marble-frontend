@@ -3,10 +3,9 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { escalateCasePayloadSchema, useEscalateCaseMutation } from '@app-builder/queries/cases/escalate-case';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { handleSubmit } from '@app-builder/utils/form';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
+import { Link } from '@tanstack/react-router';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -49,9 +48,8 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
             </div>
             {!canEscalate && isAdminUser ? (
               <Link
-                to={getRoute('/settings/inboxes/:inboxId', {
-                  inboxId: fromUUIDtoSUUID(inboxId),
-                })}
+                to="/settings/inboxes/$inboxId"
+                params={{ inboxId: fromUUIDtoSUUID(inboxId) }}
                 className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
               >
                 {t('cases:case.inbox_settings_link')}

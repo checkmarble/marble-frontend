@@ -1,6 +1,6 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import { useCurrentScenarioIteration } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
-import { Link } from '@remix-run/react';
+import { Scenario } from '@app-builder/models/scenario';
+import { Link } from '@tanstack/react-router';
 import { type TFunction } from 'i18next';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
@@ -27,6 +27,7 @@ interface ScenarioIterationMenuProps {
    * @example <MenuButton>V1</MenuButton>
    */
   children: JSX.Element;
+  scenario: Scenario;
 }
 
 export function getFormattedVersion(
@@ -57,6 +58,7 @@ function sortScenarioIteration(lhs: LabelledScenarioIteration, rhs: LabelledScen
 export function ScenarioIterationMenu({
   labelledScenarioIteration: scenarioIterations,
   children,
+  scenario,
 }: ScenarioIterationMenuProps) {
   const { i18n } = useTranslation();
   const [searchValue, setSearchValue] = React.useState('');
@@ -66,7 +68,11 @@ export function ScenarioIterationMenu({
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       {children}
       <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col min-w-48 rounded-xl py-2">
-        <ScenarioIterationContent searchValue={deferredSearchValue} labelledScenarioIteration={scenarioIterations} />
+        <ScenarioIterationContent
+          searchValue={deferredSearchValue}
+          labelledScenarioIteration={scenarioIterations}
+          scenario={scenario}
+        />
       </MenuPopover>
     </MenuRoot>
   );
@@ -75,11 +81,11 @@ export function ScenarioIterationMenu({
 interface ScenarioIterationContentProps {
   labelledScenarioIteration: LabelledScenarioIteration[];
   searchValue: string;
+  scenario: Scenario;
 }
 
-function ScenarioIterationContent({ labelledScenarioIteration, searchValue }: ScenarioIterationContentProps) {
+function ScenarioIterationContent({ labelledScenarioIteration, searchValue, scenario }: ScenarioIterationContentProps) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const currentScenario = useCurrentScenarioIteration();
 
   const matches = React.useMemo(
     () =>
@@ -108,7 +114,7 @@ function ScenarioIterationContent({ labelledScenarioIteration, searchValue }: Sc
             >
               <span className="text-s flex flex-row gap-1">
                 <Highlight
-                  className={cn('capitalize', { 'text-purple-primary': iteration.id === currentScenario.id })}
+                  className={cn('capitalize', { 'text-purple-primary': iteration.id === scenario.id })}
                   query={searchValue}
                   text={iteration.formattedVersion}
                 />
@@ -119,7 +125,7 @@ function ScenarioIterationContent({ labelledScenarioIteration, searchValue }: Sc
                   <span className="text-grey-secondary capitalize">{iteration.formattedArchived}</span>
                 ) : null}
               </span>
-              {iteration.id === currentScenario.id ? (
+              {iteration.id === scenario.id ? (
                 <span className="text-purple-primary ml-auto">
                   <Icon icon="tick" className="size-4" />
                 </span>

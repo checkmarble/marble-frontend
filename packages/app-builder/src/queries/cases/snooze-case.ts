@@ -1,28 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type SnoozeCasePayload, snoozeCasePayloadSchema } from '@app-builder/schemas/cases';
+import { snoozeCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const snoozeCasePayloadSchema = z.object({
-  caseId: z.string(),
-  snoozeUntil: z.string().nullable(),
-});
-
-export type SnoozeCasePayload = z.infer<typeof snoozeCasePayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/snooze-case');
+export { snoozeCasePayloadSchema, type SnoozeCasePayload };
 
 export const useSnoozeCaseMutation = () => {
+  const snoozeCase = useServerFn(snoozeCaseFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'snooze-case'],
-    mutationFn: async (payload: SnoozeCasePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return response.json();
-    },
+    mutationFn: async (payload: SnoozeCasePayload) => snoozeCase({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

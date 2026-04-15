@@ -1,31 +1,16 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { PrevalidationCreateContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
-import { getRoute } from '@app-builder/utils/routes';
+import { updateContinuousScreeningConfigurationFn } from '@app-builder/server-fns/continuous-screening';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-const endpoint = (configStableId: string) =>
-  getRoute('/ressources/continuous-screening/update-configuration/:configStableId', { configStableId });
+import { useServerFn } from '@tanstack/react-start';
 
 export const useUpdateContinuousScreeningConfigurationMutation = (configStableId: string) => {
+  const updateContinuousScreeningConfiguration = useServerFn(updateContinuousScreeningConfigurationFn);
   const queryClient = useQueryClient();
-  const navigate = useAgnosticNavigation();
 
   return useMutation({
     mutationKey: ['continuous-screening', 'update-configuration'],
     mutationFn: async (payload: PrevalidationCreateContinuousScreeningConfig) => {
-      const response = await fetch(endpoint(configStableId), {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
+      await updateContinuousScreeningConfiguration({ data: { ...payload, configStableId } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['continuous-screening', 'configurations'] });

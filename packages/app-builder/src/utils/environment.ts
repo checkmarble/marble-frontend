@@ -105,8 +105,6 @@ export function getServerEnv<K extends keyof ServerEnvVars>(serverEnvVarName: K)
 
 /**
  * Browser env vars, access it using getClientEnv('MY_ENV_VAR')
- *
- * https://remix.run/docs/en/main/guides/envvars
  */
 interface ClientEnvVars {
   ENV: string;

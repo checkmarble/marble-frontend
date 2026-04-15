@@ -1,4 +1,5 @@
-import { type Params } from '@remix-run/react';
+type Params = Record<string, string | undefined>;
+
 import qs, { type IParseOptions } from 'qs';
 import { type UUID } from 'short-uuid';
 import { type ZodType, z } from 'zod/v4';
@@ -43,7 +44,7 @@ export async function inputFromForm(request: Request, options?: IParseOptions) {
 }
 
 /**
- * Parse and validate Params from LoaderFunctionArgs or ActionFunctionArgs. Doesn't throw if validation fails.
+ * Parse and validate route Params. Doesn't throw if validation fails.
  */
 export async function parseParamsSafe<Output>(params: Params, schema: ZodType<Output, any, any>) {
   const result = await schema.safeParseAsync(params);
@@ -57,7 +58,7 @@ export async function parseParamsSafe<Output>(params: Params, schema: ZodType<Ou
 }
 
 /**
- * Parse and validate UUID/sUUID param from LoaderFunctionArgs or ActionFunctionArgs.
+ * Parse and validate UUID/sUUID route param.
  *
  * Returns the parsed UUID. Doesn't throw if validation fails.
  */
@@ -86,7 +87,7 @@ export async function parseIdParamSafe<KeyName extends string>(
 }
 
 /**
- * Parse and validate Params from LoaderFunctionArgs or ActionFunctionArgs. Throws if validation fails.
+ * Parse and validate route Params. Throws if validation fails.
  */
 export async function parseParams<Output>(params: Params, schema: ZodType<Output, any, any>) {
   return schema.parseAsync(params);

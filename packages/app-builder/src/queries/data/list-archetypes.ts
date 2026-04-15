@@ -1,5 +1,6 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { listArchetypesFn } from '@app-builder/server-fns/data';
 import { useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 export interface Archetype {
   name: string;
@@ -7,15 +8,13 @@ export interface Archetype {
   description?: string;
 }
 
-const endpoint = getRoute('/ressources/data/list-archetypes');
-
 export const useListArchetypesQuery = () => {
+  const listArchetypes = useServerFn(listArchetypesFn);
+
   return useQuery({
     queryKey: ['data', 'archetypes'],
-    queryFn: async () => {
-      const response = await fetch(endpoint);
-      const data = (await response.json()) as { archetypes: Archetype[] };
-      return data.archetypes;
+    queryFn: () => {
+      return listArchetypes({});
     },
   });
 };

@@ -8,8 +8,7 @@ import {
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
-import { getRoute } from '@app-builder/utils/routes';
-import { NavLink } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import {
   type ColumnFiltersState,
   createColumnHelper,
@@ -368,13 +367,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
     menuItems.push(
       <SchemaMenuMenuItem
         key="upload-data"
-        render={
-          <NavLink
-            to={getRoute('/upload/:objectType', {
-              objectType: data.original.name,
-            })}
-          />
-        }
+        render={<Link to="/upload/$objectType" params={{ objectType: data.original.name }} />}
       >
         <Icon icon="upload" className="size-6" />
         {t('data:upload_data.title')}

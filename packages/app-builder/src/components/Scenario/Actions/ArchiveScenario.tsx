@@ -1,8 +1,8 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useArchiveScenarioMutation } from '@app-builder/queries/scenarios/archive-scenario';
+import { useHydrated } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 

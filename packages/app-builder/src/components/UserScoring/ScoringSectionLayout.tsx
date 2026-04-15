@@ -8,10 +8,9 @@ import {
   useUpdateScoringRulesetMutation,
 } from '@app-builder/queries/scoring/update-ruleset';
 import { handleSubmit } from '@app-builder/utils/form';
-import { getRoute } from '@app-builder/utils/routes';
 import { createSimpleContext } from '@marble/shared';
-import { NavLink, Outlet, useMatches } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
+import { Link, Outlet, useMatches } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, NumberInput, type SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
@@ -32,7 +31,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   const { data, isPending } = useListScoringRulesetsQuery();
   const matches = useMatches();
   const showCreateButton = matches.some(
-    (m) => (m.handle as { showCreateRulesetButton?: boolean })?.showCreateRulesetButton,
+    (m) => (m.staticData as { showCreateRulesetButton?: boolean })?.showCreateRulesetButton,
   );
   const rulesets = data?.rulesets ?? [];
 
@@ -50,25 +49,26 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
               ) : null}
             </div>
             <Tabs>
-              <NavLink to={getRoute('/user-scoring/overview')} className={tabClassName}>
+              <Link to="/user-scoring/overview" className={tabClassName}>
                 {t('user-scoring:section.tab_overview')}
-              </NavLink>
+              </Link>
               {isPending ? (
                 <div className="h-full flex items-center px-v2-sm">
                   <Spinner className="size-4" />
                 </div>
               ) : (
                 rulesets.map((ruleset) => (
-                  <NavLink
+                  <Link
                     key={ruleset.id}
-                    to={getRoute('/user-scoring/:recordType/:version', {
+                    to="/user-scoring/$recordType/$version"
+                    params={{
                       recordType: ruleset.recordType,
                       version: ruleset.status === 'draft' ? 'draft' : ruleset.version.toString(),
-                    })}
+                    }}
                     className={tabClassName}
                   >
                     {ruleset.name}
-                  </NavLink>
+                  </Link>
                 ))
               )}
             </Tabs>
@@ -154,10 +154,8 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
     },
     onSubmit: async ({ formApi, value }) => {
       if (formApi.state.isValid) {
-        await updateScoringRulesetMutation.mutateAsync(value).then((res) => {
-          if (res.success) {
-            panelSharp.actions.close();
-          }
+        await updateScoringRulesetMutation.mutateAsync(value).then(() => {
+          panelSharp.actions.close();
           revalidate();
         });
       }

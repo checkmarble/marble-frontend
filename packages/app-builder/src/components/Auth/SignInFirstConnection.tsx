@@ -1,5 +1,4 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { CtaClassName } from 'ui-design-system';
 import { ExternalLink } from '../ExternalLink';
@@ -15,10 +14,7 @@ export function SignInFirstConnection({
 
   return (
     <>
-      <Link
-        className={CtaClassName({ variant: 'secondary', className: 'text-center' })}
-        to={getRoute('/create-password')}
-      >
+      <Link className={CtaClassName({ variant: 'secondary', className: 'text-center' })} to="/create-password">
         {t(isSignInHomepage ? 'auth:sign_up.set_password_sign_in' : 'auth:sign_up.set_password_sign_in_email')}
       </Link>
       {showAskDemoButton ? (

@@ -1,4 +1,3 @@
-import { redirect } from '@remix-run/node';
 import { type ZodError } from 'zod/v4';
 
 import { isRawUUIDIssue } from '../schema/shortUUIDSchema';
@@ -17,7 +16,7 @@ export function handleParseParamError<Input>(request: Request, error: ZodError<I
     const redirectURL = (issues as unknown[]).filter(isRawUUIDIssue).reduce((acc, { params: { value } }) => {
       return acc.replace(value, fromUUIDtoSUUID(value));
     }, request.url);
-    return redirect(redirectURL);
+    return new Response(null, { status: 302, headers: { Location: redirectURL } });
   }
   return badRequest(error.issues);
 }

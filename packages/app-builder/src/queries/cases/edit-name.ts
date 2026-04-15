@@ -1,25 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type EditNamePayload, editNamePayloadSchema } from '@app-builder/schemas/cases';
+import { editNameFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const editNamePayloadSchema = z.object({ name: z.string(), caseId: z.string() });
-
-export type EditNamePayload = z.infer<typeof editNamePayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/edit-name');
+export { editNamePayloadSchema, type EditNamePayload };
 
 export const useEditNameMutation = () => {
+  const editName = useServerFn(editNameFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'edit-name'],
-    mutationFn: async (payload: EditNamePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PATCH',
-        body: JSON.stringify(payload),
-      });
-      return response.json();
-    },
+    mutationFn: async (payload: EditNamePayload) => editName({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

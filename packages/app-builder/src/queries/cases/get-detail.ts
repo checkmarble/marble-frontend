@@ -1,24 +1,15 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { CaseDetail } from '@app-builder/models/cases';
-import { getRoute } from '@app-builder/utils/routes';
+import { type CaseDetail } from '@app-builder/models/cases';
+import { getCaseDetailFn } from '@app-builder/server-fns/cases';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = (caseId: string) => getRoute('/ressources/cases/:caseId/get-detail', { caseId });
+import { useServerFn } from '@tanstack/react-start';
 
 export const useGetCaseDetailQuery = (caseId: string) => {
-  const navigate = useAgnosticNavigation();
+  const getCaseDetail = useServerFn(getCaseDetailFn);
 
   return useQuery({
     queryKey: ['cases', caseId, 'get-details'],
     queryFn: async () => {
-      const response = await fetch(endpoint(caseId));
-      const result = await response.json();
-
-      if ('redirectTo' in result) {
-        navigate(result.redirectTo);
-        return { caseDetail: null };
-      }
-
+      const result = await getCaseDetail({ data: { caseId } });
       return result as { caseDetail: CaseDetail };
     },
   });

@@ -1,11 +1,10 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { addReviewToCaseCommentsFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-const endpoint = (caseId: string, reviewId: string) =>
-  getRoute('/ressources/cases/:caseId/review/:reviewId/add-to-case-comments', { caseId, reviewId });
+import { useServerFn } from '@tanstack/react-start';
 
 export function useAddReviewToCaseCommentsMutation(caseId: string, reviewId: string | undefined) {
   const queryClient = useQueryClient();
+  const addReviewToCaseComments = useServerFn(addReviewToCaseCommentsFn);
 
   return useMutation({
     mutationFn: async () => {
@@ -13,7 +12,7 @@ export function useAddReviewToCaseCommentsMutation(caseId: string, reviewId: str
         throw new Error('Review ID is required');
       }
 
-      await fetch(endpoint(caseId, reviewId), { method: 'POST' });
+      await addReviewToCaseComments({ data: { caseId, reviewId } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases', caseId, 'reviews'] });

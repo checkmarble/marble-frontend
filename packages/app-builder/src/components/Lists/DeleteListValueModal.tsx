@@ -34,12 +34,10 @@ export function DeleteListValueModal({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        deleteListValueMutation.mutateAsync(value).then((result) => {
+        deleteListValueMutation.mutateAsync(value).then(() => {
           revalidate();
-          if (result.success) {
-            setIsOpen(false);
-            form.reset();
-          }
+          setIsOpen(false);
+          form.reset();
         });
       }
     },

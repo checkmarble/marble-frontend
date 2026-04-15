@@ -61,12 +61,10 @@ export function CreateFilter({
       if (formApi.state.isValid) {
         createFilterMutation
           .mutateAsync({ tableId: selectedTableId, payload: value as CreateExportedFieldPayload })
-          .then((res: any) => {
-            if (res.success) {
-              setOpen(false);
-              revalidate();
-              form.reset();
-            }
+          .then(() => {
+            setOpen(false);
+            revalidate();
+            form.reset();
           });
       }
     },

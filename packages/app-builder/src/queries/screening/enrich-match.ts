@@ -1,21 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { enrichMatchFn } from '@app-builder/server-fns/screenings';
 import { useMutation } from '@tanstack/react-query';
-
-const endpoint = (matchId: string) =>
-  getRoute('/ressources/screenings/enrich-match/:matchId', {
-    matchId: fromUUIDtoSUUID(matchId),
-  });
+import { useServerFn } from '@tanstack/react-start';
 
 export const useEnrichMatchMutation = () => {
+  const enrichMatch = useServerFn(enrichMatchFn);
+
   return useMutation({
     mutationKey: ['screening', 'enrich-match'],
     mutationFn: async (matchId: string) => {
-      const response = await fetch(endpoint(matchId), {
-        method: 'POST',
-      });
-
-      return response.json();
+      await enrichMatch({ data: { matchId } });
     },
   });
 };

@@ -35,10 +35,8 @@ export const CloseCase = ({
       outcome: undefined,
     } as CloseCasePayload,
     onSubmit: ({ value }) => {
-      closeCaseMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
-          setOpen(false);
-        }
+      closeCaseMutation.mutateAsync(value).then(() => {
+        setOpen(false);
         revalidate();
       });
     },

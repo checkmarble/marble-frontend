@@ -1,29 +1,18 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { getRoute } from '@app-builder/utils/routes';
+import { type UnarchiveScenarioPayload, unarchiveScenarioPayloadSchema } from '@app-builder/schemas/scenarios';
+import { unarchiveScenarioFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const unarchiveScenarioPayloadSchema = z.object({
-  scenarioId: z.uuid(),
-});
-
-export type UnarchiveScenarioPayload = z.infer<typeof unarchiveScenarioPayloadSchema>;
-
-const endpoint = getRoute('/ressources/scenarios/unarchive');
+export { unarchiveScenarioPayloadSchema, type UnarchiveScenarioPayload };
 
 export const useUnarchiveScenarioMutation = () => {
+  const unarchiveScenario = useServerFn(unarchiveScenarioFn);
   const revalidate = useLoaderRevalidator();
 
   return useMutation({
     mutationKey: ['scenarios', 'unarchive'],
-    mutationFn: async (data: UnarchiveScenarioPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (data: UnarchiveScenarioPayload) => unarchiveScenario({ data }),
     onSuccess: () => {
       revalidate();
     },

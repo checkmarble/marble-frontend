@@ -1,20 +1,13 @@
-import { RuleSnoozeInformation } from '@app-builder/models/rule-snooze';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { type RuleSnoozeInformation } from '@app-builder/models/rule-snooze';
+import { getRuleSnoozeFn } from '@app-builder/server-fns/scenarios';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = (scenarioId: string, iterationId: string) =>
-  getRoute('/ressources/scenarios/:scenarioId/:iterationId/get-rule-snoozes', {
-    scenarioId: fromUUIDtoSUUID(scenarioId),
-    iterationId: fromUUIDtoSUUID(iterationId),
-  });
+import { useServerFn } from '@tanstack/react-start';
 
 export const useRuleSnoozesQuery = (scenarioId: string, iterationId: string) => {
+  const getRuleSnooze = useServerFn(getRuleSnoozeFn);
+
   return useQuery({
     queryKey: ['scenarios', 'iterations', 'ruleSnoozes', scenarioId, iterationId],
-    queryFn: async () => {
-      const response = await fetch(endpoint(scenarioId, iterationId));
-      return response.json() as Promise<{ ruleSnoozes: RuleSnoozeInformation[] }>;
-    },
+    queryFn: async () => getRuleSnooze({ data: { iterationId } }) as Promise<{ ruleSnoozes: RuleSnoozeInformation[] }>,
   });
 };

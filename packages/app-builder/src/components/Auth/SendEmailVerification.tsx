@@ -1,16 +1,14 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import { logoutFn } from '@app-builder/server-fns/auth';
 import {
   NetworkRequestFailed,
   TooManyRequest,
   useResendEmailVerification,
-} from '@app-builder/services/auth/auth.client';
-import { useClientServices } from '@app-builder/services/init.client';
-import { getRoute } from '@app-builder/utils/routes';
-import * as Sentry from '@sentry/remix';
+} from '@app-builder/services/auth/auth-client';
+import { useClientServices } from '@app-builder/services/init-client';
+import * as Sentry from '@sentry/tanstackstart-react';
+import { ClientOnly, useHydrated } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils/client-only';
-import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
 
 function SendEmailVerificationButton({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) {
@@ -30,10 +28,9 @@ function ClientSendEmailVerificationButton() {
   const { isFirebaseEmulator } = clientServices.authenticationClientService.authenticationClientRepository;
   const resendEmailVerification = useResendEmailVerification(clientServices.authenticationClientService);
 
-  const navigate = useAgnosticNavigation();
   async function onSendClick() {
     try {
-      const logout = () => navigate(getRoute('/ressources/auth/logout'));
+      const logout = () => void logoutFn({ data: {} });
       await resendEmailVerification(logout);
     } catch (error) {
       if (error instanceof NetworkRequestFailed) {
@@ -64,7 +61,7 @@ export function SendEmailVerification() {
     <ClientOnly
       fallback={<SendEmailVerificationButton>{t('auth:email-verification.resend')}</SendEmailVerificationButton>}
     >
-      {() => <ClientSendEmailVerificationButton />}
+      <ClientSendEmailVerificationButton />
     </ClientOnly>
   );
 }
@@ -89,7 +86,7 @@ export function SendEmailVerificationDescription() {
   const { t } = useTranslation(['auth']);
   return (
     <ClientOnly fallback={<Trans t={t} i18nKey="auth:email-verification.description" />}>
-      {() => <ClientSendEmailVerificationDescription />}
+      <ClientSendEmailVerificationDescription />
     </ClientOnly>
   );
 }

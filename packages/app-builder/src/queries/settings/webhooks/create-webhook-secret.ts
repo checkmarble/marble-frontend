@@ -1,25 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type CreateWebhookSecretPayload, createWebhookSecretPayloadSchema } from '@app-builder/schemas/settings';
+import { createWebhookSecretFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const createWebhookSecretPayloadSchema = z.object({
-  webhookId: z.string(),
-  expireExistingInDays: z.int().positive().optional(),
-});
-
-export type CreateWebhookSecretPayload = z.infer<typeof createWebhookSecretPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/webhooks/create-secret');
+export { createWebhookSecretPayloadSchema, type CreateWebhookSecretPayload };
 
 export const useCreateWebhookSecretMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: CreateWebhookSecretPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const createWebhookSecret = useServerFn(createWebhookSecretFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: CreateWebhookSecretPayload) => createWebhookSecret({ data: payload }),
   });
 };

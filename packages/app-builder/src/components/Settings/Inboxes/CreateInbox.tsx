@@ -59,11 +59,9 @@ export function CreateInboxContent({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         createInboxMutation.mutateAsync(value).then((res) => {
-          if (res?.success) {
-            setOpen(false);
-            queryClient.invalidateQueries({ queryKey: ['inboxes'] });
-            revalidate();
-          }
+          setOpen(false);
+          queryClient.invalidateQueries({ queryKey: ['inboxes'] });
+          revalidate();
         });
       }
     },

@@ -41,9 +41,8 @@ function RevokeWebhookSecretContent({
 
   const handleRevoke = () => {
     revokeMutation.mutateAsync({ webhookId, secretId }).then((res) => {
-      if (res?.success) {
-        onSuccess();
-      }
+      onSuccess();
+
       revalidate();
     });
   };

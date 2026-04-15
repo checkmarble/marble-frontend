@@ -86,9 +86,8 @@ export function UpdateOrganizationSettingsContents({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         updateOrganizationMutation.mutateAsync(value).then((res) => {
-          if (res.success) {
-            closeModal();
-          }
+          closeModal();
+
           revalidate();
         });
       }

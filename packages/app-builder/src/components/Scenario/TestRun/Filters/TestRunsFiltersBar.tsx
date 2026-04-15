@@ -1,9 +1,9 @@
 import { AddNewFilterButton, ClearAllFiltersButton, FilterItem, FilterPopover } from '@app-builder/components/Filters';
+import { ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey } from './filters';
 import {
@@ -14,7 +14,11 @@ import {
 } from './TestRunsFiltersContext';
 import { TestRunsFiltersMenu } from './TestRunsFiltersMenu';
 
-export function TestRunsFiltersBar() {
+type TestRunsFiltersBarProps = {
+  scenarioIterations: ScenarioIterationSummaryWithType[];
+};
+
+export function TestRunsFiltersBar({ scenarioIterations }: TestRunsFiltersBarProps) {
   const { t } = useTranslation(['scenarios', 'common']);
   const { onTestRunsFilterClose } = useTestRunsFiltersContext();
 
@@ -61,13 +65,13 @@ export function TestRunsFiltersBar() {
                   />
                 </FilterItem.Root>
                 <FilterPopover.Content>
-                  <FilterDetail filterName={filterName} />
+                  <FilterDetail filterName={filterName} scenarioIterations={scenarioIterations} />
                 </FilterPopover.Content>
               </FilterPopover.Root>
             );
           })}
           {undefinedTestRunsFilterNames.length > 0 ? (
-            <TestRunsFiltersMenu filterNames={undefinedTestRunsFilterNames}>
+            <TestRunsFiltersMenu filterNames={undefinedTestRunsFilterNames} scenarioIterations={scenarioIterations}>
               <AddNewFilterButton />
             </TestRunsFiltersMenu>
           ) : null}

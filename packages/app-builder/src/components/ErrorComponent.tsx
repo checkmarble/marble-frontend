@@ -1,6 +1,5 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { FORBIDDEN, NOT_FOUND } from '@app-builder/utils/http/http-status-codes';
-import { isRouteErrorResponse } from '@remix-run/react';
+import { useCanGoBack, useRouter } from '@tanstack/react-router';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -10,16 +9,17 @@ export const handle = {
 };
 
 export const ErrorComponent = ({ error }: { error: unknown }) => {
-  const navigate = useAgnosticNavigation();
+  const router = useRouter();
+  const canGoBack = useCanGoBack();
   const { t } = useTranslation(handle.i18n);
 
   const isDevMode = process.env.NODE_ENV === 'development';
 
   let title: string, subtitle: string | null;
-  if (isRouteErrorResponse(error) && error.status === FORBIDDEN) {
+  if (error instanceof Response && error.status === FORBIDDEN) {
     title = t('common:errors.forbidden.title');
     subtitle = t('common:errors.forbidden.subtitle');
-  } else if (isRouteErrorResponse(error) && error.status === NOT_FOUND) {
+  } else if (error instanceof Response && error.status === NOT_FOUND) {
     title = t('common:errors.not_found');
     subtitle = null;
   } else {
@@ -32,24 +32,31 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
       <h1 className="text-l text-purple-hover font-semibold">{title}</h1>
       {subtitle ? <p className="text-grey-primary text-s mb-6">{subtitle}</p> : null}
 
-      <div className="mb-1">
-        <Button variant="primary" onClick={() => navigate(-1)}>
-          {t('common:go_back')}
-        </Button>
-      </div>
+      {canGoBack ? (
+        <div className="mb-1">
+          <Button
+            variant="primary"
+            onClick={() => {
+              router.history.back();
+            }}
+          >
+            {t('common:go_back')}
+          </Button>
+        </div>
+      ) : null}
       {isDevMode ? <ErrorDetail error={error} /> : null}
     </div>
   );
 };
 
 const ErrorDetail = ({ error }: { error: unknown }) => {
-  if (isRouteErrorResponse(error)) {
+  if (error instanceof Response) {
     return (
       <div className="text-grey-primary text-xs">
         <p>
           Error status: {error.status} {error.statusText}
         </p>
-        <p>{error.data}</p>
+        <p>{error.statusText}</p>
       </div>
     );
   } else if (error instanceof Error) {

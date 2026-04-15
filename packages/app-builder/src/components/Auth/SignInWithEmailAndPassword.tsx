@@ -1,22 +1,20 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import {
   EmailUnverified,
   InvalidLoginCredentials,
   NetworkRequestFailed,
   useEmailAndPasswordSignIn,
   WrongPasswordError,
-} from '@app-builder/services/auth/auth.client';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
-import { useClientServices } from '@app-builder/services/init.client';
-import { getFieldErrors } from '@app-builder/utils/form';
-import { getRoute } from '@app-builder/utils/routes';
+} from '@app-builder/services/auth/auth-client';
+import { useClientServices } from '@app-builder/services/init-client';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { sleep } from '@app-builder/utils/sleep';
-import { Link } from '@remix-run/react';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 import { useForm } from '@tanstack/react-form';
+import { Link, useHydrated } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
 import * as z from 'zod/v4';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
@@ -67,7 +65,7 @@ export function SignInWithEmailAndPassword({
         await sleep(1000);
       } catch (error) {
         if (error instanceof EmailUnverified) {
-          navigate(getRoute('/email-verification'));
+          navigate('/email-verification');
         } else if (error instanceof WrongPasswordError || error instanceof InvalidLoginCredentials) {
           formApi.setFieldMeta('credentials.password', (prev) => ({
             ...prev,
@@ -87,14 +85,7 @@ export function SignInWithEmailAndPassword({
   });
 
   return (
-    <form
-      className="contents"
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
+    <form className="contents" onSubmit={handleSubmit(form)}>
       <div className="flex w-full flex-col gap-4">
         <form.Field
           name="credentials.email"
@@ -147,7 +138,7 @@ export function SignInWithEmailAndPassword({
             </div>
           )}
         </form.Field>
-        <Link className="text-s text-purple-primary underline" to={getRoute('/create-password')}>
+        <Link className="text-s text-purple-primary underline" to="/create-password">
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>
@@ -198,7 +189,7 @@ export const StaticSignInWithEmailAndPassword = ({
             enablePasswordManagers
           />
         </div>
-        <Link className="text-s text-purple-primary underline" to={getRoute('/create-password')}>
+        <Link className="text-s text-purple-primary underline" to="/create-password">
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>

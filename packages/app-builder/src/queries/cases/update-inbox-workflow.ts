@@ -1,38 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { type UpdateInboxWorkflowPayload, updateInboxWorkflowPayloadSchema } from '@app-builder/schemas/cases';
+import { updateInboxWorkflowFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const updateInboxWorkflowPayloadSchema = z.object({
-  updates: protectArray(
-    z.array(
-      z.object({
-        inboxId: z.uuid(),
-        caseReviewManual: z.boolean(),
-        caseReviewOnCaseCreated: z.boolean(),
-        caseReviewOnEscalate: z.boolean(),
-      }),
-    ),
-  ),
-});
-
-export type UpdateInboxWorkflowPayload = z.infer<typeof updateInboxWorkflowPayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/update-inbox-workflow');
+export { updateInboxWorkflowPayloadSchema, type UpdateInboxWorkflowPayload };
 
 export const useUpdateInboxWorkflowMutation = () => {
+  const updateInboxWorkflow = useServerFn(updateInboxWorkflowFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'inboxes', 'update-workflow'],
-    mutationFn: async (payload: UpdateInboxWorkflowPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (payload: UpdateInboxWorkflowPayload) => updateInboxWorkflow({ data: payload }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
     },

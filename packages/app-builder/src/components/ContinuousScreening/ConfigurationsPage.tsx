@@ -4,7 +4,6 @@ import {
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
 import { useContinuousScreeningConfigurationsQuery } from '@app-builder/queries/continuous-screening/configurations';
-import { getRoute } from '@app-builder/utils/routes';
 import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,8 +43,9 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
 
   const handleCreationSubmit = (value: { name: string; description: string }) => {
     const qs = QueryString.stringify(value, { addQueryPrefix: true });
+
     navigate({
-      pathname: getRoute('/continuous-screening/create'),
+      pathname: '/continuous-screening/create',
       search: qs,
     });
   };

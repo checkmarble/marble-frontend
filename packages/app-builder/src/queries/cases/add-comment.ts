@@ -1,33 +1,18 @@
-import { getRoute } from '@app-builder/utils/routes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { type AddCommentPayload, addCommentPayloadSchema } from '@app-builder/schemas/cases';
+import { addCommentFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 import { serialize } from 'object-to-formdata';
-import z from 'zod/v4';
 
-export const addCommentPayloadSchema = z
-  .object({
-    caseId: z.uuid().nonempty(),
-    comment: z.string(),
-    files: protectArray(z.array(z.instanceof(File))),
-  })
-  .refine((data) => data.comment.trim() !== '' || data.files.length > 0);
-
-export type AddCommentPayload = z.infer<typeof addCommentPayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/add-comment');
+export { addCommentPayloadSchema, type AddCommentPayload };
 
 export const useAddCommentMutation = () => {
+  const addComment = useServerFn(addCommentFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'add-comment'],
-    mutationFn: async (payload: AddCommentPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: serialize(payload, { indices: true }),
-      });
-      return response.json();
-    },
+    mutationFn: async (payload: AddCommentPayload) => addComment({ data: serialize(payload, { indices: true }) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

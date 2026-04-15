@@ -1,6 +1,5 @@
-import { type RouteID } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
-import { type UIMatch } from '@remix-run/react';
+import { type AnyRouteMatch } from '@tanstack/react-router';
 import * as z from 'zod/v4';
 
 interface PageViewNameAndProps {
@@ -8,12 +7,12 @@ interface PageViewNameAndProps {
   properties: Record<string, string> | undefined;
 }
 
-export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps | undefined {
-  switch (thisPage.id as RouteID) {
-    case 'routes/_builder+/detection+/scenarios+/_index': {
+export function getPageViewNameAndProps(thisPage: AnyRouteMatch): PageViewNameAndProps | undefined {
+  switch (thisPage.id) {
+    case 'routes/_builder/detection/scenarios/index': {
       return { name: 'Scenarios', properties: undefined };
     }
-    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/scheduled-executions': {
+    case 'routes/_builder/detection/scenarios/$scenarioId/scheduled-executions': {
       const safeParseProperties = z
         .object({
           scenarioId: shortUUIDSchema,
@@ -28,7 +27,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/trigger': {
+    case 'routes/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger': {
       const safeParseProperties = z
         .object({
           iterationId: shortUUIDSchema,
@@ -45,7 +44,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/rules': {
+    case 'routes/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules': {
       const safeParseProperties = z
         .object({
           iterationId: shortUUIDSchema,
@@ -62,7 +61,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_edit-view+/decision': {
+    case 'routes/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision': {
       const safeParseProperties = z
         .object({
           iterationId: shortUUIDSchema,
@@ -79,10 +78,10 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/detection+/decisions+/_index': {
+    case 'routes/_builder/detection/decisions/index': {
       return { name: 'Decisions', properties: undefined };
     }
-    case 'routes/_builder+/detection+/decisions+/$decisionId': {
+    case 'routes/_builder/detection/decisions/$decisionId': {
       const safeParseProperties = z
         .object({
           decisionId: shortUUIDSchema,
@@ -97,13 +96,13 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/cases+/_index': {
+    case 'routes/_builder/cases/index': {
       return { name: 'Cases', properties: undefined };
     }
-    case 'routes/_builder+/detection+/lists+/_index': {
+    case 'routes/_builder/detection/lists/index': {
       return { name: 'Lists', properties: undefined };
     }
-    case 'routes/_builder+/detection+/lists+/$listId': {
+    case 'routes/_builder/detection/lists/$listId': {
       const safeParseProperties = z
         .object({
           listId: shortUUIDSchema,
@@ -118,16 +117,16 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/detection+/analytics+/_layout': {
+    case 'routes/_builder/detection/analytics/_layout': {
       return { name: 'Analytics', properties: undefined };
     }
-    case 'routes/_builder+/data+/list': {
+    case 'routes/_builder/data/list': {
       return { name: 'Your data', properties: undefined };
     }
-    case 'routes/_builder+/data+/schema': {
+    case 'routes/_builder/data/schema': {
       return { name: 'Your data (schema)', properties: undefined };
     }
-    case 'routes/_builder+/settings+/api-keys': {
+    case 'routes/_builder/settings/api-keys': {
       return { name: 'Marble API', properties: undefined };
     }
   }

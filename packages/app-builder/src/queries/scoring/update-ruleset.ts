@@ -1,6 +1,6 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
+import { updateScoringRulesetFn } from '@app-builder/server-fns/scoring';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
 
 export const updateScoringRulesetPayloadSchema = z.object({
@@ -30,25 +30,14 @@ export const updateScoringRulesetPayloadSchema = z.object({
 
 export type UpdateScoringRulesetPayload = z.infer<typeof updateScoringRulesetPayloadSchema>;
 
-const endpoint = getRoute('/ressources/scoring/update-ruleset');
-
 export const useUpdateScoringRulesetMutation = () => {
-  const navigate = useAgnosticNavigation();
+  const updateScoringRuleset = useServerFn(updateScoringRulesetFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['scoring', 'update-ruleset'],
     mutationFn: async (payload: UpdateScoringRulesetPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      const result = await response.json();
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return { success: true };
-      }
-      return result;
+      await updateScoringRuleset({ data: payload });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scoring'] });

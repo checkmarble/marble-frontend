@@ -1,25 +1,15 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { type DataModelTableOptions } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
+import { type DataModelTableOptions } from '@app-builder/models/data-model';
+import { getTableOptionsFn } from '@app-builder/server-fns/data';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = (tableId: string) => getRoute('/ressources/data/:tableId/table-options', { tableId });
+import { useServerFn } from '@tanstack/react-start';
 
 export function useTableOptionsQuery(tableId: string | undefined) {
-  const navigate = useAgnosticNavigation();
-  if (!tableId) return null;
+  const getTableOptions = useServerFn(getTableOptionsFn);
+
   return useQuery({
     queryKey: ['data-model', 'table-options', tableId],
     queryFn: async () => {
-      const res = await fetch(endpoint(tableId));
-      const result = await res.json();
-
-      if ('redirectTo' in result) {
-        navigate(result.redirectTo);
-        return null;
-      }
-
-      return result as { tableOptions: DataModelTableOptions };
+      return getTableOptions({ data: { tableId: tableId! } }) as Promise<{ tableOptions: DataModelTableOptions }>;
     },
     enabled: !!tableId,
   });

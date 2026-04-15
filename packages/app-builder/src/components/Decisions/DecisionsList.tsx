@@ -4,10 +4,9 @@ import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { getTableSelectColumn } from '@app-builder/utils/table-selection';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -187,11 +186,7 @@ export function DecisionsList({
     enableSorting: false,
     ...tableProps,
     rowLink: (decision) => (
-      <Link
-        to={getRoute('/detection/decisions/:decisionId', {
-          decisionId: fromUUIDtoSUUID(decision.id),
-        })}
-      />
+      <Link to="/detection/decisions/$decisionId" params={{ decisionId: fromUUIDtoSUUID(decision.id) }} />
     ),
   });
 

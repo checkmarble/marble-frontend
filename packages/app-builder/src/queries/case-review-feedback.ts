@@ -1,11 +1,10 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { addCaseReviewFeedbackFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-
-const endpoint = (caseId: string, reviewId: string) =>
-  getRoute('/ressources/cases/:caseId/review/:reviewId/feedback', { caseId, reviewId });
+import { useServerFn } from '@tanstack/react-start';
 
 export function useCaseReviewFeedbackMutation(caseId: string, reviewId: string | undefined) {
   const queryClient = useQueryClient();
+  const addCaseReviewFeedback = useServerFn(addCaseReviewFeedbackFn);
 
   return useMutation({
     mutationFn: async (reaction: 'ok' | 'ko') => {
@@ -13,10 +12,7 @@ export function useCaseReviewFeedbackMutation(caseId: string, reviewId: string |
         throw new Error('Review ID is required');
       }
 
-      await fetch(endpoint(caseId, reviewId), {
-        method: 'PUT',
-        body: JSON.stringify({ reaction }),
-      });
+      await addCaseReviewFeedback({ data: { caseId, reviewId, reaction } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases', caseId, 'reviews'] });

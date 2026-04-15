@@ -3,11 +3,11 @@ import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewCustomListAstNode } from '@app-builder/models/astNode/custom-list';
 import { isDataAccessorAstNode, isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
-import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import {
+  type BuilderOptionsResource,
   type FlatAstValidation,
   type FlatNodeEvaluation,
-} from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+} from '@app-builder/server-fns/scenarios';
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getAstNodeOperandType } from '@app-builder/services/ast-node/getAstNodeOperandType';

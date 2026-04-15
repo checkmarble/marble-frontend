@@ -1,18 +1,13 @@
-import { DataModelWithTableOptions } from '@app-builder/models';
-import { getRoute } from '@app-builder/utils/routes';
+import { type DataModelWithTableOptions } from '@app-builder/models/data-model';
+import { getDataModelWithOptionsFn } from '@app-builder/server-fns/data';
 import { useQuery } from '@tanstack/react-query';
-
-const endpoint = getRoute('/ressources/data/data-model-with-options');
-
-export const dataModelWithOptionsQueryOptions = {
-  queryKey: ['data-model', 'with-options'],
-  queryFn: async () => {
-    const response = await fetch(endpoint);
-
-    return response.json() as Promise<{ dataModel: DataModelWithTableOptions }>;
-  },
-};
+import { useServerFn } from '@tanstack/react-start';
 
 export const useDataModelWithOptionsQuery = () => {
-  return useQuery(dataModelWithOptionsQueryOptions);
+  const getDataModelWithOptions = useServerFn(getDataModelWithOptionsFn);
+
+  return useQuery({
+    queryKey: ['data-model', 'with-options'],
+    queryFn: async () => getDataModelWithOptions({}) as Promise<{ dataModel: DataModelWithTableOptions }>,
+  });
 };

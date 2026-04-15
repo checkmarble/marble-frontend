@@ -36,3 +36,7 @@ export function getTableMutationError(
 export function formatTableMutationError(error: Pick<TableMutationError, 'status' | 'message'>) {
   return `${error.status}: ${error.message}`;
 }
+
+export function isTableMutationError(error: unknown): error is TableMutationError {
+  return typeof error === 'object' && error !== null && 'status' in error && 'message' in error;
+}

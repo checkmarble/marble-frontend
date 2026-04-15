@@ -11,8 +11,8 @@ import {
 } from '@app-builder/queries/settings/users/create-user';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
+import { useRouterState } from '@tanstack/react-router';
 import clsx from 'clsx';
 import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -31,14 +31,14 @@ export function CreateUser({
   userRoles: readonly [string, ...string[]];
 }) {
   const { t } = useTranslation(['common', 'settings']);
-  const navigation = useNavigation();
+  const isLoading = useRouterState({ select: (s) => s.status === 'pending' });
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (navigation.state === 'loading') {
+    if (isLoading) {
       setOpen(false);
     }
-  }, [navigation.state]);
+  }, [isLoading]);
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
@@ -81,9 +81,8 @@ function CreateUserContent({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         createUserMutation.mutateAsync(value).then((res) => {
-          if (res.success) {
-            onSuccess();
-          }
+          onSuccess();
+
           revalidate();
         });
       }
