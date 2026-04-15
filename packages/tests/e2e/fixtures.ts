@@ -94,10 +94,13 @@ const createTable = async (apiUrl: string, apiKey: string, table: Table) => {
     method: 'POST',
     headers: {
       'x-api-key': apiKey,
+      'content-type': 'application/json',
     },
     body: JSON.stringify(bodyValues),
   });
 
-  if (tableResponse.status != 200)
-    throw new Error(`failed to create data model table ${tableResponse.status} ${await tableResponse.json()}`);
+  if (!tableResponse.ok)
+    throw new Error(
+      `failed to create data model table ${tableResponse.status} ${JSON.stringify(await tableResponse.json())}`,
+    );
 };
