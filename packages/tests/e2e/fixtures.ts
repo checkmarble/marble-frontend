@@ -43,6 +43,7 @@ export const setupFixtures = async (dsn: string, apiUrl: string) => {
 const createTable = async (apiUrl: string, apiKey: string, table: Table) => {
   const bodyValues = {
     name: table.table,
+    alias: table.table,
     primary_ordering_field: 'updated_at',
     semantic_type: 'other',
     description: 'lorem ipsum',
