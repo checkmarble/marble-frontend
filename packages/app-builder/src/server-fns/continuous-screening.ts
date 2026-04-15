@@ -1,6 +1,6 @@
 import { createContinuousScreeningConfigSchema } from '@app-builder/components/ContinuousScreening/context/CreationStepper';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { reviewMatchPayloadSchema } from '@app-builder/queries/continuous-screening/review-match';
+import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { setToast } from '@app-builder/services/toast.server';
 import { redirect } from '@tanstack/react-router';
