@@ -1,5 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { DataModelField, type TableModel } from '@app-builder/models/data-model';
+import { DataModelField, PrimitiveTypes, type TableModel } from '@app-builder/models/data-model';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
@@ -13,6 +13,7 @@ import { DeleteTableModal } from '../../DeleteDataModel/DeleteTableModal';
 import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
 import { adaptUpdateTableValue } from '../EditTable/updateTable-adapter';
+import { DatatypeIcon } from '../Shared/DatatypeOption';
 import { ChangeRecord, LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
 import { UploadTableDrawer } from '../UploadData/UploadTableDrawer';
 import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
@@ -79,7 +80,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
     consumed.add(field.name);
   }
 
-  const renderField = (field: DataModelField) => {
+  const renderField = (field: DataModelField, extended?: boolean) => {
     const hasHandles = fieldGroups.some((group) => group.type === 'single' && group.field.name === field.name);
     return (
       <div
@@ -100,7 +101,10 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-v2-md))' }}
           />
         )}
-        <span title={field.name}>{field.alias || field.name}</span>
+        <div className="flex items-center gap-v2-xs justify-between">
+          <span title={field.name}>{field.alias || field.name}</span>
+          {extended && field.dataType !== 'String' && <DatatypeIcon dataType={field.dataType as PrimitiveTypes} />}
+        </div>
         {hasHandles && (
           <Handle
             type="source"
@@ -251,7 +255,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
         </div>
         <div className="mt-v2-md flex flex-col gap-v2-sm">
           {isNumberOfFieldsOpen ? (
-            data.tableModel.fields.map((field) => renderField(field))
+            data.tableModel.fields.map((field) => renderField(field, true))
           ) : relationFields.length > 0 ? (
             <>
               {fieldGroups.map((group) => {
