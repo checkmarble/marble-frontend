@@ -38,7 +38,7 @@ export function adaptUpdateTableValue(
 
   const adaptedTable: EditSemanticTablePayload = {
     tableId: tableState.tableId,
-    ...(changedProperties.includes('alias') ? { alias: tableState.alias } : {}),
+    ...(changedProperties.includes('alias') ? { alias: tableState.alias || tableState.name } : {}),
     ...(changedProperties.includes('entityType')
       ? { semantic_type: tableState.entityType === 'unset' ? 'other' : tableState.entityType }
       : {}),
@@ -212,7 +212,7 @@ function adaptTableFieldUpdate(current: TableField, original: TableField) {
   return omitUndefined({
     id: current.id,
     description: ifChanged(current.description, original.description),
-    alias: ifChanged(current.alias, original.alias),
+    alias: ifChanged(current.alias || current.name, original.alias),
     is_enum:
       current.semanticType === 'enum' ? ifChanged(true, original.isEnum) : ifChanged(current.isEnum, original.isEnum),
     is_nullable: ifChanged(current.nullable, original.nullable),
