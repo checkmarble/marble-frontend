@@ -68,17 +68,6 @@ export function EditTableDrawer({
     wasOpenRef.current = open;
   }, [open, tableModel]);
 
-  const changeSet = useMemo(
-    () =>
-      computeChangeSet(
-        initialTableStateRef.current[tableModel.id]!,
-        tablesState[tableModel.id]!,
-        initialLinksStateRef.current,
-        linksState,
-      ),
-    [linksState, tablesState, tableModel.id],
-  );
-
   const isDirty = useMemo(
     () =>
       JSON.stringify(normalizeTablesStateForDirtyCheck(tablesState)) !==
@@ -237,6 +226,12 @@ export function EditTableDrawer({
       return;
     }
     setValidationErrors([]);
+    const changeSet = computeChangeSet(
+      initialTableStateRef.current[tableModel.id]!,
+      tablesState[tableModel.id]!,
+      initialLinksStateRef.current,
+      linksState,
+    );
     await onSave(
       values,
       changeSet,
