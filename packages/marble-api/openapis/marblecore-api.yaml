@@ -481,6 +481,8 @@ paths:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1risk-levels~1{recordType}~1{recordId}
   /scoring/risk-levels/{recordType}/{recordId}/history:
     $ref: ./marblecore-api/scoring.yml#/~1scoring~1risk-levels~1{recordType}~1{recordId}~1history
+  /scoring/distribution/{recordType}:
+    $ref: ./marblecore-api/scoring.yml#/~1scoring~1distribution~1{recordType}
 
 components:
   securitySchemes:

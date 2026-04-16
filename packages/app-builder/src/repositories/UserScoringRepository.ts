@@ -10,17 +10,22 @@ import {
   ScoringSettings,
   UpdateScoringRuleset,
 } from '@app-builder/models/scoring';
+import { ScoringScore } from 'marble-api';
+
+export type ScoreDistributionItem = { risk_level: number; count: number };
 
 export interface UserScoringRepository {
   getSettings(): Promise<ScoringSettings | null>;
   listRulesets(): Promise<ScoringRuleset[]>;
   listRulesetVersions(recordType: string): Promise<ScoringRuleset[]>;
-  getRulesetWithRules(recordType: string, version: string | number): Promise<ScoringRulesetWithRules>;
+  getRulesetWithRules(recordType: string, version?: string | number): Promise<ScoringRulesetWithRules>;
   updateScoringSettings(args: { maxRiskLevel: number }): Promise<ScoringSettings>;
   updateScoringRuleset(recordType: string, payload: UpdateScoringRuleset): Promise<ScoringRulesetWithRules>;
   getRulesetPreparationStatus(recordType: string): Promise<ScenarioPublicationStatus>;
   prepareScoringRuleset(recordType: string): Promise<void>;
   commitScoringRuleset(recordType: string): Promise<ScoringRuleset>;
+  getScoreLatest(recordType: string, recordId: string): Promise<ScoringScore | null>;
+  getScoreDistribution(recordType: string): Promise<ScoreDistributionItem[]>;
 }
 
 export function makeGetUserScoringRepository() {
@@ -75,6 +80,12 @@ export function makeGetUserScoringRepository() {
     },
     async commitScoringRuleset(recordType) {
       return adaptScoringRuleset(await marbleCoreApiClient.commitScoringRuleset(recordType));
+    },
+    async getScoreLatest(recordType, recordId) {
+      return marbleCoreApiClient.getScoreLatest(recordType, recordId, { includeEvaluation: false });
+    },
+    async getScoreDistribution(recordType) {
+      return marbleCoreApiClient.getScoreDistribution(recordType);
     },
   });
 }

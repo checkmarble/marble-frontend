@@ -6945,3 +6945,23 @@ export function getScoreHistory(recordType: string, recordId: string, opts?: Oaz
         ...opts
     }));
 }
+/**
+ * Get an entity's score distribution
+ */
+export function getScoreDistribution(recordType: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            risk_level: number;
+            count: number;
+        }[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scoring/distribution/${encodeURIComponent(recordType)}`, {
+        ...opts
+    }));
+}

@@ -26,6 +26,14 @@ const getDataFn = createServerFn()
     try {
       const objectDetails = await context.authInfo.dataModelRepository.getIngestedObject(objectType, objectId);
 
+      const scoringSettings = await context.authInfo.userScoring.getSettings();
+      let activeScore = null;
+      try {
+        activeScore = (await context.authInfo.userScoring.getScoreLatest(objectType, objectId)) ?? null;
+      } catch (error) {
+        if (!isNotFoundHttpError(error)) throw error;
+      }
+
       const tables = await context.authInfo.client360.getClient360Tables();
       const { user, dataModelRepository, entitlements } = context.authInfo;
 
@@ -46,6 +54,8 @@ const getDataFn = createServerFn()
         allMetadata: tables,
         dataModel,
         dataModelFeatureAccess,
+        scoringSettings,
+        activeScore,
       };
     } catch (error) {
       if (isNotFoundHttpError(error)) {
@@ -66,8 +76,17 @@ export const Route = createFileRoute('/_app/_builder/client-detail/$objectType/$
 });
 
 function ClientDetailPage() {
-  const { objectType, objectId, objectDetails, metadata, allMetadata, dataModel, dataModelFeatureAccess } =
-    Route.useLoaderData();
+  const {
+    objectType,
+    objectId,
+    objectDetails,
+    metadata,
+    allMetadata,
+    dataModel,
+    dataModelFeatureAccess,
+    scoringSettings,
+    activeScore,
+  } = Route.useLoaderData();
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
@@ -78,6 +97,8 @@ function ClientDetailPage() {
         objectDetails={objectDetails}
         metadata={metadata}
         allMetadata={allMetadata}
+        scoringSettings={scoringSettings}
+        activeScore={activeScore}
       />
     </DataModelContextProvider>
   );
