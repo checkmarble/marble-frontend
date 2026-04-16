@@ -444,14 +444,7 @@ export const createDraftIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    const draftIteration = await context.authInfo.apiClient.createDraftFromScenarioIteration(data.iterationId);
-    throw redirect({
-      to: '/detection/scenarios/$scenarioId/i/$iterationId',
-      params: {
-        scenarioId: fromUUIDtoSUUID(data.scenarioId),
-        iterationId: fromUUIDtoSUUID(draftIteration.id),
-      },
-    });
+    return context.authInfo.apiClient.createDraftFromScenarioIteration(data.iterationId);
   });
 
 export const deactivateIterationFn = createServerFn({ method: 'POST' })
