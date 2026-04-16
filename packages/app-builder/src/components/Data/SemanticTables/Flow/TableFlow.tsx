@@ -1,5 +1,6 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '@app-builder/components/Schema/SchemaMenu';
+import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModel } from '@app-builder/models/data-model';
 import Dagre from '@dagrejs/dagre';
 import {
@@ -233,6 +234,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
       fitView();
     });
   }, [edges, fitView, nodes]);
+  const theme = useTheme();
 
   return (
     <ReactFlow<Node<DataModelNodeData>, Edge<DataModelEdgeData>>
@@ -246,6 +248,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
       onEdgesChange={onEdgesChange}
       defaultEdgeOptions={defaultDataModelEdgeOptions}
       connectionLineStyle={defaultDataModelEdgeOptions.style}
+      colorMode={theme.theme}
     >
       <Controls position="bottom-left" className="z-10">
         <CustomControls />
