@@ -1,5 +1,6 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '@app-builder/components/Schema/SchemaMenu';
+import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModel } from '@app-builder/models/data-model';
 import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
 import Dagre from '@dagrejs/dagre';
@@ -237,6 +238,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
       fitView();
     });
   }, [edges, fitView, nodes]);
+  const theme = useTheme();
 
   useEffect(() => {
     const handleResize = () => {
@@ -260,6 +262,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
       onEdgesChange={onEdgesChange}
       defaultEdgeOptions={defaultDataModelEdgeOptions}
       connectionLineStyle={defaultDataModelEdgeOptions.style}
+      colorMode={theme.theme}
     >
       <Controls position="bottom-left" className="z-10">
         <CustomControls />

@@ -15,6 +15,7 @@ export function adaptUpdateTableValue(
   originalFields: TableField[],
   originalLinks: LinkValue[],
   tableNameById: Map<string, string>,
+  originalMainTimestampFieldName?: string | null,
 ): EditSemanticTablePayload {
   const tableChange = changeSet.find((change): change is TableChange => change.type === 'table');
   const changedProperties = tableChange?.changedProperties ?? [];
@@ -38,11 +39,12 @@ export function adaptUpdateTableValue(
 
   const adaptedTable: EditSemanticTablePayload = {
     tableId: tableState.tableId,
-    ...(changedProperties.includes('alias') ? { alias: tableState.alias } : {}),
+    ...(changedProperties.includes('alias') ? { alias: tableState.alias || tableState.name } : {}),
     ...(changedProperties.includes('entityType')
       ? { semantic_type: tableState.entityType === 'unset' ? 'other' : tableState.entityType }
       : {}),
-    ...(changedProperties.includes('mainTimestampFieldName')
+    ...(changedProperties.includes('mainTimestampFieldName') ||
+    (!originalMainTimestampFieldName && !!tableState.mainTimestampFieldName)
       ? { primary_ordering_field: tableState.mainTimestampFieldName }
       : {}),
     fields: adaptFieldsOperations(
@@ -212,7 +214,7 @@ function adaptTableFieldUpdate(current: TableField, original: TableField) {
   return omitUndefined({
     id: current.id,
     description: ifChanged(current.description, original.description),
-    alias: ifChanged(current.alias, original.alias),
+    alias: ifChanged(current.alias || current.name, original.alias),
     is_enum:
       current.semanticType === 'enum' ? ifChanged(true, original.isEnum) : ifChanged(current.isEnum, original.isEnum),
     is_nullable: ifChanged(current.nullable, original.nullable),

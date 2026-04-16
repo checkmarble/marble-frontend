@@ -178,7 +178,7 @@ export function adaptSemanticField(
 export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTableValue {
   return {
     name: values.name,
-    alias: values.alias,
+    alias: values.alias || values.name,
     semantic_type: getEntityType(
       values.entityType === 'unset' ? 'other' : values.entityType,
       values.subEntity === 'unset' ? 'moral' : values.subEntity,
@@ -199,7 +199,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
     name: field.name,
     description: field.description,
     type: field.dataType,
-    alias: field.alias,
+    alias: field.alias || field.name,
     nullable: field.nullable,
     is_enum: field.isEnum || field.semanticType === 'enum',
     is_unique: field.unicityConstraint === 'active_unique_constraint',
@@ -423,11 +423,9 @@ export function validateValues(
 ): ValidationResult {
   if (scope === 'table') {
     // enforce 'updated_at' to be the default sort order if there is no other
-    const mainTimestampFieldName =
-      values.mainTimestampFieldName || (values.fields.some((f) => f.name === 'updated_at') ? 'updated_at' : '');
-    if (!mainTimestampFieldName && values.fields.some((f) => f.name === 'updated_at')) {
-      values.mainTimestampFieldName = 'updated_at';
-    }
+    const hasUpdatedAt = values.fields.some((f) => f.name === 'updated_at'); // should always be true
+    if (!values.mainTimestampFieldName && hasUpdatedAt) values.mainTimestampFieldName = 'updated_at';
+
     const errors = getTablePropertyErrors(values);
     if (!values.mainTimestampFieldName) {
       errors.push({

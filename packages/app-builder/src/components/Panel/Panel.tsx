@@ -5,7 +5,7 @@ import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelOverlay } from './PanelOverlay';
 
-export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | 'max';
+export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | '4xl' | '5xl' | 'max';
 
 const sizeClasses: Record<PanelSize, string> = {
   sm: 'max-w-sm',
@@ -14,6 +14,8 @@ const sizeClasses: Record<PanelSize, string> = {
   xl: 'max-w-xl',
   xxl: 'max-w-2xl',
   xxxl: 'max-w-3xl',
+  '4xl': 'max-w-4xl',
+  '5xl': 'max-w-5xl',
   max: 'max-w-[1000px]',
 };
 

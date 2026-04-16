@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
 import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
 import { DrawerContext } from '../Shared/DrawerContext';
 import { EntityTypeMenu } from '../Shared/EntityTypeMenu';
@@ -67,17 +68,6 @@ export function EditTableDrawer({
     }
     wasOpenRef.current = open;
   }, [open, tableModel]);
-
-  const changeSet = useMemo(
-    () =>
-      computeChangeSet(
-        initialTableStateRef.current[tableModel.id]!,
-        tablesState[tableModel.id]!,
-        initialLinksStateRef.current,
-        linksState,
-      ),
-    [linksState, tablesState, tableModel.id],
-  );
 
   const isDirty = useMemo(
     () =>
@@ -237,6 +227,12 @@ export function EditTableDrawer({
       return;
     }
     setValidationErrors([]);
+    const changeSet = computeChangeSet(
+      initialTableStateRef.current[tableModel.id]!,
+      tablesState[tableModel.id]!,
+      initialLinksStateRef.current,
+      linksState,
+    );
     await onSave(
       values,
       changeSet,
@@ -391,6 +387,10 @@ function EditableAlias({ alias, onChange }: EditableAliasProps) {
 
 function adaptFieldToTableField(field: DataModelField): TableField {
   const isSystemField = field.name === 'object_id' || field.name === 'updated_at';
+  const { semanticType: fallbackSemanticType, semanticSubType: fallbackSemanticSubType } = inferSemanticTypeFromName(
+    field.name,
+    field.dataType,
+  );
   return {
     id: field.id,
     name: field.name,
@@ -408,8 +408,8 @@ function adaptFieldToTableField(field: DataModelField): TableField {
         ? 'unique_id'
         : field.name === 'updated_at'
           ? 'last_update'
-          : (field.semanticType ?? ('text' as const)),
-    semanticSubType: field.name === 'object_id' ? 'opaque_id' : field.semanticSubType,
+          : (field.semanticType ?? fallbackSemanticType),
+    semanticSubType: field.name === 'object_id' ? 'opaque_id' : (field.semanticSubType ?? fallbackSemanticSubType),
     currencyExponent: field.currencyExponent,
     decimalPrecision: field.decimalPrecision,
     currencyFieldId: field.currencyFieldId,

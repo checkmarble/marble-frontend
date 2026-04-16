@@ -124,7 +124,14 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
           const tableNameById = new Map(dataModel.map((t) => [t.id, t.name]));
           await updateTableMutation
             .mutateAsync(
-              adaptUpdateTableValue(tableState, changeSet, initialTableState.fields, initialLinks, tableNameById),
+              adaptUpdateTableValue(
+                tableState,
+                changeSet,
+                initialTableState.fields,
+                initialLinks,
+                tableNameById,
+                data.tableModel.mainTimestampFieldName,
+              ),
             )
             .then(() => {
               toast.success(t('data:table_details.table_updated', { name: tableState.alias || tableState.name }));
