@@ -1,5 +1,6 @@
-import { Client360SearchPayload, useSearchClient360Query } from '@app-builder/queries/client360/search';
+import { useSearchClient360Query } from '@app-builder/queries/client360/search';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
+import { Client360SearchPayload } from '@app-builder/schemas/client360';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
