@@ -15,6 +15,7 @@ export function adaptUpdateTableValue(
   originalFields: TableField[],
   originalLinks: LinkValue[],
   tableNameById: Map<string, string>,
+  originalMainTimestampFieldName?: string | null,
 ): EditSemanticTablePayload {
   const tableChange = changeSet.find((change): change is TableChange => change.type === 'table');
   const changedProperties = tableChange?.changedProperties ?? [];
@@ -42,7 +43,8 @@ export function adaptUpdateTableValue(
     ...(changedProperties.includes('entityType')
       ? { semantic_type: tableState.entityType === 'unset' ? 'other' : tableState.entityType }
       : {}),
-    ...(changedProperties.includes('mainTimestampFieldName')
+    ...(changedProperties.includes('mainTimestampFieldName') ||
+    (!originalMainTimestampFieldName && !!tableState.mainTimestampFieldName)
       ? { primary_ordering_field: tableState.mainTimestampFieldName }
       : {}),
     fields: adaptFieldsOperations(
@@ -59,6 +61,7 @@ export function adaptUpdateTableValue(
     ),
     ...(fieldOrderChanged ? { metadata: { fieldOrder: currentFieldOrder } } : {}),
   };
+  console.log('adaptedTable', adaptedTable);
   return adaptedTable;
 }
 
