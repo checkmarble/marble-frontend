@@ -37,9 +37,8 @@ const apiKeysLoader = createServerFn()
 
     if (!isReadApiKeyAvailable(user)) throw redirect({ to: '/' });
 
-    const [apiKeys, openapi, openapiV1] = await Promise.all([
+    const [apiKeys, openapiV1] = await Promise.all([
       apiKey.listApiKeys(),
-      dataModelRepository.getOpenApiSpec(),
       dataModelRepository.getOpenApiSpecOfVersion('v1'),
     ]);
 
@@ -62,7 +61,6 @@ const apiKeysLoader = createServerFn()
 
     return {
       apiKeys,
-      openapi,
       openapiV1,
       createdApiKey,
       isCreateApiKeyAvailable: isCreateApiKeyAvailable(user),
@@ -87,7 +85,6 @@ function ApiKeys() {
   const { t } = useTranslation(['common', 'settings', 'api']);
   const {
     apiKeys,
-    openapi,
     openapiV1,
     createdApiKey,
     isCreateApiKeyAvailable,
@@ -165,23 +162,6 @@ function ApiKeys() {
           >
             <Icon icon="download" className="me-2 size-5" />
             {t('api:download_openapi_spec_v1')}
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              try {
-                const blob = new Blob([JSON.stringify(openapi)], {
-                  type: 'application/json;charset=utf-8,',
-                });
-                const url = URL.createObjectURL(blob);
-                void downloadFile(url, 'openapi.json');
-              } catch (_error) {
-                toast.error(t('common:errors.unknown'));
-              }
-            }}
-          >
-            <Icon icon="download" className="me-2 size-5" />
-            {t('api:download_openapi_spec')}
           </Button>
         </div>
         {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
