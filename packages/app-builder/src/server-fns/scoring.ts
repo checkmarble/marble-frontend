@@ -1,6 +1,8 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { updateScoringRulesetPayloadSchema } from '@app-builder/queries/scoring/update-ruleset';
-import { updateScoringSettingsPayloadSchema } from '@app-builder/queries/scoring/update-settings';
+import {
+  updateScoringRulesetPayloadSchema,
+  updateScoringSettingsPayloadSchema,
+} from '@app-builder/schemas/user-scoring';
 import { setToast } from '@app-builder/services/toast.server';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';

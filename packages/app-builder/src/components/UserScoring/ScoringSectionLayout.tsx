@@ -2,11 +2,8 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { type DurationUnit, SECONDS_PER_UNIT, secondsToDisplay } from '@app-builder/models/scoring';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
-import {
-  type UpdateScoringRulesetPayload,
-  updateScoringRulesetPayloadSchema,
-  useUpdateScoringRulesetMutation,
-} from '@app-builder/queries/scoring/update-ruleset';
+import { useUpdateScoringRulesetMutation } from '@app-builder/queries/scoring/update-ruleset';
+import { type UpdateScoringRulesetPayload, updateScoringRulesetPayloadSchema } from '@app-builder/schemas/user-scoring';
 import { handleSubmit } from '@app-builder/utils/form';
 import { createSimpleContext } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
