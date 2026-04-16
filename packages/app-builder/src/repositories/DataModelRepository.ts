@@ -39,7 +39,6 @@ import { GroupedAnnotations, type OpenApiSpec, UpdateTableBodyDto } from 'marble
 
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
-  getOpenApiSpec(): Promise<OpenApiSpec>;
   getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
   createTable(body: CreateTableValue): Promise<{ id: string }>;
   patchDataModelTable(tableId: string, body: UpdateTableBodyDto): Promise<void>;
@@ -77,9 +76,6 @@ export function makeGetDataModelRepository() {
       const { data_model } = await marbleCoreApiClient.getDataModel();
 
       return adaptDataModel(data_model);
-    },
-    getOpenApiSpec: async () => {
-      return marbleCoreApiClient.getDataModelOpenApi();
     },
     getOpenApiSpecOfVersion: async (version: string) => {
       return marbleCoreApiClient.getDataModelOpenApiOfVersion(version);
