@@ -42,6 +42,7 @@ export function FieldDetailPanel({
     FieldsEditorContext.useValue();
   const dataModel = useDataModel();
   const { isEditDataModelInfoAvailable, isDeleteDataModelFieldAvailable } = useDataModelFeatureAccess();
+  const [hasBeenChangedManually, setHasBeenChangedManually] = useState(false);
 
   const { t } = useTranslation(['data', 'common']);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
@@ -56,6 +57,7 @@ export function FieldDetailPanel({
     } else {
       aliasInputRef.current?.focus();
     }
+    setHasBeenChangedManually(false);
   }, [fieldId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isNameDuplicate = useMemo(() => {
@@ -145,6 +147,7 @@ export function FieldDetailPanel({
   }
 
   function inferTypeFromName(field: TableField) {
+    if (hasBeenChangedManually) return;
     if (!field.isNew) return;
     const { semanticType, semanticSubType } = inferSemanticTypeFromName(field.name, field.dataType, field.isEnum);
     update({
@@ -268,6 +271,7 @@ export function FieldDetailPanel({
                   const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, newSemanticType);
                   const isCurrentSubTypeValid = subOpts?.some((opt) => opt.value === field.semanticSubType) ?? false;
                   const firstSubType = subOpts?.[0]?.value as SemanticSubTypeField | undefined;
+                  setHasBeenChangedManually(true);
                   update({
                     semanticType: newSemanticType,
                     semanticSubType: isCurrentSubTypeValid ? field.semanticSubType : firstSubType,
@@ -286,7 +290,10 @@ export function FieldDetailPanel({
               <SelectV2
                 value={field.semanticSubType}
                 placeholder=""
-                onChange={(value) => update({ semanticSubType: value as SemanticSubTypeField })}
+                onChange={(value) => {
+                  setHasBeenChangedManually(true);
+                  update({ semanticSubType: value as SemanticSubTypeField });
+                }}
                 options={semanticSubOptions}
                 disabled={isLocked}
               />
