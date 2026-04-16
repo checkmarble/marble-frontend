@@ -61,7 +61,6 @@ export function adaptUpdateTableValue(
     ),
     ...(fieldOrderChanged ? { metadata: { fieldOrder: currentFieldOrder } } : {}),
   };
-  console.log('adaptedTable', adaptedTable);
   return adaptedTable;
 }
 
