@@ -2,7 +2,7 @@ import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataF
 import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Tag } from 'ui-design-system';
 
@@ -16,12 +16,18 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
   const { t } = useTranslation(['data', 'common']);
   const [objectId, setObjectId] = useState('');
   const [searchedObjectId, setSearchedObjectId] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open) return;
-    setObjectId('');
-    setSearchedObjectId(null);
-  }, [open]);
+    if (!open) {
+      setObjectId('');
+      setSearchedObjectId(null);
+      return;
+    }
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }, [open, inputRef]);
 
   const trimmedObjectId = useMemo(() => objectId.trim(), [objectId]);
 
@@ -52,6 +58,7 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
                 {t('data:viewer.object_id')}
               </label>
               <Input
+                ref={inputRef}
                 id={`objectIdField-${tableName}`}
                 name="objectId"
                 type="text"
