@@ -37,17 +37,17 @@ jobs:
       SERVICE_ACCOUNT: marble-frontend-cloud-run@${{ vars.GCP_PROJECT_ID }}.iam.gserviceaccount.com
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           fetch-tags: true
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: auth github actions to GCP
         id: auth
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           token_format: access_token
           project_id: ${{ vars.GCP_PROJECT_ID }}
@@ -55,7 +55,7 @@ jobs:
           service_account: ${{ vars.SERVICE_ACCOUNT_EMAIL}}
 
       - name: Login to Google Artifact Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: europe-west1-docker.pkg.dev
           username: oauth2accesstoken
@@ -67,7 +67,7 @@ jobs:
 
       # source: https://github.com/docker/build-push-action
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
@@ -83,7 +83,7 @@ jobs:
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+        uses: 'google-github-actions/setup-gcloud@v3'
         with:
           install_components: beta
 

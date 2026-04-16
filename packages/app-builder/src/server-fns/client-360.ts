@@ -1,6 +1,5 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { addConfigurationPayloadSchema } from '@app-builder/queries/client360/add-configuration';
-import { client360SearchPayloadSchema } from '@app-builder/queries/client360/search';
+import { addConfigurationPayloadSchema, client360SearchPayloadSchema } from '@app-builder/schemas/client360';
 import { setToast } from '@app-builder/services/toast.server';
 import { createServerFn } from '@tanstack/react-start';
 

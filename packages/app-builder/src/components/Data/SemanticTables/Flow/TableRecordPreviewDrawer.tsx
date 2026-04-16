@@ -43,7 +43,7 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
 
   return (
     <PanelRoot open={open} onOpenChange={onOpenChange}>
-      <PanelContainer size="xxl" className="z-50 max-w-[42rem] p-0">
+      <PanelContainer size="4xl" className="z-50 p-0">
         <PanelHeader className="border-b border-grey-border px-v2-lg py-v2-md">
           {t('data:viewer.view_ingested_data')}
         </PanelHeader>
@@ -79,7 +79,7 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
             ) : searchedObjectId && query.data !== undefined ? (
               query.data ? (
                 <div className="rounded-md border border-grey-border bg-grey-background-light p-4">
-                  <DataFields table={tableName} object={query.data} options={{ hideLinks: true, showHeader: true }} />
+                  <DataFields table={tableName} object={query.data} options={{ showHeader: true }} />
                 </div>
               ) : (
                 <div className="rounded-sm border border-grey-border bg-surface-card p-4 text-center">
