@@ -24,7 +24,6 @@ export type Sections = {
   users: Section;
   scenarios: Section;
   case_manager: Section;
-  data_display: Section;
   audit: Section;
   ip_whitelisting: Section;
 };
@@ -57,10 +56,6 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
           ? [{ title: 'case_manager', to: '/settings/inboxes' }]
           : []),
       ],
-    },
-    data_display: {
-      icon: 'world',
-      settings: [...(isAdmin(user) ? [{ title: 'data_display', to: '/settings/data-display' }] : [])],
     },
     audit: {
       icon: 'history',

@@ -1,5 +1,5 @@
-import { Client360SearchPayload } from '@app-builder/queries/client360/search';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
+import { Client360SearchPayload } from '@app-builder/schemas/client360';
 import { Client360Table } from 'marble-api';
 import { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

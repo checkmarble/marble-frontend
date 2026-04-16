@@ -2,11 +2,9 @@ import { Callout } from '@app-builder/components';
 import { StatusRadioGroup } from '@app-builder/components/Screenings/StatusRadioGroup';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { ContinuousScreeningMatch } from '@app-builder/models/continuous-screening';
-import {
-  reviewMatchPayloadSchema,
-  useReviewContinuousScreeningMatchMutation,
-} from '@app-builder/queries/continuous-screening/review-match';
+import { useReviewContinuousScreeningMatchMutation } from '@app-builder/queries/continuous-screening/review-match';
 import { ReviewScreeningMatchPayload } from '@app-builder/queries/screening/review-screening-match';
+import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { ReactNode, useState } from 'react';
