@@ -2,9 +2,8 @@ import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { KeyboardEventHandler, MouseEventHandler, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, cn, Tooltip } from 'ui-design-system';
@@ -106,7 +105,7 @@ export function CasesList({
             onKeyDown={handleRowKeyDown}
           >
             <div className="invisible">
-              <Link data-row-link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseItem.id) })} />
+              <Link data-row-link to="/cases/$caseId" params={{ caseId: fromUUIDtoSUUID(caseItem.id) }} />
             </div>
             <div className="relative p-v2-md ps-v2-xl w-25">
               <MultiSelect.Item index={index} id={caseItem.id} item={caseItem}>

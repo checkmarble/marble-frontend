@@ -1,59 +1,81 @@
-import { AppConfig } from '@app-builder/models/app-config';
-import { Tokens } from '@app-builder/routes/oidc+/auth';
+import type { AppConfig } from '@app-builder/models/app-config';
+import { createSignedCookie } from '@app-builder/repositories/SessionStorageRepositories/signed-cookie';
 import { getServerEnv } from '@app-builder/utils/environment';
-import { OAuth2Tokens } from 'arctic';
-import { OAuth2Strategy } from 'remix-auth-oauth2';
+import { CodeChallengeMethod, generateCodeVerifier, generateState, OAuth2Client, OAuth2Tokens } from 'arctic';
+import type { Tokens } from '../../routes/oidc/auth';
 
-let oidcStrategy: MarbleOidcStrategy<Tokens> | undefined = undefined;
-
-export class MarbleOidcStrategy<U> extends OAuth2Strategy<U> {
-  extraParams: { [key: string]: string } = {};
-
-  override authorizationParams(searchParams: URLSearchParams, request: Request) {
-    for (let [key, value] of Object.entries(this.extraParams)) {
-      searchParams.set(key, value);
-    }
-
-    return searchParams;
-  }
+interface OidcDiscovery {
+  authorization_endpoint: string;
+  token_endpoint: string;
 }
 
-export const makeOidcService = async (config: AppConfig) => {
-  if (oidcStrategy) {
-    return oidcStrategy;
-  }
+let discoveryCache: OidcDiscovery | undefined;
 
+async function getOidcDiscovery(issuer: string): Promise<OidcDiscovery> {
+  if (discoveryCache) return discoveryCache;
+  const res = await fetch(`${issuer}/.well-known/openid-configuration`);
+  discoveryCache = (await res.json()) as OidcDiscovery;
+  return discoveryCache;
+}
+
+export function getOauth2Cookie({ secrets, secure }: { secrets: string[]; secure: boolean }) {
+  return createSignedCookie({
+    name: 'oauth2',
+    path: '/',
+    httpOnly: true,
+    sameSite: 'lax',
+    secrets,
+    secure,
+  });
+}
+
+export async function makeOidcService(config: AppConfig) {
   const apiUrl = getServerEnv('MARBLE_API_URL');
+  const { client_id, redirect_uri, scopes, issuer, extra_params } = config.auth.oidc;
 
-  oidcStrategy = (await MarbleOidcStrategy.discover(
-    config.auth.oidc.issuer,
-    {
-      tokenEndpoint: `${apiUrl}/oidc/token`,
-      cookie: 'oauth2',
-      clientId: config.auth.oidc.client_id,
-      clientSecret: null,
-      redirectURI: config.auth.oidc.redirect_uri,
-      scopes: config.auth.oidc.scopes,
+  const discovery = await getOidcDiscovery(issuer);
+  // Override token endpoint to use marble API proxy (same as old service)
+  const tokenEndpoint = `${apiUrl}/oidc/token`;
+  const client = new OAuth2Client(client_id, null, redirect_uri);
+
+  return {
+    buildAuthorizationUrl: async (): Promise<{
+      url: string;
+      state: string;
+      codeVerifier: string;
+    }> => {
+      const state = generateState();
+      const codeVerifier = generateCodeVerifier();
+      const url = await client.createAuthorizationURLWithPKCE(
+        discovery.authorization_endpoint,
+        state,
+        CodeChallengeMethod.S256,
+        codeVerifier,
+        scopes,
+      );
+      for (const [key, value] of Object.entries(extra_params)) {
+        url.searchParams.set(key, value);
+      }
+      return { url: url.toString(), state, codeVerifier };
     },
-    async ({ tokens: rawTokens }): Promise<Tokens> => {
-      const tokens: CompatOAuth2Tokens = new CompatOAuth2Tokens(rawTokens.data);
 
-      const credentials: Tokens = {
+    refreshToken: async (refreshToken: string) => {
+      return client.refreshAccessToken(tokenEndpoint, refreshToken, scopes);
+    },
+
+    exchangeCode: async (code: string, codeVerifier: string): Promise<Tokens> => {
+      const rawTokens = await client.validateAuthorizationCode(tokenEndpoint, code, codeVerifier);
+      const tokens = new CompatOAuth2Tokens(rawTokens.data);
+      return {
         sub: 'DOES NOT MATTER',
         accessToken: tokens.accessToken() ?? '',
         refreshToken: tokens.hasRefreshToken() ? tokens.refreshToken() : '',
         idToken: tokens.idToken(),
-        expiredAt: (tokens as CompatOAuth2Tokens).accessTokenExpiresAt().getTime() ?? 0,
+        expiredAt: tokens.accessTokenExpiresAt().getTime() ?? 0,
       };
-
-      return credentials;
     },
-  )) as MarbleOidcStrategy<Tokens>;
-
-  oidcStrategy.extraParams = config.auth.oidc.extra_params;
-
-  return oidcStrategy;
-};
+  };
+}
 
 //
 // Some OpenID Connect providers do not follow the specification. This class
@@ -71,13 +93,8 @@ class CompatOAuth2Tokens extends OAuth2Tokens {
       }
 
       if (typeof this.data.expires_in === 'string') {
-        const expiresInInt = parseInt(this.data.expires_in);
-
-        if (!isNaN(expiresInInt) && expiresInInt.toString() === this.data.expires_in) {
-          return expiresInInt;
-        }
-
-        return expiresInInt;
+        const n = parseInt(this.data.expires_in);
+        if (!isNaN(n)) return n;
       }
     }
 

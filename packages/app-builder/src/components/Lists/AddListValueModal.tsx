@@ -36,12 +36,10 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         const payload = kind === 'cidrs' ? { ...value, value: normalizeCidr(value.value) } : value;
-        addListValueMutation.mutateAsync(payload).then((result) => {
+        addListValueMutation.mutateAsync(payload).then(() => {
           revalidate();
-          if (result.success) {
-            setIsOpen(false);
-            form.reset();
-          }
+          setIsOpen(false);
+          form.reset();
         });
       }
     },

@@ -5,7 +5,6 @@ import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
-import { getRoute } from '@app-builder/utils/routes';
 import { useQueryClient } from '@tanstack/react-query';
 import { Client360Table } from 'marble-api';
 import { useRef, useState } from 'react';
@@ -61,7 +60,7 @@ export const ClientDetailPage = ({
     <DataModelExplorerProvider>
       <Page.Main>
         <Page.Header>
-          <BreadCrumbs back={getRoute('/client-detail')} />
+          <BreadCrumbs back="/client-detail" />
         </Page.Header>
         <Page.Container ref={containerRef}>
           <Page.ContentV2 className="gap-v2-lg">

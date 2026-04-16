@@ -3,11 +3,12 @@ import { NewUndefinedAstNode } from '@app-builder/models';
 import { isAggregation } from '@app-builder/models/astNode/aggregation';
 import { type AstNode } from '@app-builder/models/astNode/ast-node';
 import { isDatabaseAccess } from '@app-builder/models/astNode/data-accessor';
-import { useCurrentScenario } from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/_layout';
+import { Scenario } from '@app-builder/models/scenario';
 import { useMemo, useRef } from 'react';
 import { v7 as uuidv7 } from 'uuid';
 
 interface PayloadEvaluationConditionProps {
+  scenario: Scenario;
   condition: {
     id: string;
     function: 'payload_evaluates';
@@ -30,8 +31,7 @@ function createDefaultSimpleExpression(): AstNode {
   };
 }
 
-export function PayloadEvaluationCondition({ condition, onChange }: PayloadEvaluationConditionProps) {
-  const currentScenario = useCurrentScenario();
+export function PayloadEvaluationCondition({ condition, onChange, scenario }: PayloadEvaluationConditionProps) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Get the current expression or create a default simple expression
@@ -51,7 +51,7 @@ export function PayloadEvaluationCondition({ condition, onChange }: PayloadEvalu
 
   return (
     <div className="flex items-center gap-2">
-      <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit" showValues={false}>
+      <AstBuilder.Provider scenarioId={scenario.id} mode="edit" showValues={false}>
         <AstBuilder.Root
           node={currentExpression}
           optionsDataType={(option) =>

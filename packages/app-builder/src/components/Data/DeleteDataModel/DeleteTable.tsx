@@ -3,18 +3,26 @@ import { type DestroyDataModelReport, type TableModel } from '@app-builder/model
 import { useDeleteTableMutation } from '@app-builder/queries/data/delete-table';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { dataI18n } from '../data-i18n';
 import { DeleteDataModelContent } from './DeleteDataModelContent';
 
 interface DeleteTableProps {
   table: TableModel;
+  onDeleted?: () => void;
+  triggerVariant?: 'default' | 'destructive';
+  triggerAppearance?: 'icon' | 'text' | 'icon-text';
 }
 
-export function DeleteTable({ table }: DeleteTableProps) {
+export function DeleteTable({
+  table,
+  onDeleted,
+  triggerVariant = 'default',
+  triggerAppearance = 'icon',
+}: DeleteTableProps) {
   const { t } = useTranslation(dataI18n);
   const { isDeleteDataModelTableAvailable } = useDataModelFeatureAccess();
   const [open, setOpen] = useState(false);
@@ -27,26 +35,27 @@ export function DeleteTable({ table }: DeleteTableProps) {
   }
 
   const handleOpenModal = async () => {
-    const result = await deleteTableMutation.mutateAsync({
+    const report = await deleteTableMutation.mutateAsync({
       tableId: table.id,
       perform: false,
     });
 
-    if (result.success) {
-      setReport(result.data);
-      setOpen(true);
-    }
+    setReport(report);
+    setOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    const result = await deleteTableMutation.mutateAsync({
+    const report = await deleteTableMutation.mutateAsync({
       tableId: table.id,
       perform: true,
     });
 
-    if (result.success && result.data.performed) {
+    if (report.performed) {
+      toast.success(t('common:success.deleted'));
+
       setOpen(false);
       revalidate();
+      onDeleted?.();
     }
   };
 
@@ -58,14 +67,23 @@ export function DeleteTable({ table }: DeleteTableProps) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Button
-        variant="secondary"
-        mode="icon"
+        variant={triggerVariant === 'destructive' ? 'destructive' : 'secondary'}
+        mode={triggerAppearance === 'icon' ? 'icon' : 'normal'}
         onClick={handleOpenModal}
         aria-label={t('data:delete_table.title', { name: table.name })}
         disabled={deleteTableMutation.isPending}
-        className="flex size-7"
+        className="flex gap-v2-sm"
       >
-        <Icon icon="delete" className="size-6 text-purple-primary" />
+        {(triggerAppearance === 'icon' || triggerAppearance === 'icon-text') && (
+          <Icon
+            icon="delete"
+            className={cn(
+              triggerVariant === 'destructive' ? 'text-white dark:text-grey-primary' : 'text-purple-primary',
+              triggerAppearance === 'icon' ? 'size-6' : 'size-4',
+            )}
+          />
+        )}
+        {(triggerAppearance === 'text' || triggerAppearance === 'icon-text') && <span>{t('data:delete-table')}</span>}
       </Button>
       <Modal.Content>
         <DeleteDataModelContent

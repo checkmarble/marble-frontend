@@ -1,31 +1,20 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { CreateTableValue } from '@app-builder/schemas/data';
+import { createTableFn } from '@app-builder/server-fns/data';
+import { formatTableMutationError, isTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { useMutation } from '@tanstack/react-query';
-import z from 'zod/v4';
-
-export const createTableValueSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .regex(/^[a-z]+[a-z0-9_]+$/, {
-      error: 'Only lower case alphanumeric and _, must start with a letter',
-    }),
-  description: z.string(),
-});
-
-export type CreateTableValue = z.infer<typeof createTableValueSchema>;
-
-const endpoint = getRoute('/ressources/data/createTable');
+import { useServerFn } from '@tanstack/react-start';
+import toast from 'react-hot-toast';
 
 export const useCreateTableMutation = () => {
+  const createTable = useServerFn(createTableFn);
+
   return useMutation({
     mutationKey: ['data', 'create-table'],
-    mutationFn: async (table: CreateTableValue) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(table),
-      });
-
-      return response.json();
+    mutationFn: async (table: CreateTableValue) => createTable({ data: table }),
+    onError: (error: unknown) => {
+      if (isTableMutationError(error)) {
+        toast.error(formatTableMutationError(error));
+      }
     },
   });
 };

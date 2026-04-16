@@ -1,19 +1,13 @@
 import { AddValuePayload } from '@app-builder/schemas/lists';
-import { getRoute } from '@app-builder/utils/routes';
+import { addListValueFn } from '@app-builder/server-fns/lists';
 import { useMutation } from '@tanstack/react-query';
-
-const endpoint = getRoute('/ressources/lists/value_create');
+import { useServerFn } from '@tanstack/react-start';
 
 export const useAddListValueMutation = () => {
+  const addListValue = useServerFn(addListValueFn);
+
   return useMutation({
     mutationKey: ['lists', 'addListValue'],
-    mutationFn: async (data: AddValuePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (data: AddValuePayload) => addListValue({ data }),
   });
 };

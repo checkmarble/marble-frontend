@@ -1,31 +1,19 @@
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { getScreeningAiSuggestionsFn } from '@app-builder/server-fns/screenings';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 import { useCallback } from 'react';
 
 const getScreeningAiSuggestionsQueryKey = (screeningId: string) => ['screenings', 'ai-suggestions', screeningId];
 
-const endpoint = (screeningId: string) =>
-  getRoute('/ressources/screenings/ai-suggestions/:screeningId', {
-    screeningId: fromUUIDtoSUUID(screeningId),
-  });
-
 export function useScreeningAiSuggestionsQuery(screeningId: string, enabled: boolean) {
+  const getScreeningAiSuggestions = useServerFn(getScreeningAiSuggestionsFn);
+
   return useQuery({
     queryKey: getScreeningAiSuggestionsQueryKey(screeningId),
-    queryFn: async () => {
-      const response = await fetch(endpoint(screeningId));
-      if (!response.ok) {
-        throw new Error(`Failed to fetch AI suggestions: ${response.status}`);
-      }
-      const result: { suggestions: ScreeningAiSuggestion[] } | { redirectTo: string } = await response.json();
-
-      if ('redirectTo' in result) {
-        return [];
-      }
-
-      return result.suggestions;
+    queryFn: async (): Promise<ScreeningAiSuggestion[]> => {
+      const result = await getScreeningAiSuggestions({ data: { screeningId } });
+      return result.suggestions as ScreeningAiSuggestion[];
     },
     enabled,
   });

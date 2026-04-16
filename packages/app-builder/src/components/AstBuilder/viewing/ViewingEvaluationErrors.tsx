@@ -1,4 +1,4 @@
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatNodeEvaluation } from '@app-builder/server-fns/scenarios';
 import { adaptEvaluationErrorViewModels, commonErrorMessages } from '@app-builder/services/validation';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,25 +1,15 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type ApplyArchetypePayload, applyArchetypePayloadSchema } from '@app-builder/schemas/data';
+import { applyArchetypeFn } from '@app-builder/server-fns/data';
 import { useMutation } from '@tanstack/react-query';
-import z from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const applyArchetypePayloadSchema = z.object({
-  name: z.string().min(1),
-});
-
-export type ApplyArchetypePayload = z.infer<typeof applyArchetypePayloadSchema>;
-
-const endpoint = getRoute('/ressources/data/apply-archetype');
+export { applyArchetypePayloadSchema, type ApplyArchetypePayload };
 
 export const useApplyArchetypeMutation = () => {
+  const applyArchetype = useServerFn(applyArchetypeFn);
+
   return useMutation({
     mutationKey: ['data', 'apply-archetype'],
-    mutationFn: async (payload: ApplyArchetypePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (payload: ApplyArchetypePayload) => applyArchetype({ data: payload }),
   });
 };

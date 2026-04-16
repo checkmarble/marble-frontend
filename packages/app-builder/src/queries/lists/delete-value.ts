@@ -1,20 +1,13 @@
 import { type DeleteValuePayload } from '@app-builder/schemas/lists';
-import { getRoute } from '@app-builder/utils/routes';
+import { deleteListValueFn } from '@app-builder/server-fns/lists';
 import { useMutation } from '@tanstack/react-query';
-import { serialize } from 'object-to-formdata';
-
-const endpoint = getRoute('/ressources/lists/value_delete');
+import { useServerFn } from '@tanstack/react-start';
 
 export const useDeleteListValueMutation = () => {
+  const deleteListValue = useServerFn(deleteListValueFn);
+
   return useMutation({
     mutationKey: ['lists', 'deleteListValue'],
-    mutationFn: async (data: DeleteValuePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'DELETE',
-        body: serialize(data),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (data: DeleteValuePayload) => deleteListValue({ data }),
   });
 };

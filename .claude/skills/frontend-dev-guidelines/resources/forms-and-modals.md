@@ -32,7 +32,7 @@ export function CreateItemForm({ closeModal }: { closeModal: () => void }) {
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         createMutation.mutateAsync(value).then((res) => {
-          if (res.success) closeModal();
+          closeModal();
         });
       }
     },

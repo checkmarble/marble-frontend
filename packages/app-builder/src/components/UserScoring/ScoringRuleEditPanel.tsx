@@ -10,7 +10,7 @@ import {
   type ScoringRule,
   transformSwitchAstNodeToModel,
 } from '@app-builder/models/scoring';
-import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
+import { type BuilderOptionsResource } from '@app-builder/server-fns/scenarios';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';

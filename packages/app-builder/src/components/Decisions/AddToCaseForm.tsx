@@ -70,10 +70,8 @@ function NewCaseForm({ inboxes }: { inboxes: Inbox[] }) {
           decisionIds: data?.decisionIds ?? [],
           ...value,
         })
-        .then((res) => {
-          if (res?.success) {
-            closePanel();
-          }
+        .then(() => {
+          closePanel();
           revalidate();
         });
     },
@@ -171,10 +169,8 @@ function ExistingCaseForm() {
           decisionIds: data?.decisionIds ?? [],
           ...value,
         })
-        .then((res) => {
-          if (res?.success) {
-            closePanel();
-          }
+        .then(() => {
+          closePanel();
           revalidate();
         });
     },

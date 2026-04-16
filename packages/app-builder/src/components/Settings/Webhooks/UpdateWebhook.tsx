@@ -60,9 +60,8 @@ function UpdateWebhookContent({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         updateWebhookMutation.mutateAsync(value).then((res) => {
-          if (res.success) {
-            setOpen(false);
-          }
+          setOpen(false);
+
           revalidate();
         });
       }

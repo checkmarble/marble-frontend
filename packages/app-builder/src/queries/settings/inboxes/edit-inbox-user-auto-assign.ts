@@ -1,25 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import {
+  type EditInboxUserAutoAssignPayload,
+  editInboxUserAutoAssignPayloadSchema,
+} from '@app-builder/schemas/settings';
+import { editInboxUserAutoAssignFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const editInboxUserAutoAssignPayloadSchema = z.object({
-  id: z.string(),
-  autoAssignable: z.boolean(),
-});
-
-export type EditInboxUserAutoAssignPayload = z.infer<typeof editInboxUserAutoAssignPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/inboxes/inbox-users/edit-auto-assign');
+export { editInboxUserAutoAssignPayloadSchema, type EditInboxUserAutoAssignPayload };
 
 export function useEditInboxUserAutoAssignMutation() {
-  return useMutation({
-    mutationFn: async (payload: EditInboxUserAutoAssignPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const editInboxUserAutoAssign = useServerFn(editInboxUserAutoAssignFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: EditInboxUserAutoAssignPayload) => editInboxUserAutoAssign({ data: payload }),
   });
 }

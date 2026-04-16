@@ -8,12 +8,11 @@ import {
   useEditSuspicionMutation,
 } from '@app-builder/queries/cases/edit-suspicion';
 import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
-import { getRoute } from '@app-builder/utils/routes';
 import { useForm, useStore } from '@tanstack/react-form';
+import { ClientOnly } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -35,11 +34,9 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
   const form = useForm({
     onSubmit: ({ value }) => {
       editSuspicionMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
-          setOpenReportModal(false);
-          form.setFieldValue('reportId', res.data?.id);
-          setIsCompleted(res.data?.status === 'completed');
-        }
+        setOpenReportModal(false);
+        form.setFieldValue('reportId', res.data?.id);
+        setIsCompleted(res.data?.status === 'completed');
         revalidate();
       });
     },
@@ -138,7 +135,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                   </span>
                   {reports[0]?.hasFile ? (
                     <ClientOnly>
-                      {() => <ReportFile name={t('cases:sar.action.download')} caseId={id} reportId={reports[0]!.id} />}
+                      <ReportFile name={t('cases:sar.action.download')} caseId={id} reportId={reports[0]!.id} />
                     </ClientOnly>
                   ) : (
                     <Button variant="secondary" size="small" onClick={() => setOpenReportModal(true)}>
@@ -229,10 +226,7 @@ type ReportFileProps = {
 
 const ReportFile = ({ name, caseId, reportId }: ReportFileProps) => {
   const { t } = useTranslation(casesI18n);
-  const downloadEndpoint = getRoute('/ressources/cases/sar/download/:caseId/:reportId', {
-    caseId,
-    reportId,
-  });
+  const downloadEndpoint = `/ressources/cases/sar/download/${caseId}/${reportId}`;
   const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint, {
     onError: (e) => {
       if (e instanceof AlreadyDownloadingError) {

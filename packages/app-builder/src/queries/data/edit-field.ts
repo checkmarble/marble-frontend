@@ -1,29 +1,15 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type EditFieldPayload, editFieldPayloadSchema } from '@app-builder/schemas/data';
+import { editFieldFn } from '@app-builder/server-fns/data';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const editFieldPayloadSchema = z.object({
-  description: z.string(),
-  fieldId: z.uuid(),
-  isEnum: z.boolean(),
-  isUnique: z.boolean(),
-  required: z.enum(['optional', 'required']),
-});
-
-export type EditFieldPayload = z.infer<typeof editFieldPayloadSchema>;
-
-const endpoint = getRoute('/ressources/data/editField');
+export { editFieldPayloadSchema, type EditFieldPayload };
 
 export const useEditFieldMutation = () => {
+  const editField = useServerFn(editFieldFn);
+
   return useMutation({
     mutationKey: ['data', 'edit-field'],
-    mutationFn: async (field: EditFieldPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(field),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (field: EditFieldPayload) => editField({ data: field }),
   });
 };

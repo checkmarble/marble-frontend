@@ -1,27 +1,14 @@
-import { tagColors } from '@app-builder/models/tags';
-import { getRoute } from '@app-builder/utils/routes';
+import { type CreateTagPayload, createTagPayloadSchema } from '@app-builder/schemas/settings';
+import { createTagFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const createTagPayloadSchema = z.object({
-  name: z.string().min(1),
-  color: z.enum(tagColors),
-  target: z.enum(['case', 'object']),
-});
-
-export type CreateTagPayload = z.infer<typeof createTagPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/tags/create');
+export { createTagPayloadSchema, type CreateTagPayload };
 
 export const useCreateTagMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: CreateTagPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const createTag = useServerFn(createTagFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: CreateTagPayload) => createTag({ data: payload }),
   });
 };

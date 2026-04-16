@@ -1,38 +1,17 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import { DataModelObjectValue } from '@app-builder/models';
 import { PaginatedResponse } from '@app-builder/models/pagination';
-import { getRoute } from '@app-builder/utils/routes';
+import { Client360SearchPayload } from '@app-builder/schemas/client360';
+import { searchClient360Fn } from '@app-builder/server-fns/client-360';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { z } from 'zod/v4';
-
-export const client360SearchPayloadSchema = z.object({
-  table: z.string(),
-  terms: z.string(),
-});
-
-export type Client360SearchPayload = z.infer<typeof client360SearchPayloadSchema>;
-
-const endpoint = (page: number) => getRoute('/ressources/client-360/search') + (page > 1 ? `?page=${page}` : '');
+import { useServerFn } from '@tanstack/react-start';
 
 export const useSearchClient360Query = (payload: Client360SearchPayload) => {
-  const navigate = useAgnosticNavigation();
+  const searchClient360 = useServerFn(searchClient360Fn);
 
   return useInfiniteQuery({
     queryKey: ['client360', 'search', payload.table, payload.terms],
-    queryFn: async ({ pageParam }) => {
-      const response = await fetch(endpoint(pageParam), {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if ('redirectTo' in result) {
-        navigate(result.redirectTo);
-        return { items: [], hasNextPage: false };
-      }
-
-      return result as PaginatedResponse<Record<string, unknown>>;
-    },
+    queryFn: async () =>
+      searchClient360({ data: payload }) as Promise<PaginatedResponse<Record<string, DataModelObjectValue>>>,
     getNextPageParam: (lastPage, pages) => {
       return lastPage.hasNextPage ? pages.length + 1 : null;
     },

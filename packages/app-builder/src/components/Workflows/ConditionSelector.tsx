@@ -1,5 +1,6 @@
 import { type DataModel } from '@app-builder/models';
 import { NewAstNode, NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
+import { Scenario } from '@app-builder/models/scenario';
 import { type WorkflowCondition } from '@app-builder/models/scenario/workflow';
 import { useGetLatestRulesReferencesQuery } from '@app-builder/queries/Workflows';
 import { type OutcomeDto } from 'marble-api';
@@ -14,6 +15,7 @@ import { useRule } from './RuleProvider';
 import { SelectOutcomesList } from './SelectOutcomesList';
 
 interface ConditionSelectorProps {
+  scenario: Scenario;
   condition?: WorkflowCondition;
   isFirst?: boolean;
   triggerObjectType?: string;
@@ -44,6 +46,7 @@ function ConditionSeparator() {
 }
 
 export function ConditionSelector({
+  scenario,
   condition,
   isFirst = false,
   triggerObjectType,
@@ -149,7 +152,7 @@ export function ConditionSelector({
       return (
         <>
           <ConditionPrefix {...{ isFirst }} />
-          <PayloadEvaluationCondition condition={condition as any} onChange={onChange} />
+          <PayloadEvaluationCondition scenario={scenario} condition={condition as any} onChange={onChange} />
         </>
       );
     }

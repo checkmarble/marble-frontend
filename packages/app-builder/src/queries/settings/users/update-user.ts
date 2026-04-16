@@ -1,29 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type UpdateUserPayload, updateUserPayloadSchema } from '@app-builder/schemas/settings';
+import { updateUserFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const updateUserPayloadSchema = z.object({
-  userId: z.uuid(),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.email().min(5),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
-  organizationId: z.uuid(),
-});
-
-export type UpdateUserPayload = z.infer<typeof updateUserPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/users/update');
+export { updateUserPayloadSchema, type UpdateUserPayload };
 
 export const useUpdateUserMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: UpdateUserPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+  const updateUser = useServerFn(updateUserFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: UpdateUserPayload) => updateUser({ data: payload }),
   });
 };

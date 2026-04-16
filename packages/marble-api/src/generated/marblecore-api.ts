@@ -529,8 +529,8 @@ export type ClientObjectDetailDto = {
     };
     /** The actual data of the object, as described in the client data model. */
     data: {
-        object_id?: string;
-        updated_at?: string;
+        object_id: string;
+        updated_at: string;
         [key: string]: any;
     };
     related_objects: {
@@ -1263,23 +1263,122 @@ export type TableDto = {
     };
     navigation_options?: NavigationOptionDto[];
     ftm_entity?: FtmEntity;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+    /** Name of the field used as default ordering */
+    primary_ordering_field?: string;
 };
 export type DataModelDto = {
     tables: {
         [key: string]: TableDto;
     };
 };
-export type CreateTableBody = {
+export type FieldSemanticType = "name" | "first_name" | "middle_name" | "last_name" | "enum" | "currency" | "country" | "address" | "id" | "registration_number" | "tax_id" | "account_number" | "iban" | "bic" | "foreign_key" | "url" | "email" | "phone_number" | "date_of_birth" | "last_update" | "creation_date" | "deletion_date" | "initiation_date" | "validation_date" | "monetary_amount" | "percentage";
+export type CreateTableBodyField = {
     name: string;
-    description: string;
-    ftm_entity?: FtmEntity;
-};
-export type UpdateTableBodyDto = {
     description?: string;
-    semantic_type?: "person" | "company";
-    caption_field?: string;
+    "type": "Bool" | "Int" | "Float" | "String" | "Timestamp" | "IpAddress" | "Coords";
     alias?: string;
+    semantic_type?: (FieldSemanticType) | null;
+    nullable?: boolean;
+    is_enum?: boolean;
+    is_unique?: boolean;
+    ftm_property?: string | null;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+};
+export type CreateTableBodyLink = {
+    name: string;
+    link_type: "related" | "belongs_to";
+    /** Name of a field defined in the 'fields' array */
+    child_field_name: string;
+    parent_table_id: string;
+};
+export type CreateTableBody = {
+    /** snake_case table name */
+    name: string;
+    description?: string;
+    /** Human-readable display name */
+    alias?: string;
+    semantic_type: "person" | "company" | "account" | "transaction" | "event" | "partner" | "other";
     ftm_entity?: FtmEntity;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+    /** Name of the field used as default ordering */
+    primary_ordering_field?: string;
+    fields?: CreateTableBodyField[];
+    links?: CreateTableBodyLink[];
+};
+export type CreateTableResponseDto = {
+    /** ID of the newly created table */
+    id: string;
+};
+export type AddFieldOperationDto = {
+    op: "ADD";
+    data: CreateTableBodyField;
+};
+export type ModFieldDataDto = {
+    id: string;
+    description?: string;
+    is_enum?: boolean;
+    is_unique?: boolean;
+    is_nullable?: boolean;
+    ftm_property?: string | null;
+    alias?: string;
+    semantic_type?: (FieldSemanticType) | null;
+    metadata?: {
+        [key: string]: any;
+    } | null;
+};
+export type ModFieldOperationDto = {
+    op: "MOD";
+    data: ModFieldDataDto;
+};
+export type DelFieldDataDto = {
+    id: string;
+};
+export type DelFieldOperationDto = {
+    op: "DEL";
+    data: DelFieldDataDto;
+};
+export type FieldOperationDto = AddFieldOperationDto | ModFieldOperationDto | DelFieldOperationDto;
+export type AddLinkOperationDto = {
+    op: "ADD";
+    data: CreateTableBodyLink;
+};
+export type DelLinkDataDto = {
+    id: string;
+};
+export type DelLinkOperationDto = {
+    op: "DEL";
+    data: DelLinkDataDto;
+};
+export type LinkOperationDto = AddLinkOperationDto | {
+    op: "MOD";
+    data: {
+        id: string;
+        name?: string;
+        link_type?: "related" | "belongs_to";
+        /** Name of a field defined in the 'fields' array */
+        child_field_name?: string;
+        parent_table_id?: string;
+    };
+} | DelLinkOperationDto;
+export type UpdateTableBodyDto = {
+    description?: string | null;
+    semantic_type?: ("person" | "company" | "account" | "transaction" | "event" | "partner" | "other") | null;
+    caption_field?: string | null;
+    alias?: string | null;
+    ftm_entity?: (FtmEntity) | null;
+    primary_ordering_field?: string | null;
+    fields?: FieldOperationDto[];
+    links?: LinkOperationDto[];
+    metadata?: {
+        [key: string]: any;
+    } | null;
 };
 export type Items = {
     id?: string;
@@ -1329,13 +1428,21 @@ export type CreateTableFieldDto = {
     is_enum?: boolean;
     is_unique?: boolean;
     ftm_property?: string;
+    metadata?: {
+        [key: string]: any;
+    } | null;
 };
 export type UpdateTableFieldDto = {
     description?: string;
     is_enum?: boolean;
     is_unique?: boolean;
     is_nullable?: boolean;
-    ftm_property?: string;
+    ftm_property?: string | null;
+    alias?: string;
+    semantic_type?: (FieldSemanticType) | null;
+    metadata?: {
+        [key: string]: any;
+    } | null;
 };
 export type CreateTableLinkBody = {
     name: string;
@@ -4452,11 +4559,14 @@ export function getDataModel(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
- * Create a new table on the data model
+ * Create a new table on the data model along with its initial fields and optional links
  */
 export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 204;
+        status: 201;
+        data: CreateTableResponseDto;
+    } | {
+        status: 400;
     } | {
         status: 401;
         data: string;
@@ -4464,8 +4574,7 @@ export function postDataModelTable(createTableBody: CreateTableBody, opts?: Oaza
         status: 403;
         data: string;
     } | {
-        status: 404;
-        data: string;
+        status: 409;
     }>("/data-model/tables", oazapfts.json({
         ...opts,
         method: "POST",
@@ -4487,6 +4596,9 @@ export function patchDataModelTable(tableId: string, updateTableBodyDto: UpdateT
     } | {
         status: 404;
         data: string;
+    } | {
+        status: 409;
+        data: Schema;
     }>(`/data-model/tables/${encodeURIComponent(tableId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",

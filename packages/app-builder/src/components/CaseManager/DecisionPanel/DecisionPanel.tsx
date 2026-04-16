@@ -4,6 +4,7 @@ import { AlertOutcomeIcon, ScreeningStatusBadge } from '@app-builder/components/
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
 import { RuleExecutionDetail } from '@app-builder/components/Decisions';
+import { ReviewDecisionModal } from '@app-builder/components/Decisions/ReviewDecisionModal';
 import {
   RuleExecutionCollapsible,
   RuleExecutionContent,
@@ -15,12 +16,10 @@ import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/Trigg
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { ScreeningHitsPanel } from '@app-builder/components/Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { DataModelWithTableOptions } from '@app-builder/models';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { useDetailDecisionQuery } from '@app-builder/queries/decisions/detail-decision';
 import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenario-iteration-rules';
-import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
-import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
-import { useLoaderData } from '@remix-run/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -30,11 +29,11 @@ import { Icon } from 'ui-icons';
 type DecisionPanelProps = {
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   decision: DetailedCaseDecision;
+  dataModel: DataModelWithTableOptions;
 };
 
-export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelProps) {
+export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: DecisionPanelProps) {
   const { t } = useTranslation(casesI18n);
-  const { dataModelWithTableOptions } = useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
   const detailDecisionQuery = useDetailDecisionQuery(decision.id);
 
@@ -183,14 +182,14 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
           <span className="text-m text-grey-primary font-medium">{t('cases:case_detail.trigger_object')}</span>
           <CaseDetailTriggerObject
             className="max-h-[50dvh] overflow-auto"
-            dataModel={dataModelWithTableOptions}
+            dataModel={dataModel}
             triggerObject={detailDecisionQuery.data.decision.triggerObject}
             triggerObjectType={detailDecisionQuery.data.decision.triggerObjectType}
             onLinkClicked={(tableName, objectId) => setObjectLink({ tableName, objectId })}
           />
           {objectLink ? (
             <IngestedObjectDetailModal
-              dataModel={dataModelWithTableOptions}
+              dataModel={dataModel}
               tableName={objectLink.tableName}
               objectId={objectLink.objectId}
               onClose={() => setObjectLink(null)}

@@ -1,34 +1,23 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type CreateNavigationOptionValue, createNavigationOptionSchema } from '@app-builder/schemas/data';
+import { createNavigationOptionFn } from '@app-builder/server-fns/data';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const createNavigationOptionSchema = z.object({
-  sourceFieldId: z.uuid(),
-  targetTableId: z.uuid(),
-  filterFieldId: z.uuid(),
-  orderingFieldId: z.uuid(),
-});
-
-type CreateNavigationOptionValue = z.infer<typeof createNavigationOptionSchema>;
-
-const endpoint = (tableId: string) => getRoute('/ressources/data/:tableId/createNavigationOption', { tableId });
-
-export const useCreateNavigationOptionMutation = (tableId: string) => {
-  return useMutation({
-    mutationKey: ['data', 'create-navigation-option'],
-    mutationFn: async (value: CreateNavigationOptionValue) => {
-      return fetch(endpoint(tableId), {
-        method: 'POST',
-        body: JSON.stringify(value),
-      });
-    },
-  });
-};
+export { createNavigationOptionSchema, type CreateNavigationOptionValue };
 
 type CreateNavigationOptionWithTableId = CreateNavigationOptionValue & {
   tableId: string;
   scenarioId: string;
+};
+
+export const useCreateNavigationOptionMutation = (tableId: string) => {
+  const createNavigationOption = useServerFn(createNavigationOptionFn);
+
+  return useMutation({
+    mutationKey: ['data', 'create-navigation-option'],
+    mutationFn: async (value: CreateNavigationOptionValue) => createNavigationOption({ data: { tableId, ...value } }),
+  });
 };
 
 /**
@@ -38,15 +27,12 @@ type CreateNavigationOptionWithTableId = CreateNavigationOptionValue & {
  */
 export const useCreateNavigationOptionForAstMutation = () => {
   const queryClient = useQueryClient();
+  const createNavigationOption = useServerFn(createNavigationOptionFn);
 
   return useMutation({
     mutationKey: ['data', 'create-navigation-option'],
-    mutationFn: async ({ tableId, scenarioId: _, ...value }: CreateNavigationOptionWithTableId) => {
-      return fetch(endpoint(tableId), {
-        method: 'POST',
-        body: JSON.stringify(value),
-      });
-    },
+    mutationFn: async ({ tableId, scenarioId: _, ...value }: CreateNavigationOptionWithTableId) =>
+      createNavigationOption({ data: { tableId, ...value } }),
     onSuccess: (_, { scenarioId }) => {
       // Invalidate builder-options query to refresh dataModel with new navigation options
       queryClient.invalidateQueries({

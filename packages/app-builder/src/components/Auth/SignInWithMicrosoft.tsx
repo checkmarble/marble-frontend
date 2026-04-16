@@ -1,23 +1,22 @@
+import { Spinner } from '@app-builder/components/Spinner';
+import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import {
   AccountExistsWithDifferentCredential,
   InvalidLoginCredentials,
   NetworkRequestFailed,
   PopupBlockedByClient,
   useMicrosoftSignIn,
-} from '@app-builder/services/auth/auth.client';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
-import { useClientServices } from '@app-builder/services/init.client';
+} from '@app-builder/services/auth/auth-client';
+import { useClientServices } from '@app-builder/services/init-client';
 import useAsync from '@app-builder/utils/hooks/use-async';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
+import { ClientOnly } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
-
-import { Spinner } from '../Spinner';
 import { PopupBlockedError } from './PopupBlockedError';
 
-function SignInWithMicrosoftButton({ onClick, loading }: { onClick?: () => void; loading?: boolean }) {
+function MicrosoftButton({ onClick, loading }: { onClick?: () => void; loading?: boolean }) {
   const { t } = useTranslation(['auth']);
 
   return (
@@ -71,7 +70,7 @@ function ClientSignInWithMicrosoft({
   });
 
   return (
-    <SignInWithMicrosoftButton
+    <MicrosoftButton
       onClick={() => {
         void handleMicrosoftSignIn();
       }}
@@ -91,8 +90,8 @@ export function SignInWithMicrosoft({
   loading?: boolean;
 }) {
   return (
-    <ClientOnly fallback={<SignInWithMicrosoftButton loading={loading} />}>
-      {() => <ClientSignInWithMicrosoft signIn={signIn} loading={loading} />}
+    <ClientOnly fallback={<MicrosoftButton loading={loading} />}>
+      <ClientSignInWithMicrosoft signIn={signIn} loading={loading} />
     </ClientOnly>
   );
 }

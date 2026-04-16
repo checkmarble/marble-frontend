@@ -1,25 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type EditInboxPayload, editInboxPayloadSchema } from '@app-builder/schemas/cases';
+import { editInboxFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const editInboxPayloadSchema = z.object({ inboxId: z.string(), caseId: z.string() });
-
-export type EditInboxPayload = z.infer<typeof editInboxPayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/edit-inbox');
+export { editInboxPayloadSchema, type EditInboxPayload };
 
 export const useEditInboxMutation = () => {
+  const editInbox = useServerFn(editInboxFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'edit-inbox'],
-    mutationFn: async (payload: EditInboxPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PATCH',
-        body: JSON.stringify(payload),
-      });
-      return response.json();
-    },
+    mutationFn: async (payload: EditInboxPayload) => editInbox({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

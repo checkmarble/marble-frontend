@@ -12,7 +12,6 @@ import { useCommitScoringRulesetMutation } from '@app-builder/queries/scoring/co
 import { useListScoringRulesetVersionsQuery } from '@app-builder/queries/scoring/list-ruleset-versions';
 import { usePrepareScoringRulesetMutation } from '@app-builder/queries/scoring/prepare-ruleset';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, type SelectOption, SelectV2 } from 'ui-design-system';
@@ -44,7 +43,7 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
   }));
 
   const handleVersionChange = (version: string) => {
-    navigate(getRoute('/user-scoring/:recordType/:version', { recordType: ruleset.recordType, version }));
+    navigate(`/user-scoring/${ruleset.recordType}/${version}`);
   };
 
   return (

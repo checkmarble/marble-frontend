@@ -1,33 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type AddRuleSnoozePayload, addRuleSnoozePayloadSchema, durationUnitOptions } from '@app-builder/schemas/cases';
+import { addRuleSnoozeFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const durationUnitOptions = ['hours', 'days', 'weeks'] as const;
-
-export const addRuleSnoozePayloadSchema = z.object({
-  decisionId: z.string(),
-  ruleId: z.string(),
-  comment: z.string().optional(),
-  durationValue: z.number().min(1),
-  durationUnit: z.enum(durationUnitOptions),
-});
-
-export type AddRuleSnoozePayload = z.infer<typeof addRuleSnoozePayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/add-rule-snooze');
+export { addRuleSnoozePayloadSchema, durationUnitOptions, type AddRuleSnoozePayload };
 
 export const useAddRuleSnoozeMutation = () => {
+  const addRuleSnooze = useServerFn(addRuleSnoozeFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'add-rule-snooze'],
-    mutationFn: async (payload: AddRuleSnoozePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return response.json();
-    },
+    mutationFn: async (payload: AddRuleSnoozePayload) => addRuleSnooze({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

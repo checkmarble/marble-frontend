@@ -10,9 +10,9 @@ import {
 } from '@app-builder/queries/scenarios/update-scenario';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -50,10 +50,8 @@ function UpdateScenarioContent({
     defaultValues: defaultValue,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateScenarioMutation.mutateAsync(value).then((res) => {
-          if (res.success) {
-            onUpdateSuccess();
-          }
+        updateScenarioMutation.mutateAsync(value).then(() => {
+          onUpdateSuccess();
           revalidate();
         });
       }

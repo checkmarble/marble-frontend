@@ -1,27 +1,15 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type UpdateScenarioPayload, updateScenarioPayloadSchema } from '@app-builder/schemas/scenarios';
+import { updateScenarioFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const updateScenarioPayloadSchema = z.object({
-  scenarioId: z.uuid(),
-  name: z.string().min(1),
-  description: z.string(),
-});
-
-export type UpdateScenarioPayload = z.infer<typeof updateScenarioPayloadSchema>;
-
-const endpoint = getRoute('/ressources/scenarios/update');
+export { updateScenarioPayloadSchema, type UpdateScenarioPayload };
 
 export const useUpdateScenarioMutation = () => {
+  const updateScenario = useServerFn(updateScenarioFn);
+
   return useMutation({
     mutationKey: ['scenarios', 'update'],
-    mutationFn: async (data: UpdateScenarioPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-      });
-
-      return response.json();
-    },
+    mutationFn: async (data: UpdateScenarioPayload) => updateScenario({ data }),
   });
 };

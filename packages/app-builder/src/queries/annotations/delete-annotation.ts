@@ -1,18 +1,12 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { deleteAnnotationFn } from '@app-builder/server-fns/data';
 import { useMutation } from '@tanstack/react-query';
-
-const endpoint = (annotationId: string) =>
-  getRoute('/ressources/data/delete-annotation/:annotationId', { annotationId });
+import { useServerFn } from '@tanstack/react-start';
 
 export const useDeleteAnnotationMutation = (annotationId: string) => {
+  const deleteAnnotation = useServerFn(deleteAnnotationFn);
+
   return useMutation({
     mutationKey: ['annotations', 'delete-annotation', annotationId],
-    mutationFn: async () => {
-      const response = await fetch(endpoint(annotationId), {
-        method: 'POST',
-      });
-
-      return response.json();
-    },
+    mutationFn: async () => deleteAnnotation({ data: { annotationId } }),
   });
 };

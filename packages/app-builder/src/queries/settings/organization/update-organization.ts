@@ -1,25 +1,14 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { type UpdateOrganizationPayload, updateOrganizationPayloadSchema } from '@app-builder/schemas/settings';
+import { updateOrganizationFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
-import z from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const updateOrganizationPayloadSchema = z.object({
-  organizationId: z.string().min(1),
-  autoAssignQueueLimit: z.coerce.number().min(0).optional(),
-});
-
-export type UpdateOrganizationPayload = z.infer<typeof updateOrganizationPayloadSchema>;
-
-const endpoint = getRoute('/ressources/settings/organization/update');
+export { updateOrganizationPayloadSchema, type UpdateOrganizationPayload };
 
 export const useUpdateOrganizationMutation = () => {
-  return useMutation({
-    mutationFn: async (payload: UpdateOrganizationPayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      });
+  const updateOrganization = useServerFn(updateOrganizationFn);
 
-      return response.json();
-    },
+  return useMutation({
+    mutationFn: async (payload: UpdateOrganizationPayload) => updateOrganization({ data: payload }),
   });
 };

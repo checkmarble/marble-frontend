@@ -1,22 +1,19 @@
 import { Callout } from '@app-builder/components/Callout';
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
-import { type action as refineAction } from '@app-builder/routes/ressources+/screenings+/refine';
-import { refineSearchSchema, type action as searchAction } from '@app-builder/routes/ressources+/screenings+/search';
+import { useRefineScreeningMutation } from '@app-builder/queries/screening/refine-screening';
+import { useSearchScreeningMatchesMutation } from '@app-builder/queries/screening/search-screening-matches';
+import { type RefineSearchInput, refineSearchSchema } from '@app-builder/server-fns/screenings';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { getRoute } from '@app-builder/utils/routes';
-import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import clsx from 'clsx';
-import { serialize as objectToFormData } from 'object-to-formdata';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
-
 import { MatchResult } from './MatchResult';
 import { ScreeningStatusTag } from './ScreeningStatusTag';
 import { screeningsI18n } from './screenings-i18n';
@@ -45,11 +42,14 @@ export function RefineSearchModal({
   onClose: _onClose,
 }: RefineSearchModalProps) {
   const { t } = useTranslation(screeningsI18n);
-  const searchFetcher = useFetcher<typeof searchAction>();
-  const refineFetcher = useFetcher<typeof refineAction>();
-  const formDataRef = useRef<FormData | null>(null);
+  const formValuesRef = useRef<RefineSearchInput | null>(null);
   const onClose = useCallbackRef(_onClose);
   const onRefineSuccess = useCallbackRef(_onRefineSuccess);
+
+  const [searchResults, setSearchResults] = useState<ScreeningMatchPayload[] | null>(null);
+
+  const searchMutation = useSearchScreeningMatchesMutation();
+  const refineMutation = useRefineScreeningMutation();
 
   const form = useForm({
     defaultValues: {
@@ -60,29 +60,12 @@ export function RefineSearchModal({
       onChange: refineSearchSchema,
     },
     onSubmit: ({ value }) => {
-      formDataRef.current = objectToFormData(value, {
-        dotsForObjectNotation: true,
-      });
-
-      searchFetcher.submit(formDataRef.current, {
-        method: 'POST',
-        action: getRoute('/ressources/screenings/search'),
+      formValuesRef.current = value;
+      searchMutation.mutateAsync(value).then((data) => {
+        setSearchResults(data);
       });
     },
   });
-
-  const [searchResults, setSearchResults] = useState<ScreeningMatchPayload[] | null>(null);
-  useEffect(() => {
-    if (searchFetcher.data?.success) {
-      setSearchResults(searchFetcher.data.data);
-    }
-  }, [searchFetcher.data]);
-  useEffect(() => {
-    if (refineFetcher.data?.success) {
-      onRefineSuccess(refineFetcher.data.data.id);
-      onClose();
-    }
-  }, [refineFetcher.data, onClose]);
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const additionalFields = entityType ? SEARCH_ENTITIES[entityType].fields : [];
@@ -98,10 +81,10 @@ export function RefineSearchModal({
   };
 
   const handleRefine = () => {
-    if (formDataRef.current) {
-      refineFetcher.submit(formDataRef.current, {
-        method: 'POST',
-        action: getRoute('/ressources/screenings/refine'),
+    if (formValuesRef.current) {
+      refineMutation.mutateAsync(formValuesRef.current).then((data) => {
+        onRefineSuccess(data.id);
+        onClose();
       });
     }
   };
@@ -171,7 +154,7 @@ export function RefineSearchModal({
             </Modal.Footer>
           </>
         ) : (
-          <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
+          <form onSubmit={handleSubmit(form)} className="contents">
             <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
               {screening.request ? <SearchInput request={screening.request} /> : null}
               <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
@@ -210,7 +193,7 @@ export function RefineSearchModal({
                 )}
               </form.Subscribe>
             </Modal.Footer>
-          </searchFetcher.Form>
+          </form>
         )}
       </Modal.Content>
     </Modal.Root>

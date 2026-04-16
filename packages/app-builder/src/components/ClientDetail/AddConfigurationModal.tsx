@@ -1,9 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { DataModel } from '@app-builder/models';
-import {
-  addConfigurationPayloadSchema,
-  useAddConfigurationMutation,
-} from '@app-builder/queries/client360/add-configuration';
+import { useAddConfigurationMutation } from '@app-builder/queries/client360/add-configuration';
+import { addConfigurationPayloadSchema } from '@app-builder/schemas/client360';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { Client360Table } from 'marble-api';
@@ -41,11 +39,9 @@ export const AddConfigurationModal = ({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        addConfigurationMutation.mutateAsync(value).then((result) => {
-          if (result.success) {
-            setOpen(false);
-            form.reset();
-          }
+        addConfigurationMutation.mutateAsync(value).then(() => {
+          setOpen(false);
+          form.reset();
           revalidate();
         });
       }

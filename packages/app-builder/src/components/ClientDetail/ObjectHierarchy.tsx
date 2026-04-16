@@ -1,13 +1,8 @@
 import { DataModelWithTableOptions, type TableModel } from '@app-builder/models';
 import { useHierarchyQuery } from '@app-builder/queries/data/get-hierarchy';
-import {
-  HierarchyLeaf,
-  HierarchyNode,
-  HierarchyTreeBase,
-} from '@app-builder/routes/ressources+/data+/get-hierarchy.$objectType.$objectId';
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { type HierarchyLeaf, type HierarchyNode, type HierarchyTreeBase } from '@app-builder/server-fns/data';
 import { UseQueryResult } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -261,7 +256,10 @@ const TreeItem = ({
               <TreeItemData item={item} metadata={metadata} handleExplore={handleExplore} />
             ) : null}
             {!isHierarchyLeaf(item) && metadata ? (
-              <Link to={getRoute('/client-detail/:objectType/:objectId', item)}>
+              <Link
+                to="/client-detail/$objectType/$objectId"
+                params={{ objectType: item.objectType, objectId: item.data['object_id'] as string }}
+              >
                 <Icon icon="arrow-up-right" className="size-5" />
               </Link>
             ) : null}
@@ -336,10 +334,11 @@ const TreeItemData = ({
         {splicedItems.map((itemObject, idx) => (
           <Fragment key={itemObject['object_id'] as string}>
             <Link
-              to={getRoute('/client-detail/:objectType/:objectId', {
+              to="/client-detail/$objectType/$objectId"
+              params={{
                 objectType: item.objectType,
                 objectId: itemObject['object_id'] as string,
-              })}
+              }}
               className="text-purple-primary hover:underline"
             >
               {itemObject[metadata.caption_field] as string}
@@ -361,10 +360,11 @@ const TreeItemData = ({
                 return (
                   <Link
                     key={itemObject['object_id'] as string}
-                    to={getRoute('/client-detail/:objectType/:objectId', {
+                    to="/client-detail/$objectType/$objectId"
+                    params={{
                       objectType: item.objectType,
                       objectId: itemObject['object_id'] as string,
-                    })}
+                    }}
                     className="flex items-center justify-between h-6 hover:text-purple-primary"
                   >
                     <span>{itemObject[metadata.caption_field] as string}</span>

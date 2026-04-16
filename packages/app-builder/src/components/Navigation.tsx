@@ -1,4 +1,4 @@
-import { NavLink } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
@@ -34,13 +34,17 @@ export function SidebarLink({ Icon, labelTKey, to, children, className }: Sideba
   const { t } = useTranslation(navigationI18n);
 
   return (
-    <NavLink className={({ isActive }) => sidebarLink({ isActive, className })} to={to}>
+    <Link
+      className={sidebarLink({ className })}
+      activeProps={{ className: sidebarLink({ isActive: true, className }) }}
+      to={to}
+    >
       <Icon className="size-6 shrink-0" />
       <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
         {t(labelTKey)}
       </span>
       {children}
-    </NavLink>
+    </Link>
   );
 }
 
@@ -75,19 +79,21 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
   const { t } = useTranslation(navigationI18n);
 
   return (
-    <NavLink
-      className={({ isActive }) =>
-        clsx(
+    <Link
+      className={clsx(
+        'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
+        'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:text-grey-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
+      )}
+      activeProps={{
+        className: clsx(
           'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
-          isActive
-            ? 'bg-purple-background text-purple-primary dark:bg-grey-background-light dark:text-purple-hover'
-            : 'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:text-grey-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
-        )
-      }
+          'bg-purple-background text-purple-primary dark:bg-grey-background-light dark:text-purple-hover',
+        ),
+      }}
       to={to}
     >
       <Icon className="size-6 shrink-0" />
       <span className="first-letter:capitalize">{t(labelTKey)}</span>
-    </NavLink>
+    </Link>
   );
 }

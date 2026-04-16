@@ -1,40 +1,13 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { CreateFieldValue } from '@app-builder/schemas/data';
+import { createFieldFn } from '@app-builder/server-fns/data';
 import { useMutation } from '@tanstack/react-query';
-import { z } from 'zod/v4';
-
-export const createFieldValueSchema = z.object({
-  name: z
-    .string()
-    .min(1, {
-      message: 'NAME_MIN',
-    })
-    .regex(/^[a-z]+[a-z0-9_]*$/, {
-      message: 'NAME_REGEX',
-    })
-    .refine((value) => value !== 'id', {
-      message: 'NAME_RESERVED',
-    }),
-  description: z.string(),
-  required: z.string(),
-  type: z.enum(['String', 'Bool', 'Timestamp', 'Float', 'Int', 'IpAddress', 'Coords']),
-  tableId: z.string(),
-  isEnum: z.boolean(),
-  isUnique: z.boolean(),
-});
-
-export type CreateFieldValue = z.infer<typeof createFieldValueSchema>;
-
-const endpoint = getRoute('/ressources/data/createField');
+import { useServerFn } from '@tanstack/react-start';
 
 export const useCreateFieldMutation = () => {
+  const createField = useServerFn(createFieldFn);
+
   return useMutation({
     mutationKey: ['data', 'create-field'],
-    mutationFn: async (field: CreateFieldValue) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(field),
-      });
-      return response.json();
-    },
+    mutationFn: async (field: CreateFieldValue) => createField({ data: field }),
   });
 };

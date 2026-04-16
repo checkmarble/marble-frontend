@@ -1,4 +1,6 @@
+import { renameWorkflowRuleFn } from '@app-builder/server-fns/workflows';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
 
 interface RenameRuleInput {
   ruleId: string;
@@ -8,26 +10,15 @@ interface RenameRuleInput {
 }
 
 export function useRenameRuleMutation() {
+  const renameWorkflowRule = useServerFn(renameWorkflowRuleFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ ruleId, name, fallthrough, scenarioId }: RenameRuleInput): Promise<RenameRuleInput> => {
-      const response = await fetch(`/ressources/workflows/rule/${ruleId}/rename`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, fallthrough }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to rename rule');
-      }
-
+      await renameWorkflowRule({ data: { ruleId, name, fallthrough } });
       return { ruleId, scenarioId, name, fallthrough };
     },
     onSuccess: ({ scenarioId }: RenameRuleInput) => {
-      // Invalidate and refetch workflow rules after successful rename
       queryClient.invalidateQueries({
         queryKey: ['workflow-rules', scenarioId],
       });

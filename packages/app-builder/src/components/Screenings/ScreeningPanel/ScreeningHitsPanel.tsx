@@ -13,9 +13,8 @@ import {
   useInvalidateScreeningDetail,
   useScreeningDetailQuery,
 } from '@app-builder/queries/screening/get-screening-detail';
-import { type action as refineAction } from '@app-builder/routes/ressources+/screenings+/refine';
-import { getRoute } from '@app-builder/utils/routes';
-import { useFetcher } from '@remix-run/react';
+import { useRefineScreeningMutation } from '@app-builder/queries/screening/refine-screening';
+import { type RefineSearchInput } from '@app-builder/server-fns/screenings';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
@@ -92,33 +91,26 @@ export function ScreeningHitsPanel({
 
   // Preview state: search results shown on the left before validation
   const [previewResults, setPreviewResults] = useState<ScreeningMatchPayload[] | null>(null);
-  const previewFormDataRef = useRef<FormData | null>(null);
-  const refineFetcher = useFetcher<typeof refineAction>();
+  const previewFormValuesRef = useRef<RefineSearchInput | null>(null);
+  const refineMutation = useRefineScreeningMutation();
 
-  const handleSearchComplete = useCallback((results: ScreeningMatchPayload[], formData: FormData) => {
+  const handleSearchComplete = useCallback((results: ScreeningMatchPayload[], formValues: RefineSearchInput) => {
     setPreviewResults(results);
-    previewFormDataRef.current = formData;
+    previewFormValuesRef.current = formValues;
   }, []);
 
   const handleValidate = useCallback(() => {
-    if (previewFormDataRef.current) {
-      refineFetcher.submit(previewFormDataRef.current, {
-        method: 'POST',
-        action: getRoute('/ressources/screenings/refine'),
+    if (previewFormValuesRef.current) {
+      refineMutation.mutateAsync(previewFormValuesRef.current).then((data) => {
+        handleRefineSuccess(data.id);
       });
     }
-  }, [refineFetcher]);
+  }, [refineMutation]);
 
   const handleCancelPreview = useCallback(() => {
     setPreviewResults(null);
-    previewFormDataRef.current = null;
+    previewFormValuesRef.current = null;
   }, []);
-
-  useEffect(() => {
-    if (refineFetcher.data?.success) {
-      handleRefineSuccess(refineFetcher.data.data.id);
-    }
-  }, [refineFetcher.data, handleRefineSuccess]);
 
   const currentName = screeningQuery.data?.config.name ?? screeningName;
   const currentStatus = screeningQuery.data?.status ?? screeningStatus;

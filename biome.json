@@ -21,7 +21,7 @@
       "!**/coverage/**",
       "!**/public/**",
       "!packages/marble-api/src/generated/**",
-      "!packages/app-builder/src/utils/routes/routes.ts",
+      "!packages/app-builder/src/routeTree.gen.ts",
       "!packages-licenses.json"
     ]
   },

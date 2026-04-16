@@ -3,7 +3,7 @@ import { type AstNode } from '@app-builder/models';
 import { type RuleExecution } from '@app-builder/models/decision';
 import { NewNodeEvaluation, type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
-import { generateFlatEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { generateFlatEvaluation } from '@app-builder/server-fns/scenarios';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';

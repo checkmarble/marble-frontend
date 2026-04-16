@@ -1,20 +1,18 @@
-import { type DetailedCaseDecision } from '@app-builder/models/cases';
-import { getTriggerObjectFields } from '@app-builder/models/data-model';
+import { CaseDetail, type DetailedCaseDecision } from '@app-builder/models/cases';
+import { DataModelWithTableOptions, getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { type ScreeningStatus } from '@app-builder/models/screening';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
-import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
-import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { useLoaderData } from '@remix-run/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { ReviewDecisionModal } from '../Decisions/ReviewDecisionModal';
 import { FormatData } from '../FormatData';
 import { ScreeningHitsPanel } from '../Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '../Spinner';
@@ -26,13 +24,16 @@ export const CaseAlerts = ({
   selectDecision,
   setDrawerContentMode,
   drawerContentMode,
+  caseDetail,
+  dataModel,
 }: {
   selectDecision: (decision: DetailedCaseDecision) => void;
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
+  caseDetail: CaseDetail;
+  dataModel: DataModelWithTableOptions;
 }) => {
   const { t } = useTranslation(casesI18n);
-  const { case: caseDetail, dataModelWithTableOptions } = useLoaderData<typeof loader>();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
 
@@ -52,7 +53,7 @@ export const CaseAlerts = ({
         <>
           <div className="flex flex-col gap-2">
             {decisions.map((decision) => {
-              const triggerObjectFields = getTriggerObjectFields(dataModelWithTableOptions, decision.triggerObjectType);
+              const triggerObjectFields = getTriggerObjectFields(dataModel, decision.triggerObjectType);
               const isActive = selectedDecision === decision.id && drawerContentMode === 'decision';
 
               return (

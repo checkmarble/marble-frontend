@@ -1,5 +1,4 @@
-import { Link } from '@remix-run/react';
-import { type RemixLinkProps } from '@remix-run/react/dist/components';
+import { Link, type LinkProps as RemixLinkProps } from '@tanstack/react-router';
 import { clsx } from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';

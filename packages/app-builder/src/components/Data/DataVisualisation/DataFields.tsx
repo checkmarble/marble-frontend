@@ -1,15 +1,10 @@
-import { CalloutV2 } from '@app-builder/components/Callout';
-import { Spinner } from '@app-builder/components/Spinner';
 import { type DataModelField, DataModelObject } from '@app-builder/models';
-import { useTableOptionsQuery } from '@app-builder/queries/data/get-table-options';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { adaptCurrency } from '@app-builder/utils/currencies';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { DataField } from './DataField';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
@@ -41,11 +36,7 @@ export type DataFieldsProps = (
 
 export function DataFields({ table, object, preset, customFields, className, options }: DataFieldsProps) {
   const dataModel = useDataModel();
-  const { t } = useTranslation(['common']);
   const tableModel = dataModel.find((tbl) => tbl.name === table);
-
-  const tableOptionsQuery = useTableOptionsQuery(tableModel?.id);
-  const tableOptions = tableOptionsQuery?.data?.tableOptions;
 
   const links = options?.hideLinks ? undefined : getLinksFromDatamodel(dataModel, table);
 
@@ -53,38 +44,34 @@ export function DataFields({ table, object, preset, customFields, className, opt
     if (preset === 'custom') {
       return customFields.map((field) => tableModel?.fields.find((fld) => fld.name === field));
     }
-    return filterFieldsByPreset(
-      tableModel?.fields ?? [],
-      preset ?? 'full',
-      tableOptions?.fieldOrder,
-      tableOptions?.displayedFields,
-      options,
-    );
-  }, [tableModel, preset, customFields, tableOptions?.fieldOrder, tableOptions?.displayedFields]);
+    return filterFieldsByPreset(tableModel?.fields ?? [], preset ?? 'full', options);
+  }, [tableModel, preset, customFields, options]);
 
   const contextValue = useMemo(() => {
-    if (!tableModel)
-      return { currency: undefined, country: undefined, preset, options, table: undefined, tableOptions };
+    if (!tableModel) return { currency: undefined, country: undefined, preset, options, table: undefined };
 
     // Detect country
     const countryField = tableModel.fields.find((f) => /country/i.test(f.name));
     const rawCountry = countryField ? object.data?.[countryField.name] : undefined;
     const country = typeof rawCountry === 'string' && rawCountry.length > 0 ? rawCountry.toUpperCase() : undefined;
 
-    // Priority 1: explicit currency field
-    const currencyField = tableModel.fields.find((f) => /currency|curr_/i.test(f.name));
+    // Search for explicit currency field (semantic)
+    let currencyField = tableModel.fields.find((f) => f.semanticType === 'currency_code');
+    // fallback search from field name (only if there is only one of them)
+    if (!currencyField) {
+      const currencyFields = tableModel.fields.filter((f) => /currency|curr_/i.test(f.name));
+      currencyField = currencyFields.length === 1 ? currencyFields[0] : undefined;
+    }
     const rawCurrency = currencyField ? object.data?.[currencyField.name] : undefined;
     if (typeof rawCurrency === 'string' && rawCurrency.length > 0) {
-      const currency = adaptCurrency(rawCurrency, false);
-      if (currency) return { currency, country, preset, options, table: tableModel, tableOptions };
+      return { currency: rawCurrency, country, preset, options, table: tableModel };
     }
 
-    return { currency: undefined, country, preset, options, table: tableModel, tableOptions };
+    return { currency: undefined, country, preset, options, table: tableModel };
   }, [
     tableModel,
     object.data,
     preset,
-    tableOptions,
     options?.mapHeight,
     options?.hideLinks,
     options?.hideMetadata,
@@ -109,81 +96,70 @@ export function DataFields({ table, object, preset, customFields, className, opt
     return metadataByField;
   }, [object.data]);
 
-  return match(tableOptionsQuery)
-    .with(null, { isPending: true }, () => <Spinner className="size-4" />)
-    .with({ isError: true }, { isSuccess: true }, (query) => (
-      <DataVisualisationProvider value={contextValue}>
-        {query.isError ? (
-          <CalloutV2 className="col-span-full mb-2">{t('common:generic_fetch_data_error')}</CalloutV2>
-        ) : null}
-        {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
-        <div
-          className={cn(
-            'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
-            options?.layout === '2-columns' && 'grid-cols-[max-content_1fr_max-content_1fr]',
-            options?.layout === '3-columns' && 'grid-cols-[max-content_1fr_max-content_1fr_max-content_1fr]',
-            (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_1fr]',
-            className,
-          )}
-        >
-          {Array.isArray(fields)
-            ? fields.map((field) => {
-                const linkedTo = field ? links?.[field.name] : undefined;
-                const metaDataValue =
-                  field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
-                return field ? (
-                  <DataField
-                    key={field?.id}
-                    field={field}
-                    value={formatValue(object.data?.[field.name])}
-                    linkedTo={linkedTo}
-                    metaData={metaDataValue}
-                  />
-                ) : null;
-              })
-            : null}
-        </div>
-      </DataVisualisationProvider>
-    ))
-    .exhaustive();
+  return (
+    <DataVisualisationProvider value={contextValue}>
+      {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
+      <div
+        className={cn(
+          'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
+          options?.layout === '2-columns' && 'grid-cols-[max-content_1fr_max-content_1fr]',
+          options?.layout === '3-columns' && 'grid-cols-[max-content_1fr_max-content_1fr_max-content_1fr]',
+          (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_1fr]',
+          className,
+        )}
+      >
+        {Array.isArray(fields)
+          ? fields.map((field) => {
+              const linkedTo = field ? links?.[field.name] : undefined;
+              const metaDataValue =
+                field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
+              const fieldCurrency = resolveFieldCurrency(field, tableModel?.fields, object.data);
+              return field ? (
+                <DataField
+                  key={field?.id}
+                  field={field}
+                  value={formatValue(object.data?.[field.name])}
+                  linkedTo={linkedTo}
+                  metaData={metaDataValue}
+                  currency={fieldCurrency}
+                />
+              ) : null;
+            })
+          : null}
+      </div>
+    </DataVisualisationProvider>
+  );
 }
 
 function filterFieldsByPreset(
   fields: DataModelField[],
   preset: TYPE_DATA_TABLE_VISUALISATION_PRESET,
-  fieldOrder?: string[],
-  displayedFields?: string[],
-  options?: {
-    withId?: boolean;
-  },
+  options?: { withId?: boolean },
 ) {
-  const filtered = (() => {
-    switch (preset) {
-      case 'essentials': {
-        const withId = options?.withId !== false; // default to true
-        return fields.filter((field) => field.nullable === false || (withId && field.name === 'object_id'));
-      }
-      case 'advanced':
-      // tbd
-      case 'full':
-        return fields;
+  switch (preset) {
+    case 'essentials': {
+      const withId = options?.withId !== false; // default to true
+      return fields.filter(
+        (field) => !field.hidden && (field.nullable === false || (withId && field.name === 'object_id')),
+      );
     }
-  })();
+    case 'advanced':
+    // tbd
+    case 'full':
+      return fields.filter((field) => !field.hidden || field.name === 'object_id');
+  }
+}
 
-  const visible = displayedFields
-    ? filtered.filter((field) => field.name === 'object_id' || displayedFields.includes(field.id))
-    : filtered;
-
-  if (!fieldOrder || fieldOrder.length === 0) return visible;
-
-  return [...visible].sort((a, b) => {
-    const ai = fieldOrder.indexOf(a.id);
-    const bi = fieldOrder.indexOf(b.id);
-    if (ai === -1 && bi === -1) return 0;
-    if (ai === -1) return 1;
-    if (bi === -1) return -1;
-    return ai - bi;
-  });
+function resolveFieldCurrency(
+  field: DataModelField | undefined,
+  allFields: DataModelField[] | undefined,
+  data: Record<string, unknown> | undefined,
+): string | undefined {
+  if (!field?.currencyFieldId || !allFields || !data) return undefined;
+  const currencyField = allFields.find((f) => f.id === field.currencyFieldId);
+  if (!currencyField) return undefined;
+  const raw = data[currencyField.name];
+  return typeof raw === 'string' && raw.length > 0 ? raw : undefined;
 }
 
 function formatValue(value: unknown): string | number | boolean | undefined {

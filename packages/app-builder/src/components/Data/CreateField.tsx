@@ -1,11 +1,8 @@
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { EnumDataTypes, UniqueDataTypes } from '@app-builder/models';
-import {
-  CreateFieldValue,
-  createFieldValueSchema,
-  useCreateFieldMutation,
-} from '@app-builder/queries/data/create-field';
+import { EnumDataTypes, PrimitiveTypes, UniqueDataTypes } from '@app-builder/models';
+import { useCreateFieldMutation } from '@app-builder/queries/data/create-field';
+import { CreateFieldValue, createFieldValueSchema } from '@app-builder/schemas/data';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import {
   type CreateFieldValidationErrorCode,
@@ -22,7 +19,7 @@ import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription'
 import { FormInput } from '../Form/Tanstack/FormInput';
 import { Nudge } from '../Nudge';
 
-const VALUE_TYPES = [
+const VALUE_TYPES: { value: PrimitiveTypes; display: string; nudge?: boolean }[] = [
   { value: 'String', display: 'data:create_field.type_string' },
   { value: 'Bool', display: 'data:create_field.type_bool' },
   { value: 'Timestamp', display: 'data:create_field.type_timestamp' },
@@ -68,7 +65,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       required: REQUIRED_OPTIONS[0].value,
       name: '',
       description: '',
-      type: VALUE_TYPES[0].value,
+      type: VALUE_TYPES[0]!.value,
       tableId: tableId,
       isEnum: false,
       isUnique: false,

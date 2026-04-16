@@ -10,6 +10,7 @@ import invariant from 'tiny-invariant';
 import { assertNever } from 'typescript-utils';
 
 import { adaptCase, type Case } from './cases';
+import { DataModelObjectValue } from './data-model';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
 import { type Outcome } from './outcome';
 
@@ -35,7 +36,7 @@ export interface Decision {
     version: number;
   };
   score: number;
-  triggerObject: Record<string, unknown>;
+  triggerObject: Record<string, DataModelObjectValue>;
   triggerObjectType: string;
   scheduledExecutionId?: string;
 }
@@ -101,6 +102,31 @@ export type ExecutionError = {
   code: 'division_by_zero' | 'null_value_found' | 'unknown_error';
   message: string;
 };
+
+type EnrichedRuleExecution = RuleExecution & {
+  ruleGroup?: string;
+};
+
+export type DecisionForSnooze = Decision & {
+  rules: EnrichedRuleExecution[];
+};
+
+type SnoozeData =
+  | {
+      isSnoozed: true;
+      start: string;
+      end: string;
+    }
+  | {
+      isSnoozed: false;
+      start: undefined;
+      end: undefined;
+    };
+
+export type RuleWithSnoozeData = EnrichedRuleExecution & {
+  hitAt: string;
+  decisionId: string;
+} & SnoozeData;
 
 const errorCodeMappings: Record<number, ExecutionError['code']> = {
   100: 'division_by_zero',

@@ -1,17 +1,17 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { uploadListDataFileFn } from '@app-builder/server-fns/lists';
 import { useMutation } from '@tanstack/react-query';
-
-const uploadListDataFileEndpoint = (listId: string) => {
-  return getRoute('/ressources/lists/upload/:listId', { listId });
-};
+import { useServerFn } from '@tanstack/react-start';
 
 export const useUploadListDataFile = (listId: string) => {
+  const uploadListDataFile = useServerFn(uploadListDataFileFn);
   return useMutation({
     mutationFn: async (formData: FormData) => {
-      return fetch(uploadListDataFileEndpoint(listId), {
-        body: formData,
-        method: 'POST',
-      });
+      const enriched = new FormData();
+      for (const [key, value] of formData.entries()) {
+        enriched.append(key, value);
+      }
+      enriched.append('listId', listId);
+      return uploadListDataFile({ data: enriched });
     },
   });
 };

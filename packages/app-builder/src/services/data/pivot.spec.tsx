@@ -9,6 +9,7 @@ describe('getFieldPivotOptions', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
       fields: helperFields(['String', 'Int', 'Float', 'Bool', 'String[]', 'Int[]', 'Float[]']),
+      semanticType: 'other',
       linksToSingle: [],
     });
 
@@ -32,6 +33,7 @@ describe('getLinksPivotOptions', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
       fields: helperFields(['Int']),
+      semanticType: 'other',
       linksToSingle: [
         {
           id: '1',
@@ -44,6 +46,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -53,6 +56,7 @@ describe('getLinksPivotOptions', () => {
         id: '2',
         fields: helperFields(['String']),
         linksToSingle: [],
+        semanticType: 'other',
       }),
     ];
 
@@ -78,6 +82,7 @@ describe('getLinksPivotOptions', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
       fields: helperFields(['Int']),
+      semanticType: 'other',
       linksToSingle: [
         {
           id: '1',
@@ -90,6 +95,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -98,6 +104,7 @@ describe('getLinksPivotOptions', () => {
       helperTable({
         id: '2',
         fields: helperFields(['Int']),
+        semanticType: 'other',
         linksToSingle: [],
       }),
     ];
@@ -112,6 +119,7 @@ describe('getLinksPivotOptions', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
       fields: helperFields(['Int']),
+      semanticType: 'other',
       linksToSingle: [
         {
           id: '1',
@@ -124,6 +132,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -132,6 +141,7 @@ describe('getLinksPivotOptions', () => {
       helperTable({
         id: '2',
         fields: helperFields(['Int']),
+        semanticType: 'other',
         linksToSingle: [
           {
             id: '2',
@@ -144,12 +154,14 @@ describe('getLinksPivotOptions', () => {
             childTableId: '2',
             childFieldName: 'field1',
             childFieldId: '1',
+            relationType: 'belongs_to',
           },
         ],
       }),
       helperTable({
         id: '3',
         fields: helperFields(['String']),
+        semanticType: 'other',
         linksToSingle: [],
       }),
     ];
@@ -176,6 +188,7 @@ describe('getLinksPivotOptions', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
       fields: helperFields(['Int', 'Int']),
+      semanticType: 'other',
       linksToSingle: [
         {
           id: '1',
@@ -188,6 +201,7 @@ describe('getLinksPivotOptions', () => {
           childTableId: '1',
           childFieldName: 'field1',
           childFieldId: '1',
+          relationType: 'belongs_to',
         },
       ],
     });
@@ -196,6 +210,7 @@ describe('getLinksPivotOptions', () => {
       helperTable({
         id: '2',
         fields: helperFields(['Int', 'Int', 'Int']),
+        semanticType: 'other',
         linksToSingle: [
           {
             id: '2',
@@ -208,6 +223,7 @@ describe('getLinksPivotOptions', () => {
             childTableId: '2',
             childFieldName: 'field1',
             childFieldId: '1',
+            relationType: 'belongs_to',
           },
           {
             id: '3',
@@ -220,6 +236,7 @@ describe('getLinksPivotOptions', () => {
             childTableId: '2',
             childFieldName: 'field1',
             childFieldId: '1',
+            relationType: 'belongs_to',
           },
         ],
       }),
@@ -227,6 +244,7 @@ describe('getLinksPivotOptions', () => {
         id: '3',
         fields: helperFields(['String']),
         linksToSingle: [],
+        semanticType: 'other',
       }),
     ];
 
@@ -249,11 +267,13 @@ describe('getLinksPivotOptions', () => {
   });
 });
 
-function helperTable(args: Pick<TableModel, 'id' | 'fields' | 'linksToSingle'>): TableModel {
+function helperTable(args: Pick<TableModel, 'id' | 'fields' | 'linksToSingle' | 'semanticType'>): TableModel {
   return {
     ...args,
     name: `table${args.id}`,
     description: '',
+    alias: 'alias',
+    captionField: 'captionField',
   };
 }
 

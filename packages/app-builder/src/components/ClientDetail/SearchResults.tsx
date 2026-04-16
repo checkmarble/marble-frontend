@@ -1,8 +1,8 @@
-import { Client360SearchPayload, useSearchClient360Query } from '@app-builder/queries/client360/search';
+import { useSearchClient360Query } from '@app-builder/queries/client360/search';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
+import { Client360SearchPayload } from '@app-builder/schemas/client360';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -42,10 +42,11 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
             .map((item) => {
               return (
                 <Link
-                  to={getRoute('/client-detail/:objectType/:objectId', {
+                  to="/client-detail/$objectType/$objectId"
+                  params={{
                     objectType: payload.table,
                     objectId: item['object_id'] as string,
-                  })}
+                  }}
                   key={item['object_id'] as string}
                   className="p-v2-md flex items-center border border-grey-border rounded-v2-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
                 >

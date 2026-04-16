@@ -21,11 +21,9 @@ export function AddComment({ caseId }: { caseId: string }) {
   const form = useForm({
     defaultValues: { caseId, comment: '', files: [] } as AddCommentPayload,
     onSubmit: ({ value }) => {
-      addCommentMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
-          form.reset();
-          form.validate('mount');
-        }
+      addCommentMutation.mutateAsync(value).then(() => {
+        form.reset();
+        form.validate('mount');
         revalidate();
       });
     },

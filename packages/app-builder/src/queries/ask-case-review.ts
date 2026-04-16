@@ -1,14 +1,13 @@
-import { getRoute } from '@app-builder/utils/routes';
+import { enqueueReviewFn } from '@app-builder/server-fns/cases';
 import { useMutation } from '@tanstack/react-query';
-
-const endpoint = (caseId: string) => getRoute('/ressources/cases/:caseId/enqueue-review', { caseId });
+import { useServerFn } from '@tanstack/react-start';
 
 export function useEnqueueCaseReviewMutation() {
+  const enqueueReview = useServerFn(enqueueReviewFn);
+
   return useMutation({
     mutationFn: async (caseId: string) => {
-      await fetch(endpoint(caseId), {
-        method: 'POST',
-      });
+      await enqueueReview({ data: { caseId } });
     },
   });
 }

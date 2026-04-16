@@ -1,5 +1,4 @@
 import { AddNewFilterButton, ClearAllFiltersLink, FilterItem, FilterPopover } from '@app-builder/components/Filters';
-import { getRoute } from '@app-builder/utils/routes';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
@@ -99,7 +98,7 @@ export function DecisionFiltersBar() {
             </DecisionFiltersMenu>
           ) : null}
         </div>
-        <ClearAllFiltersLink to={getRoute('/detection/decisions')} replace />
+        <ClearAllFiltersLink to="/detection/decisions" replace />
       </div>
     </>
   );

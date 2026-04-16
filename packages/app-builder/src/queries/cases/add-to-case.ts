@@ -1,49 +1,22 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { getRoute } from '@app-builder/utils/routes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import {
+  type AddToCasePayload,
+  addToCasePayloadSchema,
+  existingCaseSchema,
+  newCaseSchema,
+} from '@app-builder/schemas/cases';
+import { addToCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod/v4';
+import { useServerFn } from '@tanstack/react-start';
 
-export const newCaseSchema = z.object({
-  newCase: z.literal(true),
-  name: z.string().min(1),
-  decisionIds: protectArray(z.array(z.string())),
-  inboxId: z.string().min(1),
-});
-
-export const existingCaseSchema = z.object({
-  newCase: z.literal(false),
-  caseId: z.string().min(1),
-  decisionIds: protectArray(z.array(z.string())),
-});
-
-export const addToCasePayloadSchema = z.discriminatedUnion('newCase', [newCaseSchema, existingCaseSchema]);
-
-export type AddToCasePayload = z.infer<typeof addToCasePayloadSchema>;
-
-const endpoint = getRoute('/ressources/cases/add-to-case');
+export { addToCasePayloadSchema, type AddToCasePayload, existingCaseSchema, newCaseSchema };
 
 export const useAddToCaseMutation = () => {
-  const navigate = useAgnosticNavigation();
+  const addToCase = useServerFn(addToCaseFn);
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'add-to-case'],
-    mutationFn: async (payload: AddToCasePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
-    },
+    mutationFn: async (payload: AddToCasePayload) => addToCase({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },

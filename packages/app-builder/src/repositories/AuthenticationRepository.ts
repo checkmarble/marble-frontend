@@ -1,6 +1,5 @@
 import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
 import { AppConfig } from '@app-builder/models/app-config';
-import { getRoute } from '@app-builder/utils/routes';
 import { User } from 'firebase/auth';
 
 export interface AuthenticationClientRepository {
@@ -64,7 +63,7 @@ export function getAuthenticationClientRepository(
   }
 
   const emailVerificationActionCodeSettings = {
-    url: new URL(getRoute('/sign-in'), appConfig.urls.marble).href,
+    url: new URL('/sign-in', appConfig.urls.marble).href,
   };
 
   async function emailAndPassswordSignUp(locale: string, email: string, password: string) {
@@ -87,7 +86,7 @@ export function getAuthenticationClientRepository(
   }
 
   const passwordResetEmailActionCodeSettings = {
-    url: new URL(getRoute('/sign-in'), appConfig.urls.marble).href,
+    url: new URL('/sign-in', appConfig.urls.marble).href,
   };
 
   async function sendPasswordResetEmail(locale: string, email: string) {

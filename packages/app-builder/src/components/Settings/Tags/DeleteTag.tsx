@@ -43,9 +43,8 @@ const DeleteTagContent = ({ tagId, onSuccess }: { tagId: string; onSuccess: () =
 
   const handleDeleteTag = () => {
     deleteTagMutation.mutateAsync({ tagId }).then((res) => {
-      if (res.success) {
-        onSuccess();
-      }
+      onSuccess();
+
       revalidate();
     });
   };

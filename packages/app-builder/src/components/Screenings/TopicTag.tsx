@@ -1,5 +1,5 @@
 import { SCREENING_CATEGORY_COLORS, SCREENING_TOPICS_MAP } from '@app-builder/models/screening';
-import * as Sentry from '@sentry/remix';
+import * as Sentry from '@sentry/tanstackstart-react';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 

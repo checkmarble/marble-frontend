@@ -1,5 +1,5 @@
 import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
-import { getRoute } from '@app-builder/utils/routes';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, type ButtonV2Props, cn } from 'ui-design-system';
@@ -11,9 +11,13 @@ type CaseFileProps = {
 
 export const CaseFileButton = ({ file, className, size }: CaseFileProps) => {
   const { t } = useTranslation(['cases']);
-  const downloadEndpoint = getRoute('/ressources/cases/download-file/:fileId', { fileId: file.id });
+  const router = useRouter();
+  const downloadEndpoint = router.buildLocation({
+    to: '/ressources/cases/download-file/$fileId',
+    params: { fileId: file.id },
+  });
 
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint, {
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint.href, {
     onError: (e) => {
       if (e instanceof AlreadyDownloadingError) {
         // Already downloading, do nothing

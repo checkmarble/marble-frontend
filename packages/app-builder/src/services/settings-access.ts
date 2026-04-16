@@ -8,7 +8,6 @@ import {
   isReadUserAvailable,
 } from '@app-builder/services/feature-access';
 import { type IconName } from 'ui-icons';
-import { getRoute } from '../utils/routes';
 
 export type SettingEntry = {
   title: string;
@@ -25,7 +24,6 @@ export type Sections = {
   users: Section;
   scenarios: Section;
   case_manager: Section;
-  data_display: Section;
   audit: Section;
   ip_whitelisting: Section;
 };
@@ -36,44 +34,38 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
     api: {
       icon: 'world',
       settings: [
-        ...(isReadApiKeyAvailable(user) ? [{ title: 'api', to: getRoute('/settings/api-keys') }] : []),
-        ...(user.permissions.canManageWebhooks ? [{ title: 'webhooks', to: getRoute('/settings/webhooks') }] : []),
+        ...(isReadApiKeyAvailable(user) ? [{ title: 'api', to: '/settings/api-keys' }] : []),
+        ...(user.permissions.canManageWebhooks ? [{ title: 'webhooks', to: '/settings/webhooks' }] : []),
       ],
     },
     users: {
       icon: 'users',
-      settings: [...(isReadUserAvailable(user) ? [{ title: 'users', to: getRoute('/settings/users') }] : [])],
+      settings: [...(isReadUserAvailable(user) ? [{ title: 'users', to: '/settings/users' }] : [])],
     },
     scenarios: {
       icon: 'world',
       settings: [
-        ...(isAdmin(user) ? [{ title: 'scenarios', to: getRoute('/settings/scenarios') }] : []),
-        ...(isAdmin(user) ? [{ title: 'filters-settings', to: getRoute('/settings/analytics/filters') }] : []),
+        ...(isAdmin(user) ? [{ title: 'scenarios', to: '/settings/scenarios' }] : []),
+        ...(isAdmin(user) ? [{ title: 'filters-settings', to: '/settings/analytics/filters' }] : []),
       ],
     },
     case_manager: {
       icon: 'case-manager',
       settings: [
         ...(canAccessInboxesSettings(user, inboxes) || isReadTagAvailable(user) || isAdmin(user)
-          ? [{ title: 'case_manager', to: getRoute('/settings/inboxes') }]
+          ? [{ title: 'case_manager', to: '/settings/inboxes' }]
           : []),
       ],
     },
-    data_display: {
-      icon: 'world',
-      settings: [...(isAdmin(user) ? [{ title: 'data_display', to: getRoute('/settings/data-display') }] : [])],
-    },
     audit: {
       icon: 'history',
-      settings: [
-        ...(isAdmin(user) ? [{ title: 'audit.audit_logs_section', to: getRoute('/settings/audit-logs') }] : []),
-      ],
+      settings: [...(isAdmin(user) ? [{ title: 'audit.audit_logs_section', to: '/settings/audit-logs' }] : [])],
     },
     ip_whitelisting: {
       icon: 'world',
       settings: [
         ...(isAdmin(user) && appConfig.isManagedMarble
-          ? [{ title: 'ip_whitelisting', to: getRoute('/settings/ip-whitelisting') }]
+          ? [{ title: 'ip_whitelisting', to: '/settings/ip-whitelisting' }]
           : []),
       ],
     },

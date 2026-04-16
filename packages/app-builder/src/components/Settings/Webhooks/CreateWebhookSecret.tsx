@@ -40,9 +40,8 @@ function CreateWebhookSecretContent({ webhookId, onSuccess }: { webhookId: strin
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         createMutation.mutateAsync(value).then((res) => {
-          if (res?.success) {
-            onSuccess();
-          }
+          onSuccess();
+
           revalidate();
         });
       }

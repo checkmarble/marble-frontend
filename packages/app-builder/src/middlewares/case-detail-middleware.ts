@@ -1,55 +1,47 @@
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
-import { createMiddlewareWithGlobalContext } from '@app-builder/core/requests';
 import { isNotFoundHttpError } from '@app-builder/models';
+import { setToast } from '@app-builder/services/toast.server';
 import { parseIdParamSafe, parseQuerySafe } from '@app-builder/utils/input-validation';
-import { getRoute } from '@app-builder/utils/routes';
-import { redirect } from '@remix-run/server-runtime';
+import { redirect } from '@tanstack/react-router';
+import { createMiddleware } from '@tanstack/react-start';
+import { getRequest } from '@tanstack/react-start/server';
 import { tryit } from 'radash';
 import { z } from 'zod/v4';
 import { authMiddleware } from './auth-middleware';
 
-export const caseDetailMiddleware = createMiddlewareWithGlobalContext(
-  [authMiddleware],
-  async function caseDetailMiddleware({ request, params, context }, next, exit) {
+export const caseDetailMiddleware = createMiddleware({ type: 'function' })
+  .middleware([authMiddleware])
+  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .server(async ({ next, context, data }) => {
+    const request = getRequest();
     const { cases: caseRepository, inbox: inboxRepository } = context.authInfo;
-    const { toastSessionService, i18nextService } = context.services;
+    const { i18nextService } = context.services;
 
-    // Check if the case ID provided is valid
-    const parsedResult = await parseIdParamSafe(params, 'caseId');
+    const parsedResult = await parseIdParamSafe(data?.params ?? {}, 'caseId');
     if (!parsedResult.success) {
-      return exit(redirect(getRoute('/cases/inboxes')));
+      throw redirect({ to: '/cases/inboxes' });
     }
 
-    const [toastSession, t, query] = await Promise.all([
-      toastSessionService.getSession(request),
+    const [t, query] = await Promise.all([
       i18nextService.getFixedT(request, ['common', 'cases']),
       parseQuerySafe(request, z.object({ fromInbox: z.string() }).optional()),
     ]);
 
-    // Check if the case exists
     const [error, caseDetail] = await tryit(async () => caseRepository.getCase({ caseId: parsedResult.data.caseId }))();
+
     if (error) {
       const destinationInboxId = query.data?.fromInbox ? query.data.fromInbox : MY_INBOX_ID;
-
-      setToastMessage(toastSession, {
+      await setToast({
         type: 'error',
         message: isNotFoundHttpError(error) ? t('cases:errors.case_not_found') : t('common:errors.unknown'),
       });
-
-      // Redirect to the destination inbox with a toast message
-      return exit(
-        redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: destinationInboxId }), {
-          headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) },
-        }),
-      );
+      throw redirect({ to: '/cases/inboxes/$inboxId', params: { inboxId: destinationInboxId } });
     }
 
-    // If the user doesn't have access to the inbox, redirect to the inboxes page
     const inboxes = await inboxRepository.listInboxes();
     const caseInbox = inboxes.find((inbox) => inbox.id === caseDetail.inboxId);
     if (!caseInbox) {
-      return exit(redirect(getRoute('/cases/inboxes')));
+      throw redirect({ to: '/cases/inboxes' });
     }
 
     return next({
@@ -58,5 +50,4 @@ export const caseDetailMiddleware = createMiddlewareWithGlobalContext(
         case: { detail: caseDetail, inbox: caseInbox },
       },
     });
-  },
-);
+  });

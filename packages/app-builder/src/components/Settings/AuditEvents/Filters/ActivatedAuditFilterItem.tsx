@@ -1,5 +1,6 @@
 import { type ApiKey } from '@app-builder/models/api-keys';
-import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
+import type { AuditEventsFilterName } from '@app-builder/queries/audit-events/get-audit-events';
+import { AuditEventsFilters } from '@app-builder/schemas/settings';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { useCallbackRef } from '@marble/shared';
@@ -8,7 +9,6 @@ import { type MouseEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
 import { DateRangeFilterMenu } from './DateRangeFilterMenu';
 

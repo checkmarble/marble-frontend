@@ -26,7 +26,7 @@ import {
 } from 'marble-api';
 import { match } from 'ts-pattern';
 import { adaptContinuousScreening, ContinuousScreening } from './continuous-screening';
-import { adaptClientObjectDetail, type ClientObjectDetail } from './data-model';
+import { adaptClientObjectDetail, type ClientObjectDetail, DataModelObjectValue } from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
 import { type Outcome as DecisionOutcome } from './outcome';
 import { ScreeningStatus } from './screening';
@@ -429,7 +429,7 @@ export interface CaseDetail extends Case {
   decisions: {
     id: string;
     createdAt: string;
-    triggerObject: Record<string, unknown>;
+    triggerObject: Record<string, DataModelObjectValue>;
     triggerObjectType: string;
     outcome: DecisionOutcome;
     pivotValues: {
@@ -554,7 +554,7 @@ export type PivotObject = {
   /** Metadata of the pivot object, if it has been ingested (only for pivot type "object") */
   pivotObjectMetadata?: {
     validFrom?: string;
-    [key: string]: unknown;
+    [key: string]: any;
   };
   /** -> Data of the pivot object, if it is a pivot object and it has been ingested (only for pivot type "object"), otherwise {key:value} with the pivot field used. If it is an ingested object, may include nested objects {link_name:{object}} where link_name is the name of a link pointing from the pivot object, and object is the full data present on the object found following that link. */
   pivotObjectData: ClientObjectDetail;
@@ -660,7 +660,7 @@ export function adaptAiCaseReviewListItem(dto: AiCaseReviewListItemDto): AiCaseR
 export type DetailedCaseDecision = {
   id: string;
   createdAt: string;
-  triggerObject: Record<string, unknown>;
+  triggerObject: Record<string, DataModelObjectValue>;
   triggerObjectType: string;
   outcome: DecisionOutcome;
   pivotValues: {

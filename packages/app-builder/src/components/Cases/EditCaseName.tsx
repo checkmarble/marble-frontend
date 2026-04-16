@@ -16,10 +16,8 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
   const revalidate = useLoaderRevalidator();
   const form = useForm({
     onSubmit: ({ value }) => {
-      editNameMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
-          setIsEditing(false);
-        }
+      editNameMutation.mutateAsync(value).then(() => {
+        setIsEditing(false);
         revalidate();
       });
     },

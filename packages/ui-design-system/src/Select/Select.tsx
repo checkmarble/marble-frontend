@@ -19,7 +19,7 @@ import {
 } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef, ReactNode, useRef, useState } from 'react';
+import { forwardRef, type ReactElement, ReactNode, useRef, useState } from 'react';
 import { Icon, IconName } from 'ui-icons';
 import { MenuCommand } from '../MenuCommand/MenuCommand';
 import Tag from '../Tag/Tag';
@@ -233,7 +233,10 @@ function renderOptionLabel<T, O extends SelectOption<T>>(option: O, displayedVal
   return typeof option.label === 'function' ? option.label() : option.label;
 }
 
-export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(props: SelectV2Props<T, O>) {
+function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
+  props: SelectV2Props<T, O>,
+  ref: React.ForwardedRef<HTMLButtonElement>,
+) {
   const {
     options,
     placeholder,
@@ -302,11 +305,11 @@ export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(props: 
     <MenuCommand.Menu open={open} onOpenChange={handleOpenChange}>
       <MenuCommand.Trigger>
         {variant === 'default' ? (
-          <MenuCommand.SelectButton disabled={disabled} className={className}>
+          <MenuCommand.SelectButton ref={ref} disabled={disabled} className={className}>
             {renderTriggerContent()}
           </MenuCommand.SelectButton>
         ) : (
-          <button disabled={disabled} className={cn('flex gap-v2-xxs items-center', className)}>
+          <button ref={ref} disabled={disabled} className={cn('flex gap-v2-xxs items-center', className)}>
             {props.multiple && selectedOptions && selectedOptions.length > 0 ? (
               <Tag color="purple">
                 <span className="flex items-center">
@@ -360,3 +363,7 @@ export function SelectV2<T, O extends SelectOption<T> = SelectOption<T>>(props: 
     </MenuCommand.Menu>
   );
 }
+
+export const SelectV2 = forwardRef(SelectV2Inner) as <T, O extends SelectOption<T> = SelectOption<T>>(
+  props: SelectV2Props<T, O> & { ref?: React.Ref<HTMLButtonElement> },
+) => ReactElement;

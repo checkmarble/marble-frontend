@@ -1,14 +1,11 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import { type ScheduledExecutionsLoader } from '@app-builder/routes/ressources+/decisions+/list-scheduled-execution';
+import { useListScheduleExecutions } from '@app-builder/queries/decisions/list-scheduled-executions';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
-import { useFetcher } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSpinDelay } from 'spin-delay';
 import { Input, SelectWithCombobox } from 'ui-design-system';
-
 import { decisionsI18n } from '../../decisions-i18n';
 import { useScheduledExecutionFilter } from '../DecisionFiltersContext';
 
@@ -16,31 +13,29 @@ export function ScheduledExecutionFilter() {
   const { t } = useTranslation(decisionsI18n);
   const formatDateTime = useFormatDateTime();
 
-  const loadFetcher = useFetcher<ScheduledExecutionsLoader>();
-  React.useEffect(() => {
-    if (loadFetcher.state === 'idle' && !loadFetcher.data) {
-      loadFetcher.load(getRoute('/ressources/decisions/list-scheduled-execution'));
-    }
-  }, [loadFetcher]);
-  const successfullScheduledExecutions = React.useMemo(
-    () =>
-      loadFetcher.data
-        ?.filter(({ status }) => status === 'success')
-        .map((scheduledExecution) => ({
-          id: scheduledExecution.id,
-          scenarioName: scheduledExecution.scenarioName,
-          startedAt: {
-            dateTime: scheduledExecution.startedAt,
-            formattedDateTime: formatDateTime(scheduledExecution.startedAt, {
-              dateStyle: 'short',
-              timeStyle: 'short',
-            }),
-          },
-        })),
-    [formatDateTime, loadFetcher.data],
-  );
+  const scheduledExecutionsQuery = useListScheduleExecutions();
 
-  const isLoading = loadFetcher.state === 'loading' || successfullScheduledExecutions === undefined;
+  const successfullScheduledExecutions = React.useMemo(() => {
+    if (!scheduledExecutionsQuery.data) {
+      return undefined;
+    }
+
+    return scheduledExecutionsQuery.data.scheduledExecutions
+      ?.filter(({ status }) => status === 'success')
+      .map((scheduledExecution) => ({
+        id: scheduledExecution.id,
+        scenarioName: scheduledExecution.scenarioName,
+        startedAt: {
+          dateTime: scheduledExecution.startedAt,
+          formattedDateTime: formatDateTime(scheduledExecution.startedAt, {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          }),
+        },
+      }));
+  }, [formatDateTime, scheduledExecutionsQuery.data]);
+
+  const isLoading = scheduledExecutionsQuery.isPending || successfullScheduledExecutions === undefined;
   const showSpinner = useSpinDelay(isLoading);
 
   const [value, setSearchValue] = React.useState('');

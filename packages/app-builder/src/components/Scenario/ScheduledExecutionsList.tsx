@@ -1,16 +1,12 @@
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type ParseKeys } from 'i18next';
-import qs from 'qs';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { type DecisionFilters } from '../Decisions';
 import { scenarioI18n } from './scenario-i18n';
 
 const columnHelper = createColumnHelper<ScheduledExecution>();
@@ -32,9 +28,8 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
           if (numberOfCreatedDecisions > 0) {
             return (
               <Link
-                to={getDecisionRoute({
-                  scheduledExecutionId: [row.original.id],
-                })}
+                to="/detection/decisions"
+                search={{ scheduledExecutionId: [row.original.id] }}
                 className="hover:text-purple-hover focus:text-purple-hover text-purple-primary relative font-semibold hover:underline focus:underline"
               >
                 {formattedNumber}
@@ -148,7 +143,3 @@ const getStatusTKey = (status: string): ParseKeys<['scenarios']> => {
   }
   return 'scenarios:scheduled_execution.status_pending';
 };
-
-function getDecisionRoute(decisionFilters: Pick<DecisionFilters, 'scheduledExecutionId'>) {
-  return `${getRoute('/detection/decisions')}?${qs.stringify(decisionFilters)}`;
-}

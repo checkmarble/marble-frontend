@@ -8,8 +8,7 @@ import {
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
-import { getRoute } from '@app-builder/utils/routes';
-import { NavLink } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import {
   type ColumnFiltersState,
   createColumnHelper,
@@ -18,11 +17,11 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
 import clsx from 'clsx';
 import * as React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -59,6 +58,11 @@ export interface TableModelNodeData {
     hasLink: boolean;
   }[];
 }
+
+export type TableModelFlowNode = Node<
+  TableModelNodeData & { type: 'table_model'; state: 'initialized' | 'laid_out' | 'visible' } & Record<string, unknown>,
+  'table_model'
+>;
 
 export function adaptTableModelNodeData(
   tableModel: TableModel,
@@ -110,7 +114,7 @@ export function getTableModelNodeDataId(data: TableModelNodeData): string {
 
 const columnHelper = createColumnHelper<TableModelNodeData['columns'][number]>();
 
-export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
+export function TableModelNode({ data }: NodeProps<TableModelFlowNode>) {
   const { t } = useTranslation(dataI18n);
   const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } = useSelectedPivot();
   const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
@@ -363,16 +367,10 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
     menuItems.push(
       <SchemaMenuMenuItem
         key="upload-data"
-        render={
-          <NavLink
-            to={getRoute('/upload/:objectType', {
-              objectType: data.original.name,
-            })}
-          />
-        }
+        render={<Link to="/upload/$objectType" params={{ objectType: data.original.name }} />}
       >
         <Icon icon="upload" className="size-6" />
-        {t('data:upload_data')}
+        {t('data:upload_data.title')}
       </SchemaMenuMenuItem>,
     );
   }

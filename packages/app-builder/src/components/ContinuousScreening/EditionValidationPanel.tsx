@@ -30,10 +30,8 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: 
   const revalidate = useLoaderRevalidator();
 
   const handleValidateClick = () => {
-    updateConfigurationMutation.mutateAsync(updatedConfig).then((res) => {
-      if (res.success) {
-        panelSharp.actions.close();
-      }
+    updateConfigurationMutation.mutateAsync(updatedConfig).then(() => {
+      panelSharp.actions.close();
       revalidate();
     });
   };

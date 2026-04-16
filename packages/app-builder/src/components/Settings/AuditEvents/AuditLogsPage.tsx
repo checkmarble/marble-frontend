@@ -5,14 +5,13 @@ import { type ApiKey } from '@app-builder/models/api-keys';
 import {
   type AuditEventsFilterName,
   auditEventsFilterNames,
-  auditEventsFiltersSchema,
   useGetAuditEventsQuery,
 } from '@app-builder/queries/audit-events/get-audit-events';
+import { auditEventsFiltersSchema } from '@app-builder/schemas/settings';
 import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
-
 import { AuditEventsTable } from './AuditEventsTable';
 import { type FilterEntry } from './Filters/ActivatedAuditFilterItem';
 import { AuditEventsFiltersBar } from './Filters/AuditEventsFiltersBar';

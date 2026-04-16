@@ -1,7 +1,7 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
-import { type FreeformSearchInput } from '@app-builder/routes/ressources+/screenings+/freeform-search';
+import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { useForm, useStore } from '@tanstack/react-form';
 import clsx from 'clsx';

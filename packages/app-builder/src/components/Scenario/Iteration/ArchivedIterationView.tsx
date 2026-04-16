@@ -1,12 +1,9 @@
 import { OutcomeBadge, scenarioI18n } from '@app-builder/components';
 import { decisionsI18n } from '@app-builder/components/Decisions/decisions-i18n';
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
+import { ScenarioIterationWithoutRules } from '@app-builder/models/scenario/iteration';
 import { type ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { type ScreeningConfig } from '@app-builder/models/screening-config';
-import {
-  useCurrentScenarioIteration,
-  useScenarioIterationRulesMetadata,
-} from '@app-builder/routes/_builder+/detection+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
@@ -19,11 +16,15 @@ type RuleOrScreening = (ScenarioIterationRuleMetadata & { type: 'rule' }) | (Scr
 
 const columnHelper = createColumnHelper<RuleOrScreening>();
 
-export function ArchivedIterationView() {
+type ArchivedIterationViewProps = {
+  rulesMetadata: ScenarioIterationRuleMetadata[];
+  scenarioIteration: ScenarioIterationWithoutRules;
+};
+
+export function ArchivedIterationView({ rulesMetadata, scenarioIteration }: ArchivedIterationViewProps) {
   const { t } = useTranslation(archivedIterationI18n);
-  const rulesMetadata = useScenarioIterationRulesMetadata();
   const { screeningConfigs, scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold } =
-    useCurrentScenarioIteration();
+    scenarioIteration;
 
   const items: RuleOrScreening[] = useMemo(
     () => [

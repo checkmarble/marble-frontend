@@ -1,5 +1,5 @@
 import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
-import { getRoute } from '@app-builder/utils/routes';
+import { useRouter } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { cn } from 'ui-design-system';
@@ -12,12 +12,16 @@ type AnnotationFileDownloadProps = {
 
 export function AnnotationFileDownload({ annotationId, fileId }: AnnotationFileDownloadProps) {
   const { t } = useTranslation(['cases', 'common']);
-  const downloadEndpoint = getRoute('/ressources/annotations/download-file/:annotationId/:fileId', {
-    annotationId,
-    fileId,
+  const router = useRouter();
+  const downloadEndpoint = router.buildLocation({
+    to: '/ressources/annotations/download-file/$annotationId/$fileId',
+    params: {
+      annotationId,
+      fileId,
+    },
   });
 
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint, {
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint.href, {
     onError: (e) => {
       if (e instanceof AlreadyDownloadingError) {
         // Already downloading, do nothing

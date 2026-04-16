@@ -1,9 +1,8 @@
 import { CaseStatusBadgeV2, decisionsI18n } from '@app-builder/components';
 import { type DecisionDetails } from '@app-builder/models/decision';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 
@@ -28,9 +27,8 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
 
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
-            to={getRoute('/detection/scenarios/:scenarioId', {
-              scenarioId: fromUUIDtoSUUID(scenario.id),
-            })}
+            to="/detection/scenarios/$scenarioId"
+            params={{ scenarioId: fromUUIDtoSUUID(scenario.id) }}
             className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
           >
             {scenario.name}
@@ -38,10 +36,11 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
 
           <DetailLabel>{t('decisions:scenario.version')}</DetailLabel>
           <Link
-            to={getRoute('/detection/scenarios/:scenarioId/i/:iterationId', {
+            to="/detection/scenarios/$scenarioId/i/$iterationId"
+            params={{
               scenarioId: fromUUIDtoSUUID(scenario.id),
               iterationId: fromUUIDtoSUUID(scenario.scenarioIterationId),
-            })}
+            }}
             className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
           >
             {`V${scenario.version}`}
@@ -55,9 +54,8 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
             <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
               <CaseStatusBadgeV2 status={caseDetail.status} variant="semi-full" />
               <Link
-                to={getRoute('/cases/:caseId', {
-                  caseId: fromUUIDtoSUUID(caseDetail.id),
-                })}
+                to="/cases/$caseId"
+                params={{ caseId: fromUUIDtoSUUID(caseDetail.id) }}
                 className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
               >
                 {caseDetail.name}
