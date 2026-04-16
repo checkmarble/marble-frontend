@@ -2,6 +2,8 @@
   "overview.configure_score": "Configurer un score",
 
   "overview.no_ruleset": "Vous n'avez pas encore de jeu de règles configuré. Choisissez une entité sur laquelle créer un jeu de règles pour commencer.",
+  "overview.ruleset_card.no_distribution": "Aucune distribution pour l'instant",
+  "overview.ruleset_card.title": "Répartition des risques pour : {{name}}",
   "risk_type.customer_features": "Caractéristiques client",
   "risk_type.distribution_channels": "Canaux de distribution",
   "risk_type.geo_risks": "Risques géographiques",

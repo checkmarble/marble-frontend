@@ -2,6 +2,8 @@
   "overview.configure_score": "تكوين النقاط",
 
   "overview.no_ruleset": "لا يوجد لديك أي مجموعة قواعد مكوّنة بعد. اختر كيانًا لإنشاء مجموعة قواعد للبدء.",
+  "overview.ruleset_card.no_distribution": "لا يوجد توزيع بعد",
+  "overview.ruleset_card.title": "توزيع المخاطر لـ: {{name}}",
   "risk_type.customer_features": "خصائص العميل",
   "risk_type.distribution_channels": "قنوات التوزيع",
   "risk_type.geo_risks": "المخاطر الجغرافية",
