@@ -8,8 +8,24 @@ export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
   .inputValidator(addConfigurationPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
-      const { tableId, ...body } = data;
-      await context.authInfo.dataModelRepository.patchDataModelTable(tableId, body);
+      const { tableId, semanticType, captionField, alias } = data;
+      const { dataModelRepository } = context.authInfo;
+
+      // Fetch data model to find the caption field id
+      const dataModel = await dataModelRepository.getDataModel();
+      const table = dataModel.find((t) => t.id === tableId);
+      const field = table?.fields.find((f) => f.name === captionField);
+
+      await dataModelRepository.patchDataModelTable(tableId, {
+        semantic_type: semanticType,
+        caption_field: captionField,
+        alias,
+        // Set the caption field's semantic_type to 'name' only if it has none
+        // Treat both undefined and "" as "no semantic type"
+        fields:
+          field && !field.semanticType ? [{ op: 'MOD', data: { id: field.id, semantic_type: 'name' } }] : undefined,
+      });
+
       await setToast({ type: 'success', messageKey: 'common:success.save' });
     } catch {
       await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
