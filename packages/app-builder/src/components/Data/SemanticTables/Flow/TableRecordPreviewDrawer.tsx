@@ -2,7 +2,7 @@ import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataF
 import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Tag } from 'ui-design-system';
 
@@ -16,12 +16,18 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
   const { t } = useTranslation(['data', 'common']);
   const [objectId, setObjectId] = useState('');
   const [searchedObjectId, setSearchedObjectId] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open) return;
-    setObjectId('');
-    setSearchedObjectId(null);
-  }, [open]);
+    if (!open) {
+      setObjectId('');
+      setSearchedObjectId(null);
+      return;
+    }
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }, [open, inputRef]);
 
   const trimmedObjectId = useMemo(() => objectId.trim(), [objectId]);
 
@@ -37,7 +43,7 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
 
   return (
     <PanelRoot open={open} onOpenChange={onOpenChange}>
-      <PanelContainer size="xxl" className="z-50 max-w-[42rem] p-0">
+      <PanelContainer size="4xl" className="z-50 p-0">
         <PanelHeader className="border-b border-grey-border px-v2-lg py-v2-md">
           {t('data:viewer.view_ingested_data')}
         </PanelHeader>
@@ -52,6 +58,7 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
                 {t('data:viewer.object_id')}
               </label>
               <Input
+                ref={inputRef}
                 id={`objectIdField-${tableName}`}
                 name="objectId"
                 type="text"
@@ -72,7 +79,7 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
             ) : searchedObjectId && query.data !== undefined ? (
               query.data ? (
                 <div className="rounded-md border border-grey-border bg-grey-background-light p-4">
-                  <DataFields table={tableName} object={query.data} options={{ hideLinks: true, showHeader: true }} />
+                  <DataFields table={tableName} object={query.data} options={{ showHeader: true }} />
                 </div>
               ) : (
                 <div className="rounded-sm border border-grey-border bg-surface-card p-4 text-center">

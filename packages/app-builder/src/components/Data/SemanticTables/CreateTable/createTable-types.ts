@@ -178,7 +178,7 @@ export function adaptSemanticField(
 export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTableValue {
   return {
     name: values.name,
-    alias: values.alias,
+    alias: values.alias || values.name,
     semantic_type: getEntityType(
       values.entityType === 'unset' ? 'other' : values.entityType,
       values.subEntity === 'unset' ? 'moral' : values.subEntity,
@@ -199,7 +199,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
     name: field.name,
     description: field.description,
     type: field.dataType,
-    alias: field.alias,
+    alias: field.alias || field.name,
     nullable: field.nullable,
     is_enum: field.isEnum || field.semanticType === 'enum',
     is_unique: field.unicityConstraint === 'active_unique_constraint',

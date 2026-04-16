@@ -338,11 +338,14 @@ function StringId() {
 function StringForeignKey() {
   const field = useField();
   const value = useStringValue();
+  if (!value) return <EmptyValue />;
   return (
-    <span className={cn('inline-flex items-center gap-1', codeClassName)}>
-      <Icon icon="arrow-forward" className="size-4 text-purple-primary" />
-      <span>{field?.foreignkeyTable ?? value ?? '-'}</span>
-    </span>
+    <CopyToClipboardButton toCopy={value}>
+      <span className="inline-flex items-center gap-1" title={value}>
+        <Icon icon="arrow-forward" className="size-4 text-purple-primary" />
+        <span>{field?.foreignkeyTable ?? value ?? '-'}</span>
+      </span>
+    </CopyToClipboardButton>
   );
 }
 
