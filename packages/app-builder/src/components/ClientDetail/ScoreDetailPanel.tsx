@@ -35,8 +35,8 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
             return ((segEnd - segStart) / totalRange) * 100;
           });
           const markerPositions = thresholds.map((v) => ((v - minValue) / totalRange) * 100);
-          const segStart = currentLevel === 1 ? minValue : thresholds[currentLevel - 2]!;
-          const segEnd = currentLevel > thresholds.length ? maxValue : thresholds[currentLevel - 1]!;
+          const segStart = currentLevel === 1 ? minValue : thresholds[currentLevel - 1]!;
+          const segEnd = currentLevel > thresholds.length ? maxValue : thresholds[currentLevel]!;
           const markerPct = (((segStart + segEnd) / 2 - minValue) / totalRange) * 100;
           return { segmentWidths, markerPositions, markerPct };
         })()
@@ -62,7 +62,7 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
             className="absolute top-1/2 size-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white shadow-sm"
             style={{
               left: `${proportional.markerPct}%`,
-              backgroundColor: colors[currentLevel - 1],
+              backgroundColor: colors[currentLevel],
             }}
           />
         ) : null}
@@ -97,9 +97,8 @@ export function ScoreDetailPanel({
   const thresholds = rulesetQuery.data?.ruleset.thresholds;
 
   const maxRiskLevel = scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6;
-  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][activeScore.risk_level - 1] ?? 'inherit';
-  const scoreLabel =
-    SCORING_LEVELS_LABELS[maxRiskLevel][activeScore.risk_level - 1] ?? activeScore.risk_level.toString();
+  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][activeScore.risk_level] ?? 'inherit';
+  const scoreLabel = SCORING_LEVELS_LABELS[maxRiskLevel][activeScore.risk_level] ?? activeScore.risk_level.toString();
 
   return (
     <PanelRoot open={open} onOpenChange={onOpenChange}>
