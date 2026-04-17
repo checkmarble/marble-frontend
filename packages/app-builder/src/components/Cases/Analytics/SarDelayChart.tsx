@@ -12,11 +12,15 @@ import { useTranslation } from 'react-i18next';
 
 import { ChartEmptyState } from './ChartEmptyState';
 import {
+  BAR_BORDER_RADIUS,
+  BAR_BORDER_WIDTH,
+  buildBarGradient,
   CASE_ANALYTICS_COLORS,
-  CHART_LEGEND_OFFSET,
+  formatBracket,
   formatChartNumber,
   formatPeriodTick,
   formatPeriodTooltip,
+  getNiceYAxisTicks,
   getXTickValues,
   isSamePeriodYear,
   nivoTheme,
@@ -36,6 +40,13 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
   const sameYear = useMemo(() => isSamePeriodYear(chartData.map((d) => d.period)), [chartData]);
   const xTickValues = useMemo(() => getXTickValues(chartData, 'period'), [chartData]);
 
+  const yTicks = useMemo(() => getNiceYAxisTicks(chartData.flatMap((d) => [d.avgDays, d.maxDays])), [chartData]);
+
+  const distributionYTicks = useMemo(
+    () => getNiceYAxisTicks(delayDistribution.map((d) => d.count)),
+    [delayDistribution],
+  );
+
   return (
     <div className="bg-surface-card border-grey-border flex flex-col gap-v2-md rounded-v2-lg border p-v2-md">
       <span className="text-s font-medium">{t('cases:analytics.sar.delay_title')}</span>
@@ -54,18 +65,43 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
                 groupMode="grouped"
                 enableLabel={false}
                 padding={0.3}
-                margin={{ top: 5, right: 5, bottom: CHART_LEGEND_OFFSET + 20, left: 50 }}
-                colors={[CASE_ANALYTICS_COLORS.primary, CASE_ANALYTICS_COLORS.primaryLight]}
-                valueScale={{ type: 'linear' }}
+                innerPadding={2}
+                margin={{ top: 5, right: 5, bottom: 60, left: 50 }}
+                colors={[CASE_ANALYTICS_COLORS.yellow, CASE_ANALYTICS_COLORS.orange]}
+                borderRadius={BAR_BORDER_RADIUS}
+                borderWidth={BAR_BORDER_WIDTH}
+                borderColor={{ from: 'color' }}
+                defs={[
+                  buildBarGradient(CASE_ANALYTICS_COLORS.yellow, 'grad-sar-avg'),
+                  buildBarGradient(CASE_ANALYTICS_COLORS.orange, 'grad-sar-max'),
+                ]}
+                fill={[
+                  { match: { id: 'avgDays' }, id: 'grad-sar-avg' },
+                  { match: { id: 'maxDays' }, id: 'grad-sar-max' },
+                ]}
+                valueScale={{ type: 'linear', min: 0, max: yTicks[yTicks.length - 1] }}
                 axisBottom={{
-                  tickRotation: -30,
+                  tickRotation: 0,
                   tickValues: xTickValues,
                   format: (value: string) => formatPeriodTick(value, language, sameYear),
                 }}
                 axisLeft={{
+                  tickValues: yTicks,
                   format: (v: number) => formatChartNumber(v, language),
                 }}
                 legendLabel={(datum) => t(`cases:analytics.chart.${String(datum.id)}`)}
+                legends={[
+                  {
+                    dataFrom: 'keys',
+                    anchor: 'bottom',
+                    direction: 'row',
+                    itemWidth: 110,
+                    itemHeight: 20,
+                    translateY: 56,
+                    symbolShape: 'circle',
+                    symbolSize: 10,
+                  },
+                ]}
                 tooltip={({ id, value, indexValue, data }) => (
                   <div className={tooltipStyle}>
                     <span className="text-s text-grey-primary font-semibold">
@@ -83,18 +119,6 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
                   </div>
                 )}
                 theme={nivoTheme}
-                legends={[
-                  {
-                    dataFrom: 'keys',
-                    anchor: 'bottom',
-                    direction: 'row',
-                    itemWidth: 110,
-                    itemHeight: 20,
-                    translateY: CHART_LEGEND_OFFSET + 20,
-                    symbolShape: 'circle',
-                    symbolSize: 10,
-                  },
-                ]}
               />
             )}
           </div>
@@ -113,18 +137,26 @@ export function SarDelayChart({ delayByPeriod, delayDistribution }: SarDelayChar
                 layout="horizontal"
                 enableLabel={false}
                 padding={0.4}
-                margin={{ top: 5, right: 20, bottom: 24, left: 90 }}
-                colors={[CASE_ANALYTICS_COLORS.primary]}
-                valueScale={{ type: 'linear' }}
+                margin={{ top: 5, right: 20, bottom: 40, left: 90 }}
+                colors={[CASE_ANALYTICS_COLORS.purpleLight]}
+                borderRadius={BAR_BORDER_RADIUS}
+                borderWidth={BAR_BORDER_WIDTH}
+                borderColor={{ from: 'color' }}
+                defs={[buildBarGradient(CASE_ANALYTICS_COLORS.purpleLight, 'grad-sar-distribution')]}
+                fill={[{ match: { id: 'count' }, id: 'grad-sar-distribution' }]}
+                valueScale={{ type: 'linear', min: 0, max: distributionYTicks[distributionYTicks.length - 1] }}
                 axisBottom={{
+                  tickValues: distributionYTicks,
                   format: (v: number) => formatChartNumber(v, language),
                 }}
                 axisLeft={{
-                  format: (v: string) => v,
+                  format: (v: string) => formatBracket(v, t),
                 }}
                 tooltip={({ indexValue, value }) => (
                   <div className={tooltipStyle}>
-                    <span className="text-s text-grey-primary font-semibold">{indexValue}</span>
+                    <span className="text-s text-grey-primary font-semibold">
+                      {formatBracket(String(indexValue), t)}
+                    </span>
                     <div className="flex items-center justify-between gap-v2-md">
                       <span className="text-s text-grey-secondary">{t('cases:analytics.sar.reports')}</span>
                       <span className="text-s text-grey-primary font-semibold">

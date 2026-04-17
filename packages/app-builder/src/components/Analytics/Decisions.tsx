@@ -362,6 +362,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
               padding={padding}
               margin={{ top: 5, right: 5, bottom: 24, left: 54 }}
               colors={getBarColors}
+              borderRadius={4}
+              borderWidth={1}
+              borderColor={{ from: 'color' }}
               defs={[
                 {
                   id: 'compareOpacity',
@@ -371,11 +374,23 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                     { offset: 100, color: 'inherit', opacity: 0.5 },
                   ],
                 },
+                {
+                  id: 'barGradient',
+                  type: 'linearGradient',
+                  colors: [
+                    { offset: 0, color: 'inherit', opacity: 0.85 },
+                    { offset: 100, color: 'inherit', opacity: 0.2 },
+                  ],
+                },
               ]}
               fill={[
                 {
                   match: (n) => n.data.data.rangeId === 'compare',
                   id: 'compareOpacity',
+                },
+                {
+                  match: (n) => n.data.data.rangeId !== 'compare',
+                  id: 'barGradient',
                 },
               ]}
               groupMode={scale === 'symlog' ? 'grouped' : 'stacked'}
@@ -409,31 +424,32 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 const outcomes: Outcome[] = ['approve', 'decline', 'review', 'blockAndReview'];
                 const totalValue = !percentage && typeof data.total === 'number' ? data.total : undefined;
                 return (
-                  <div className="flex flex-col gap-v2-xs bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm">
-                    <div className="text-s text-grey-60 mb-v2-xs">{getTootlipDateFormat(data?.date)}</div>
+                  <div className="flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
+                    <span className="text-s text-grey-primary font-semibold">{getTootlipDateFormat(data?.date)}</span>
                     <div className="flex flex-col gap-v2-xs">
                       {outcomes.map((outcome) => {
                         const outcomeValue = data?.[outcome] ?? 0;
                         const displayValue = percentage ? `${outcomeValue.toFixed(1)}%` : outcomeValue;
                         return (
-                          <div key={outcome} className="flex items-center gap-v2-sm whitespace-nowrap">
-                            <div
-                              className="size-3 rounded-sm flex-shrink-0"
-                              style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
-                            />
-                            <span className="text-s text-grey-primary">
-                              {t(getOutcomeTranslationKey(outcome))}:{' '}
-                              <strong className="font-semibold">{displayValue}</strong>
-                            </span>
+                          <div key={outcome} className="flex items-center justify-between gap-v2-md">
+                            <div className="flex items-center gap-v2-xs">
+                              <div
+                                className="size-2.5 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
+                              />
+                              <span className="text-s text-grey-secondary">{t(getOutcomeTranslationKey(outcome))}</span>
+                            </div>
+                            <span className="text-s text-grey-primary font-semibold">{displayValue}</span>
                           </div>
                         );
                       })}
                     </div>
                     {!percentage && totalValue !== undefined && (
-                      <div className="flex items-center gap-v2-sm pt-v2-xs border-t border-grey-border mt-v2-xs">
-                        <span className="text-s text-grey-primary font-semibold">
-                          {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}: {totalValue}
+                      <div className="flex items-center justify-between gap-v2-md pt-v2-xs border-t border-grey-border mt-v2-xs">
+                        <span className="text-s text-grey-secondary">
+                          {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}
                         </span>
+                        <span className="text-s text-grey-primary font-semibold">{totalValue}</span>
                       </div>
                     )}
                   </div>
