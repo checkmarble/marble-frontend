@@ -311,7 +311,7 @@ function Analytics() {
   ];
 
   return (
-    <Page.Main className="bg-grey-background-light">
+    <Page.Main>
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
           <DetectionNavigationTabs
