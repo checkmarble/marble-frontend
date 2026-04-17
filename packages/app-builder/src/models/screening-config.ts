@@ -54,7 +54,10 @@ export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
 }
 
 export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfigDto {
-  return {
+  const q = mapValues(config.query ?? {}, (node) =>
+    node ? adaptNodeDto(node) : undefined,
+  ) as ScreeningConfigDto['query'];
+  const out = {
     id: config.id,
     name: config.name,
     description: config.description,
@@ -64,9 +67,7 @@ export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfi
     forced_outcome: config.forcedOutcome,
     trigger_rule: config.triggerRule ? adaptNodeDto(config.triggerRule) : undefined,
     entity_type: config.entityType,
-    query: mapValues(config.query ?? {}, (node) =>
-      node ? adaptNodeDto(node) : undefined,
-    ) as ScreeningConfigDto['query'],
+    query: q,
     counterparty_id_expression: config.counterPartyId ? adaptNodeDto(config.counterPartyId) : undefined,
     preprocessing: config.preprocessing
       ? {
@@ -78,4 +79,5 @@ export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfi
         }
       : undefined,
   };
+  return out;
 }
