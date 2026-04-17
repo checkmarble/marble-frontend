@@ -1,6 +1,8 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '@app-builder/components/Schema/SchemaMenu';
+import { Spinner } from '@app-builder/components/Spinner';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
+import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import { type DataModel } from '@app-builder/models/data-model';
 import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
 import Dagre from '@dagrejs/dagre';
@@ -14,10 +16,11 @@ import {
   type NodeChange,
   ReactFlow,
   ReactFlowProvider,
+  useNodesInitialized,
   useReactFlow,
 } from '@xyflow/react';
 import reactflowStyles from '@xyflow/react/dist/style.css?url';
-import { type ReactNode, useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import * as R from 'remeda';
 import { MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -83,6 +86,12 @@ export function TableFlow({ dataModel, children }: TableFlowProps) {
 function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   const [nodes, setNodes] = useState<Array<Node<DataModelNodeData>>>([]);
   const [edges, setEdges] = useState<Array<Edge<DataModelEdgeData>>>([]);
+  const shouldFitRef = useRef(false);
+  const nodesInitialized = useNodesInitialized();
+  const {
+    ref: containerRef,
+    dimensions: { width: containerWidth, height: containerHeight },
+  } = useResizeObserver();
 
   const onNodesChange = useCallback((changes: NodeChange<Node<DataModelNodeData>>[]) => {
     const allowedChanges = changes.filter((change) => change.type !== 'remove');
@@ -160,45 +169,52 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     );
   }, [dataModel]);
 
+  const { fitView, getEdges, getNodes } = useDataModelReactFlow();
+
   useIsomorphicLayoutEffect(() => {
+    if (!nodesInitialized) return;
+    if (!nodes.some((nd) => nd.data.state === 'initialized') && !edges.some((ed) => ed.data?.state === 'initialized'))
+      return;
+
+    const liveNodes = getNodes();
+    const liveEdges = getEdges();
+
+    if (liveNodes.length !== nodes.length || liveEdges.length !== edges.length) return;
     if (
-      nodes.some((nd) => {
-        const { width } = nodeMeasured(nd);
-        return width === undefined;
+      liveNodes.some((nd) => {
+        const { width, height } = nodeMeasured(nd);
+        return width === undefined || height === undefined;
       })
     )
       return;
 
-    if (nodes.some((nd) => nd.data.state === 'initialized') || edges.some((ed) => ed.data?.state === 'initialized')) {
-      const layout = layoutElements(nodes, edges);
-      setNodes(
-        R.pipe(
-          layout.nodes,
-          R.map((nd) => {
-            if (nd.data.state !== 'initialized') return nd;
-            return {
-              ...nd,
-              data: { ...nd.data, state: 'laid_out' },
-            } satisfies Node<DataModelNodeData>;
-          }),
-        ),
-      );
-      setEdges(
-        R.pipe(
-          layout.edges,
-          R.map((ed) => {
-            if (ed.data?.state !== 'initialized') return ed;
-            return {
-              ...ed,
-              data: { ...ed.data, state: 'laid_out' },
-            } satisfies Edge<DataModelEdgeData>;
-          }),
-        ),
-      );
-    }
-  }, [edges, nodes]);
-
-  const { fitView } = useDataModelReactFlow();
+    const layout = layoutElements(liveNodes, liveEdges);
+    shouldFitRef.current = true;
+    setNodes(
+      R.pipe(
+        layout.nodes,
+        R.map((nd) => {
+          if (nd.data.state !== 'initialized') return nd;
+          return {
+            ...nd,
+            data: { ...nd.data, state: 'laid_out' },
+          } satisfies Node<DataModelNodeData>;
+        }),
+      ),
+    );
+    setEdges(
+      R.pipe(
+        layout.edges,
+        R.map((ed) => {
+          if (ed.data?.state !== 'initialized') return ed;
+          return {
+            ...ed,
+            data: { ...ed.data, state: 'laid_out' },
+          } satisfies Edge<DataModelEdgeData>;
+        }),
+      ),
+    );
+  }, [edges, getEdges, getNodes, nodes, nodesInitialized]);
 
   useEffect(() => {
     const hasLaidOutNode = nodes.some((nd) => nd.data.state === 'laid_out');
@@ -233,42 +249,60 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
           }),
         ),
       );
+  }, [edges, nodes]);
 
+  useEffect(() => {
+    if (!shouldFitRef.current || !nodesInitialized || nodes.length === 0) return;
+    if (containerWidth === 0 || containerHeight === 0) return;
+    const visibleNodes = nodes.filter((nd) => nd.data.state === 'visible');
+    if (visibleNodes.length === 0 || visibleNodes.length !== nodes.length) return;
+
+    shouldFitRef.current = false;
     window.requestAnimationFrame(() => {
-      fitView();
+      fitView({ nodes: visibleNodes });
     });
-  }, [edges, fitView, nodes]);
+  }, [containerHeight, containerWidth, fitView, nodes, nodesInitialized]);
+
   const theme = useTheme();
 
   useEffect(() => {
-    const handleResize = () => {
-      window.requestAnimationFrame(() => {
-        fitView();
-      });
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [fitView]);
+    if (containerWidth === 0 || containerHeight === 0) return;
+    const visibleNodes = nodes.filter((nd) => nd.data.state === 'visible');
+    if (visibleNodes.length === 0) return;
+
+    window.requestAnimationFrame(() => {
+      fitView({ nodes: visibleNodes });
+    });
+  }, [containerHeight, containerWidth, fitView, nodes]);
+
+  const isLoading = nodes.length > 0 && nodes.some((nd) => nd.data.state !== 'visible');
 
   return (
-    <ReactFlow<Node<DataModelNodeData>, Edge<DataModelEdgeData>>
-      className="size-full"
-      nodes={nodes}
-      edges={edges}
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
-      minZoom={0.3}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      defaultEdgeOptions={defaultDataModelEdgeOptions}
-      connectionLineStyle={defaultDataModelEdgeOptions.style}
-      colorMode={theme.theme}
-    >
-      <Controls position="bottom-left" className="z-10">
-        <CustomControls />
-      </Controls>
-      {children}
-    </ReactFlow>
+    <div ref={containerRef} className="relative size-full">
+      {isLoading ? (
+        <div className="bg-surface-page/80 absolute inset-0 z-10 flex items-center justify-center rounded-lg backdrop-blur-[1px]">
+          <Spinner className="size-8" />
+        </div>
+      ) : null}
+      <ReactFlow<Node<DataModelNodeData>, Edge<DataModelEdgeData>>
+        className="size-full"
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        minZoom={0.3}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        defaultEdgeOptions={defaultDataModelEdgeOptions}
+        connectionLineStyle={defaultDataModelEdgeOptions.style}
+        colorMode={theme.theme}
+      >
+        <Controls position="bottom-left" className="z-10">
+          <CustomControls />
+        </Controls>
+        {children}
+      </ReactFlow>
+    </div>
   );
 }
 
