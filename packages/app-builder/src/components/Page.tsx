@@ -54,19 +54,29 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(fu
   );
 });
 
+const pageDescriptionClassName = cva(
+  'bg-grey-white text-s text-grey-secondary flex flex-row gap-2 p-v2-md font-normal border-grey-border dark:bg-grey-background',
+  {
+    variants: {
+      headerBanner: {
+        true: 'border-b',
+        false: 'border rounded-v2-md ',
+      },
+    },
+    defaultVariants: {
+      headerBanner: false,
+    },
+  },
+);
+
 function PageDescription({
   className,
   withIcon = true,
+  headerBanner = false,
   ...props
-}: React.ComponentProps<'aside'> & { withIcon?: boolean }) {
+}: React.ComponentProps<'aside'> & { withIcon?: boolean; headerBanner?: boolean }) {
   return (
-    <aside
-      className={cn(
-        'bg-grey-white text-s text-grey-secondary flex flex-row gap-2 p-v2-md font-normal border border-grey-border rounded-v2-md dark:bg-grey-background',
-        className,
-      )}
-      {...props}
-    >
+    <aside className={cn(pageDescriptionClassName({ headerBanner }), className)} {...props}>
       {withIcon ? <Icon icon="tip" className="size-5 shrink-0" /> : null}
       {props.children}
     </aside>

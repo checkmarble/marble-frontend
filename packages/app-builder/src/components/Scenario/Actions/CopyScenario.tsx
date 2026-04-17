@@ -4,8 +4,9 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useCopyScenarioMutation } from '@app-builder/queries/scenarios/copy-scenario';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import { useHydrated } from '@tanstack/react-router';
-import * as React from 'react';
+import { useHydrated, useRouter } from '@tanstack/react-router';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -24,29 +25,49 @@ export function CopyScenario({
   scenarioId: string;
   scenarioName: string;
 }) {
+  const [open, setOpen] = useState(false);
+
+  const handleSuccess = () => {
+    setOpen(false);
+  };
+
   return (
-    <Modal.Root>
+    <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
-        <CopyScenarioContent scenarioId={scenarioId} scenarioName={scenarioName} />
+        <CopyScenarioContent scenarioId={scenarioId} scenarioName={scenarioName} onSuccess={handleSuccess} />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-function CopyScenarioContent({ scenarioId, scenarioName }: { scenarioId: string; scenarioName: string }) {
+type CopyScenarioContentProps = {
+  scenarioId: string;
+  scenarioName: string;
+  onSuccess: () => void;
+};
+
+function CopyScenarioContent({ scenarioId, scenarioName, onSuccess }: CopyScenarioContentProps) {
   const { t } = useTranslation(['scenarios', 'common']);
   const copyScenarioMutation = useCopyScenarioMutation();
+  const router = useRouter();
 
   const form = useForm({
     defaultValues: {
       name: '',
     },
     onSubmit: async ({ value }) => {
-      await copyScenarioMutation.mutateAsync({
-        scenarioId,
-        name: value.name || t('scenarios:copy_scenario.name_placeholder', { name: scenarioName }),
-      });
+      try {
+        await copyScenarioMutation.mutateAsync({
+          scenarioId,
+          name: value.name || t('scenarios:copy_scenario.name_placeholder', { name: scenarioName }),
+        });
+        toast.success(t('common:success.save'));
+        onSuccess();
+        router.invalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
+      }
     },
     validators: {
       onSubmitAsync: copyScenarioFormSchema,

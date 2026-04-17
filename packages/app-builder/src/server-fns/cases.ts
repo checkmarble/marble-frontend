@@ -1,6 +1,6 @@
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isStatusBadRequestHttpError, isStatusConflictHttpError } from '@app-builder/models';
+import { isNotFoundHttpError, isStatusBadRequestHttpError, isStatusConflictHttpError } from '@app-builder/models';
 import { type AiSettingSchema } from '@app-builder/models/ai-settings';
 import {
   type AiCaseReviewListItem,
@@ -387,21 +387,22 @@ export const addToCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(addToCasePayloadSchema)
   .handler(async ({ context, data }) => {
+    const request = getRequest();
+    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
+
     try {
       if (data.newCase) {
-        const createdCase = await context.authInfo.cases.createCase(data);
-        throw redirect({ to: '/cases/$caseId', params: { caseId: fromUUIDtoSUUID(createdCase.id) } });
+        return await context.authInfo.cases.createCase(data);
       } else {
-        await context.authInfo.cases.addDecisionsToCase(data);
-        await setToast({ type: 'success', messageKey: 'common:success.add_to_case' });
+        return await context.authInfo.cases.addDecisionsToCase(data);
       }
     } catch (error) {
-      if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
-      await setToast({
-        type: 'error',
-        messageKey: isStatusBadRequestHttpError(error) ? 'common:errors.add_to_case.invalid' : 'common:errors.unknown',
-      });
-      throw new Error('Failed to add to case');
+      if (isStatusBadRequestHttpError(error)) {
+        throw new Error(t('common:errors.add_to_case.invalid'));
+      } else if (isNotFoundHttpError(error)) {
+        throw new Error(t('cases:errors.case_not_found'));
+      }
+      throw new Error(t('common:errors.unknown'));
     }
   });
 

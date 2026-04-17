@@ -198,17 +198,10 @@ export const copyScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(copyScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.scenario.copyScenario({
-        scenarioId: data.scenarioId,
-        name: data.name || undefined,
-      });
-      throw redirect({ to: '/detection/scenarios' });
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to copy scenario');
-    }
+    return context.authInfo.scenario.copyScenario({
+      scenarioId: data.scenarioId,
+      name: data.name || undefined,
+    });
   });
 
 export const createScenarioFn = createServerFn({ method: 'POST' })

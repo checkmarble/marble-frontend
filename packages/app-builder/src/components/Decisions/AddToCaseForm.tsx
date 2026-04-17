@@ -2,20 +2,36 @@ import { useDecisionRightPanelContext } from '@app-builder/components';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { CaseDetail } from '@app-builder/models/cases';
 import { existingCaseSchema, newCaseSchema, useAddToCaseMutation } from '@app-builder/queries/cases/add-to-case';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+type OnSuccessAddFn = (type: 'new_case' | 'existing_case', caseDetail: CaseDetail) => void;
+
 export function AddToCaseForm() {
   const { t } = useTranslation(['decisions']);
   const inboxesQuery = useGetInboxesQuery();
   const [isNewCase, setIsNewCase] = useState(false);
+  const { closePanel } = useDecisionRightPanelContext();
+  const router = useRouter();
+  const navigate = useNavigate();
+
+  const handleSuccess: OnSuccessAddFn = async (type, caseDetail) => {
+    closePanel();
+    await router.invalidate();
+
+    if (type === 'new_case') {
+      navigate({ to: '/cases/s/$caseId', params: { caseId: fromUUIDtoSUUID(caseDetail.id) } });
+    }
+  };
 
   if (inboxesQuery.isPending) {
     return <p>Loading...</p>;
@@ -38,7 +54,11 @@ export function AddToCaseForm() {
         </FormLabel>
         <Switch id="newCase" checked={isNewCase} onCheckedChange={(checked) => setIsNewCase(checked)} />
       </div>
-      {isNewCase ? <NewCaseForm inboxes={inboxes} /> : <ExistingCaseForm />}
+      {isNewCase ? (
+        <NewCaseForm inboxes={inboxes} onSuccess={handleSuccess} />
+      ) : (
+        <ExistingCaseForm onSuccess={handleSuccess} />
+      )}
     </div>
   );
 }
@@ -48,11 +68,10 @@ interface Inbox {
   name: string;
 }
 
-function NewCaseForm({ inboxes }: { inboxes: Inbox[] }) {
+function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSuccessAddFn }) {
   const { t } = useTranslation(['decisions']);
   const addToCaseMutation = useAddToCaseMutation();
-  const revalidate = useLoaderRevalidator();
-  const { data, closePanel } = useDecisionRightPanelContext();
+  const { data } = useDecisionRightPanelContext();
 
   const form = useForm({
     defaultValues: {
@@ -62,18 +81,16 @@ function NewCaseForm({ inboxes }: { inboxes: Inbox[] }) {
     validators: {
       onSubmit: newCaseSchema.pick({ name: true, inboxId: true }),
     },
-    onSubmit: ({ value, formApi }) => {
+    onSubmit: async ({ value, formApi }) => {
       if (!formApi.state.isValid) return;
-      addToCaseMutation
-        .mutateAsync({
-          newCase: true,
-          decisionIds: data?.decisionIds ?? [],
-          ...value,
-        })
-        .then(() => {
-          closePanel();
-          revalidate();
-        });
+
+      const caseDetail = await addToCaseMutation.mutateAsync({
+        newCase: true,
+        decisionIds: data?.decisionIds ?? [],
+        ...value,
+      });
+
+      onSuccess('new_case', caseDetail);
     },
   });
 
@@ -148,11 +165,10 @@ function NewCaseForm({ inboxes }: { inboxes: Inbox[] }) {
   );
 }
 
-function ExistingCaseForm() {
+function ExistingCaseForm({ onSuccess }: { onSuccess: OnSuccessAddFn }) {
   const { t } = useTranslation(['decisions']);
   const addToCaseMutation = useAddToCaseMutation();
-  const revalidate = useLoaderRevalidator();
-  const { data, closePanel } = useDecisionRightPanelContext();
+  const { data } = useDecisionRightPanelContext();
 
   const form = useForm({
     defaultValues: {
@@ -161,18 +177,16 @@ function ExistingCaseForm() {
     validators: {
       onSubmit: existingCaseSchema.pick({ caseId: true }),
     },
-    onSubmit: ({ value, formApi }) => {
+    onSubmit: async ({ value, formApi }) => {
       if (!formApi.state.isValid) return;
-      addToCaseMutation
-        .mutateAsync({
-          newCase: false,
-          decisionIds: data?.decisionIds ?? [],
-          ...value,
-        })
-        .then(() => {
-          closePanel();
-          revalidate();
-        });
+
+      const caseDetail = await addToCaseMutation.mutateAsync({
+        newCase: false,
+        decisionIds: data?.decisionIds ?? [],
+        ...value,
+      });
+
+      onSuccess('existing_case', caseDetail);
     },
   });
 
