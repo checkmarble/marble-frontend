@@ -2,6 +2,7 @@ import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '@app-builder/components/Schema/SchemaMenu';
 import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { type DataModel } from '@app-builder/models/data-model';
+import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
 import Dagre from '@dagrejs/dagre';
 import {
   applyEdgeChanges,
@@ -49,12 +50,8 @@ const edgeTypes = {
 
 const useDataModelReactFlow = useReactFlow<Node<DataModelNodeData>, Edge<DataModelEdgeData>>;
 
-function nodeMeasuredWidth(nd: Node<DataModelNodeData>) {
-  return nd.measured?.width ?? nd.width;
-}
-
-function nodeMeasuredHeight(nd: Node<DataModelNodeData>) {
-  return nd.measured?.height ?? nd.height;
+function nodeMeasured(nd: Node<DataModelNodeData>) {
+  return { width: nd.measured?.width ?? nd.width, height: nd.measured?.height ?? nd.height };
 }
 
 function getRelationFieldNames(tableModel: DataModel[number], dataModel: DataModel) {
@@ -163,8 +160,14 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     );
   }, [dataModel]);
 
-  useEffect(() => {
-    if (nodes.some((nd) => nodeMeasuredWidth(nd) === undefined)) return;
+  useIsomorphicLayoutEffect(() => {
+    if (
+      nodes.some((nd) => {
+        const { width } = nodeMeasured(nd);
+        return width === undefined;
+      })
+    )
+      return;
 
     if (nodes.some((nd) => nd.data.state === 'initialized') || edges.some((ed) => ed.data?.state === 'initialized')) {
       const layout = layoutElements(nodes, edges);
@@ -196,6 +199,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   }, [edges, nodes]);
 
   const { fitView } = useDataModelReactFlow();
+
   useEffect(() => {
     const hasLaidOutNode = nodes.some((nd) => nd.data.state === 'laid_out');
     const hasLaidOutEdge = edges.some((ed) => ed.data?.state === 'laid_out');
@@ -235,6 +239,16 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     });
   }, [edges, fitView, nodes]);
   const theme = useTheme();
+
+  useEffect(() => {
+    const handleResize = () => {
+      window.requestAnimationFrame(() => {
+        fitView();
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [fitView]);
 
   return (
     <ReactFlow<Node<DataModelNodeData>, Edge<DataModelEdgeData>>
@@ -290,17 +304,18 @@ function layoutElements(nodes: Array<Node<DataModelNodeData>>, edges: Array<Edge
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   g.setGraph({
     rankdir: 'LR',
-    nodesep: 150,
-    ranksep: 150,
+    nodesep: 100,
+    ranksep: 100,
   });
 
   edges.forEach((edge) => g.setEdge(edge.source, edge.target));
-  nodes.forEach((node) =>
-    g.setNode(node.id, {
-      width: nodeMeasuredWidth(node) ?? undefined,
-      height: nodeMeasuredHeight(node) ?? undefined,
-    }),
-  );
+  nodes.forEach((node) => {
+    const { width, height } = nodeMeasured(node);
+    return g.setNode(node.id, {
+      width,
+      height,
+    });
+  });
 
   Dagre.layout(g, {
     weight: 1000,
@@ -310,9 +325,10 @@ function layoutElements(nodes: Array<Node<DataModelNodeData>>, edges: Array<Edge
   return {
     nodes: nodes.map((nd) => {
       const { x, y } = g.node(nd.id);
+      const { width, height } = nodeMeasured(nd);
       const position = {
-        x: x - (nodeMeasuredWidth(nd) ?? 0) / 2,
-        y: y - (nodeMeasuredHeight(nd) ?? 0) / 2,
+        x: x - (width ?? 0) / 2,
+        y: y - (height ?? 0) / 2,
       };
 
       if (position.x === nd.position.x && position.y === nd.position.y) {
