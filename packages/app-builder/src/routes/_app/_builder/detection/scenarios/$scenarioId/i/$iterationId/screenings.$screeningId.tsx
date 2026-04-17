@@ -127,26 +127,25 @@ const editScreeningAction = createServerFn({ method: 'POST' })
   .handler(async function editScreeningAction({ context, data: { params, payload } }) {
     const { scenarioIterationScreeningRepository } = context.authInfo;
 
-    const changes = {
-      ...payload,
-      counterPartyId: payload.counterPartyId ?? NewUndefinedAstNode(),
-      query: clearQuery(payload.entityType, payload.query) as Partial<{
-        [key: string]: import('@app-builder/models').AstNode;
-      }>,
-      preprocessing: {
-        ...payload.preprocessing,
-        useNer: payload.entityType === 'Thing' ? payload.preprocessing?.useNer : undefined,
-        nerIgnoreClassification: payload.preprocessing?.useNer
-          ? payload.preprocessing?.nerIgnoreClassification
-          : undefined,
-        skipIfUnder: payload.preprocessing?.skipIfUnder ?? undefined,
-        blacklistListId: payload.preprocessing?.blacklistListId ?? undefined,
-      },
-    } as any;
     return scenarioIterationScreeningRepository.updateScreeningConfig({
       iterationId: params.iterationId,
       screeningId: params.screeningId,
-      changes: changes,
+      changes: {
+        ...payload,
+        counterPartyId: payload.counterPartyId ?? NewUndefinedAstNode(),
+        query: clearQuery(payload.entityType, payload.query) as Partial<{
+          [key: string]: import('@app-builder/models').AstNode;
+        }>,
+        preprocessing: {
+          ...payload.preprocessing,
+          useNer: payload.entityType === 'Thing' ? payload.preprocessing?.useNer : undefined,
+          nerIgnoreClassification: payload.preprocessing?.useNer
+            ? payload.preprocessing?.nerIgnoreClassification
+            : undefined,
+          skipIfUnder: payload.preprocessing?.skipIfUnder ?? undefined,
+          blacklistListId: payload.preprocessing?.blacklistListId ?? undefined,
+        },
+      } as any,
     });
   });
 
