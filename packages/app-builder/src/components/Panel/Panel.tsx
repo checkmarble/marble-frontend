@@ -1,11 +1,10 @@
 import { Slot } from '@radix-ui/react-slot';
-import { IconProps } from 'packages/ui-icons/src/Icon';
 import { type ComponentPropsWithoutRef, forwardRef, type ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
 import { Button, ButtonAppearance, ButtonVariant, cn, StickyComponent, Typo, UnstyledInput } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Icon, type IconProps } from 'ui-icons';
 import { PanelOverlay } from './PanelOverlay';
 
 export type PanelSize = 'small' | 'medium' | 'large';

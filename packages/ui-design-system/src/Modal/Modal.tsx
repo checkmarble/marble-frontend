@@ -1,9 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { IconProps } from 'packages/ui-icons/src/Icon';
 import { forwardRef, type ReactNode } from 'react';
 import { match } from 'ts-pattern';
-import { Icon } from 'ui-icons';
+import { Icon, type IconProps } from 'ui-icons';
 import { Button, CtaV2ClassName } from '../Button/Button';
 import { StickyComponent } from '../StickyComponent/StickyComponent';
 import { typoClassName } from '../Typography/Typo';

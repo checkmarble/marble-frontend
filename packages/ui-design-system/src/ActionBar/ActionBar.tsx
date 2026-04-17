@@ -1,6 +1,5 @@
-import type { IconProps } from 'packages/ui-icons/src/Icon';
 import { Children, Fragment, ReactNode } from 'react';
-import { Icon } from 'ui-icons';
+import { Icon, type IconProps } from 'ui-icons';
 import { Button } from '../Button/Button';
 
 type ActionBarProps = {

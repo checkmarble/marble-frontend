@@ -1,5 +1,4 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { type UnionToArray } from '@app-builder/utils/types';
 import {
   type AiCaseReviewListItemDto,
   type CaseContributorDto,
@@ -71,7 +70,7 @@ export type CaseOutcome = Outcome;
 export const caseOutcomes: CaseOutcome[] = ['false_positive', 'valuable_alert', 'confirmed_risk', 'unset'];
 
 export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
-export const finalOutcomes: UnionToArray<FinalOutcome> = ['false_positive', 'valuable_alert', 'confirmed_risk'];
+export const finalOutcomes = ['false_positive', 'valuable_alert', 'confirmed_risk'] as const;
 
 // AI review levels from case review
 export const caseReviewLevels = ['probable_false_positive', 'investigate', 'escalate'] as const;
@@ -125,7 +124,7 @@ export const adaptCase = (dto: CaseDto): Case => ({
 //
 
 export type CaseEventType = CaseEventDto['event_type'];
-export const caseEventTypes: UnionToArray<CaseEventType> = [
+export const caseEventTypes = [
   'case_created',
   'status_updated',
   'outcome_updated',
@@ -145,7 +144,7 @@ export const caseEventTypes: UnionToArray<CaseEventType> = [
   'sar_status_changed',
   'sar_file_uploaded',
   'entity_annotated',
-];
+] as const;
 
 interface CaseEventBase<T extends CaseEventType> {
   id: string;

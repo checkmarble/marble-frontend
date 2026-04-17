@@ -8,7 +8,8 @@
     "@vitest/ui": "4.1.8",
     "lefthook": "^2.1.9",
     "react-refresh": "^0.18.0",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "@typescript/native-preview": "7.0.0-dev.20260417.1"
   },
   "license": "MIT",
   "overrides": {
