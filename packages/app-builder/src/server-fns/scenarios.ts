@@ -198,17 +198,10 @@ export const copyScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(copyScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.scenario.copyScenario({
-        scenarioId: data.scenarioId,
-        name: data.name || undefined,
-      });
-      throw redirect({ to: '/detection/scenarios' });
-    } catch (error) {
-      if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to copy scenario');
-    }
+    return context.authInfo.scenario.copyScenario({
+      scenarioId: data.scenarioId,
+      name: data.name || undefined,
+    });
   });
 
 export const createScenarioFn = createServerFn({ method: 'POST' })
@@ -444,14 +437,7 @@ export const createDraftIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    const draftIteration = await context.authInfo.apiClient.createDraftFromScenarioIteration(data.iterationId);
-    throw redirect({
-      to: '/detection/scenarios/$scenarioId/i/$iterationId',
-      params: {
-        scenarioId: fromUUIDtoSUUID(data.scenarioId),
-        iterationId: fromUUIDtoSUUID(draftIteration.id),
-      },
-    });
+    return context.authInfo.apiClient.createDraftFromScenarioIteration(data.iterationId);
   });
 
 export const deactivateIterationFn = createServerFn({ method: 'POST' })

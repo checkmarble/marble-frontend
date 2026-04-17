@@ -108,3 +108,19 @@ export const updateScoringSettingsFn = createServerFn({ method: 'POST' })
       throw new Error('Failed to update scoring settings');
     }
   });
+
+export const getScoringRulesetFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ recordType: z.string() }))
+  .handler(async ({ context, data }) => {
+    const ruleset = await context.authInfo.userScoring.getRulesetWithRules(data.recordType);
+    return { ruleset };
+  });
+
+export const getScoreDistributionFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ recordType: z.string() }))
+  .handler(async ({ context, data }) => {
+    const distribution = await context.authInfo.userScoring.getScoreDistribution(data.recordType);
+    return { distribution };
+  });

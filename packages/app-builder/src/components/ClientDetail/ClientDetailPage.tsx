@@ -1,12 +1,13 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
 import { DataModelObject } from '@app-builder/models';
+import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABELS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
 import { useQueryClient } from '@tanstack/react-query';
-import { Client360Table } from 'marble-api';
+import { Client360Table, type ScoringScore } from 'marble-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -23,6 +24,7 @@ import { ClientComments } from './ClientComments';
 import { DocumentsList } from './DocumentsList';
 import { MonitoringHitsList } from './MonitoringHitsList';
 import { ObjectHierarchy } from './ObjectHierarchy';
+import { ScoreDetailPanel } from './ScoreDetailPanel';
 import { TitleBar } from './TitleBar';
 
 type ClientDetailPageProps = {
@@ -31,6 +33,8 @@ type ClientDetailPageProps = {
   objectDetails: DataModelObject;
   metadata: Client360Table;
   allMetadata: Client360Table[];
+  scoringSettings: ScoringSettings | null;
+  activeScore: ScoringScore | null;
 };
 
 export const ClientDetailPage = ({
@@ -39,6 +43,8 @@ export const ClientDetailPage = ({
   objectDetails,
   metadata,
   allMetadata,
+  scoringSettings,
+  activeScore,
 }: ClientDetailPageProps) => {
   const { t } = useTranslation(['common', 'client360']);
   const dataModelQuery = useDataModelWithOptionsQuery();
@@ -54,7 +60,19 @@ export const ClientDetailPage = ({
   const [showAlertHitsPanel, setShowAlertHitsPanel] = useState(false);
   const alertHitsQuery = useGetObjectCasesQuery(objectType, objectId);
   const alertHitsCount = alertHitsQuery.data?.cases.length ?? 0;
-  // const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
+  const [showScorePanel, setShowScorePanel] = useState(false);
+
+  let [scoreColor, scoreLabel] = ['', ''];
+
+  if (scoringSettings && activeScore) {
+    scoreColor =
+      SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level - 1] ?? 'inherit';
+    scoreLabel =
+      SCORING_LEVELS_LABELS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level - 1] ??
+      activeScore.risk_level.toString();
+  }
+
+  const handleScoreClick = () => setShowScorePanel(true);
 
   return (
     <DataModelExplorerProvider>
@@ -74,24 +92,21 @@ export const ClientDetailPage = ({
             {/* Client details */}
             <div className="flex gap-v2-md">
               {/* Score card */}
-              {/*<div className="flex flex-col items-center gap-v2-md justify-center text-orange-primary not-dark:bg-orange-background-light border border-orange-border rounded-lg p-v2-md py-v2-sm w-[180px] min-h-[140px] self-start shrink-0">
-                <div className="flex flex-col items-center gap-v2-sm">
-                  <span>Score:</span>
-                  <span className="text-[30px] font-semibold">XX / XXX</span>
-                </div>
-                <Tooltip.Default content="This is a tooltip">
-                  <Icon icon="tip" className="size-5" />
-                </Tooltip.Default>
-              </div>*/}
-              <div className="relative size-[180px] rounded-v2-md bg-surface-card">
-                <div className="absolute flex flex-col items-center gap-v2-sm justify-center size-[180px] border border-grey-border/80 rounded-v2-md">
-                  <Icon icon="comet" className="size-10 text-yellow-primary" />
-                  <div className="flex flex-col items-center">
-                    <span className="font-semibold">{t('client360:client_detail.score_card.title')}</span>
-                    <span>{t('client360:client_detail.score_card.coming_soon')}</span>
+              {scoringSettings && activeScore ? (
+                <button
+                  type="button"
+                  className="flex flex-col gap-v2-sm border rounded-lg p-v2-md py-v2-sm w-[180px] self-start shrink-0 items-start"
+                  style={{ borderColor: scoreColor, backgroundColor: `${scoreColor}20` }}
+                  onClick={handleScoreClick}
+                >
+                  <span className="text-small">{t('client360:client_detail.risk_level')}</span>
+                  <div className="flex gap-v2-xs items-center">
+                    <div className="size-4 rounded-full" style={{ backgroundColor: scoreColor }} />
+                    <span className="font-semibold">{scoreLabel}</span>
+                    <Icon icon="eye" className="size-4" />
                   </div>
-                </div>
-              </div>
+                </button>
+              ) : null}
               {/* Client fields card */}
               <Card className="grow">
                 <div className="min-h-[140px]">
@@ -265,6 +280,15 @@ export const ClientDetailPage = ({
           </div>
         </PanelContainer>
       </PanelRoot>
+      {scoringSettings && activeScore ? (
+        <ScoreDetailPanel
+          open={showScorePanel}
+          onOpenChange={setShowScorePanel}
+          objectType={objectType}
+          activeScore={activeScore}
+          scoringSettings={scoringSettings}
+        />
+      ) : null}
     </DataModelExplorerProvider>
   );
 };

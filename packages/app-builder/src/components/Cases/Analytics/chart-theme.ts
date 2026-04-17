@@ -39,7 +39,58 @@ export const CASE_ANALYTICS_COLORS = {
   success: 'var(--color-green-primary)',
   warning: 'var(--color-yellow-primary)',
   danger: 'var(--color-red-primary)',
+  // New tokens added for the Figma design pass
+  yellow: 'var(--color-yellow-primary)',
+  yellowLight: 'var(--color-yellow-secondary)',
+  orange: 'var(--color-orange-primary)',
+  orangeLight: 'var(--color-orange-secondary)',
+  red: 'var(--color-red-secondary)',
+  green: 'var(--color-green-secondary)',
+  purple: 'var(--color-purple-primary)',
+  purpleLight: 'var(--color-purple-secondary)',
 } as const;
+
+/** Corner radius applied to bars for the Figma rounded look. */
+export const BAR_BORDER_RADIUS = 6;
+
+/** Outline width drawn around each bar (in bar's own color). */
+export const BAR_BORDER_WIDTH = 1;
+
+/**
+ * Builds a nivo `defs` linearGradient entry for a vertical gradient on a bar.
+ * Top of the bar uses the color at opacity 0.8; bottom fades to 0.15.
+ * Pair with `fill={[{ match: { id: '<key>' }, id: '<gradientId>' }]}` on ResponsiveBar.
+ */
+export function buildBarGradient(colorVar: string, id: string) {
+  return {
+    id,
+    type: 'linearGradient' as const,
+    colors: [
+      { offset: 0, color: colorVar, opacity: 0.8 },
+      { offset: 100, color: colorVar, opacity: 0.15 },
+    ],
+  };
+}
+
+const DEFAULT_Y_TICKS = [0, 200, 400, 600, 800, 1000];
+
+/**
+ * Computes 6 clean integer y-axis ticks from a list of raw numeric values.
+ * The top tick is the data max rounded up to the nearest power-of-10 multiple
+ * (5, 10, 25, 50, 100, 250, 500, 1000, ...). Returns a safe default for empty data.
+ * Lifted from components/Cases/Overview/constants.ts::getYAxisTicksValues.
+ */
+export function getNiceYAxisTicks(values: number[]): number[] {
+  if (values.length === 0) return DEFAULT_Y_TICKS;
+
+  const maxValue = Math.max(...values);
+  if (maxValue === 0) return DEFAULT_Y_TICKS;
+
+  const highestPow10Divider = Math.max(10, Math.pow(10, Math.floor(Math.log10(maxValue))));
+  const lastTickValue = Math.ceil(maxValue / highestPow10Divider) * highestPow10Divider;
+
+  return Array.from({ length: 6 }, (_, i) => (lastTickValue / 5) * i);
+}
 
 /**
  * Formats a period key (YYYY-MM-DD / YYYY-MM / YYYY-Q[1-4]) to a short, localized axis tick label.
@@ -120,4 +171,24 @@ export function isSamePeriodYear(periods: string[]): boolean {
   if (periods.length === 0) return true;
   const years = new Set(periods.map((p) => p.slice(0, 4)));
   return years.size === 1;
+}
+
+/**
+ * Localizes a backend AnalyticsBracketDto value ('0-2' | '3-10' | '11-30' | '31+')
+ * to a human-readable, localized day-range label via the i18n t() function.
+ * Unknown bracket values fall through unchanged so chart rendering never breaks.
+ */
+export function formatBracket(bracket: string, t: (key: string) => string): string {
+  switch (bracket) {
+    case '0-2':
+      return t('cases:analytics.chart.bracket.0_2');
+    case '3-10':
+      return t('cases:analytics.chart.bracket.3_10');
+    case '11-30':
+      return t('cases:analytics.chart.bracket.11_30');
+    case '31+':
+      return t('cases:analytics.chart.bracket.over_30');
+    default:
+      return bracket;
+  }
 }

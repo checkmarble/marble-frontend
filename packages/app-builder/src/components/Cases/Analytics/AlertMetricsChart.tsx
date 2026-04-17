@@ -6,10 +6,14 @@ import { useTranslation } from 'react-i18next';
 
 import { ChartEmptyState } from './ChartEmptyState';
 import {
+  BAR_BORDER_RADIUS,
+  BAR_BORDER_WIDTH,
+  buildBarGradient,
   CASE_ANALYTICS_COLORS,
   formatChartNumber,
   formatPeriodTick,
   formatPeriodTooltip,
+  getNiceYAxisTicks,
   getXTickValues,
   isSamePeriodYear,
   nivoTheme,
@@ -27,6 +31,7 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
 
   const alertSameYear = useMemo(() => isSamePeriodYear(alertCountByPeriod.map((d) => d.period)), [alertCountByPeriod]);
   const alertXTickValues = useMemo(() => getXTickValues(alertCountByPeriod, 'period'), [alertCountByPeriod]);
+  const alertYTicks = useMemo(() => getNiceYAxisTicks(alertCountByPeriod.map((d) => d.count)), [alertCountByPeriod]);
 
   const fpSameYear = useMemo(
     () => isSamePeriodYear(falsePositiveRateByPeriod.map((d) => d.period)),
@@ -52,14 +57,20 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                 enableLabel={false}
                 padding={0.3}
                 margin={{ top: 5, right: 5, bottom: 40, left: 50 }}
-                colors={[CASE_ANALYTICS_COLORS.secondary]}
-                valueScale={{ type: 'linear' }}
+                colors={[CASE_ANALYTICS_COLORS.red]}
+                borderRadius={BAR_BORDER_RADIUS}
+                borderWidth={BAR_BORDER_WIDTH}
+                borderColor={{ from: 'color' }}
+                defs={[buildBarGradient(CASE_ANALYTICS_COLORS.red, 'grad-alert-count')]}
+                fill={[{ match: { id: 'count' }, id: 'grad-alert-count' }]}
+                valueScale={{ type: 'linear', min: 0, max: alertYTicks[alertYTicks.length - 1] }}
                 axisBottom={{
-                  tickRotation: -30,
+                  tickRotation: 0,
                   tickValues: alertXTickValues,
                   format: (value: string) => formatPeriodTick(value, language, alertSameYear),
                 }}
                 axisLeft={{
+                  tickValues: alertYTicks,
                   format: (v: number) => formatChartNumber(v, language),
                 }}
                 tooltip={({ indexValue, value }) => (
@@ -94,11 +105,16 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                 enableLabel={false}
                 padding={0.3}
                 margin={{ top: 5, right: 5, bottom: 40, left: 40 }}
-                colors={[CASE_ANALYTICS_COLORS.warning]}
+                colors={[CASE_ANALYTICS_COLORS.green]}
+                borderRadius={BAR_BORDER_RADIUS}
+                borderWidth={BAR_BORDER_WIDTH}
+                borderColor={{ from: 'color' }}
+                defs={[buildBarGradient(CASE_ANALYTICS_COLORS.green, 'grad-fp-rate')]}
+                fill={[{ match: { id: 'rate' }, id: 'grad-fp-rate' }]}
                 valueScale={{ type: 'linear', min: 0, max: 100 }}
                 gridYValues={[0, 25, 50, 75, 100]}
                 axisBottom={{
-                  tickRotation: -30,
+                  tickRotation: 0,
                   tickValues: fpXTickValues,
                   format: (value: string) => formatPeriodTick(value, language, fpSameYear),
                 }}

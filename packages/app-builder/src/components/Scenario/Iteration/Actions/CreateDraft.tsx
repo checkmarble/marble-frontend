@@ -1,7 +1,7 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateDraftIterationMutation } from '@app-builder/queries/scenarios/create-draft-iteration';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -53,12 +53,19 @@ const ExistingDraftModal = ({
 }) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const createDraftIterationMutation = useCreateDraftIterationMutation(scenarioId, iterationId);
-  const navigate = useAgnosticNavigation();
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleOverrideDraft = () => {
-    createDraftIterationMutation.mutateAsync().then(() => {
-      revalidate();
+    createDraftIterationMutation.mutateAsync().then(async (newIteration) => {
+      await router.invalidate();
+      navigate({
+        to: '/detection/scenarios/$scenarioId/i/$iterationId/trigger',
+        params: {
+          scenarioId: fromUUIDtoSUUID(scenarioId),
+          iterationId: fromUUIDtoSUUID(newIteration.id),
+        },
+      });
     });
   };
 
@@ -85,13 +92,26 @@ const ExistingDraftModal = ({
               variant="secondary"
               appearance="stroked"
               onClick={() =>
-                navigate(location.pathname.replace(fromUUIDtoSUUID(iterationId), fromUUIDtoSUUID(draftId)))
+                navigate({
+                  to: '../$iterationId',
+                  from: '/detection/scenarios/$scenarioId/i/$iterationId',
+                  params: {
+                    iterationId: fromUUIDtoSUUID(draftId),
+                  },
+                })
               }
             >
               {t('scenarios:create_draft.keep_existing_draft')}
             </Button>
           </Modal.Close>
-          <Button className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
+          <Button
+            className="flex-1"
+            variant="primary"
+            name="create"
+            onClick={handleOverrideDraft}
+            disabled={createDraftIterationMutation.isPending}
+          >
+            {createDraftIterationMutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
             {t('scenarios:create_draft.override_existing_draft')}
           </Button>
         </Modal.Footer>

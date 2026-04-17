@@ -308,6 +308,38 @@
       '401':
         $ref: 'components.yml#/responses/401'
 
+/scoring/distribution/{recordType}:
+  get:
+    tags: [Scoring]
+    summary: Get an entity's score distribution
+    operationId: getScoreDistribution
+    parameters:
+      - name: recordType
+        description: Data model type of the scoring ruleset
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Distribution
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required: [risk_level, count]
+                properties:
+                  risk_level:
+                    type: integer
+                  count:
+                    type: integer
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+
 components:
   schemas:
     ScoringSettings:

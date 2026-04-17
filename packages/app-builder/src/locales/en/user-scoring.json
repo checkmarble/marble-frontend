@@ -2,6 +2,8 @@
   "overview.configure_score": "Configure a score",
 
   "overview.no_ruleset": "You don't have any ruleset configured yet. Choose an entity on which to create a ruleset to start.",
+  "overview.ruleset_card.no_distribution": "No distribution yet",
+  "overview.ruleset_card.title": "Risk repartition for: {{name}}",
   "risk_type.customer_features": "Customer features",
   "risk_type.distribution_channels": "Distribution channels",
   "risk_type.geo_risks": "Geo risks",
