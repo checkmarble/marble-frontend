@@ -27,7 +27,7 @@ type ScoringRuleEditPanelProps = {
   maxRiskLevel: number;
   customLists?: CustomList[];
   hasValidLicense?: boolean;
-  onChange?: (rule: ScoringRule) => void;
+  onChange?: (rule: ScoringRule) => Promise<boolean>;
   onDelete?: () => void;
 };
 
@@ -70,11 +70,13 @@ export function ScoringRuleEditPanel({
 
   const isValid = !!name.trim() && !!riskType && !!currentModel && isCompleteRule(currentModel);
 
-  const handleValidate = () => {
-    if (isValid && currentModel && isCompleteRule(currentModel)) {
-      onChange?.({ ...rule, name, riskType, ast: buildSwitchAstNodeFromModel(currentModel) });
+  const handleValidate = async () => {
+    if (isValid && currentModel && isCompleteRule(currentModel) && onChange) {
+      const result = await onChange({ ...rule, name, riskType, ast: buildSwitchAstNodeFromModel(currentModel) });
+      if (result) {
+        sharp.actions.close();
+      }
     }
-    sharp.actions.close();
   };
 
   return (

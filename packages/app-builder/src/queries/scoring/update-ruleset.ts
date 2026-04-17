@@ -10,7 +10,7 @@ export const useUpdateScoringRulesetMutation = () => {
   return useMutation({
     mutationKey: ['scoring', 'update-ruleset'],
     mutationFn: async (payload: UpdateScoringRulesetPayload) => {
-      await updateScoringRuleset({ data: payload });
+      return updateScoringRuleset({ data: payload });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['scoring'] });
