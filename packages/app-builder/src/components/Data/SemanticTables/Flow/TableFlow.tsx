@@ -274,7 +274,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     window.requestAnimationFrame(() => {
       fitView({ nodes: visibleNodes });
     });
-  }, [containerHeight, containerWidth, fitView, nodes, nodesInitialized]);
+  }, [containerHeight, containerWidth, fitView, nodesInitialized]);
 
   useEffect(() => {
     if (hasScheduledInitialStabilizationRef.current) return;
@@ -307,6 +307,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   const theme = useTheme();
 
   useEffect(() => {
+    if (isInitialLayoutSettled) return;
     if (containerWidth === 0 || containerHeight === 0) return;
     const visibleNodes = nodes.filter((nd) => nd.data.state === 'visible');
     if (visibleNodes.length === 0) return;
@@ -314,7 +315,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     window.requestAnimationFrame(() => {
       fitView({ nodes: visibleNodes });
     });
-  }, [containerHeight, containerWidth, fitView, nodes]);
+  }, [containerHeight, containerWidth, fitView, isInitialLayoutSettled, nodes]);
 
   const isLoading = nodes.length > 0 && (!isInitialLayoutSettled || nodes.some((nd) => nd.data.state !== 'visible'));
 
