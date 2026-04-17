@@ -83,7 +83,11 @@ export const AddConfigurationModal = ({
                     value={field.state.value}
                     placeholder={t('client360:client_detail.add_configuration_modal.table_placeholder')}
                     onChange={field.handleChange}
-                    options={availableTables.map((table) => ({ label: table.name, value: table.id }))}
+                    options={availableTables.map((table) => ({
+                      label: table.name,
+                      value: table.id,
+                      rowValue: table.name,
+                    }))}
                     className="w-full"
                   />
                 </div>
