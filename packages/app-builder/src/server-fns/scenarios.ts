@@ -589,7 +589,7 @@ export const createScreeningRuleFn = createServerFn({ method: 'POST' })
         iterationId: fromUUIDtoSUUID(data.iterationId),
         screeningId: fromUUIDtoSUUID(config.id as string),
       },
-      search: { isNew: 'true' },
+      search: { isNew: true },
     });
   });
 

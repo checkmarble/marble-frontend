@@ -48,7 +48,7 @@ import { Button, cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
-const searchParamsSchema = z.object({ isNew: z.stringbool().optional() });
+const searchParamsSchema = z.object({ isNew: z.boolean().optional() });
 const screeningLoaderDataSchema = z.object({
   scenarioId: z.string().transform((shortId) => fromSUUIDtoUUID(shortId)),
   screeningId: z.string().transform((shortId) => fromSUUIDtoUUID(shortId)),
