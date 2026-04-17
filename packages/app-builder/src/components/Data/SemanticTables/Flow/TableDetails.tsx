@@ -143,6 +143,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                 initialLinks,
                 tableNameById,
                 data.tableModel.mainTimestampFieldName,
+                data.tableModel.fields,
               ),
             )
             .then(() => {
