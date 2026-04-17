@@ -135,6 +135,6 @@ export function adaptNodeDto(astNode: AstNode): NodeDto {
     name: astNode.name ?? undefined,
     constant: astNode.constant,
     children: (astNode.children ?? []).map(adaptNodeDto),
-    named_children: R.mapValues(astNode.namedChildren ?? {}, adaptNodeDto),
+    named_children: R.mapValues(R.pickBy(astNode.namedChildren ?? {}, R.isDefined), adaptNodeDto),
   };
 }
