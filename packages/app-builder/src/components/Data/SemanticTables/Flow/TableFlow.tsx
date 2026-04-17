@@ -57,6 +57,15 @@ function nodeMeasured(nd: Node<DataModelNodeData>) {
   return { width: nd.measured?.width ?? nd.width, height: nd.measured?.height ?? nd.height };
 }
 
+function runAfterTwoFrames(callback: () => void) {
+  // Wait for React commit + browser paint so React Flow measurements are stable.
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      callback();
+    });
+  });
+}
+
 function getRelationFieldNames(tableModel: DataModel[number], dataModel: DataModel) {
   const relationFieldNames = new Set([
     ...tableModel.linksToSingle.map((link) => link.childFieldName),
@@ -86,7 +95,9 @@ export function TableFlow({ dataModel, children }: TableFlowProps) {
 function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   const [nodes, setNodes] = useState<Array<Node<DataModelNodeData>>>([]);
   const [edges, setEdges] = useState<Array<Edge<DataModelEdgeData>>>([]);
+  const [isInitialLayoutSettled, setIsInitialLayoutSettled] = useState(false);
   const shouldFitRef = useRef(false);
+  const hasScheduledInitialStabilizationRef = useRef(false);
   const nodesInitialized = useNodesInitialized();
   const {
     ref: containerRef,
@@ -103,6 +114,8 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
   }, []);
 
   useEffect(() => {
+    setIsInitialLayoutSettled(false);
+    hasScheduledInitialStabilizationRef.current = false;
     setNodes((currentNodes) =>
       R.pipe(
         dataModel,
@@ -263,6 +276,34 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     });
   }, [containerHeight, containerWidth, fitView, nodes, nodesInitialized]);
 
+  useEffect(() => {
+    if (hasScheduledInitialStabilizationRef.current) return;
+    if (!nodesInitialized || nodes.length === 0) return;
+    if (containerWidth === 0 || containerHeight === 0) return;
+    if (nodes.some((nd) => nd.data.state !== 'visible')) return;
+
+    hasScheduledInitialStabilizationRef.current = true;
+    runAfterTwoFrames(() => {
+      const liveNodes = getNodes();
+      const liveEdges = getEdges();
+      if (
+        liveNodes.some((nd) => {
+          const { width, height } = nodeMeasured(nd);
+          return width === undefined || height === undefined;
+        })
+      ) {
+        hasScheduledInitialStabilizationRef.current = false;
+        return;
+      }
+
+      const layout = layoutElements(liveNodes, liveEdges);
+      setNodes(layout.nodes);
+      setEdges(layout.edges);
+      fitView({ nodes: layout.nodes });
+      setIsInitialLayoutSettled(true);
+    });
+  }, [containerHeight, containerWidth, fitView, getEdges, getNodes, nodes, nodesInitialized, setEdges, setNodes]);
+
   const theme = useTheme();
 
   useEffect(() => {
@@ -275,7 +316,7 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     });
   }, [containerHeight, containerWidth, fitView, nodes]);
 
-  const isLoading = nodes.length > 0 && nodes.some((nd) => nd.data.state !== 'visible');
+  const isLoading = nodes.length > 0 && (!isInitialLayoutSettled || nodes.some((nd) => nd.data.state !== 'visible'));
 
   return (
     <div ref={containerRef} className="relative size-full">
