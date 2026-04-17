@@ -99,9 +99,9 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
             .filter((item) => item.count > 0)
             .map((item) => ({
               id: item.risk_level,
-              label: labels[item.risk_level - 1] ?? item.risk_level.toString(),
+              label: labels[item.risk_level] ?? item.risk_level.toString(),
               value: item.count,
-              color: colors[item.risk_level - 1] ?? '#ccc',
+              color: colors[item.risk_level] ?? '#ccc',
             }));
 
           return (
@@ -124,7 +124,7 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
                     direction: 'row',
                     justify: false,
                     translateY: 56,
-                    itemsSpacing: 16,
+                    itemsSpacing: 32,
                     itemWidth: 40,
                     itemHeight: 24,
                     itemDirection: 'left-to-right',

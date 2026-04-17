@@ -29,11 +29,7 @@ export default defineConfig({
               preset: 'node-server',
             },
           }),
-          tanstackStart({
-            // router: {
-            //   routeFileIgnorePattern: '.*\\.test\\.tsx?$',
-            // },
-          }),
+          tanstackStart(),
           ...(isSentryConfigured
             ? [
                 sentryVitePlugin({
@@ -62,6 +58,18 @@ export default defineConfig({
   },
   build: {
     sourcemap: isSentryConfigured,
+  },
+  environments: {
+    client: {
+      build: {
+        assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined),
+      },
+    },
+    ssr: {
+      build: {
+        assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined),
+      },
+    },
   },
   test: {
     globals: true,

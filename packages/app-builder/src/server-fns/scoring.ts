@@ -65,35 +65,26 @@ export const updateScoringRulesetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateScoringRulesetPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      const { recordType, id: rulesetId, ...rulesetPayload } = data;
-      const entityRulesets = await context.authInfo.userScoring.listRulesetVersions(recordType);
+    const { recordType, id: rulesetId, ...rulesetPayload } = data;
+    const entityRulesets = await context.authInfo.userScoring.listRulesetVersions(recordType);
 
-      rulesetPayload.name = `Scores ${recordType}`;
-      const updatedRuleset = await context.authInfo.userScoring.updateScoringRuleset(recordType, rulesetPayload);
+    rulesetPayload.name = `Scores ${recordType}`;
+    const updatedRuleset = await context.authInfo.userScoring.updateScoringRuleset(recordType, rulesetPayload);
 
-      if (!rulesetId) {
-        throw redirect({
-          to: '/user-scoring/$recordType/$version',
-          params: { recordType, version: 'draft' },
-        });
-      }
+    if (!rulesetId) {
+      throw redirect({
+        to: '/user-scoring/$recordType/$version',
+        params: { recordType, version: 'draft' },
+      });
+    }
 
-      const currentRuleset = entityRulesets.find((r) => r.id === rulesetId);
-      if (!currentRuleset) {
-        throw new Error('Non existing ruleset');
-      }
+    const currentRuleset = entityRulesets.find((r) => r.id === rulesetId);
+    if (!currentRuleset) {
+      throw new Error('Non existing ruleset');
+    }
 
-      if (currentRuleset.status === 'committed' && updatedRuleset.status === 'draft') {
-        throw redirect({
-          to: '/user-scoring/$recordType/$version',
-          params: { recordType, version: 'draft' },
-        });
-      }
-    } catch (error) {
-      if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update ruleset');
+    if (currentRuleset.status === 'committed' && updatedRuleset.status === 'draft') {
+      return updatedRuleset;
     }
   });
 

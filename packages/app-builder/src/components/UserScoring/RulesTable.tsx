@@ -1,4 +1,3 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { NewAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { isSwitchAstNode, NewSwitchAstNode } from '@app-builder/models/astNode/control-flow';
@@ -12,7 +11,9 @@ import {
 } from '@app-builder/models/scoring';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useUpdateScoringRulesetMutation } from '@app-builder/queries/scoring/update-ruleset';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
@@ -79,7 +80,8 @@ interface RulesTableProps {
 
 export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTableProps) {
   const { t } = useTranslation(['user-scoring']);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
+  const navigate = useNavigate();
   const { rules, recordType: entityType } = ruleset;
   const [open, setOpen] = useState(false);
   const [panelRule, setPanelRule] = useState<ScoringRule | null>(null);
@@ -103,8 +105,29 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
     setOpen(false);
   };
 
-  const handleRuleChange = (stableId: string, newRule: ScoringRule) => {
-    mutation
+  const onSaveSuccess = async (ruleset: ScoringRulesetWithRules | undefined) => {
+    toast.success(t('common:success.save'));
+    await router.invalidate();
+
+    if (ruleset) {
+      navigate({
+        to: '/user-scoring/$recordType/$version',
+        params: {
+          recordType: ruleset.recordType,
+          version: 'draft',
+        },
+      });
+    }
+    return true;
+  };
+
+  const onSaveError = async () => {
+    toast.error(t('common:errors.unknown'));
+    return false;
+  };
+
+  const handleRuleChange = async (stableId: string, newRule: ScoringRule) => {
+    return mutation
       .mutateAsync({
         id: ruleset.id,
         recordType: ruleset.recordType,
@@ -123,13 +146,12 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
             : { stableId: r.stableId, name: r.name, description: r.description, riskType: r.riskType, ast: r.ast },
         ),
       })
-      .then(() => {
-        revalidate();
-      });
+      .then(onSaveSuccess)
+      .catch(onSaveError);
   };
 
-  const handleRuleAdd = (newRule: ScoringRule) => {
-    mutation
+  const handleRuleAdd = async (newRule: ScoringRule) => {
+    return mutation
       .mutateAsync({
         id: ruleset.id,
         recordType: ruleset.recordType,
@@ -153,10 +175,11 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
           },
         ],
       })
-      .then(() => {
-        revalidate();
+      .then((ruleset) => {
         setPanelRule(null);
-      });
+        return onSaveSuccess(ruleset);
+      })
+      .catch(onSaveError);
   };
 
   const handleRuleDelete = (stableId: string) => {
@@ -177,9 +200,8 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
             ast: r.ast,
           })),
       })
-      .then(() => {
-        revalidate();
-      });
+      .then(onSaveSuccess)
+      .catch(onSaveError);
   };
 
   return (
@@ -260,7 +282,7 @@ interface RuleRowProps {
   entityType: string;
   maxRiskLevel: number;
   customLists: CustomList[];
-  onRuleChange?: (rule: ScoringRule) => void;
+  onRuleChange?: (rule: ScoringRule) => Promise<boolean>;
   onRuleDelete?: () => void;
 }
 

@@ -1,4 +1,3 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type DurationUnit, SECONDS_PER_UNIT, secondsToDisplay } from '@app-builder/models/scoring';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
@@ -7,8 +6,9 @@ import { type UpdateScoringRulesetPayload, updateScoringRulesetPayloadSchema } f
 import { handleSubmit } from '@app-builder/utils/form';
 import { createSimpleContext } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
-import { Link, Outlet, useMatches } from '@tanstack/react-router';
+import { Link, Outlet, useMatches, useNavigate, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, NumberInput, type SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -130,8 +130,9 @@ function DurationSecondsField({
 }
 
 function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number }) {
-  const { t } = useTranslation(['user-scoring']);
-  const revalidate = useLoaderRevalidator();
+  const { t } = useTranslation(['common', 'user-scoring']);
+  const router = useRouter();
+  const navigate = useNavigate();
   const updateScoringRulesetMutation = useUpdateScoringRulesetMutation();
   const dataModelQuery = useDataModelQuery();
   const panelSharp = PanelSharpFactory.useSharp();
@@ -151,10 +152,26 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
     },
     onSubmit: async ({ formApi, value }) => {
       if (formApi.state.isValid) {
-        await updateScoringRulesetMutation.mutateAsync(value).then(() => {
+        try {
+          let ruleset = await updateScoringRulesetMutation.mutateAsync(value);
+
+          toast.success(t('common:success.save'));
+
           panelSharp.actions.close();
-          revalidate();
-        });
+          await router.invalidate();
+
+          if (ruleset) {
+            navigate({
+              to: '/user-scoring/$recordType/$version',
+              params: {
+                recordType: ruleset.recordType,
+                version: 'draft',
+              },
+            });
+          }
+        } catch {
+          toast.error(t('common:errors.unknown'));
+        }
       }
     },
   });
