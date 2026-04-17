@@ -103,7 +103,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
       columnHelper.accessor((row) => getPivotDisplayValue(row.pivot), {
         id: 'definition',
         header: t('decisions:pivot_detail.definition'),
-        size: 200,
+        size: 160,
         cell: ({ getValue }) => {
           const definition = getValue();
           return <span>{definition}</span>;
@@ -118,7 +118,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
         {
           id: 'filter_decisions',
           header: t('decisions:pivot_detail.pivot_value'),
-          size: 200,
+          size: 240,
           cell: ({ getValue }) => (
             <Tooltip.Default content={t('decisions:pivot_detail.pivot_value.tooltip')}>
               <Link to={getDecisionRoute({ pivotValue: getValue().value })}>

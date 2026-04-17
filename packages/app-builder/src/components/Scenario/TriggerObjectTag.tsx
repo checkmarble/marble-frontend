@@ -1,5 +1,5 @@
-import * as Ariakit from '@ariakit/react';
 import { useTranslation } from 'react-i18next';
+import { Tag, TooltipV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface TriggerObjectTagProps {
@@ -9,24 +9,22 @@ interface TriggerObjectTagProps {
 export function TriggerObjectTag({ children }: TriggerObjectTagProps) {
   const { t } = useTranslation(['scenarios']);
   return (
-    <div className="text-s bg-purple-background-light text-purple-primary flex items-center gap-2 rounded-v2-md py-v2-xs px-v2-sm font-normal dark:text-purple-hover">
+    <Tag size="small" color="grey" className="flex items-center gap-2">
       {children}
 
-      <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="bottom">
-        <Ariakit.HovercardAnchor
-          tabIndex={-1}
-          className="hover:text-purple-primary text-purple-disabled cursor-pointer transition-colors"
-        >
+      <TooltipV2.Tooltip delayDuration={0}>
+        <TooltipV2.TooltipTrigger tabIndex={-1} className="cursor-pointer transition-colors">
           <Icon icon="tip" className="size-3.5" />
-        </Ariakit.HovercardAnchor>
-        <Ariakit.Hovercard
-          portal
-          gutter={16}
+        </TooltipV2.TooltipTrigger>
+        <TooltipV2.TooltipContent
+          side="bottom"
+          align="start"
+          sideOffset={8}
           className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-2 z-50 shadow-md"
         >
           {t('scenarios:trigger_object.description')}
-        </Ariakit.Hovercard>
-      </Ariakit.HovercardProvider>
-    </div>
+        </TooltipV2.TooltipContent>
+      </TooltipV2.Tooltip>
+    </Tag>
   );
 }

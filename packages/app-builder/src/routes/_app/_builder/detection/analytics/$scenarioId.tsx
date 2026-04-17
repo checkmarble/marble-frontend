@@ -6,7 +6,6 @@ import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVs
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { UpsellCard } from '@app-builder/components/Analytics/UpsellCard';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import type {
   DateRangeFilter as AnalyticsDateRangeFilter,
@@ -18,15 +17,16 @@ import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-avail
 import { useAnalyticsDataQuery } from '@app-builder/queries/analytics/get-data';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
-import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiltersBar, FormattingProvider, I18nProvider } from 'ui-design-system';
 import type { FilterChange, FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
+import { z } from 'zod/v4';
 
 interface LoaderData {
   scenarioId: string;
@@ -38,21 +38,27 @@ interface LoaderData {
   isAnalyticsAvailable: boolean;
 }
 
+const paramsSchema = z.object({
+  scenarioId: z.string().transform((id) => fromSUUIDtoUUID(id)),
+});
+
+const searchParamsSchema = z.object({
+  q: z.string().default(() => btoa(JSON.stringify({ range: { type: 'dynamic', fromNow: '-P30D' } }))),
+});
+
 const analyticsLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .inputValidator(paramsSchema)
   .handler(async function analyticsLoader({ data, context }) {
     const { scenario, user, entitlements } = context.authInfo;
 
-    const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
-
     const [scenarios, scenarioIterations] = await Promise.all([
       scenario.listScenarios(),
-      scenario.listScenarioIterations({ scenarioId }),
+      scenario.listScenarioIterations({ scenarioId: data.scenarioId }),
     ]);
 
     return {
-      scenarioId,
+      scenarioId: data.scenarioId,
       scenarios,
       scenarioVersions: scenarioIterations
         .filter(({ version }) => version !== null)
@@ -65,7 +71,8 @@ const analyticsLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/analytics/$scenarioId')({
-  loader: ({ params }) => analyticsLoader({ data: { params } }),
+  validateSearch: searchParamsSchema,
+  loader: ({ params }) => analyticsLoader({ data: params }),
   staleTime: Infinity,
   errorComponent: ({ error }) => {
     Sentry.captureException(error);
@@ -76,31 +83,15 @@ export const Route = createFileRoute('/_app/_builder/detection/analytics/$scenar
 
 function Analytics() {
   const {
+    scenarioId,
     scenarios,
     scenarioVersions,
     isAnalyticsAvailable: hasAnalyticsLicense,
   } = Route.useLoaderData() as LoaderData;
 
-  const scenarioId = useParam('scenarioId');
-  const [searchParams] = useState(
-    () => new URLSearchParams(typeof window !== 'undefined' ? window.location.search : ''),
-  );
   const { t, i18n } = useTranslation(['filters', 'analytics']);
-
-  const navigate = useAgnosticNavigation();
-  const queryString = searchParams.get('q');
-
-  useEffect(() => {
-    if (!queryString) {
-      return navigate(
-        {
-          pathname: `/detection/analytics/${fromUUIDtoSUUID(scenarioId)}`,
-          search: `?q=${btoa(JSON.stringify({ range: { type: 'dynamic', fromNow: '-P30D' } }))}`,
-        },
-        { replace: true },
-      );
-    }
-  }, [scenarioId, navigate, queryString]);
+  const navigate = useNavigate();
+  const { q: queryString } = Route.useSearch();
 
   const parsedFiltersResult = useMemo<AnalyticsFiltersQuery | null>(() => {
     try {
@@ -270,13 +261,13 @@ function Analytics() {
       ...(trigger.length && nextScenarioId === scenarioId ? { trigger } : {}),
     };
 
-    return navigate(
-      {
-        pathname: `/detection/analytics/${fromUUIDtoSUUID(nextScenarioId)}`,
-        search: `?q=${btoa(JSON.stringify(nextQuery))}`,
+    navigate({
+      from: '/detection/analytics/$scenarioId',
+      to: '.',
+      search: {
+        q: btoa(JSON.stringify(nextQuery)),
       },
-      { replace: true },
-    );
+    });
   };
 
   const onInstantUpdate = (change: FilterChange): void => {

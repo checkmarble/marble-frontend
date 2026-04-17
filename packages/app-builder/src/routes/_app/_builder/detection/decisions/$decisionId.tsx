@@ -218,7 +218,7 @@ function DecisionPage() {
                   <ScreeningDetail key={s.id} screening={s} />
                 ))}
               </div>
-              <div className="flex flex-col gap-4 lg:gap-8">
+              <div className="flex flex-col gap-4 lg:gap-8 shrink-0">
                 <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />

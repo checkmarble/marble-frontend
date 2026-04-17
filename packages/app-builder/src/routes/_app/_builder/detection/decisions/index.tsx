@@ -223,7 +223,7 @@ function AddToCase({
   const getDecisionIds = () => {
     const selectedDecisions = getSelectedDecisions();
     if (selectedDecisions.some((decision) => decision.case)) {
-      toast.error(t('common:errors.add_to_case.invalid'));
+      toast.error(t('decisions:errors.decision_already_in_case'));
     } else {
       onTriggerClick({ decisionIds: selectedDecisions.map(({ id }) => id) });
     }

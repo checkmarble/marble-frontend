@@ -7,6 +7,7 @@ import {
 import { addToCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+import toast from 'react-hot-toast';
 
 export { addToCasePayloadSchema, type AddToCasePayload, existingCaseSchema, newCaseSchema };
 
@@ -19,6 +20,9 @@ export const useAddToCaseMutation = () => {
     mutationFn: async (payload: AddToCasePayload) => addToCase({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 };

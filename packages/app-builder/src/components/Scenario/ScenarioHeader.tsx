@@ -14,8 +14,9 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Tag } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { TriggerObjectTag } from './TriggerObjectTag';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
@@ -44,10 +45,7 @@ export function ScenarioHeader({ isEditScenarioAvailable, scenario }: ScenarioHe
         displayValueClassName="text-h2 truncate"
         inputClassName="text-h2 min-w-0 flex-1 border-none bg-transparent font-normal outline-hidden"
       />
-      <Tag size="small" color="grey" className="flex items-center gap-2">
-        {scenario.triggerObjectType}
-        <Icon icon="tip" className="size-4" />
-      </Tag>
+      <TriggerObjectTag>{scenario.triggerObjectType}</TriggerObjectTag>
     </div>
   );
 }

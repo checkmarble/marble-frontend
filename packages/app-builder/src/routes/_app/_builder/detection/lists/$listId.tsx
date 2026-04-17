@@ -144,7 +144,7 @@ function Lists() {
         ) : null}
       </Page.Header>
       <Page.Container>
-        {customList.description ? <Page.Description>{customList.description}</Page.Description> : null}
+        {customList.description ? <Page.Description headerBanner>{customList.description}</Page.Description> : null}
         <Page.Content className="max-w-(--breakpoint-xl)">
           {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
