@@ -2,7 +2,7 @@ import { z } from 'zod/v4';
 
 export const updateScoringRulesetPayloadSchema = z.object({
   id: z.string().optional(),
-  recordType: z.string(),
+  recordType: z.string().nonempty(),
   name: z.string(),
   description: z.string().optional(),
   thresholds: z.array(z.number()).superRefine((arr, ctx) => {
