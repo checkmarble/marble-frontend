@@ -1,6 +1,7 @@
-import { Callout, type DecisionFilters, decisionsI18n } from '@app-builder/components';
+import { Callout, decisionsI18n } from '@app-builder/components';
 import { type Pivot } from '@app-builder/models';
 import { type DataModelObject } from '@app-builder/models/data-model';
+import { DecisionFilters } from '@app-builder/schemas/decisions';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { Link } from '@tanstack/react-router';

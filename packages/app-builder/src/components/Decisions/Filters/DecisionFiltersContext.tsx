@@ -1,39 +1,15 @@
-import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
+import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Inbox } from '@app-builder/models/inbox';
-import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
+import { type KnownOutcome } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
+import { DecisionFilters } from '@app-builder/schemas/decisions';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
+import { type DateRangeFilterForm } from '@app-builder/utils/schema/filterSchema';
 import { useForm, useStore } from '@tanstack/react-form';
 import * as React from 'react';
 import * as R from 'remeda';
-import * as z from 'zod/v4';
-
 import { type DecisionFilterName, decisionFilterNames } from './filters';
-
-export const decisionFiltersSchema = z.object({
-  dateRange: dateRangeSchema.optional(),
-  hasCase: z
-    .enum(['true', 'false'])
-    .transform((val) => val === 'true')
-    .optional(),
-  outcomeAndReviewStatus: z
-    .object({
-      outcome: z.enum(knownOutcomes),
-      reviewStatus: z.enum(reviewStatuses).optional(),
-    })
-    .optional(),
-  pivotValue: z.string().optional(),
-  scenarioId: protectArray(z.array(z.string())).optional(),
-  scheduledExecutionId: protectArray(z.array(z.string().uuid())).optional(),
-  caseInboxId: protectArray(z.array(z.string())).optional(),
-  triggerObject: protectArray(z.array(z.string())).optional(),
-  triggerObjectId: z.string().optional(),
-});
-
-export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
 
 // Helper to capture the inferred form type without partial generic application
 function _useDecisionFiltersForm() {

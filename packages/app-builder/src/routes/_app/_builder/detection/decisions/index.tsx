@@ -1,13 +1,11 @@
 import {
   CursorPaginationButtons,
-  type DecisionFilters,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
   DecisionRightPanel,
   DecisionsList,
   DecisionViewModel,
-  decisionFiltersSchema,
   decisionsI18n,
   ErrorComponent,
   Page,
@@ -18,20 +16,16 @@ import { AddToCaseForm } from '@app-builder/components/Decisions/AddToCaseForm';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { type Decision } from '@app-builder/models/decision';
-import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
+import { type PaginationParams } from '@app-builder/models/pagination';
+import { DecisionFilters, decisionFiltersSchema } from '@app-builder/schemas/decisions';
 import { handleSubmit } from '@app-builder/utils/form';
-import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { useForm } from '@tanstack/react-form';
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { getRequest } from '@tanstack/react-start/server';
-import qs from 'qs';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -39,52 +33,47 @@ import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
-export const buildQueryParams = (filters: DecisionFilters, offsetId: string | null) => {
+const decisionsListQueryParamsSchema = z.intersection(decisionFiltersSchema, paginationSchema);
+type DecisionsListQueryParams = z.infer<typeof decisionsListQueryParamsSchema>;
+
+export const buildQueryParams = (filters: DecisionFilters, offsetId: string | undefined): DecisionsListQueryParams => {
   return {
-    outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
-    triggerObject: filters.triggerObject ?? [],
-    triggerObjectId: filters.triggerObjectId || null,
+    outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
+    triggerObject: filters.triggerObject,
+    triggerObjectId: filters.triggerObjectId,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
         ? {
             type: 'static',
-            endDate: filters.dateRange.endDate || null,
-            startDate: filters.dateRange.startDate || null,
+            endDate: filters.dateRange.endDate,
+            startDate: filters.dateRange.startDate,
           }
         : {
             type: 'dynamic',
             fromNow: filters.dateRange.fromNow,
           }
-      : {},
-    pivotValue: filters.pivotValue || null,
+      : undefined,
+    pivotValue: filters.pivotValue,
     scenarioId: filters.scenarioId ?? [],
     scheduledExecutionId: filters.scheduledExecutionId ?? [],
     caseInboxId: filters.caseInboxId ?? [],
-    hasCase: filters?.hasCase ?? null,
+    hasCase: filters?.hasCase,
     offsetId,
   };
 };
 
-const decisionsLoader = createServerFn()
+const decisionsLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .handler(async function decisionsLoader({ context }) {
-    const request = getRequest();
+  .inputValidator(decisionsListQueryParamsSchema)
+  .handler(async function decisionsLoader({ context, data }) {
     const { decision, scenario, dataModelRepository, inbox } = context.authInfo;
 
-    const parsedFilterQuery = await parseQuerySafe(request, decisionFiltersSchema);
-    const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
-
-    if (!parsedFilterQuery.success || !parsedPaginationQuery.success) {
-      throw redirect({ to: '/detection/decisions' });
-    }
-
-    const { outcomeAndReviewStatus, ...filters } = parsedFilterQuery.data;
+    const { outcomeAndReviewStatus, ...filters } = data;
     const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
       decision.listDecisions({
         outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
         reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
         ...filters,
-        ...parsedPaginationQuery.data,
       }),
       scenario.listScenarios(),
       dataModelRepository.listPivots({}),
@@ -94,14 +83,16 @@ const decisionsLoader = createServerFn()
     return {
       decisionsData,
       scenarios,
-      filters: parsedFilterQuery.data,
+      filters: data,
       hasPivots: pivots.length > 0,
       inboxes,
     };
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
-  loader: () => decisionsLoader(),
+  validateSearch: decisionsListQueryParamsSchema,
+  loaderDeps: ({ search }) => search,
+  loader: ({ deps }) => decisionsLoader({ data: deps }),
   errorComponent: ({ error }) => {
     Sentry.captureException(error);
     return <ErrorComponent error={error} />;
@@ -110,35 +101,24 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
 });
 
 function DetectionDecisions() {
-  const { decisionsData: initialDecisionsData, filters, scenarios, hasPivots, inboxes } = Route.useLoaderData();
+  const { decisionsData, filters, scenarios, hasPivots, inboxes } = Route.useLoaderData();
 
-  const [currentPage, setCurrentPage] = useState<{ data: PaginatedResponse<Decision>; cursors: (string | null)[] }>({
-    data: initialDecisionsData,
-    cursors: [null],
-  });
   const [pageNb, setPageNb] = useState(1);
   const [hasPreviousPage, setHasPreviousPage] = useState(false);
 
-  const data = currentPage.data;
-  const { items: decisions, ...pagination } = data;
+  const { items: decisions, ...pagination } = decisionsData;
 
-  const navigate = useAgnosticNavigation();
+  const navigate = useNavigate();
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, paginationParams?: PaginationParams) => {
       if (!paginationParams) {
-        setCurrentPage({ data: initialDecisionsData, cursors: [null] });
         setPageNb(1);
         setHasPreviousPage(false);
-        navigate(
-          {
-            pathname: '/detection/decisions',
-            search: qs.stringify(buildQueryParams(decisionFilters, null), {
-              skipNulls: true,
-              addQueryPrefix: true,
-            }),
-          },
-          { replace: true },
-        );
+        navigate({
+          to: '/detection/decisions',
+          search: buildQueryParams(decisionFilters, undefined),
+          replace: true,
+        });
         return;
       }
 
@@ -152,7 +132,7 @@ function DetectionDecisions() {
         setHasPreviousPage(pageNb > 2);
       }
     },
-    [navigate, initialDecisionsData, pageNb],
+    [navigate, pageNb],
   );
 
   const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
