@@ -1,5 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type TableModel } from '@app-builder/models/data-model';
+import { DataModelField, PrimitiveTypes, type TableModel } from '@app-builder/models/data-model';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
@@ -7,12 +7,13 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
+import { Button, cn, MenuCommand, Tag, tagClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DeleteTableModal } from '../../DeleteDataModel/DeleteTableModal';
 import { dataI18n } from '../../data-i18n';
 import { EditTableDrawer } from '../EditTable/EditTableDrawer';
 import { adaptUpdateTableValue } from '../EditTable/updateTable-adapter';
+import { DatatypeIcon } from '../Shared/DatatypeOption';
 import { ChangeRecord, LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
 import { UploadTableDrawer } from '../UploadData/UploadTableDrawer';
 import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
@@ -36,6 +37,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dataModel = useDataModel();
   const { isIngestDataAvailable } = useDataModelFeatureAccess();
+  const [isNumberOfFieldsOpen, setIsNumberOfFieldsOpen] = useState(false);
 
   const relationFields = data.tableModel.fields.filter((field) => data.relationFieldNames.includes(field.name));
   const belongsToField = (fieldName: string) =>
@@ -78,33 +80,43 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
     consumed.add(field.name);
   }
 
-  const renderField = (field: (typeof relationFields)[0]) => (
-    <div
-      key={field.id}
-      className={cn(
-        'bg-surface-card relative rounded-md px-v2-md py-v2-sm text-s',
-        belongsToField(field.name)
-          ? 'border-purple-primary border-2 text-purple-primary'
-          : 'border-grey-secondary border text-grey-secondary',
-      )}
-    >
-      <Handle
-        type="target"
-        id={`related:${field.name}`}
-        position={Position.Left}
-        isConnectable={false}
-        style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-v2-md))' }}
-      />
-      <span title={field.name}>{field.alias || field.name}</span>
-      <Handle
-        type="source"
-        id={`related:${field.name}`}
-        position={Position.Right}
-        isConnectable={false}
-        style={{ background: 'transparent', border: 'none', right: 'calc(-1 * var(--spacing-v2-md))' }}
-      />
-    </div>
-  );
+  const renderField = (field: DataModelField, extended?: boolean) => {
+    const hasHandles = fieldGroups.some((group) => group.type === 'single' && group.field.name === field.name);
+    return (
+      <div
+        key={field.id}
+        className={cn(
+          'bg-surface-card relative rounded-md px-v2-md py-v2-sm text-s',
+          belongsToField(field.name)
+            ? 'border-purple-primary border-2 text-purple-primary'
+            : 'border-grey-secondary border text-grey-secondary',
+        )}
+      >
+        {hasHandles && (
+          <Handle
+            type="target"
+            id={`related:${field.name}`}
+            position={Position.Left}
+            isConnectable={false}
+            style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-v2-md))' }}
+          />
+        )}
+        <div className="flex items-center gap-v2-xs justify-between">
+          <span title={field.name}>{field.alias || field.name}</span>
+          {extended && field.dataType !== 'String' && <DatatypeIcon dataType={field.dataType as PrimitiveTypes} />}
+        </div>
+        {hasHandles && (
+          <Handle
+            type="source"
+            id={`related:${field.name}`}
+            position={Position.Right}
+            isConnectable={false}
+            style={{ background: 'transparent', border: 'none', right: 'calc(-1 * var(--spacing-v2-md))' }}
+          />
+        )}
+      </div>
+    );
+  };
 
   const updateTableMutation = useEditSemanticTableMutation();
   const revalidate = useLoaderRevalidator();
@@ -181,9 +193,16 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                   )}
                 </>
               )}
-              <Tag color="grey">
+              <button
+                className={cn('cursor-pointer', tagClassName({ color: 'purple' }))}
+                onClick={() => setIsNumberOfFieldsOpen((isOpen) => !isOpen)}
+              >
                 {t('data:table_details.number_of_fields', { number: data.tableModel.fields.length })}
-              </Tag>
+                <Icon
+                  icon="arrow-down"
+                  className={cn('size-4 transition-transform', isNumberOfFieldsOpen && 'rotate-180')}
+                />
+              </button>
             </div>
           </div>
           <MenuCommand.Menu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -234,21 +253,28 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             }}
           />
         </div>
-        {relationFields.length > 0 ? (
-          <div className="mt-v2-md flex flex-col gap-v2-sm">
-            {fieldGroups.map((group) => {
-              if (group.type === 'pair') {
-                return (
-                  <div key={`${group.fields[0].id}-${group.fields[1].id}`} className="relative flex flex-col gap-v2-sm">
-                    <div className="absolute -left-2 top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l border-purple-primary" />
-                    {group.fields.map((field) => renderField(field))}
-                  </div>
-                );
-              }
-              return renderField(group.field);
-            })}
-          </div>
-        ) : null}
+        <div className="mt-v2-md flex flex-col gap-v2-sm">
+          {isNumberOfFieldsOpen ? (
+            data.tableModel.fields.map((field) => renderField(field, true))
+          ) : relationFields.length > 0 ? (
+            <>
+              {fieldGroups.map((group) => {
+                if (group.type === 'pair') {
+                  return (
+                    <div
+                      key={`${group.fields[0].id}-${group.fields[1].id}`}
+                      className="relative flex flex-col gap-v2-sm"
+                    >
+                      <div className="absolute -left-2 top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l border-purple-primary" />
+                      {group.fields.map((field) => renderField(field))}
+                    </div>
+                  );
+                }
+                return renderField(group.field);
+              })}
+            </>
+          ) : null}
+        </div>
       </div>
       {typeof document !== 'undefined' ? createPortal(drawer, document.body) : drawer}
     </>

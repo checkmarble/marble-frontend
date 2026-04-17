@@ -23,8 +23,9 @@ function DatatypeOption({ dataType }: { dataType: PrimitiveTypes }) {
 }
 
 export function DatatypeIcon({ dataType }: { dataType: PrimitiveTypes }) {
+  const labelKey = dataTypeOptions.find((opt) => opt.value === dataType)?.labelKey;
   return (
-    <span className=" text-grey-secondary bg-grey-background rounded p-v2-sm grid place-items-center">
+    <span className=" text-grey-secondary bg-grey-background rounded p-v2-sm grid place-items-center" title={labelKey}>
       <Icon icon={getDataTypeIcon(dataType) ?? 'minus'} className="size-4" />
     </span>
   );
