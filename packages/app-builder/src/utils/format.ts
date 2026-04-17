@@ -7,7 +7,7 @@ import { differenceInYears } from 'date-fns/differenceInYears';
 import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
 import { formatDuration as dateFnsFormatDuration } from 'date-fns/formatDuration';
 import { formatRelative } from 'date-fns/formatRelative';
-import { type Currency, dinero, toDecimal } from 'dinero.js';
+import { type DineroCurrency, dinero, toDecimal } from 'dinero.js';
 import { useCallback } from 'react';
 import { Temporal } from 'temporal-polyfill';
 
@@ -82,7 +82,7 @@ export function formatCurrency(
   {
     currency,
     ...options
-  }: { language: string; currency: Currency<number> } & Omit<Intl.NumberFormatOptions, 'currency' | 'style'>,
+  }: { language: string; currency: DineroCurrency<number> } & Omit<Intl.NumberFormatOptions, 'currency' | 'style'>,
 ) {
   const decimal = toDecimal(dinero({ amount, currency }));
   // @ts-expect-error toDecimal return string instead of `${number}`
