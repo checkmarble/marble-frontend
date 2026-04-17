@@ -198,7 +198,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
           </div>
 
           {/* "Then" arrow + Actions Box — grouped so the arrow aligns to the action box center */}
-          <div className="flex items-center self-start">
+          <div className="flex items-center self-center">
             <div className="w-28 h-0.5 bg-grey-disabled relative">
               <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-disabled"></div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-border px-3 py-1 rounded-sm z-10">

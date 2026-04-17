@@ -19,25 +19,29 @@ import {
   isAiRuleBuildingAvailable,
   isContinuousScreeningAvailable,
 } from '@app-builder/services/feature-access';
-import { setToast } from '@app-builder/services/toast.server';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromSUUIDtoUUID, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { useDebouncedCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { getRequest } from '@tanstack/react-start/server';
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
-const ruleLoader = createServerFn()
+const paramsSchema = z.object({
+  scenarioId: z.string().transform((id) => fromSUUIDtoUUID(id)),
+  ruleId: z.string().transform((id) => fromSUUIDtoUUID(id)),
+});
+
+const ruleLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .inputValidator(paramsSchema)
   .handler(async function ruleLoader({ data, context }) {
     const {
       customListsRepository,
@@ -48,14 +52,12 @@ const ruleLoader = createServerFn()
       continuousScreening,
     } = context.authInfo;
 
-    const ruleId = fromParams(data?.params ?? {}, 'ruleId');
-
     const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, rule, screeningConfigs] = await Promise.all(
       [
-        editor.listAccessors({ scenarioId: fromParams(data?.params ?? {}, 'scenarioId') }),
+        editor.listAccessors({ scenarioId: data.scenarioId }),
         dataModelRepository.getDataModel(),
         customListsRepository.listCustomLists(),
-        scenarioIterationRuleRepository.getRule({ ruleId }),
+        scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }),
         isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
       ],
     );
@@ -83,47 +85,29 @@ const editRuleFormSchema = z.object({
 
 type EditRuleForm = z.infer<typeof editRuleFormSchema>;
 
-type EditRuleActionResult = { status: 'success' | 'error'; errors: any };
+const editRuleConfigurationSchema = z.object({
+  params: z.object({
+    scenarioId: z.string(),
+    iterationId: z.string(),
+    ruleId: z.string(),
+  }),
+  payload: editRuleFormSchema,
+});
 
-const editRuleAction = createServerFn()
+const editRuleAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
-  .handler(async function editRuleAction({ context, data }): Promise<EditRuleActionResult> {
-    const request = getRequest();
+  .inputValidator(editRuleConfigurationSchema)
+  .handler(async function editRuleAction({ context, data: { params, payload } }) {
     const { scenarioIterationRuleRepository } = context.authInfo;
 
-    const raw = await request.json();
-
-    const result = editRuleFormSchema.safeParse(raw);
-
-    if (!result.success) {
-      return { status: 'error' as const, errors: z.treeifyError(result.error) };
-    }
-
-    try {
-      await scenarioIterationRuleRepository.updateRule({
-        ruleId: fromParams(data?.params ?? {}, 'ruleId'),
-        ...result.data,
-      });
-
-      await setToast({
-        type: 'success',
-        messageKey: 'common:success.save',
-      });
-
-      return { status: 'success' as const, errors: [] };
-    } catch {
-      await setToast({
-        type: 'error',
-        messageKey: 'common:errors.unknown',
-      });
-
-      return { status: 'error' as const, errors: [] };
-    }
+    return await scenarioIterationRuleRepository.updateRule({
+      ruleId: params.ruleId,
+      ...payload,
+    });
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId')({
-  loader: ({ params }) => ruleLoader({ data: { params } }),
+  loader: ({ params }) => ruleLoader({ data: params }),
   staticData: {
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {
@@ -189,7 +173,7 @@ function RuleDetail() {
 
   const mutation = useMutation({
     mutationFn: (value: EditRuleForm) =>
-      editRuleAction({ data: { params: { scenarioId, iterationId, ruleId: rule.id }, ...value } }),
+      editRuleAction({ data: { params: { scenarioId, iterationId, ruleId: rule.id }, payload: value } }),
   });
 
   const { currentScenario } = useDetectionScenarioData();
@@ -205,9 +189,14 @@ function RuleDetail() {
   });
 
   const form = useForm({
-    onSubmit: ({ value, formApi }) => {
+    onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        mutation.mutate(value);
+        try {
+          await mutation.mutateAsync(value);
+          toast.success(t('common:success.save'));
+        } catch {
+          toast.error(t('common:errors.unknown'));
+        }
       }
     },
     validators: {
