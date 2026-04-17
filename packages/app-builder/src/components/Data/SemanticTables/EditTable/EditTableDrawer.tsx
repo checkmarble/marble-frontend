@@ -232,6 +232,7 @@ export function EditTableDrawer({
       tablesState[tableModel.id]!,
       initialLinksStateRef.current,
       linksState,
+      tableModel.fields,
     );
     await onSave(
       values,
@@ -480,6 +481,7 @@ function computeChangeSet(
   currentTableState: SemanticTableFormValues,
   initialLinksState: Record<string, LinkValue>,
   currentLinksState: Record<string, LinkValue>,
+  originalModelFields?: DataModelField[],
 ): ChangeRecord[] {
   const changes: ChangeRecord[] = [];
 
@@ -499,6 +501,7 @@ function computeChangeSet(
   // Field changes
   const initialFieldMap = new Map(initialTableState.fields.map((f) => [f.id, f]));
   const currentFieldMap = new Map(currentTableState.fields.map((f) => [f.id, f]));
+  const originalFieldMap = originalModelFields ? new Map(originalModelFields.map((f) => [f.id, f])) : undefined;
 
   for (const field of currentTableState.fields) {
     if (field.isNew) {
@@ -507,6 +510,18 @@ function computeChangeSet(
       const initialField = initialFieldMap.get(field.id);
       if (initialField && JSON.stringify(initialField) !== JSON.stringify(field)) {
         changes.push({ type: 'field', operation: 'MOD', objectId: field.id });
+      } else if (initialField && originalFieldMap) {
+        // Detect inferred semantic types: the form applies inference from field names,
+        // but both initial and current form state have the same inferred values.
+        // Compare against the original backend data to detect these as real changes.
+        const originalField = originalFieldMap.get(field.id);
+        if (originalField) {
+          const hasInferredSemanticType = !originalField.semanticType && field.semanticType;
+          const hasInferredSemanticSubType = !originalField.semanticSubType && field.semanticSubType;
+          if (hasInferredSemanticType || hasInferredSemanticSubType) {
+            changes.push({ type: 'field', operation: 'MOD', objectId: field.id });
+          }
+        }
       }
     }
   }
@@ -529,6 +544,5 @@ function computeChangeSet(
       changes.push({ type: 'link', operation: 'DEL', objectId: linkId });
     }
   }
-
   return changes;
 }

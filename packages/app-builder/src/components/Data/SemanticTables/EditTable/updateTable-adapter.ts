@@ -1,3 +1,4 @@
+import { type DataModelField } from '@app-builder/models';
 import { EditSemanticFieldPayload, EditSemanticLinkPayload, EditSemanticTablePayload } from '@app-builder/schemas/data';
 import { ifChanged, omitUndefined } from '@app-builder/utils/omit-undefined';
 import { adaptLink, adaptSemanticField, adaptTableField } from '../CreateTable/createTable-types';
@@ -16,6 +17,7 @@ export function adaptUpdateTableValue(
   originalLinks: LinkValue[],
   tableNameById: Map<string, string>,
   originalMainTimestampFieldName?: string | null,
+  rawModelFields?: DataModelField[],
 ): EditSemanticTablePayload {
   const tableChange = changeSet.find((change): change is TableChange => change.type === 'table');
   const changedProperties = tableChange?.changedProperties ?? [];
@@ -54,6 +56,7 @@ export function adaptUpdateTableValue(
       newLinkValues,
       deletedLinkValues,
       tableNameById,
+      rawModelFields,
     ),
     links: adaptLinksOperations(
       changeSet.filter((change) => change.type === 'link'),
@@ -100,8 +103,10 @@ function adaptFieldsOperations(
   newLinkValues: LinkValue[] = [],
   deletedLinkValues: LinkValue[] = [],
   tableNameById: Map<string, string> = new Map(),
+  rawModelFields?: DataModelField[],
 ): EditSemanticFieldPayload[] | undefined {
   const originalFieldsById = new Map(originalFields.map((f) => [f.id, f]));
+  const rawFieldsById = rawModelFields ? new Map(rawModelFields.map((f) => [f.id, f])) : undefined;
   const fieldOps: EditSemanticTablePayload['fields'] = [];
   const processedFieldNames = new Set<string>();
 
@@ -129,7 +134,14 @@ function adaptFieldsOperations(
               foreignkeyTable: undefined,
             }
           : fieldValues;
-      fieldOps.push(adaptFieldOperation(change, effectiveField, originalFieldsById.get(effectiveField.id)));
+      fieldOps.push(
+        adaptFieldOperation(
+          change,
+          effectiveField,
+          originalFieldsById.get(effectiveField.id),
+          rawFieldsById?.get(effectiveField.id),
+        ),
+      );
       processedFieldNames.add(fieldValues.name);
     }
   }
@@ -177,12 +189,13 @@ function adaptFieldOperation(
   change: FieldChange,
   fieldValues: TableField,
   originalField?: TableField,
+  rawModelField?: DataModelField,
 ): EditSemanticFieldPayload {
   if (change.operation === 'MOD')
     return {
       op: 'MOD',
       data: originalField
-        ? adaptTableFieldUpdate(fieldValues, originalField)
+        ? adaptTableFieldUpdate(fieldValues, originalField, rawModelField)
         : { id: fieldValues.id, ...adaptTableField(fieldValues) },
     };
   if (change.operation === 'DEL')
@@ -206,12 +219,17 @@ const metadataKeys = [
   'hidden',
 ] as const satisfies (keyof TableField)[];
 
-function adaptTableFieldUpdate(current: TableField, original: TableField) {
-  const semanticTypeChanged =
-    current.semanticType !== original.semanticType || current.semanticSubType !== original.semanticSubType;
-  const metadataChanged = metadataKeys.some((k) => current[k] !== original[k]);
+function adaptTableFieldUpdate(current: TableField, original: TableField, rawModelField?: DataModelField) {
+  // When a raw model field is available, compare against the actual backend values
+  // to detect inferred semantic types as real changes
 
-  return omitUndefined({
+  const originalSemanticType = rawModelField ? rawModelField.semanticType : original.semanticType;
+  const originalSemanticSubType = rawModelField ? rawModelField.semanticSubType : original.semanticSubType;
+  const semanticTypeChanged =
+    current.semanticType !== originalSemanticType || current.semanticSubType !== originalSemanticSubType;
+  const metadataChanged = semanticTypeChanged || metadataKeys.some((k) => current[k] !== original[k]);
+
+  const field = omitUndefined({
     id: current.id,
     description: ifChanged(current.description, original.description),
     alias: ifChanged(current.alias || current.name, original.alias),
@@ -236,4 +254,5 @@ function adaptTableFieldUpdate(current: TableField, original: TableField) {
         }
       : undefined,
   });
+  return field;
 }
