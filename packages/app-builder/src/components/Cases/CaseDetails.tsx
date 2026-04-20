@@ -7,6 +7,7 @@ import { type CurrentUser, DataModelWithTableOptions, isAdmin } from '@app-build
 import { CaseDetail, CaseReview, DetailedCaseDecision, SuspiciousActivityReport } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
+import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { useRef, useState } from 'react';
@@ -55,6 +56,11 @@ export const CaseDetails = ({
   });
   const reviewReactionMutation = useCaseReviewFeedbackMutation(caseDetail.id, caseReview?.id);
   const addReviewToCaseCommentsMutation = useAddReviewToCaseCommentsMutation(caseDetail.id, caseReview?.id);
+
+  const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
+  const hasRuleHits = caseDecisionsQuery.data?.pages.some((page) =>
+    page.decisions.some((d) => d.rules.some((r) => r.outcome === 'hit')),
+  );
 
   const [selectedTab, setSelectedTab] = useState<'caseDetails' | 'review'>('caseDetails');
   const revalidate = useLoaderRevalidator();
@@ -224,10 +230,12 @@ export const CaseDetails = ({
             <div className="flex flex-col justify-start gap-1.5">
               <div className="text-h2 text-grey-primary flex items-center justify-between px-1 font-medium">
                 <span>{t('cases:alerts')}</span>
-                <Button variant="secondary" onClick={() => setDrawerContentMode('snooze')}>
-                  <Icon icon="snooze" className="size-3.5" />
-                  {t('cases:decisions.snooze_rules')}
-                </Button>
+                {hasRuleHits ? (
+                  <Button variant="secondary" onClick={() => setDrawerContentMode('snooze')}>
+                    <Icon icon="snooze" className="size-3.5" />
+                    {t('cases:decisions.snooze_rules')}
+                  </Button>
+                ) : null}
               </div>
               <CaseAlerts
                 selectDecision={selectDecision}
