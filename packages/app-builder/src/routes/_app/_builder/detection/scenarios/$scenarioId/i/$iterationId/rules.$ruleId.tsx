@@ -33,7 +33,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
+import { Button, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -217,8 +217,6 @@ function RuleDetail() {
   });
 
   const [formulaKey, setFormulaKey] = useState(0);
-  const [isDuplicateRuleOpen, setIsDuplicateRuleOpen] = useState(false);
-  const [isDeleteRuleOpen, setIsDeleteRuleOpen] = useState(false);
 
   const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
   const [ruleDescription, setRuleDescription] = useState<string | undefined>(undefined);
@@ -319,47 +317,20 @@ function RuleDetail() {
               </form.Field>
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <DuplicateRule
-                    ruleId={rule.id}
-                    iterationId={rule.scenarioIterationId}
-                    scenarioId={scenarioId}
-                    open={isDuplicateRuleOpen}
-                    onOpenChange={setIsDuplicateRuleOpen}
-                  />
-                  <DeleteRule
-                    ruleId={rule.id}
-                    iterationId={rule.scenarioIterationId}
-                    scenarioId={scenarioId}
-                    open={isDeleteRuleOpen}
-                    onOpenChange={setIsDeleteRuleOpen}
-                  />
-                  <MenuCommand.Menu>
-                    <MenuCommand.Trigger>
-                      <Button variant="secondary" className="size-8 p-0">
-                        <Icon icon="dots-three" className="size-5" />
-                      </Button>
-                    </MenuCommand.Trigger>
-                    <MenuCommand.Content align="end" sideOffset={4} size="small">
-                      <MenuCommand.List>
-                        <MenuCommand.Item onSelect={() => setIsDuplicateRuleOpen(true)}>
-                          <div className="flex items-center gap-v2-xs">
-                            <Icon icon="copy" className="size-4" aria-hidden />
-                            {t('scenarios:clone_rule.button')}
-                          </div>
-                        </MenuCommand.Item>
-                        <MenuCommand.Item onSelect={() => setIsDeleteRuleOpen(true)}>
-                          <div className="text-red-primary flex items-center gap-v2-xs">
-                            <Icon icon="delete" className="size-4" aria-hidden />
-                            {t('common:delete')}
-                          </div>
-                        </MenuCommand.Item>
-                      </MenuCommand.List>
-                    </MenuCommand.Content>
-                  </MenuCommand.Menu>
-
-                  <Button variant="primary" type="submit" disabled={mutation.isPending}>
-                    {mutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" aria-hidden /> : null}
-                    <Icon icon="save" className="size-5" aria-hidden />
+                  <DuplicateRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
+                    <Button variant="secondary" size="small" type="button">
+                      <Icon icon="copy" className="size-4" aria-hidden />
+                      {t('scenarios:clone_rule.button')}
+                    </Button>
+                  </DuplicateRule>
+                  <DeleteRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
+                    <Button variant="destructive" size="small" type="button">
+                      <Icon icon="delete" className="size-4" aria-hidden />
+                      {t('common:delete')}
+                    </Button>
+                  </DeleteRule>
+                  <Button variant="primary" size="small" type="submit">
+                    <Icon icon="save" className="size-4" aria-hidden />
                     {t('common:save')}
                   </Button>
                 </div>
