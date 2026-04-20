@@ -5,6 +5,7 @@ import {
   type ScoringRuleset,
   type ScoringSettings as ScoringSettingsModel,
 } from '@app-builder/models/scoring';
+import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useGetScoreDistributionQuery } from '@app-builder/queries/scoring/get-score-distribution';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
 import { ResponsivePie } from '@nivo/pie';
@@ -66,13 +67,15 @@ export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsMod
 function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; settings: ScoringSettingsModel }) {
   const { t } = useTranslation(['user-scoring', 'common']);
   const distributionQuery = useGetScoreDistributionQuery(ruleset.recordType);
+  const dataModel = useDataModelQuery().data?.dataModel ?? [];
+  const entityName = dataModel.find((table) => table.name === ruleset.recordType)?.alias || ruleset.recordType;
   const maxRiskLevel = settings.maxRiskLevel as 3 | 4 | 5 | 6;
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
   const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md h-[400px]">
-      <p className="text-s font-medium">{t('user-scoring:overview.ruleset_card.title', { name: ruleset.name })}</p>
+      <p className="text-s font-medium">{t('user-scoring:overview.ruleset_card.title', { name: entityName })}</p>
       {match(distributionQuery)
         .with({ isPending: true }, () => (
           <div className="flex flex-1 items-center justify-center">

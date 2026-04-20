@@ -59,6 +59,7 @@
   "section.create_panel.unit_placeholder": "unité",
   "section.create_panel.validate": "Valider",
   "section.tab_overview": "Vue d'ensemble",
+  "section.tab_scores": "Scores {{name}}",
 
   "section.title": "Scoring client",
   "settings.define_scale": "Définissez une échelle de risque, puis choisissez l'entité sur laquelle créer le jeu de règles.",
