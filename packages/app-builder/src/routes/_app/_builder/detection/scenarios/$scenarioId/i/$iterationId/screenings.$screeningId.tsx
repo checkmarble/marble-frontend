@@ -342,10 +342,15 @@ function ScreeningDetail() {
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      className="text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden"
+                      className={cn(
+                        'text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden',
+                        field.state.meta.errors.length > 0 && 'border-b border-red-primary',
+                      )}
                       placeholder={t('scenarios:sanction_name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                    {field.state.meta.errors.length > 0 ? (
+                      <span className="text-xs text-red-primary">{t('scenarios:edit_screening.name_required')}</span>
+                    ) : null}
                   </div>
                 )}
               </form.Field>
