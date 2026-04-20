@@ -27,7 +27,11 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, ScreeningOutcome } from '@app-builder/models/outcome';
-import { type BuilderOptionsResource } from '@app-builder/server-fns/scenarios';
+import {
+  type BuilderOptionsResource,
+  buildDatabaseAccessorsFromDataModel,
+  buildPayloadAccessorsFromDataModel,
+} from '@app-builder/server-fns/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { isAccessible, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -58,21 +62,20 @@ const screeningLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(screeningLoaderDataSchema)
   .handler(async function screeningLoader({ data, context }) {
-    const { customListsRepository, editor, dataModelRepository, screening, continuousScreening, entitlements } =
+    const { customListsRepository, dataModelRepository, scenario, screening, continuousScreening, entitlements } =
       context.authInfo;
 
-    const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, { sections }, screeningConfigs] =
-      await Promise.all([
-        editor.listAccessors({ scenarioId: data.scenarioId }),
-        dataModelRepository.getDataModel(),
-        customListsRepository.listCustomLists(),
-        screening.listDatasets(),
-        isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
-      ]);
+    const [currentScenario, dataModel, customLists, { sections }, screeningConfigs] = await Promise.all([
+      scenario.getScenario({ scenarioId: data.scenarioId }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      screening.listDatasets(),
+      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
+    ]);
 
     return {
-      databaseAccessors,
-      payloadAccessors,
+      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
+      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
       dataModel,
       customLists,
       sections,

@@ -13,6 +13,10 @@ import useIntersection from '@app-builder/hooks/useIntersection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
+import {
+  buildDatabaseAccessorsFromDataModel,
+  buildPayloadAccessorsFromDataModel,
+} from '@app-builder/server-fns/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import {
   hasAnyEntitlement,
@@ -44,26 +48,24 @@ const ruleLoader = createServerFn({ method: 'GET' })
   .handler(async function ruleLoader({ data, context }) {
     const {
       customListsRepository,
-      editor,
       dataModelRepository,
+      scenario,
       scenarioIterationRuleRepository,
       entitlements,
       continuousScreening,
     } = context.authInfo;
 
-    const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, rule, screeningConfigs] = await Promise.all(
-      [
-        editor.listAccessors({ scenarioId: data.scenarioId }),
-        dataModelRepository.getDataModel(),
-        customListsRepository.listCustomLists(),
-        scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }),
-        isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
-      ],
-    );
+    const [currentScenario, dataModel, customLists, rule, screeningConfigs] = await Promise.all([
+      scenario.getScenario({ scenarioId: data.scenarioId }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }),
+      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
+    ]);
 
     return {
-      databaseAccessors,
-      payloadAccessors,
+      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
+      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
       dataModel,
       customLists,
       isAiRuleDescriptionEnabled: isAiRuleBuildingAvailable(entitlements),
