@@ -422,6 +422,7 @@
   "rules.new_group": "new rule group",
   "rules.rule_group": "Rule group",
   "rules.score": "Score Modifier",
+  "rules.score_or_outcome": "Outcome",
   "sanction_counterparty_id": "Counterparty ID",
   "sanction_counterparty_id_placeholder": "Select a unique counterparty identifier",
   "sanction_counterparty_id.tooltip": "Choose a unique identifier value (like IBAN, phone number), which can be whitelisted in case of a false positive match.",
