@@ -6,7 +6,7 @@ import { type UpdateScoringRulesetPayload, updateScoringRulesetPayloadSchema } f
 import { handleSubmit } from '@app-builder/utils/form';
 import { createSimpleContext } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
-import { Link, Outlet, useMatches, useNavigate, useRouter } from '@tanstack/react-router';
+import { Link, Outlet, useMatches, useNavigate, useParams, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,6 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   const { t } = useTranslation(['user-scoring']);
   const [panelOpen, setPanelOpen] = useState(false);
   const { data, isPending } = useListScoringRulesetsQuery();
-  const dataModel = useDataModelQuery().data?.dataModel ?? [];
   const matches = useMatches();
   const showCreateButton = matches.some(
     (m) => (m.staticData as { showCreateRulesetButton?: boolean })?.showCreateRulesetButton,
@@ -55,21 +54,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
                   <Spinner className="size-4" />
                 </div>
               ) : (
-                rulesets.map((ruleset) => (
-                  <Link
-                    key={ruleset.id}
-                    to="/user-scoring/$recordType/$version"
-                    params={{
-                      recordType: ruleset.recordType,
-                      version: ruleset.status === 'draft' ? 'draft' : ruleset.version.toString(),
-                    }}
-                    className={tabClassName}
-                  >
-                    {t('user-scoring:section.tab_scores', {
-                      name: dataModel.find((table) => table.name === ruleset.recordType)?.alias || ruleset.recordType,
-                    })}
-                  </Link>
-                ))
+                rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
               )}
             </Tabs>
             <Outlet />
@@ -82,6 +67,27 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
         </Page.Container>
       </Page.Main>
     </CreateRulesetPanelContext.Provider>
+  );
+}
+
+function RulesetTab({ ruleset }: { ruleset: { recordType: string; status: string; version: number; name: string } }) {
+  const params = useParams({ strict: false }) as { recordType?: string };
+  const isActive = params.recordType === ruleset.recordType;
+
+  return (
+    <Link
+      to="/user-scoring/$recordType/$version"
+      params={{
+        recordType: ruleset.recordType,
+        version: ruleset.status === 'draft' ? 'draft' : ruleset.version.toString(),
+      }}
+      className={tabClassName}
+      activeProps={{}}
+      inactiveProps={{}}
+      data-status={isActive ? 'active' : undefined}
+    >
+      {ruleset.name}
+    </Link>
   );
 }
 

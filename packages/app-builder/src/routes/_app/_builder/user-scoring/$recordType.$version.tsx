@@ -4,7 +4,7 @@ import { isNotFoundHttpError } from '@app-builder/models';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import { type ScoringRulesetWithRules } from '@app-builder/models/scoring';
 import { hasAnyEntitlement } from '@app-builder/services/feature-access';
-import { createFileRoute, Navigate, redirect, useLoaderData } from '@tanstack/react-router';
+import { createFileRoute, redirect, useLoaderData } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
 const scoringRulesetLoader = createServerFn()
@@ -42,10 +42,14 @@ export const Route = createFileRoute('/_app/_builder/user-scoring/$recordType/$v
 });
 
 function UserScoringRulesetRoute() {
-  const { ruleset, customLists, preparationStatus, hasValidLicense } = Route.useLoaderData();
-  const { settings } = useLoaderData({ from: '/_app/_builder/user-scoring' });
+  const loaderData = Route.useLoaderData();
+  const parentData = useLoaderData({ from: '/_app/_builder/user-scoring' });
 
-  if (!settings) return <Navigate to="/user-scoring/overview" replace />;
+  // During router.invalidate(), loader data can be temporarily undefined
+  if (!loaderData || !parentData?.settings) return null;
+
+  const { ruleset, customLists, preparationStatus, hasValidLicense } = loaderData;
+  const { settings } = parentData;
 
   return (
     <ScoringRulesetPage
