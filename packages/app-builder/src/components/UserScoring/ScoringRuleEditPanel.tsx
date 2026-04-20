@@ -10,7 +10,11 @@ import {
   type ScoringRule,
   transformSwitchAstNodeToModel,
 } from '@app-builder/models/scoring';
-import { type BuilderOptionsResource, buildPayloadAccessorsFromDataModel } from '@app-builder/server-fns/scenarios';
+import {
+  type BuilderOptionsResource,
+  buildDatabaseAccessorsFromDataModel,
+  buildPayloadAccessorsFromDataModel,
+} from '@app-builder/server-fns/scenarios';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -48,19 +52,23 @@ export function ScoringRuleEditPanel({
     () => buildPayloadAccessorsFromDataModel(dataModel, entityType),
     [dataModel, entityType],
   );
+  const databaseAccessors = useMemo(
+    () => buildDatabaseAccessorsFromDataModel(dataModel, entityType),
+    [dataModel, entityType],
+  );
 
   const builderOptionsData = useMemo(
     (): BuilderOptionsResource => ({
       dataModel,
       triggerObjectType: entityType,
       customLists,
-      databaseAccessors: [],
+      databaseAccessors,
       payloadAccessors,
       hasValidLicense,
       hasContinuousScreening: false,
       screeningConfigs: [],
     }),
-    [dataModel, entityType, customLists, payloadAccessors, hasValidLicense],
+    [dataModel, entityType, customLists, databaseAccessors, payloadAccessors, hasValidLicense],
   );
   const [name, setName] = useState(rule.name);
   const [riskType, setRiskType] = useState(rule.riskType);
