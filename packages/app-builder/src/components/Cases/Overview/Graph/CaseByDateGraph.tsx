@@ -7,6 +7,7 @@ import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
+import { BAR_BORDER_RADIUS, BAR_BORDER_WIDTH, buildBarGradient, nivoTheme } from '../../Analytics/chart-theme';
 import { CaseStatusBadge } from '../../CaseStatus';
 import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../constants';
 
@@ -74,22 +75,37 @@ export const CaseByDateGraph = () => {
                       },
                     }}
                     margin={{ top: 5, right: 5, bottom: 54, left: 50 }}
+                    borderRadius={BAR_BORDER_RADIUS}
+                    borderWidth={BAR_BORDER_WIDTH}
+                    borderColor={{ from: 'color' }}
                     defs={[
+                      ...graphCaseStatuses.map((status) =>
+                        buildBarGradient(graphStatusesColors[status], `grad-${status}`),
+                      ),
                       {
                         id: 'unhoverOpacity',
                         type: 'linearGradient',
                         colors: [
-                          { offset: 0, color: 'inherit', opacity: 0.75 },
-                          { offset: 100, color: 'inherit', opacity: 0.75 },
+                          { offset: 0, color: 'inherit', opacity: 0.5 },
+                          { offset: 100, color: 'inherit', opacity: 0.5 },
                         ],
                       },
                     ]}
                     fill={[
-                      {
-                        match: (n) => hovering !== null && n.data.indexValue !== hovering,
-                        id: 'unhoverOpacity',
-                      },
+                      ...graphCaseStatuses.map((status) => ({
+                        match: { id: status },
+                        id: `grad-${status}`,
+                      })),
+                      ...(hovering !== null
+                        ? [
+                            {
+                              match: (n: { data: { indexValue: string | number } }) => n.data.indexValue !== hovering,
+                              id: 'unhoverOpacity',
+                            },
+                          ]
+                        : []),
                     ]}
+                    colorBy="id"
                     colors={({ id }) => graphStatusesColors[id as keyof typeof graphStatusesColors]}
                     padding={0.3}
                     layout="vertical"
@@ -103,6 +119,8 @@ export const CaseByDateGraph = () => {
                         itemWidth: 100,
                         itemHeight: 25,
                         translateY: 54,
+                        symbolShape: 'circle',
+                        symbolSize: 10,
                         data: graphCaseStatuses.map((status) => ({
                           id: status,
                           label: t(`cases:case.status.${status}`),
@@ -123,12 +141,7 @@ export const CaseByDateGraph = () => {
                         </div>
                       </div>
                     )}
-                    theme={{
-                      text: { fill: 'var(--color-grey-secondary)' },
-                      axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
-                      legends: { text: { fill: 'var(--color-grey-secondary)' } },
-                      grid: { line: { stroke: 'var(--color-grey-border)', strokeWidth: 1, strokeDasharray: '4 4' } },
-                    }}
+                    theme={nivoTheme}
                   />
                 </div>
               </>
