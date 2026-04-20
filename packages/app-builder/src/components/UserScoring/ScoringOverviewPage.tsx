@@ -112,6 +112,12 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
                 padAngle={1}
                 colors={{ datum: 'data.color' }}
                 enableArcLabels={false}
+                tooltip={({ datum }) => (
+                  <div className="flex items-center gap-v2-xs bg-surface-card p-v2-xs rounded-lg border border-grey-border shadow-sm text-s text-grey-primary whitespace-nowrap">
+                    <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: datum.color }} />
+                    {datum.label}: {datum.value} ({Math.round((datum.value / total) * 100)}%)
+                  </div>
+                )}
                 arcLinkLabel={(datum) => `${Math.round((datum.value / total) * 100)}%`}
                 arcLinkLabelsColor={{ from: 'color' }}
                 arcLinkLabelsThickness={0}
