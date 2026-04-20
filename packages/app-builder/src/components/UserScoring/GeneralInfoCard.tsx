@@ -3,7 +3,7 @@ import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/pub
 import {
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABELS,
+  SCORING_LEVELS_LABEL_KEYS,
   type ScoringRulesetWithRules,
   type ScoringSettings,
   SECONDS_PER_UNIT,
@@ -274,7 +274,7 @@ function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; t
   }
 
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
-  const labels = SCORING_LEVELS_LABELS[maxRiskLevel];
+  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
     <div className="flex flex-col gap-v2-sm">
@@ -286,7 +286,7 @@ function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; t
             <Fragment key={color}>
               <div className="flex items-center gap-v2-xs h-6 px-2 rounded-full border" style={{ borderColor: color }}>
                 <div className="size-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                <span className="text-xs text-grey-primary">{labels[i]}</span>
+                <span className="text-xs text-grey-primary">{t(labelKeys[i] ?? '')}</span>
               </div>
               {!isLast ? (
                 <span className="text-xs font-medium text-grey-placeholder">{`≤ ${thresholds[i]} <`}</span>

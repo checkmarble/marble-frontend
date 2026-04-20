@@ -1,7 +1,7 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import {
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABELS,
+  SCORING_LEVELS_LABEL_KEYS,
   type ScoringRuleset,
   type ScoringSettings as ScoringSettingsModel,
 } from '@app-builder/models/scoring';
@@ -68,7 +68,7 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
   const distributionQuery = useGetScoreDistributionQuery(ruleset.recordType);
   const maxRiskLevel = settings.maxRiskLevel as 3 | 4 | 5 | 6;
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
-  const labels = SCORING_LEVELS_LABELS[maxRiskLevel];
+  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md h-[400px]">
@@ -99,7 +99,7 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
             .filter((item) => item.count > 0)
             .map((item) => ({
               id: item.risk_level,
-              label: labels[item.risk_level] ?? item.risk_level.toString(),
+              label: t(labelKeys[item.risk_level] ?? item.risk_level.toString()),
               value: item.count,
               color: colors[item.risk_level] ?? '#ccc',
             }));

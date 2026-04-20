@@ -1,4 +1,9 @@
 {
+  "level.high": "Élevé",
+
+  "level.low": "Faible",
+  "level.medium": "Moyen",
+  "level.very_high": "Très élevé",
   "overview.configure_score": "Configurer un score",
 
   "overview.no_ruleset": "Vous n'avez pas encore de jeu de règles configuré. Choisissez une entité sur laquelle créer un jeu de règles pour commencer.",
