@@ -83,14 +83,11 @@ export const CaseByInboxGraph = () => {
                       },
                     ]}
                     colorBy="id"
-                    colors={Object.values(graphStatusesColors)}
+                    colors={({ id }) => graphStatusesColors[id as keyof typeof graphStatusesColors]}
                     padding={0.3}
                     layout="vertical"
                     onMouseEnter={(d) => setHovering(d.indexValue as string)}
                     onMouseLeave={() => setHovering(null)}
-                    legendLabel={(datum) =>
-                      t(`cases:case.status.${datum.id as 'snoozed' | 'pending' | 'investigating' | 'closed'}`)
-                    }
                     legends={[
                       {
                         dataFrom: 'keys',
@@ -99,6 +96,11 @@ export const CaseByInboxGraph = () => {
                         itemWidth: 100,
                         itemHeight: 25,
                         translateY: 100,
+                        data: graphCaseStatuses.map((status) => ({
+                          id: status,
+                          label: t(`cases:case.status.${status}`),
+                          color: graphStatusesColors[status],
+                        })),
                       },
                     ]}
                     tooltip={({ id, value, data }) => (
