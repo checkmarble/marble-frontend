@@ -1,6 +1,7 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type DataModel } from '@app-builder/models';
 import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
+import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   buildSwitchAstNodeFromModel,
@@ -44,18 +45,24 @@ export function ScoringRuleEditPanel({
   const { t } = useTranslation(['user-scoring']);
   const sharp = PanelSharpFactory.useSharp();
 
+  const payloadAccessors = useMemo(() => {
+    const table = dataModel.find((t) => t.name === entityType);
+    if (!table) return [];
+    return table.fields.filter((f) => !f.hidden).map((f) => NewPayloadAstNode(f.name));
+  }, [dataModel, entityType]);
+
   const builderOptionsData = useMemo(
     (): BuilderOptionsResource => ({
       dataModel,
       triggerObjectType: entityType,
       customLists,
       databaseAccessors: [],
-      payloadAccessors: [],
+      payloadAccessors,
       hasValidLicense,
       hasContinuousScreening: false,
       screeningConfigs: [],
     }),
-    [dataModel, entityType, customLists, hasValidLicense],
+    [dataModel, entityType, customLists, payloadAccessors, hasValidLicense],
   );
   const [name, setName] = useState(rule.name);
   const [riskType, setRiskType] = useState(rule.riskType);
