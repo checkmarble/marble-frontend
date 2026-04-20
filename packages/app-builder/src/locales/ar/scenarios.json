@@ -422,6 +422,7 @@
   "rules.new_group": "مجموعة قواعد جديدة",
   "rules.rule_group": "مجموعة القواعد",
   "rules.score": "مُعدِّل الدرجة",
+  "rules.score_or_outcome": "النتيجة",
   "sanction_counterparty_id": "معرف الطرف المقابل",
   "sanction_counterparty_id_placeholder": "حدد معرف طرف مقابل فريد",
   "sanction_counterparty_id.tooltip": "اختر مُعرّفًا فريدًا (مثل IBAN أو رقم الهاتف) يمكن إدراجه في القائمة البيضاء في حال حدوث تطابق كاذب.",

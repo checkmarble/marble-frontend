@@ -422,6 +422,7 @@
   "rules.new_group": "Nouveau groupe de règles",
   "rules.rule_group": "Groupe de règles",
   "rules.score": "Score",
+  "rules.score_or_outcome": "Résultat",
   "sanction_counterparty_id": "Identifiant de la contrepartie",
   "sanction_counterparty_id_placeholder": "Sélectionnez un identifiant de contrepartie unique",
   "sanction_counterparty_id.tooltip": "Choisissez un identifiant unique de la contrepartie (comme un code iban, un numéro de téléphone...), qui pourra être utilisé pour placer en liste blanche les faux positifs.",
