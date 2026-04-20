@@ -125,9 +125,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
       scoringIntervalSeconds: 180 * SECONDS_PER_UNIT.days,
     } as UpdateScoringRulesetPayload,
     validators: {
-      onSubmit: updateScoringRulesetPayloadSchema,
       onChange: updateScoringRulesetPayloadSchema,
-      onMount: updateScoringRulesetPayloadSchema,
     },
     onSubmit: async ({ formApi, value }) => {
       if (formApi.state.isValid) {
