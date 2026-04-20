@@ -7,6 +7,7 @@ import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
+import { BAR_BORDER_RADIUS, BAR_BORDER_WIDTH, buildBarGradient, nivoTheme } from '../../Analytics/chart-theme';
 import { CaseStatusBadge } from '../../CaseStatus';
 import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../constants';
 
@@ -66,7 +67,13 @@ export const CaseByInboxGraph = () => {
                       truncateTickAt: 10,
                     }}
                     margin={{ top: 5, right: 5, bottom: 100, left: 50 }}
+                    borderRadius={BAR_BORDER_RADIUS}
+                    borderWidth={BAR_BORDER_WIDTH}
+                    borderColor={{ from: 'color' }}
                     defs={[
+                      ...graphCaseStatuses.map((status) =>
+                        buildBarGradient(graphStatusesColors[status], `grad-${status}`),
+                      ),
                       {
                         id: 'unhoverOpacity',
                         type: 'linearGradient',
@@ -77,10 +84,18 @@ export const CaseByInboxGraph = () => {
                       },
                     ]}
                     fill={[
-                      {
-                        match: (n) => hovering !== null && n.data.indexValue !== hovering,
-                        id: 'unhoverOpacity',
-                      },
+                      ...graphCaseStatuses.map((status) => ({
+                        match: { id: status },
+                        id: `grad-${status}`,
+                      })),
+                      ...(hovering !== null
+                        ? [
+                            {
+                              match: (n: { data: { indexValue: string | number } }) => n.data.indexValue !== hovering,
+                              id: 'unhoverOpacity',
+                            },
+                          ]
+                        : []),
                     ]}
                     colorBy="id"
                     colors={({ id }) => graphStatusesColors[id as keyof typeof graphStatusesColors]}
@@ -96,6 +111,8 @@ export const CaseByInboxGraph = () => {
                         itemWidth: 100,
                         itemHeight: 25,
                         translateY: 100,
+                        symbolShape: 'circle',
+                        symbolSize: 10,
                         data: graphCaseStatuses.map((status) => ({
                           id: status,
                           label: t(`cases:case.status.${status}`),
@@ -116,12 +133,7 @@ export const CaseByInboxGraph = () => {
                         </div>
                       </div>
                     )}
-                    theme={{
-                      text: { fill: 'var(--color-grey-secondary)' },
-                      axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
-                      legends: { text: { fill: 'var(--color-grey-secondary)' } },
-                      grid: { line: { stroke: 'var(--color-grey-border)', strokeWidth: 1, strokeDasharray: '4 4' } },
-                    }}
+                    theme={nivoTheme}
                   />
                 </div>
               </>
