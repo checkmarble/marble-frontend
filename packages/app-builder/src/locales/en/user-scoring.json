@@ -22,6 +22,7 @@
   "rule_edit.model_type.screening_tags": "Screening tags",
   "rule_edit.model_type.user_attribute": "User attributes",
   "rule_edit.name_placeholder": "Rule name...",
+  "rule_edit.name_required": "Rule name is required",
   "rule_edit.risk_type_placeholder": "Risk type *",
   "rule_edit.save": "Save changes",
   "ruleset.add_rule": "Add rule",
