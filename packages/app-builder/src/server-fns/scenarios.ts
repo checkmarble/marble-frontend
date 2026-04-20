@@ -4,6 +4,7 @@ import { type AstValidation, type ScenarioValidationErrorCode } from '@app-build
 import { isKnownOperandAstNode, isLeafOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import {
   type DatabaseAccessAstNode,
+  NewDatabaseAccessAstNode,
   NewPayloadAstNode,
   type PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
@@ -188,6 +189,47 @@ export function buildPayloadAccessorsFromDataModel(dataModel: DataModel, trigger
   return table.fields.filter((f) => !f.hidden).map((f) => NewPayloadAstNode(f.name));
 }
 
+export function buildDatabaseAccessorsFromDataModel(
+  dataModel: DataModel,
+  triggerObjectType: string,
+): DatabaseAccessAstNode[] {
+  const triggerTable = dataModel.find((t) => t.name === triggerObjectType);
+  if (!triggerTable) return [];
+
+  const accessors: DatabaseAccessAstNode[] = [];
+
+  function recurse(
+    tableName: string,
+    path: string[],
+    linksToSingle: DataModel[number]['linksToSingle'],
+    visited: string[],
+  ) {
+    for (const link of linksToSingle) {
+      const linkedTable = dataModel.find((t) => t.name === link.parentTableName);
+      if (!linkedTable || visited.includes(linkedTable.name)) continue;
+
+      const pathForLink = [...path, link.name];
+
+      for (const field of linkedTable.fields) {
+        if (field.hidden) continue;
+        accessors.push(
+          NewDatabaseAccessAstNode({
+            tableName: triggerObjectType,
+            fieldName: field.name,
+            path: pathForLink,
+          }),
+        );
+      }
+
+      recurse(linkedTable.name, pathForLink, linkedTable.linksToSingle, [...visited, linkedTable.name]);
+    }
+  }
+
+  recurse(triggerTable.name, [], triggerTable.linksToSingle, [triggerTable.name]);
+
+  return accessors;
+}
+
 // ---- Scenario CRUD ----
 
 export const archiveScenarioFn = createServerFn({ method: 'POST' })
@@ -284,25 +326,22 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string() }))
   .handler(async ({ context, data }): Promise<BuilderOptionsResource> => {
-    const { editor, scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements } =
+    const { scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements } =
       context.authInfo;
 
-    const [currentScenario, customLists, dataModel, accessors, screeningConfigs] = await Promise.all([
+    const [currentScenario, customLists, dataModel, screeningConfigs] = await Promise.all([
       scenario.getScenario({ scenarioId: data.scenarioId }),
       customListsRepository.listCustomLists(),
       dataModelRepository.getDataModel(),
-      editor.listAccessors({ scenarioId: data.scenarioId }),
       isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
     ]);
-
-    const payloadAccessors = buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType);
 
     return {
       triggerObjectType: currentScenario.triggerObjectType,
       customLists,
       dataModel,
-      databaseAccessors: accessors.databaseAccessors,
-      payloadAccessors,
+      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
+      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
       hasValidLicense: hasAnyEntitlement(entitlements),
       hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
       screeningConfigs,
