@@ -3,6 +3,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import { type ScoringRulesetWithRules } from '@app-builder/models/scoring';
+import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { createFileRoute, Navigate, redirect, useLoaderData } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -10,7 +11,7 @@ const scoringRulesetLoader = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scoringRulesetLoader({ data, context }) {
-    const { userScoring, customListsRepository } = context.authInfo;
+    const { userScoring, customListsRepository, entitlements } = context.authInfo;
 
     const recordType = data?.params?.['recordType'] ?? '';
     const version = data?.params?.['version'] ?? '';
@@ -32,7 +33,7 @@ const scoringRulesetLoader = createServerFn()
       preparationStatus = await userScoring.getRulesetPreparationStatus(recordType);
     }
 
-    return { ruleset, customLists, preparationStatus };
+    return { ruleset, customLists, preparationStatus, hasValidLicense: hasAnyEntitlement(entitlements) };
   });
 
 export const Route = createFileRoute('/_app/_builder/user-scoring/$recordType/$version')({
@@ -41,7 +42,7 @@ export const Route = createFileRoute('/_app/_builder/user-scoring/$recordType/$v
 });
 
 function UserScoringRulesetRoute() {
-  const { ruleset, customLists, preparationStatus } = Route.useLoaderData();
+  const { ruleset, customLists, preparationStatus, hasValidLicense } = Route.useLoaderData();
   const { settings } = useLoaderData({ from: '/_app/_builder/user-scoring' });
 
   if (!settings) return <Navigate to="/user-scoring/overview" replace />;
@@ -52,6 +53,7 @@ function UserScoringRulesetRoute() {
       settings={settings}
       customLists={customLists}
       preparationStatus={preparationStatus}
+      hasValidLicense={hasValidLicense}
     />
   );
 }

@@ -76,9 +76,10 @@ interface RulesTableProps {
   ruleset: ScoringRulesetWithRules;
   maxRiskLevel: number;
   customLists: CustomList[];
+  hasValidLicense?: boolean;
 }
 
-export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTableProps) {
+export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense }: RulesTableProps) {
   const { t } = useTranslation(['user-scoring']);
   const router = useRouter();
   const navigate = useNavigate();
@@ -247,6 +248,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
                   entityType={entityType}
                   maxRiskLevel={maxRiskLevel}
                   customLists={customLists}
+                  hasValidLicense={hasValidLicense}
                   onRuleChange={(newRule) => handleRuleChange(rule.stableId, newRule)}
                   onRuleDelete={() => handleRuleDelete(rule.stableId)}
                 />
@@ -268,6 +270,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists }: RulesTablePro
             entityType={entityType}
             maxRiskLevel={maxRiskLevel}
             customLists={customLists}
+            hasValidLicense={hasValidLicense}
             onChange={handleRuleAdd}
           />
         ) : null}
@@ -282,11 +285,21 @@ interface RuleRowProps {
   entityType: string;
   maxRiskLevel: number;
   customLists: CustomList[];
+  hasValidLicense?: boolean;
   onRuleChange?: (rule: ScoringRule) => Promise<boolean>;
   onRuleDelete?: () => void;
 }
 
-function RuleRow({ rule, dataModel, entityType, maxRiskLevel, customLists, onRuleChange, onRuleDelete }: RuleRowProps) {
+function RuleRow({
+  rule,
+  dataModel,
+  entityType,
+  maxRiskLevel,
+  customLists,
+  hasValidLicense,
+  onRuleChange,
+  onRuleDelete,
+}: RuleRowProps) {
   const { t } = useTranslation(['user-scoring']);
   const switchNode = rule.ast && isSwitchAstNode(rule.ast) ? rule.ast : null;
   const [isEditing, setIsEditing] = useState(false);
@@ -326,6 +339,7 @@ function RuleRow({ rule, dataModel, entityType, maxRiskLevel, customLists, onRul
               entityType={entityType}
               maxRiskLevel={maxRiskLevel}
               customLists={customLists}
+              hasValidLicense={hasValidLicense}
               onChange={onRuleChange}
               onDelete={
                 onRuleDelete

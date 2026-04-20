@@ -9,13 +9,25 @@ interface ScoringRulesetPageProps {
   settings: ScoringSettings;
   customLists: CustomList[];
   preparationStatus: ScenarioPublicationStatus | null;
+  hasValidLicense?: boolean;
 }
 
-export function ScoringRulesetPage({ ruleset, settings, customLists, preparationStatus }: ScoringRulesetPageProps) {
+export function ScoringRulesetPage({
+  ruleset,
+  settings,
+  customLists,
+  preparationStatus,
+  hasValidLicense,
+}: ScoringRulesetPageProps) {
   return (
     <div className="flex flex-col gap-v2-md">
       <GeneralInfoCard ruleset={ruleset} settings={settings} preparationStatus={preparationStatus} />
-      <RulesTable ruleset={ruleset} maxRiskLevel={settings.maxRiskLevel} customLists={customLists} />
+      <RulesTable
+        ruleset={ruleset}
+        maxRiskLevel={settings.maxRiskLevel}
+        customLists={customLists}
+        hasValidLicense={hasValidLicense}
+      />
     </div>
   );
 }
