@@ -1,7 +1,6 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type DataModel } from '@app-builder/models';
 import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
-import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
   buildSwitchAstNodeFromModel,
@@ -11,7 +10,7 @@ import {
   type ScoringRule,
   transformSwitchAstNodeToModel,
 } from '@app-builder/models/scoring';
-import { type BuilderOptionsResource } from '@app-builder/server-fns/scenarios';
+import { type BuilderOptionsResource, buildPayloadAccessorsFromDataModel } from '@app-builder/server-fns/scenarios';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -45,11 +44,10 @@ export function ScoringRuleEditPanel({
   const { t } = useTranslation(['user-scoring']);
   const sharp = PanelSharpFactory.useSharp();
 
-  const payloadAccessors = useMemo(() => {
-    const table = dataModel.find((t) => t.name === entityType);
-    if (!table) return [];
-    return table.fields.filter((f) => !f.hidden).map((f) => NewPayloadAstNode(f.name));
-  }, [dataModel, entityType]);
+  const payloadAccessors = useMemo(
+    () => buildPayloadAccessorsFromDataModel(dataModel, entityType),
+    [dataModel, entityType],
+  );
 
   const builderOptionsData = useMemo(
     (): BuilderOptionsResource => ({
