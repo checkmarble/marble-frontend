@@ -1,4 +1,9 @@
 {
+  "level.high": "High",
+
+  "level.low": "Low",
+  "level.medium": "Medium",
+  "level.very_high": "Very high",
   "overview.configure_score": "Configure a score",
 
   "overview.no_ruleset": "You don't have any ruleset configured yet. Choose an entity on which to create a ruleset to start.",

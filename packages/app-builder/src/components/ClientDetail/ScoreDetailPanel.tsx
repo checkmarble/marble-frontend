@@ -1,4 +1,4 @@
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABELS, type ScoringSettings } from '@app-builder/models/scoring';
+import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useGetScoringRulesetQuery } from '@app-builder/queries/scoring/get-ruleset';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { type ScoringScore } from 'marble-api';
@@ -91,14 +91,16 @@ export function ScoreDetailPanel({
   activeScore,
   scoringSettings,
 }: ScoreDetailPanelProps) {
-  const { t } = useTranslation(['client360']);
+  const { t } = useTranslation(['client360', 'user-scoring']);
   const formatDateTime = useFormatDateTime();
   const rulesetQuery = useGetScoringRulesetQuery(objectType);
   const thresholds = rulesetQuery.data?.ruleset.thresholds;
 
   const maxRiskLevel = scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6;
   const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][activeScore.risk_level] ?? 'inherit';
-  const scoreLabel = SCORING_LEVELS_LABELS[maxRiskLevel][activeScore.risk_level] ?? activeScore.risk_level.toString();
+  const scoreLabel = t(
+    SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][activeScore.risk_level] ?? activeScore.risk_level.toString(),
+  );
 
   return (
     <PanelRoot open={open} onOpenChange={onOpenChange}>

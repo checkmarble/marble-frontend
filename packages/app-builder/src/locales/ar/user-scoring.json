@@ -1,4 +1,9 @@
 {
+  "level.high": "مرتفع",
+
+  "level.low": "منخفض",
+  "level.medium": "متوسط",
+  "level.very_high": "مرتفع جداً",
   "overview.configure_score": "تكوين النقاط",
 
   "overview.no_ruleset": "لا يوجد لديك أي مجموعة قواعد مكوّنة بعد. اختر كيانًا لإنشاء مجموعة قواعد للبدء.",

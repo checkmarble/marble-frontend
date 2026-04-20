@@ -1,7 +1,7 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
 import { DataModelObject } from '@app-builder/models';
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABELS, type ScoringSettings } from '@app-builder/models/scoring';
+import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
@@ -46,7 +46,7 @@ export const ClientDetailPage = ({
   scoringSettings,
   activeScore,
 }: ClientDetailPageProps) => {
-  const { t } = useTranslation(['common', 'client360']);
+  const { t } = useTranslation(['common', 'client360', 'user-scoring']);
   const dataModelQuery = useDataModelWithOptionsQuery();
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const [showExplorer, setShowExplorer] = useState(false);
@@ -67,9 +67,10 @@ export const ClientDetailPage = ({
   if (scoringSettings && activeScore) {
     scoreColor =
       SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ?? 'inherit';
-    scoreLabel =
-      SCORING_LEVELS_LABELS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ??
-      activeScore.risk_level.toString();
+    scoreLabel = t(
+      SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ??
+        activeScore.risk_level.toString(),
+    );
   }
 
   const handleScoreClick = () => setShowScorePanel(true);
