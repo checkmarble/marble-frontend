@@ -24,6 +24,8 @@
   "ruleset.commit": "Valider",
   "ruleset.cooldown": "Cooldown :",
   "ruleset.create_rule": "Créer une règle",
+
+  "ruleset.edit_settings_title": "Modifier les paramètres généraux",
   "ruleset.error": "Une erreur est survenue.",
   "ruleset.last_update": "Dernière mise à jour :",
   "ruleset.no_rules": "Aucune règle configurée.",
@@ -38,7 +40,6 @@
   "ruleset.rule_type.user_attribute": "Attribut utilisateur",
   "ruleset.rules_column": "Règles",
   "ruleset.score_renew": "Renouvellement du score :",
-
   "ruleset.title": "Informations générales",
   "ruleset.version_placeholder": "Version",
   "section.configure_button": "Configurer un score",

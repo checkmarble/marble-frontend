@@ -24,6 +24,8 @@
   "ruleset.commit": "Commit",
   "ruleset.cooldown": "Cooldown:",
   "ruleset.create_rule": "Create rule",
+
+  "ruleset.edit_settings_title": "Edit general settings",
   "ruleset.error": "An error occurred.",
   "ruleset.last_update": "Last update:",
   "ruleset.no_rules": "No rules configured yet.",
@@ -38,7 +40,6 @@
   "ruleset.rule_type.user_attribute": "User attribute",
   "ruleset.rules_column": "Rules",
   "ruleset.score_renew": "Score renew:",
-
   "ruleset.title": "Global information",
   "ruleset.version_placeholder": "Version",
   "section.configure_button": "Configure a score",
