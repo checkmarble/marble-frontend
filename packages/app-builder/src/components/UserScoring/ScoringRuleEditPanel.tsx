@@ -1,14 +1,13 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type DataModel } from '@app-builder/models';
-import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
-  buildSwitchAstNodeFromModel,
+  buildAstNodeFromModel,
   type DraftRuleModel,
   isCompleteRule,
   RISK_TYPES,
   type ScoringRule,
-  transformSwitchAstNodeToModel,
+  transformAstNodeToModel,
 } from '@app-builder/models/scoring';
 import {
   type BuilderOptionsResource,
@@ -73,7 +72,7 @@ export function ScoringRuleEditPanel({
   const [name, setName] = useState(rule.name);
   const [riskType, setRiskType] = useState(rule.riskType);
   const [currentModel, setCurrentModel] = useState<DraftRuleModel | null>(() =>
-    isSwitchAstNode(rule.ast) ? transformSwitchAstNodeToModel(rule.ast, entityType, dataModel) : null,
+    transformAstNodeToModel(rule.ast, entityType, dataModel),
   );
 
   const RISK_TYPE_OPTIONS: SelectOption<string>[] = RISK_TYPES.map((v) => ({
@@ -85,7 +84,12 @@ export function ScoringRuleEditPanel({
 
   const handleValidate = async () => {
     if (isValid && currentModel && isCompleteRule(currentModel) && onChange) {
-      const result = await onChange({ ...rule, name, riskType, ast: buildSwitchAstNodeFromModel(currentModel) });
+      const result = await onChange({
+        ...rule,
+        name,
+        riskType,
+        ast: buildAstNodeFromModel(currentModel, { entityType }),
+      });
       if (result) {
         sharp.actions.close();
       }
@@ -142,17 +146,15 @@ export function ScoringRuleEditPanel({
         </div>
         <PanelContent>
           <div className="flex flex-col gap-v2-md p-v2-md border border-grey-border rounded-v2-md">
-            {isSwitchAstNode(rule.ast) ? (
-              <SwitchNode
-                mode="edit"
-                node={rule.ast}
-                dataModel={dataModel}
-                entityType={entityType}
-                maxRiskLevel={maxRiskLevel}
-                customLists={customLists}
-                onModelChange={(model) => setCurrentModel(model)}
-              />
-            ) : null}
+            <SwitchNode
+              mode="edit"
+              node={rule.ast}
+              dataModel={dataModel}
+              entityType={entityType}
+              maxRiskLevel={maxRiskLevel}
+              customLists={customLists}
+              onModelChange={(model) => setCurrentModel(model)}
+            />
           </div>
         </PanelContent>
         <PanelFooter>
