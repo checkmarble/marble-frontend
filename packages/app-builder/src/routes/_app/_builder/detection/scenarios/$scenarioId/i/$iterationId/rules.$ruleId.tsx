@@ -25,7 +25,7 @@ import * as Ariakit from '@ariakit/react';
 import { useDebouncedCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -170,10 +170,18 @@ function RuleDetail() {
   const { t } = useTranslation([...scenarioI18n, 'common']);
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: (value: EditRuleForm) =>
       editRuleAction({ data: { params: { scenarioId, iterationId, ruleId: rule.id }, payload: value } }),
+    onSuccess: async () => {
+      await router.invalidate();
+      toast.success(t('common:success.save'));
+    },
+    onError: () => {
+      toast.error(t('common:errors.unknown'));
+    },
   });
 
   const { currentScenario } = useDetectionScenarioData();
@@ -189,14 +197,9 @@ function RuleDetail() {
   });
 
   const form = useForm({
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        try {
-          await mutation.mutateAsync(value);
-          toast.success(t('common:success.save'));
-        } catch {
-          toast.error(t('common:errors.unknown'));
-        }
+        mutation.mutate(value);
       }
     },
     validators: {
@@ -330,7 +333,8 @@ function RuleDetail() {
                     </Ariakit.Menu>
                   </Ariakit.MenuProvider>
 
-                  <Button variant="primary" type="submit">
+                  <Button variant="primary" type="submit" disabled={mutation.isPending}>
+                    {mutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" aria-hidden /> : null}
                     <Icon icon="save" className="size-5" aria-hidden />
                     {t('common:save')}
                   </Button>
