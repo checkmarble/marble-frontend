@@ -2,7 +2,11 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type AstNode, type DataModel } from '@app-builder/models';
 import { type AstValidation, type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { isKnownOperandAstNode, isLeafOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { type DatabaseAccessAstNode, type PayloadAstNode } from '@app-builder/models/astNode/data-accessor';
+import {
+  type DatabaseAccessAstNode,
+  NewPayloadAstNode,
+  type PayloadAstNode,
+} from '@app-builder/models/astNode/data-accessor';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { isStatusBadRequestHttpError, isStatusConflictHttpError } from '@app-builder/models/http-errors';
@@ -178,6 +182,12 @@ export type BuilderOptionsResource = {
   screeningConfigs: ContinuousScreeningConfig[];
 };
 
+export function buildPayloadAccessorsFromDataModel(dataModel: DataModel, triggerObjectType: string): PayloadAstNode[] {
+  const table = dataModel.find((t) => t.name === triggerObjectType);
+  if (!table) return [];
+  return table.fields.filter((f) => !f.hidden).map((f) => NewPayloadAstNode(f.name));
+}
+
 // ---- Scenario CRUD ----
 
 export const archiveScenarioFn = createServerFn({ method: 'POST' })
@@ -285,12 +295,14 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
       isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
     ]);
 
+    const payloadAccessors = buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType);
+
     return {
       triggerObjectType: currentScenario.triggerObjectType,
       customLists,
       dataModel,
       databaseAccessors: accessors.databaseAccessors,
-      payloadAccessors: accessors.payloadAccessors,
+      payloadAccessors,
       hasValidLicense: hasAnyEntitlement(entitlements),
       hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
       screeningConfigs,
