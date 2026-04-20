@@ -5,7 +5,7 @@ import { addConfigurationPayloadSchema } from '@app-builder/schemas/client360';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { Client360Table } from 'marble-api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -48,11 +48,41 @@ export const AddConfigurationModal = ({
     },
   });
 
-  const availableTables = dataModel.filter((table) => tables.every((t) => t.id !== table.id));
+  const availableTables = dataModel.filter((table) => {
+    // Exclude tables already configured in Client360
+    if (tables.some((t) => t.id === table.id)) return false;
+
+    // Exclude tables with fixed semantic types (transaction, event, account, partner)
+    if (table.semanticType === 'transaction' || table.semanticType === 'event' || table.semanticType === 'account')
+      return false;
+    if (table.semanticType === 'person' && table.subEntity === 'generic') return false; // partner
+
+    // Exclude already fully configured tables (has person/company semantic type + caption field)
+    const hasPersonOrCompany =
+      table.semanticType === 'person' && (table.subEntity === 'natural' || table.subEntity === 'moral');
+    if (hasPersonOrCompany && table.captionField) return false;
+
+    return true;
+  });
+
   const selectedTable = useStore(form.store, (state) =>
     state.values.tableId ? dataModel.find((table) => table.id === state.values.tableId) : null,
   );
   const tableFields = selectedTable ? selectedTable.fields.filter((field) => field.dataType === 'String') : [];
+
+  // Pre-fill alias, semanticType, and captionField from the selected table
+  const selectedTableId = selectedTable?.id;
+  useEffect(() => {
+    if (selectedTable) {
+      form.setFieldValue('alias', selectedTable.alias || '');
+      form.setFieldValue('captionField', selectedTable.captionField || '');
+      if (selectedTable.semanticType === 'person' && selectedTable.subEntity === 'moral') {
+        form.setFieldValue('semanticType', 'company');
+      } else if (selectedTable.semanticType === 'person' && selectedTable.subEntity === 'natural') {
+        form.setFieldValue('semanticType', 'person');
+      }
+    }
+  }, [selectedTableId]);
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
