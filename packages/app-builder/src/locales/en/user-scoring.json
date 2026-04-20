@@ -59,6 +59,7 @@
   "section.create_panel.unit_placeholder": "unit",
   "section.create_panel.validate": "Validate",
   "section.tab_overview": "Overview",
+  "section.tab_scores": "Scores {{name}}",
 
   "section.title": "Customer Scoring",
   "settings.define_scale": "Define a risk scale, then choose the entity on which you want to create the ruleset.",

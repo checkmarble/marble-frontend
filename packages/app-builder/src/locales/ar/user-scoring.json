@@ -59,6 +59,7 @@
   "section.create_panel.unit_placeholder": "وحدة",
   "section.create_panel.validate": "تحقق",
   "section.tab_overview": "نظرة عامة",
+  "section.tab_scores": "نقاط {{name}}",
 
   "section.title": "تكوين النقاط",
   "settings.define_scale": "حدد مقياس مخاطر، ثم اختر الكيان الذي تريد إنشاء مجموعة القواعد عليه.",

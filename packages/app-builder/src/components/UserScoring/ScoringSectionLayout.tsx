@@ -26,6 +26,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   const { t } = useTranslation(['user-scoring']);
   const [panelOpen, setPanelOpen] = useState(false);
   const { data, isPending } = useListScoringRulesetsQuery();
+  const dataModel = useDataModelQuery().data?.dataModel ?? [];
   const matches = useMatches();
   const showCreateButton = matches.some(
     (m) => (m.staticData as { showCreateRulesetButton?: boolean })?.showCreateRulesetButton,
@@ -64,7 +65,9 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
                     }}
                     className={tabClassName}
                   >
-                    {ruleset.name}
+                    {t('user-scoring:section.tab_scores', {
+                      name: dataModel.find((table) => table.name === ruleset.recordType)?.alias || ruleset.recordType,
+                    })}
                   </Link>
                 ))
               )}
