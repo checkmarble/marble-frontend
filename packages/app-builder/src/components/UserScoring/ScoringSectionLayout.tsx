@@ -10,7 +10,7 @@ import { Link, Outlet, useMatches, useNavigate, useRouter } from '@tanstack/reac
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, type SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
+import { Button, NumberInput, type SelectOption, SelectV2, Tabs, Tooltip, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
 import { PanelContainer, PanelRoot } from '../Panel';
@@ -211,14 +211,18 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
               <form.Field name="cooldownSeconds">
                 {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
-              <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
+                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              </Tooltip.Default>
             </div>
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <form.Field name="scoringIntervalSeconds">
                 {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
-              <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
+                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              </Tooltip.Default>
             </div>
           </div>
         </div>
