@@ -86,15 +86,19 @@ export const defaultCreateTableFormValues: SemanticTableFormValues = {
 const entityTypesRequiringLink = ['transaction', 'event', 'account'] as const;
 type EntityTypeRequiringLink = (typeof entityTypesRequiringLink)[number];
 
+const tableEntityStepCommonShape = {
+  name: z.string().min(1).regex(dataModelNameRegex, {
+    error: 'Only lower case alphanumeric and _, must start with a letter',
+  }),
+  alias: z.string(),
+  belongsToTableId: z.string(),
+};
+
 export const createTableEntityStepSchema = z
   .object({
-    name: z.string().min(1).regex(dataModelNameRegex, {
-      error: 'Only lower case alphanumeric and _, must start with a letter',
-    }),
-    alias: z.string(),
+    ...tableEntityStepCommonShape,
     entityType: z.enum(ftmEntities),
     subEntity: z.enum(ftmEntityPersonOptions).optional(),
-    belongsToTableId: z.string(),
   })
   .refine(
     (data) => {
@@ -112,7 +116,29 @@ export const createTableEntityStepSchema = z
     },
     { error: 'Please select a destination table', path: ['belongsToTableId'] },
   );
-const editTableEntityStepSchema = createTableEntityStepSchema.optional();
+const editTableEntityStepSchema = z
+  .object({
+    ...tableEntityStepCommonShape,
+    entityType: z.union([z.enum(ftmEntities), z.literal('unset')]),
+    subEntity: z.union([z.enum(ftmEntityPersonOptions), z.literal('unset')]).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.entityType === 'person') return !!data.subEntity && data.subEntity !== 'unset';
+
+      return true;
+    },
+    { error: 'Please select a sub-entity', path: ['subEntity'] },
+  )
+  .refine(
+    (data) => {
+      if (data.entityType === 'unset') return true;
+      if (requiresLink(data.entityType)) return data.belongsToTableId.length > 0;
+
+      return true;
+    },
+    { error: 'Please select a destination table', path: ['belongsToTableId'] },
+  );
 
 export function requiresLink(entityType: FtmEntityV2 | ''): entityType is EntityTypeRequiringLink {
   return entityTypesRequiringLink.includes(entityType as EntityTypeRequiringLink);
@@ -365,7 +391,7 @@ function getLinkErrors(values: SemanticTableFormValues, t: TFunction<['data']>):
   const nameCounts = new Map<string, string[]>();
 
   for (const link of values.links) {
-    const linkField = values.fields.find((field) => field.id === link.tableFieldId);
+    const linkField = values.fields.find((field) => field.name === link.tableFieldId);
     const trimmedName = link.name.trim();
 
     if (!trimmedName) {

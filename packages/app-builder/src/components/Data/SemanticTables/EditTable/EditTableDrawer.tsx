@@ -59,7 +59,6 @@ export function EditTableDrawer({
       const nextInitialTableState = {
         [tableModel.id]: adaptTableModelToFormValues(tableModel),
       };
-      console.log('nextInitialTableState', nextInitialTableState);
       const nextInitialLinksState = adaptLinksToLinkState(tableModel.linksToSingle, tableModel.id);
       initialTableStateRef.current = nextInitialTableState;
       initialLinksStateRef.current = nextInitialLinksState;
@@ -200,8 +199,9 @@ export function EditTableDrawer({
   }, []);
 
   const tableState = tablesState[tableModel.id]!;
-  const isSemanticTypeChanged = tableState.entityType !== tableModel.semanticType;
-
+  const initialTableState = initialTableStateRef.current[tableModel.id]!;
+  const isSemanticTypeChanged =
+    tableState.entityType !== initialTableState.entityType || tableState.subEntity !== initialTableState.subEntity;
   const destinationTableOptions = useMemo(
     () => dataModel.map((t) => ({ tableId: t.id, label: t.alias || t.name })),
     [dataModel],

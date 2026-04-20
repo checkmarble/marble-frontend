@@ -35,7 +35,7 @@ export function CreateTableDrawer({
 
   const form = useCreateTableForm(async (value) => {
     if (!form.state.isValid) return;
-    const checkValidation = validateValues(value, 'all', t);
+    const checkValidation = validateValues(value, 'all', t, false);
     if (!checkValidation.ok) {
       setValidationErrors(checkValidation.errors);
       return;
