@@ -118,7 +118,7 @@ export function CreateTableDrawer({
     e.preventDefault();
     e.stopPropagation();
 
-    const result = validateValues(formValues, currentValidationScope, t);
+    const result = validateValues(formValues, currentValidationScope, t, true);
     if (!result.ok) {
       setValidationErrors(result.errors);
       return;

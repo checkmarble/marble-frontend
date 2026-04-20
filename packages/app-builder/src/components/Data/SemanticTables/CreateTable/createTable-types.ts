@@ -93,14 +93,12 @@ export const createTableEntityStepSchema = z
     }),
     alias: z.string(),
     entityType: z.enum(ftmEntities),
-    subEntity: z.string(),
+    subEntity: z.enum(ftmEntityPersonOptions).optional(),
     belongsToTableId: z.string(),
   })
   .refine(
     (data) => {
-      if (data.entityType === 'person') {
-        return ftmEntityPersonOptions.includes(data.subEntity as (typeof ftmEntityPersonOptions)[number]);
-      }
+      if (data.entityType === 'person') return !!data.subEntity;
 
       return true;
     },
@@ -108,13 +106,13 @@ export const createTableEntityStepSchema = z
   )
   .refine(
     (data) => {
-      if (requiresLink(data.entityType)) {
-        return data.belongsToTableId.length > 0;
-      }
+      if (requiresLink(data.entityType)) return data.belongsToTableId.length > 0;
+
       return true;
     },
     { error: 'Please select a destination table', path: ['belongsToTableId'] },
   );
+const editTableEntityStepSchema = createTableEntityStepSchema.optional();
 
 export function requiresLink(entityType: FtmEntityV2 | ''): entityType is EntityTypeRequiringLink {
   return entityTypesRequiringLink.includes(entityType as EntityTypeRequiringLink);
@@ -227,13 +225,7 @@ export function adaptLink(link: LinkValue): CreateTableValue['links'][number] {
 
 function getEntityType(entityType: FtmEntityV2, subEntity: FtmEntityPersonOption): SemanticTypeTable {
   const fieldEntity = match(entityType)
-    .with('person', () =>
-      match(subEntity)
-        .with('moral', () => 'company')
-        .with('natural', () => 'person')
-        .with('generic', () => 'partner')
-        .exhaustive(),
-    )
+    .with('person', () => getEntitySubtype(subEntity))
     .with('transaction', () => 'transaction')
     .with('event', () => 'event')
     .with('other', () => 'other')
@@ -241,6 +233,14 @@ function getEntityType(entityType: FtmEntityV2, subEntity: FtmEntityPersonOption
     .exhaustive();
 
   return fieldEntity as SemanticTypeTable;
+}
+
+export function getEntitySubtype(subEntity: FtmEntityPersonOption): SemanticTypeTable {
+  return match(subEntity)
+    .with('moral', () => 'company' as const)
+    .with('natural', () => 'person' as const)
+    .with('generic', () => 'partner' as const)
+    .exhaustive();
 }
 
 type SemanticTableConstraints = {
@@ -264,8 +264,10 @@ const specificTableConstraints: Record<FtmEntityV2 | 'unset', SemanticTableConst
 
 const knownTableFields = ['name', 'entityType', 'subEntity', 'belongsToTableId'] as const;
 
-function getTablePropertyErrors(values: SemanticTableFormValues): TablePropertyError[] {
-  const parsing = createTableEntityStepSchema.safeParse(values);
+function getTablePropertyErrors(values: SemanticTableFormValues, creationMode: boolean = false): TablePropertyError[] {
+  const parsing = creationMode
+    ? createTableEntityStepSchema.safeParse(values)
+    : editTableEntityStepSchema.safeParse(values);
   if (!parsing.success) {
     return parsing.error.issues.map((issue) => ({
       kind: 'table' as const,
@@ -420,13 +422,16 @@ export function validateValues(
   values: SemanticTableFormValues,
   scope: ValidationScope = 'all',
   t: TFunction<['data']>,
+  creationMode: boolean = false,
 ): ValidationResult {
-  if (scope === 'table') {
+  const errors: ValidationError[] = [];
+
+  if (scope === 'table' || scope === 'all') {
     // enforce 'updated_at' to be the default sort order if there is no other
     const hasUpdatedAt = values.fields.some((f) => f.name === 'updated_at'); // should always be true
     if (!values.mainTimestampFieldName && hasUpdatedAt) values.mainTimestampFieldName = 'updated_at';
 
-    const errors = getTablePropertyErrors(values);
+    errors.push(...getTablePropertyErrors(values, creationMode));
     if (!values.mainTimestampFieldName) {
       errors.push({
         kind: 'table',
@@ -434,33 +439,17 @@ export function validateValues(
         message: t('data:create_table.one_timestamp_field_should_be_selected_as_the_main_ordering_field'),
       });
     }
-    return errors.length > 0 ? { ok: false, errors } : { ok: true };
   }
 
-  if (scope === 'fields') {
-    const errors = [...getConstraintErrors(values, 'fields', t), ...getFieldErrors(values, t)];
-    return errors.length > 0 ? { ok: false, errors } : { ok: true };
+  if (scope === 'fields' || scope === 'all') {
+    errors.push(...getConstraintErrors(values, 'fields', t), ...getFieldErrors(values, t));
   }
 
-  if (scope === 'links') {
-    const errors = [...getConstraintErrors(values, 'links', t), ...getLinkErrors(values, t)];
-    return errors.length > 0 ? { ok: false, errors } : { ok: true };
+  if (scope === 'links' || scope === 'all') {
+    errors.push(...getConstraintErrors(values, 'links', t), ...getLinkErrors(values, t));
   }
 
-  const tableErrors = getTablePropertyErrors(values);
-  if (tableErrors.length > 0) {
-    return { ok: false, errors: tableErrors };
-  }
-
-  const errors: ValidationError[] = [
-    ...getConstraintErrors(values, 'fields', t),
-    ...getFieldErrors(values, t),
-    ...getConstraintErrors(values, 'links', t),
-    ...getLinkErrors(values, t),
-  ];
-
-  if (errors.length > 0) return { ok: false, errors };
-  return { ok: true };
+  return errors.length > 0 ? { ok: false, errors } : { ok: true };
 }
 
 export { apiSemanticTypeToFormEntity } from '@app-builder/models';
