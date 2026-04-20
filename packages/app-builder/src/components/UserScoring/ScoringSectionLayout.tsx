@@ -1,4 +1,4 @@
-import { type DurationUnit, SECONDS_PER_UNIT, secondsToDisplay } from '@app-builder/models/scoring';
+import { SECONDS_PER_UNIT } from '@app-builder/models/scoring';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
 import { useUpdateScoringRulesetMutation } from '@app-builder/queries/scoring/update-ruleset';
@@ -82,49 +82,27 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   );
 }
 
-function DurationSecondsField({
+function DurationDaysField({
   value,
   onChange,
 }: {
   value: number | undefined;
   onChange: (seconds: number | undefined) => void;
 }) {
-  const { t } = useTranslation(['common', 'user-scoring']);
-  const initial = value !== undefined ? secondsToDisplay(value) : { value: 0, unit: 'days' as DurationUnit };
-  const [inputValue, setInputValue] = useState(initial.value);
-  const [unit, setUnit] = useState<DurationUnit | null>(initial.unit);
-
-  const durationUnitOptions: SelectOption<DurationUnit | null>[] = [
-    { label: t('user-scoring:section.create_panel.unit_placeholder'), value: null },
-    { label: t('common:duration_unit.days'), value: 'days' },
-    { label: t('common:duration_unit.months'), value: 'months' },
-    { label: t('common:duration_unit.years'), value: 'years' },
-  ];
+  const { t } = useTranslation(['common']);
+  const [days, setDays] = useState(value !== undefined ? value / SECONDS_PER_UNIT.days : 0);
 
   return (
     <>
       <NumberInput
         className="max-w-15"
-        value={inputValue}
+        value={days}
         onChange={(v) => {
-          setInputValue(v);
-          if (unit) {
-            onChange(v > 0 ? v * SECONDS_PER_UNIT[unit] : undefined);
-          }
+          setDays(v);
+          onChange(v > 0 ? v * SECONDS_PER_UNIT.days : undefined);
         }}
       />
-      <SelectV2<DurationUnit | null>
-        placeholder={t('user-scoring:section.create_panel.unit_placeholder')}
-        options={durationUnitOptions}
-        value={unit}
-        onChange={(u) => {
-          setUnit(u);
-          if (u) {
-            onChange(inputValue > 0 ? inputValue * SECONDS_PER_UNIT[u] : undefined);
-          }
-        }}
-        className="text-small min-w-22"
-      />
+      <span className="text-grey-secondary">{t('common:duration_unit.days')}</span>
     </>
   );
 }
@@ -142,8 +120,8 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
       recordType: '',
       thresholds: Array.from({ length: maxRiskLevel - 1 }, (_, i) => (i + 1) * 10) as number[],
       rules: [],
-      cooldownSeconds: 0,
-      scoringIntervalSeconds: 0,
+      cooldownSeconds: 90 * SECONDS_PER_UNIT.days,
+      scoringIntervalSeconds: 180 * SECONDS_PER_UNIT.days,
     } as UpdateScoringRulesetPayload,
     validators: {
       onSubmit: updateScoringRulesetPayloadSchema,
@@ -209,7 +187,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
               <form.Field name="cooldownSeconds">
-                {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
+                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
               <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
                 <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
@@ -218,7 +196,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <form.Field name="scoringIntervalSeconds">
-                {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
+                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
               <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
                 <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
