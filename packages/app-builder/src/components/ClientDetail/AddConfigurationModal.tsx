@@ -70,11 +70,12 @@ export const AddConfigurationModal = ({
   );
   const tableFields = selectedTable ? selectedTable.fields.filter((field) => field.dataType === 'String') : [];
 
-  // Pre-fill alias and semanticType from the selected table
+  // Pre-fill alias, semanticType, and captionField from the selected table
   const selectedTableId = selectedTable?.id;
   useEffect(() => {
     if (selectedTable) {
       form.setFieldValue('alias', selectedTable.alias || '');
+      form.setFieldValue('captionField', selectedTable.captionField || '');
       if (selectedTable.semanticType === 'person' && selectedTable.subEntity === 'moral') {
         form.setFieldValue('semanticType', 'company');
       } else if (selectedTable.semanticType === 'person' && selectedTable.subEntity === 'natural') {
