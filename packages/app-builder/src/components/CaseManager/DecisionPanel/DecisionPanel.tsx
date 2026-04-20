@@ -142,8 +142,11 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
         .with({ isError: true }, () => (
           <div className="text-grey-secondary p-4 text-center text-xs">{t('common:global_error')}</div>
         ))
-        .otherwise(() =>
-          filteredRuleExecutions.length === 0 ? null : (
+        .otherwise(() => {
+          const allRules = detailDecisionQuery.data?.decision.rules ?? [];
+          if (allRules.length === 0) return null;
+
+          return (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-m text-grey-primary font-medium">{t('cases:decisions.rules')}</span>
@@ -154,27 +157,29 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
                   <Switch id="showHitOnly" checked={showHitOnly} onCheckedChange={setShowHitOnly} />
                 </div>
               </div>
-              <RulesExecutionsContainer className="h-fit">
-                {filteredRuleExecutions.map((ruleExecution) => (
-                  <RuleExecutionCollapsible key={ruleExecution.ruleId}>
-                    <RuleExecutionTitle ruleExecution={ruleExecution} />
-                    <RuleExecutionContent>
-                      <RuleExecutionDescription description={ruleExecution.description} />
-                      {scenarioIterationRules.data ? (
-                        <RuleExecutionDetail
-                          scenarioId={detailDecisionQuery.data?.decision.scenario.id ?? ''}
-                          ruleExecution={ruleExecution}
-                          rules={scenarioIterationRules.data.rules}
-                          isIterationArchived={scenarioIterationRules.data.archived}
-                        />
-                      ) : null}
-                    </RuleExecutionContent>
-                  </RuleExecutionCollapsible>
-                ))}
-              </RulesExecutionsContainer>
+              {filteredRuleExecutions.length > 0 ? (
+                <RulesExecutionsContainer className="h-fit">
+                  {filteredRuleExecutions.map((ruleExecution) => (
+                    <RuleExecutionCollapsible key={ruleExecution.ruleId}>
+                      <RuleExecutionTitle ruleExecution={ruleExecution} />
+                      <RuleExecutionContent>
+                        <RuleExecutionDescription description={ruleExecution.description} />
+                        {scenarioIterationRules.data ? (
+                          <RuleExecutionDetail
+                            scenarioId={detailDecisionQuery.data?.decision.scenario.id ?? ''}
+                            ruleExecution={ruleExecution}
+                            rules={scenarioIterationRules.data.rules}
+                            isIterationArchived={scenarioIterationRules.data.archived}
+                          />
+                        ) : null}
+                      </RuleExecutionContent>
+                    </RuleExecutionCollapsible>
+                  ))}
+                </RulesExecutionsContainer>
+              ) : null}
             </div>
-          ),
-        )}
+          );
+        })}
 
       {/* Trigger Object */}
       {detailDecisionQuery.data ? (
