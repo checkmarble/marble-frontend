@@ -15,6 +15,9 @@ import { SegmentScript } from '@app-builder/services/segment/SegmentScript';
 import { CsrfContext } from '@app-builder/utils/csrf-client';
 import { NonceProvider, useNonce } from '@app-builder/utils/nonce';
 import * as Sentry from '@sentry/react';
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { formDevtoolsPlugin } from '@tanstack/react-form-devtools';
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
 import {
   ClientOnly,
   createFileRoute,
@@ -25,6 +28,7 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import clsx from 'clsx';
 import QueryString from 'qs';
 import { useCallback, useEffect, useState } from 'react';
@@ -154,6 +158,13 @@ function RootDocumentInner({ children }: { children: React.ReactNode }) {
         <ClientOnly>
           <TimezoneDetector />
           <MarbleToaster toastMessage={loaderData?.toastMessage} />
+          <TanStackDevtools
+            plugins={[
+              { name: 'TanStack Router', render: <TanStackRouterDevtoolsPanel /> },
+              { name: 'TanStack Query', render: <ReactQueryDevtoolsPanel /> },
+              formDevtoolsPlugin(),
+            ]}
+          />
         </ClientOnly>
       </body>
     </html>
