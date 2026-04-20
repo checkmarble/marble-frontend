@@ -189,6 +189,7 @@ function RuleDetail() {
   const editor = useEditorMode();
   const ruleGroups = useDerivedIterationRuleGroupsData();
 
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const intersection = useIntersection(descriptionRef, {
@@ -196,6 +197,12 @@ function RuleDetail() {
     rootMargin: '-30px',
     threshold: 1,
   });
+
+  useEffect(() => {
+    if (!rule.name && editor === 'edit') {
+      nameInputRef.current?.focus();
+    }
+  }, []);
 
   const form = useForm({
     onSubmit: ({ value, formApi }) => {
@@ -291,6 +298,7 @@ function RuleDetail() {
                 {(field) => (
                   <div className="flex w-full flex-col gap-1">
                     <input
+                      ref={nameInputRef}
                       type="text"
                       name={field.name}
                       disabled={editor === 'view'}

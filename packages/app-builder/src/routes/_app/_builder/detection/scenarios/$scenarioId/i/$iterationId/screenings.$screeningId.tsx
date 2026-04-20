@@ -43,7 +43,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { pick } from 'radash';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -238,6 +238,7 @@ function ScreeningDetail() {
       editScreeningAction({ data: { params: { scenarioId: scenario.id, iterationId, screeningId }, payload: value } }),
   });
 
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { org } = useOrganizationDetails();
@@ -252,6 +253,12 @@ function ScreeningDetail() {
   // New screenings (isNew query param) start with hasBeenSaved=false
   // Existing screenings start with hasBeenSaved=true
   const [hasBeenSaved, setHasBeenSaved] = useState(!isNew);
+
+  useEffect(() => {
+    if (isNew && editor === 'edit') {
+      nameInputRef.current?.focus();
+    }
+  }, []);
 
   const form = useForm({
     onSubmit: async ({ value, formApi }) => {
@@ -270,7 +277,7 @@ function ScreeningDetail() {
     },
     defaultValues: {
       id: screeningConfig?.id,
-      name: screeningConfig?.name ?? 'Screening',
+      name: screeningConfig?.name ?? '',
       description: screeningConfig?.description ?? '',
       ruleGroup: screeningConfig?.ruleGroup ?? 'Screening',
       datasets: screeningConfig?.datasets ?? [],
@@ -328,6 +335,7 @@ function ScreeningDetail() {
                 {(field) => (
                   <div className="flex w-full flex-col gap-1">
                     <input
+                      ref={nameInputRef}
                       type="text"
                       name={field.name}
                       disabled={editor === 'view'}
