@@ -6,15 +6,26 @@ import {
   SCORING_LEVELS_LABELS,
   type ScoringRulesetWithRules,
   type ScoringSettings,
+  SECONDS_PER_UNIT,
   secondsToDisplay,
 } from '@app-builder/models/scoring';
 import { useCommitScoringRulesetMutation } from '@app-builder/queries/scoring/commit-ruleset';
 import { useListScoringRulesetVersionsQuery } from '@app-builder/queries/scoring/list-ruleset-versions';
 import { usePrepareScoringRulesetMutation } from '@app-builder/queries/scoring/prepare-ruleset';
+import { useUpdateScoringRulesetMutation } from '@app-builder/queries/scoring/update-ruleset';
+import { type UpdateScoringRulesetPayload, updateScoringRulesetPayloadSchema } from '@app-builder/schemas/user-scoring';
+import { handleSubmit } from '@app-builder/utils/form';
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { Fragment } from 'react';
+import { useForm } from '@tanstack/react-form';
+import { useNavigate, useRouter } from '@tanstack/react-router';
+import { Fragment, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, type SelectOption, SelectV2 } from 'ui-design-system';
+import { Button, NumberInput, type SelectOption, SelectV2, Tooltip } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+import { PanelContainer, PanelRoot } from '../Panel';
+import { PanelSharpFactory } from '../Panel/Panel';
+import { ScoringLevelThresholds } from './ScoringLevelThresholds';
 
 interface GeneralInfoCardProps {
   ruleset: ScoringRulesetWithRules;
@@ -41,6 +52,7 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
     value: v.status === 'committed' ? v.version.toString() : 'draft',
     label: v.status === 'committed' ? `V${v.version}` : 'draft',
   }));
+  const [editPanelOpen, setEditPanelOpen] = useState(false);
 
   const handleVersionChange = (version: string) => {
     navigate(`/user-scoring/${ruleset.recordType}/${version}`);
@@ -82,6 +94,9 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
               </Button>
             )
           ) : null}
+          <Button variant="secondary" mode="icon" onClick={() => setEditPanelOpen(true)}>
+            <Icon icon="edit" className="size-4" />
+          </Button>
         </div>
       </div>
 
@@ -111,7 +126,144 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
       </div>
 
       <RiskLevelBadges maxRiskLevel={settings.maxRiskLevel} thresholds={ruleset.thresholds} />
+
+      <PanelRoot open={editPanelOpen} onOpenChange={setEditPanelOpen}>
+        <EditGeneralSettingsPanel ruleset={ruleset} maxRiskLevel={settings.maxRiskLevel} />
+      </PanelRoot>
     </div>
+  );
+}
+
+function DurationDaysField({
+  value,
+  onChange,
+}: {
+  value: number | undefined;
+  onChange: (seconds: number | undefined) => void;
+}) {
+  const { t } = useTranslation(['common']);
+  const [days, setDays] = useState(value !== undefined ? value / SECONDS_PER_UNIT.days : 0);
+
+  return (
+    <>
+      <NumberInput
+        className="max-w-15"
+        borderColor={days < 1 ? 'redfigma-47' : 'greyfigma-90'}
+        value={days}
+        onChange={(v) => {
+          setDays(v);
+          onChange(v > 0 ? v * SECONDS_PER_UNIT.days : undefined);
+        }}
+      />
+      <span className="text-grey-secondary">{t('common:duration_unit.days')}</span>
+    </>
+  );
+}
+
+function EditGeneralSettingsPanel({
+  ruleset,
+  maxRiskLevel,
+}: {
+  ruleset: ScoringRulesetWithRules;
+  maxRiskLevel: number;
+}) {
+  const { t } = useTranslation(['common', 'user-scoring']);
+  const router = useRouter();
+  const navigate = useNavigate();
+  const updateMutation = useUpdateScoringRulesetMutation();
+  const panelSharp = PanelSharpFactory.useSharp();
+  const form = useForm({
+    defaultValues: {
+      id: ruleset.id,
+      recordType: ruleset.recordType,
+      name: ruleset.name,
+      thresholds: ruleset.thresholds,
+      cooldownSeconds: ruleset.cooldownSeconds,
+      scoringIntervalSeconds: ruleset.scoringIntervalSeconds,
+      rules: ruleset.rules.map((r) => ({
+        stableId: r.stableId,
+        name: r.name,
+        description: r.description,
+        riskType: r.riskType,
+        ast: r.ast,
+      })),
+    } as UpdateScoringRulesetPayload,
+    validators: {
+      onChange: updateScoringRulesetPayloadSchema,
+    },
+    onSubmit: async ({ formApi, value }) => {
+      if (formApi.state.isValid) {
+        try {
+          await updateMutation.mutateAsync(value);
+          toast.success(t('common:success.save'));
+          panelSharp.actions.close();
+          await router.invalidate();
+          navigate({
+            to: '/user-scoring/$recordType/$version',
+            params: { recordType: ruleset.recordType, version: 'draft' },
+          });
+        } catch {
+          toast.error(t('common:errors.unknown'));
+        }
+      }
+    },
+  });
+
+  return (
+    <PanelContainer size="lg" className="flex-col gap-v2-md">
+      <form className="contents" onSubmit={handleSubmit(form)}>
+        <div className="flex items-center gap-v2-md">
+          <button type="button" onClick={() => panelSharp.actions.close()}>
+            <Icon icon="x" className="size-6" />
+          </button>
+          <h2 className="text-h2 font-semibold">{t('user-scoring:ruleset.edit_settings_title')}</h2>
+        </div>
+        <div className="flex flex-col gap-v2-sm">
+          {t('user-scoring:section.create_panel.general_settings')}
+          <div className="border border-grey-border rounded-v2-md p-v2-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-v2-sm gap-y-v2-md">
+            <div className="grid grid-cols-subgrid col-span-full items-center">
+              <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
+              <form.Field name="cooldownSeconds">
+                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
+              </form.Field>
+              <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
+                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              </Tooltip.Default>
+            </div>
+            <div className="grid grid-cols-subgrid col-span-full items-center">
+              <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
+              <form.Field name="scoringIntervalSeconds">
+                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
+              </form.Field>
+              <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
+                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              </Tooltip.Default>
+            </div>
+          </div>
+        </div>
+        <form.Field name="thresholds">
+          {(field) => (
+            <ScoringLevelThresholds
+              maxRiskLevel={maxRiskLevel}
+              thresholds={field.state.value}
+              onThresholdsChange={field.handleChange}
+            />
+          )}
+        </form.Field>
+        <div className="flex gap-v2-sm justify-end mt-auto">
+          <Button appearance="stroked" onClick={() => panelSharp.actions.close()}>
+            {t('user-scoring:section.create_panel.cancel')}
+          </Button>
+          <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
+            {([canSubmit, isSubmitting]) => (
+              <Button disabled={!canSubmit || isSubmitting} type="submit">
+                {t('user-scoring:section.create_panel.validate')}
+              </Button>
+            )}
+          </form.Subscribe>
+        </div>
+      </form>
+    </PanelContainer>
   );
 }
 

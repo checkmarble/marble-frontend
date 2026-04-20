@@ -1,3 +1,4 @@
+import { SECONDS_PER_UNIT } from '@app-builder/models/scoring';
 import { z } from 'zod/v4';
 
 export const updateScoringRulesetPayloadSchema = z.object({
@@ -12,8 +13,8 @@ export const updateScoringRulesetPayloadSchema = z.object({
       }
     });
   }),
-  cooldownSeconds: z.number().optional(),
-  scoringIntervalSeconds: z.number().optional(),
+  cooldownSeconds: z.number().min(SECONDS_PER_UNIT.days).optional(),
+  scoringIntervalSeconds: z.number().min(SECONDS_PER_UNIT.days).optional(),
   rules: z.array(
     z.object({
       stableId: z.string().optional(),

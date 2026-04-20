@@ -33,6 +33,7 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
           const isLast = i === maxRiskLevel - 1;
           const upperThreshold = thresholds[i];
           const lowerBound = i > 0 ? (thresholds[i - 1] ?? 0) + 1 : undefined;
+          const hasError = i > 0 && !isLast && (upperThreshold ?? 0) <= (thresholds[i - 1] ?? 0);
 
           return (
             <div key={color} className="flex items-center gap-v2-sm">
@@ -69,6 +70,7 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
                   </span>
                   <NumberInput
                     className="flex-1"
+                    borderColor={hasError ? 'redfigma-47' : 'greyfigma-90'}
                     value={upperThreshold ?? 0}
                     onChange={(value) => handleChange(i, value)}
                   />

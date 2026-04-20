@@ -24,6 +24,8 @@
   "ruleset.commit": "تأكيد",
   "ruleset.cooldown": "مدة الانتظار:",
   "ruleset.create_rule": "إنشاء قاعدة",
+
+  "ruleset.edit_settings_title": "تعديل الإعدادات العامة",
   "ruleset.error": "حدث خطأ.",
   "ruleset.last_update": "آخر تحديث:",
   "ruleset.no_rules": "لم يتم تكوين أي قواعد بعد.",
@@ -38,7 +40,6 @@
   "ruleset.rule_type.user_attribute": "سمة المستخدم",
   "ruleset.rules_column": "القواعد",
   "ruleset.score_renew": "تجديد النتيجة:",
-
   "ruleset.title": "المعلومات العامة",
   "ruleset.version_placeholder": "الإصدار",
   "section.configure_button": "تكوين نقاط",

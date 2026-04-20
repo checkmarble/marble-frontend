@@ -96,6 +96,7 @@ function DurationDaysField({
     <>
       <NumberInput
         className="max-w-15"
+        borderColor={days < 1 ? 'redfigma-47' : 'greyfigma-90'}
         value={days}
         onChange={(v) => {
           setDays(v);
@@ -185,20 +186,20 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
           {t('user-scoring:section.create_panel.general_settings')}
           <div className="border border-grey-border rounded-v2-md p-v2-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-v2-sm gap-y-v2-md">
             <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
+              <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <form.Field name="cooldownSeconds">
                 {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
-              <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
+              <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
                 <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
               </Tooltip.Default>
             </div>
             <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
+              <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
               <form.Field name="scoringIntervalSeconds">
                 {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
-              <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
+              <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
                 <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
               </Tooltip.Default>
             </div>
