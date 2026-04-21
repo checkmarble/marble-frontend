@@ -35,8 +35,8 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
             return ((segEnd - segStart) / totalRange) * 100;
           });
           const markerPositions = thresholds.map((v) => ((v - minValue) / totalRange) * 100);
-          const segStart = currentLevel === 1 ? minValue : thresholds[currentLevel - 1]!;
-          const segEnd = currentLevel > thresholds.length ? maxValue : thresholds[currentLevel]!;
+          const segStart = currentLevel === 0 ? minValue : thresholds[currentLevel - 1]!;
+          const segEnd = currentLevel >= thresholds.length ? maxValue : thresholds[currentLevel]!;
           const markerPct = (((segStart + segEnd) / 2 - minValue) / totalRange) * 100;
           return { segmentWidths, markerPositions, markerPct };
         })()
@@ -97,9 +97,10 @@ export function ScoreDetailPanel({
   const thresholds = rulesetQuery.data?.ruleset.thresholds;
 
   const maxRiskLevel = scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6;
-  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][activeScore.risk_level] ?? 'inherit';
+  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][Math.max(activeScore.risk_level - 1, 0)] ?? 'inherit';
   const scoreLabel = t(
-    SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][activeScore.risk_level] ?? activeScore.risk_level.toString(),
+    SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][Math.max(activeScore.risk_level - 1, 0)] ??
+      activeScore.risk_level.toString(),
   );
 
   return (
@@ -132,7 +133,11 @@ export function ScoreDetailPanel({
             <span className="text-s font-medium text-grey-primary">
               {t('client360:client_detail.score_panel.score_scale')}
             </span>
-            <ScoreScale maxRiskLevel={maxRiskLevel} currentLevel={activeScore.risk_level} thresholds={thresholds} />
+            <ScoreScale
+              maxRiskLevel={maxRiskLevel}
+              currentLevel={Math.max(activeScore.risk_level - 1, 0)}
+              thresholds={thresholds}
+            />
           </div>
         </PanelContent>
       </PanelContainer>

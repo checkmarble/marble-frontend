@@ -66,10 +66,12 @@ export const ClientDetailPage = ({
 
   if (scoringSettings && activeScore) {
     scoreColor =
-      SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ?? 'inherit';
+      SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][Math.max(activeScore.risk_level - 1, 0)] ??
+      'inherit';
     scoreLabel = t(
-      SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ??
-        activeScore.risk_level.toString(),
+      SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][
+        Math.max(activeScore.risk_level - 1, 0)
+      ] ?? activeScore.risk_level.toString(),
     );
   }
 
