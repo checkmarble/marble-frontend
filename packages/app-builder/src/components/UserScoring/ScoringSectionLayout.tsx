@@ -71,7 +71,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
 }
 
 function RulesetTab({ ruleset }: { ruleset: { recordType: string; status: string; version: number; name: string } }) {
-  const params = useParams({ strict: false }) as { recordType?: string };
+  const params = useParams({ strict: false });
   const isActive = params.recordType === ruleset.recordType;
 
   return (
