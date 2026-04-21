@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -71,12 +72,15 @@ export function UpdateInboxUserContent({
     defaultValues: currentInboxUser as UpdateInboxUserPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateInboxUserMutation.mutateAsync(value).then((res) => {
-          if (!res) {
+        updateInboxUserMutation
+          .mutateAsync(value)
+          .then(() => {
             onSuccess();
-          }
-          revalidate();
-        });
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

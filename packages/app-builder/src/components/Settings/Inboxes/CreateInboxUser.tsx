@@ -17,6 +17,7 @@ import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -101,12 +102,15 @@ export function CreateInboxUserContent({
       autoAssignable: false,
     } as CreateInboxUserPayload,
     onSubmit: async ({ value }) => {
-      createInboxUserMutation.mutateAsync(value).then((res) => {
-        if (!res) {
+      createInboxUserMutation
+        .mutateAsync(value)
+        .then(() => {
           onSuccess();
-        }
-        revalidate();
-      });
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: createInboxUserPayloadSchema,

@@ -206,11 +206,8 @@ export const createInboxFn = createServerFn({ method: 'POST' })
       if (data.redirectRoute) {
         throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(createdInbox.id) } });
       }
-
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to create inbox');
     }
   });
@@ -240,7 +237,6 @@ export const updateInboxFn = createServerFn({ method: 'POST' })
       throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(updatedInbox.id) } });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to update inbox');
     }
   });
@@ -257,7 +253,6 @@ export const createInboxUserFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to create inbox user');
     }
   });
@@ -297,7 +292,6 @@ export const updateInboxUserFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to update inbox user');
     }
   });
