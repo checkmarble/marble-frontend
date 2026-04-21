@@ -5,12 +5,12 @@ import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const variances = cva(
-  'border-grey-border text-grey-primary bg-purple-background-light hover:bg-grey-background active:bg-grey-border flex w-fit shrink-0 cursor-pointer select-none items-center break-all border font-normal transition-colors',
+  'border-grey-border text-grey-primary bg-purple-background-light hover:bg-grey-background active:bg-grey-border flex w-fit shrink-0 cursor-pointer select-none items-center break-all border font-normal leading-none transition-colors',
   {
     variants: {
       size: {
         sm: 'p-0.5 gap-2',
-        lg: 'min-h-8 gap-3 px-2',
+        lg: 'min-h-8 gap-3 px-2 py-1',
       },
       dimmed: {
         true: 'text-grey-secondary',
