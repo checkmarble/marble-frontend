@@ -10,6 +10,7 @@ import {
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -85,11 +86,16 @@ export function UpdateOrganizationSettingsContents({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateOrganizationMutation.mutateAsync(value).then((res) => {
-          closeModal();
-
-          revalidate();
-        });
+        updateOrganizationMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+            closeModal();
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

@@ -132,12 +132,9 @@ export const enrichMatchFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.screening.enrichMatch({ matchId: data.matchId });
-      await setToast({ type: 'success', message: 'screenings:success.match_enriched' });
     } catch (error) {
       if (isStatusConflictHttpError(error)) {
-        await setToast({ type: 'error', message: 'screenings:error.match_already_enriched' });
-      } else {
-        await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
+        return { error: 'already_enriched' as const };
       }
       throw new Error('Failed to enrich match');
     }

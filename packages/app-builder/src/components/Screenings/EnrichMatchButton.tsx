@@ -2,6 +2,7 @@ import { screeningsI18n } from '@app-builder/components/Screenings/screenings-i1
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useEnrichMatchMutation } from '@app-builder/queries/screening/enrich-match';
 import { useCallbackRef } from '@app-builder/utils/hooks';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -12,9 +13,19 @@ export function EnrichMatchButton({ matchId }: { matchId: string }) {
   const revalidate = useLoaderRevalidator();
 
   const handleButtonClick = useCallbackRef(() => {
-    enrichMatchMutation.mutateAsync(matchId).then(() => {
-      revalidate();
-    });
+    enrichMatchMutation
+      .mutateAsync(matchId)
+      .then((res) => {
+        if (res && 'error' in res) {
+          toast.error(t('screenings:error.match_already_enriched'));
+          return;
+        }
+        toast.success(t('screenings:success.match_enriched'));
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   });
 
   return (

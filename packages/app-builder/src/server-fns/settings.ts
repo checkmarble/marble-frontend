@@ -327,14 +327,8 @@ export const updateOrganizationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateOrganizationPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      const { organizationId, autoAssignQueueLimit } = data;
-      await context.authInfo.organization.updateOrganization({ organizationId, changes: { autoAssignQueueLimit } });
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update organization');
-    }
+    const { organizationId, autoAssignQueueLimit } = data;
+    await context.authInfo.organization.updateOrganization({ organizationId, changes: { autoAssignQueueLimit } });
   });
 
 export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
