@@ -35,7 +35,7 @@ export function CreateTableDrawer({
 
   const form = useCreateTableForm(async (value) => {
     if (!form.state.isValid) return;
-    const checkValidation = validateValues(value, 'all', t);
+    const checkValidation = validateValues(value, 'all', t, false);
     if (!checkValidation.ok) {
       setValidationErrors(checkValidation.errors);
       return;
@@ -118,7 +118,7 @@ export function CreateTableDrawer({
     e.preventDefault();
     e.stopPropagation();
 
-    const result = validateValues(formValues, currentValidationScope, t);
+    const result = validateValues(formValues, currentValidationScope, t, true);
     if (!result.ok) {
       setValidationErrors(result.errors);
       return;

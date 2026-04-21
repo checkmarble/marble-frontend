@@ -4,6 +4,7 @@ import { type LinkToSingle, type TableModel } from '@app-builder/models/data-mod
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
@@ -198,8 +199,9 @@ export function EditTableDrawer({
   }, []);
 
   const tableState = tablesState[tableModel.id]!;
-  const isSemanticTypeChanged = tableState.entityType !== tableModel.semanticType;
-
+  const initialTableState = initialTableStateRef.current[tableModel.id]!;
+  const isSemanticTypeChanged =
+    tableState.entityType !== initialTableState.entityType || tableState.subEntity !== initialTableState.subEntity;
   const destinationTableOptions = useMemo(
     () => dataModel.map((t) => ({ tableId: t.id, label: t.alias || t.name })),
     [dataModel],
@@ -212,16 +214,15 @@ export function EditTableDrawer({
 
   async function handleSave() {
     const links = getLinksForTable(tableModel.id);
-    const values: SemanticTableFormValues = { ...tableState, links };
+    const belongsToLink = links.find((link) => link.relationType === 'belongs_to');
+    const values: SemanticTableFormValues = {
+      ...tableState,
+      links,
+      belongsToTableId: belongsToLink?.targetTableId ?? tableState.belongsToTableId,
+    };
 
-    const tableResult = validateValues(values, 'table', t);
-    const fieldResult = validateValues(values, 'fields', t);
-    const linkResult = validateValues(values, 'links', t);
-    const errors: ValidationError[] = [
-      ...(!tableResult.ok ? tableResult.errors : []),
-      ...(!fieldResult.ok ? fieldResult.errors : []),
-      ...(!linkResult.ok ? linkResult.errors : []),
-    ];
+    const validation = validateValues(values, 'all', t, false);
+    const errors = validation.ok ? [] : validation.errors;
     if (errors.length > 0) {
       setValidationErrors(errors);
       return;
@@ -300,8 +301,9 @@ export function EditTableDrawer({
 
             <EntityTypeMenu
               entityType={tableState.entityType}
+              entitySubtype={tableState.subEntity}
               isChanged={isSemanticTypeChanged}
-              onSelect={(entityType) => updateTableState(tableModel.id, { entityType, subEntity: 'moral' })}
+              onSelect={(entityType, subEntity) => updateTableState(tableModel.id, { entityType, subEntity })}
             />
           </header>
 
@@ -467,13 +469,20 @@ function adaptLinksToLinkState(links: LinkToSingle[], tableId: string): Record<s
 }
 
 function normalizeTablesStateForDirtyCheck(state: Record<string, SemanticTableFormValues>) {
-  return Object.values(state)
-    .map(({ isVisited: _isVisited, ...table }) => table)
-    .sort((a, b) => a.tableId.localeCompare(b.tableId));
+  return R.pipe(
+    state,
+    R.values(),
+    R.map(({ isVisited: _isVisited, ...table }) => table),
+    R.sortBy((t) => t.tableId),
+  );
 }
 
 function normalizeLinksStateForDirtyCheck(state: Record<string, LinkValue>) {
-  return Object.values(state).sort((a, b) => a.linkId.localeCompare(b.linkId));
+  return R.pipe(
+    state,
+    R.values(),
+    R.sortBy((l) => l.linkId),
+  );
 }
 
 function computeChangeSet(
