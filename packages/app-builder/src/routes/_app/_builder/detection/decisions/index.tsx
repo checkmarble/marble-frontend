@@ -1,5 +1,4 @@
 import {
-  CursorPaginationButtons,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -9,11 +8,15 @@ import {
   decisionsI18n,
   ErrorComponent,
   Page,
-  paginationSchema,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
 import { AddToCaseForm } from '@app-builder/components/Decisions/AddToCaseForm';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
+import {
+  CursorPaginationButtons,
+  paginationSchema,
+  usePaginationsButton,
+} from '@app-builder/components/Decisions/PaginationButtons';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
@@ -26,7 +29,7 @@ import * as Sentry from '@sentry/react';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
@@ -61,6 +64,20 @@ export const buildQueryParams = (filters: DecisionFilters, offsetId: string | un
     offsetId,
   };
 };
+
+function getDecisionFilters(filters: DecisionsListQueryParams): DecisionFilters {
+  return {
+    outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
+    triggerObject: filters.triggerObject,
+    triggerObjectId: filters.triggerObjectId,
+    dateRange: filters.dateRange,
+    pivotValue: filters.pivotValue,
+    scenarioId: filters.scenarioId,
+    scheduledExecutionId: filters.scheduledExecutionId,
+    caseInboxId: filters.caseInboxId,
+    hasCase: filters.hasCase,
+  };
+}
 
 const decisionsLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -102,18 +119,17 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
 
 function DetectionDecisions() {
   const { decisionsData, filters, scenarios, hasPivots, inboxes } = Route.useLoaderData();
-
-  const [pageNb, setPageNb] = useState(1);
-  const [hasPreviousPage, setHasPreviousPage] = useState(false);
-
   const { items: decisions, ...pagination } = decisionsData;
+  const decisionFilters = getDecisionFilters(filters);
+  const paginationState = usePaginationsButton({
+    filterValues: decisionFilters,
+    items: decisions,
+  });
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, paginationParams?: PaginationParams) => {
       if (!paginationParams) {
-        setPageNb(1);
-        setHasPreviousPage(false);
         navigate({
           to: '/detection/decisions',
           search: buildQueryParams(decisionFilters, undefined),
@@ -122,17 +138,13 @@ function DetectionDecisions() {
         return;
       }
 
-      if (paginationParams.next && paginationParams.offsetId) {
-        // Load next page
-        setPageNb((p) => p + 1);
-        setHasPreviousPage(true);
-      }
-      if (paginationParams.previous) {
-        setPageNb((p) => Math.max(1, p - 1));
-        setHasPreviousPage(pageNb > 2);
-      }
+      navigate({
+        to: '/detection/decisions',
+        search: buildQueryParams(decisionFilters, paginationParams.offsetId),
+        replace: true,
+      });
     },
-    [navigate, pageNb],
+    [navigate],
   );
 
   const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
@@ -148,7 +160,7 @@ function DetectionDecisions() {
               <DecisionFiltersProvider
                 scenarios={scenarios}
                 submitDecisionFilters={navigateDecisionList}
-                filterValues={filters}
+                filterValues={decisionFilters}
                 hasPivots={hasPivots}
                 inboxes={inboxes}
               >
@@ -175,10 +187,9 @@ function DetectionDecisions() {
                 <CursorPaginationButtons
                   items={decisions}
                   onPaginationChange={(paginationParams: PaginationParams) =>
-                    navigateDecisionList(filters, paginationParams)
+                    navigateDecisionList(decisionFilters, paginationParams)
                   }
-                  hasPreviousPage={hasPreviousPage}
-                  pageNb={pageNb}
+                  paginationState={paginationState}
                   boundariesDisplay="dates"
                   {...pagination}
                 />

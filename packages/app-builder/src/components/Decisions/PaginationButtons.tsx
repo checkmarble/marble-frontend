@@ -1,5 +1,6 @@
 import { defaultPaginationSize, type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { useFormatDateTime } from '@app-builder/utils/format';
+import { useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -19,13 +20,122 @@ type ItemWithId = {
   createdAt: string;
 };
 
-type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
-  onPaginationChange: (paginationParams: PaginationParams) => void;
-  hasPreviousPage: boolean;
-  boundariesDisplay: 'ranks' | 'dates';
+type PageBoundaries = {
+  firstId?: string;
+  lastId?: string;
+};
+
+export type PaginationButtonsState = {
   pageNb: number;
+  hasPreviousPage: boolean;
+  goToNext: () => PaginationParams | undefined;
+  goToPrevious: () => PaginationParams | undefined;
+};
+
+type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
+  paginationState: PaginationButtonsState;
+  onPaginationChange: (paginationParams: PaginationParams) => void;
+  boundariesDisplay: 'ranks' | 'dates';
   itemsPerPage?: number;
 };
+
+function getPageBoundaries(items: ItemWithId[]): PageBoundaries | undefined {
+  const firstId = items[0]?.id;
+  const lastId = items[items.length - 1]?.id;
+
+  if (!firstId && !lastId) {
+    return undefined;
+  }
+
+  return {
+    firstId,
+    lastId,
+  };
+}
+
+export function usePaginationsButton<TFilterValues>({
+  filterValues,
+  items,
+}: {
+  filterValues: TFilterValues;
+  items: ItemWithId[];
+}): PaginationButtonsState {
+  const [pageNb, setPageNb] = useState(1);
+  const [pageBoundaries, setPageBoundaries] = useState<PageBoundaries[]>(() => {
+    const currentPageBoundaries = getPageBoundaries(items);
+    return currentPageBoundaries ? [currentPageBoundaries] : [];
+  });
+
+  const filterValuesKey = JSON.stringify(filterValues);
+  const itemsKey = items.map((item) => item.id).join('|');
+  const previousFilterValuesKey = useRef(filterValuesKey);
+  const previousItemsKey = useRef(itemsKey);
+
+  useEffect(() => {
+    const currentPageBoundaries = getPageBoundaries(items);
+
+    if (previousFilterValuesKey.current !== filterValuesKey) {
+      previousFilterValuesKey.current = filterValuesKey;
+      previousItemsKey.current = itemsKey;
+      setPageNb(1);
+      setPageBoundaries(currentPageBoundaries ? [currentPageBoundaries] : []);
+      return;
+    }
+
+    if (previousItemsKey.current === itemsKey) {
+      return;
+    }
+
+    previousItemsKey.current = itemsKey;
+
+    if (!currentPageBoundaries) {
+      return;
+    }
+
+    setPageBoundaries((previousPageBoundaries) => {
+      const nextPageBoundaries = [...previousPageBoundaries];
+      nextPageBoundaries[pageNb - 1] = currentPageBoundaries;
+      return nextPageBoundaries;
+    });
+  }, [filterValuesKey, items, itemsKey, pageNb]);
+
+  const goToNext = () => {
+    const currentPageBoundaries = pageBoundaries[pageNb - 1] ?? getPageBoundaries(items);
+
+    if (!currentPageBoundaries?.lastId) {
+      return undefined;
+    }
+
+    setPageNb((currentPageNb) => currentPageNb + 1);
+
+    return {
+      next: true,
+      offsetId: currentPageBoundaries.lastId,
+    } satisfies PaginationParams;
+  };
+
+  const goToPrevious = () => {
+    const previousPageBoundaries = pageBoundaries[pageNb - 2];
+
+    if (!previousPageBoundaries?.firstId) {
+      return undefined;
+    }
+
+    setPageNb((currentPageNb) => Math.max(1, currentPageNb - 1));
+
+    return {
+      previous: true,
+      offsetId: previousPageBoundaries.firstId,
+    } satisfies PaginationParams;
+  };
+
+  return {
+    pageNb,
+    hasPreviousPage: !!pageBoundaries[pageNb - 2]?.firstId,
+    goToNext,
+    goToPrevious,
+  };
+}
 
 function FormattedDatesRange({ startTs, endTs }: { startTs: string | undefined; endTs: string | undefined }) {
   const { t } = useTranslation(['common']);
@@ -43,7 +153,7 @@ function FormattedDatesRange({ startTs, endTs }: { startTs: string | undefined; 
     start.getMonth() === end.getMonth() &&
     start.getDate() === end.getDate();
   const isSameMinute = isSameLocalDay && start.getHours() === end.getHours() && start.getMinutes() === end.getMinutes();
-  const isSameSecond = isSameMinute && end.getSeconds() === end.getSeconds();
+  const isSameSecond = isSameMinute && start.getSeconds() === end.getSeconds();
 
   if (isSameSecond)
     return (
@@ -125,10 +235,10 @@ function RankNumberRange({
 }) {
   const { t } = useTranslation(['common']);
 
-  const start = pageNumber * itemsPerPage + 1;
-  const end = currentPageItemCount > 0 ? pageNumber * itemsPerPage + currentPageItemCount : 0;
+  const start = (pageNumber - 1) * itemsPerPage + 1;
+  const end = currentPageItemCount > 0 ? (pageNumber - 1) * itemsPerPage + currentPageItemCount : 0;
 
-  if (pageNumber === 0 && currentPageItemCount === 0) {
+  if (pageNumber === 1 && currentPageItemCount === 0) {
     return null;
   }
 
@@ -145,38 +255,41 @@ function RankNumberRange({
 export function CursorPaginationButtons({
   items,
   hasNextPage,
-  hasPreviousPage,
+  paginationState,
   onPaginationChange,
   boundariesDisplay,
-  pageNb,
   itemsPerPage = defaultPaginationSize,
 }: CursorPaginationsButtonsProps) {
   const startTs = items[0]?.createdAt;
   const endTs = items[items.length - 1]?.createdAt;
 
   const fetchPrevious = () => {
-    const pagination: PaginationParams = {
-      previous: true,
-      offsetId: items[0]?.id,
-    };
-    onPaginationChange(pagination);
+    const pagination = paginationState.goToPrevious();
+
+    if (pagination) {
+      onPaginationChange(pagination);
+    }
   };
 
   const fetchNext = () => {
-    const pagination: PaginationParams = {
-      next: true,
-      offsetId: items[items.length - 1]?.id,
-    };
-    onPaginationChange(pagination);
+    const pagination = paginationState.goToNext();
+
+    if (pagination) {
+      onPaginationChange(pagination);
+    }
   };
 
-  const previousDisabled = !hasPreviousPage;
+  const previousDisabled = !paginationState.hasPreviousPage;
   const nextDisabled = !hasNextPage;
 
   return (
     <div className="flex items-center justify-end gap-2">
       {boundariesDisplay === 'ranks' ? (
-        <RankNumberRange pageNumber={pageNb} currentPageItemCount={items.length} itemsPerPage={itemsPerPage} />
+        <RankNumberRange
+          pageNumber={paginationState.pageNb}
+          currentPageItemCount={items.length}
+          itemsPerPage={itemsPerPage}
+        />
       ) : (
         <FormattedDatesRange startTs={startTs} endTs={endTs} />
       )}
