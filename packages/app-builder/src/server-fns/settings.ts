@@ -458,10 +458,9 @@ export const createUserFn = createServerFn({ method: 'POST' })
         organization_id: data.organizationId,
       });
     } catch (error) {
-      await setToast({
-        type: 'error',
-        messageKey: isStatusConflictHttpError(error) ? 'common:errors.list.duplicate_email' : 'common:errors.unknown',
-      });
+      if (isStatusConflictHttpError(error)) {
+        return { error: 'duplicate_email' as const };
+      }
       throw new Error('Failed to create user');
     }
   });
@@ -481,18 +480,13 @@ export const updateUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateUserPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.apiClient.updateUser(data.userId, {
-        first_name: data.firstName,
-        last_name: data.lastName,
-        email: data.email,
-        role: data.role,
-        organization_id: data.organizationId,
-      });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update user');
-    }
+    await context.authInfo.apiClient.updateUser(data.userId, {
+      first_name: data.firstName,
+      last_name: data.lastName,
+      email: data.email,
+      role: data.role,
+      organization_id: data.organizationId,
+    });
   });
 
 // ---- Webhooks ----
