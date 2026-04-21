@@ -8,7 +8,12 @@ import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
-import { type FieldValidationError, type ValidationError, validateValues } from '../CreateTable/createTable-types';
+import {
+  type FieldValidationError,
+  type LinkValidationError,
+  type ValidationError,
+  validateValues,
+} from '../CreateTable/createTable-types';
 import { DrawerContext } from '../Shared/DrawerContext';
 import { EntityTypeMenu } from '../Shared/EntityTypeMenu';
 import type {
@@ -211,6 +216,10 @@ export function EditTableDrawer({
     () => new Set(validationErrors.filter((e): e is FieldValidationError => e.kind === 'field').map((e) => e.fieldId)),
     [validationErrors],
   );
+  const linkErrorIds = useMemo(
+    () => new Set(validationErrors.filter((e): e is LinkValidationError => e.kind === 'link').map((e) => e.linkId)),
+    [validationErrors],
+  );
 
   async function handleSave() {
     const links = getLinksForTable(tableModel.id);
@@ -221,7 +230,7 @@ export function EditTableDrawer({
       belongsToTableId: belongsToLink?.targetTableId ?? tableState.belongsToTableId,
     };
 
-    const validation = validateValues(values, 'all', t, false);
+    const validation = validateValues(values, 'all', t, false, dataModel);
     const errors = validation.ok ? [] : validation.errors;
     if (errors.length > 0) {
       setValidationErrors(errors);
@@ -311,6 +320,7 @@ export function EditTableDrawer({
             <FormTable
               tableId={tableModel.id}
               errorFieldIds={fieldErrorIds}
+              errorLinkIds={linkErrorIds}
               destinationTableOptions={destinationTableOptions}
             />
           </div>

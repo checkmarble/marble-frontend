@@ -82,6 +82,7 @@
   "create_table.name_placeholder": "الاسم...",
   "create_table.name_regex_error": "فقط أحرف صغيرة وأرقام و_، يجب أن يبدأ بحرف",
   "create_table.one_timestamp_field_should_be_selected_as_the_main_ordering_field": "يجب تحديد حقل واحد للطابع الزمني ليكون حقل الطلب الرئيسي",
+  "create_table.person_parent_entity_type_change_forbidden": "هذا الجدول هو حاليًا جدول الشخص الأب لجدول يتطلب رابط belongs_to إلى شخص. يُرجى تعديل تلك الجداول أولًا قبل تغيير نوع هذا الكيان.",
   "create_table.select_destination_table": "اختر الجدول الوجهة...",
   "create_table.step_entity": "الكيان",
   "create_table.step_fields": "الحقول",
