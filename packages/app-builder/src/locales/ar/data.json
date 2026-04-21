@@ -321,6 +321,7 @@
   "viewer.no_object_found": "لم يتم العثور على كائن بالمعرف \"{{objectId}}\" في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
   "viewer.object_type": "نوع الكائن",
+  "viewer.related_object_not_ingested": "الكائن المرتبط {{tableName}} بالمعرف \"{{objectId}}\" لم يتم استيعابه بعد.",
   "viewer.view_ingested_data": "عرض البيانات المستوردة",
   "vpn": "نعم",
   "yes": "نعم"
