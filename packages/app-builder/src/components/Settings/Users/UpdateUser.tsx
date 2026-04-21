@@ -16,6 +16,7 @@ import clsx from 'clsx';
 import { Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -63,11 +64,16 @@ function UpdateUserContent({
     defaultValues: user as UpdateUserPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateUserMutation.mutateAsync(value).then((res) => {
-          onSuccess();
-
-          revalidate();
-        });
+        updateUserMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+            onSuccess();
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {
