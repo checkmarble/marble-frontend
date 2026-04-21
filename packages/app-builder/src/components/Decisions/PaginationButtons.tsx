@@ -56,23 +56,58 @@ function getPageBoundaries(items: ItemWithId[]): PageBoundaries | undefined {
 export function usePaginationsButton<TFilterValues>({
   filterValues,
   items,
+  initialOffsetId,
 }: {
   filterValues: TFilterValues;
   items: ItemWithId[];
+  initialOffsetId?: string;
 }): PaginationButtonsState {
-  const [pageNb, setPageNb] = useState(1);
+  const [pageNb, setPageNb] = useState(() => (initialOffsetId ? 2 : 1));
   const [pageBoundaries, setPageBoundaries] = useState<PageBoundaries[]>(() => {
     const currentPageBoundaries = getPageBoundaries(items);
-    return currentPageBoundaries ? [currentPageBoundaries] : [];
+    if (!currentPageBoundaries) return [];
+    if (!initialOffsetId) return [currentPageBoundaries];
+    return [
+      {
+        firstId: initialOffsetId,
+      },
+      currentPageBoundaries,
+    ];
   });
 
   const filterValuesKey = JSON.stringify(filterValues);
   const itemsKey = items.map((item) => item.id).join('|');
   const previousFilterValuesKey = useRef(filterValuesKey);
   const previousItemsKey = useRef(itemsKey);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     const currentPageBoundaries = getPageBoundaries(items);
+    const hasInitialOffsetId = Boolean(initialOffsetId);
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      previousFilterValuesKey.current = filterValuesKey;
+      previousItemsKey.current = itemsKey;
+
+      if (hasInitialOffsetId && currentPageBoundaries) {
+        setPageNb((currentPageNb) => (currentPageNb > 1 ? currentPageNb : 2));
+        setPageBoundaries((previousPageBoundaries) => {
+          if (previousPageBoundaries.length > 1) {
+            return previousPageBoundaries;
+          }
+
+          return [
+            {
+              firstId: initialOffsetId,
+            },
+            currentPageBoundaries,
+          ];
+        });
+      }
+
+      return;
+    }
 
     if (previousFilterValuesKey.current !== filterValuesKey) {
       previousFilterValuesKey.current = filterValuesKey;
@@ -97,7 +132,7 @@ export function usePaginationsButton<TFilterValues>({
       nextPageBoundaries[pageNb - 1] = currentPageBoundaries;
       return nextPageBoundaries;
     });
-  }, [filterValuesKey, items, itemsKey, pageNb]);
+  }, [filterValuesKey, initialOffsetId, items, itemsKey, pageNb]);
 
   const goToNext = () => {
     const currentPageBoundaries = pageBoundaries[pageNb - 1] ?? getPageBoundaries(items);
@@ -106,6 +141,11 @@ export function usePaginationsButton<TFilterValues>({
       return undefined;
     }
 
+    setPageBoundaries((previousPageBoundaries) => {
+      const nextPageBoundaries = [...previousPageBoundaries];
+      nextPageBoundaries[pageNb - 1] = currentPageBoundaries;
+      return nextPageBoundaries;
+    });
     setPageNb((currentPageNb) => currentPageNb + 1);
 
     return {

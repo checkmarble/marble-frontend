@@ -39,7 +39,10 @@ import { z } from 'zod/v4';
 const decisionsListQueryParamsSchema = z.intersection(decisionFiltersSchema, paginationSchema);
 type DecisionsListQueryParams = z.infer<typeof decisionsListQueryParamsSchema>;
 
-export const buildQueryParams = (filters: DecisionFilters, offsetId: string | undefined): DecisionsListQueryParams => {
+export const buildQueryParams = (
+  filters: DecisionFilters,
+  paginationParams?: PaginationParams,
+): DecisionsListQueryParams => {
   return {
     outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
     triggerObject: filters.triggerObject,
@@ -57,11 +60,16 @@ export const buildQueryParams = (filters: DecisionFilters, offsetId: string | un
           }
       : undefined,
     pivotValue: filters.pivotValue,
-    scenarioId: filters.scenarioId ?? [],
-    scheduledExecutionId: filters.scheduledExecutionId ?? [],
-    caseInboxId: filters.caseInboxId ?? [],
+    scenarioId: filters.scenarioId,
+    scheduledExecutionId: filters.scheduledExecutionId,
+    caseInboxId: filters.caseInboxId,
     hasCase: filters?.hasCase,
-    offsetId,
+    offsetId: paginationParams?.offsetId,
+    next: paginationParams?.next,
+    previous: paginationParams?.previous,
+    order: paginationParams?.order,
+    sorting: paginationParams?.sorting,
+    limit: paginationParams?.limit,
   };
 };
 
@@ -124,6 +132,7 @@ function DetectionDecisions() {
   const paginationState = usePaginationsButton({
     filterValues: decisionFilters,
     items: decisions,
+    initialOffsetId: filters.offsetId,
   });
 
   const navigate = useNavigate();
@@ -132,7 +141,7 @@ function DetectionDecisions() {
       if (!paginationParams) {
         navigate({
           to: '/detection/decisions',
-          search: buildQueryParams(decisionFilters, undefined),
+          search: buildQueryParams(decisionFilters),
           replace: true,
         });
         return;
@@ -140,7 +149,7 @@ function DetectionDecisions() {
 
       navigate({
         to: '/detection/decisions',
-        search: buildQueryParams(decisionFilters, paginationParams.offsetId),
+        search: buildQueryParams(decisionFilters, paginationParams),
         replace: true,
       });
     },
