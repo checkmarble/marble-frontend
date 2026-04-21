@@ -62,7 +62,6 @@ export const createApiKeyFn = createServerFn({ method: 'POST' })
       throw redirect({ to: '/settings/api-keys' });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to create API key');
     }
   });
@@ -423,13 +422,7 @@ export const createTagFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(createTagPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.apiClient.createTag(data);
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to create tag');
-    }
+    await context.authInfo.apiClient.createTag(data);
   });
 
 export const deleteTagFn = createServerFn({ method: 'POST' })
@@ -447,13 +440,7 @@ export const updateTagFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateTagPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.apiClient.updateTag(data.id, data);
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update tag');
-    }
+    await context.authInfo.apiClient.updateTag(data.id, data);
   });
 
 // ---- Users ----

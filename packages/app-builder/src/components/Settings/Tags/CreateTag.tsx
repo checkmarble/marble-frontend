@@ -12,6 +12,7 @@ import {
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -48,11 +49,16 @@ const CreateTagContent = ({ onSuccess }: { onSuccess: () => void }) => {
     defaultValues: { name: '', color: tagColors[0], target: 'case' } as CreateTagPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createTagMutation.mutateAsync(value).then((res) => {
-          onSuccess();
-
-          revalidate();
-        });
+        createTagMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+            onSuccess();
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {
