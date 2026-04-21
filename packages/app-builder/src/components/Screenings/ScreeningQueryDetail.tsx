@@ -17,7 +17,7 @@ const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
   );
 
   return (
-    <div className="text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4 mb-2">
+    <div className="text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] items-center gap-3 gap-x-4 break-all rounded-lg p-4 mb-2">
       <span className="font-semibold">type</span>
       <span>
         {match(query.schema)
