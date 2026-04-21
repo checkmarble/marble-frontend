@@ -225,6 +225,7 @@ const metadataKeys = [
   'currencyFieldId',
   'foreignkeyTable',
   'hidden',
+  'booleanDisplay',
 ] as const satisfies (keyof TableField)[];
 
 function adaptTableFieldUpdate(current: TableField, original: TableField, rawModelField?: DataModelField) {
@@ -259,6 +260,7 @@ function adaptTableFieldUpdate(current: TableField, original: TableField, rawMod
           currencyFieldId: current.currencyFieldId,
           foreignkeyTable: current.foreignkeyTable,
           hidden: current.hidden,
+          booleanDisplay: current.booleanDisplay,
         }
       : undefined,
   });
