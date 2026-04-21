@@ -9,11 +9,15 @@ export function DeleteRule({
   scenarioId,
   iterationId,
   children,
+  open,
+  onOpenChange,
 }: {
   ruleId: string;
   scenarioId: string;
   iterationId: string;
-  children: React.ReactElement;
+  children?: React.ReactElement;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const deleteRuleMutation = useDeleteRuleMutation(scenarioId, iterationId);
@@ -26,8 +30,8 @@ export function DeleteRule({
   };
 
   return (
-    <Modal.Root>
-      <Modal.Trigger asChild>{children}</Modal.Trigger>
+    <Modal.Root open={open} onOpenChange={onOpenChange}>
+      {children ? <Modal.Trigger asChild>{children}</Modal.Trigger> : null}
       <Modal.Content>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex flex-1 flex-col items-center justify-center gap-2">

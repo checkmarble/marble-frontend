@@ -9,7 +9,6 @@ import { useDetectionScenarioIterationData } from '@app-builder/hooks/routes-lay
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { setToast } from '@app-builder/services/toast.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -21,6 +20,7 @@ import { getRequest } from '@tanstack/react-start/server';
 import { type TFunction } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Collapsible } from 'ui-design-system';
@@ -112,38 +112,40 @@ const handle = {
 
 type SaveDecisionResult = { status: 'success' | 'error'; errors: any };
 
-const saveDecisionAction = createServerFn()
+const saveDecisionInputSchema = z.object({
+  params: z.record(z.string(), z.string()),
+  scoreReviewThreshold: z.number(),
+  scoreBlockAndReviewThreshold: z.number(),
+  scoreDeclineThreshold: z.number(),
+});
+
+const saveDecisionAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .inputValidator((input) => saveDecisionInputSchema.parse(input))
   .handler(async function saveDecisionAction({ context, data }): Promise<SaveDecisionResult> {
     const request = getRequest();
     const { i18nextService } = context.services;
     const { scenario } = context.authInfo;
 
-    const [raw, t] = await Promise.all([request.json(), i18nextService.getFixedT(request, ['common', 'scenarios'])]);
+    const t = await i18nextService.getFixedT(request, ['common', 'scenarios']);
+    const { params, scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold } = data;
 
-    const result = getFormSchema(t).safeParse(raw);
+    const result = getFormSchema(t).safeParse({
+      scoreReviewThreshold,
+      scoreBlockAndReviewThreshold,
+      scoreDeclineThreshold,
+    });
 
     if (!result.success) {
       return { status: 'error' as const, errors: z.treeifyError(result.error) };
     }
 
     try {
-      const iterationId = fromParams(data?.params ?? {}, 'iterationId');
-      await scenario.updateScenarioIteration(iterationId, raw);
-
-      await setToast({
-        type: 'success',
-        message: t('common:success.save'),
-      });
+      const iterationId = fromParams(params, 'iterationId');
+      await scenario.updateScenarioIteration(iterationId, result.data);
 
       return { status: 'success' as const, errors: [] };
     } catch (_error) {
-      await setToast({
-        type: 'error',
-        message: t('common:errors.unknown'),
-      });
-
       return { status: 'error' as const, errors: [] };
     }
   });
@@ -202,8 +204,19 @@ function EditScoreThresholds() {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   const mutation = useMutation({
-    mutationFn: (value: z.infer<ReturnType<typeof getFormSchema>>) =>
-      saveDecisionAction({ data: { params, ...value } }),
+    mutationFn: (value: z.infer<ReturnType<typeof getFormSchema>>) => {
+      return saveDecisionAction({ data: { params, ...value } });
+    },
+    onSuccess: (result) => {
+      if (result.status === 'success') {
+        toast.success(t('common:success.save'));
+        return;
+      }
+      toast.error(t('common:errors.unknown'));
+    },
+    onError: () => {
+      toast.error(t('common:errors.unknown'));
+    },
   });
 
   const editorMode = useEditorMode();

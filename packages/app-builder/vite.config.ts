@@ -1,5 +1,6 @@
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
+import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
@@ -24,6 +25,7 @@ export default defineConfig({
     ...(isTest
       ? []
       : [
+          devtools(),
           nitro({
             config: {
               preset: 'node-server',
