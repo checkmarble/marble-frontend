@@ -238,6 +238,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
       currencyFieldId: field.currencyFieldId,
       foreignkeyTable: field.foreignkeyTable,
       hidden: field.hidden,
+      booleanDisplay: field.booleanDisplay,
     },
   };
 }
