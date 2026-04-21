@@ -6,5 +6,5 @@ type DataListGridProps = {
 };
 
 export const DataListGrid = ({ className, children }: DataListGridProps) => {
-  return <div className={cn('grid grid-cols-[116px_1fr] items-center gap-x-3 gap-y-2', className)}>{children}</div>;
+  return <div className={cn('grid grid-cols-[116px_1fr] items-baseline gap-x-3 gap-y-2', className)}>{children}</div>;
 };
