@@ -20,7 +20,7 @@ export function LinkForm({
   const { t } = useTranslation(['data']);
   const { isCreateDataModelLinkAvailable } = useDataModelFeatureAccess();
   return (
-    <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'border border-red-primary p-v2-md')}>
+    <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'bg-red-primary/5 p-v2-sm')}>
       <h4 className="text-m font-semibold">{t('data:upload_data.links_settings')}</h4>
       <div className="flex flex-col gap-v2-md">
         {links.map((link) => (
@@ -108,14 +108,13 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
       className={cn(
         'flex gap-x-v2-md gap-y-v2-sm rounded-lg',
         compact ? 'flex-wrap items-start' : 'items-center',
-        hasError && 'border border-red-primary p-v2-sm',
+        hasError && 'border border-red-primary/40 bg-red-primary/5 p-v2-sm',
       )}
     >
       <Input
         value={link.name}
         onChange={(e) => updateLink(linkId, { name: e.currentTarget.value })}
         placeholder={t('data:upload_data.link_name_placeholder')}
-        borderColor={hasError ? 'redfigma-47' : undefined}
         className="w-36 min-w-fit"
         disabled={link.isNew === false}
       />
@@ -124,7 +123,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         placeholder={t('data:upload_data.link_field_placeholder')}
         onChange={(value) => updateLink(linkId, { tableFieldId: value })}
         options={fieldOptions}
-        className={cn('flex-1 min-w-fit', hasError && 'border-red-primary')}
+        className="flex-1 min-w-fit"
         disabled={link.isNew === false}
       />
       <SelectV2
@@ -132,14 +131,14 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         placeholder=""
         onChange={(value) => updateLink(linkId, { relationType: value })}
         options={relationOptions}
-        className={cn('w-40 min-w-fit', hasError && 'border-red-primary')}
+        className="w-40 min-w-fit"
       />
       <SelectV2
         value={link.targetTableId}
         placeholder={t('data:upload_data.link_destination_placeholder')}
         onChange={(value) => updateLink(linkId, { targetTableId: value })}
         options={destinationOptions}
-        className={cn('flex-1 min-w-fit', hasError && 'border-red-primary')}
+        className="flex-1 min-w-fit"
         disabled={link.isNew === false}
       />
       {isDeleteDataModelLinkAvailable && (

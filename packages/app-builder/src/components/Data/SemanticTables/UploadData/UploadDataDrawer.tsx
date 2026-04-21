@@ -3,6 +3,7 @@ import {
   adaptCreateTableValue,
   adaptLink,
   type FieldValidationError,
+  type LinkValidationError,
   requiresLink,
   type ValidationError,
   validateValues,
@@ -477,6 +478,10 @@ export function UploadDataDrawerContent() {
     () => new Set(validationErrors.filter((e): e is FieldValidationError => e.kind === 'field').map((e) => e.fieldId)),
     [validationErrors],
   );
+  const errorLinkIds = useMemo(
+    () => new Set(validationErrors.filter((e): e is LinkValidationError => e.kind === 'link').map((e) => e.linkId)),
+    [validationErrors],
+  );
 
   async function handleSave() {
     const nonCanceledTableIds = tableIds.filter((id) => !tablesState[id]!.isCanceled);
@@ -489,7 +494,7 @@ export function UploadDataDrawerContent() {
         ...tableState,
         links: getLinksForTable(rawId),
       };
-      const result = validateValues(values, 'all', t, true);
+      const result = validateValues(values, 'all', t, true, dataModel);
       if (!result.ok) {
         for (const error of result.errors) {
           preErrors.push(`${tableState.name}: ${error.message}`);
@@ -639,7 +644,7 @@ export function UploadDataDrawerContent() {
       ...tableState,
       links: getLinksForTable(selectedTableId),
     };
-    const result = validateValues(values, 'all', t, true);
+    const result = validateValues(values, 'all', t, true, dataModel);
     if (!result.ok) {
       setValidationErrors(result.errors);
       return;
@@ -768,7 +773,12 @@ export function UploadDataDrawerContent() {
       </header>
       <div className="flex-1 overflow-auto px-v2-lg">
         {selectedTableId && tablesState[selectedTableId] ? (
-          <FormTable key={selectedTableId} tableId={selectedTableId} errorFieldIds={errorFieldIds} />
+          <FormTable
+            key={selectedTableId}
+            tableId={selectedTableId}
+            errorFieldIds={errorFieldIds}
+            errorLinkIds={errorLinkIds}
+          />
         ) : (
           <p className="text-s text-grey-secondary">{t('data:upload_data.no_table_selected')}</p>
         )}
