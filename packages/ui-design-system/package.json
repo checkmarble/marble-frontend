@@ -67,7 +67,7 @@
     "sharpstate": "^0.0.13",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-radix": "^4.0.2",
-    "temporal-polyfill": "^0.2.5",
+    "temporal-polyfill": "^0.3.2",
     "ts-pattern": "^5.8.0",
     "ui-icons": "workspace:*"
   },
