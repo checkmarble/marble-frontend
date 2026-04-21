@@ -12,6 +12,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type Tag } from 'marble-api';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -45,11 +46,16 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
     defaultValues: tag as UpdateTagPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateTagMutation.mutateAsync(value).then((res) => {
-          onSuccess();
-
-          revalidate();
-        });
+        updateTagMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+            onSuccess();
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

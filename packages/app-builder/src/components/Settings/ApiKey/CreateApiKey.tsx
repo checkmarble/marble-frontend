@@ -3,6 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { apiKeyRoleOptions } from '@app-builder/models/api-keys';
+
 import {
   CreateApiKeyPayload,
   createApiKeyPayloadSchema,
@@ -12,6 +13,7 @@ import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/a
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -43,12 +45,15 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
   const form = useForm({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createApiKeyMutation.mutateAsync(value).then((res) => {
-          if (!res) {
+        createApiKeyMutation
+          .mutateAsync(value)
+          .then(() => {
             onSuccess();
-          }
-          revalidate();
-        });
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     defaultValues: { description: '', role: 'API_CLIENT' } as CreateApiKeyPayload,
