@@ -129,9 +129,7 @@ export function ScoringRuleEditPanel({
               placeholder={t('user-scoring:rule_edit.name_placeholder')}
             />
             {nameTouched && !name.trim() ? (
-              <span className="text-xs text-red-primary mt-1">
-                {t('user-scoring:rule_edit.name_required')}
-              </span>
+              <span className="text-xs text-red-primary mt-1">{t('user-scoring:rule_edit.name_required')}</span>
             ) : null}
           </div>
           {onDelete ? (
