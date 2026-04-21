@@ -22,6 +22,7 @@
   "rule_edit.model_type.screening_tags": "وسوم الفحص",
   "rule_edit.model_type.user_attribute": "سمات المستخدم",
   "rule_edit.name_placeholder": "اسم القاعدة...",
+  "rule_edit.name_required": "اسم القاعدة مطلوب",
   "rule_edit.risk_type_placeholder": "نوع المخاطر *",
   "rule_edit.save": "حفظ التغييرات",
   "ruleset.add_rule": "إضافة قاعدة",
