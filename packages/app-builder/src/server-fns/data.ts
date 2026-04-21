@@ -644,10 +644,20 @@ export const uploadIngestionDataFn = createServerFn({ method: 'POST' })
       if (key !== 'objectType') backendData.append(key, value);
     }
 
-    return fetch(`${getServerEnv('MARBLE_API_URL')}${getIngestionDataBatchUploadEndpoint(objectType)}`, {
-      body: backendData,
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
+    const upstream = await fetch(
+      `${getServerEnv('MARBLE_API_URL')}${getIngestionDataBatchUploadEndpoint(objectType)}`,
+      {
+        body: backendData,
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+
+    const body = await upstream.arrayBuffer();
+    return new Response(body, {
+      status: upstream.status,
+      statusText: upstream.statusText,
+      headers: new Headers(upstream.headers),
     });
   });
 

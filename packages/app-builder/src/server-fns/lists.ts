@@ -84,9 +84,16 @@ export const uploadListDataFileFn = createServerFn({ method: 'POST' })
       if (key !== 'listId') backendData.append(key, value);
     }
 
-    return fetch(`${getServerEnv('MARBLE_API_URL')}${getCustomListDataUploadEndpoint(listId)}`, {
+    const upstream = await fetch(`${getServerEnv('MARBLE_API_URL')}${getCustomListDataUploadEndpoint(listId)}`, {
       body: backendData,
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const body = await upstream.arrayBuffer();
+    return new Response(body, {
+      status: upstream.status,
+      statusText: upstream.statusText,
+      headers: new Headers(upstream.headers),
     });
   });
