@@ -196,32 +196,27 @@ function Rules() {
           return <Tag>{value}</Tag>;
         },
       }),
-      columnHelper.accessor((row) => (row.type === 'rule' ? row.scoreModifier : undefined), {
-        id: 'score',
-        cell: ({ getValue }) => {
-          const scoreModifier = getValue();
-          if (!scoreModifier) return '';
-          return (
-            <span className={scoreModifier < 0 ? 'text-green-primary' : 'text-red-primary'}>
-              {formatNumber(scoreModifier, {
-                language,
-                signDisplay: 'exceptZero',
-              })}
-            </span>
-          );
-        },
-        header: t('scenarios:rules.score'),
-        size: 100,
-      }),
-      columnHelper.accessor((row) => (row.type === 'sanction' ? row.forcedOutcome : undefined), {
-        id: 'outcome',
-        cell: ({ getValue }) => {
-          const outcome = getValue();
+      columnHelper.display({
+        id: 'score_or_outcome',
+        header: t('scenarios:rules.score_or_outcome'),
+        size: 150,
+        cell: ({ row }) => {
+          if (row.original.type === 'rule') {
+            const scoreModifier = row.original.scoreModifier;
+            if (!scoreModifier) return '';
+            return (
+              <span className={scoreModifier < 0 ? 'text-green-primary' : 'text-red-primary'}>
+                {formatNumber(scoreModifier, {
+                  language,
+                  signDisplay: 'exceptZero',
+                })}
+              </span>
+            );
+          }
+          const outcome = row.original.forcedOutcome;
           if (!outcome) return '';
           return <OutcomeBadge outcome={outcome} size="md" />;
         },
-        header: t('decisions:outcome'),
-        size: 120,
       }),
     ],
     [language, scenarioValidation, screeningIdToValidationIndex, t],

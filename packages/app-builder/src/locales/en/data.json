@@ -322,6 +322,7 @@
   "viewer.no_object_found": "No object found for id \"{{objectId}}\" in {{tableName}}",
   "viewer.object_id": "Object ID",
   "viewer.object_type": "Object type",
+  "viewer.related_object_not_ingested": "The linked {{tableName}} with id \"{{objectId}}\" has not been ingested yet.",
   "viewer.view_ingested_data": "View ingested data",
   "vpn": "Yes",
   "yes": "Yes"

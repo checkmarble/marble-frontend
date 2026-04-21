@@ -553,13 +553,11 @@ export const createRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['scenarios']);
     const rule = await context.authInfo.scenarioIterationRuleRepository.createRule({
       scenarioIterationId: data.iterationId,
       displayOrder: 1,
       formula: null,
-      name: t('scenarios:create_rule.default_name'),
+      name: '',
       description: '',
       ruleGroup: '',
       scoreModifier: 0,
@@ -618,12 +616,10 @@ export const createScreeningRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['scenarios']);
     const config = await context.authInfo.scenarioIterationScreeningRepository.createScreeningConfig({
       iterationId: data.iterationId,
       changes: {
-        name: t('scenarios:create_sanction.default_name'),
+        name: '',
         ruleGroup: 'Screening',
         forcedOutcome: 'block_and_review',
       },

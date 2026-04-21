@@ -33,7 +33,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
+import { Button, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -189,6 +189,7 @@ function RuleDetail() {
   const editor = useEditorMode();
   const ruleGroups = useDerivedIterationRuleGroupsData();
 
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const intersection = useIntersection(descriptionRef, {
@@ -196,6 +197,12 @@ function RuleDetail() {
     rootMargin: '-30px',
     threshold: 1,
   });
+
+  useEffect(() => {
+    if (!rule.name && editor === 'edit') {
+      nameInputRef.current?.focus();
+    }
+  }, []);
 
   const form = useForm({
     onSubmit: ({ value, formApi }) => {
@@ -210,8 +217,6 @@ function RuleDetail() {
   });
 
   const [formulaKey, setFormulaKey] = useState(0);
-  const [isDuplicateRuleOpen, setIsDuplicateRuleOpen] = useState(false);
-  const [isDeleteRuleOpen, setIsDeleteRuleOpen] = useState(false);
 
   const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
   const [ruleDescription, setRuleDescription] = useState<string | undefined>(undefined);
@@ -291,62 +296,41 @@ function RuleDetail() {
                 {(field) => (
                   <div className="flex w-full flex-col gap-1">
                     <input
+                      ref={nameInputRef}
                       type="text"
                       name={field.name}
                       disabled={editor === 'view'}
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      className="text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden"
+                      className={cn(
+                        'text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden',
+                        field.state.meta.errors.length > 0 && 'border-b border-red-primary',
+                      )}
                       placeholder={t('scenarios:edit_rule.name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                    {field.state.meta.errors.length > 0 ? (
+                      <span className="text-xs text-red-primary">{t('scenarios:edit_rule.name_required')}</span>
+                    ) : null}
                   </div>
                 )}
               </form.Field>
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <DuplicateRule
-                    ruleId={rule.id}
-                    iterationId={rule.scenarioIterationId}
-                    scenarioId={scenarioId}
-                    open={isDuplicateRuleOpen}
-                    onOpenChange={setIsDuplicateRuleOpen}
-                  />
-                  <DeleteRule
-                    ruleId={rule.id}
-                    iterationId={rule.scenarioIterationId}
-                    scenarioId={scenarioId}
-                    open={isDeleteRuleOpen}
-                    onOpenChange={setIsDeleteRuleOpen}
-                  />
-                  <MenuCommand.Menu>
-                    <MenuCommand.Trigger>
-                      <Button variant="secondary" className="size-8 p-0">
-                        <Icon icon="dots-three" className="size-5" />
-                      </Button>
-                    </MenuCommand.Trigger>
-                    <MenuCommand.Content align="end" sideOffset={4} size="small">
-                      <MenuCommand.List>
-                        <MenuCommand.Item onSelect={() => setIsDuplicateRuleOpen(true)}>
-                          <div className="flex items-center gap-v2-xs">
-                            <Icon icon="copy" className="size-4" aria-hidden />
-                            {t('scenarios:clone_rule.button')}
-                          </div>
-                        </MenuCommand.Item>
-                        <MenuCommand.Item onSelect={() => setIsDeleteRuleOpen(true)}>
-                          <div className="text-red-primary flex items-center gap-v2-xs">
-                            <Icon icon="delete" className="size-4" aria-hidden />
-                            {t('common:delete')}
-                          </div>
-                        </MenuCommand.Item>
-                      </MenuCommand.List>
-                    </MenuCommand.Content>
-                  </MenuCommand.Menu>
-
-                  <Button variant="primary" type="submit" disabled={mutation.isPending}>
-                    {mutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" aria-hidden /> : null}
-                    <Icon icon="save" className="size-5" aria-hidden />
+                  <DuplicateRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
+                    <Button variant="secondary" size="small" type="button">
+                      <Icon icon="copy" className="size-4" aria-hidden />
+                      {t('scenarios:clone_rule.button')}
+                    </Button>
+                  </DuplicateRule>
+                  <DeleteRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
+                    <Button variant="destructive" size="small" type="button">
+                      <Icon icon="delete" className="size-4" aria-hidden />
+                      {t('common:delete')}
+                    </Button>
+                  </DeleteRule>
+                  <Button variant="primary" size="small" type="submit">
+                    <Icon icon="save" className="size-4" aria-hidden />
                     {t('common:save')}
                   </Button>
                 </div>
