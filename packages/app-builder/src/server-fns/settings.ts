@@ -44,7 +44,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Dict } from '@swan-io/boxed';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { getRequest } from '@tanstack/react-start/server';
+
 import { pick } from 'radash';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
@@ -309,18 +309,15 @@ export const updateAllowedNetworksFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateAllowedNetworksPayloadSchema.and(z.object({ organizationId: z.string() })))
   .handler(async ({ context, data }) => {
-    const t = await context.services.i18nextService.getFixedT(getRequest(), ['settings']);
-
     try {
       const subnets = await context.authInfo.organization.updateAllowedNetworks(
         data.organizationId,
         data.allowedNetworks,
       );
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
       return { subnets };
     } catch (error) {
       if (isHttpError(error) && error.status === UNPROCESSABLE_ENTITY) {
-        await setToast({ type: 'error', message: t('settings:ip_whitelisting.errors.ip_not_in_range') });
+        return { error: 'ip_not_in_range' as const };
       }
       throw new Error('Failed to update allowed networks');
     }
@@ -344,20 +341,14 @@ export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateOrganizationScenariosPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.organization.updateOrganization({
-        organizationId: data.organizationId,
-        changes: {
-          defaultScenarioTimezone: data.defaultScenarioTimezone,
-          sanctionThreshold: data.sanctionThreshold,
-          sanctionLimit: data.sanctionLimit,
-        },
-      });
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update organization scenarios');
-    }
+    await context.authInfo.organization.updateOrganization({
+      organizationId: data.organizationId,
+      changes: {
+        defaultScenarioTimezone: data.defaultScenarioTimezone,
+        sanctionThreshold: data.sanctionThreshold,
+        sanctionLimit: data.sanctionLimit,
+      },
+    });
   });
 
 export const updateDataDisplayFn = createServerFn({ method: 'POST' })

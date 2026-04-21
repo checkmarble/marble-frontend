@@ -3,6 +3,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormSelectTimezone } from '@app-builder/components/Settings/FormSelectTimezone';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
 import {
@@ -16,6 +17,7 @@ import { useForm } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn, useServerFn } from '@tanstack/react-start';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 
@@ -44,6 +46,7 @@ function Scenarios() {
   const { t } = useTranslation(['settings', 'common']);
   const { organization, user, entitlements } = Route.useLoaderData();
   const updateOrganizationScenarios = useServerFn(updateOrganizationScenariosFn);
+  const revalidate = useLoaderRevalidator();
 
   const updateMutation = useMutation({
     mutationFn: (value: UpdateOrganizationScenariosPayload) => updateOrganizationScenarios({ data: value }),
@@ -51,7 +54,17 @@ function Scenarios() {
 
   const form = useForm({
     onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) updateMutation.mutate(value);
+      if (formApi.state.isValid) {
+        updateMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
+      }
     },
     validators: {
       onChange: updateOrganizationScenariosPayloadSchema as unknown as any,
