@@ -9,7 +9,7 @@ import { type RefineSearchInput } from '@app-builder/server-fns/screenings';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 import { screeningsI18n } from '../screenings-i18n';
 import { InlineRefineSearch } from './InlineRefineSearch';
 
@@ -110,9 +110,7 @@ function QueryProperties({ query }: { query: ScreeningQuery }) {
         </SearchDetailRow>
       ))}
       <SearchDetailRow label={t('screenings:search_entity_type')}>
-        <span className="inline-flex items-center rounded-full border border-grey-border bg-white px-2 py-0.5 text-xs text-grey-secondary">
-          {entityTypeLabel}
-        </span>
+        <Tag color="grey">{entityTypeLabel}</Tag>
       </SearchDetailRow>
     </>
   );

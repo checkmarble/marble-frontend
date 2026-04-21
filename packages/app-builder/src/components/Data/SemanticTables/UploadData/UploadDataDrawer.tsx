@@ -14,6 +14,7 @@ import { useDataModel } from '@app-builder/services/data/data-model';
 import { isTableMutationError } from '@app-builder/services/data/table-mutation-errors';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { Button, cn, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
@@ -34,12 +35,12 @@ import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
  * Get table IDs with canceled last.
  */
 function sortedTableIds(tablesState: Record<string, SemanticTableFormValues>): string[] {
-  return Object.values(tablesState)
-    .sort((a, b) => {
-      if (a.isCanceled !== b.isCanceled) return a.isCanceled ? 1 : -1;
-      return 0;
-    })
-    .map((t) => t.tableId);
+  return R.pipe(
+    tablesState,
+    R.values(),
+    R.sortBy((t) => (t.isCanceled ? 1 : 0)),
+    R.map((t) => t.tableId),
+  );
 }
 
 export type UploadDataDrawerProps = {
@@ -250,13 +251,20 @@ export function UploadDataDrawer({ open, data, onClose, children }: UploadDataDr
 }
 
 function normalizeTablesStateForDirtyCheck(state: Record<string, SemanticTableFormValues>) {
-  return Object.values(state)
-    .map(({ isVisited: _isVisited, ...table }) => table)
-    .sort((a, b) => a.tableId.localeCompare(b.tableId));
+  return R.pipe(
+    state,
+    R.values(),
+    R.map(({ isVisited: _isVisited, ...table }) => table),
+    R.sortBy((t) => t.tableId),
+  );
 }
 
 function normalizeLinksStateForDirtyCheck(state: Record<string, LinkValue>) {
-  return Object.values(state).sort((a, b) => a.linkId.localeCompare(b.linkId));
+  return R.pipe(
+    state,
+    R.values(),
+    R.sortBy((l) => l.linkId),
+  );
 }
 
 function buildInitialTablesState(data: unknown): Record<string, SemanticTableFormValues> {
@@ -481,7 +489,7 @@ export function UploadDataDrawerContent() {
         ...tableState,
         links: getLinksForTable(rawId),
       };
-      const result = validateValues(values, 'all', t);
+      const result = validateValues(values, 'all', t, true);
       if (!result.ok) {
         for (const error of result.errors) {
           preErrors.push(`${tableState.name}: ${error.message}`);
@@ -631,7 +639,7 @@ export function UploadDataDrawerContent() {
       ...tableState,
       links: getLinksForTable(selectedTableId),
     };
-    const result = validateValues(values, 'all', t);
+    const result = validateValues(values, 'all', t, true);
     if (!result.ok) {
       setValidationErrors(result.errors);
       return;
@@ -733,11 +741,12 @@ export function UploadDataDrawerContent() {
           <>
             <EntityTypeMenu
               entityType={tablesState[selectedTableId].entityType}
+              entitySubtype={tablesState[selectedTableId].subEntity}
               isChanged={tablesState[selectedTableId].entityType === 'unset'}
-              onSelect={(entityType) =>
+              onSelect={(entityType, subEntity) =>
                 updateTableState(selectedTableId, {
                   entityType,
-                  subEntity: 'moral',
+                  subEntity,
                   ...(!requiresLink(entityType) && { belongsToTableId: '' }),
                 })
               }

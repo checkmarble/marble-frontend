@@ -58,6 +58,7 @@ export function InlineRefineSearch({
   const searchInputs = screening.request
     ? Object.values(screening.request.queries).flatMap((query) => Object.values(query.properties).flat())
     : [];
+  const nameField = useStore(form.store, (state) => state.values.fields.name);
 
   return (
     <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-4 border-l border-grey-border pl-4">
@@ -78,7 +79,7 @@ export function InlineRefineSearch({
               {mainFieldsOpen ? (
                 <>
                   {searchInputs.length > 0 ? (
-                    <div className="flex h-[33px] items-center overflow-clip rounded border border-purple-border-light bg-white p-2">
+                    <div className="overflow-clip text-purple-primary">
                       <span className="truncate text-s font-medium">{searchInputs.join(' ')}</span>
                     </div>
                   ) : null}
@@ -108,7 +109,6 @@ export function InlineRefineSearch({
                             placeholder={t(`screenings:entity.property.${field}`)}
                             value={formField.state.value as string}
                             onChange={(e) => formField.handleChange(e.target.value)}
-                            className="border-purple-border-light"
                           />
                         )}
                       </form.Field>
@@ -125,7 +125,7 @@ export function InlineRefineSearch({
             </Button>
             <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
               {([isPristine, canSubmit, isSubmitting]) => (
-                <Button type="submit" size="small" disabled={isPristine || !canSubmit} variant="primary">
+                <Button type="submit" size="small" disabled={isPristine || !canSubmit || !nameField} variant="primary">
                   {isSubmitting ? '...' : t('screenings:refine_inline.search')}
                 </Button>
               )}

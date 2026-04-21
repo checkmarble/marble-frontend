@@ -51,7 +51,7 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                   className="p-v2-md flex items-center border border-grey-border rounded-v2-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
                 >
                   <Highlight
-                    text={item[metadata.caption_field] as string}
+                    text={String(item[metadata.caption_field] ?? '')}
                     query={payload.terms}
                     markClassName="bg-yellow-background dark:bg-yellow-primary/30 text-grey-primary"
                     className="min-w-100"

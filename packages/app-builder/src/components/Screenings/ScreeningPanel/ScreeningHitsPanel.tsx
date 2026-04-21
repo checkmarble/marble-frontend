@@ -69,7 +69,7 @@ export function ScreeningHitsPanel({
   const bulkReviewMutation = useBulkReviewMatchesMutation();
 
   // Selection state (lifted here so header buttons can access it)
-  const [selectedMatchIds, setSelectedMatchIds] = useState<Set<string>>(new Set());
+  const [selectedMatchIds, setSelectedMatchIds] = useState<string[]>([]);
 
   const revalidate = useCallback(() => {
     invalidateScreeningDetail(decisionId, currentScreeningId);
@@ -142,7 +142,7 @@ export function ScreeningHitsPanel({
   );
 
   const showDismissButton = !isInPreview && probableFalsePositiveMatchIds.length >= 1;
-  const showBulkButton = !isInPreview && selectedMatchIds.size >= 2;
+  const showBulkButton = !isInPreview && selectedMatchIds.length >= 2;
 
   const handleDismissFalsePositives = useCallback(() => {
     bulkReviewMutation.mutate(probableFalsePositiveMatchIds, {
@@ -151,7 +151,7 @@ export function ScreeningHitsPanel({
   }, [bulkReviewMutation, probableFalsePositiveMatchIds, revalidateAfterBulk]);
 
   const handleBulkMarkFalsePositive = useCallback(() => {
-    bulkReviewMutation.mutate([...selectedMatchIds], {
+    bulkReviewMutation.mutate(selectedMatchIds, {
       onSuccess: revalidateAfterBulk,
     });
   }, [bulkReviewMutation, selectedMatchIds, revalidateAfterBulk]);
@@ -167,8 +167,8 @@ export function ScreeningHitsPanel({
             onClick={() => handleOpenChange(false)}
             aria-label="Close panel"
           />
-          <div className="flex flex-1 items-center gap-1">
-            <h2 className="text-xl font-semibold text-grey-primary tracking-[-0.8px]">{currentName}</h2>
+          <div className="flex flex-1 items-center gap-2">
+            <h2 className="text-xl font-semibold text-grey-primary tracking-[-0.8px] leading-0">{currentName}</h2>
             <ScreeningStatusTag status={currentStatus} />
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -263,8 +263,8 @@ function PanelMatchList({
   onValidate: () => void;
   onCancel: () => void;
   aiSuggestionsByMatchId: Map<string, ScreeningAiSuggestion>;
-  selectedMatchIds: Set<string>;
-  setSelectedMatchIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  selectedMatchIds: string[];
+  setSelectedMatchIds: React.Dispatch<React.SetStateAction<string[]>>;
   isInPreview: boolean;
 }) {
   const { t } = useTranslation(screeningsI18n);
@@ -272,38 +272,39 @@ function PanelMatchList({
   const pendingMatches = useMemo(() => filter(screening.matches, (m) => m.status === 'pending'), [screening.matches]);
   const matchesToReviewCount = pendingMatches.length;
 
-  // Clear selection when matches change (after revalidation)
-  const matchIdsKey = screening.matches.map((m) => m.id).join(',');
-  useEffect(() => {
-    setSelectedMatchIds(new Set());
-  }, [matchIdsKey, setSelectedMatchIds]);
-
   const toggleMatch = useCallback(
     (matchId: string, checked: boolean) => {
       setSelectedMatchIds((prev) => {
-        const next = new Set(prev);
         if (checked) {
-          next.add(matchId);
-        } else {
-          next.delete(matchId);
+          return prev.includes(matchId) ? prev : [...prev, matchId];
         }
-        return next;
+        return prev.filter((id) => id !== matchId);
       });
     },
     [setSelectedMatchIds],
   );
 
   const pendingMatchIds = useMemo(() => pendingMatches.map((m) => m.id), [pendingMatches]);
+  const pendingMatchIdsSet = useMemo(() => new Set(pendingMatchIds), [pendingMatchIds]);
+  const selectedMatchIdsSet = useMemo(() => new Set(selectedMatchIds), [selectedMatchIds]);
+
+  // Keep selection limited to current pending matches after revalidation/status changes.
+  useEffect(() => {
+    setSelectedMatchIds((prev) => {
+      const next = prev.filter((id) => pendingMatchIdsSet.has(id));
+      return next.length === prev.length ? prev : next;
+    });
+  }, [pendingMatchIdsSet, setSelectedMatchIds]);
 
   const toggleAll = useCallback(() => {
     setSelectedMatchIds((prev) => {
-      const allSelected = pendingMatchIds.every((id) => prev.has(id));
-      return allSelected ? new Set() : new Set(pendingMatchIds);
+      const allSelected = pendingMatchIds.every((id) => prev.includes(id));
+      return allSelected ? [] : pendingMatchIds;
     });
   }, [pendingMatchIds, setSelectedMatchIds]);
 
   const showSelectControls = !isInPreview && pendingMatches.length >= 1;
-  const allSelected = pendingMatchIds.length > 0 && pendingMatchIds.every((id) => selectedMatchIds.has(id));
+  const allSelected = pendingMatchIds.length > 0 && pendingMatchIds.every((id) => selectedMatchIdsSet.has(id));
 
   const previewMatches = useMemo<ScreeningMatch[] | null>(() => {
     if (!previewResults) return null;
@@ -368,7 +369,7 @@ function PanelMatchList({
                 <div className="flex shrink-0 items-start pt-5 w-4">
                   <Checkbox
                     size="small"
-                    checked={selectedMatchIds.has(screeningMatch.id)}
+                    checked={selectedMatchIdsSet.has(screeningMatch.id)}
                     onCheckedChange={(checked) => toggleMatch(screeningMatch.id, checked === true)}
                   />
                 </div>

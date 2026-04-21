@@ -1,7 +1,7 @@
 import { type DataModelField } from '@app-builder/models';
 import { EditSemanticFieldPayload, EditSemanticLinkPayload, EditSemanticTablePayload } from '@app-builder/schemas/data';
 import { ifChanged, omitUndefined } from '@app-builder/utils/omit-undefined';
-import { adaptLink, adaptSemanticField, adaptTableField } from '../CreateTable/createTable-types';
+import { adaptLink, adaptSemanticField, adaptTableField, getEntitySubtype } from '../CreateTable/createTable-types';
 import { ChangeRecord, LinkValue, SemanticTableFormValues, TableField } from '../Shared/semanticData-types';
 
 type TableChange = Extract<ChangeRecord, { type: 'table' }>;
@@ -39,11 +39,19 @@ export function adaptUpdateTableValue(
       return stillUsed ? [] : [link];
     });
 
+  console.log('tableState', { entityType: tableState.entityType, subEntity: tableState.subEntity });
   const adaptedTable: EditSemanticTablePayload = {
     tableId: tableState.tableId,
     ...(changedProperties.includes('alias') ? { alias: tableState.alias || tableState.name } : {}),
-    ...(changedProperties.includes('entityType')
-      ? { semantic_type: tableState.entityType === 'unset' ? 'other' : tableState.entityType }
+    ...(changedProperties.includes('entityType') || changedProperties.includes('subEntity')
+      ? {
+          semantic_type:
+            tableState.entityType === 'person'
+              ? getEntitySubtype(tableState.subEntity === 'unset' ? 'moral' : tableState.subEntity)
+              : tableState.entityType === 'unset'
+                ? 'other'
+                : tableState.entityType,
+        }
       : {}),
     ...(changedProperties.includes('mainTimestampFieldName') ||
     (!originalMainTimestampFieldName && !!tableState.mainTimestampFieldName)
@@ -64,6 +72,7 @@ export function adaptUpdateTableValue(
     ),
     ...(fieldOrderChanged ? { metadata: { fieldOrder: currentFieldOrder } } : {}),
   };
+  console.log('adaptedTable', adaptedTable);
   return adaptedTable;
 }
 
