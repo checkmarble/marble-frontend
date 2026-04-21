@@ -138,22 +138,20 @@ function DetectionDecisions() {
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, paginationParams?: PaginationParams) => {
-      if (!paginationParams) {
-        navigate({
-          to: '/detection/decisions',
-          search: buildQueryParams(decisionFilters),
-          replace: true,
-        });
-        return;
-      }
+      const searchPaginationParams: PaginationParams = {
+        ...(filters.order ? { order: filters.order } : {}),
+        ...(filters.sorting ? { sorting: filters.sorting } : {}),
+        ...(filters.limit ? { limit: filters.limit } : {}),
+        ...(paginationParams ?? {}),
+      };
 
       navigate({
         to: '/detection/decisions',
-        search: buildQueryParams(decisionFilters, paginationParams),
+        search: buildQueryParams(decisionFilters, searchPaginationParams),
         replace: true,
       });
     },
-    [navigate],
+    [filters.limit, filters.order, filters.sorting, navigate],
   );
 
   const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =

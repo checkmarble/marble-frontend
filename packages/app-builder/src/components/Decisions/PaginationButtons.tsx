@@ -300,6 +300,7 @@ export function CursorPaginationButtons({
   boundariesDisplay,
   itemsPerPage = defaultPaginationSize,
 }: CursorPaginationsButtonsProps) {
+  const { t } = useTranslation(['common']);
   const startTs = items[0]?.createdAt;
   const endTs = items[items.length - 1]?.createdAt;
 
@@ -333,10 +334,16 @@ export function CursorPaginationButtons({
       ) : (
         <FormattedDatesRange startTs={startTs} endTs={endTs} />
       )}
-      <Button onClick={fetchPrevious} variant="secondary" mode="icon" disabled={previousDisabled}>
+      <Button
+        onClick={fetchPrevious}
+        variant="secondary"
+        mode="icon"
+        disabled={previousDisabled}
+        aria-label={t('common:previous')}
+      >
         <Icon icon="arrow-left" className="size-4" />
       </Button>
-      <Button onClick={fetchNext} variant="secondary" mode="icon" disabled={nextDisabled}>
+      <Button onClick={fetchNext} variant="secondary" mode="icon" disabled={nextDisabled} aria-label={t('common:next')}>
         <Icon icon="arrow-right" className="size-4" />
       </Button>
     </div>
