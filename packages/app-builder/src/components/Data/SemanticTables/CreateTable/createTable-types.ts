@@ -13,6 +13,7 @@ import {
   type SemanticSubTypeField,
   SemanticSubTypeFieldMap,
   SemanticTypeField,
+  type TableModel,
 } from '@app-builder/models';
 import { CreateTableValue } from '@app-builder/schemas/data';
 import { TFunction } from 'i18next';
@@ -32,6 +33,7 @@ export type LinkValidationError = { kind: 'link'; linkId: string; message: strin
 export type ValidationError = TablePropertyError | FieldValidationError | LinkValidationError;
 export type ValidationResult = { ok: true } | { ok: false; errors: ValidationError[] };
 export type ValidationScope = 'all' | 'table' | 'fields' | 'links';
+type ValidationTableModel = Pick<TableModel, 'id' | 'semanticType' | 'belongsToTableId' | 'linksToSingle'>;
 
 export const defaultCreateTableFields: TableField[] = [
   {
@@ -236,6 +238,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
       currencyFieldId: field.currencyFieldId,
       foreignkeyTable: field.foreignkeyTable,
       hidden: field.hidden,
+      booleanDisplay: field.booleanDisplay,
     },
   };
 }
@@ -270,23 +273,17 @@ export function getEntitySubtype(subEntity: FtmEntityPersonOption): SemanticType
 }
 
 type SemanticTableConstraints = {
-  fieldExist?: { type: SemanticTypeField; subType?: SemanticSubTypeField; name?: string };
-  linkExist?: { dataType: FtmEntityV2 };
+  type: SemanticTypeField;
+  subType?: SemanticSubTypeField;
+  name?: string;
+  dataType?: FtmEntityV2;
 }[];
 
-const defaultTableConstraints = [
-  { fieldExist: { name: 'object_id', type: 'unique_id', subType: 'opaque_id' } },
-  { fieldExist: { name: 'updated_at', type: 'last_update' } },
+const tableConstraints = [
+  { name: 'object_id', type: 'unique_id', subType: 'opaque_id' },
+  { name: 'updated_at', type: 'last_update' },
+  { type: 'name', dataType: 'person' },
 ] as const satisfies SemanticTableConstraints;
-
-const specificTableConstraints: Record<FtmEntityV2 | 'unset', SemanticTableConstraints> = {
-  person: [{ fieldExist: { type: 'name' } }],
-  transaction: [{ linkExist: { dataType: 'person' } }],
-  event: [{ linkExist: { dataType: 'person' } }],
-  account: [{ linkExist: { dataType: 'person' } }],
-  other: [],
-  unset: [],
-} as const;
 
 const knownTableFields = ['name', 'entityType', 'subEntity', 'belongsToTableId'] as const;
 
@@ -307,20 +304,52 @@ function getTablePropertyErrors(values: SemanticTableFormValues, creationMode: b
   return [];
 }
 
-function getConstraintErrors(
+function resolveBelongsToParentTableId(table: ValidationTableModel): string | undefined {
+  return (
+    table.belongsToTableId ?? table.linksToSingle.find((link) => link.relationType === 'belongs_to')?.parentTableId
+  );
+}
+
+function getEntityTypeChangeErrors(
   values: SemanticTableFormValues,
-  scope: Exclude<ValidationScope, 'all' | 'table'>,
   t: TFunction<['data']>,
-) {
-  const errors: ValidationError[] = [];
-  const constraints: SemanticTableConstraints = [
-    ...defaultTableConstraints,
-    ...specificTableConstraints[values.entityType],
+  tables?: ValidationTableModel[],
+): TablePropertyError[] {
+  if (!tables || !values.tableId) return [];
+  const previousTable = tables.find((table) => table.id === values.tableId);
+  if (!previousTable) return [];
+
+  const previousEntityType = previousTable.semanticType ?? '';
+  const nextEntityType = values.entityType === 'unset' ? '' : values.entityType;
+  if (previousEntityType !== 'person' || nextEntityType === 'person') return [];
+
+  const hasBlockingChild = tables.some((table) => {
+    if (table.id === values.tableId) return false;
+    if (!requiresLink(table.semanticType ?? '')) return false;
+
+    return resolveBelongsToParentTableId(table) === values.tableId;
+  });
+
+  if (!hasBlockingChild) return [];
+
+  return [
+    {
+      kind: 'table',
+      field: 'entityType',
+      message: t('data:create_table.person_parent_entity_type_change_forbidden'),
+    },
   ];
+}
+
+function getConstraintErrors(values: SemanticTableFormValues, t: TFunction<['data']>) {
+  const errors: ValidationError[] = [];
+  const constraints: SemanticTableConstraints = [...tableConstraints];
+  const entityType = values.entityType === 'unset' ? '' : values.entityType;
 
   for (const constraint of constraints) {
-    if (scope === 'fields' && constraint.fieldExist) {
-      const { name, type, subType } = constraint.fieldExist;
+    if (constraint) {
+      const { name, type, subType, dataType } = constraint;
+      if (dataType !== undefined && dataType !== entityType) continue;
       const found = values.fields.some((f) => {
         if (name && f.name !== name) return false;
         if (type && f.semanticType !== type) return false;
@@ -332,17 +361,6 @@ function getConstraintErrors(
           kind: 'table',
           field: 'name',
           message: t('data:create_table.missing_required_field', { field: name ?? type }),
-        });
-      }
-    }
-
-    if (scope === 'links' && constraint.linkExist) {
-      const found = values.links.some((l) => l.targetTableId !== '');
-      if (!found) {
-        errors.push({
-          kind: 'table',
-          field: 'belongsToTableId',
-          message: t('data:create_table.link_to_related_table_required'),
         });
       }
     }
@@ -389,6 +407,8 @@ function getFieldErrors(values: SemanticTableFormValues, t: TFunction<['data']>)
 function getLinkErrors(values: SemanticTableFormValues, t: TFunction<['data']>): LinkValidationError[] {
   const errors: LinkValidationError[] = [];
   const nameCounts = new Map<string, string[]>();
+  const entityType = values.entityType === 'unset' ? '' : values.entityType;
+  const hasBelongsToLink = values.links.some((link) => link.relationType === 'belongs_to');
 
   for (const link of values.links) {
     const linkField = values.fields.find((field) => field.name === link.tableFieldId);
@@ -431,6 +451,14 @@ function getLinkErrors(values: SemanticTableFormValues, t: TFunction<['data']>):
         }),
       });
     }
+
+    if (requiresLink(entityType) && !hasBelongsToLink) {
+      errors.push({
+        kind: 'link',
+        linkId: link.linkId,
+        message: t('data:create_table.link_to_related_table_required'),
+      });
+    }
   }
 
   for (const [name, ids] of nameCounts) {
@@ -449,6 +477,7 @@ export function validateValues(
   scope: ValidationScope = 'all',
   t: TFunction<['data']>,
   creationMode: boolean = false,
+  tables?: ValidationTableModel[],
 ): ValidationResult {
   const errors: ValidationError[] = [];
 
@@ -458,6 +487,9 @@ export function validateValues(
     if (!values.mainTimestampFieldName && hasUpdatedAt) values.mainTimestampFieldName = 'updated_at';
 
     errors.push(...getTablePropertyErrors(values, creationMode));
+    if (!creationMode) {
+      errors.push(...getEntityTypeChangeErrors(values, t, tables));
+    }
     if (!values.mainTimestampFieldName) {
       errors.push({
         kind: 'table',
@@ -468,11 +500,11 @@ export function validateValues(
   }
 
   if (scope === 'fields' || scope === 'all') {
-    errors.push(...getConstraintErrors(values, 'fields', t), ...getFieldErrors(values, t));
+    errors.push(...getConstraintErrors(values, t), ...getFieldErrors(values, t));
   }
 
   if (scope === 'links' || scope === 'all') {
-    errors.push(...getConstraintErrors(values, 'links', t), ...getLinkErrors(values, t));
+    errors.push(...getLinkErrors(values, t));
   }
 
   return errors.length > 0 ? { ok: false, errors } : { ok: true };

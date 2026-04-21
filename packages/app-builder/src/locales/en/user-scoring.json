@@ -1,4 +1,9 @@
 {
+  "level.high": "High",
+
+  "level.low": "Low",
+  "level.medium": "Medium",
+  "level.very_high": "Very high",
   "overview.configure_score": "Configure a score",
 
   "overview.no_ruleset": "You don't have any ruleset configured yet. Choose an entity on which to create a ruleset to start.",
@@ -17,6 +22,7 @@
   "rule_edit.model_type.screening_tags": "Screening tags",
   "rule_edit.model_type.user_attribute": "User attributes",
   "rule_edit.name_placeholder": "Rule name...",
+  "rule_edit.name_required": "Rule name is required",
   "rule_edit.risk_type_placeholder": "Risk type *",
   "rule_edit.save": "Save changes",
   "ruleset.add_rule": "Add rule",
@@ -24,6 +30,8 @@
   "ruleset.commit": "Commit",
   "ruleset.cooldown": "Cooldown:",
   "ruleset.create_rule": "Create rule",
+
+  "ruleset.edit_settings_title": "Edit general settings",
   "ruleset.error": "An error occurred.",
   "ruleset.last_update": "Last update:",
   "ruleset.no_rules": "No rules configured yet.",
@@ -38,19 +46,21 @@
   "ruleset.rule_type.user_attribute": "User attribute",
   "ruleset.rules_column": "Rules",
   "ruleset.score_renew": "Score renew:",
-
   "ruleset.title": "Global information",
   "ruleset.version_placeholder": "Version",
   "section.configure_button": "Configure a score",
   "section.create_panel.cancel": "Cancel",
   "section.create_panel.entity_placeholder": "Select an entity",
   "section.create_panel.general_settings": "General settings",
-  "section.create_panel.lower_score_duration": "Maximum duration to lower a score:",
+  "section.create_panel.lower_score_duration": "Minimum duration to lower a score:",
+  "section.create_panel.lower_score_duration_tooltip": "The minimum time before the risk level can be lowered after a score change.",
   "section.create_panel.recalculation_duration": "Maximum duration before recalculation:",
+  "section.create_panel.recalculation_duration_tooltip": "The maximum time before the score is automatically recalculated.",
   "section.create_panel.title": "Configure new score",
   "section.create_panel.unit_placeholder": "unit",
   "section.create_panel.validate": "Validate",
   "section.tab_overview": "Overview",
+  "section.tab_scores": "Scores {{name}}",
 
   "section.title": "Customer Scoring",
   "settings.define_scale": "Define a risk scale, then choose the entity on which you want to create the ruleset.",

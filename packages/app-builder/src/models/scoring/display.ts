@@ -8,9 +8,13 @@ export const SCORING_LEVELS_COLORS: Record<MaxRiskLevel, string[]> = {
   6: ['#89D4AD', '#FFD57E', '#FDBD35', '#FF6600', '#DB5F4A', '#D2371D'],
 };
 
-export const SCORING_LEVELS_LABELS: Record<MaxRiskLevel, string[]> = {
-  3: ['Low', 'Medium', 'High'],
-  4: ['Low', 'Medium', 'High', 'Very high'],
+/**
+ * i18n keys for levels 3 and 4 (e.g. 'user-scoring:level.low').
+ * Levels 5 and 6 use plain number strings (not translated).
+ */
+export const SCORING_LEVELS_LABEL_KEYS: Record<MaxRiskLevel, string[]> = {
+  3: ['user-scoring:level.low', 'user-scoring:level.medium', 'user-scoring:level.high'],
+  4: ['user-scoring:level.low', 'user-scoring:level.medium', 'user-scoring:level.high', 'user-scoring:level.very_high'],
   5: ['1', '2', '3', '4', '5'],
   6: ['1', '2', '3', '4', '5', '6'],
 };

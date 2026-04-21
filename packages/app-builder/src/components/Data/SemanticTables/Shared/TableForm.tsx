@@ -14,10 +14,12 @@ import { type LinkValue, type TableField } from './semanticData-types';
 export function FormTable({
   tableId,
   errorFieldIds,
+  errorLinkIds,
   destinationTableOptions: overrideDestinationTableOptions,
 }: {
   tableId: string;
   errorFieldIds?: ReadonlySet<string>;
+  errorLinkIds?: ReadonlySet<string>;
   destinationTableOptions?: { tableId: string; label: string }[];
 }) {
   const {
@@ -151,7 +153,7 @@ export function FormTable({
           </section>
         ) : null}
         <LinksEditorContext.Provider value={linksEditorValue}>
-          <LinkForm compact={!!selectedFieldId} />
+          <LinkForm compact={!!selectedFieldId} errorLinkIds={errorLinkIds} hasError={Boolean(errorLinkIds?.size)} />
         </LinksEditorContext.Provider>
         <FieldsEditorContext.Provider value={fieldsEditorValue}>
           <FieldsForm

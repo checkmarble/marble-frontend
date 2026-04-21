@@ -2,11 +2,11 @@ import { match } from 'ts-pattern';
 import { v7 as uuidv7 } from 'uuid';
 import { type AstNode, type DataModel } from '..';
 import { type AggregationAstNode, isAggregation } from '../astNode/aggregation';
-import { NewUndefinedAstNode } from '../astNode/ast-node';
 import { isMainAstBinaryNode } from '../astNode/builder-ast-node';
 import { isConstant, NewConstantAstNode } from '../astNode/constant';
 import {
   isScoreComputationAstNode,
+  isSwitchAstNode,
   type ScoreComputationAstNode,
   type SwitchAstNode,
   scoreComputationAstNodeName,
@@ -16,8 +16,10 @@ import { isCustomListAccess, NewCustomListAstNode } from '../astNode/custom-list
 import { isPayload, type PayloadAstNode } from '../astNode/data-accessor';
 import {
   isMonitoringListCheckAstNode,
+  isRecordHasTagsAstNode,
   monitoringListCheckAstNodeName,
   NewTagCheckAstNode,
+  recordHasTagsAstNodeName,
 } from '../astNode/monitoring-list-check';
 import { isRecordHasPastAlertAstNode, NewRecordHasPastAlertsAstNode } from '../astNode/risk';
 import {
@@ -33,7 +35,18 @@ import {
 } from './conditions';
 import { type DraftRuleModel, type RuleModel } from './rule-model';
 
-export function transformSwitchAstNodeToModel(
+export type BuildContext = { entityType?: string };
+
+export function transformAstNodeToModel(
+  node: AstNode,
+  entityType?: string,
+  dataModel?: DataModel,
+): DraftRuleModel | null {
+  if (!isSwitchAstNode(node)) return null;
+  return transformSwitchAstNodeToModel(node, entityType, dataModel);
+}
+
+function transformSwitchAstNodeToModel(
   node: SwitchAstNode,
   entityType?: string,
   dataModel?: DataModel,
@@ -64,7 +77,7 @@ export function transformSwitchAstNodeToModel(
     if (scoreComputationNodes.length === 0) {
       return {
         type,
-        conditions: { type: 'tags', branches: [], default: { modifier: 0 } },
+        conditions: { type: 'tags', branches: [{ value: [], impact: { modifier: 0 } }], default: { modifier: 0 } },
       };
     }
     const conditions = parseTagsBranches(scoreComputationNodes);
@@ -99,29 +112,32 @@ export function transformSwitchAstNodeToModel(
   return null;
 }
 
-export function buildSwitchAstNodeFromModel(model: RuleModel): SwitchAstNode {
-  if (model.type === 'screening_tags' || model.type === 'entity_tags') {
-    return {
-      id: uuidv7(),
-      name: switchAstNodeName,
-      constant: undefined,
-      namedChildren: {
-        field: NewUndefinedAstNode(),
-        type: NewConstantAstNode({ constant: model.type }),
-      },
-      children: buildTagsSwitchChildren(model.conditions),
-    };
-  }
+export function buildAstNodeFromModel(model: RuleModel, ctx: BuildContext = {}): AstNode {
   if (model.type === 'past_alerts') {
     return {
       id: uuidv7(),
       name: switchAstNodeName,
       constant: undefined,
       namedChildren: {
-        field: NewUndefinedAstNode(),
+        field: NewConstantAstNode({ constant: null }),
         type: NewConstantAstNode({ constant: model.type }),
       },
       children: buildPastAlertsSwitchChildren(model.conditions),
+    };
+  }
+  if (model.type === 'screening_tags' || model.type === 'entity_tags') {
+    if (!ctx.entityType) {
+      throw new Error(`buildAstNodeFromModel: entityType is required to build a "${model.type}" rule`);
+    }
+    return {
+      id: uuidv7(),
+      name: switchAstNodeName,
+      constant: undefined,
+      namedChildren: {
+        field: NewConstantAstNode({ constant: null }),
+        type: NewConstantAstNode({ constant: model.type }),
+      },
+      children: buildTagsSwitchChildren(model.type, model.conditions, ctx.entityType),
     };
   }
   const children = buildConditionChildren(model.field, model.conditions);
@@ -135,16 +151,6 @@ export function buildSwitchAstNodeFromModel(model: RuleModel): SwitchAstNode {
     },
     children,
   };
-}
-
-function buildTagsSwitchChildren(conditions: TagsSwitch): AstNode[] {
-  const branchNodes = conditions.branches.map((branch) => {
-    const branchCondition = NewTagCheckAstNode(monitoringListCheckAstNodeName, {
-      topicFilters: branch.value,
-    });
-    return buildScoreComputationAstNode(branchCondition, branch.impact);
-  });
-  return [...branchNodes, buildScoreComputationAstNode(NewConstantAstNode({ constant: true }), conditions.default)];
 }
 
 function buildPastAlertsSwitchChildren(conditions: BoolSwitch): AstNode[] {
@@ -173,6 +179,22 @@ function parsePastAlertsBranches(nodes: ScoreComputationAstNode[]): BoolSwitch |
   return { type: 'bool', ifTrue, ifFalse };
 }
 
+function buildTagsSwitchChildren(
+  type: 'screening_tags' | 'entity_tags',
+  conditions: TagsSwitch,
+  entityType: string,
+): AstNode[] {
+  const branchNodes = conditions.branches.map((branch) => {
+    const config = { targetTableName: entityType, topicFilters: branch.value };
+    const branchCondition =
+      type === 'screening_tags'
+        ? NewTagCheckAstNode(monitoringListCheckAstNodeName, config)
+        : NewTagCheckAstNode(recordHasTagsAstNodeName, config);
+    return buildScoreComputationAstNode(branchCondition, branch.impact);
+  });
+  return [...branchNodes, buildScoreComputationAstNode(NewConstantAstNode({ constant: true }), conditions.default)];
+}
+
 function parseTagsBranches(nodes: ScoreComputationAstNode[]): TagsSwitch | null {
   const lastNode = nodes[nodes.length - 1]!;
   const lastCondition = lastNode.children[0];
@@ -187,7 +209,7 @@ function parseTagsBranches(nodes: ScoreComputationAstNode[]): TagsSwitch | null 
 
     const conditionNode = branchNode.children[0];
     let tagValues: string[] = [];
-    if (conditionNode && isMonitoringListCheckAstNode(conditionNode)) {
+    if (conditionNode && (isMonitoringListCheckAstNode(conditionNode) || isRecordHasTagsAstNode(conditionNode))) {
       tagValues = conditionNode.namedChildren.config.constant.topicFilters;
     }
     return { value: tagValues, impact: branchImpact };

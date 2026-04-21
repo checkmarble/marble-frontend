@@ -5,7 +5,7 @@ import {
   ftmEntityPersonOptions,
 } from '@app-builder/models/data-model';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -14,11 +14,12 @@ import { isLinkableTable } from './semanticData-types';
 
 type EntityType = FtmEntityV2 | 'unset' | null | undefined;
 type EntitySubtype = FtmEntityPersonOption | 'unset' | null | undefined;
+type PersistedEntitySubtype = FtmEntityPersonOption | 'unset' | undefined;
 interface EntityTypeMenuProps {
   entityType: EntityType;
   entitySubtype: EntitySubtype;
   isChanged?: boolean;
-  onSelect: (entityType: FtmEntityV2, entitySubtype?: FtmEntityPersonOption) => void;
+  onSelect: (entityType: FtmEntityV2, entitySubtype?: PersistedEntitySubtype) => void;
   /** Override whether entities requiring a link (transaction/event/account) are selectable.
    * Defaults to checking the persisted data model for linkable tables. */
   canSelectTypeThatNeedsAPerson?: boolean;
@@ -38,6 +39,14 @@ export function EntityTypeMenu({
   const [selectedPersonEntity, setSelectedPersonEntity] = useState<EntitySubtype>(entitySubtype);
 
   const dataModel = useDataModel();
+
+  useEffect(() => {
+    setSelectedEntity(entityType);
+  }, [entityType]);
+
+  useEffect(() => {
+    setSelectedPersonEntity(entitySubtype);
+  }, [entitySubtype]);
 
   const canSelectFromDataModel = useMemo(() => dataModel.some(isLinkableTable), [dataModel]);
   const entitySubtypeOptions = useMemo(
@@ -61,9 +70,15 @@ export function EntityTypeMenu({
     [t, canSelectTypeThatNeedsAPerson],
   );
 
-  function handleSelectEntity(option: FtmEntityV2, personOption?: FtmEntityPersonOption) {
+  function handleSelectEntity(option: FtmEntityV2) {
     setSelectedEntity(option);
-    if (option !== 'person') onSelect(option, undefined);
+
+    if (option !== 'person') {
+      onSelect(option, undefined);
+      return;
+    }
+
+    onSelect(option, selectedPersonEntity ?? 'unset');
   }
 
   function handleSelectSubEntity(option: FtmEntityPersonOption) {
@@ -78,8 +93,8 @@ export function EntityTypeMenu({
         <MenuCommand.Trigger>
           <Tag color={isChanged ? 'red' : 'grey'} className="cursor-pointer gap-1">
             {isChanged && <Icon icon="tip" className="size-3" />}
-            {entityType && entityType !== 'unset'
-              ? t(`data:upload_data.ftm_entity.${entityType}`)
+            {selectedEntity && selectedEntity !== 'unset'
+              ? t(`data:upload_data.ftm_entity.${selectedEntity}`)
               : t('data:upload_data.object_placeholder')}
             <Icon icon="caret-down" className={cn('size-3 transition-transform', open && 'rotate-180')} />
           </Tag>

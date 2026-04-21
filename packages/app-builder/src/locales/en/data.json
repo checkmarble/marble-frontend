@@ -82,6 +82,7 @@
   "create_table.name_placeholder": "Name...",
   "create_table.name_regex_error": "Only lower case alphanumeric and _, must start with a letter",
   "create_table.one_timestamp_field_should_be_selected_as_the_main_ordering_field": "One Timestamp field should be selected as the main ordering field",
+  "create_table.person_parent_entity_type_change_forbidden": "This table is currently the person parent of a table that requires a belongs_to person link. Update those tables first before changing this entity type.",
   "create_table.select_destination_table": "Select destination table...",
   "create_table.step_entity": "Entity",
   "create_table.step_fields": "Fields",
@@ -321,6 +322,7 @@
   "viewer.no_object_found": "No object found for id \"{{objectId}}\" in {{tableName}}",
   "viewer.object_id": "Object ID",
   "viewer.object_type": "Object type",
+  "viewer.related_object_not_ingested": "The linked {{tableName}} with id \"{{objectId}}\" has not been ingested yet.",
   "viewer.view_ingested_data": "View ingested data",
   "vpn": "Yes",
   "yes": "Yes"

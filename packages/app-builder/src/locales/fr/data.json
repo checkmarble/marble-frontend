@@ -82,6 +82,7 @@
   "create_table.name_placeholder": "Nom...",
   "create_table.name_regex_error": "Uniquement des minuscules alphanumériques et _, doit commencer par une lettre",
   "create_table.one_timestamp_field_should_be_selected_as_the_main_ordering_field": "Un champ de date doit être sélectionné comme champ de tri principal",
+  "create_table.person_parent_entity_type_change_forbidden": "Cette table est actuellement la table personne parente d'une table qui nécessite un lien belongs_to vers une personne. Modifiez d'abord ces tables avant de changer ce type d'entité.",
   "create_table.select_destination_table": "Sélectionner la table de destination...",
   "create_table.step_entity": "Entité",
   "create_table.step_fields": "Champs",
@@ -321,6 +322,7 @@
   "viewer.no_object_found": "Aucun objet trouvé avec l'ID \"{{objectId}}\" dans {{tableName}}",
   "viewer.object_id": "ID de l'objet",
   "viewer.object_type": "Type d'objet",
+  "viewer.related_object_not_ingested": "Le {{tableName}} lié avec l'ID \"{{objectId}}\" n'a pas encore été ingéré.",
   "viewer.view_ingested_data": "Voir les données ingérées",
   "vpn": "Oui",
   "yes": "Oui"

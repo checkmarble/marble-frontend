@@ -147,7 +147,7 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
             {t('continuousScreening:review.entity_details.view_all')}
           </Button>
         </div>
-        <div className="flex items-center gap-v2-sm">
+        <div className="flex flex-wrap items-center gap-v2-sm">
           {screening.opensanctionEntityPayload.properties['topics']?.map((topic) => {
             return <TopicTag key={topic} topic={topic} className="text-small" />;
           })}
