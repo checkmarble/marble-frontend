@@ -2,6 +2,7 @@ import { LoadingIcon } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useRevokeWebhookSecretMutation } from '@app-builder/queries/settings/webhooks/revoke-webhook-secret';
 import { type ReactElement, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 
@@ -40,11 +41,15 @@ function RevokeWebhookSecretContent({
   const revalidate = useLoaderRevalidator();
 
   const handleRevoke = () => {
-    revokeMutation.mutateAsync({ webhookId, secretId }).then((res) => {
-      onSuccess();
-
-      revalidate();
-    });
+    revokeMutation
+      .mutateAsync({ webhookId, secretId })
+      .then(() => {
+        onSuccess();
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (
