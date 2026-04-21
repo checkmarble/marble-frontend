@@ -1,4 +1,4 @@
-import { type AstNode } from '@app-builder/models';
+import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
 import { type RuleModel } from '@app-builder/models/scoring';
@@ -6,7 +6,7 @@ import { SwitchNodeEdit } from './SwitchNodeEdit';
 import { SwitchNodeView } from './SwitchNodeView';
 
 interface SwitchNodeProps {
-  node: AstNode;
+  node: SwitchAstNode;
   mode: 'edit' | 'view';
   dataModel: DataModel;
   entityType: string;

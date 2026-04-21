@@ -1,10 +1,9 @@
 import { NewAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
-import { NewSwitchAstNode } from '@app-builder/models/astNode/control-flow';
+import { isSwitchAstNode, NewSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
 import {
-  buildAstNodeFromModel,
   RULE_TYPES,
   type RuleModelType,
   type ScoringRule,
@@ -91,28 +90,10 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
   const mutation = useUpdateScoringRulesetMutation();
 
   const handleConfirm = (ruleType: RuleModelType) => {
-    const ast = match(ruleType)
-      .with('user_attribute', () => NewSwitchAstNode(ruleType, NewAstNode()))
-      .with('aggregate', () => NewSwitchAstNode(ruleType, NewAggregatorAstNode('SUM')))
-      .with('screening_tags', 'entity_tags', () =>
-        buildAstNodeFromModel(
-          {
-            type: ruleType as 'screening_tags' | 'entity_tags',
-            conditions: {
-              type: 'tags',
-              branches: [{ value: [], impact: { modifier: 0 } }],
-              default: { modifier: 0 },
-            },
-          },
-          { entityType },
-        ),
-      )
-      .with('past_alerts', () =>
-        buildAstNodeFromModel({
-          type: 'past_alerts',
-          conditions: { type: 'bool', ifTrue: { modifier: 0 }, ifFalse: { modifier: 0 } },
-        }),
-      )
+    const fieldNode = match(ruleType)
+      .with('user_attribute', () => NewAstNode())
+      .with('aggregate', () => NewAggregatorAstNode('SUM'))
+      .with('screening_tags', 'entity_tags', 'past_alerts', () => undefined)
       .exhaustive();
 
     setPanelRule({
@@ -120,7 +101,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
       name: '',
       description: '',
       riskType: 'customer_features',
-      ast,
+      ast: NewSwitchAstNode(ruleType, fieldNode),
     });
     setOpen(false);
   };
@@ -320,6 +301,7 @@ function RuleRow({
   onRuleDelete,
 }: RuleRowProps) {
   const { t } = useTranslation(['user-scoring']);
+  const switchNode = rule.ast && isSwitchAstNode(rule.ast) ? rule.ast : null;
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -329,44 +311,48 @@ function RuleRow({
       </div>
       <div className="flex flex-1 flex-col gap-v2-sm px-v2-md py-v2-sm">
         <span className="text-grey-primary text-s font-medium">{rule.name}</span>
-        <SwitchNode
-          node={rule.ast}
-          mode="view"
-          dataModel={dataModel}
-          entityType={entityType}
-          maxRiskLevel={maxRiskLevel}
-          customLists={customLists}
-        />
-      </div>
-      <div className="flex shrink-0 items-center justify-end px-v2-md py-v2-sm">
-        <button
-          type="button"
-          className="border-purple-primary text-purple-primary flex size-6 items-center justify-center rounded-lg border shadow-sm"
-          aria-label="Edit rule"
-          onClick={() => setIsEditing(true)}
-        >
-          <Icon icon="edit" className="size-4" />
-        </button>
-        <PanelRoot open={isEditing} onOpenChange={setIsEditing}>
-          <ScoringRuleEditPanel
-            rule={rule}
+        {switchNode ? (
+          <SwitchNode
+            node={switchNode}
+            mode="view"
             dataModel={dataModel}
             entityType={entityType}
             maxRiskLevel={maxRiskLevel}
             customLists={customLists}
-            hasValidLicense={hasValidLicense}
-            onChange={onRuleChange}
-            onDelete={
-              onRuleDelete
-                ? () => {
-                    onRuleDelete();
-                    setIsEditing(false);
-                  }
-                : undefined
-            }
           />
-        </PanelRoot>
+        ) : null}
       </div>
+      {switchNode ? (
+        <div className="flex shrink-0 items-center justify-end px-v2-md py-v2-sm">
+          <button
+            type="button"
+            className="border-purple-primary text-purple-primary flex size-6 items-center justify-center rounded-lg border shadow-sm"
+            aria-label="Edit rule"
+            onClick={() => setIsEditing(true)}
+          >
+            <Icon icon="edit" className="size-4" />
+          </button>
+          <PanelRoot open={isEditing} onOpenChange={setIsEditing}>
+            <ScoringRuleEditPanel
+              rule={rule}
+              dataModel={dataModel}
+              entityType={entityType}
+              maxRiskLevel={maxRiskLevel}
+              customLists={customLists}
+              hasValidLicense={hasValidLicense}
+              onChange={onRuleChange}
+              onDelete={
+                onRuleDelete
+                  ? () => {
+                      onRuleDelete();
+                      setIsEditing(false);
+                    }
+                  : undefined
+              }
+            />
+          </PanelRoot>
+        </div>
+      ) : null}
     </div>
   );
 }

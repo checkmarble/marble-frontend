@@ -11,7 +11,7 @@ import { makeGetContinuousScreeningRepository } from './ContinuousScreeningRepos
 import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
-
+import { makeGetEditorRepository } from './EditorRepository';
 import { makeGetFeatureAccessRepository } from './FeatureAccessRepository';
 import { makeGetInboxRepository } from './InboxRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
@@ -48,7 +48,7 @@ export function makeServerRepositories({
     getMarbleCoreAPIClientWithAuth,
     getUserRepository: makeGetUserRepository(),
     getInboxRepository: makeGetInboxRepository(),
-
+    getEditorRepository: makeGetEditorRepository(),
     getDecisionRepository: makeGetDecisionRepository(),
     getCaseRepository: makeGetCaseRepository(),
     getContinuousScreeningRepository: makeGetContinuousScreeningRepository(),

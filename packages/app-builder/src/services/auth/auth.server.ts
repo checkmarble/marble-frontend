@@ -14,7 +14,7 @@ import { ContinuousScreeningRepository } from '@app-builder/repositories/Continu
 import { type CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
 import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
-
+import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
 import { type makeGetFeatureAccessRepository } from '@app-builder/repositories/FeatureAccessRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
@@ -51,7 +51,7 @@ interface AuthenticatedInfo {
    */
   apiClient: MarbleCoreApi;
   tokenService: TokenService<string>;
-
+  editor: EditorRepository;
   decision: DecisionRepository;
   cases: CaseRepository;
   continuousScreening: ContinuousScreeningRepository;
@@ -122,7 +122,7 @@ interface MakeAuthenticationServerServiceArgs {
   getAppConfigRepository: (marbleCoreApiClient: MarbleCoreApi) => AppConfigRepository;
   getUserRepository: (marbleCoreApiClient: MarbleCoreApi) => UserRepository;
   getInboxRepository: (marbleCoreApiClient: MarbleCoreApi) => InboxRepository;
-
+  getEditorRepository: (marbleCoreApiClient: MarbleCoreApi) => EditorRepository;
   getDecisionRepository: (marbleCoreApiClient: MarbleCoreApi) => DecisionRepository;
   getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
   getContinuousScreeningRepository: (marbleCoreApiClient: MarbleCoreApi) => ContinuousScreeningRepository;
@@ -157,6 +157,7 @@ export function makeAuthenticationServerService({
   getAppConfigRepository,
   getUserRepository,
   getInboxRepository,
+  getEditorRepository,
   getDecisionRepository,
   getCaseRepository,
   getContinuousScreeningRepository,
@@ -405,7 +406,7 @@ export function makeAuthenticationServerService({
     return {
       tokenService,
       apiClient: marbleCoreApiClient,
-
+      editor: getEditorRepository(marbleCoreApiClient),
       decision: getDecisionRepository(marbleCoreApiClient),
       cases: getCaseRepository(marbleCoreApiClient),
       continuousScreening: getContinuousScreeningRepository(marbleCoreApiClient),

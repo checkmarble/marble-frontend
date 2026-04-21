@@ -1,8 +1,7 @@
-import { type AstNode } from '@app-builder/models';
-import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
+import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
-import { getOperationType, isCompleteRule, transformAstNodeToModel } from '@app-builder/models/scoring';
+import { getOperationType, isCompleteRule, transformSwitchAstNodeToModel } from '@app-builder/models/scoring';
 import { SCREENING_CATEGORY_I18N_KEY_MAP, topicsToCategories } from '@app-builder/models/screening';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
@@ -17,7 +16,7 @@ import { FieldPill } from './shared';
 import { TagsSwitchDescription } from './TagsSwitchDescription';
 
 interface SwitchNodeViewProps {
-  node: AstNode;
+  node: SwitchAstNode;
   dataModel: DataModel;
   entityType: string;
   maxRiskLevel: number;
@@ -31,9 +30,8 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
     i18n: { language },
   } = useTranslation(['user-scoring', 'scenarios']);
   const { getTagById } = useOrganizationObjectTags();
-  const fieldType = isSwitchAstNode(node) ? getOperationType(entityType, dataModel, node) : null;
-  const model = transformAstNodeToModel(node, entityType, dataModel);
-  const hasChildren = isSwitchAstNode(node) ? node.children.length > 0 : true;
+  const fieldType = getOperationType(entityType, dataModel, node);
+  const model = transformSwitchAstNodeToModel(node, entityType, dataModel);
 
   return (
     <div className="flex flex-col gap-v2-sm pl-10 text-xs text-grey-secondary">
@@ -76,7 +74,7 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
           : null}
       </div>
 
-      {!hasChildren ? (
+      {node.children.length === 0 ? (
         <p className="italic text-grey-placeholder">{t('user-scoring:switch.no_condition')}</p>
       ) : model && isCompleteRule(model) ? (
         match(model)

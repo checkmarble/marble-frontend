@@ -39,6 +39,46 @@
           application/json:
             schema:
               $ref: "#/components/schemas/AppConfigDto"
+/editor/{scenarioId}/identifiers:
+  get:
+    tags:
+      - Editor
+    summary: List all identifiers
+    operationId: listIdentifiers
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioId
+        description: ID of the scenario
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: The list of identifiers
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - database_accessors
+                - payload_accessors
+              properties:
+                database_accessors:
+                  type: array
+                  items:
+                    $ref: "ast.yml#/components/schemas/NodeDto"
+                payload_accessors:
+                  type: array
+                  items:
+                    $ref: "ast.yml#/components/schemas/NodeDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
 components:
   schemas:
     LegacyAnalyticsDto:

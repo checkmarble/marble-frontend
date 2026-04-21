@@ -568,7 +568,6 @@ function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
 }
 
 function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string }) {
-  const { t } = useTranslation(['data']);
   const [isOpen, setIsOpen] = useState(false);
   const options = useOptions();
   const objectDetailQuery = useObjectDetailsQuery(linkedTo, value, isOpen);
@@ -599,9 +598,7 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
               />
             ))
             .otherwise(() => (
-              <span className="text-grey-secondary text-s">
-                {t('data:viewer.related_object_not_ingested', { tableName: linkedTo, objectId: value })}
-              </span>
+              <EmptyValue />
             ))}
         </div>
       )}

@@ -12,7 +12,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
         {associations?.map((association, associationIndex) => {
           return association.properties.person?.map((person: any, idx: number) => {
             const { id, properties } = person;
-            if (!properties?.name?.[0]) return null;
+            if (!properties.name?.[0]) return null;
             const rel =
               association.properties.relationship
                 ?.map((relation: string) =>

@@ -1,23 +1,20 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type DataModel } from '@app-builder/models';
+import { isSwitchAstNode } from '@app-builder/models/astNode/control-flow';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
-  buildAstNodeFromModel,
+  buildSwitchAstNodeFromModel,
   type DraftRuleModel,
   isCompleteRule,
   RISK_TYPES,
   type ScoringRule,
-  transformAstNodeToModel,
+  transformSwitchAstNodeToModel,
 } from '@app-builder/models/scoring';
-import {
-  type BuilderOptionsResource,
-  buildDatabaseAccessorsFromDataModel,
-  buildPayloadAccessorsFromDataModel,
-} from '@app-builder/server-fns/scenarios';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type BuilderOptionsResource } from '@app-builder/server-fns/scenarios';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, type SelectOption, SelectV2, Tag } from 'ui-design-system';
+import { Button, type SelectOption, SelectV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelContainer, PanelContent, PanelFooter } from '../Panel';
 import { PanelSharpFactory } from '../Panel/Panel';
@@ -47,42 +44,23 @@ export function ScoringRuleEditPanel({
   const { t } = useTranslation(['user-scoring']);
   const sharp = PanelSharpFactory.useSharp();
 
-  const payloadAccessors = useMemo(
-    () => buildPayloadAccessorsFromDataModel(dataModel, entityType),
-    [dataModel, entityType],
-  );
-  const databaseAccessors = useMemo(
-    () => buildDatabaseAccessorsFromDataModel(dataModel, entityType),
-    [dataModel, entityType],
-  );
-
   const builderOptionsData = useMemo(
     (): BuilderOptionsResource => ({
       dataModel,
       triggerObjectType: entityType,
       customLists,
-      databaseAccessors,
-      payloadAccessors,
+      databaseAccessors: [],
+      payloadAccessors: [],
       hasValidLicense,
       hasContinuousScreening: false,
       screeningConfigs: [],
     }),
-    [dataModel, entityType, customLists, databaseAccessors, payloadAccessors, hasValidLicense],
+    [dataModel, entityType, customLists, hasValidLicense],
   );
-  const nameInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(rule.name);
-  const [nameTouched, setNameTouched] = useState(false);
   const [riskType, setRiskType] = useState(rule.riskType);
-
-  useEffect(() => {
-    if (!rule.name) {
-      // Delay to run after the panel's focus trap effect
-      const id = setTimeout(() => nameInputRef.current?.focus(), 50);
-      return () => clearTimeout(id);
-    }
-  }, []);
   const [currentModel, setCurrentModel] = useState<DraftRuleModel | null>(() =>
-    transformAstNodeToModel(rule.ast, entityType, dataModel),
+    isSwitchAstNode(rule.ast) ? transformSwitchAstNodeToModel(rule.ast, entityType, dataModel) : null,
   );
 
   const RISK_TYPE_OPTIONS: SelectOption<string>[] = RISK_TYPES.map((v) => ({
@@ -94,12 +72,7 @@ export function ScoringRuleEditPanel({
 
   const handleValidate = async () => {
     if (isValid && currentModel && isCompleteRule(currentModel) && onChange) {
-      const result = await onChange({
-        ...rule,
-        name,
-        riskType,
-        ast: buildAstNodeFromModel(currentModel, { entityType }),
-      });
+      const result = await onChange({ ...rule, name, riskType, ast: buildSwitchAstNodeFromModel(currentModel) });
       if (result) {
         sharp.actions.close();
       }
@@ -116,22 +89,12 @@ export function ScoringRuleEditPanel({
             onClick={sharp.actions.close}
             aria-label="Close panel"
           />
-          <div className="flex flex-1 flex-col">
-            <input
-              ref={nameInputRef}
-              className={cn(
-                'text-l font-semibold outline-none',
-                nameTouched && !name.trim() ? 'border-b border-red-primary' : '',
-              )}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onBlur={() => setNameTouched(true)}
-              placeholder={t('user-scoring:rule_edit.name_placeholder')}
-            />
-            {nameTouched && !name.trim() ? (
-              <span className="text-xs text-red-primary mt-1">{t('user-scoring:rule_edit.name_required')}</span>
-            ) : null}
-          </div>
+          <input
+            className="flex-1 text-l font-semibold outline-none"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t('user-scoring:rule_edit.name_placeholder')}
+          />
           {onDelete ? (
             <button
               onClick={onDelete}
@@ -166,15 +129,17 @@ export function ScoringRuleEditPanel({
         </div>
         <PanelContent>
           <div className="flex flex-col gap-v2-md p-v2-md border border-grey-border rounded-v2-md">
-            <SwitchNode
-              mode="edit"
-              node={rule.ast}
-              dataModel={dataModel}
-              entityType={entityType}
-              maxRiskLevel={maxRiskLevel}
-              customLists={customLists}
-              onModelChange={(model) => setCurrentModel(model)}
-            />
+            {isSwitchAstNode(rule.ast) ? (
+              <SwitchNode
+                mode="edit"
+                node={rule.ast}
+                dataModel={dataModel}
+                entityType={entityType}
+                maxRiskLevel={maxRiskLevel}
+                customLists={customLists}
+                onModelChange={(model) => setCurrentModel(model)}
+              />
+            ) : null}
           </div>
         </PanelContent>
         <PanelFooter>

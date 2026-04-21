@@ -2,12 +2,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type AstNode, type DataModel } from '@app-builder/models';
 import { type AstValidation, type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { isKnownOperandAstNode, isLeafOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import {
-  type DatabaseAccessAstNode,
-  NewDatabaseAccessAstNode,
-  NewPayloadAstNode,
-  type PayloadAstNode,
-} from '@app-builder/models/astNode/data-accessor';
+import { type DatabaseAccessAstNode, type PayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { isStatusBadRequestHttpError, isStatusConflictHttpError } from '@app-builder/models/http-errors';
@@ -183,48 +178,6 @@ export type BuilderOptionsResource = {
   screeningConfigs: ContinuousScreeningConfig[];
 };
 
-export function buildPayloadAccessorsFromDataModel(dataModel: DataModel, triggerObjectType: string): PayloadAstNode[] {
-  const table = dataModel.find((t) => t.name === triggerObjectType);
-  if (!table) return [];
-  return table.fields.filter((f) => !f.hidden).map((f) => NewPayloadAstNode(f.name));
-}
-
-export function buildDatabaseAccessorsFromDataModel(
-  dataModel: DataModel,
-  triggerObjectType: string,
-): DatabaseAccessAstNode[] {
-  const triggerTable = dataModel.find((t) => t.name === triggerObjectType);
-  if (!triggerTable) return [];
-
-  const accessors: DatabaseAccessAstNode[] = [];
-
-  function recurse(path: string[], linksToSingle: DataModel[number]['linksToSingle'], visited: string[]) {
-    for (const link of linksToSingle) {
-      const linkedTable = dataModel.find((t) => t.name === link.parentTableName);
-      if (!linkedTable || visited.includes(linkedTable.name)) continue;
-
-      const pathForLink = [...path, link.name];
-
-      for (const field of linkedTable.fields) {
-        if (field.hidden) continue;
-        accessors.push(
-          NewDatabaseAccessAstNode({
-            tableName: triggerObjectType,
-            fieldName: field.name,
-            path: pathForLink,
-          }),
-        );
-      }
-
-      recurse(pathForLink, linkedTable.linksToSingle, [...visited, linkedTable.name]);
-    }
-  }
-
-  recurse([], triggerTable.linksToSingle, [triggerTable.name]);
-
-  return accessors;
-}
-
 // ---- Scenario CRUD ----
 
 export const archiveScenarioFn = createServerFn({ method: 'POST' })
@@ -321,13 +274,14 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string() }))
   .handler(async ({ context, data }): Promise<BuilderOptionsResource> => {
-    const { scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements } =
+    const { editor, scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements } =
       context.authInfo;
 
-    const [currentScenario, customLists, dataModel, screeningConfigs] = await Promise.all([
+    const [currentScenario, customLists, dataModel, accessors, screeningConfigs] = await Promise.all([
       scenario.getScenario({ scenarioId: data.scenarioId }),
       customListsRepository.listCustomLists(),
       dataModelRepository.getDataModel(),
+      editor.listAccessors({ scenarioId: data.scenarioId }),
       isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
     ]);
 
@@ -335,8 +289,8 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
       triggerObjectType: currentScenario.triggerObjectType,
       customLists,
       dataModel,
-      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
-      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
+      databaseAccessors: accessors.databaseAccessors,
+      payloadAccessors: accessors.payloadAccessors,
       hasValidLicense: hasAnyEntitlement(entitlements),
       hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
       screeningConfigs,
@@ -553,11 +507,13 @@ export const createRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
+    const request = getRequest();
+    const t = await context.services.i18nextService.getFixedT(request, ['scenarios']);
     const rule = await context.authInfo.scenarioIterationRuleRepository.createRule({
       scenarioIterationId: data.iterationId,
       displayOrder: 1,
       formula: null,
-      name: '',
+      name: t('scenarios:create_rule.default_name'),
       description: '',
       ruleGroup: '',
       scoreModifier: 0,
@@ -616,10 +572,12 @@ export const createScreeningRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
+    const request = getRequest();
+    const t = await context.services.i18nextService.getFixedT(request, ['scenarios']);
     const config = await context.authInfo.scenarioIterationScreeningRepository.createScreeningConfig({
       iterationId: data.iterationId,
       changes: {
-        name: '',
+        name: t('scenarios:create_sanction.default_name'),
         ruleGroup: 'Screening',
         forcedOutcome: 'block_and_review',
       },

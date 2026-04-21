@@ -321,7 +321,6 @@
   "viewer.no_object_found": "Aucun objet trouvé avec l'ID \"{{objectId}}\" dans {{tableName}}",
   "viewer.object_id": "ID de l'objet",
   "viewer.object_type": "Type d'objet",
-  "viewer.related_object_not_ingested": "Le {{tableName}} lié avec l'ID \"{{objectId}}\" n'a pas encore été ingéré.",
   "viewer.view_ingested_data": "Voir les données ingérées",
   "vpn": "Oui",
   "yes": "Oui"

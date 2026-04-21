@@ -5479,6 +5479,26 @@ export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.Re
     }));
 }
 /**
+ * List all identifiers
+ */
+export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            database_accessors: NodeDto[];
+            payload_accessors: NodeDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/editor/${encodeURIComponent(scenarioId)}/identifiers`, {
+        ...opts
+    }));
+}
+/**
  * List audit events
  */
 export function listAuditEvents({ $from, to, userId, apiKeyId, table, entityId, limit, after }: {
