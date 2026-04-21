@@ -37,7 +37,7 @@ import {
   updateWebhookPayloadSchema,
 } from '@app-builder/schemas/settings';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
-import { setToast } from '@app-builder/services/toast.server';
+
 import { UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -149,7 +149,6 @@ export const deleteExportedFieldFn = createServerFn({ method: 'POST' })
 
       throw new Error('Invalid payload');
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to delete exported field');
     }
   });
@@ -189,7 +188,6 @@ export const updateExportedFieldFn = createServerFn({ method: 'POST' })
 
       throw new Error('Invalid payload');
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to update exported field');
     }
   });
@@ -350,20 +348,14 @@ export const updateDataDisplayFn = createServerFn({ method: 'POST' })
     ),
   )
   .handler(async ({ context, data }) => {
-    try {
-      await Promise.all(
-        Dict.entries(data).map(([tableId, body]) =>
-          context.authInfo.dataModelRepository.setDataModelTableOptions(tableId, {
-            ...body,
-            displayedFields: body.displayedFields ?? [],
-          }),
-        ),
-      );
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update data display');
-    }
+    await Promise.all(
+      Dict.entries(data).map(([tableId, body]) =>
+        context.authInfo.dataModelRepository.setDataModelTableOptions(tableId, {
+          ...body,
+          displayedFields: body.displayedFields ?? [],
+        }),
+      ),
+    );
   });
 
 // ---- Personal Settings ----
@@ -494,7 +486,6 @@ export const createWebhookFn = createServerFn({ method: 'POST' })
       throw redirect({ to: '/settings/webhooks/$webhookId', params: { webhookId: webhook.id } });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to create webhook');
     }
   });
@@ -503,15 +494,10 @@ export const createWebhookSecretFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(createWebhookSecretPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.webhookRepository.createWebhookSecret({
-        webhookId: data.webhookId,
-        createSecretBody: { expireExistingInDays: data.expireExistingInDays },
-      });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to create webhook secret');
-    }
+    await context.authInfo.webhookRepository.createWebhookSecret({
+      webhookId: data.webhookId,
+      createSecretBody: { expireExistingInDays: data.expireExistingInDays },
+    });
   });
 
 export const deleteWebhookFn = createServerFn({ method: 'POST' })
@@ -531,28 +517,18 @@ export const revokeWebhookSecretFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(revokeWebhookSecretPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.webhookRepository.revokeWebhookSecret({
-        webhookId: data.webhookId,
-        secretId: data.secretId,
-      });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to revoke webhook secret');
-    }
+    await context.authInfo.webhookRepository.revokeWebhookSecret({
+      webhookId: data.webhookId,
+      secretId: data.secretId,
+    });
   });
 
 export const updateWebhookFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateWebhookPayloadSchema)
   .handler(async ({ context, data }) => {
-    try {
-      await context.authInfo.webhookRepository.updateWebhook({
-        webhookId: data.id,
-        webhookUpdateBody: data,
-      });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update webhook');
-    }
+    await context.authInfo.webhookRepository.updateWebhook({
+      webhookId: data.id,
+      webhookUpdateBody: data,
+    });
   });
