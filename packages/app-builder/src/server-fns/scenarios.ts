@@ -198,12 +198,7 @@ export function buildDatabaseAccessorsFromDataModel(
 
   const accessors: DatabaseAccessAstNode[] = [];
 
-  function recurse(
-    tableName: string,
-    path: string[],
-    linksToSingle: DataModel[number]['linksToSingle'],
-    visited: string[],
-  ) {
+  function recurse(path: string[], linksToSingle: DataModel[number]['linksToSingle'], visited: string[]) {
     for (const link of linksToSingle) {
       const linkedTable = dataModel.find((t) => t.name === link.parentTableName);
       if (!linkedTable || visited.includes(linkedTable.name)) continue;
@@ -221,11 +216,11 @@ export function buildDatabaseAccessorsFromDataModel(
         );
       }
 
-      recurse(linkedTable.name, pathForLink, linkedTable.linksToSingle, [...visited, linkedTable.name]);
+      recurse(pathForLink, linkedTable.linksToSingle, [...visited, linkedTable.name]);
     }
   }
 
-  recurse(triggerTable.name, [], triggerTable.linksToSingle, [triggerTable.name]);
+  recurse([], triggerTable.linksToSingle, [triggerTable.name]);
 
   return accessors;
 }
