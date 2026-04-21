@@ -96,36 +96,47 @@ export function DataFields({ table, object, preset, customFields, className, opt
     return metadataByField;
   }, [object.data]);
 
+  const columnCount = options?.layout === '3-columns' ? 3 : options?.layout === '2-columns' ? 2 : 1;
+  const fieldsArray = Array.isArray(fields) ? fields : [];
+  const chunkSize = Math.max(1, Math.ceil(fieldsArray.length / columnCount));
+  const fieldsByColumn = Array.from({ length: columnCount }, (_, i) =>
+    fieldsArray.slice(i * chunkSize, (i + 1) * chunkSize),
+  );
+
+  const renderField = (field: (typeof fieldsArray)[number]) => {
+    if (!field) return null;
+    const linkedTo = links?.[field.name];
+    const metaDataValue = hasMetadataContent(metaData?.[field.name]) ? metaData?.[field.name] : undefined;
+    const fieldCurrency = resolveFieldCurrency(field, tableModel?.fields, object.data);
+    return (
+      <DataField
+        key={field.id}
+        field={field}
+        value={formatValue(object.data?.[field.name])}
+        linkedTo={linkedTo}
+        metaData={metaDataValue}
+        currency={fieldCurrency}
+      />
+    );
+  };
+
   return (
     <DataVisualisationProvider value={contextValue}>
-      {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
-      <div
-        className={cn(
-          'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
-          options?.layout === '2-columns' && 'grid-cols-[max-content_1fr_max-content_1fr]',
-          options?.layout === '3-columns' && 'grid-cols-[max-content_1fr_max-content_1fr_max-content_1fr]',
-          (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_1fr]',
-          className,
+      <div className={cn('flex flex-col gap-y-2', className)}>
+        {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
+        {columnCount === 1 ? (
+          <div className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 break-all">
+            {fieldsByColumn[0]?.map(renderField)}
+          </div>
+        ) : (
+          <div className="flex gap-x-4">
+            {fieldsByColumn.map((colFields, i) => (
+              <div key={i} className="grid min-w-0 flex-1 grid-cols-[max-content_1fr] gap-x-4 gap-y-2 break-all">
+                {colFields.map(renderField)}
+              </div>
+            ))}
+          </div>
         )}
-      >
-        {Array.isArray(fields)
-          ? fields.map((field) => {
-              const linkedTo = field ? links?.[field.name] : undefined;
-              const metaDataValue =
-                field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
-              const fieldCurrency = resolveFieldCurrency(field, tableModel?.fields, object.data);
-              return field ? (
-                <DataField
-                  key={field?.id}
-                  field={field}
-                  value={formatValue(object.data?.[field.name])}
-                  linkedTo={linkedTo}
-                  metaData={metaDataValue}
-                  currency={fieldCurrency}
-                />
-              ) : null;
-            })
-          : null}
       </div>
     </DataVisualisationProvider>
   );
