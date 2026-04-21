@@ -116,7 +116,7 @@ export function DataField({ field, value, linkedTo, metaData, currency }: DataFi
   return (
     <DataFieldProvider value={contextValue}>
       <div className="col-span-2 grid grid-cols-subgrid items-start">
-        <label htmlFor={field?.id} className="text-grey-secondary">
+        <label htmlFor={field?.id} className="text-grey-secondary self-center">
           {field?.name}
         </label>
         <div id={field?.id}>
