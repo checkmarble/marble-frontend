@@ -10,7 +10,7 @@ const variances = cva(
     variants: {
       size: {
         sm: 'p-0.5 gap-2',
-        lg: 'min-h-8 gap-3 px-2 py-1',
+        lg: 'gap-3 px-2 py-0.5',
       },
       dimmed: {
         true: 'text-grey-secondary',
