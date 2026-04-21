@@ -7,7 +7,6 @@ import {
   deleteValuePayloadSchema,
   editListPayloadSchema,
 } from '@app-builder/schemas/lists';
-import { setToast } from '@app-builder/services/toast.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCustomListDataUploadEndpoint } from '@app-builder/utils/files';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -26,12 +25,9 @@ export const createListFn = createServerFn({ method: 'POST' })
       if (error instanceof Response && error.status >= 300 && error.status < 400) {
         throw error;
       }
-      await setToast({
-        type: 'error',
-        messageKey: isStatusConflictHttpError(error)
-          ? 'common:errors.list.duplicate_list_name'
-          : 'common:errors.unknown',
-      });
+      if (isStatusConflictHttpError(error)) {
+        return { error: 'duplicate_list_name' as const };
+      }
       throw new Error('Failed to create list');
     }
   });
