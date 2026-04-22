@@ -1,4 +1,9 @@
-import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
+import {
+  isMaxRiskLevelInRange,
+  SCORING_LEVELS_COLORS,
+  SCORING_LEVELS_LABEL_KEYS,
+  scoringLevelEntries,
+} from '@app-builder/models/scoring';
 import { useTranslation } from 'react-i18next';
 import { Input, NumberInput } from 'ui-design-system';
 
@@ -14,7 +19,7 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
     return null;
   }
 
-  const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
+  const colorEntries = scoringLevelEntries(SCORING_LEVELS_COLORS[maxRiskLevel]);
   const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   const handleChange = (index: number, value: number) => {
@@ -28,19 +33,19 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
       <span className="text-s font-medium text-grey-primary">{t('user-scoring:thresholds.title')}</span>
       <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md">
         <span className="text-s text-grey-primary">{t('user-scoring:thresholds.risk_levels')}</span>
-        {colors.map((color, i) => {
+        {colorEntries.map(([level, color], i) => {
           const isFirst = i === 0;
-          const isLast = i === maxRiskLevel - 1;
+          const isLast = i === colorEntries.length - 1;
           const upperThreshold = thresholds[i];
           const lowerBound = i > 0 ? (thresholds[i - 1] ?? 0) + 1 : undefined;
           const hasError = i > 0 && !isLast && (upperThreshold ?? 0) <= (thresholds[i - 1] ?? 0);
 
           return (
-            <div key={color} className="flex items-center gap-v2-sm">
+            <div key={level} className="flex items-center gap-v2-sm">
               {/* Level name display */}
               <div className="flex items-center gap-v2-xs h-10 w-[195px] shrink-0 border border-grey-border rounded-sm px-2">
                 <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                <span className="text-s font-medium flex-1 min-w-0 truncate">{t(labelKeys[i] ?? '')}</span>
+                <span className="text-s font-medium flex-1 min-w-0 truncate">{t(labelKeys[level] ?? '')}</span>
               </div>
 
               {isFirst ? (

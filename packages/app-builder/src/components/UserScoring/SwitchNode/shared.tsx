@@ -7,6 +7,7 @@ import {
   isMaxRiskLevelInRange,
   SCORING_LEVELS_COLORS,
   type ScoreImpact,
+  scoringLevelEntries,
 } from '@app-builder/models/scoring';
 import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +45,7 @@ interface SwitchCaseRowProps {
 export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowProps) {
   const { t } = useTranslation(['user-scoring']);
 
-  const colors = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : [];
+  const colors = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : {};
 
   return (
     <li className="flex items-center gap-v2-sm">
@@ -62,7 +63,7 @@ export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowP
               <span>{t('user-scoring:switch.and')}</span>
               <Tag color="grey" className="gap-v2-xs">
                 <span>{t('user-scoring:switch.floor_label')}</span>
-                <div className="rounded-full size-3" style={{ backgroundColor: colors?.[impact.floor] }} />
+                <div className="rounded-full size-3" style={{ backgroundColor: colors[impact.floor] }} />
               </Tag>
             </>
           ) : null}
@@ -93,17 +94,19 @@ interface RiskLevelSelectProps {
 export function RiskLevelSelect({ floor, maxRiskLevel, onChange }: RiskLevelSelectProps) {
   const { t } = useTranslation(['user-scoring']);
 
-  const levels = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : [];
+  const levelEntries = isMaxRiskLevelInRange(maxRiskLevel)
+    ? scoringLevelEntries(SCORING_LEVELS_COLORS[maxRiskLevel])
+    : [];
   const options: SelectOption<number | null>[] = [
     { label: t('user-scoring:switch.add_floor'), value: null },
-    ...levels.map((color, i) => ({
+    ...levelEntries.map(([level, color]) => ({
       label: (
         <span className="flex gap-v2-xs items-center">
           <span>{t('user-scoring:switch.floor_label')} </span>
           <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: color }}></div>
         </span>
       ),
-      value: i,
+      value: level,
     })),
   ];
 
