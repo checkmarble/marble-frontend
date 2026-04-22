@@ -32,7 +32,7 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
   const proportional =
     thresholds && thresholds.length === maxRiskLevel - 1
       ? (() => {
-          const minValue = thresholds[0]! > 0 ? 0 : thresholds[0]! - 10;
+          const minValue = thresholds[0]! > 10 ? thresholds[0]! - 10 : 0;
           const maxValue = thresholds[thresholds.length - 1]! + 10;
           const totalRange = maxValue - minValue;
           const showZeroLabel = thresholds[0]! !== 0;
@@ -57,7 +57,7 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
             allLabels.push({ value: String(thresholds[i]), pct: markerPositions[i]!, staggered: false });
           }
           allLabels.sort((a, b) => a.pct - b.pct);
-          const minGap = 8; // % of total bar width
+          const minGap = 5; // % of total bar width
           for (let i = 1; i < allLabels.length; i++) {
             if (allLabels[i]!.pct - allLabels[i - 1]!.pct < minGap) {
               // Stagger if the previous wasn't already staggered; otherwise keep on the same row
