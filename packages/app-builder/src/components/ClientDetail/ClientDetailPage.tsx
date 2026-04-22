@@ -1,12 +1,13 @@
 import { BackButton } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
-import { DataModelObject } from '@app-builder/models';
+import { DataModelObject, isAnalyst } from '@app-builder/models';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
 import { isAccessible } from '@app-builder/services/feature-access';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { Client360Table, type ScoringScore } from 'marble-api';
@@ -52,6 +53,8 @@ export const ClientDetailPage = ({
   userScoringAccess,
 }: ClientDetailPageProps) => {
   const { t } = useTranslation(['common', 'client360', 'user-scoring']);
+  const { currentUser } = useOrganizationDetails();
+  const canConfigureUserScoring = isAccessible(userScoringAccess) && !isAnalyst(currentUser);
   const dataModelQuery = useDataModelWithOptionsQuery();
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const [showExplorer, setShowExplorer] = useState(false);
@@ -117,12 +120,14 @@ export const ClientDetailPage = ({
                   <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-v2-sm rounded-lg border p-v2-md py-v2-sm w-[180px] self-start shrink-0 text-center">
                     <Icon icon="comet" className="size-10 shrink-0" />
                     <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
-                    <Link
-                      to="/user-scoring"
-                      className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
-                    >
-                      {t('client360:client_detail.risk_level.configure')}
-                    </Link>
+                    {canConfigureUserScoring ? (
+                      <Link
+                        to="/user-scoring"
+                        className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
+                      >
+                        {t('client360:client_detail.risk_level.configure')}
+                      </Link>
+                    ) : null}
                   </div>
                 )
               ) : (
