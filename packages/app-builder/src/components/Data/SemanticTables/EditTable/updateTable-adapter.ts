@@ -226,6 +226,7 @@ const metadataKeys = [
   'foreignkeyTable',
   'hidden',
   'booleanDisplay',
+  'isInteger',
 ] as const satisfies (keyof TableField)[];
 
 function adaptTableFieldUpdate(current: TableField, original: TableField, rawModelField?: DataModelField) {
@@ -261,6 +262,7 @@ function adaptTableFieldUpdate(current: TableField, original: TableField, rawMod
           foreignkeyTable: current.foreignkeyTable,
           hidden: current.hidden,
           booleanDisplay: current.booleanDisplay,
+          isInteger: current.isInteger,
         }
       : undefined,
   });

@@ -427,6 +427,7 @@ function adaptFieldToTableField(field: DataModelField): TableField {
     decimalPrecision: field.decimalPrecision,
     currencyFieldId: field.currencyFieldId,
     booleanDisplay: field.booleanDisplay,
+    isInteger: field.isInteger,
     foreignkeyTable: field.foreignkeyTable,
     isNew: false,
     locked: isSystemField,

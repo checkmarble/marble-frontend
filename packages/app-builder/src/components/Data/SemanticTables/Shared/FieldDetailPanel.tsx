@@ -108,7 +108,7 @@ export function FieldDetailPanel({
     () =>
       fields
         .filter((f) => f.id !== fieldId && f.semanticType === 'currency_code')
-        .map((f) => ({ label: f.alias || f.name, value: f.id })),
+        .map((f) => ({ label: f.alias || f.name, value: f.name })),
     [fields, fieldId],
   );
   const linkedLinks = useMemo(
@@ -194,6 +194,7 @@ export function FieldDetailPanel({
                   currencyExponent: undefined,
                   decimalPrecision: undefined,
                   booleanDisplay: undefined,
+                  isInteger: undefined,
                   enumValues: undefined,
                 })
               }
@@ -320,6 +321,11 @@ export function FieldDetailPanel({
             />
           ) : null}
 
+          {/* Number-specific: integer toggle & decimal precision */}
+          {field.semanticType === 'number' ? (
+            <NumberSettings field={field} onChange={update} disabled={isLocked} />
+          ) : null}
+
           {/* Enum-specific: key/color/value list */}
           {field.semanticType === 'enum' && field.semanticSubType === 'key_color_value' ? (
             <EnumValuesSettings field={field} onChange={update} disabled={isLocked} />
@@ -364,6 +370,7 @@ export function FieldDetailPanel({
                     decimalPrecision: field.decimalPrecision,
                     currencyFieldId: field.currencyFieldId,
                     booleanDisplay: field.booleanDisplay,
+                    isInteger: field.isInteger,
                     foreignkeyTable: field.foreignkeyTable,
                   }}
                   value={mockedValue}
@@ -447,6 +454,44 @@ function CurrencySettings({
           disabled={disabled}
         />
       </div>
+    </div>
+  );
+}
+
+function NumberSettings({
+  field,
+  onChange,
+  disabled,
+}: {
+  field: TableField;
+  onChange: (values: Partial<TableField>) => void;
+  disabled: boolean;
+}) {
+  const { t } = useTranslation(['data']);
+  const isInteger = field.isInteger ?? true;
+  return (
+    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+      <span className="text-s text-grey-secondary">{t('data:upload_data.field_number_settings')}</span>
+      <label className="flex items-center gap-v2-sm cursor-pointer">
+        <Switch
+          checked={isInteger}
+          onCheckedChange={(checked) => onChange({ isInteger: checked })}
+          disabled={disabled}
+        />
+        <span className="text-s">{t('data:upload_data.field_is_integer')}</span>
+      </label>
+      {!isInteger ? (
+        <div className="flex flex-col gap-v2-xs">
+          <label className="text-s text-grey-secondary">{t('data:upload_data.field_decimal_precision')}</label>
+          <NumberInput
+            min={0}
+            max={10}
+            value={field.decimalPrecision ?? 2}
+            onChange={(value) => onChange({ decimalPrecision: Math.min(10, Math.max(0, value)) })}
+            disabled={disabled}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

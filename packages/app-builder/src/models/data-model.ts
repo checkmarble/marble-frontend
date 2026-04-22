@@ -74,6 +74,7 @@ export interface DataModelField {
   decimalPrecision?: number;
   currencyFieldId?: string;
   booleanDisplay?: 'yes_no' | 'checkbox';
+  isInteger?: boolean;
   foreignkeyTable?: string;
   hidden?: boolean;
 }
@@ -130,6 +131,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
   const booleanDisplayRaw = readMetadataString(meta, 'booleanDisplay');
   const booleanDisplay =
     booleanDisplayRaw === 'yes_no' || booleanDisplayRaw === 'checkbox' ? booleanDisplayRaw : undefined;
+  const isInteger = readMetadataBoolean(meta, 'isInteger');
   const foreignkeyTable = readMetadataString(meta, 'foreignkeyTable', 'foreignkey_table');
   const hidden = readMetadataBoolean(meta, 'hidden');
 
@@ -152,6 +154,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
     decimalPrecision,
     currencyFieldId,
     booleanDisplay,
+    isInteger,
     foreignkeyTable,
     hidden,
   };
