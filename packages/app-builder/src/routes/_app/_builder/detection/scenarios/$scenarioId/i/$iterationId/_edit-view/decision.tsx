@@ -5,6 +5,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
@@ -200,6 +201,7 @@ function EditScoreThresholds() {
   const { t } = useTranslation(handle.i18n);
   const params = Route.useParams();
   const { scenarioIteration, scenarioValidation } = useDetectionScenarioIterationData();
+  const revalidate = useLoaderRevalidator();
 
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
@@ -210,6 +212,7 @@ function EditScoreThresholds() {
     onSuccess: (result) => {
       if (result.status === 'success') {
         toast.success(t('common:success.save'));
+        revalidate();
         return;
       }
       toast.error(t('common:errors.unknown'));
