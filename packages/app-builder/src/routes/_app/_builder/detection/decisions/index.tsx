@@ -1,5 +1,4 @@
 import {
-  CursorPaginationButtons,
   DecisionFiltersBar,
   DecisionFiltersMenu,
   DecisionFiltersProvider,
@@ -9,11 +8,15 @@ import {
   decisionsI18n,
   ErrorComponent,
   Page,
-  paginationSchema,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
 import { AddToCaseForm } from '@app-builder/components/Decisions/AddToCaseForm';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
+import {
+  CursorPaginationButtons,
+  paginationSchema,
+  usePaginationsButton,
+} from '@app-builder/components/Decisions/PaginationButtons';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
@@ -26,7 +29,7 @@ import * as Sentry from '@sentry/react';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
@@ -36,7 +39,10 @@ import { z } from 'zod/v4';
 const decisionsListQueryParamsSchema = z.intersection(decisionFiltersSchema, paginationSchema);
 type DecisionsListQueryParams = z.infer<typeof decisionsListQueryParamsSchema>;
 
-export const buildQueryParams = (filters: DecisionFilters, offsetId: string | undefined): DecisionsListQueryParams => {
+export const buildQueryParams = (
+  filters: DecisionFilters,
+  paginationParams?: PaginationParams,
+): DecisionsListQueryParams => {
   return {
     outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
     triggerObject: filters.triggerObject,
@@ -54,13 +60,32 @@ export const buildQueryParams = (filters: DecisionFilters, offsetId: string | un
           }
       : undefined,
     pivotValue: filters.pivotValue,
-    scenarioId: filters.scenarioId ?? [],
-    scheduledExecutionId: filters.scheduledExecutionId ?? [],
-    caseInboxId: filters.caseInboxId ?? [],
+    scenarioId: filters.scenarioId,
+    scheduledExecutionId: filters.scheduledExecutionId,
+    caseInboxId: filters.caseInboxId,
     hasCase: filters?.hasCase,
-    offsetId,
+    offsetId: paginationParams?.offsetId,
+    next: paginationParams?.next,
+    previous: paginationParams?.previous,
+    order: paginationParams?.order,
+    sorting: paginationParams?.sorting,
+    limit: paginationParams?.limit,
   };
 };
+
+function getDecisionFilters(filters: DecisionsListQueryParams): DecisionFilters {
+  return {
+    outcomeAndReviewStatus: filters.outcomeAndReviewStatus,
+    triggerObject: filters.triggerObject,
+    triggerObjectId: filters.triggerObjectId,
+    dateRange: filters.dateRange,
+    pivotValue: filters.pivotValue,
+    scenarioId: filters.scenarioId,
+    scheduledExecutionId: filters.scheduledExecutionId,
+    caseInboxId: filters.caseInboxId,
+    hasCase: filters.hasCase,
+  };
+}
 
 const decisionsLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
@@ -102,37 +127,31 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/')({
 
 function DetectionDecisions() {
   const { decisionsData, filters, scenarios, hasPivots, inboxes } = Route.useLoaderData();
-
-  const [pageNb, setPageNb] = useState(1);
-  const [hasPreviousPage, setHasPreviousPage] = useState(false);
-
   const { items: decisions, ...pagination } = decisionsData;
+  const decisionFilters = getDecisionFilters(filters);
+  const paginationState = usePaginationsButton({
+    filterValues: decisionFilters,
+    items: decisions,
+    initialOffsetId: filters.offsetId,
+  });
 
   const navigate = useNavigate();
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, paginationParams?: PaginationParams) => {
-      if (!paginationParams) {
-        setPageNb(1);
-        setHasPreviousPage(false);
-        navigate({
-          to: '/detection/decisions',
-          search: buildQueryParams(decisionFilters, undefined),
-          replace: true,
-        });
-        return;
-      }
+      const searchPaginationParams: PaginationParams = {
+        ...(filters.order ? { order: filters.order } : {}),
+        ...(filters.sorting ? { sorting: filters.sorting } : {}),
+        ...(filters.limit ? { limit: filters.limit } : {}),
+        ...(paginationParams ?? {}),
+      };
 
-      if (paginationParams.next && paginationParams.offsetId) {
-        // Load next page
-        setPageNb((p) => p + 1);
-        setHasPreviousPage(true);
-      }
-      if (paginationParams.previous) {
-        setPageNb((p) => Math.max(1, p - 1));
-        setHasPreviousPage(pageNb > 2);
-      }
+      navigate({
+        to: '/detection/decisions',
+        search: buildQueryParams(decisionFilters, searchPaginationParams),
+        replace: true,
+      });
     },
-    [navigate, pageNb],
+    [filters.limit, filters.order, filters.sorting, navigate],
   );
 
   const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
@@ -148,7 +167,7 @@ function DetectionDecisions() {
               <DecisionFiltersProvider
                 scenarios={scenarios}
                 submitDecisionFilters={navigateDecisionList}
-                filterValues={filters}
+                filterValues={decisionFilters}
                 hasPivots={hasPivots}
                 inboxes={inboxes}
               >
@@ -175,10 +194,9 @@ function DetectionDecisions() {
                 <CursorPaginationButtons
                   items={decisions}
                   onPaginationChange={(paginationParams: PaginationParams) =>
-                    navigateDecisionList(filters, paginationParams)
+                    navigateDecisionList(decisionFilters, paginationParams)
                   }
-                  hasPreviousPage={hasPreviousPage}
-                  pageNb={pageNb}
+                  paginationState={paginationState}
                   boundariesDisplay="dates"
                   {...pagination}
                 />
