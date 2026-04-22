@@ -101,7 +101,7 @@ export function CreateInboxUserContent({
       role: 'admin',
       autoAssignable: false,
     } as CreateInboxUserPayload,
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       createInboxUserMutation
         .mutateAsync(value)
         .then(() => {
