@@ -1,6 +1,6 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useNavigate } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
@@ -17,7 +17,7 @@ const searchFormSchema = z.object({
 
 export const SearchForm = ({ table }: SearchFormProps) => {
   const { t } = useTranslation(['client360']);
-  const navigate = useAgnosticNavigation();
+  const navigate = useNavigate();
   const tableName = table.alias || table.name;
 
   const form = useForm({
@@ -33,9 +33,15 @@ export const SearchForm = ({ table }: SearchFormProps) => {
       if (formApi.state.isValid) {
         const trimmedValue = value.value.trim();
         if (z.uuid().safeParse(trimmedValue).success) {
-          navigate(`/client-detail/${table.name}/${trimmedValue}`);
+          navigate({
+            to: '/client-detail/$objectType/$objectId',
+            params: { objectType: table.name, objectId: trimmedValue },
+          });
         } else {
-          navigate({ pathname: '/client-detail', search: `?table=${table.name}&terms=${value.value}` });
+          navigate({
+            to: '/client-detail',
+            search: { table: table.name, terms: trimmedValue },
+          });
         }
       }
     },
