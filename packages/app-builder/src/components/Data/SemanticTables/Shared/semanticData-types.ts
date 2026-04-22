@@ -11,7 +11,7 @@ import {
   type TableModel,
 } from '@app-builder/models';
 import { FtmEntity } from 'marble-api';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 
 export type LinkValue = {
   linkId: string;
@@ -85,6 +85,7 @@ export type TableField = {
   decimalPrecision?: number;
   currencyFieldId?: string;
   booleanDisplay?: 'yes_no' | 'checkbox';
+  isInteger?: boolean;
   foreignkeyTable?: string;
   isDefaultBelongsTo?: boolean;
   enumValues?: { key: string; color: EnumColors; value: string }[];
@@ -140,8 +141,7 @@ export function getMockValue(
     return match(dataType)
       .with('String', () => 'Welcome to Marble')
       .with('Timestamp', () => '2021-01-01T14:20:00.000Z')
-      .with('Int', () => 42)
-      .with('Float', () => 1234567890)
+      .with(P.union('Int', 'Float'), () => 12345678)
       .exhaustive();
   }
   const value = match(semanticType)
@@ -205,7 +205,7 @@ export function getMockValue(
     .with('deletion_date', () => '2021-01-01T14:20:00.000Z')
     .with('initiation_date', () => '2021-01-01T14:20:00.000Z')
     .with('validation_date', () => '2021-01-01T14:20:00.000Z')
-    .with('number', () => 42)
+    .with('number', () => 12345.6789)
     .with('monetary_amount', () => 1234567890)
     .with('percentage', () => 0.34)
     .exhaustive();

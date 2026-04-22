@@ -5,8 +5,7 @@ import { Icon } from 'ui-icons';
 const dataTypeOptions: { value: PrimitiveTypes; labelKey: string }[] = [
   { value: 'String', labelKey: 'String' },
   { value: 'Timestamp', labelKey: 'Timestamp' },
-  { value: 'Int', labelKey: 'Integer' },
-  { value: 'Float', labelKey: 'Float' },
+  { value: 'Float', labelKey: 'Number' },
   { value: 'Bool', labelKey: 'Boolean' },
   { value: 'Coords', labelKey: 'GPS Coords' },
   { value: 'IpAddress', labelKey: 'IP Address' },

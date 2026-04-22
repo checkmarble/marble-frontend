@@ -156,7 +156,7 @@ function resolveFieldCurrency(
   data: Record<string, unknown> | undefined,
 ): string | undefined {
   if (!field?.currencyFieldId || !allFields || !data) return undefined;
-  const currencyField = allFields.find((f) => f.id === field.currencyFieldId);
+  const currencyField = allFields.find((f) => f.name === field.currencyFieldId || f.id === field.currencyFieldId);
   if (!currencyField) return undefined;
   const raw = data[currencyField.name];
   return typeof raw === 'string' && raw.length > 0 ? raw : undefined;

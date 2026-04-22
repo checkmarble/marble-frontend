@@ -104,6 +104,7 @@ export function DataField({ field, value, linkedTo, metaData, currency }: DataFi
     field?.semanticType,
     field?.semanticSubType,
     field?.booleanDisplay,
+    field?.isInteger,
   );
 
   const resolvedMetaData = options?.hideMetadata ? undefined : metaData;
@@ -148,6 +149,7 @@ function adaptFieldType(
   semanticType?: SemanticTypeField,
   semanticSubType?: SemanticSubTypeField,
   booleanDisplay?: 'yes_no' | 'checkbox',
+  isInteger?: boolean,
 ): VALID_DATA_TYPE {
   if (!dataType || !name) return 'string-free';
 
@@ -189,7 +191,7 @@ function adaptFieldType(
       case 'monetary_amount':
         return 'number-currency';
       case 'number':
-        return 'number-integer';
+        return isInteger === false ? 'number-float' : 'number-integer';
       case 'enum':
         return 'enum-values';
       case 'link':
@@ -446,14 +448,24 @@ function NumberInteger() {
   const value = useNumberValue();
   const language = useFormatLanguage();
   if (value === undefined || isNaN(value)) return <EmptyValue />;
-  return <span>{formatNumber(value, { language })}</span>;
+  return <span>{formatNumber(value, { language, maximumFractionDigits: 0 })}</span>;
 }
 
 function NumberFloat() {
   const value = useNumberValue();
   const language = useFormatLanguage();
+  const field = useField();
+  const decimalPrecision = field?.decimalPrecision ?? 2;
   if (value === undefined || isNaN(value)) return <EmptyValue />;
-  return <span>{formatNumber(value, { language })}</span>;
+  return (
+    <span>
+      {formatNumber(value, {
+        language,
+        minimumFractionDigits: decimalPrecision,
+        maximumFractionDigits: decimalPrecision,
+      })}
+    </span>
+  );
 }
 
 function NumberCurrency() {
