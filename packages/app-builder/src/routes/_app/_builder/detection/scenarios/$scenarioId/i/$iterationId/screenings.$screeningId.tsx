@@ -17,6 +17,7 @@ import { FieldSkipIfUnder } from '@app-builder/components/Scenario/Screening/Fie
 import { FieldToolTip } from '@app-builder/components/Scenario/Screening/FieldToolTip';
 import { ScreeningTermIgnoreList } from '@app-builder/components/Scenario/Screening/ScreeningTermIgnoreList';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   useDerivedIterationRuleGroupsData,
   useDetectionScenarioData,
@@ -248,6 +249,7 @@ function ScreeningDetail() {
     rootMargin: '-30px',
     threshold: 1,
   });
+  const revalidate = useLoaderRevalidator();
 
   // Initialize hasBeenSaved based on whether this is a newly created screening
   // New screenings (isNew query param) start with hasBeenSaved=false
@@ -263,13 +265,16 @@ function ScreeningDetail() {
   const form = useForm({
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        try {
-          await mutation.mutateAsync(value);
-          setHasBeenSaved(true);
-          toast.success(t('common:success.save'));
-        } catch {
-          toast.error(t('common:errors.unknown'));
-        }
+        mutation
+          .mutateAsync(value)
+          .then(() => {
+            setHasBeenSaved(true);
+            toast.success(t('common:success.save'));
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {
