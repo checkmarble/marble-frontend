@@ -653,11 +653,14 @@ export const uploadIngestionDataFn = createServerFn({ method: 'POST' })
       },
     );
 
-    const body = await upstream.arrayBuffer();
+    const headers = new Headers(upstream.headers);
+    headers.delete('content-encoding');
+    headers.delete('content-length');
+    const body = [204, 205, 304].includes(upstream.status) ? null : await upstream.arrayBuffer();
     return new Response(body, {
       status: upstream.status,
       statusText: upstream.statusText,
-      headers: new Headers(upstream.headers),
+      headers,
     });
   });
 
