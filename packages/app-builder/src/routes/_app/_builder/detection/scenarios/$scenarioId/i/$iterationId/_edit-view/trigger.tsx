@@ -1,4 +1,4 @@
-import { Callout, scenarioI18n } from '@app-builder/components';
+import { Callout, CopyToClipboardButton, scenarioI18n } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
@@ -18,7 +18,6 @@ import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useRef, useState } from 'react';
@@ -107,7 +106,6 @@ function Trigger() {
     setTrigger(NewUndefinedAstNode());
   };
 
-  const getCopyToClipboardProps = useGetCopyToClipboard();
   return (
     <>
       <Collapsible.Container className="bg-surface-card max-w-3xl">
@@ -141,10 +139,7 @@ function Trigger() {
                         components={{
                           ScenarioIdLabel: <code className="select-none" />,
                           ScenarioIdValue: (
-                            <code
-                              className="border-grey-border cursor-pointer select-none rounded-xs border px-1"
-                              {...getCopyToClipboardProps(scenarioIteration.scenarioId)}
-                            />
+                            <CopyToClipboardButton toCopy={scenarioIteration.scenarioId} className="inline-flex" />
                           ),
                         }}
                         values={{
