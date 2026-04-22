@@ -1,3 +1,4 @@
+import { DataTypeKey } from '@app-builder/models';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
@@ -7,7 +8,7 @@ import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { DatatypeIcon } from './DatatypeOption';
-import type { TableField } from './semanticData-types';
+import { getSemanticSubOptions, type TableField } from './semanticData-types';
 
 export function FieldsForm({
   onFieldSelect,
@@ -147,10 +148,13 @@ function FieldRow({
 }
 
 const getSemanticLabel = (field: TableField, t: TFunction) => {
+  const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, field.semanticType);
+
   if (field.dataType === 'Bool') return t('data:upload_data.field_semantic.boolean');
   if (field.dataType === 'IpAddress') return t('data:upload_data.field_semantic.ip_address');
   if (field.dataType === 'Coords') return t('data:upload_data.field_semantic.coords');
-  if (field.semanticSubType) return t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`);
+  if (subOpts?.length && subOpts.some((opt) => opt.value === field.semanticSubType))
+    return t(`data:upload_data.field_semantic_sub.${field.semanticSubType}`);
   if (field.semanticType) return t(`data:upload_data.field_semantic.${field.semanticType}`);
   return null;
 };
