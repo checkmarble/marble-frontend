@@ -21,6 +21,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn, useServerFn } from '@tanstack/react-start';
 import { cva } from 'class-variance-authority';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Collapsible, Switch } from 'ui-design-system';
@@ -106,7 +107,14 @@ function DataDisplaySettings() {
     },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateMutation.mutate(value);
+        updateMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
   });

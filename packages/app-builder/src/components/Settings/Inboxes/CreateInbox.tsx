@@ -12,6 +12,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -58,11 +59,17 @@ export function CreateInboxContent({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createInboxMutation.mutateAsync(value).then((res) => {
-          setOpen(false);
-          queryClient.invalidateQueries({ queryKey: ['inboxes'] });
-          revalidate();
-        });
+        createInboxMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+            setOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['inboxes'] });
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
   });

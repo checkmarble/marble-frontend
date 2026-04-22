@@ -1,4 +1,4 @@
-import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { BackButton } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
 import { DataModelObject } from '@app-builder/models';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
@@ -66,10 +66,12 @@ export const ClientDetailPage = ({
 
   if (scoringSettings && activeScore) {
     scoreColor =
-      SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ?? 'inherit';
+      SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][Math.max(activeScore.risk_level - 1, 0)] ??
+      'inherit';
     scoreLabel = t(
-      SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][activeScore.risk_level] ??
-        activeScore.risk_level.toString(),
+      SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6][
+        Math.max(activeScore.risk_level - 1, 0)
+      ] ?? activeScore.risk_level.toString(),
     );
   }
 
@@ -78,18 +80,18 @@ export const ClientDetailPage = ({
   return (
     <DataModelExplorerProvider>
       <Page.Main>
-        <Page.Header>
-          <BreadCrumbs back="/client-detail" />
+        <Page.Header className="border-b-0 bg-transparent gap-4">
+          <BackButton back="/client-detail" />
+          <TitleBar
+            objectType={objectType}
+            objectId={objectId}
+            objectDetails={objectDetails}
+            annotationsQuery={annotationsQuery}
+            metadata={metadata}
+          />
         </Page.Header>
         <Page.Container ref={containerRef}>
           <Page.ContentV2 className="gap-v2-lg">
-            <TitleBar
-              objectType={objectType}
-              objectId={objectId}
-              objectDetails={objectDetails}
-              annotationsQuery={annotationsQuery}
-              metadata={metadata}
-            />
             {/* Client details */}
             <div className="flex gap-v2-md">
               {/* Score card */}

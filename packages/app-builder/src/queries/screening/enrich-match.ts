@@ -8,7 +8,7 @@ export const useEnrichMatchMutation = () => {
   return useMutation({
     mutationKey: ['screening', 'enrich-match'],
     mutationFn: async (matchId: string) => {
-      await enrichMatch({ data: { matchId } });
+      return enrichMatch({ data: { matchId } });
     },
   });
 };

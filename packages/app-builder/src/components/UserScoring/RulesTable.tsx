@@ -154,6 +154,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
         name: ruleset.name,
         thresholds: ruleset.thresholds,
         cooldownSeconds: ruleset.cooldownSeconds,
+        scoringIntervalSeconds: ruleset.scoringIntervalSeconds,
         rules: ruleset.rules.map((r) =>
           r.stableId === stableId
             ? {
@@ -178,6 +179,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
         name: ruleset.name,
         thresholds: ruleset.thresholds,
         cooldownSeconds: ruleset.cooldownSeconds,
+        scoringIntervalSeconds: ruleset.scoringIntervalSeconds,
         rules: [
           ...ruleset.rules.map((r) => ({
             stableId: r.stableId,
@@ -210,6 +212,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
         name: ruleset.name,
         thresholds: ruleset.thresholds,
         cooldownSeconds: ruleset.cooldownSeconds,
+        scoringIntervalSeconds: ruleset.scoringIntervalSeconds,
         rules: ruleset.rules
           .filter((r) => r.stableId !== stableId)
           .map((r) => ({
