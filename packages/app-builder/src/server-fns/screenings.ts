@@ -199,9 +199,19 @@ export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
       if (key !== 'screeningId') backendData.append(key, value);
     }
 
-    return fetch(`${getServerEnv('MARBLE_API_URL')}${getScreeningFileUploadEndpoint(screeningId)}`, {
+    const upstream = await fetch(`${getServerEnv('MARBLE_API_URL')}${getScreeningFileUploadEndpoint(screeningId)}`, {
       body: backendData,
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const headers = new Headers(upstream.headers);
+    headers.delete('content-encoding');
+    headers.delete('content-length');
+    const body = [204, 205, 304].includes(upstream.status) ? null : await upstream.arrayBuffer();
+    return new Response(body, {
+      status: upstream.status,
+      statusText: upstream.statusText,
+      headers,
     });
   });
