@@ -1,4 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
+import { useDataModel } from '@app-builder/services/data/data-model';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,13 +30,14 @@ export function CreateTableDrawer({
   onSave: (values: SemanticTableFormValues) => Promise<boolean>;
 }) {
   const { t } = useTranslation(['data', 'common']);
+  const dataModel = useDataModel();
   const [currentStep, setCurrentStep] = useState(0);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
 
   const form = useCreateTableForm(async (value) => {
     if (!form.state.isValid) return;
-    const checkValidation = validateValues(value, 'all', t, false);
+    const checkValidation = validateValues(value, 'all', t, false, dataModel);
     if (!checkValidation.ok) {
       setValidationErrors(checkValidation.errors);
       return;
@@ -118,7 +120,7 @@ export function CreateTableDrawer({
     e.preventDefault();
     e.stopPropagation();
 
-    const result = validateValues(formValues, currentValidationScope, t, true);
+    const result = validateValues(formValues, currentValidationScope, t, true, dataModel);
     if (!result.ok) {
       setValidationErrors(result.errors);
       return;

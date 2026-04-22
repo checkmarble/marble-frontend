@@ -8,6 +8,7 @@ import {
 } from '@app-builder/queries/settings/organization/update-allowed-networks';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input } from 'ui-design-system';
@@ -30,13 +31,23 @@ export const IpWhitelistingSettingsPage = ({
       allowedNetworks,
     },
     onSubmit: ({ value }) => {
-      updateAllowedNetworksMutation.mutateAsync(value).then((res) => {
-        if (res?.subnets) {
-          // Manually update the form value as the backend registers normalized values of cidr/ips
-          form.setFieldValue('allowedNetworks', res.subnets);
-        }
-        revalidate();
-      });
+      updateAllowedNetworksMutation
+        .mutateAsync(value)
+        .then((res) => {
+          if (res && 'error' in res) {
+            toast.error(t('settings:ip_whitelisting.errors.ip_not_in_range'));
+            return;
+          }
+          if (res?.subnets) {
+            // Manually update the form value as the backend registers normalized values of cidr/ips
+            form.setFieldValue('allowedNetworks', res.subnets);
+          }
+          toast.success(t('common:success.save'));
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: updateAllowedNetworksPayloadSchema,

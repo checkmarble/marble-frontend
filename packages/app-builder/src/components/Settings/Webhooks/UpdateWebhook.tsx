@@ -17,6 +17,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Modal } from 'ui-design-system';
@@ -59,11 +60,15 @@ function UpdateWebhookContent({
     defaultValues: defaultValue,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateWebhookMutation.mutateAsync(value).then((res) => {
-          setOpen(false);
-
-          revalidate();
-        });
+        updateWebhookMutation
+          .mutateAsync(value)
+          .then(() => {
+            setOpen(false);
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

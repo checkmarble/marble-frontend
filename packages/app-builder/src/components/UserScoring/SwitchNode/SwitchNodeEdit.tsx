@@ -1,7 +1,7 @@
-import { type SwitchAstNode } from '@app-builder/models/astNode/control-flow';
+import { type AstNode } from '@app-builder/models';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type DataModel } from '@app-builder/models/data-model';
-import { type RuleModel, transformSwitchAstNodeToModel } from '@app-builder/models/scoring';
+import { type RuleModel, transformAstNodeToModel } from '@app-builder/models/scoring';
 import { match } from 'ts-pattern';
 import { AggregateRuleEdit } from './AggregateRuleEdit';
 import { PastAlertsRuleEdit } from './PastAlertsRuleEdit';
@@ -9,7 +9,7 @@ import { TagsRuleEdit } from './TagsRuleEdit';
 import { UserAttributeRuleEdit } from './UserAttributeRuleEdit';
 
 interface SwitchNodeEditProps {
-  node: SwitchAstNode;
+  node: AstNode;
   maxRiskLevel: number;
   dataModel: DataModel;
   entityType: string;
@@ -25,7 +25,7 @@ export function SwitchNodeEdit({
   customLists,
   onModelChange,
 }: SwitchNodeEditProps) {
-  const model = transformSwitchAstNodeToModel(node, entityType, dataModel);
+  const model = transformAstNodeToModel(node, entityType, dataModel);
   if (!model) return null;
 
   return (

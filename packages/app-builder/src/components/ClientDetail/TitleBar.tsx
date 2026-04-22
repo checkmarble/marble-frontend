@@ -28,13 +28,12 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   const entityName = metadata.alias || metadata.name;
 
   return (
-    <div className="flex gap-v2-md items-center">
-      <div className="flex gap-v2-xs items-center">
-        <h1 className="text-h1 font-semibold capitalize">{objectDetails.data[metadata.caption_field] as string}</h1>
+    <div className="flex gap-v2-md items-center min-w-0">
+      <div className="flex gap-v2-xs items-center shrink-0">
+        <h1 className="text-l font-bold capitalize">{objectDetails.data[metadata.caption_field] as string}</h1>
         <Tag color="grey">{entityName}</Tag>
       </div>
-      <div className="w-px self-stretch bg-grey-border" />
-      <div className="flex gap-v2-xs items-center">
+      <div className="flex gap-v2-xs items-center font-normal">
         {match(annotationsQuery)
           .with({ isPending: true }, () => <Spinner className="size-4" />)
           .with({ isError: true }, () => (
@@ -55,16 +54,18 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                     <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
                   </div>
                 ) : (
-                  <Trans
-                    t={t}
-                    i18nKey="client360:entity_tags.no_tag_present"
-                    components={{
-                      Entity: <Tag color="grey" />,
-                    }}
-                    values={{
-                      objectType: entityName,
-                    }}
-                  />
+                  <span className="font-normal text-s text-grey-secondary">
+                    <Trans
+                      t={t}
+                      i18nKey="client360:entity_tags.no_tag_present"
+                      components={{
+                        Entity: <Tag color="grey" />,
+                      }}
+                      values={{
+                        objectType: entityName,
+                      }}
+                    />
+                  </span>
                 )}
                 <MenuCommand.Menu persistOnSelect open={editTagsOpen} onOpenChange={setEditTagsOpen}>
                   <MenuCommand.Trigger>
@@ -90,7 +91,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
           .exhaustive()}
       </div>
       <div className="w-px self-stretch bg-grey-border" />
-      <div className="flex gap-v2-xs items-center">
+      <div className="flex gap-v2-xs items-center font-normal">
         {match(annotationsQuery)
           .with({ isPending: true }, () => <Spinner className="size-4" />)
           .with({ isError: true }, () => (
@@ -115,16 +116,18 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
                     ))}
                   </div>
                 ) : (
-                  <Trans
-                    t={t}
-                    i18nKey="client360:entity_tags.no_screening_tag_present"
-                    components={{
-                      Entity: <Tag color="grey" />,
-                    }}
-                    values={{
-                      objectType: entityName,
-                    }}
-                  />
+                  <span className="font-normal text-s text-grey-secondary">
+                    <Trans
+                      t={t}
+                      i18nKey="client360:entity_tags.no_screening_tag_present"
+                      components={{
+                        Entity: <Tag color="grey" />,
+                      }}
+                      values={{
+                        objectType: entityName,
+                      }}
+                    />
+                  </span>
                 )}
                 <MenuCommand.Menu
                   persistOnSelect

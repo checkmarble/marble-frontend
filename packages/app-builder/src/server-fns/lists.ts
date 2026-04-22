@@ -7,7 +7,6 @@ import {
   deleteValuePayloadSchema,
   editListPayloadSchema,
 } from '@app-builder/schemas/lists';
-import { setToast } from '@app-builder/services/toast.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCustomListDataUploadEndpoint } from '@app-builder/utils/files';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -26,12 +25,9 @@ export const createListFn = createServerFn({ method: 'POST' })
       if (error instanceof Response && error.status >= 300 && error.status < 400) {
         throw error;
       }
-      await setToast({
-        type: 'error',
-        messageKey: isStatusConflictHttpError(error)
-          ? 'common:errors.list.duplicate_list_name'
-          : 'common:errors.unknown',
-      });
+      if (isStatusConflictHttpError(error)) {
+        return { error: 'duplicate_list_name' as const };
+      }
       throw new Error('Failed to create list');
     }
   });
@@ -84,9 +80,19 @@ export const uploadListDataFileFn = createServerFn({ method: 'POST' })
       if (key !== 'listId') backendData.append(key, value);
     }
 
-    return fetch(`${getServerEnv('MARBLE_API_URL')}${getCustomListDataUploadEndpoint(listId)}`, {
+    const upstream = await fetch(`${getServerEnv('MARBLE_API_URL')}${getCustomListDataUploadEndpoint(listId)}`, {
       body: backendData,
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const headers = new Headers(upstream.headers);
+    headers.delete('content-encoding');
+    headers.delete('content-length');
+    const body = [204, 205, 304].includes(upstream.status) ? null : await upstream.arrayBuffer();
+    return new Response(body, {
+      status: upstream.status,
+      statusText: upstream.statusText,
+      headers,
     });
   });

@@ -11,6 +11,7 @@ import {
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type ReactElement, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 
@@ -39,11 +40,15 @@ function CreateWebhookSecretContent({ webhookId, onSuccess }: { webhookId: strin
     } as CreateWebhookSecretPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createMutation.mutateAsync(value).then((res) => {
-          onSuccess();
-
-          revalidate();
-        });
+        createMutation
+          .mutateAsync(value)
+          .then(() => {
+            onSuccess();
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

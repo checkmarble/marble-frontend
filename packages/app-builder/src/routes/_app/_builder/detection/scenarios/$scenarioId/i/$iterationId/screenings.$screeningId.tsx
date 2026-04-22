@@ -27,7 +27,11 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, ScreeningOutcome } from '@app-builder/models/outcome';
-import { type BuilderOptionsResource } from '@app-builder/server-fns/scenarios';
+import {
+  type BuilderOptionsResource,
+  buildDatabaseAccessorsFromDataModel,
+  buildPayloadAccessorsFromDataModel,
+} from '@app-builder/server-fns/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { isAccessible, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -39,7 +43,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { pick } from 'radash';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -58,21 +62,20 @@ const screeningLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(screeningLoaderDataSchema)
   .handler(async function screeningLoader({ data, context }) {
-    const { customListsRepository, editor, dataModelRepository, screening, continuousScreening, entitlements } =
+    const { customListsRepository, dataModelRepository, scenario, screening, continuousScreening, entitlements } =
       context.authInfo;
 
-    const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, { sections }, screeningConfigs] =
-      await Promise.all([
-        editor.listAccessors({ scenarioId: data.scenarioId }),
-        dataModelRepository.getDataModel(),
-        customListsRepository.listCustomLists(),
-        screening.listDatasets(),
-        isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
-      ]);
+    const [currentScenario, dataModel, customLists, { sections }, screeningConfigs] = await Promise.all([
+      scenario.getScenario({ scenarioId: data.scenarioId }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      screening.listDatasets(),
+      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
+    ]);
 
     return {
-      databaseAccessors,
-      payloadAccessors,
+      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
+      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
       dataModel,
       customLists,
       sections,
@@ -235,6 +238,7 @@ function ScreeningDetail() {
       editScreeningAction({ data: { params: { scenarioId: scenario.id, iterationId, screeningId }, payload: value } }),
   });
 
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { org } = useOrganizationDetails();
@@ -249,6 +253,12 @@ function ScreeningDetail() {
   // New screenings (isNew query param) start with hasBeenSaved=false
   // Existing screenings start with hasBeenSaved=true
   const [hasBeenSaved, setHasBeenSaved] = useState(!isNew);
+
+  useEffect(() => {
+    if (isNew && editor === 'edit') {
+      nameInputRef.current?.focus();
+    }
+  }, []);
 
   const form = useForm({
     onSubmit: async ({ value, formApi }) => {
@@ -267,7 +277,7 @@ function ScreeningDetail() {
     },
     defaultValues: {
       id: screeningConfig?.id,
-      name: screeningConfig?.name ?? 'Screening',
+      name: screeningConfig?.name ?? '',
       description: screeningConfig?.description ?? '',
       ruleGroup: screeningConfig?.ruleGroup ?? 'Screening',
       datasets: screeningConfig?.datasets ?? [],
@@ -325,16 +335,22 @@ function ScreeningDetail() {
                 {(field) => (
                   <div className="flex w-full flex-col gap-1">
                     <input
+                      ref={nameInputRef}
                       type="text"
                       name={field.name}
                       disabled={editor === 'view'}
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      className="text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden"
+                      className={cn(
+                        'text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden',
+                        field.state.meta.errors.length > 0 && 'border-b border-red-primary',
+                      )}
                       placeholder={t('scenarios:sanction_name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                    {field.state.meta.errors.length > 0 ? (
+                      <span className="text-xs text-red-primary">{t('scenarios:edit_screening.name_required')}</span>
+                    ) : null}
                   </div>
                 )}
               </form.Field>

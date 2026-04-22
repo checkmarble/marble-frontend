@@ -1,4 +1,9 @@
 {
+  "level.high": "مرتفع",
+
+  "level.low": "منخفض",
+  "level.medium": "متوسط",
+  "level.very_high": "مرتفع جداً",
   "overview.configure_score": "تكوين النقاط",
 
   "overview.no_ruleset": "لا يوجد لديك أي مجموعة قواعد مكوّنة بعد. اختر كيانًا لإنشاء مجموعة قواعد للبدء.",
@@ -17,6 +22,7 @@
   "rule_edit.model_type.screening_tags": "وسوم الفحص",
   "rule_edit.model_type.user_attribute": "سمات المستخدم",
   "rule_edit.name_placeholder": "اسم القاعدة...",
+  "rule_edit.name_required": "اسم القاعدة مطلوب",
   "rule_edit.risk_type_placeholder": "نوع المخاطر *",
   "rule_edit.save": "حفظ التغييرات",
   "ruleset.add_rule": "إضافة قاعدة",
@@ -24,6 +30,8 @@
   "ruleset.commit": "تأكيد",
   "ruleset.cooldown": "مدة الانتظار:",
   "ruleset.create_rule": "إنشاء قاعدة",
+
+  "ruleset.edit_settings_title": "تعديل الإعدادات العامة",
   "ruleset.error": "حدث خطأ.",
   "ruleset.last_update": "آخر تحديث:",
   "ruleset.no_rules": "لم يتم تكوين أي قواعد بعد.",
@@ -38,7 +46,6 @@
   "ruleset.rule_type.user_attribute": "سمة المستخدم",
   "ruleset.rules_column": "القواعد",
   "ruleset.score_renew": "تجديد النتيجة:",
-
   "ruleset.title": "المعلومات العامة",
   "ruleset.version_placeholder": "الإصدار",
   "section.configure_button": "تكوين نقاط",
@@ -46,11 +53,14 @@
   "section.create_panel.entity_placeholder": "اختر كيانًا",
   "section.create_panel.general_settings": "الإعدادات العامة",
   "section.create_panel.lower_score_duration": "الحد الأقصى للمدة لخفض النقاط:",
+  "section.create_panel.lower_score_duration_tooltip": "الحد الأدنى للمدة قبل أن يمكن خفض مستوى المخاطر بعد تغيير النقاط.",
   "section.create_panel.recalculation_duration": "الحد الأقصى للمدة قبل إعادة الحساب:",
+  "section.create_panel.recalculation_duration_tooltip": "الحد الأقصى للمدة قبل إعادة حساب النقاط تلقائيًا.",
   "section.create_panel.title": "تكوين نقاط جديدة",
   "section.create_panel.unit_placeholder": "وحدة",
   "section.create_panel.validate": "تحقق",
   "section.tab_overview": "نظرة عامة",
+  "section.tab_scores": "نقاط {{name}}",
 
   "section.title": "تكوين النقاط",
   "settings.define_scale": "حدد مقياس مخاطر، ثم اختر الكيان الذي تريد إنشاء مجموعة القواعد عليه.",

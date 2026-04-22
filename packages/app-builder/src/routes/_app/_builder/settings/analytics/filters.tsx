@@ -12,6 +12,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -281,6 +282,9 @@ function Filters() {
                         setIsConfirmOpen(false);
                         setItemToDelete(null);
                         revalidate();
+                      })
+                      .catch(() => {
+                        toast.error(t('common:errors.unknown'));
                       });
                   }}
                 >

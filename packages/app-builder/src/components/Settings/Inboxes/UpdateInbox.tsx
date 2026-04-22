@@ -13,6 +13,7 @@ import {
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -83,12 +84,15 @@ export function UpdateInboxContent({
     } as UpdateInboxPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateInboxMutation.mutateAsync(value).then((res) => {
-          if (!res) {
+        updateInboxMutation
+          .mutateAsync(value)
+          .then(() => {
             onSuccess();
-          }
-          revalidate();
-        });
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

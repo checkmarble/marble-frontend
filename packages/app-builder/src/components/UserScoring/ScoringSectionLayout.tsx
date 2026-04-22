@@ -1,4 +1,4 @@
-import { type DurationUnit, SECONDS_PER_UNIT, secondsToDisplay } from '@app-builder/models/scoring';
+import { SECONDS_PER_UNIT } from '@app-builder/models/scoring';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
 import { useUpdateScoringRulesetMutation } from '@app-builder/queries/scoring/update-ruleset';
@@ -6,11 +6,11 @@ import { type UpdateScoringRulesetPayload, updateScoringRulesetPayloadSchema } f
 import { handleSubmit } from '@app-builder/utils/form';
 import { createSimpleContext } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
-import { Link, Outlet, useMatches, useNavigate, useRouter } from '@tanstack/react-router';
+import { Link, Outlet, useMatches, useNavigate, useParams, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, type SelectOption, SelectV2, Tabs, tabClassName } from 'ui-design-system';
+import { Button, NumberInput, type SelectOption, SelectV2, Tabs, Tooltip, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
 import { PanelContainer, PanelRoot } from '../Panel';
@@ -54,19 +54,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
                   <Spinner className="size-4" />
                 </div>
               ) : (
-                rulesets.map((ruleset) => (
-                  <Link
-                    key={ruleset.id}
-                    to="/user-scoring/$recordType/$version"
-                    params={{
-                      recordType: ruleset.recordType,
-                      version: ruleset.status === 'draft' ? 'draft' : ruleset.version.toString(),
-                    }}
-                    className={tabClassName}
-                  >
-                    {ruleset.name}
-                  </Link>
-                ))
+                rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
               )}
             </Tabs>
             <Outlet />
@@ -82,49 +70,49 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   );
 }
 
-function DurationSecondsField({
+function RulesetTab({ ruleset }: { ruleset: { recordType: string; status: string; version: number; name: string } }) {
+  const params = useParams({ strict: false });
+  const isActive = params.recordType === ruleset.recordType;
+
+  return (
+    <Link
+      to="/user-scoring/$recordType/$version"
+      params={{
+        recordType: ruleset.recordType,
+        version: ruleset.status === 'draft' ? 'draft' : ruleset.version.toString(),
+      }}
+      className={tabClassName}
+      activeProps={{}}
+      inactiveProps={{}}
+      data-status={isActive ? 'active' : undefined}
+    >
+      {ruleset.name}
+    </Link>
+  );
+}
+
+function DurationDaysField({
   value,
   onChange,
 }: {
   value: number | undefined;
   onChange: (seconds: number | undefined) => void;
 }) {
-  const { t } = useTranslation(['common', 'user-scoring']);
-  const initial = value !== undefined ? secondsToDisplay(value) : { value: 0, unit: 'days' as DurationUnit };
-  const [inputValue, setInputValue] = useState(initial.value);
-  const [unit, setUnit] = useState<DurationUnit | null>(initial.unit);
-
-  const durationUnitOptions: SelectOption<DurationUnit | null>[] = [
-    { label: t('user-scoring:section.create_panel.unit_placeholder'), value: null },
-    { label: t('common:duration_unit.days'), value: 'days' },
-    { label: t('common:duration_unit.months'), value: 'months' },
-    { label: t('common:duration_unit.years'), value: 'years' },
-  ];
+  const { t } = useTranslation(['common']);
+  const [days, setDays] = useState(value !== undefined ? value / SECONDS_PER_UNIT.days : 0);
 
   return (
     <>
       <NumberInput
         className="max-w-15"
-        value={inputValue}
+        borderColor={days < 1 ? 'redfigma-47' : 'greyfigma-90'}
+        value={days}
         onChange={(v) => {
-          setInputValue(v);
-          if (unit) {
-            onChange(v > 0 ? v * SECONDS_PER_UNIT[unit] : undefined);
-          }
+          setDays(v);
+          onChange(v > 0 ? v * SECONDS_PER_UNIT.days : undefined);
         }}
       />
-      <SelectV2<DurationUnit | null>
-        placeholder={t('user-scoring:section.create_panel.unit_placeholder')}
-        options={durationUnitOptions}
-        value={unit}
-        onChange={(u) => {
-          setUnit(u);
-          if (u) {
-            onChange(inputValue > 0 ? inputValue * SECONDS_PER_UNIT[u] : undefined);
-          }
-        }}
-        className="text-small min-w-22"
-      />
+      <span className="text-grey-secondary">{t('common:duration_unit.days')}</span>
     </>
   );
 }
@@ -142,13 +130,11 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
       recordType: '',
       thresholds: Array.from({ length: maxRiskLevel - 1 }, (_, i) => (i + 1) * 10) as number[],
       rules: [],
-      cooldownSeconds: 0,
-      scoringIntervalSeconds: 0,
+      cooldownSeconds: 90 * SECONDS_PER_UNIT.days,
+      scoringIntervalSeconds: 180 * SECONDS_PER_UNIT.days,
     } as UpdateScoringRulesetPayload,
     validators: {
-      onSubmit: updateScoringRulesetPayloadSchema,
       onChange: updateScoringRulesetPayloadSchema,
-      onMount: updateScoringRulesetPayloadSchema,
     },
     onSubmit: async ({ formApi, value }) => {
       if (formApi.state.isValid) {
@@ -207,18 +193,22 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
           {t('user-scoring:section.create_panel.general_settings')}
           <div className="border border-grey-border rounded-v2-md p-v2-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-v2-sm gap-y-v2-md">
             <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
+              <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <form.Field name="cooldownSeconds">
-                {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
+                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
-              <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
+                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              </Tooltip.Default>
             </div>
             <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
+              <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
               <form.Field name="scoringIntervalSeconds">
-                {(field) => <DurationSecondsField value={field.state.value} onChange={field.handleChange} />}
+                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
-              <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
+                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+              </Tooltip.Default>
             </div>
           </div>
         </div>

@@ -20,6 +20,23 @@ export function isDatabaseAccess(node: IdLessAstNode): node is CheckNodeId<Datab
   return node.name === databaseAccessAstNodeName;
 }
 
+export function NewDatabaseAccessAstNode(args: {
+  tableName: string;
+  fieldName: string;
+  path: string[];
+}): DatabaseAccessAstNode {
+  return {
+    id: uuidv7(),
+    name: databaseAccessAstNodeName,
+    children: [],
+    namedChildren: {
+      fieldName: NewConstantAstNode({ constant: args.fieldName }),
+      path: NewConstantAstNode({ constant: args.path }),
+      tableName: NewConstantAstNode({ constant: args.tableName }),
+    },
+  };
+}
+
 export const payloadAstNodeName = 'Payload';
 export interface PayloadAstNode {
   id: string;

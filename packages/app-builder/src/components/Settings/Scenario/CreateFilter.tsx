@@ -8,6 +8,7 @@ import {
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -65,6 +66,9 @@ export function CreateFilter({
             setOpen(false);
             revalidate();
             form.reset();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
           });
       }
     },

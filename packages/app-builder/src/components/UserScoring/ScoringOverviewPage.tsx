@@ -1,10 +1,11 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import {
   SCORING_LEVELS_COLORS,
-  SCORING_LEVELS_LABELS,
+  SCORING_LEVELS_LABEL_KEYS,
   type ScoringRuleset,
   type ScoringSettings as ScoringSettingsModel,
 } from '@app-builder/models/scoring';
+import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useGetScoreDistributionQuery } from '@app-builder/queries/scoring/get-score-distribution';
 import { useListScoringRulesetsQuery } from '@app-builder/queries/scoring/list-rulesets';
 import { ResponsivePie } from '@nivo/pie';
@@ -66,13 +67,15 @@ export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsMod
 function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; settings: ScoringSettingsModel }) {
   const { t } = useTranslation(['user-scoring', 'common']);
   const distributionQuery = useGetScoreDistributionQuery(ruleset.recordType);
+  const dataModel = useDataModelQuery().data?.dataModel ?? [];
+  const entityName = dataModel.find((table) => table.name === ruleset.recordType)?.alias || ruleset.recordType;
   const maxRiskLevel = settings.maxRiskLevel as 3 | 4 | 5 | 6;
   const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
-  const labels = SCORING_LEVELS_LABELS[maxRiskLevel];
+  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md h-[400px]">
-      <p className="text-s font-medium">{t('user-scoring:overview.ruleset_card.title', { name: ruleset.name })}</p>
+      <p className="text-s font-medium">{t('user-scoring:overview.ruleset_card.title', { name: entityName })}</p>
       {match(distributionQuery)
         .with({ isPending: true }, () => (
           <div className="flex flex-1 items-center justify-center">
@@ -99,50 +102,38 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
             .filter((item) => item.count > 0)
             .map((item) => ({
               id: item.risk_level,
-              label: labels[item.risk_level] ?? item.risk_level.toString(),
+              label: t(labelKeys[item.risk_level] ?? item.risk_level.toString()),
               value: item.count,
               color: colors[item.risk_level] ?? '#ccc',
             }));
 
           return (
-            <div className="flex-1">
-              <ResponsivePie
-                data={pieData}
-                innerRadius={0.7}
-                padAngle={1}
-                colors={{ datum: 'data.color' }}
-                enableArcLabels={false}
-                arcLinkLabel={(datum) => `${Math.round((datum.value / total) * 100)}%`}
-                arcLinkLabelsColor={{ from: 'color' }}
-                arcLinkLabelsThickness={0}
-                arcLinkLabelsDiagonalLength={12}
-                arcLinkLabelsStraightLength={12}
-                arcLinkLabelsTextColor="var(--color-grey-primary)"
-                legends={[
-                  {
-                    anchor: 'bottom',
-                    direction: 'row',
-                    justify: false,
-                    translateY: 56,
-                    itemsSpacing: 32,
-                    itemWidth: 40,
-                    itemHeight: 24,
-                    itemDirection: 'left-to-right',
-                    symbolSize: 12,
-                    symbolShape: 'circle',
-                  },
-                ]}
-                margin={{ top: 30, right: 40, bottom: 70, left: 40 }}
-                theme={{
-                  legends: {
-                    text: {
-                      fill: 'var(--color-grey-secondary)',
-                      fontSize: 12,
-                      fontWeight: 500,
-                    },
-                  },
-                }}
-              />
+            <div className="flex flex-1 flex-col gap-v2-sm">
+              <div className="flex-1">
+                <ResponsivePie
+                  data={pieData}
+                  innerRadius={0.7}
+                  padAngle={1}
+                  colors={{ datum: 'data.color' }}
+                  enableArcLabels={false}
+                  tooltip={({ datum }) => (
+                    <div className="flex items-center gap-v2-xs bg-surface-card p-v2-xs rounded-lg border border-grey-border shadow-sm text-s text-grey-primary whitespace-nowrap">
+                      <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: datum.color }} />
+                      {datum.label}: {datum.value} ({Math.round((datum.value / total) * 100)}%)
+                    </div>
+                  )}
+                  enableArcLinkLabels={false}
+                  margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                />
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-x-v2-md gap-y-v2-xs">
+                {pieData.map((item) => (
+                  <div key={item.id} className="flex items-center gap-v2-xs">
+                    <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                    <span className="text-xs font-medium text-grey-secondary">{item.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           );
         })
