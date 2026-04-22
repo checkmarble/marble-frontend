@@ -96,11 +96,11 @@ export type TableField = {
 export function getSemanticSubOptions(
   dataType: DataTypeKey,
   semanticType: SemanticTypeField,
-): { value: string }[] | undefined {
+): { value: SemanticSubTypeField }[] | undefined {
   const options = semanticTypesByDataType[dataType];
   if (!options) return undefined;
   const match = options.find((o) => o.value === semanticType);
-  return match && 'subOptions' in match ? (match.subOptions as { value: string }[]) : undefined;
+  return match && 'subOptions' in match ? match.subOptions : undefined;
 }
 
 export type SemanticTableFormValues = {
