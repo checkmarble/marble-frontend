@@ -8,6 +8,6 @@ export const useAddConfigurationMutation = () => {
 
   return useMutation({
     mutationKey: ['client360', 'add-configuration'],
-    mutationFn: async (payload: AddConfigurationPayload) => addConfiguration({ data: payload }),
+    mutationFn: (payload: AddConfigurationPayload) => addConfiguration({ data: payload }),
   });
 };

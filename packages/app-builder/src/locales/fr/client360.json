@@ -3,6 +3,7 @@
   "client_detail.add_configuration_modal.alias_placeholder": "Saisir un alias",
   "client_detail.add_configuration_modal.button": "Ajouter une configuration",
   "client_detail.add_configuration_modal.caption_field_placeholder": "Champ représentant le nom",
+  "client_detail.add_configuration_modal.description": "Seules les tables comportant au moins un champ de type Nom sont disponibles ici",
   "client_detail.add_configuration_modal.name_label": "Nom :",
   "client_detail.add_configuration_modal.table_label": "Table :",
   "client_detail.add_configuration_modal.table_placeholder": "Sélectionner une table",

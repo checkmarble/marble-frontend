@@ -6,6 +6,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { Client360Table } from 'marble-api';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -39,11 +40,17 @@ export const AddConfigurationModal = ({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        addConfigurationMutation.mutateAsync(value).then(() => {
-          setOpen(false);
-          form.reset();
-          revalidate();
-        });
+        addConfigurationMutation
+          .mutateAsync(value)
+          .then(() => {
+            toast.success(t('common:success.save'));
+            setOpen(false);
+            form.reset();
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
   });
@@ -61,6 +68,10 @@ export const AddConfigurationModal = ({
     const hasPersonOrCompany =
       table.semanticType === 'person' && (table.subEntity === 'natural' || table.subEntity === 'moral');
     if (hasPersonOrCompany && table.captionField) return false;
+    // Exculde table with no field having name semantic type and no semantic type
+    const hasNoName = table.fields.every((field) => field.semanticType !== 'name');
+    const hasFieldWithNoSemantic = table.fields.some((field) => !field.semanticType);
+    if (hasNoName && !hasFieldWithNoSemantic) return false;
 
     return true;
   });
@@ -99,6 +110,11 @@ export const AddConfigurationModal = ({
       </Modal.Trigger>
       <Modal.Content size="medium">
         <Modal.Title>{t('client360:client_detail.add_configuration_modal.title')}</Modal.Title>
+        <Modal.Description>
+          <p className="text-grey-secondary text-small text-center pt-2">
+            {t('client360:client_detail.add_configuration_modal.description')}
+          </p>
+        </Modal.Description>
         <div className="p-v2-md">
           <form
             id="add-configuration-form"

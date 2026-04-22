@@ -3,6 +3,7 @@
   "client_detail.add_configuration_modal.alias_placeholder": "أدخل الاسم المستعار",
   "client_detail.add_configuration_modal.button": "إضافة إعداد",
   "client_detail.add_configuration_modal.caption_field_placeholder": "حقل يمثل الاسم",
+  "client_detail.add_configuration_modal.description": "تتوفر هنا فقط الجداول التي تحتوي على حقل واحد على الأقل بنوع الاسم",
   "client_detail.add_configuration_modal.name_label": "الاسم:",
   "client_detail.add_configuration_modal.table_label": "الجدول:",
   "client_detail.add_configuration_modal.table_placeholder": "اختر جدولاً",

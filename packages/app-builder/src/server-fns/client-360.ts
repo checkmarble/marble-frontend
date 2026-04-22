@@ -1,6 +1,5 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { addConfigurationPayloadSchema, client360SearchPayloadSchema } from '@app-builder/schemas/client360';
-import { setToast } from '@app-builder/services/toast.server';
 import { createServerFn } from '@tanstack/react-start';
 
 export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
@@ -25,10 +24,7 @@ export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
         fields:
           field && !field.semanticType ? [{ op: 'MOD', data: { id: field.id, semantic_type: 'name' } }] : undefined,
       });
-
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to add configuration');
     }
   });

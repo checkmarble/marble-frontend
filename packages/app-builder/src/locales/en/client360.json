@@ -3,6 +3,7 @@
   "client_detail.add_configuration_modal.alias_placeholder": "Enter an alias",
   "client_detail.add_configuration_modal.button": "Add configuration",
   "client_detail.add_configuration_modal.caption_field_placeholder": "Select a caption field",
+  "client_detail.add_configuration_modal.description": "Only the tables having at least one field with a type of Name are available here",
   "client_detail.add_configuration_modal.name_label": "Name:",
   "client_detail.add_configuration_modal.table_label": "Table:",
   "client_detail.add_configuration_modal.table_placeholder": "Select a table",
