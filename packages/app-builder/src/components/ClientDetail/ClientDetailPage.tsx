@@ -116,20 +116,18 @@ export const ClientDetailPage = ({
                       <Icon icon="eye" className="size-4" />
                     </div>
                   </button>
-                ) : (
+                ) : canConfigureUserScoring ? (
                   <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-v2-sm rounded-lg border p-v2-md py-v2-sm w-[180px] self-start shrink-0 text-center">
                     <Icon icon="comet" className="size-10 shrink-0" />
                     <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
-                    {canConfigureUserScoring ? (
-                      <Link
-                        to="/user-scoring"
-                        className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
-                      >
-                        {t('client360:client_detail.risk_level.configure')}
-                      </Link>
-                    ) : null}
+                    <Link
+                      to="/user-scoring"
+                      className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
+                    >
+                      {t('client360:client_detail.risk_level.configure')}
+                    </Link>
                   </div>
-                )
+                ) : null
               ) : (
                 <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-v2-sm rounded-lg border p-v2-md py-v2-sm w-[180px] self-start shrink-0 text-center">
                   <Icon icon="comet" className="size-10 shrink-0" />
