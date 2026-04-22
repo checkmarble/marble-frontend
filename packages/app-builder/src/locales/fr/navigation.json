@@ -37,5 +37,6 @@
   "settings.inboxes": "Boîtes de réception",
   "settings.tags": "Tags",
   "settings.users": "Utilisateurs",
-  "user_scoring": "Scoring utilisateur"
+  "user_scoring": "Scoring utilisateur",
+  "user_scoring.nudge": "Scorez et classez automatiquement vos clients par niveau de risque"
 }

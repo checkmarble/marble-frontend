@@ -20,7 +20,6 @@ import { OrganizationUsersContextProvider } from '@app-builder/services/organiza
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { useSentryIdentification, useSentryReplay } from '@app-builder/services/sentry';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
-import { isUserScoringEnabled } from '@app-builder/utils/environment';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { ClientOnly, createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -62,7 +61,7 @@ const appBuilderLayoutLoader = createServerFn()
         isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
         continuousScreening: entitlements.continuousScreening,
         isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
-        isUserScoringAvailable: !isAnalyst(user) && isUserScoringEnabled(organizationDetail.id),
+        userScoring: isAnalyst(user) ? ('restricted' as const) : entitlements.userScoring,
       },
       authProvider: context.appConfig.auth.provider,
       isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
@@ -131,13 +130,34 @@ function Builder() {
                             </li>
                           )}
                           {/* User Scoring */}
-                          {featuresAccess.isUserScoringAvailable && (
+                          {!isAnalyst(user) && (
                             <li>
-                              <SidebarLink
-                                labelTKey="navigation:user_scoring"
-                                to="/user-scoring"
-                                Icon={(props) => <Icon icon="123" {...props} />}
-                              />
+                              {match(featuresAccess.userScoring)
+                                .with(P.union('allowed', 'test'), () => {
+                                  return (
+                                    <SidebarLink
+                                      labelTKey="navigation:user_scoring"
+                                      to="/user-scoring"
+                                      Icon={(props) => <Icon icon="123" {...props} />}
+                                    />
+                                  );
+                                })
+                                .otherwise((value) => {
+                                  return (
+                                    <div className="text-grey-disabled relative flex gap-2 p-2">
+                                      <Icon icon="123" className="size-6 shrink-0" />
+                                      <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                                        {t('navigation:user_scoring')}
+                                      </span>
+                                      <Nudge
+                                        collapsed={!leftSidebarSharp.value.expanded}
+                                        kind={value}
+                                        className="size-6"
+                                        content={t('navigation:user_scoring.nudge')}
+                                      />
+                                    </div>
+                                  );
+                                })}
                             </li>
                           )}
                           {/* Monitoring (Continuous Screening) */}

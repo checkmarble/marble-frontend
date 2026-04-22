@@ -26,6 +26,8 @@
   "client_detail.monitoring_hits.title": "المراقبة",
   "client_detail.no_object_found": "لم يتم العثور على {{objectType}}",
   "client_detail.risk_level": "مستوى المخاطر:",
+  "client_detail.risk_level.configure": "إعداد التسجيل",
+  "client_detail.risk_level.upgrade": "الترقية للفتح",
   "client_detail.score_card.coming_soon": "قريباً",
   "client_detail.score_card.title": "النقاط",
   "client_detail.score_distribution.count_label": "العدد / %",

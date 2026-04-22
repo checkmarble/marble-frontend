@@ -37,5 +37,6 @@
   "settings.inboxes": "صناديق الوارد",
   "settings.tags": "الوسوم",
   "settings.users": "المستخدمون",
-  "user_scoring": "تسجيل نقاط المستخدم"
+  "user_scoring": "تسجيل نقاط المستخدم",
+  "user_scoring.nudge": "قم بتسجيل وترتيب عملائك تلقائيًا حسب مستوى المخاطر"
 }

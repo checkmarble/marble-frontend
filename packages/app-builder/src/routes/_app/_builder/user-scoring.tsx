@@ -1,6 +1,7 @@
 import { ScoringSectionLayout } from '@app-builder/components/UserScoring/ScoringSectionLayout';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isUserScoringEnabled } from '@app-builder/utils/environment';
+import { isAnalyst } from '@app-builder/models';
+import { isUserScoringAvailable } from '@app-builder/services/feature-access';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { type Namespace } from 'i18next';
@@ -8,9 +9,9 @@ import { type Namespace } from 'i18next';
 const userScoringLayoutLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function userScoringLayout({ context }) {
-    const { user, userScoring } = context.authInfo;
+    const { user, entitlements, userScoring } = context.authInfo;
 
-    if (!isUserScoringEnabled(user.organizationId)) {
+    if (isAnalyst(user) || !isUserScoringAvailable(entitlements)) {
       throw redirect({ to: '/' });
     }
 

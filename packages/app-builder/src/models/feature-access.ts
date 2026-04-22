@@ -14,6 +14,7 @@ export interface FeatureAccesses {
   caseAiAssist: FeatureAccessLevelDto;
   continuousScreening: FeatureAccessLevelDto;
   aiRuleBuilding: FeatureAccessLevelDto;
+  userScoring: FeatureAccessLevelDto;
 }
 
 export function emptyFeatureAccesses(): FeatureAccesses {
@@ -31,6 +32,7 @@ export function emptyFeatureAccesses(): FeatureAccesses {
     caseAiAssist: 'restricted',
     continuousScreening: 'restricted',
     aiRuleBuilding: 'restricted',
+    userScoring: 'restricted',
   };
 }
 
@@ -49,5 +51,6 @@ export function adaptFeatureAccesses(dto: FeatureAccessDto): FeatureAccesses {
     caseAiAssist: dto.case_ai_assist,
     continuousScreening: dto.continuous_screening,
     aiRuleBuilding: dto.ai_rule_building,
+    userScoring: dto.user_scoring ?? 'restricted',
   };
 }

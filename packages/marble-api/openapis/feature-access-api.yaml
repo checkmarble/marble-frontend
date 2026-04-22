@@ -65,6 +65,8 @@ components:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
         ai_rule_building:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
+        user_scoring:
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
       required:
         - workflows
         - analytics
@@ -79,6 +81,7 @@ components:
         - case_ai_assist
         - continuous_screening
         - ai_rule_building
+        - user_scoring
   responses:
     "401":
       description: Unauthorized

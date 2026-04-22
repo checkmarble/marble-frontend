@@ -6,8 +6,11 @@ import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
+import { isAccessible } from '@app-builder/services/feature-access';
 import { useQueryClient } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
 import { Client360Table, type ScoringScore } from 'marble-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -35,6 +38,7 @@ type ClientDetailPageProps = {
   allMetadata: Client360Table[];
   scoringSettings: ScoringSettings | null;
   activeScore: ScoringScore | null;
+  userScoringAccess: FeatureAccessLevelDto;
 };
 
 export const ClientDetailPage = ({
@@ -45,6 +49,7 @@ export const ClientDetailPage = ({
   allMetadata,
   scoringSettings,
   activeScore,
+  userScoringAccess,
 }: ClientDetailPageProps) => {
   const { t } = useTranslation(['common', 'client360', 'user-scoring']);
   const dataModelQuery = useDataModelWithOptionsQuery();
@@ -93,21 +98,47 @@ export const ClientDetailPage = ({
             {/* Client details */}
             <div className="flex gap-v2-md">
               {/* Score card */}
-              {scoringSettings && activeScore ? (
-                <button
-                  type="button"
-                  className="flex flex-col gap-v2-sm border rounded-lg p-v2-md py-v2-sm w-[180px] self-start shrink-0 items-start"
-                  style={{ borderColor: scoreColor, backgroundColor: `${scoreColor}20` }}
-                  onClick={handleScoreClick}
-                >
-                  <span className="text-small">{t('client360:client_detail.risk_level')}</span>
-                  <div className="flex gap-v2-xs items-center">
-                    <div className="size-4 rounded-full" style={{ backgroundColor: scoreColor }} />
-                    <span className="font-semibold">{scoreLabel}</span>
-                    <Icon icon="eye" className="size-4" />
+              {isAccessible(userScoringAccess) ? (
+                scoringSettings && activeScore ? (
+                  <button
+                    type="button"
+                    className="flex flex-col gap-v2-sm border rounded-lg p-v2-md py-v2-sm w-[180px] self-start shrink-0 items-start"
+                    style={{ borderColor: scoreColor, backgroundColor: `${scoreColor}20` }}
+                    onClick={handleScoreClick}
+                  >
+                    <span className="text-small">{t('client360:client_detail.risk_level')}</span>
+                    <div className="flex gap-v2-xs items-center">
+                      <div className="size-4 rounded-full" style={{ backgroundColor: scoreColor }} />
+                      <span className="font-semibold">{scoreLabel}</span>
+                      <Icon icon="eye" className="size-4" />
+                    </div>
+                  </button>
+                ) : (
+                  <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-v2-sm rounded-lg border p-v2-md py-v2-sm w-[180px] self-start shrink-0 text-center">
+                    <Icon icon="comet" className="size-10 shrink-0" />
+                    <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
+                    <Link
+                      to="/user-scoring"
+                      className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
+                    >
+                      {t('client360:client_detail.risk_level.configure')}
+                    </Link>
                   </div>
-                </button>
-              ) : null}
+                )
+              ) : (
+                <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-v2-sm rounded-lg border p-v2-md py-v2-sm w-[180px] self-start shrink-0 text-center">
+                  <Icon icon="comet" className="size-10 shrink-0" />
+                  <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
+                  <a
+                    href="https://checkmarble.com/upgrade"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
+                  >
+                    {t('client360:client_detail.risk_level.upgrade')}
+                  </a>
+                </div>
+              )}
               {/* Client fields card */}
               <Card className="grow">
                 <div className="min-h-[140px]">
@@ -281,7 +312,7 @@ export const ClientDetailPage = ({
           </div>
         </PanelContainer>
       </PanelRoot>
-      {scoringSettings && activeScore ? (
+      {scoringSettings && activeScore && isAccessible(userScoringAccess) ? (
         <ScoreDetailPanel
           open={showScorePanel}
           onOpenChange={setShowScorePanel}
