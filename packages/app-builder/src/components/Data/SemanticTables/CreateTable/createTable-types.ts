@@ -239,6 +239,7 @@ export function adaptTableField(field: TableField): CreateTableValue['fields'][n
       foreignkeyTable: field.foreignkeyTable,
       hidden: field.hidden,
       booleanDisplay: field.booleanDisplay,
+      isInteger: field.isInteger,
     },
   };
 }
