@@ -1,5 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { DataModelField, PrimitiveTypes, type TableModel } from '@app-builder/models/data-model';
+import { DataModelField, LinkRelationType, PrimitiveTypes, type TableModel } from '@app-builder/models/data-model';
 import { useEditSemanticTableMutation } from '@app-builder/queries/data/edit-semantic-table';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/react';
@@ -50,9 +50,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             (link.childTableName === data.tableModel.name && link.childFieldName === fieldName)),
       );
 
-  const selfRefLinks = data.tableModel.linksToSingle.filter(
-    (link) => link.parentTableId === link.childTableId && link.relationType === 'belongs_to',
-  );
+  const selfRefLinks = data.tableModel.linksToSingle.filter((link) => link.parentTableId === link.childTableId);
   const selfRefPartner = new Map<string, string>();
   for (const link of selfRefLinks) {
     selfRefPartner.set(link.parentFieldName, link.childFieldName);
@@ -61,7 +59,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
 
   type FieldGroup =
     | { type: 'single'; field: (typeof relationFields)[0] }
-    | { type: 'pair'; fields: [(typeof relationFields)[0], (typeof relationFields)[0]] };
+    | { type: 'pair'; fields: [(typeof relationFields)[0], (typeof relationFields)[0]]; linkType: LinkRelationType };
   const fieldGroups: FieldGroup[] = [];
   const consumed = new Set<string>();
   for (const field of relationFields) {
@@ -70,7 +68,8 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
     if (partnerName) {
       const partner = relationFields.find((f) => f.name === partnerName);
       if (partner) {
-        fieldGroups.push({ type: 'pair', fields: [field, partner] });
+        const link = selfRefLinks.find((l) => l.parentFieldName === field.name && l.childFieldName === partnerName);
+        fieldGroups.push({ type: 'pair', fields: [field, partner], linkType: link?.relationType ?? 'belongs_to' });
         consumed.add(field.name);
         consumed.add(partnerName);
         continue;
@@ -266,7 +265,14 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
                       key={`${group.fields[0].id}-${group.fields[1].id}`}
                       className="relative flex flex-col gap-v2-sm"
                     >
-                      <div className="absolute -left-2 top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l border-purple-primary" />
+                      <div
+                        className={cn(
+                          'absolute -left-2 top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l ',
+                          group.linkType === 'belongs_to'
+                            ? 'border-purple-primary'
+                            : 'border-grey-secondary border-dashed',
+                        )}
+                      />
                       {group.fields.map((field) => renderField(field))}
                     </div>
                   );
