@@ -37,5 +37,6 @@
   "settings.inboxes": "Inboxes",
   "settings.tags": "Tags",
   "settings.users": "Users",
-  "user_scoring": "Customer Scoring"
+  "user_scoring": "Customer Scoring",
+  "user_scoring.nudge": "Automatically score and rank your customers by risk level"
 }

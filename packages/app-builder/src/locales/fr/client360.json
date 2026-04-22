@@ -26,6 +26,8 @@
   "client_detail.monitoring_hits.title": "Monitoring",
   "client_detail.no_object_found": "Aucun {{objectType}} trouvé",
   "client_detail.risk_level": "Niveau de risque :",
+  "client_detail.risk_level.configure": "Configurer le scoring",
+  "client_detail.risk_level.upgrade": "Débloquer avec Premium",
   "client_detail.score_card.coming_soon": "À venir",
   "client_detail.score_card.title": "Score",
   "client_detail.score_distribution.count_label": "Nombre / %",

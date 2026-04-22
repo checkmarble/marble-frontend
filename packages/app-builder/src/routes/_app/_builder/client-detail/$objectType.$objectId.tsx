@@ -56,6 +56,7 @@ const getDataFn = createServerFn()
         dataModelFeatureAccess,
         scoringSettings,
         activeScore,
+        userScoringAccess: entitlements.userScoring,
       };
     } catch (error) {
       if (isNotFoundHttpError(error)) {
@@ -86,6 +87,7 @@ function ClientDetailPage() {
     dataModelFeatureAccess,
     scoringSettings,
     activeScore,
+    userScoringAccess,
   } = Route.useLoaderData();
 
   return (
@@ -99,6 +101,7 @@ function ClientDetailPage() {
         allMetadata={allMetadata}
         scoringSettings={scoringSettings}
         activeScore={activeScore}
+        userScoringAccess={userScoringAccess}
       />
     </DataModelContextProvider>
   );
