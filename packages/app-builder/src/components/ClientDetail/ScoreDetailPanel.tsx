@@ -26,9 +26,11 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
   const proportional =
     thresholds && thresholds.length === maxRiskLevel - 1
       ? (() => {
-          const minValue = thresholds[0]! >= 10 ? 0 : thresholds[0]! - 10;
+          const minValue = thresholds[0]! > 0 ? 0 : thresholds[0]! - 10;
           const maxValue = thresholds[thresholds.length - 1]! + 10;
           const totalRange = maxValue - minValue;
+          const showZeroLabel = thresholds[0]! !== 0;
+          const zeroLabelPct = ((0 - minValue) / totalRange) * 100;
           const segmentWidths = colors.map((_, i) => {
             const segStart = i === 0 ? minValue : thresholds[i - 1]!;
             const segEnd = i === thresholds.length ? maxValue : thresholds[i]!;
@@ -38,14 +40,14 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
           const segStart = currentLevel === 0 ? minValue : thresholds[currentLevel - 1]!;
           const segEnd = currentLevel >= thresholds.length ? maxValue : thresholds[currentLevel]!;
           const markerPct = (((segStart + segEnd) / 2 - minValue) / totalRange) * 100;
-          return { segmentWidths, markerPositions, markerPct };
+          return { segmentWidths, markerPositions, markerPct, showZeroLabel, zeroLabelPct };
         })()
       : undefined;
 
   return (
     <div className="flex flex-col gap-v2-xs">
       <div className="relative h-6">
-        <div className="flex w-full overflow-hidden rounded-lg gap-px mt-2">
+        <div className="relative flex w-full overflow-hidden rounded-lg gap-px mt-2">
           {colors.map((color, i) => (
             <div
               key={i}
@@ -56,6 +58,9 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
               }}
             />
           ))}
+          {proportional?.showZeroLabel ? (
+            <div className="absolute inset-y-0 w-px bg-white" style={{ left: `${proportional.zeroLabelPct}%` }} />
+          ) : null}
         </div>
         {proportional ? (
           <div
@@ -69,6 +74,17 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
       </div>
       {proportional ? (
         <div className="relative flex h-4 items-center mt-v2-xs">
+          {proportional.showZeroLabel ? (
+            <div
+              className="absolute text-xs text-grey-secondary"
+              style={{
+                left: `${proportional.zeroLabelPct}%`,
+                ...(proportional.zeroLabelPct > 0 && { transform: 'translateX(-50%)' }),
+              }}
+            >
+              0
+            </div>
+          ) : null}
           {thresholds!.map((value, i) => (
             <div
               key={i}
