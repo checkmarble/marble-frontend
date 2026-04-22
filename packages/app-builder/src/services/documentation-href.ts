@@ -8,7 +8,7 @@ export const stringTemplatingDocHref = 'https://docs.checkmarble.com/docs/string
 
 export const aggregationDocHref = 'https://docs.checkmarble.com/docs/aggregations';
 
-export const dateDocHref = 'https://docs.checkmarble.com/docs/now-copy';
+export const dateDocHref = 'https://docs.checkmarble.com/docs/datetime-functions';
 
 export const scenarioObjectDocHref = 'https://docs.checkmarble.com/docs/executing-a-scenario#the-scenario-object';
 
