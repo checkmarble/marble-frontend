@@ -1,4 +1,9 @@
-import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
+import {
+  SCORING_LEVELS_COLORS,
+  SCORING_LEVELS_LABEL_KEYS,
+  type ScoringSettings,
+  scoringLevelEntries,
+} from '@app-builder/models/scoring';
 import { useGetScoringRulesetQuery } from '@app-builder/queries/scoring/get-ruleset';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { type ScoringScore } from 'marble-api';
@@ -21,7 +26,8 @@ interface ScoreScaleProps {
 }
 
 function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps) {
-  const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
+  const colorMap = SCORING_LEVELS_COLORS[maxRiskLevel];
+  const colorEntries = scoringLevelEntries(colorMap);
 
   const proportional =
     thresholds && thresholds.length === maxRiskLevel - 1
@@ -31,14 +37,15 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
           const totalRange = maxValue - minValue;
           const showZeroLabel = thresholds[0]! !== 0;
           const zeroLabelPct = ((0 - minValue) / totalRange) * 100;
-          const segmentWidths = colors.map((_, i) => {
+          const segmentWidths = colorEntries.map((_, i) => {
             const segStart = i === 0 ? minValue : thresholds[i - 1]!;
             const segEnd = i === thresholds.length ? maxValue : thresholds[i]!;
             return ((segEnd - segStart) / totalRange) * 100;
           });
           const markerPositions = thresholds.map((v) => ((v - minValue) / totalRange) * 100);
-          const segStart = currentLevel === 0 ? minValue : thresholds[currentLevel - 1]!;
-          const segEnd = currentLevel >= thresholds.length ? maxValue : thresholds[currentLevel]!;
+          // currentLevel is 1-based
+          const segStart = currentLevel <= 1 ? minValue : thresholds[currentLevel - 2]!;
+          const segEnd = currentLevel > thresholds.length ? maxValue : thresholds[currentLevel - 1]!;
           const markerPct = (((segStart + segEnd) / 2 - minValue) / totalRange) * 100;
 
           // Build all labels (0 + thresholds) sorted by position, then stagger when too close
@@ -66,9 +73,9 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
     <div className="flex flex-col gap-v2-xs">
       <div className="relative h-6">
         <div className="relative flex w-full overflow-hidden rounded-lg gap-px mt-2">
-          {colors.map((color, i) => (
+          {colorEntries.map(([level, color], i) => (
             <div
-              key={i}
+              key={level}
               className="h-2"
               style={{
                 backgroundColor: color,
@@ -85,7 +92,7 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
             className="absolute top-1/2 size-6 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white shadow-sm"
             style={{
               left: `${proportional.markerPct}%`,
-              backgroundColor: colors[currentLevel],
+              backgroundColor: colorMap[currentLevel],
             }}
           />
         ) : null}
@@ -127,10 +134,9 @@ export function ScoreDetailPanel({
   const thresholds = rulesetQuery.data?.ruleset.thresholds;
 
   const maxRiskLevel = scoringSettings.maxRiskLevel as 3 | 4 | 5 | 6;
-  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][Math.max(activeScore.risk_level - 1, 0)] ?? 'inherit';
+  const scoreColor = SCORING_LEVELS_COLORS[maxRiskLevel][activeScore.risk_level] ?? 'inherit';
   const scoreLabel = t(
-    SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][Math.max(activeScore.risk_level - 1, 0)] ??
-      activeScore.risk_level.toString(),
+    SCORING_LEVELS_LABEL_KEYS[maxRiskLevel][activeScore.risk_level] ?? activeScore.risk_level.toString(),
   );
 
   return (
@@ -163,11 +169,7 @@ export function ScoreDetailPanel({
             <span className="text-s font-medium text-grey-primary">
               {t('client360:client_detail.score_panel.score_scale')}
             </span>
-            <ScoreScale
-              maxRiskLevel={maxRiskLevel}
-              currentLevel={Math.max(activeScore.risk_level - 1, 0)}
-              thresholds={thresholds}
-            />
+            <ScoreScale maxRiskLevel={maxRiskLevel} currentLevel={activeScore.risk_level} thresholds={thresholds} />
           </div>
         </PanelContent>
       </PanelContainer>

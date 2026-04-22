@@ -7,6 +7,7 @@ import {
   type ScoringRulesetWithRules,
   type ScoringSettings,
   SECONDS_PER_UNIT,
+  scoringLevelEntries,
   secondsToDisplay,
 } from '@app-builder/models/scoring';
 import { useCommitScoringRulesetMutation } from '@app-builder/queries/scoring/commit-ruleset';
@@ -273,20 +274,20 @@ function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; t
     return null;
   }
 
-  const colors = SCORING_LEVELS_COLORS[maxRiskLevel];
+  const colorEntries = scoringLevelEntries(SCORING_LEVELS_COLORS[maxRiskLevel]);
   const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
     <div className="flex flex-col gap-v2-sm">
       <span className="text-s text-grey-secondary">{t('user-scoring:ruleset.risk_level')}</span>
       <div className="flex items-center gap-v2-sm">
-        {colors.map((color, i) => {
-          const isLast = i === maxRiskLevel - 1;
+        {colorEntries.map(([level, color], i) => {
+          const isLast = i === colorEntries.length - 1;
           return (
-            <Fragment key={color}>
+            <Fragment key={level}>
               <div className="flex items-center gap-v2-xs h-6 px-2 rounded-full border" style={{ borderColor: color }}>
                 <div className="size-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                <span className="text-xs text-grey-primary">{t(labelKeys[i] ?? '')}</span>
+                <span className="text-xs text-grey-primary">{t(labelKeys[level] ?? '')}</span>
               </div>
               {!isLast ? (
                 <span className="text-xs font-medium text-grey-placeholder">{`≤ ${thresholds[i]} <`}</span>
