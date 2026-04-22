@@ -40,7 +40,25 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
           const segStart = currentLevel === 0 ? minValue : thresholds[currentLevel - 1]!;
           const segEnd = currentLevel >= thresholds.length ? maxValue : thresholds[currentLevel]!;
           const markerPct = (((segStart + segEnd) / 2 - minValue) / totalRange) * 100;
-          return { segmentWidths, markerPositions, markerPct, showZeroLabel, zeroLabelPct };
+
+          // Build all labels (0 + thresholds) sorted by position, then stagger when too close
+          const allLabels: Array<{ value: string; pct: number; staggered: boolean }> = [];
+          if (showZeroLabel) {
+            allLabels.push({ value: '0', pct: zeroLabelPct, staggered: false });
+          }
+          for (let i = 0; i < thresholds.length; i++) {
+            allLabels.push({ value: String(thresholds[i]), pct: markerPositions[i]!, staggered: false });
+          }
+          allLabels.sort((a, b) => a.pct - b.pct);
+          const minGap = 8; // % of total bar width
+          for (let i = 1; i < allLabels.length; i++) {
+            if (allLabels[i]!.pct - allLabels[i - 1]!.pct < minGap) {
+              // Stagger if the previous wasn't already staggered; otherwise keep on the same row
+              allLabels[i]!.staggered = !allLabels[i - 1]!.staggered;
+            }
+          }
+
+          return { segmentWidths, markerPositions, markerPct, showZeroLabel, zeroLabelPct, allLabels };
         })()
       : undefined;
 
@@ -73,25 +91,21 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
         ) : null}
       </div>
       {proportional ? (
-        <div className="relative flex h-4 items-center mt-v2-xs">
-          {proportional.showZeroLabel ? (
+        <div
+          className="relative mt-v2-xs"
+          style={{ height: proportional.allLabels.some((l) => l.staggered) ? 32 : 16 }}
+        >
+          {proportional.allLabels.map((label) => (
             <div
+              key={label.value}
               className="absolute text-xs text-grey-secondary"
               style={{
-                left: `${proportional.zeroLabelPct}%`,
-                ...(proportional.zeroLabelPct > 0 && { transform: 'translateX(-50%)' }),
+                left: `${label.pct}%`,
+                top: label.staggered ? 16 : 0,
+                ...(label.pct > 0 && { transform: 'translateX(-50%)' }),
               }}
             >
-              0
-            </div>
-          ) : null}
-          {thresholds!.map((value, i) => (
-            <div
-              key={i}
-              className="absolute -translate-x-1/2 text-xs text-grey-secondary"
-              style={{ left: `${proportional.markerPositions[i]}%` }}
-            >
-              {value}
+              {label.value}
             </div>
           ))}
         </div>
