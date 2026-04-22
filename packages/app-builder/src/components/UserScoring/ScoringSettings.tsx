@@ -6,6 +6,7 @@ import {
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABEL_KEYS,
   type ScoringSettings as ScoringSettingsModel,
+  scoringLevelEntries,
 } from '@app-builder/models/scoring';
 import { useUpdateScoringSettingsMutation } from '@app-builder/queries/scoring/update-settings';
 import { useState } from 'react';
@@ -89,15 +90,15 @@ function ScoringLevels({ maxLevel, className }: { maxLevel: number; className?: 
     return null;
   }
 
-  const scoringColors = SCORING_LEVELS_COLORS[maxLevel];
-  const scoringLabelKeys = SCORING_LEVELS_LABEL_KEYS[maxLevel];
+  const colorEntries = scoringLevelEntries(SCORING_LEVELS_COLORS[maxLevel]);
+  const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxLevel];
 
   return (
     <div className={cn(className)}>
-      {scoringColors.map((color, i) => (
-        <div key={color} className="flex gap-v2-sm items-center">
+      {colorEntries.map(([level, color]) => (
+        <div key={level} className="flex gap-v2-sm items-center">
           <div className="size-4 rounded-full" style={{ backgroundColor: color }} />
-          <span>{t(scoringLabelKeys[i] ?? '')}</span>
+          <span>{t(labelKeys[level] ?? '')}</span>
         </div>
       ))}
     </div>
