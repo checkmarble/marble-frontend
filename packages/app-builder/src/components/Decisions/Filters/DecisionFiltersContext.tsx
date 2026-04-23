@@ -59,6 +59,10 @@ function adaptFilterValues({ dateRange, ...otherFilters }: DecisionFilters): Dec
   const adaptedFilterValues: DecisionFiltersForm = {
     ...emptyDecisionFilters,
     ...otherFilters,
+    scenarioId: otherFilters.scenarioId ?? [],
+    scheduledExecutionId: otherFilters.scheduledExecutionId ?? [],
+    caseInboxId: otherFilters.caseInboxId ?? [],
+    triggerObject: otherFilters.triggerObject ?? [],
   };
   if (dateRange?.type === 'static') {
     adaptedFilterValues.dateRange = {
@@ -108,6 +112,10 @@ export function DecisionFiltersProvider({
       hasCase: formValues.hasCase ?? undefined,
       pivotValue: formValues.pivotValue ?? undefined,
       triggerObjectId: formValues.triggerObjectId ?? undefined,
+      scenarioId: formValues.scenarioId?.length ? formValues.scenarioId : undefined,
+      scheduledExecutionId: formValues.scheduledExecutionId?.length ? formValues.scheduledExecutionId : undefined,
+      caseInboxId: formValues.caseInboxId?.length ? formValues.caseInboxId : undefined,
+      triggerObject: formValues.triggerObject?.length ? formValues.triggerObject : undefined,
     });
   });
   const onDecisionFilterClose = useCallbackRef(() => {
