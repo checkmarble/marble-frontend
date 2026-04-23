@@ -26,12 +26,12 @@ export default defineConfig({
       ? []
       : [
           devtools(),
+          tanstackStart(),
           nitro({
             config: {
               preset: 'node-server',
             },
           }),
-          tanstackStart(),
           ...(isSentryConfigured
             ? [
                 sentryVitePlugin({
