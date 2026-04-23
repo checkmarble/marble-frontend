@@ -35,7 +35,7 @@ export function adaptGoTimeDuration(duration: Temporal.Duration): string {
   const timeDuration = duration.round({
     largestUnit: 'hours',
     smallestUnit: 'seconds',
-    relativeTo: Temporal.Now.plainDateTimeISO('gregory'),
+    relativeTo: Temporal.Now.plainDateTimeISO(),
   });
   let result = '';
   if (timeDuration.hours != 0) {
