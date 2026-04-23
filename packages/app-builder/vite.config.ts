@@ -25,13 +25,15 @@ export default defineConfig({
     ...(isTest
       ? []
       : [
+          // Keep TanStack Start first so it can register its route/data handling
+          // before other Vite/Nitro plugins that may add catch-all behavior.
+          tanstackStart(),
           devtools(),
           nitro({
             config: {
               preset: 'node-server',
             },
           }),
-          tanstackStart(),
           ...(isSentryConfigured
             ? [
                 sentryVitePlugin({
