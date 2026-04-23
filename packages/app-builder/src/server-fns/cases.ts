@@ -328,7 +328,7 @@ export const addRuleSnoozeFn = createServerFn({ method: 'POST' })
 
     if (
       Temporal.Duration.compare(duration, Temporal.Duration.from({ days: 180 }), {
-        relativeTo: Temporal.Now.plainDateTimeISO('gregory'),
+        relativeTo: Temporal.Now.plainDateTimeISO(),
       }) >= 0
     ) {
       return {
