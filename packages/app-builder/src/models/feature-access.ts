@@ -51,7 +51,6 @@ export function adaptFeatureAccesses(dto: FeatureAccessDto): FeatureAccesses {
     caseAiAssist: dto.case_ai_assist,
     continuousScreening: dto.continuous_screening,
     aiRuleBuilding: dto.ai_rule_building,
-    // TODO: restore to the commented code after the release, once the updated license server is rolled out.
-    userScoring: 'allowed', // dto.user_scoring,
+    userScoring: dto.user_scoring,
   };
 }
