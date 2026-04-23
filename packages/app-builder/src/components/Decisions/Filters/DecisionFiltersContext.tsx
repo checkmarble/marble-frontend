@@ -55,25 +55,28 @@ const emptyDecisionFilters: DecisionFiltersForm = {
   triggerObjectId: null,
 };
 
-function adaptFilterValues({ dateRange, ...otherFilters }: DecisionFilters): DecisionFiltersForm {
-  const adaptedFilterValues: DecisionFiltersForm = {
-    ...emptyDecisionFilters,
-    ...otherFilters,
-  };
-  if (dateRange?.type === 'static') {
-    adaptedFilterValues.dateRange = {
+function adaptFilterValues(filterValues: DecisionFilters): DecisionFiltersForm {
+  let dateRange: DateRangeFilterForm = null;
+  if (filterValues.dateRange?.type === 'static') {
+    dateRange = {
       type: 'static',
-      startDate: dateRange.startDate ?? '',
-      endDate: dateRange.endDate ?? '',
+      startDate: filterValues.dateRange.startDate ?? '',
+      endDate: filterValues.dateRange.endDate ?? '',
     };
+  } else if (filterValues.dateRange?.type === 'dynamic' && filterValues.dateRange.fromNow) {
+    dateRange = { type: 'dynamic', fromNow: filterValues.dateRange.fromNow };
   }
-  if (dateRange?.type === 'dynamic' && dateRange.fromNow) {
-    adaptedFilterValues.dateRange = {
-      type: 'dynamic',
-      fromNow: dateRange.fromNow,
-    };
-  }
-  return adaptedFilterValues;
+  return {
+    dateRange,
+    hasCase: filterValues.hasCase ?? null,
+    outcomeAndReviewStatus: filterValues.outcomeAndReviewStatus ?? null,
+    pivotValue: filterValues.pivotValue ?? null,
+    scenarioId: filterValues.scenarioId ?? [],
+    scheduledExecutionId: filterValues.scheduledExecutionId ?? [],
+    caseInboxId: filterValues.caseInboxId ?? [],
+    triggerObject: filterValues.triggerObject ?? [],
+    triggerObjectId: filterValues.triggerObjectId ?? null,
+  };
 }
 
 export function DecisionFiltersProvider({
@@ -108,6 +111,10 @@ export function DecisionFiltersProvider({
       hasCase: formValues.hasCase ?? undefined,
       pivotValue: formValues.pivotValue ?? undefined,
       triggerObjectId: formValues.triggerObjectId ?? undefined,
+      scenarioId: formValues.scenarioId?.length ? formValues.scenarioId : undefined,
+      scheduledExecutionId: formValues.scheduledExecutionId?.length ? formValues.scheduledExecutionId : undefined,
+      caseInboxId: formValues.caseInboxId?.length ? formValues.caseInboxId : undefined,
+      triggerObject: formValues.triggerObject?.length ? formValues.triggerObject : undefined,
     });
   });
   const onDecisionFilterClose = useCallbackRef(() => {
