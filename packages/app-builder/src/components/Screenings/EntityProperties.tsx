@@ -87,7 +87,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                         }}
                         className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover"
                       >
-                        + {restItemsCount} more
+                        {t('common:more_remains', { count: restItemsCount })}
                       </button>
                     </>
                   ) : null}
