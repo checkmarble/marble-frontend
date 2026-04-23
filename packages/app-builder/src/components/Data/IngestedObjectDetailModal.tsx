@@ -1,5 +1,5 @@
-import { type DataModelObject, type TableModel } from '@app-builder/models';
-import { useQuery } from '@tanstack/react-query';
+import { isNotFoundHttpError, type TableModel } from '@app-builder/models';
+import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 import { DataFields } from './DataVisualisation/DataFields';
@@ -16,17 +16,13 @@ export function IngestedObjectDetailModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation(['data']);
-  const { data, isPending } = useQuery<{ object: DataModelObject | null }>({
-    queryKey: ['data', 'view', tableName, objectId],
-    queryFn: async () => {
-      const response = await fetch(`/data/view/${tableName}/${objectId}`);
-      return response.json();
-    },
-  });
+  const { data: object, isPending, error } = useObjectDetailsQuery(tableName, objectId);
 
-  if (isPending || !data) {
+  if (isPending) {
     return null;
   }
+
+  const noObjectFound = isNotFoundHttpError(error);
 
   return (
     <Modal.Root
@@ -38,8 +34,8 @@ export function IngestedObjectDetailModal({
       <Modal.Content size="large">
         <Modal.Title>{tableName}</Modal.Title>
         <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
-          {data.object ? (
-            <DataFields table={tableName} object={data.object} options={{ hideLinks: true }} />
+          {object && !noObjectFound ? (
+            <DataFields table={tableName} object={object} options={{ hideLinks: true }} />
           ) : (
             <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
           )}

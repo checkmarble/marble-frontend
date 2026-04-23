@@ -123,9 +123,6 @@ export function getPageViewNameAndProps(thisPage: AnyRouteMatch): PageViewNameAn
     case 'routes/_builder/data/list': {
       return { name: 'Your data', properties: undefined };
     }
-    case 'routes/_builder/data/schema': {
-      return { name: 'Your data (schema)', properties: undefined };
-    }
     case 'routes/_builder/settings/api-keys': {
       return { name: 'Marble API', properties: undefined };
     }

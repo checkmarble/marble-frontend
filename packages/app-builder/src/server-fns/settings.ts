@@ -39,9 +39,7 @@ import {
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 
 import { UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { Dict } from '@swan-io/boxed';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -334,28 +332,6 @@ export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
         sanctionLimit: data.sanctionLimit,
       },
     });
-  });
-
-export const updateDataDisplayFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(
-    z.record(
-      z.string(),
-      z.object({
-        displayedFields: protectArray(z.array(z.string())).default([]),
-        fieldOrder: protectArray(z.array(z.string())),
-      }),
-    ),
-  )
-  .handler(async ({ context, data }) => {
-    await Promise.all(
-      Dict.entries(data).map(([tableId, body]) =>
-        context.authInfo.dataModelRepository.setDataModelTableOptions(tableId, {
-          ...body,
-          displayedFields: body.displayedFields ?? [],
-        }),
-      ),
-    );
   });
 
 // ---- Personal Settings ----

@@ -212,15 +212,7 @@ export function getMockValue(
   return value;
 }
 
-/**
- * Returns true if a table can serve as the target of a link (transaction/event/account "belongs to" link).
- * Tables of type Person, Company, Organization, or with no entity type qualify.
- */
+// Returns true if a table can serve as the target of a link (transaction/event/account "belongs to" link).
 export function isLinkableTable(table: TableModel): boolean {
-  return (
-    table.ftmEntity === 'Person' ||
-    table.ftmEntity === 'Company' ||
-    table.ftmEntity === 'Organization' ||
-    !table.ftmEntity
-  );
+  return table.semanticType === 'person';
 }

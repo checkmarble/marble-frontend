@@ -4,8 +4,6 @@ import {
   adaptClientDataListResponse,
   adaptCreateAnnotationDto,
   adaptCreateNavigationOptionDto,
-  adaptCreatePivotInputDto,
-  adaptCreateTableFieldDto,
   adaptDataModel,
   adaptDataModelObject,
   adaptDataModelTableOptions,
@@ -14,13 +12,10 @@ import {
   adaptExportedFieldsDto,
   adaptPivot,
   adaptSetDataModelTableOptionBodyDto,
-  adaptUpdateFieldDto,
   type ClientDataListRequestBody,
   type ClientDataListResponse,
   type CreateAnnotationBody,
-  type CreateFieldInput,
   type CreateNavigationOption,
-  type CreatePivotInput,
   createTableValueToCreateTableBody,
   type DataModel,
   type DataModelObject,
@@ -30,7 +25,6 @@ import {
   ExportedFields,
   type Pivot,
   type SetDataModelTableOptionsBody,
-  type UpdateFieldInput,
 } from '@app-builder/models';
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
@@ -42,10 +36,7 @@ export interface DataModelRepository {
   getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
   createTable(body: CreateTableValue): Promise<{ id: string }>;
   patchDataModelTable(tableId: string, body: UpdateTableBodyDto): Promise<void>;
-  postDataModelTableField(tableId: string, createFieldInput: CreateFieldInput): Promise<void>;
-  patchDataModelField(tableId: string, updateFieldInput: UpdateFieldInput): Promise<void>;
   listPivots(args: { tableId?: string }): Promise<Pivot[]>;
-  createPivot(pivot: CreatePivotInput): Promise<Pivot>;
   getIngestedObject(tableName: string, objectId: string): Promise<DataModelObject>;
   getCasesForObject(objectType: string, objectId: string): Promise<Case[]>;
   listClientObjects(args: { tableName: string; body: ClientDataListRequestBody }): Promise<ClientDataListResponse>;
@@ -57,9 +48,6 @@ export interface DataModelRepository {
   updateDataModelTableExportedFields(tableId: string, body: ExportedFields): Promise<ExportedFields>;
   getDataModelTableExportedFields(tableId: string): Promise<ExportedFields>;
   deleteTable(tableId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
-  deleteField(fieldId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
-  deleteLink(linkId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
-  deletePivot(pivotId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
   getAnnotationsByTableNameAndObjectId(
     tableName: string,
     objectId: string,
@@ -83,23 +71,12 @@ export function makeGetDataModelRepository() {
     patchDataModelTable: async (tableId, body) => {
       await marbleCoreApiClient.patchDataModelTable(tableId, body);
     },
-    postDataModelTableField: async (tableId, createFieldInput) => {
-      await marbleCoreApiClient.postDataModelTableField(tableId, adaptCreateTableFieldDto(createFieldInput));
-    },
-    patchDataModelField: async (tableId, updateFieldInput) => {
-      await marbleCoreApiClient.patchDataModelField(tableId, adaptUpdateFieldDto(updateFieldInput));
-    },
     listPivots: async ({ tableId }) => {
       const { pivots } = await marbleCoreApiClient.listDataModelPivots({
         tableId,
       });
 
       return pivots.map(adaptPivot);
-    },
-    createPivot: async (pivotInput) => {
-      const { pivot } = await marbleCoreApiClient.createDataModelPivot(adaptCreatePivotInputDto(pivotInput));
-
-      return adaptPivot(pivot);
     },
     getIngestedObject: async (tableName, objectId) => {
       return adaptDataModelObject(await marbleCoreApiClient.getIngestedObject(tableName, objectId));
@@ -138,42 +115,6 @@ export function makeGetDataModelRepository() {
     deleteTable: async (tableId, options) => {
       try {
         const result = await marbleCoreApiClient.deleteDataModelTable(tableId, options);
-        return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
-      } catch (error) {
-        // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
-        if (isStatusConflictHttpError(error)) {
-          return adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto);
-        }
-        throw error;
-      }
-    },
-    deleteField: async (fieldId, options) => {
-      try {
-        const result = await marbleCoreApiClient.deleteDataModelField(fieldId, options);
-        return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
-      } catch (error) {
-        // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
-        if (isStatusConflictHttpError(error)) {
-          return adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto);
-        }
-        throw error;
-      }
-    },
-    deleteLink: async (linkId, options) => {
-      try {
-        const result = await marbleCoreApiClient.deleteDataModelLink(linkId, options);
-        return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
-      } catch (error) {
-        // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
-        if (isStatusConflictHttpError(error)) {
-          return adaptDestroyDataModelReport(error.data as DestroyDataModelReportDto);
-        }
-        throw error;
-      }
-    },
-    deletePivot: async (pivotId, options) => {
-      try {
-        const result = await marbleCoreApiClient.deleteDataModelPivot(pivotId, options);
         return adaptDestroyDataModelReport(result as DestroyDataModelReportDto);
       } catch (error) {
         // 409 Conflict is a valid response containing the DestroyDataModelReport with blocking conflicts
