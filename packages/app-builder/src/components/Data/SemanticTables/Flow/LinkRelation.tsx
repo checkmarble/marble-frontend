@@ -2,6 +2,7 @@ import { type LinkToSingle } from '@app-builder/models';
 import { BaseEdge, type DefaultEdgeOptions, type Edge, type EdgeProps, getBezierPath, MarkerType } from '@xyflow/react';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import '@xyflow/react/dist/style.css';
 
 export type LinkToSingleData = {
   original: LinkToSingle;

@@ -9,6 +9,7 @@ import { Button } from 'ui-design-system';
 import { DeletePivot } from './DeleteDataModel/DeletePivot';
 import { dataI18n } from './data-i18n';
 import { PivotDetails } from './PivotDetails';
+import '@xyflow/react/dist/style.css';
 
 interface SelectedPivotContextValue {
   displayPivot: boolean;

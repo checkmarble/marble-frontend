@@ -33,6 +33,7 @@ import { dataI18n } from './data-i18n';
 import { EditField } from './EditField';
 import { EditTable } from './EditTable';
 import { useSelectedPivot } from './SelectedPivot';
+import '@xyflow/react/dist/style.css';
 
 const MIN_COLUMNS = 2;
 

@@ -1,5 +1,6 @@
 import { type LinkToSingle } from '@app-builder/models';
 import { BaseEdge, type DefaultEdgeOptions, type Edge, type EdgeProps, getBezierPath, MarkerType } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
 import { useSelectedPivot } from './SelectedPivot';
 
