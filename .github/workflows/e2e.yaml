@@ -35,7 +35,13 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - run: bun run -F tests test:install
-      - run: bun run -F tests test:ci
+      - name: Pre-pull test container images in parallel with build
+        run: |
+          docker pull postgis/postgis:17-3.6-alpine &
+          docker pull europe-west1-docker.pkg.dev/marble-infra/marble/firebase-emulator:latest &
+          docker pull europe-west1-docker.pkg.dev/marble-infra/marble/marble-backend:latest &
+          bun run -F tests test:ci
+          wait
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
