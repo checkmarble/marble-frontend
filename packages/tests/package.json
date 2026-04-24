@@ -7,6 +7,8 @@
   "scripts": {
     "test:install": "playwright install",
     "test": "DEBUG=testcontainers:containers NODE_OPTIONS=--disable-warning=ExperimentalWarning playwright test",
+    "test:prod": "rm -rf ../app-builder/.output && NODE_ENV=production bun run -F app-builder build && DEBUG=testcontainers:containers NODE_OPTIONS=--disable-warning=ExperimentalWarning playwright test --config=playwright.ci.config.ts",
+    "test:ci": "bun run test:prod",
     "test:ui": "NODE_OPTIONS=--disable-warning=ExperimentalWarning playwright test --ui",
     "lint": "eslint ."
   },
