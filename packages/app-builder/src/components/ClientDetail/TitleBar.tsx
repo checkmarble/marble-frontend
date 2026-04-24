@@ -25,7 +25,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   const [editTagsOpen, setEditTagsOpen] = useState(false);
   const [editRiskCateogoriesOpen, setEditRiskCategoriesOpen] = useState(false);
   const queryClient = useQueryClient();
-  const entityName = metadata.alias || metadata.name;
+  const entityName = metadata?.alias || metadata.name;
 
   return (
     <div className="flex gap-v2-md items-center min-w-0">
