@@ -241,12 +241,12 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
       case 'string':
         return value.includes('\n') ? (
           value.split('\n').map((v, index) => (
-            <p key={`chunk-${index}`} className="break-words">
+            <p key={`chunk-${index}`}>
               <HighlightText text={v} highlight={ctx.highlightText} />
             </p>
           ))
         ) : (
-          <HighlightText text={value} highlight={ctx.highlightText} className="break-words" />
+          <HighlightText text={value} highlight={ctx.highlightText} />
         );
       case 'url':
         return <ExternalLink href={value}>{value}</ExternalLink>;
