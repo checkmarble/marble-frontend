@@ -10,7 +10,7 @@
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "NODE_ENV=production vite build",
     "start": "node .output/server/index.mjs",
     "unit-tests": "vitest run"
   },
