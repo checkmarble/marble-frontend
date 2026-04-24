@@ -13,12 +13,12 @@ interface HighlightTextProps {
  * - "Vladimir Putin" highlights "Vladimir", "Putin", or "Vladimir Putin"
  */
 export function HighlightText({ text, highlight, className }: HighlightTextProps): ReactNode {
-  if (!text) return null;
   const isMatch = useMemo(() => {
     if (!highlight || highlight.length === 0) {
       return false;
     }
 
+    if (!text) return null;
     const textLower = text.toLowerCase();
     const highlightLower = highlight.toLowerCase();
 
