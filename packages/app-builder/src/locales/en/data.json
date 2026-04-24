@@ -188,7 +188,7 @@
   "parent_table": "Related table",
   "select_archetype.button_accept": "Apply archetype",
   "select_archetype.title": "Select an archetype",
-  "show_hidden_fields": "Show the hidden fields",
+  "show_hidden_fields": "Show the hidden fields ({{count}})",
   "table_details.actions": "Table actions",
   "table_details.number_of_fields": "{{number}} fields",
   "table_details.other_table": "Unknown",

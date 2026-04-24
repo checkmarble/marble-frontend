@@ -188,7 +188,7 @@
   "parent_table": "جدول ذو صلة",
   "select_archetype.button_accept": "تطبيق النموذج",
   "select_archetype.title": "اختيار نموذج أولي",
-  "show_hidden_fields": "إظهار الحقول المخفية",
+  "show_hidden_fields": "إظهار الحقول المخفية ({{count}})",
   "table_details.actions": "إجراءات الجدول",
   "table_details.number_of_fields": "الحقول {{number}}.",
   "table_details.other_table": "مجهول",

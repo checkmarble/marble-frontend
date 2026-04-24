@@ -188,7 +188,7 @@
   "parent_table": "Table associée",
   "select_archetype.button_accept": "Appliquer l'archétype",
   "select_archetype.title": "Sélectionner un archétype",
-  "show_hidden_fields": "Afficher les champs masqués",
+  "show_hidden_fields": "Afficher les champs masqués ({{count}})",
   "table_details.actions": "Actions de la table",
   "table_details.number_of_fields": "{{number}} champs",
   "table_details.other_table": "Inconnu",

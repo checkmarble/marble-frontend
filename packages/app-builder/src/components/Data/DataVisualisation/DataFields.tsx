@@ -131,10 +131,12 @@ export function DataFields({ table, object, preset, customFields, className, opt
               ) : null;
             })
           : null}
-        {options?.withOptionalHidden ? (
+        {fields.some((field) => field?.hidden) && options?.withOptionalHidden ? (
           <div className="flex justify-start col-span-full">
             <Button variant="secondary" size="small" onClick={() => setShowHidden(!showHidden)}>
-              {showHidden ? t('data:hide_hidden_fields') : t('data:show_hidden_fields')}
+              {showHidden
+                ? t('data:hide_hidden_fields')
+                : t('data:show_hidden_fields', { count: fields.filter((field) => field?.hidden).length })}
             </Button>
           </div>
         ) : null}
