@@ -37,15 +37,7 @@ export const ScreeningObjectDetails = ({ objectType, objectId, className }: Scre
           const tableModel = dmQuery.data.dataModel.find((t) => t.name === objectType);
           if (!tableModel) return null;
 
-          return (
-            <DataFields
-              table={tableModel.name}
-              object={{
-                data: objQuery.data.data,
-                metadata: { validFrom: (objQuery.data.data['updated_at'] as string) ?? '' },
-              }}
-            />
-          );
+          return <DataFields table={tableModel.name} object={{ data: objQuery.data.data }} />;
         })
         .exhaustive()}
     </div>

@@ -2,7 +2,7 @@ import { useSearchClient360Query } from '@app-builder/queries/client360/search';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { Client360SearchPayload } from '@app-builder/schemas/client360';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
-import { Link } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -14,10 +14,21 @@ import { Spinner } from '../Spinner';
 export const SearchResults = ({ payload, tables }: { payload: Client360SearchPayload; tables: Client360Table[] }) => {
   const { t } = useTranslation(['common', 'client360']);
   const searchQuery = useSearchClient360Query(payload);
+  const navigate = useNavigate();
   const metadata = tables.find((table) => table.name === payload.table);
 
   if (!metadata) {
     return <div>{t('client360:client_detail.search_results.metadata_not_found', { table: payload.table })}</div>;
+  }
+
+  function handleClickCard(objectId: string) {
+    navigate({
+      to: '/client-detail/$objectType/$objectId',
+      params: {
+        objectType: payload.table,
+        objectId,
+      },
+    });
   }
 
   return match(searchQuery)
@@ -40,15 +51,21 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
           {data.pages
             .flatMap((page) => page.items)
             .map((item) => {
+              const objectId = item['object_id'] as string;
+
               return (
-                <Link
-                  to="/client-detail/$objectType/$objectId"
-                  params={{
-                    objectType: payload.table,
-                    objectId: item['object_id'] as string,
+                <div
+                  key={objectId}
+                  role="link"
+                  tabIndex={0}
+                  className="p-v2-md flex items-center border border-grey-border rounded-v2-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-purple-primary"
+                  onClick={() => handleClickCard(objectId)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      handleClickCard(objectId);
+                    }
                   }}
-                  key={item['object_id'] as string}
-                  className="p-v2-md flex items-center border border-grey-border rounded-v2-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
                 >
                   <Highlight
                     text={String(item[metadata.caption_field] ?? '')}
@@ -58,12 +75,12 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                   />
                   <DataFields
                     table={payload.table}
-                    object={{ data: item, metadata: { validFrom: (item['updated_at'] as string) ?? '' } }}
+                    object={{ data: item }}
                     preset="essentials"
                     options={{ withId: true, hideLinks: true }}
                   />
-                  <EntityTags objectType={payload.table} objectId={item['object_id'] as string} />
-                </Link>
+                  <EntityTags objectType={payload.table} objectId={objectId} />
+                </div>
               );
             })}
           {searchQuery.hasNextPage ? (

@@ -2,10 +2,10 @@ import { type DataModelField, DataModelObject } from '@app-builder/models';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { cn } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { DataField } from './DataField';
 import { type TYPE_DATA_TABLE_VISUALISATION_PRESET } from './data-type';
 import { getLinksFromDatamodel, hasMetadataContent, isMetadataKey, METADATA_FIELDS } from './dataFieldsUtils';
@@ -31,12 +31,15 @@ export type DataFieldsProps = (
     showHeader?: boolean;
     withId?: boolean;
     layout?: '1-column' | '2-columns' | '3-columns';
+    withOptionalHidden?: boolean;
   };
 };
 
 export function DataFields({ table, object, preset, customFields, className, options }: DataFieldsProps) {
   const dataModel = useDataModel();
+  const [showHidden, setShowHidden] = useState(false);
   const tableModel = dataModel.find((tbl) => tbl.name === table);
+  const { t } = useTranslation(['data']);
 
   const links = options?.hideLinks ? undefined : getLinksFromDatamodel(dataModel, table);
 
@@ -114,6 +117,8 @@ export function DataFields({ table, object, preset, customFields, className, opt
               const metaDataValue =
                 field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
               const fieldCurrency = resolveFieldCurrency(field, tableModel?.fields, object.data);
+              const isHidden = field?.hidden && !showHidden;
+              if (isHidden) return null;
               return field ? (
                 <DataField
                   key={field?.id}
@@ -126,6 +131,13 @@ export function DataFields({ table, object, preset, customFields, className, opt
               ) : null;
             })
           : null}
+        {options?.withOptionalHidden ? (
+          <div className="flex justify-start col-span-full">
+            <Button variant="secondary" size="small" onClick={() => setShowHidden(!showHidden)}>
+              {showHidden ? t('data:hide_hidden_fields') : t('data:show_hidden_fields')}
+            </Button>
+          </div>
+        ) : null}
       </div>
     </DataVisualisationProvider>
   );
@@ -134,19 +146,21 @@ export function DataFields({ table, object, preset, customFields, className, opt
 function filterFieldsByPreset(
   fields: DataModelField[],
   preset: TYPE_DATA_TABLE_VISUALISATION_PRESET,
-  options?: { withId?: boolean },
+  options?: { withId?: boolean; withOptionalHidden?: boolean },
 ) {
   switch (preset) {
     case 'essentials': {
       const withId = options?.withId !== false; // default to true
       return fields.filter(
-        (field) => !field.hidden && (field.nullable === false || (withId && field.name === 'object_id')),
+        (field) =>
+          (!field.hidden || options?.withOptionalHidden) &&
+          (field.nullable === false || (withId && field.name === 'object_id')),
       );
     }
     case 'advanced':
     // tbd
     case 'full':
-      return fields.filter((field) => !field.hidden || field.name === 'object_id');
+      return fields.filter((field) => !field.hidden || options?.withOptionalHidden || field.name === 'object_id');
   }
 }
 
@@ -177,14 +191,16 @@ function DataFieldsHeader({ object }: { object: DataModelObject }) {
   return (
     <div className="text-m col-span-full flex items-center gap-2 mb-2">
       <span className="bg-surface-card border-blue-58 text-blue-58 rounded-sm border px-2 py-1">ID: {objectId}</span>
-      <span className="bg-surface-card border-grey-placeholder text-grey-secondary rounded-sm border px-2 py-1">
-        {t('data:last_ingestion_at', {
-          date: formatDateTime(object.metadata.validFrom, {
-            dateStyle: 'short',
-            timeStyle: 'short',
-          }),
-        })}
-      </span>
+      {object?.metadata?.validFrom && (
+        <span className="bg-surface-card border-grey-placeholder text-grey-secondary rounded-sm border px-2 py-1">
+          {t('data:last_ingestion_at', {
+            date: formatDateTime(object.metadata.validFrom, {
+              dateStyle: 'short',
+              timeStyle: 'short',
+            }),
+          })}
+        </span>
+      )}
     </div>
   );
 }
