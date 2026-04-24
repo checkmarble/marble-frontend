@@ -783,7 +783,8 @@ export function getTriggerObjectFields(
   const tableOptions = dataModelWithTableOptions.find(({ name }) => name === triggerObjectType);
 
   return R.pipe(
-    tableOptions?.options.fieldOrder ?? [],
+    // fields are already ordered
+    tableOptions?.fields.map((f) => f.id) ?? [],
     R.filter((id) =>
       tableOptions?.options.displayedFields ? tableOptions.options.displayedFields.includes(id) : true,
     ),
