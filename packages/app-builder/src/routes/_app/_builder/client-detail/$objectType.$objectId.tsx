@@ -18,55 +18,63 @@ const getDataFn = createServerFn()
   .middleware([authMiddleware])
   .inputValidator(paramsSchema)
   .handler(async ({ context, data: { objectId, objectType } }) => {
-    const request = getRequest();
-    const { i18nextService } = context.services;
-    const t = await i18nextService.getFixedT(request, ['common', 'client360']);
-    const { user, dataModelRepository, userScoring, client360, entitlements } = context.authInfo;
+    try {
+      const request = getRequest();
+      const { i18nextService } = context.services;
+      const t = await i18nextService.getFixedT(request, ['common', 'client360']);
+      const { user, dataModelRepository, userScoring, client360, entitlements } = context.authInfo;
 
-    const objectPromise = dataModelRepository.getIngestedObject(objectType, objectId).catch(async (error) => {
-      if (isNotFoundHttpError(error)) {
-        await setToast({
-          type: 'error',
-          message: t('client360:client_detail.no_object_found', { objectType }),
-        });
+      const objectPromise = dataModelRepository.getIngestedObject(objectType, objectId).catch(async (error) => {
+        if (isNotFoundHttpError(error)) {
+          await setToast({
+            type: 'error',
+            message: t('client360:client_detail.no_object_found', { objectType }),
+          });
+          throw redirect({ to: '/client-detail' });
+        }
+        throw error;
+      });
+
+      const [objectDetails, scoringSettings, tables, dataModel] = await Promise.all([
+        objectPromise,
+        userScoring.getSettings(),
+        client360.getClient360Tables(),
+        dataModelRepository.getDataModel(),
+      ]);
+
+      let activeScore = null;
+      try {
+        activeScore = (await userScoring.getScoreLatest(objectType, objectId)) ?? null;
+      } catch (error) {
+        if (!isNotFoundHttpError(error)) throw error;
+      }
+
+      const tableMetadata = tables.find((table) => table.name === objectType);
+      if (!tableMetadata) {
         throw redirect({ to: '/client-detail' });
       }
-      throw error;
-    });
 
-    const [objectDetails, scoringSettings, tables, dataModel] = await Promise.all([
-      objectPromise,
-      userScoring.getSettings(),
-      client360.getClient360Tables(),
-      dataModelRepository.getDataModel(),
-    ]);
+      const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
 
-    let activeScore = null;
-    try {
-      activeScore = (await userScoring.getScoreLatest(objectType, objectId)) ?? null;
+      return {
+        objectType,
+        objectId,
+        objectDetails,
+        metadata: tableMetadata,
+        allMetadata: tables,
+        dataModel,
+        dataModelFeatureAccess,
+        scoringSettings,
+        activeScore,
+        userScoringAccess: entitlements.userScoring,
+      };
     } catch (error) {
-      if (!isNotFoundHttpError(error)) throw error;
+      if (error instanceof Response) throw error;
+      throw new Response(error instanceof Error ? error.message : String(error), {
+        status: 500,
+        headers: { 'Content-Type': 'text/plain' },
+      });
     }
-
-    const tableMetadata = tables.find((table) => table.name === objectType);
-    if (!tableMetadata) {
-      throw redirect({ to: '/client-detail' });
-    }
-
-    const dataModelFeatureAccess = dataModelFeatureAccessLoader(user, entitlements);
-
-    return {
-      objectType,
-      objectId,
-      objectDetails,
-      metadata: tableMetadata,
-      allMetadata: tables,
-      dataModel,
-      dataModelFeatureAccess,
-      scoringSettings,
-      activeScore,
-      userScoringAccess: entitlements.userScoring,
-    };
   });
 
 export const Route = createFileRoute('/_app/_builder/client-detail/$objectType/$objectId')({

@@ -2,11 +2,11 @@ import { useSearchClient360Query } from '@app-builder/queries/client360/search';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { Client360SearchPayload } from '@app-builder/schemas/client360';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
-import { useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Tag } from 'ui-design-system';
+import { Button, LinkWrapper, Tag } from 'ui-design-system';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { Highlight } from '../Highlight';
 import { Spinner } from '../Spinner';
@@ -15,20 +15,9 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
   const { t } = useTranslation(['common', 'client360']);
   const searchQuery = useSearchClient360Query(payload);
   const metadata = tables.find((table) => table.name === payload.table);
-  const navigate = useNavigate();
 
   if (!metadata) {
     return <div>{t('client360:client_detail.search_results.metadata_not_found', { table: payload.table })}</div>;
-  }
-
-  function handleClick(objectId: string) {
-    navigate({
-      to: '/client-detail/$objectType/$objectId',
-      params: {
-        objectType: payload.table,
-        objectId,
-      },
-    });
   }
 
   return match(searchQuery)
@@ -51,18 +40,14 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
           {data.pages
             .flatMap((page) => page.items)
             .map((item) => {
+              const objectId = item['object_id'] as string;
+
               return (
-                <div
-                  onClick={() => handleClick(item['object_id'] as string)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      handleClick(item['object_id'] as string);
-                    }
-                  }}
-                  role="link"
-                  tabIndex={0}
-                  key={item['object_id'] as string}
+                <LinkWrapper
+                  key={objectId}
+                  link={
+                    <Link to="/client-detail/$objectType/$objectId" params={{ objectType: payload.table, objectId }} />
+                  }
                   className="p-v2-md flex items-center border border-grey-border rounded-v2-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
                 >
                   <Highlight
@@ -77,8 +62,8 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                     preset="essentials"
                     options={{ withId: true, hideLinks: true }}
                   />
-                  <EntityTags objectType={payload.table} objectId={item['object_id'] as string} />
-                </div>
+                  <EntityTags objectType={payload.table} objectId={objectId} />
+                </LinkWrapper>
               );
             })}
           {searchQuery.hasNextPage ? (
