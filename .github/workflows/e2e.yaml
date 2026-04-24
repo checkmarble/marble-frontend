@@ -35,13 +35,23 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - run: bun run -F tests test:install
-      - name: Pre-pull test container images in parallel with build
+      - name: Cache app build output
+        id: cache-output
+        uses: actions/cache@v5
+        with:
+          path: packages/app-builder/.output
+          key: ${{ runner.os }}-output-${{ hashFiles('packages/*/src/**', 'packages/*/package.json', 'packages/app-builder/vite.config.ts', 'packages/app-builder/tsconfig.json', 'bun.lock') }}
+      - name: Pre-pull test container images (and build if cache miss)
         run: |
           docker pull postgis/postgis:17-3.6-alpine &
           docker pull europe-west1-docker.pkg.dev/marble-infra/marble/firebase-emulator:latest &
           docker pull europe-west1-docker.pkg.dev/marble-infra/marble/marble-backend:latest &
-          bun run -F tests test:ci
+          if [ "${{ steps.cache-output.outputs.cache-hit }}" != "true" ]; then
+            bun run -F app-builder build
+          fi
           wait
+      - name: Run E2E tests
+        run: bun run -F tests test:run:prod
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
