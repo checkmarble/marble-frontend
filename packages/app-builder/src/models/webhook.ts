@@ -11,13 +11,16 @@ export const eventTypes = [
   'case.updated',
   'case.created_manually',
   'case.created_from_workflow',
+  'case.created_from_continuous_screening',
   'case.decisions_updated',
   'case.tags_updated',
   'case.comment_created',
   'case.file_created',
   'case.rule_snooze_created',
   'case.decision_reviewed',
+  'case.continuous_screening_match_reviewed',
   'decision.created',
+  'async_decision.failed',
 ] as const;
 export type EventType = (typeof eventTypes)[number];
 
