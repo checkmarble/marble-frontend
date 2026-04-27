@@ -2,6 +2,7 @@ import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/s
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
+import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { useForm, useStore } from '@tanstack/react-form';
 import CountryFlag from 'country-flag-emojis';
@@ -10,7 +11,6 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input, SelectCountry, type SelectCountryValue } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { screeningsI18n } from '../screenings-i18n';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
@@ -29,23 +29,24 @@ function setAdditionalFields(fields: string[], prev: FreeformSearchInput['fields
 function countryFormStringToValue(raw: string): SelectCountryValue | null {
   const trimmed = raw.trim();
   if (trimmed === '') return null;
-  try {
-    const c = CountryFlag.byCountryCode(trimmed.length <= 3 ? trimmed.toUpperCase() : trimmed);
+  const cc = trimmed.length <= 3 ? trimmed.toUpperCase() : trimmed;
+  const res = tryCatch(() => CountryFlag.byCountryCode(cc));
+  if (res.ok) {
+    const c = res.value;
     return {
       isoAlpha2: c.isoAlpha2,
       isoAlpha3: c.isoAlpha3,
       name: c.nameEnglish,
       isManual: false,
     };
-  } catch {
-    return { isoAlpha2: '', isoAlpha3: '', name: trimmed, isManual: true };
   }
+  return { isoAlpha2: '', isoAlpha3: '', name: trimmed, isManual: true };
 }
 
 function countryValueToFormString(v: SelectCountryValue | null): string {
   if (!v) return '';
   if (v.isManual) return v.name;
-  return v.isoAlpha2;
+  return v.isoAlpha3;
 }
 
 interface FreeformSearchFormProps {

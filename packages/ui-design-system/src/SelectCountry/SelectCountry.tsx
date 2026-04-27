@@ -27,15 +27,15 @@ export type SelectCountryProps = {
 } & Pick<ComponentProps<typeof MenuCommand.SelectButton>, 'className' | 'disabled' | 'name' | 'onBlur' | 'id'> &
   Omit<ComponentProps<typeof MenuCommand.Menu>, MenuOmitted> & { menuContentClassName?: string };
 
-function buildCountryList(): { countries: readonly CountryFlag[]; byIso2: ReadonlyMap<string, CountryFlag> } {
+function buildCountryList(): { countries: readonly CountryFlag[]; byIso3: ReadonlyMap<string, CountryFlag> } {
   const list = Object.values(allCountryFlags as Record<string, CountryFlag>).sort((a, b) =>
     a.nameEnglish.localeCompare(b.nameEnglish),
   );
-  const byIso2 = new Map<string, CountryFlag>();
+  const byIso3 = new Map<string, CountryFlag>();
   for (const c of list) {
-    byIso2.set(c.isoAlpha2, c);
+    byIso3.set(c.isoAlpha3, c);
   }
-  return { countries: list, byIso2 };
+  return { countries: list, byIso3 };
 }
 
 function itemFilterValue(c: CountryFlag) {
@@ -88,7 +88,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
   },
   ref,
 ) {
-  const { countries, byIso2 } = useMemo(buildCountryList, []);
+  const { countries, byIso3 } = useMemo(buildCountryList, []);
   const [internalOpen, setInternalOpen] = useState(false);
 
   const open = openProp ?? internalOpen;
@@ -97,8 +97,8 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
     onOpenChangeProp?.(next);
   };
 
-  const listIso2 = value && !value.isManual ? value.isoAlpha2 : undefined;
-  const selectedFromList = listIso2 ? byIso2.get(listIso2) : undefined;
+  const listIso3 = value && !value.isManual ? value.isoAlpha3 : undefined;
+  const selectedFromList = listIso3 ? byIso3.get(listIso3) : undefined;
   const displayTrigger = () => {
     if (value?.isManual) {
       return (
@@ -124,8 +124,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
     );
   };
 
-  const handleListChange = (iso2: string) => {
-    const c = byIso2.get(iso2);
+  const handleListChange = (c: CountryFlag) => {
     if (!c) return;
     onValueChange({
       isoAlpha2: c.isoAlpha2,
@@ -176,11 +175,11 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
           <MenuCommand.List className="max-h-60 min-h-0">
             {countries.map((c) => (
               <MenuCommand.Item
-                key={c.isoAlpha2}
+                key={c.isoAlpha3}
                 value={itemFilterValue(c)}
                 className="cursor-pointer"
-                selected={c.isoAlpha2 === listIso2}
-                onSelect={() => handleListChange(c.isoAlpha2)}
+                selected={c.isoAlpha3 === listIso3}
+                onSelect={() => handleListChange(c)}
               >
                 <span className="text-s text-grey-primary flex w-full min-w-0 items-center justify-between gap-2 font-medium">
                   <span className="flex min-w-0 items-center gap-2">
@@ -189,7 +188,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
                     </span>
                     <span className="truncate">{c.nameEnglish}</span>
                   </span>
-                  {c.isoAlpha2 === listIso2 ? (
+                  {c.isoAlpha3 === listIso3 ? (
                     <Icon icon="tick" className="size-5 shrink-0 text-purple-primary" />
                   ) : null}
                 </span>
