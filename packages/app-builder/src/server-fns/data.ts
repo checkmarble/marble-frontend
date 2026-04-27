@@ -1,4 +1,4 @@
-import { MAX_FILE_SIZE, MAX_FILE_SIZE_MB } from '@app-builder/hooks/useFormDropzone';
+import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isNotFoundHttpError, isStatusConflictHttpError } from '@app-builder/models';
 import { type Case } from '@app-builder/models/cases';
@@ -21,7 +21,6 @@ import {
 } from '@app-builder/schemas/data';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { getTableMutationError } from '@app-builder/services/data/table-mutation-errors';
-import { setToast } from '@app-builder/services/toast.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getClientAnnotationFileUploadEndpoint, getIngestionDataBatchUploadEndpoint } from '@app-builder/utils/files';
 import { omitUndefined } from '@app-builder/utils/omit-undefined';
@@ -258,21 +257,15 @@ export const createNavigationOptionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ tableId: z.string(), ...createNavigationOptionSchema.shape }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
     const { tableId, ...options } = data;
-
     try {
       await context.authInfo.dataModelRepository.createNavigationOption(tableId, options);
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
       return { success: true };
     } catch (err) {
-      let message = t('common:errors.unknown');
       if (isStatusConflictHttpError(err)) {
-        message = t('data:create_navigation_option.errors.duplicate_pivot_value');
+        return { status: 'error', error: 'duplicate_pivot_value' as const };
       }
-      await setToast({ type: 'error', message });
-      return { status: 'error', errors: [] };
+      throw new Error('Failed to create navigation option');
     }
   });
 
@@ -280,15 +273,10 @@ export const applyArchetypeFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(applyArchetypePayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
-
     try {
       await context.authInfo.apiClient.applyArchetype({ name: data.name }, {});
-      await setToast({ type: 'success', message: t('data:apply_archetype.success') });
       return { success: true };
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       return { success: false };
     }
   });
@@ -332,7 +320,6 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
   })
   .handler(async ({ context, data: formData }) => {
     const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
     const authSession = await useAuthSession();
 
     const [err, raw] = await tryit(async (req: Request) => {
@@ -344,8 +331,7 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
     })(request);
 
     if (err) {
-      await setToast({ type: 'error', message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }) });
-      return { success: false, errors: [] };
+      return { success: false, error: 'file_too_large' as const };
     }
 
     const token = authSession.data.authToken?.access_token;
@@ -424,8 +410,7 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
         })
         .exhaustive();
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
-      return { success: false };
+      throw new Error('Failed to create annotation');
     }
   });
 
@@ -433,15 +418,10 @@ export const deleteAnnotationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ annotationId: z.string() }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
-
     try {
       await context.authInfo.dataModelRepository.deleteAnnotation(data.annotationId);
-      await setToast({ type: 'success', message: t('common:success.deleted') });
       return { success: true };
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       return { success: false, errors: [] };
     }
   });
@@ -498,16 +478,11 @@ export const importOrgFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ body: z.unknown() }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
-
     try {
       await context.authInfo.organization.importOrganization(data.body);
-      await setToast({ type: 'success', message: t('data:import_org.success') });
       return { success: true };
     } catch (error) {
       console.error('[import-org] Import failed:', error);
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       return { success: false };
     }
   });
@@ -519,22 +494,16 @@ export const importOrgFileFn = createServerFn({ method: 'POST' })
     return data;
   })
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
-
     const file = data.get('file');
     if (!(file instanceof Blob)) {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       return { success: false };
     }
 
     try {
       await context.authInfo.organization.importOrganizationFromFile(file);
-      await setToast({ type: 'success', message: t('data:import_org.success') });
       return { success: true };
     } catch (error) {
       console.error('[import-org-file] Import failed:', error);
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       return { success: false };
     }
   });

@@ -6,6 +6,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -47,13 +48,20 @@ export function ClientCommentForm({
       onMount: createCommentAnnotationSchema,
     },
     onSubmit({ value }) {
-      createAnnotationMutation.mutateAsync(value).then((result) => {
-        revalidate();
-        if (result.success) {
-          form.setFieldValue('payload.text', '');
-          onAnnotateSuccess();
-        }
-      });
+      createAnnotationMutation
+        .mutateAsync(value)
+        .then((result) => {
+          revalidate();
+          if (result.success) {
+            form.setFieldValue('payload.text', '');
+            onAnnotateSuccess();
+          } else {
+            toast.error(t('common:errors.unknown'));
+          }
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
   });
 

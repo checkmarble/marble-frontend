@@ -3,6 +3,7 @@ import { useApplyArchetypeMutation } from '@app-builder/queries/data/apply-arche
 import { type Archetype, useListArchetypesQuery } from '@app-builder/queries/data/list-archetypes';
 import clsx from 'clsx';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -18,14 +19,21 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
   const handleApply = () => {
     if (!selectedArchetype) return;
 
-    applyArchetypeMutation.mutateAsync({ name: selectedArchetype.name }).then((result) => {
-      revalidate();
-
-      if (result.success) {
-        setIsOpen(false);
-        setSelectedArchetype(null);
-      }
-    });
+    applyArchetypeMutation
+      .mutateAsync({ name: selectedArchetype.name })
+      .then((result) => {
+        revalidate();
+        if (result.success) {
+          toast.success(t('data:apply_archetype.success'));
+          setIsOpen(false);
+          setSelectedArchetype(null);
+        } else {
+          toast.error(t('common:errors.unknown'));
+        }
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (

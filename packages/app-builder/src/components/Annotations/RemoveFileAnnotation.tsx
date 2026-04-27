@@ -2,6 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { type FileAnnotation } from '@app-builder/models';
 import { useDeleteAnnotationMutation } from '@app-builder/queries/annotations/delete-annotation';
 import { useCallbackRef } from '@marble/shared';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 
@@ -18,14 +19,21 @@ export function RemoveFileAnnotation({ annotation, onClose, onDelete }: RemoveFi
   const revalidate = useLoaderRevalidator();
 
   const handleDelete = useCallbackRef(() => {
-    deleteAnnotationMutation.mutateAsync().then((result) => {
-      revalidate();
-
-      if (result.success) {
-        onDelete?.();
-        onClose();
-      }
-    });
+    deleteAnnotationMutation
+      .mutateAsync()
+      .then((result) => {
+        revalidate();
+        if (result.success) {
+          toast.success(t('common:success.deleted'));
+          onDelete?.();
+          onClose();
+        } else {
+          toast.error(t('common:errors.unknown'));
+        }
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   });
 
   return (

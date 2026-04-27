@@ -14,6 +14,7 @@ import { type ScreeningCategory, topicsToCategories } from '@app-builder/models/
 import { useCreateNavigationOptionForAstMutation } from '@app-builder/queries/data/create-navigation-option';
 import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Stepper, type StepperStep } from 'ui-design-system';
 
@@ -130,28 +131,32 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
   };
 
   const handleSave = async () => {
-    // Create pending navigation options in parallel
-    // Note: if one fails, already-created options remain on the server but the AST node won't be saved
-    if (pendingNavigationOptions.length > 0) {
-      await Promise.all(
-        pendingNavigationOptions.map((pending) =>
-          createNavigationOptionMutation.mutateAsync({
-            scenarioId,
-            tableId: pending.tableId,
-            sourceFieldId: pending.sourceFieldId,
-            targetTableId: pending.targetTableId,
-            filterFieldId: pending.filterFieldId,
-            orderingFieldId: pending.orderingFieldId,
-          }),
-        ),
-      );
+    try {
+      // Create pending navigation options in parallel
+      // Note: if one fails, already-created options remain on the server but the AST node won't be saved
+      if (pendingNavigationOptions.length > 0) {
+        await Promise.all(
+          pendingNavigationOptions.map((pending) =>
+            createNavigationOptionMutation.mutateAsync({
+              scenarioId,
+              tableId: pending.tableId,
+              sourceFieldId: pending.sourceFieldId,
+              targetTableId: pending.targetTableId,
+              filterFieldId: pending.filterFieldId,
+              orderingFieldId: pending.orderingFieldId,
+            }),
+          ),
+        );
+      }
+
+      const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
+      const updatedNode = NewTagCheckAstNode(monitoringListCheckAstNodeName, newConfig);
+      updatedNode.id = node.id;
+
+      props.onSave(updatedNode);
+    } catch {
+      toast.error(t('common:errors.unknown'));
     }
-
-    const newConfig = toMonitoringListCheckConfig(targetTableName, pathToTarget, selectedTopics, linkedObjectChecks);
-    const updatedNode = NewTagCheckAstNode(monitoringListCheckAstNodeName, newConfig);
-    updatedNode.id = node.id;
-
-    props.onSave(updatedNode);
   };
 
   const canProceedFromStep1 = !!targetTableName;

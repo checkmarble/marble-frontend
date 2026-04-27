@@ -9,6 +9,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -47,9 +48,19 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
     },
     onSubmit({ value, formApi }) {
       if (formApi.state.isValid) {
-        createNavigationOptionMutation.mutateAsync(value).then(() => {
-          revalidate();
-        });
+        createNavigationOptionMutation
+          .mutateAsync(value)
+          .then((res) => {
+            if ('error' in res && res.error === 'duplicate_pivot_value') {
+              toast.error(t('data:create_navigation_option.errors.duplicate_pivot_value'));
+              return;
+            }
+            toast.success(t('common:success.save'));
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
   });
