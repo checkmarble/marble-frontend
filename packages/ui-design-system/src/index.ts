@@ -23,6 +23,7 @@ export * from './Radio/Radio';
 export * from './RadioGroup/RadioGroup';
 export * from './ScrollArea/ScrollArea';
 export * from './Select/Select';
+export * from './SelectCountry/SelectCountry';
 export * from './SelectWithCombobox/SelectWithCombobox';
 export * from './Separator/Separator';
 export * from './Stepper/Stepper';

@@ -4,11 +4,11 @@ import { useFreeformSearchMutation } from '@app-builder/queries/screening/freefo
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { useForm, useStore } from '@tanstack/react-form';
-import clsx from 'clsx';
+import CountryFlag from 'country-flag-emojis';
 import { type FunctionComponent, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input } from 'ui-design-system';
+import { Button, cn, Input, SelectCountry, type SelectCountryValue } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { screeningsI18n } from '../screenings-i18n';
@@ -24,6 +24,28 @@ function setAdditionalFields(fields: string[], prev: FreeformSearchInput['fields
     result[field] = prevValue[field] ?? '';
   }
   return result as FreeformSearchInput['fields'];
+}
+
+function countryFormStringToValue(raw: string): SelectCountryValue | null {
+  const trimmed = raw.trim();
+  if (trimmed === '') return null;
+  try {
+    const c = CountryFlag.byCountryCode(trimmed.length <= 3 ? trimmed.toUpperCase() : trimmed);
+    return {
+      isoAlpha2: c.isoAlpha2,
+      isoAlpha3: c.isoAlpha3,
+      name: c.nameEnglish,
+      isManual: false,
+    };
+  } catch {
+    return { isoAlpha2: '', isoAlpha3: '', name: trimmed, isManual: true };
+  }
+}
+
+function countryValueToFormString(v: SelectCountryValue | null): string {
+  if (!v) return '';
+  if (v.isManual) return v.name;
+  return v.isoAlpha2;
 }
 
 interface FreeformSearchFormProps {
@@ -162,15 +184,26 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
                 const isLastOdd = index === entityTypeFields.length - 1 && entityTypeFields.length % 2 === 1;
                 return (
                   <form.Field key={fieldName} name={`fields.${fieldName}`}>
-                    {(formField) => (
-                      <Input
-                        name={formField.name}
-                        value={(formField.state.value as string) ?? ''}
-                        onChange={(e) => formField.handleChange(e.target.value)}
-                        className={clsx('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
-                        placeholder={t(`screenings:entity.property.${fieldName}`)}
-                      />
-                    )}
+                    {(formField) =>
+                      fieldName === 'country' ? (
+                        <SelectCountry
+                          name={formField.name}
+                          rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                          className="w-full"
+                          value={countryFormStringToValue((formField.state.value as string) ?? '')}
+                          onValueChange={(v) => formField.handleChange(countryValueToFormString(v))}
+                          placeholder={t(`screenings:entity.property.${fieldName}`)}
+                        />
+                      ) : (
+                        <Input
+                          name={formField.name}
+                          value={(formField.state.value as string) ?? ''}
+                          onChange={(e) => formField.handleChange(e.target.value)}
+                          className={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                          placeholder={t(`screenings:entity.property.${fieldName}`)}
+                        />
+                      )
+                    }
                   </form.Field>
                 );
               })}
