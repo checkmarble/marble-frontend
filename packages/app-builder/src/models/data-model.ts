@@ -563,7 +563,7 @@ export function getConstantDataTypeTKey(dataType?: DataType): ParseKeys<'scenari
 
 export type DataModelObject = {
   data: Record<string, DataModelObjectValue>;
-  metadata: {
+  metadata?: {
     validFrom: string;
   };
 };

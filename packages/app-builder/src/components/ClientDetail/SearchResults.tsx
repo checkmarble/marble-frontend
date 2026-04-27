@@ -58,7 +58,7 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                   />
                   <DataFields
                     table={payload.table}
-                    object={{ data: item, metadata: { validFrom: (item['updated_at'] as string) ?? '' } }}
+                    object={{ data: item }}
                     preset="essentials"
                     options={{ withId: true, hideLinks: true }}
                   />
