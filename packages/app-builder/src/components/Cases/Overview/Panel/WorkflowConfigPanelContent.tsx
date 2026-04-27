@@ -5,6 +5,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxWorkflowMutation } from '@app-builder/queries/cases/update-inbox-workflow';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
@@ -19,7 +20,7 @@ interface WorkflowConfigPanelContentProps {
 
 export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelContentProps) => {
   const panelSharp = PanelSharpFactory.useSharp();
-  const { t } = useTranslation(['cases']);
+  const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const updateWorkflowMutation = useUpdateInboxWorkflowMutation();
   const revalidate = useLoaderRevalidator();
@@ -87,8 +88,12 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
         { updates },
         {
           onSuccess: () => {
+            toast.success(t('cases:overview.panel.workflow.saved'));
             revalidate();
             panelSharp.actions.close();
+          },
+          onError: () => {
+            toast.error(t('common:errors.unknown'));
           },
         },
       );

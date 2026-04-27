@@ -12,12 +12,13 @@ import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateCase() {
-  const { t } = useTranslation(['cases']);
+  const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const createCaseMutation = useCreateCaseMutation();
   const { data } = useCaseRightPanelContext();
@@ -31,10 +32,15 @@ export function CreateCase() {
     } satisfies CreateCasePayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createCaseMutation.mutateAsync(value).then((res) => {
-          queryClient.invalidateQueries({ queryKey: ['cases', 'get-cases', value.inboxId] });
-          revalidate();
-        });
+        createCaseMutation
+          .mutateAsync(value)
+          .then(() => {
+            queryClient.invalidateQueries({ queryKey: ['cases', 'get-cases', value.inboxId] });
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

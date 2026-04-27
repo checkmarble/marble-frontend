@@ -16,6 +16,7 @@ import {
 import { useRefineScreeningMutation } from '@app-builder/queries/screening/refine-screening';
 import { type RefineSearchInput } from '@app-builder/server-fns/screenings';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
 import { match } from 'ts-pattern';
@@ -45,7 +46,7 @@ export function ScreeningHitsPanel({
   screeningName,
   screeningStatus,
 }: ScreeningHitsPanelProps) {
-  const { t } = useTranslation(screeningsI18n);
+  const { t } = useTranslation([...screeningsI18n, 'common']);
   const [currentScreeningId, setCurrentScreeningId] = useState(initialScreeningId);
   useEffect(() => {
     setCurrentScreeningId(initialScreeningId);
@@ -147,14 +148,16 @@ export function ScreeningHitsPanel({
   const handleDismissFalsePositives = useCallback(() => {
     bulkReviewMutation.mutate(probableFalsePositiveMatchIds, {
       onSuccess: revalidateAfterBulk,
+      onError: () => toast.error(t('common:errors.unknown')),
     });
-  }, [bulkReviewMutation, probableFalsePositiveMatchIds, revalidateAfterBulk]);
+  }, [bulkReviewMutation, probableFalsePositiveMatchIds, revalidateAfterBulk, t]);
 
   const handleBulkMarkFalsePositive = useCallback(() => {
     bulkReviewMutation.mutate(selectedMatchIds, {
       onSuccess: revalidateAfterBulk,
+      onError: () => toast.error(t('common:errors.unknown')),
     });
-  }, [bulkReviewMutation, selectedMatchIds, revalidateAfterBulk]);
+  }, [bulkReviewMutation, selectedMatchIds, revalidateAfterBulk, t]);
 
   return (
     <PanelRoot open={open} onOpenChange={handleOpenChange}>

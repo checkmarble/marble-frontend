@@ -7,12 +7,13 @@ import { OpenCasePayload, openCasePayloadSchema, useOpenCaseMutation } from '@ap
 import { getFieldErrors, handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const OpenCase = ({ id }: { id: string }) => {
-  const { t } = useTranslation(casesI18n);
+  const { t } = useTranslation([...casesI18n, 'common']);
   const openCaseMutation = useOpenCaseMutation();
   const revalide = useLoaderRevalidator();
   const [open, setOpen] = useState(false);
@@ -20,10 +21,15 @@ export const OpenCase = ({ id }: { id: string }) => {
   const form = useForm({
     defaultValues: { caseId: id, comment: '' } as OpenCasePayload,
     onSubmit: ({ value }) => {
-      openCaseMutation.mutateAsync(value).then(() => {
-        setOpen(false);
-        revalide();
-      });
+      openCaseMutation
+        .mutateAsync(value)
+        .then(() => {
+          setOpen(false);
+          revalide();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: openCasePayloadSchema,

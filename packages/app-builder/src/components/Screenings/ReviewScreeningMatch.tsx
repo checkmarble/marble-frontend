@@ -11,6 +11,7 @@ import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Switch, TextArea } from 'ui-design-system';
 
@@ -37,10 +38,15 @@ export const ReviewScreeningMatch = ({
       whitelist: false,
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
-      reviewScreeningMatchMutation.mutateAsync(value).then(() => {
-        onClose();
-        revalidate();
-      });
+      reviewScreeningMatchMutation
+        .mutateAsync(value)
+        .then(() => {
+          onClose();
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: reviewScreeningMatchPayloadSchema,

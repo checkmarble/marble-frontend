@@ -6,12 +6,13 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId: string; isAdminUser: boolean }) => {
-  const { t } = useTranslation(casesI18n);
+  const { t } = useTranslation([...casesI18n, 'common']);
   const escalateCaseMutation = useEscalateCaseMutation();
   const revalidate = useLoaderRevalidator();
   const inboxesQuery = useGetInboxesQuery();
@@ -24,9 +25,14 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
 
   const form = useForm({
     onSubmit: async ({ value }) => {
-      escalateCaseMutation.mutateAsync(value).then(() => {
-        revalidate();
-      });
+      escalateCaseMutation
+        .mutateAsync(value)
+        .then(() => {
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     defaultValues: { caseId: id, inboxId },
     validators: {

@@ -9,23 +9,29 @@ import {
 import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { toggle } from 'radash';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function AddComment({ caseId }: { caseId: string }) {
-  const { t } = useTranslation(casesI18n);
+  const { t } = useTranslation([...casesI18n, 'common']);
   const addCommentMutation = useAddCommentMutation();
   const revalidate = useLoaderRevalidator();
 
   const form = useForm({
     defaultValues: { caseId, comment: '', files: [] } as AddCommentPayload,
     onSubmit: ({ value }) => {
-      addCommentMutation.mutateAsync(value).then(() => {
-        form.reset();
-        form.validate('mount');
-        revalidate();
-      });
+      addCommentMutation
+        .mutateAsync(value)
+        .then(() => {
+          form.reset();
+          form.validate('mount');
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: addCommentPayloadSchema,
