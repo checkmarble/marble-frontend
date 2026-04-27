@@ -1,7 +1,6 @@
 import { Callout, decisionsI18n } from '@app-builder/components';
 import { type Pivot } from '@app-builder/models';
 import { type DataModelObject } from '@app-builder/models/data-model';
-import { DecisionFilters } from '@app-builder/schemas/decisions';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { Link } from '@tanstack/react-router';
@@ -122,7 +121,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
           size: 240,
           cell: ({ getValue }) => (
             <Tooltip.Default content={t('decisions:pivot_detail.pivot_value.tooltip')}>
-              <Link to={getDecisionRoute({ pivotValue: getValue().value })}>
+              <Link to="/detection/decisions" search={{ pivotValue: getValue().value }}>
                 <PivotDetails value={getValue().value} table={getValue().table} object={getValue().object} />
               </Link>
             </Tooltip.Default>
@@ -151,11 +150,6 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
       </Table.Body>
     </Table.Container>
   );
-}
-
-function getDecisionRoute(decisionFilters: Pick<DecisionFilters, 'pivotValue'>) {
-  const searchParams = new URLSearchParams(decisionFilters);
-  return `/detection/decisions?${searchParams.toString()}`;
 }
 
 function PivotDetails({ value, table, object }: { value: string; table: string; object: DataModelObject | null }) {

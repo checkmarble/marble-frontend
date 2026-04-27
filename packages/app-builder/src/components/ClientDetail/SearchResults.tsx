@@ -6,7 +6,7 @@ import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Tag } from 'ui-design-system';
+import { Button, LinkWrapper, Tag } from 'ui-design-system';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { Highlight } from '../Highlight';
 import { Spinner } from '../Spinner';
@@ -40,14 +40,14 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
           {data.pages
             .flatMap((page) => page.items)
             .map((item) => {
+              const objectId = item['object_id'] as string;
+
               return (
-                <Link
-                  to="/client-detail/$objectType/$objectId"
-                  params={{
-                    objectType: payload.table,
-                    objectId: item['object_id'] as string,
-                  }}
-                  key={item['object_id'] as string}
+                <LinkWrapper
+                  key={objectId}
+                  link={
+                    <Link to="/client-detail/$objectType/$objectId" params={{ objectType: payload.table, objectId }} />
+                  }
                   className="p-v2-md flex items-center border border-grey-border rounded-v2-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
                 >
                   <Highlight
@@ -58,12 +58,12 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                   />
                   <DataFields
                     table={payload.table}
-                    object={{ data: item, metadata: { validFrom: (item['updated_at'] as string) ?? '' } }}
+                    object={{ data: item }}
                     preset="essentials"
                     options={{ withId: true, hideLinks: true }}
                   />
-                  <EntityTags objectType={payload.table} objectId={item['object_id'] as string} />
-                </Link>
+                  <EntityTags objectType={payload.table} objectId={objectId} />
+                </LinkWrapper>
               );
             })}
           {searchQuery.hasNextPage ? (

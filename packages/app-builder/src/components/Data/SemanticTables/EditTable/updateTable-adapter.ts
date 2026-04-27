@@ -39,7 +39,6 @@ export function adaptUpdateTableValue(
       return stillUsed ? [] : [link];
     });
 
-  console.log('tableState', { entityType: tableState.entityType, subEntity: tableState.subEntity });
   const adaptedTable: EditSemanticTablePayload = {
     tableId: tableState.tableId,
     ...(changedProperties.includes('alias') ? { alias: tableState.alias || tableState.name } : {}),

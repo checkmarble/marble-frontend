@@ -12,6 +12,7 @@ export * from './FiltersBar/FiltersBar';
 export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';
 export * from './Kbd/Kbd';
+export * from './LinkWrapper/LinkWrapper';
 export * from './Markdown/Markdown';
 export * from './Markdown/ReleaseMarkdown';
 export * from './Menu/Menu';

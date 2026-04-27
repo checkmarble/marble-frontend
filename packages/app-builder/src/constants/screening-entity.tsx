@@ -239,7 +239,15 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
     const dataType = propertyMetadata[property].type;
     switch (dataType) {
       case 'string':
-        return <HighlightText text={value} highlight={ctx.highlightText} />;
+        return value.includes('\n') ? (
+          value.split('\n').map((v, index) => (
+            <p key={`chunk-${index}`}>
+              <HighlightText text={v} highlight={ctx.highlightText} />
+            </p>
+          ))
+        ) : (
+          <HighlightText text={value} highlight={ctx.highlightText} />
+        );
       case 'url':
         return <ExternalLink href={value}>{value}</ExternalLink>;
       case 'country':

@@ -170,7 +170,6 @@ export function PivotsPanelContent({
                     table={tableModel.name}
                     object={{
                       data: proof.object.data,
-                      metadata: { validFrom: (proof.object.data['updated_at'] as string) ?? '' },
                     }}
                   />
                   {navigationOptions ? (
@@ -328,10 +327,7 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
   return (
     <>
       <div className="flex flex-col gap-8">
-        <DataFields
-          table={tableModel.name}
-          object={{ data, metadata: { validFrom: (data['updated_at'] as string) ?? '' } }}
-        />
+        <DataFields table={tableModel.name} object={{ data }} />
 
         {filteredRelatedObjects.length > 0 ? (
           <div className="">
@@ -350,13 +346,7 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
                       tableName,
                     })}
                   </h4>
-                  <DataFields
-                    table={relatedObjectType}
-                    object={{
-                      data: relatedObject.relatedObjectDetail.data,
-                      metadata: { validFrom: (relatedObject.relatedObjectDetail.data['updated_at'] as string) ?? '' },
-                    }}
-                  />
+                  <DataFields table={relatedObjectType} object={{ data: relatedObject.relatedObjectDetail.data }} />
                 </Fragment>
               );
             })}

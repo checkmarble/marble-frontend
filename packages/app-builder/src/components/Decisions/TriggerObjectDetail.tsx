@@ -27,11 +27,7 @@ export function DecisionDetailTriggerObject({
     <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:trigger_object.type')}</Collapsible.Title>
       <Collapsible.Content>
-        <DataFields
-          table={table}
-          object={{ data: triggerObject, metadata: { validFrom: (triggerObject['updated_at'] as string) ?? '' } }}
-          options={{ mapHeight: 200 }}
-        />
+        <DataFields table={table} object={{ data: triggerObject }} options={{ mapHeight: 200 }} />
       </Collapsible.Content>
     </Collapsible.Container>
   );
@@ -45,7 +41,7 @@ export function CaseDetailTriggerObject({
   onLinkClicked,
 }: {
   dataModel: TableModel[];
-  triggerObject: Record<string, unknown>;
+  triggerObject: Record<string, DataModelObjectValue>;
   triggerObjectType: string;
   className?: string;
   onLinkClicked: (tableName: string, objectId: string) => void;
@@ -66,26 +62,35 @@ export function CaseDetailTriggerObject({
         className,
       )}
     >
-      {parsedTriggerObject.map(([property, data]) => {
-        const fieldType = dataModelTable?.fields?.find((f) => f.name === property)?.dataType;
-        return (
-          <Fragment key={property}>
-            <span className="font-semibold">{property}</span>
-            <div className="inline-flex items-center gap-2">
-              {links[property] && !!data.value ? (
-                <button
-                  className="text-purple-primary group flex items-center gap-1 text-left"
-                  onClick={() => onLinkClicked(links[property] as string, data.value as string)}
-                >
+      {dataModelTable?.name ? (
+        <DataFields
+          // use the fancy display if possible
+          table={dataModelTable.name}
+          object={{ data: triggerObject }}
+          options={{ hideLinks: true, withOptionalHidden: true }}
+        />
+      ) : (
+        parsedTriggerObject.map(([property, data]) => {
+          const fieldType = dataModelTable?.fields?.find((f) => f.name === property)?.dataType;
+          return (
+            <Fragment key={property}>
+              <span className="font-semibold">{property}</span>
+              <div className="inline-flex items-center gap-2">
+                {links[property] && !!data.value ? (
+                  <button
+                    className="text-purple-primary group flex items-center gap-1 text-left"
+                    onClick={() => onLinkClicked(links[property] as string, data.value as string)}
+                  >
+                    <FormatData type={fieldType} data={data} mapHeight={200} />
+                  </button>
+                ) : (
                   <FormatData type={fieldType} data={data} mapHeight={200} />
-                </button>
-              ) : (
-                <FormatData type={fieldType} data={data} mapHeight={200} />
-              )}
-            </div>
-          </Fragment>
-        );
-      })}
+                )}
+              </div>
+            </Fragment>
+          );
+        })
+      )}
     </div>
   );
 }
