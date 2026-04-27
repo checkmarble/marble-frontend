@@ -5,7 +5,7 @@ import { isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } fr
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { setToast } from '@app-builder/services/toast.server';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { z } from 'zod/v4';
@@ -70,7 +70,7 @@ const getDataFn = createServerFn()
         userScoringAccess: entitlements.userScoring,
       };
     } catch (error) {
-      if (error instanceof Response) throw error;
+      if (isRedirect(error) || error instanceof Response) throw error;
       console.error('Failed to load client detail data', error);
       throw new Response('Internal Server Error', { status: 500, headers: { 'Content-Type': 'text/plain' } });
     }

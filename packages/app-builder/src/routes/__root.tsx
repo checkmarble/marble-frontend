@@ -147,7 +147,9 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootErrorBoundary({ error }: { error: unknown }) {
-  Sentry.captureException(error);
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
   // Intentionally render body content only — the shellComponent wraps this output
   // in <html>/<head>/<body>, so rendering our own would produce duplicate document elements.
   return <RootErrorBoundaryBody error={error} />;
