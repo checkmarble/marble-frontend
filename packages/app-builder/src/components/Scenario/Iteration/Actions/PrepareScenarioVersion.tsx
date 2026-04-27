@@ -7,6 +7,7 @@ import {
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -91,12 +92,21 @@ function PrepareScenarioVersionContent({
       if (formApi.state.isValid) {
         const payload = prepareIterationPayloadSchema.safeParse(value);
         if (payload.success) {
-          prepareIterationMutation.mutateAsync(payload.data).then((res) => {
-            if (!res) {
-              onSuccess();
-            }
-            revalidate();
-          });
+          prepareIterationMutation
+            .mutateAsync(payload.data)
+            .then((res) => {
+              if (res?.error === 'preparation_service_occupied') {
+                toast.error(t('scenarios:deployment_modal.prepare.preparation_service_occupied'));
+              } else if (res?.error) {
+                toast.error(t('common:errors.unknown'));
+              } else {
+                onSuccess();
+                revalidate();
+              }
+            })
+            .catch(() => {
+              toast.error(t('common:errors.unknown'));
+            });
         }
       }
     },

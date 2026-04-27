@@ -7,6 +7,7 @@ import {
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -64,9 +65,20 @@ function CommitScenarioDraftContent({ scenarioId, iterationId }: { scenarioId: s
       if (formApi.state.isValid) {
         const payload = commitIterationPayloadSchema.safeParse(value);
         if (payload.success) {
-          commitIterationMutation.mutateAsync(payload.data).then(() => {
-            revalidate();
-          });
+          commitIterationMutation
+            .mutateAsync(payload.data)
+            .then((res) => {
+              if (res?.error === 'validation_error') {
+                toast.error(t('scenarios:deployment_modal.commit.validation_error'));
+              } else if (res?.error) {
+                toast.error(t('common:errors.unknown'));
+              } else {
+                revalidate();
+              }
+            })
+            .catch(() => {
+              toast.error(t('common:errors.unknown'));
+            });
         }
       }
     },

@@ -3,6 +3,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { Scenario } from '@app-builder/models/scenario';
 import { useCancelTestRunMutation } from '@app-builder/queries/scenarios/cancel-testrun';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 
@@ -21,9 +22,14 @@ export function CancelTestRun({
   const revalidate = useLoaderRevalidator();
 
   const handleCancelScenario = () => {
-    cancelTestRunMutation.mutateAsync().then(() => {
-      revalidate();
-    });
+    cancelTestRunMutation
+      .mutateAsync()
+      .then(() => {
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (

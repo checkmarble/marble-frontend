@@ -2,6 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useArchiveScenarioMutation } from '@app-builder/queries/scenarios/archive-scenario';
 import { useHydrated } from '@tanstack/react-router';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -42,10 +43,15 @@ function ArchiveScenarioContent({
   const revalidate = useLoaderRevalidator();
 
   const handleArchiveScenario = () => {
-    archiveScenarioMutation.mutateAsync({ scenarioId }).then(() => {
-      revalidate();
-      onClose();
-    });
+    archiveScenarioMutation
+      .mutateAsync({ scenarioId })
+      .then(() => {
+        revalidate();
+        onClose();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (

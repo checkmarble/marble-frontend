@@ -41,7 +41,6 @@ import {
   updateScenarioPayloadSchema,
 } from '@app-builder/schemas/scenarios';
 import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
-import { setToast } from '@app-builder/services/toast.server';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { redirect } from '@tanstack/react-router';
@@ -236,7 +235,6 @@ export const archiveScenarioFn = createServerFn({ method: 'POST' })
       throw redirect({ to: '/detection/scenarios' });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to archive scenario');
     }
   });
@@ -265,7 +263,6 @@ export const createScenarioFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to create scenario');
     }
   });
@@ -276,9 +273,7 @@ export const unarchiveScenarioFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.unarchiveScenario({ scenarioId: data.scenarioId });
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to unarchive scenario');
     }
   });
@@ -287,12 +282,9 @@ export const updateScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
     try {
       await context.authInfo.scenario.updateScenario(data);
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       throw new Error('Failed to update scenario');
     }
   });
@@ -378,8 +370,6 @@ export const generateAstFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(generateRuleInputSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'scenarios']);
     try {
       const result = await context.authInfo.scenarioIterationRuleRepository.generateRuleAst({
         scenarioId: data.scenarioId,
@@ -388,7 +378,6 @@ export const generateAstFn = createServerFn({ method: 'POST' })
       });
       return { success: true, ...result };
     } catch {
-      await setToast({ type: 'error', message: t('scenarios:rules.ai_generate.error_generating') });
       return { success: false };
     }
   });
@@ -419,8 +408,6 @@ export const activateIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(activateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'scenarios']);
     try {
       await context.authInfo.scenario.createScenarioPublication({
         publicationAction: 'publish',
@@ -435,20 +422,11 @@ export const activateIterationFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      let formError: string;
-      if (error instanceof ValidationError) {
-        formError = t('scenarios:deployment_modal.activate.validation_error');
-      } else if (error instanceof PreparationIsRequiredError) {
-        formError = t('scenarios:deployment_modal.activate.preparation_is_required_error');
-      } else if (error instanceof PreparationServiceOccupied) {
-        formError = t('scenarios:deployment_modal.activate.preparation_service_occupied_error');
-      } else if (error instanceof IsDraftError) {
-        formError = t('scenarios:deployment_modal.activate.is_draft_error');
-      } else {
-        formError = t('common:errors.unknown');
-      }
-      await setToast({ type: 'error', message: formError });
-      throw new Error('Failed to activate iteration');
+      if (error instanceof ValidationError) return { error: 'validation_error' as const };
+      if (error instanceof PreparationIsRequiredError) return { error: 'preparation_is_required' as const };
+      if (error instanceof PreparationServiceOccupied) return { error: 'preparation_service_occupied' as const };
+      if (error instanceof IsDraftError) return { error: 'is_draft' as const };
+      return { error: 'unknown' as const };
     }
   });
 
@@ -456,8 +434,6 @@ export const commitIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(commitIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'scenarios']);
     try {
       await context.authInfo.scenario.commitScenarioIteration({ iterationId: data.iterationId });
       throw redirect({
@@ -469,13 +445,8 @@ export const commitIterationFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({
-        type: 'error',
-        message: isStatusBadRequestHttpError(error)
-          ? t('scenarios:deployment_modal.commit.validation_error')
-          : t('common:errors.unknown'),
-      });
-      throw new Error('Failed to commit iteration');
+      if (isStatusBadRequestHttpError(error)) return { error: 'validation_error' as const };
+      return { error: 'unknown' as const };
     }
   });
 
@@ -490,8 +461,6 @@ export const deactivateIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(deactivateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'scenarios']);
     try {
       await context.authInfo.scenario.createScenarioPublication({
         publicationAction: 'unpublish',
@@ -506,7 +475,6 @@ export const deactivateIterationFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       throw new Error('Failed to deactivate iteration');
     }
   });
@@ -515,8 +483,6 @@ export const prepareIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(prepareIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'scenarios']);
     try {
       await context.authInfo.scenario.startPublicationPreparation({ iterationId: data.iterationId });
       throw redirect({
@@ -528,14 +494,8 @@ export const prepareIterationFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({
-        type: 'error',
-        message:
-          error instanceof PreparationServiceOccupied
-            ? t('scenarios:deployment_modal.prepare.preparation_service_occupied')
-            : t('common:errors.unknown'),
-      });
-      throw new Error('Failed to prepare iteration');
+      if (error instanceof PreparationServiceOccupied) return { error: 'preparation_service_occupied' as const };
+      return { error: 'unknown' as const };
     }
   });
 
@@ -666,7 +626,6 @@ export const cancelTestRunFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to cancel test run');
     }
   });
@@ -675,8 +634,6 @@ export const createTestRunFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(createTestRunPayloadSchema.and(z.object({ scenarioId: z.string() })))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
     const { scenarioId, ...payload } = data;
     try {
       await context.authInfo.testRun.launchTestRun({ ...payload, scenarioId });
@@ -685,13 +642,8 @@ export const createTestRunFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
-      await setToast({
-        type: 'error',
-        messageKey: isStatusConflictHttpError(error)
-          ? t('common:errors.data.duplicate_test_run')
-          : t('common:errors.unknown'),
-      });
-      throw new Error('Failed to create test run');
+      if (isStatusConflictHttpError(error)) return { error: 'duplicate_test_run' as const };
+      return { error: 'unknown' as const };
     }
   });
 

@@ -13,6 +13,7 @@ import { useHydrated } from '@tanstack/react-router';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -106,6 +107,7 @@ export function EditableScenarioField({
   inputClassName?: string;
 }) {
   const [isEditing, setIsEditing] = useState(false);
+  const { t } = useTranslation(['common']);
   const updateScenarioMutation = useUpdateScenarioMutation();
   const revalidate = useLoaderRevalidator();
   const fieldSchema =
@@ -119,10 +121,15 @@ export function EditableScenarioField({
     } satisfies UpdateScenarioPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateScenarioMutation.mutateAsync(value).then(() => {
-          setIsEditing(false);
-          revalidate();
-        });
+        updateScenarioMutation
+          .mutateAsync(value)
+          .then(() => {
+            setIsEditing(false);
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {
