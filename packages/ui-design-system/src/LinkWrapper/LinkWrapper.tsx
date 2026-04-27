@@ -42,8 +42,9 @@ export function LinkWrapper({
   ...props
 }: LinkWrapperProps) {
   const handleClick: MouseEventHandler<HTMLDivElement> = (event) => {
+    if (isInteractiveTarget(event.target, event.currentTarget, interactiveSelector)) return;
     onClick?.(event);
-    if (event.defaultPrevented || isInteractiveTarget(event.target, event.currentTarget, interactiveSelector)) return;
+    if (event.defaultPrevented) return;
 
     const rowLink = getRowLink(event.currentTarget);
     if (rowLink) {
@@ -52,18 +53,17 @@ export function LinkWrapper({
   };
 
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (isInteractiveTarget(event.target, event.currentTarget, interactiveSelector)) return;
     onKeyDown?.(event);
     if (event.defaultPrevented) return;
     if (event.key !== 'Enter' && event.key !== ' ') return;
-    if (isInteractiveTarget(event.target, event.currentTarget, interactiveSelector)) return;
-
     event.preventDefault();
     getRowLink(event.currentTarget)?.click();
   };
 
   return (
     <div {...props} onClick={handleClick} onKeyDown={handleKeyDown} role={role} tabIndex={tabIndex}>
-      <div aria-hidden className="invisible">
+      <div aria-hidden className="hidden">
         {cloneElement(link as ReactElement<Record<string, unknown>>, {
           'data-row-link': '',
           tabIndex: -1,
