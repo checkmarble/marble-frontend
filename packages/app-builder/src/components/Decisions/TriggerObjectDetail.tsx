@@ -27,11 +27,7 @@ export function DecisionDetailTriggerObject({
     <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:trigger_object.type')}</Collapsible.Title>
       <Collapsible.Content>
-        <DataFields
-          table={table}
-          object={{ data: triggerObject, metadata: { validFrom: (triggerObject['updated_at'] as string) ?? '' } }}
-          options={{ mapHeight: 200 }}
-        />
+        <DataFields table={table} object={{ data: triggerObject }} options={{ mapHeight: 200 }} />
       </Collapsible.Content>
     </Collapsible.Container>
   );
@@ -70,11 +66,8 @@ export function CaseDetailTriggerObject({
         <DataFields
           // use the fancy display if possible
           table={dataModelTable.name}
-          object={{
-            data: triggerObject,
-            metadata: { validFrom: (triggerObject['updated_at'] as string) ?? '' },
-          }}
-          options={{ hideLinks: true }}
+          object={{ data: triggerObject }}
+          options={{ hideLinks: true, withOptionalHidden: true }}
         />
       ) : (
         parsedTriggerObject.map(([property, data]) => {
