@@ -2,7 +2,6 @@ import { createContinuousScreeningConfigSchema } from '@app-builder/components/C
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
-import { setToast } from '@app-builder/services/toast.server';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
@@ -56,7 +55,6 @@ export const createContinuousScreeningConfigurationFn = createServerFn({ method:
       throw redirect({ to: '/continuous-screening/configurations' });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to create configuration');
     }
   });
@@ -66,10 +64,8 @@ export const dismissContinuousScreeningFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ screeningId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
-      await setToast({ type: 'success', message: 'continuousScreening:success.dismissed' });
       await context.authInfo.continuousScreening.dismiss(data.screeningId);
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to dismiss screening');
     }
   });
@@ -81,7 +77,6 @@ export const loadMoreContinuousScreeningMatchesFn = createServerFn({ method: 'PO
     try {
       await context.authInfo.continuousScreening.loadMoreMatches(data.screeningId);
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to load more matches');
     }
   });
@@ -93,7 +88,6 @@ export const reviewContinuousScreeningMatchFn = createServerFn({ method: 'POST' 
     try {
       await context.authInfo.continuousScreening.updateMatchStatus(data);
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to review match');
     }
   });
@@ -102,24 +96,18 @@ export const updateContinuousScreeningConfigurationFn = createServerFn({ method:
   .middleware([authMiddleware])
   .inputValidator(createContinuousScreeningConfigSchema.and(z.object({ configStableId: z.string() })))
   .handler(async ({ context, data }) => {
-    try {
-      const { inboxName, configStableId, ...payload } = data;
+    const { inboxName, configStableId, ...payload } = data;
 
-      let inboxId: string;
-      if (payload.inboxId === null) {
-        if (!inboxName) {
-          throw new Error('Inbox name is required when no inbox is selected');
-        }
-        const newInbox = await context.authInfo.inbox.createInbox({ name: inboxName });
-        inboxId = newInbox.id;
-      } else {
-        inboxId = payload.inboxId;
+    let inboxId: string;
+    if (payload.inboxId === null) {
+      if (!inboxName) {
+        throw new Error('Inbox name is required when no inbox is selected');
       }
-
-      await context.authInfo.continuousScreening.updateConfiguration(configStableId, { ...payload, inboxId });
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
-    } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw new Error('Failed to update configuration');
+      const newInbox = await context.authInfo.inbox.createInbox({ name: inboxName });
+      inboxId = newInbox.id;
+    } else {
+      inboxId = payload.inboxId;
     }
+
+    await context.authInfo.continuousScreening.updateConfiguration(configStableId, { ...payload, inboxId });
   });

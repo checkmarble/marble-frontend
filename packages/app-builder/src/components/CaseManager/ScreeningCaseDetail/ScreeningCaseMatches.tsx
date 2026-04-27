@@ -14,6 +14,7 @@ import { useDismissContinuousScreeningMutation } from '@app-builder/queries/cont
 import { useLoadMoreContinuousScreeningMatchesMutation } from '@app-builder/queries/continuous-screening/load-more-matches';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { Fragment, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Modal, Tag } from 'ui-design-system';
@@ -31,14 +32,19 @@ export const ScreeningCaseMatches = ({
   caseDetail: Case;
   isUserAdmin: boolean;
 }) => {
-  const { t } = useTranslation(['continuousScreening', 'screenings']);
+  const { t } = useTranslation(['continuousScreening', 'screenings', 'common']);
   const loadMoreMatchesMutation = useLoadMoreContinuousScreeningMatchesMutation(screening.id);
   const revalidate = useLoaderRevalidator();
 
   const handleLoadMore = () => {
-    loadMoreMatchesMutation.mutateAsync().then(() => {
-      revalidate();
-    });
+    loadMoreMatchesMutation
+      .mutateAsync()
+      .then(() => {
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (
@@ -174,11 +180,16 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
   const [open, setOpen] = useState(false);
 
   const dismissAlert = () => {
-    dismissMutation.mutateAsync(screening.id).then(() => {
-      revalidate();
-
-      setOpen(false);
-    });
+    dismissMutation
+      .mutateAsync(screening.id)
+      .then(() => {
+        toast.success(t('continuousScreening:success.dismissed'));
+        revalidate();
+        setOpen(false);
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (
