@@ -9,6 +9,7 @@ import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useForm, useStore } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type ReactNode, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input, Modal, Select } from 'ui-design-system';
@@ -61,9 +62,14 @@ export function RefineSearchModal({
     },
     onSubmit: ({ value }) => {
       formValuesRef.current = value;
-      searchMutation.mutateAsync(value).then((data) => {
-        setSearchResults(data);
-      });
+      searchMutation
+        .mutateAsync(value)
+        .then((data) => {
+          setSearchResults(data);
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
   });
 

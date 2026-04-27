@@ -10,6 +10,7 @@ import {
 } from '@app-builder/models/scoring';
 import { useUpdateScoringSettingsMutation } from '@app-builder/queries/scoring/update-settings';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 
@@ -31,15 +32,20 @@ function ScoringSettingsDisplay({ settings }: { settings: ScoringSettingsModel }
 }
 
 function ScoringSettingsForm() {
-  const { t } = useTranslation(['user-scoring']);
+  const { t } = useTranslation(['user-scoring', 'common']);
   const [maxRiskLevel, setMaxRiskLevel] = useState(3);
   const updateScoringSettingsMutation = useUpdateScoringSettingsMutation();
   const revalidate = useLoaderRevalidator();
 
   const handleValidateScale = () => {
-    updateScoringSettingsMutation.mutateAsync({ maxRiskLevel }).then(() => {
-      revalidate();
-    });
+    updateScoringSettingsMutation
+      .mutateAsync({ maxRiskLevel })
+      .then(() => {
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (

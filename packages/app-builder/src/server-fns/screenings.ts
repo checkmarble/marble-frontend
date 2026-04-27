@@ -2,7 +2,6 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
-import { setToast } from '@app-builder/services/toast.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getScreeningFileUploadEndpoint } from '@app-builder/utils/files';
 import { createServerFn } from '@tanstack/react-start';
@@ -151,12 +150,7 @@ export const searchScreeningMatchesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(refineSearchSchema)
   .handler(async ({ context, data }) => {
-    try {
-      return await context.authInfo.screening.searchScreeningMatches(data);
-    } catch (err) {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      throw err;
-    }
+    return await context.authInfo.screening.searchScreeningMatches(data);
   });
 
 export const freeformSearchFn = createServerFn({ method: 'POST' })
@@ -167,7 +161,6 @@ export const freeformSearchFn = createServerFn({ method: 'POST' })
       const results = await context.authInfo.screening.freeformSearch(data);
       return { success: true as const, data: results as ScreeningMatchPayload[] };
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       return { success: false as const, error: 'Freeform search failed' };
     }
   });

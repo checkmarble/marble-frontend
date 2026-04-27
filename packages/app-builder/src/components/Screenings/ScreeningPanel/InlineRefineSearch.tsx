@@ -6,6 +6,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -40,9 +41,14 @@ export function InlineRefineSearch({
       onChange: refineSearchSchema,
     },
     onSubmit: ({ value }) => {
-      searchMutation.mutateAsync(value).then((data) => {
-        onSearchComplete(data, value);
-      });
+      searchMutation
+        .mutateAsync(value)
+        .then((data) => {
+          onSearchComplete(data, value);
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
   });
 

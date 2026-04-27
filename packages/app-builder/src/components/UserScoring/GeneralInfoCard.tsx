@@ -82,14 +82,22 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
                   prepareMutation.isPending ||
                   ruleset.rules.length === 0
                 }
-                onClick={() => prepareMutation.mutate(ruleset.recordType)}
+                onClick={() =>
+                  prepareMutation.mutate(ruleset.recordType, {
+                    onError: () => toast.error(t('common:errors.unknown')),
+                  })
+                }
               >
                 {t('user-scoring:ruleset.prepare')}
               </Button>
             ) : (
               <Button
                 disabled={commitMutation.isPending || ruleset.rules.length === 0}
-                onClick={() => commitMutation.mutate(ruleset.recordType)}
+                onClick={() =>
+                  commitMutation.mutate(ruleset.recordType, {
+                    onError: () => toast.error(t('common:errors.unknown')),
+                  })
+                }
               >
                 {t('user-scoring:ruleset.commit')}
               </Button>
