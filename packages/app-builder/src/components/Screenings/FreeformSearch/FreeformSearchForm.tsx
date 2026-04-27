@@ -184,18 +184,54 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               {entityTypeFields.map((fieldName, index) => {
                 const isLastOdd = index === entityTypeFields.length - 1 && entityTypeFields.length % 2 === 1;
                 return (
-                  <form.Field key={fieldName} name={`fields.${fieldName}`}>
-                    {(formField) =>
-                      fieldName === 'country' ? (
-                        <SelectCountry
-                          name={formField.name}
-                          rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
-                          className="w-full"
-                          value={countryFormStringToValue((formField.state.value as string) ?? '')}
-                          onValueChange={(v) => formField.handleChange(countryValueToFormString(v))}
-                          placeholder={t(`screenings:entity.property.${fieldName}`)}
-                        />
-                      ) : (
+                  <form.Field
+                    key={fieldName}
+                    name={`fields.${fieldName}`}
+                    validators={
+                      fieldName === 'birthDate'
+                        ? {
+                            onBlur: ({ value }) => {
+                              const v = (value as string) ?? '';
+                              if (!v) return undefined;
+                              return /^\d{4}(-\d{2}-\d{2})?$/.test(v)
+                                ? undefined
+                                : t('screenings:freeform_search.birth_date_invalid');
+                            },
+                          }
+                        : undefined
+                    }
+                  >
+                    {(formField) => {
+                      if (fieldName === 'country') {
+                        return (
+                          <SelectCountry
+                            name={formField.name}
+                            rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                            className="w-full"
+                            value={countryFormStringToValue((formField.state.value as string) ?? '')}
+                            onValueChange={(v) => formField.handleChange(countryValueToFormString(v))}
+                            placeholder={t(`screenings:entity.property.${fieldName}`)}
+                          />
+                        );
+                      }
+                      if (fieldName === 'birthDate') {
+                        return (
+                          <div className={cn('flex flex-col gap-1', isLastOdd && 'col-span-2 lg:col-span-1')}>
+                            <Input
+                              name={formField.name}
+                              value={(formField.state.value as string) ?? ''}
+                              onChange={(e) => formField.handleChange(e.target.value)}
+                              onBlur={formField.handleBlur}
+                              className="w-full"
+                              placeholder={t(`screenings:entity.property.${fieldName}`)}
+                            />
+                            {formField.state.meta.errors.length > 0 && (
+                              <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
+                            )}
+                          </div>
+                        );
+                      }
+                      return (
                         <Input
                           name={formField.name}
                           value={(formField.state.value as string) ?? ''}
@@ -203,8 +239,8 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
                           className={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
                           placeholder={t(`screenings:entity.property.${fieldName}`)}
                         />
-                      )
-                    }
+                      );
+                    }}
                   </form.Field>
                 );
               })}
