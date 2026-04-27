@@ -6,9 +6,7 @@ import {
   type ClientObjectDetailDto,
   type CreateAnnotationDto,
   type CreateNavigationOptionDto,
-  type CreatePivotInputDto,
   CreateTableBody,
-  type CreateTableFieldDto,
   type DataModelDto,
   type DataModelObjectDto,
   type DataModelTableOptionsDto,
@@ -23,7 +21,6 @@ import {
   type SetDataModelTableOptionsBodyDto,
   type TableDto,
   UpdateTableBodyDto,
-  type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
@@ -375,66 +372,6 @@ export function adaptPivot(pivotDto: PivotDto): Pivot {
     fieldId: pivotDto.field_id,
     pathLinks: pivotDto.path_links,
     pathLinkIds: pivotDto.path_link_ids,
-  };
-}
-
-export type CreatePivotInput =
-  | {
-      baseTableId: string;
-      fieldId: string;
-    }
-  | {
-      baseTableId: string;
-      pathLinkIds: string[];
-    };
-
-export function adaptCreatePivotInputDto(createPivotInput: CreatePivotInput): CreatePivotInputDto {
-  if ('fieldId' in createPivotInput) {
-    return {
-      base_table_id: createPivotInput.baseTableId,
-      field_id: createPivotInput.fieldId,
-    };
-  } else {
-    return {
-      base_table_id: createPivotInput.baseTableId,
-      path_link_ids: createPivotInput.pathLinkIds,
-    };
-  }
-}
-
-export interface CreateFieldInput {
-  name: string;
-  description: string;
-  type: PrimitiveTypes;
-  nullable: boolean;
-  isEnum?: boolean;
-  isUnique?: boolean;
-}
-
-export function adaptCreateTableFieldDto(createFieldInput: CreateFieldInput): CreateTableFieldDto {
-  return {
-    name: createFieldInput.name,
-    description: createFieldInput.description,
-    type: createFieldInput.type,
-    nullable: createFieldInput.nullable,
-    is_enum: createFieldInput.isEnum,
-    is_unique: createFieldInput.isUnique,
-  };
-}
-
-export interface UpdateFieldInput {
-  description?: string;
-  isEnum?: boolean;
-  isUnique?: boolean;
-  isNullable?: boolean;
-}
-
-export function adaptUpdateFieldDto(updateFieldInput: UpdateFieldInput): UpdateTableFieldDto {
-  return {
-    description: updateFieldInput.description,
-    is_enum: updateFieldInput.isEnum,
-    is_unique: updateFieldInput.isUnique,
-    is_nullable: updateFieldInput.isNullable,
   };
 }
 

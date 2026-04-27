@@ -61,7 +61,7 @@ export function PivotValueFilter() {
             t={t}
             i18nKey="decisions:pivot_detail.missing_pivot_definition"
             components={{
-              DataModelLink: <Link to="/data/schema" className={linkClasses} />,
+              DataModelLink: <Link to="/data/list" className={linkClasses} />,
               DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />

@@ -7,30 +7,20 @@ import {
   type DataModel,
   type DataModelObjectValue,
   type DataModelWithTableOptions,
-  type DestroyDataModelReport,
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models/data-model';
 import { createAnnotationPayloadSchema } from '@app-builder/schemas/annotations';
 import {
   applyArchetypePayloadSchema,
-  createFieldValueSchema,
-  createLinkValueSchema,
   createNavigationOptionSchema,
-  createPivotFormSchema,
   createTableValueSchema,
-  deleteFieldPayloadSchema,
-  deleteLinkPayloadSchema,
-  deletePivotPayloadSchema,
   deleteTablePayloadSchema,
-  editFieldPayloadSchema,
   editSemanticTablePayloadSchema,
-  editTablePayloadSchema,
   listObjectsInputSchema,
 } from '@app-builder/schemas/data';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 import { getTableMutationError } from '@app-builder/services/data/table-mutation-errors';
-import { captureUnexpectedError } from '@app-builder/services/monitoring';
 import { setToast } from '@app-builder/services/toast.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getClientAnnotationFileUploadEndpoint, getIngestionDataBatchUploadEndpoint } from '@app-builder/utils/files';
@@ -249,21 +239,6 @@ export const createTableFn = createServerFn({ method: 'POST' })
     }
   });
 
-export const editTableFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(editTablePayloadSchema)
-  .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
-
-    try {
-      await context.authInfo.dataModelRepository.patchDataModelTable(data.tableId, { description: data.description });
-    } catch (error) {
-      const mutError = getTableMutationError(error, t);
-      throw mutError;
-    }
-  });
-
 export const deleteTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(deleteTablePayloadSchema)
@@ -276,160 +251,6 @@ export const deleteTableFn = createServerFn({ method: 'POST' })
     } catch (error) {
       const mutError = getTableMutationError(error, t);
       throw mutError;
-    }
-  });
-
-export const createFieldFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(createFieldValueSchema)
-  .handler(async ({ context, data }) => {
-    const { name, description, type, required, tableId, isEnum, isUnique } = data;
-    try {
-      await context.authInfo.dataModelRepository.postDataModelTableField(tableId, {
-        name,
-        description,
-        type,
-        nullable: required === 'optional',
-        isEnum,
-        isUnique,
-      });
-      return { success: true };
-    } catch (error) {
-      if (isStatusConflictHttpError(error)) {
-        return {
-          success: false,
-          status: 409,
-          message: 'Field name already exists',
-          errors: [{ field: 'name', code: 'NAME_CONFLICT' }],
-        };
-      }
-      const request = getRequest();
-      captureUnexpectedError(error, 'createField@action', request);
-      return { success: false, errors: [] };
-    }
-  });
-
-export const editFieldFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(editFieldPayloadSchema)
-  .handler(async ({ context, data }) => {
-    const { description, fieldId, isEnum, isUnique, required } = data;
-    try {
-      await context.authInfo.dataModelRepository.patchDataModelField(fieldId, {
-        description,
-        isEnum,
-        isUnique,
-        isNullable: required === 'optional',
-      });
-      return { success: 'true' as const, errors: [] };
-    } catch (error) {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
-      const request = getRequest();
-      captureUnexpectedError(error, 'editField@action', request);
-      return { success: 'false' as const, errors: [] };
-    }
-  });
-
-export const deleteFieldFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(deleteFieldPayloadSchema)
-  .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
-
-    try {
-      const result = await context.authInfo.dataModelRepository.deleteField(data.fieldId, { perform: data.perform });
-      if (result.performed) {
-        await setToast({ type: 'success', message: t('common:success.deleted') });
-      }
-      return { success: true as const, data: result } as { success: true; data: DestroyDataModelReport };
-    } catch (error) {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
-      return { success: false as const, errors: [], error: String(error) };
-    }
-  });
-
-export const createLinkFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(createLinkValueSchema)
-  .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
-    const { name, parentFieldId, childFieldId, parentTableId, childTableId } = data;
-
-    try {
-      await context.authInfo.apiClient.postDataModelTableLink({
-        name,
-        parent_field_id: parentFieldId,
-        child_field_id: childFieldId,
-        parent_table_id: parentTableId,
-        child_table_id: childTableId,
-      });
-      return { success: 'true' as const, errors: [] };
-    } catch (error) {
-      if (isStatusConflictHttpError(error)) {
-        await setToast({ type: 'error', message: t('common:errors.data.duplicate_link_name') });
-      }
-      return { success: 'false' as const, errors: [] };
-    }
-  });
-
-export const deleteLinkFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(deleteLinkPayloadSchema)
-  .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
-
-    try {
-      const result = await context.authInfo.dataModelRepository.deleteLink(data.linkId, { perform: data.perform });
-      if (result.performed) {
-        await setToast({ type: 'success', message: t('common:success.deleted') });
-      }
-      return { success: true as const, data: result } as { success: true; data: DestroyDataModelReport };
-    } catch (error) {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
-      return { success: false as const, errors: [], error: String(error) };
-    }
-  });
-
-export const createPivotFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(createPivotFormSchema)
-  .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
-
-    try {
-      await context.authInfo.dataModelRepository.createPivot(data.pivot);
-      return { success: 'true' as const, errors: [] };
-    } catch (error) {
-      await setToast({
-        type: 'error',
-        message: isStatusConflictHttpError(error)
-          ? t('data:create_pivot.errors.data.duplicate_pivot_value')
-          : t('common:errors.unknown'),
-      });
-      return { success: 'false' as const, errors: [] };
-    }
-  });
-
-export const deletePivotFn = createServerFn({ method: 'POST' })
-  .middleware([authMiddleware])
-  .inputValidator(deletePivotPayloadSchema)
-  .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
-
-    try {
-      const result = await context.authInfo.dataModelRepository.deletePivot(data.pivotId, { perform: data.perform });
-      if (result.performed) {
-        await setToast({ type: 'success', message: t('common:success.deleted') });
-      }
-      return { success: true as const, data: result } as { success: true; data: DestroyDataModelReport };
-    } catch (error) {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
-      return { success: false as const, errors: [], error: String(error) };
     }
   });
 

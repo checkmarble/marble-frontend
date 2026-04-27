@@ -18,6 +18,7 @@ export function HighlightText({ text, highlight, className }: HighlightTextProps
       return false;
     }
 
+    if (!text) return null;
     const textLower = text.toLowerCase();
     const highlightLower = highlight.toLowerCase();
 

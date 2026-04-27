@@ -54,7 +54,6 @@ import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_build
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
 import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
 import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_builder/settings/inboxes'
-import { Route as AppBuilderSettingsDataDisplayRouteImport } from './routes/_app/_builder/settings/data-display'
 import { Route as AppBuilderSettingsAuditLogsRouteImport } from './routes/_app/_builder/settings/audit-logs'
 import { Route as AppBuilderSettingsApiKeysRouteImport } from './routes/_app/_builder/settings/api-keys'
 import { Route as AppBuilderSettingsAnalyticsRouteImport } from './routes/_app/_builder/settings/analytics'
@@ -62,8 +61,6 @@ import { Route as AppBuilderDetectionScenariosRouteImport } from './routes/_app/
 import { Route as AppBuilderDetectionListsRouteImport } from './routes/_app/_builder/detection/lists'
 import { Route as AppBuilderDetectionDecisionsRouteImport } from './routes/_app/_builder/detection/decisions'
 import { Route as AppBuilderDetectionAnalyticsRouteImport } from './routes/_app/_builder/detection/analytics'
-import { Route as AppBuilderDataViewRouteImport } from './routes/_app/_builder/data/view'
-import { Route as AppBuilderDataSchemaRouteImport } from './routes/_app/_builder/data/schema'
 import { Route as AppBuilderDataListRouteImport } from './routes/_app/_builder/data/list'
 import { Route as AppBuilderContinuousScreeningConfigurationsRouteImport } from './routes/_app/_builder/continuous-screening/configurations'
 import { Route as AppBuilderCasesOverviewRouteImport } from './routes/_app/_builder/cases/overview'
@@ -98,7 +95,6 @@ import { Route as AppBuilderDetectionScenariosScenarioIdWorkflowRouteImport } fr
 import { Route as AppBuilderDetectionScenariosScenarioIdTestRunRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/test-run'
 import { Route as AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
 import { Route as AppBuilderDetectionScenariosScenarioIdHomeRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/home'
-import { Route as AppBuilderDataViewTableNameObjectIdRouteImport } from './routes/_app/_builder/data/view.$tableName.$objectId'
 import { Route as AppBuilderCasesDetailSCaseIdRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId'
 import { Route as AppBuilderCasesDetailMCaseIdRouteImport } from './routes/_app/_builder/cases/_detail/m.$caseId'
 import { Route as AppBuilderCasesCaseIdDDecisionIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId'
@@ -358,12 +354,6 @@ const AppBuilderSettingsInboxesRoute =
     path: '/inboxes',
     getParentRoute: () => AppBuilderSettingsRoute,
   } as any)
-const AppBuilderSettingsDataDisplayRoute =
-  AppBuilderSettingsDataDisplayRouteImport.update({
-    id: '/data-display',
-    path: '/data-display',
-    getParentRoute: () => AppBuilderSettingsRoute,
-  } as any)
 const AppBuilderSettingsAuditLogsRoute =
   AppBuilderSettingsAuditLogsRouteImport.update({
     id: '/audit-logs',
@@ -406,16 +396,6 @@ const AppBuilderDetectionAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AppBuilderDetectionRoute,
   } as any)
-const AppBuilderDataViewRoute = AppBuilderDataViewRouteImport.update({
-  id: '/view',
-  path: '/view',
-  getParentRoute: () => AppBuilderDataRoute,
-} as any)
-const AppBuilderDataSchemaRoute = AppBuilderDataSchemaRouteImport.update({
-  id: '/schema',
-  path: '/schema',
-  getParentRoute: () => AppBuilderDataRoute,
-} as any)
 const AppBuilderDataListRoute = AppBuilderDataListRouteImport.update({
   id: '/list',
   path: '/list',
@@ -613,12 +593,6 @@ const AppBuilderDetectionScenariosScenarioIdHomeRoute =
     path: '/home',
     getParentRoute: () => AppBuilderDetectionScenariosScenarioIdRoute,
   } as any)
-const AppBuilderDataViewTableNameObjectIdRoute =
-  AppBuilderDataViewTableNameObjectIdRouteImport.update({
-    id: '/$tableName/$objectId',
-    path: '/$tableName/$objectId',
-    getParentRoute: () => AppBuilderDataViewRoute,
-  } as any)
 const AppBuilderCasesDetailSCaseIdRoute =
   AppBuilderCasesDetailSCaseIdRouteImport.update({
     id: '/s/$caseId',
@@ -781,8 +755,6 @@ export interface FileRoutesByFullPath {
   '/cases/overview': typeof AppBuilderCasesOverviewRoute
   '/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
   '/data/list': typeof AppBuilderDataListRoute
-  '/data/schema': typeof AppBuilderDataSchemaRoute
-  '/data/view': typeof AppBuilderDataViewRouteWithChildren
   '/detection/analytics': typeof AppBuilderDetectionAnalyticsRouteWithChildren
   '/detection/decisions': typeof AppBuilderDetectionDecisionsRouteWithChildren
   '/detection/lists': typeof AppBuilderDetectionListsRouteWithChildren
@@ -790,7 +762,6 @@ export interface FileRoutesByFullPath {
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
-  '/settings/data-display': typeof AppBuilderSettingsDataDisplayRoute
   '/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
@@ -834,7 +805,6 @@ export interface FileRoutesByFullPath {
   '/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
   '/cases/m/$caseId': typeof AppBuilderCasesDetailMCaseIdRoute
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdRoute
-  '/data/view/$tableName/$objectId': typeof AppBuilderDataViewTableNameObjectIdRoute
   '/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
   '/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
   '/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteWithChildren
@@ -878,12 +848,9 @@ export interface FileRoutesByTo {
   '/cases/overview': typeof AppBuilderCasesOverviewRoute
   '/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
   '/data/list': typeof AppBuilderDataListRoute
-  '/data/schema': typeof AppBuilderDataSchemaRoute
-  '/data/view': typeof AppBuilderDataViewRouteWithChildren
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
-  '/settings/data-display': typeof AppBuilderSettingsDataDisplayRoute
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
@@ -924,7 +891,6 @@ export interface FileRoutesByTo {
   '/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
   '/cases/m/$caseId': typeof AppBuilderCasesDetailMCaseIdRoute
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdRoute
-  '/data/view/$tableName/$objectId': typeof AppBuilderDataViewTableNameObjectIdRoute
   '/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
   '/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
   '/detection/scenarios/$scenarioId/workflow': typeof AppBuilderDetectionScenariosScenarioIdWorkflowRoute
@@ -978,8 +944,6 @@ export interface FileRoutesById {
   '/_app/_builder/cases/overview': typeof AppBuilderCasesOverviewRoute
   '/_app/_builder/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
   '/_app/_builder/data/list': typeof AppBuilderDataListRoute
-  '/_app/_builder/data/schema': typeof AppBuilderDataSchemaRoute
-  '/_app/_builder/data/view': typeof AppBuilderDataViewRouteWithChildren
   '/_app/_builder/detection/analytics': typeof AppBuilderDetectionAnalyticsRouteWithChildren
   '/_app/_builder/detection/decisions': typeof AppBuilderDetectionDecisionsRouteWithChildren
   '/_app/_builder/detection/lists': typeof AppBuilderDetectionListsRouteWithChildren
@@ -987,7 +951,6 @@ export interface FileRoutesById {
   '/_app/_builder/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/_app/_builder/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/_app/_builder/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
-  '/_app/_builder/settings/data-display': typeof AppBuilderSettingsDataDisplayRoute
   '/_app/_builder/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/_app/_builder/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
@@ -1031,7 +994,6 @@ export interface FileRoutesById {
   '/_app/_builder/cases/$caseId/d/$decisionId': typeof AppBuilderCasesCaseIdDDecisionIdRouteWithChildren
   '/_app/_builder/cases/_detail/m/$caseId': typeof AppBuilderCasesDetailMCaseIdRoute
   '/_app/_builder/cases/_detail/s/$caseId': typeof AppBuilderCasesDetailSCaseIdRoute
-  '/_app/_builder/data/view/$tableName/$objectId': typeof AppBuilderDataViewTableNameObjectIdRoute
   '/_app/_builder/detection/scenarios/$scenarioId/home': typeof AppBuilderDetectionScenariosScenarioIdHomeRoute
   '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions': typeof AppBuilderDetectionScenariosScenarioIdScheduledExecutionsRoute
   '/_app/_builder/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunRouteWithChildren
@@ -1086,8 +1048,6 @@ export interface FileRouteTypes {
     | '/cases/overview'
     | '/continuous-screening/configurations'
     | '/data/list'
-    | '/data/schema'
-    | '/data/view'
     | '/detection/analytics'
     | '/detection/decisions'
     | '/detection/lists'
@@ -1095,7 +1055,6 @@ export interface FileRouteTypes {
     | '/settings/analytics'
     | '/settings/api-keys'
     | '/settings/audit-logs'
-    | '/settings/data-display'
     | '/settings/inboxes'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
@@ -1139,7 +1098,6 @@ export interface FileRouteTypes {
     | '/cases/$caseId/d/$decisionId'
     | '/cases/m/$caseId'
     | '/cases/s/$caseId'
-    | '/data/view/$tableName/$objectId'
     | '/detection/scenarios/$scenarioId/home'
     | '/detection/scenarios/$scenarioId/scheduled-executions'
     | '/detection/scenarios/$scenarioId/test-run'
@@ -1183,12 +1141,9 @@ export interface FileRouteTypes {
     | '/cases/overview'
     | '/continuous-screening/configurations'
     | '/data/list'
-    | '/data/schema'
-    | '/data/view'
     | '/settings/analytics'
     | '/settings/api-keys'
     | '/settings/audit-logs'
-    | '/settings/data-display'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
     | '/settings/tags'
@@ -1229,7 +1184,6 @@ export interface FileRouteTypes {
     | '/cases/$caseId/d/$decisionId'
     | '/cases/m/$caseId'
     | '/cases/s/$caseId'
-    | '/data/view/$tableName/$objectId'
     | '/detection/scenarios/$scenarioId/home'
     | '/detection/scenarios/$scenarioId/scheduled-executions'
     | '/detection/scenarios/$scenarioId/workflow'
@@ -1282,8 +1236,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/cases/overview'
     | '/_app/_builder/continuous-screening/configurations'
     | '/_app/_builder/data/list'
-    | '/_app/_builder/data/schema'
-    | '/_app/_builder/data/view'
     | '/_app/_builder/detection/analytics'
     | '/_app/_builder/detection/decisions'
     | '/_app/_builder/detection/lists'
@@ -1291,7 +1243,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/analytics'
     | '/_app/_builder/settings/api-keys'
     | '/_app/_builder/settings/audit-logs'
-    | '/_app/_builder/settings/data-display'
     | '/_app/_builder/settings/inboxes'
     | '/_app/_builder/settings/ip-whitelisting'
     | '/_app/_builder/settings/scenarios'
@@ -1335,7 +1286,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/cases/$caseId/d/$decisionId'
     | '/_app/_builder/cases/_detail/m/$caseId'
     | '/_app/_builder/cases/_detail/s/$caseId'
-    | '/_app/_builder/data/view/$tableName/$objectId'
     | '/_app/_builder/detection/scenarios/$scenarioId/home'
     | '/_app/_builder/detection/scenarios/$scenarioId/scheduled-executions'
     | '/_app/_builder/detection/scenarios/$scenarioId/test-run'
@@ -1695,13 +1645,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderSettingsInboxesRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
-    '/_app/_builder/settings/data-display': {
-      id: '/_app/_builder/settings/data-display'
-      path: '/data-display'
-      fullPath: '/settings/data-display'
-      preLoaderRoute: typeof AppBuilderSettingsDataDisplayRouteImport
-      parentRoute: typeof AppBuilderSettingsRoute
-    }
     '/_app/_builder/settings/audit-logs': {
       id: '/_app/_builder/settings/audit-logs'
       path: '/audit-logs'
@@ -1750,20 +1693,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/detection/analytics'
       preLoaderRoute: typeof AppBuilderDetectionAnalyticsRouteImport
       parentRoute: typeof AppBuilderDetectionRoute
-    }
-    '/_app/_builder/data/view': {
-      id: '/_app/_builder/data/view'
-      path: '/view'
-      fullPath: '/data/view'
-      preLoaderRoute: typeof AppBuilderDataViewRouteImport
-      parentRoute: typeof AppBuilderDataRoute
-    }
-    '/_app/_builder/data/schema': {
-      id: '/_app/_builder/data/schema'
-      path: '/schema'
-      fullPath: '/data/schema'
-      preLoaderRoute: typeof AppBuilderDataSchemaRouteImport
-      parentRoute: typeof AppBuilderDataRoute
     }
     '/_app/_builder/data/list': {
       id: '/_app/_builder/data/list'
@@ -2002,13 +1931,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/detection/scenarios/$scenarioId/home'
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdHomeRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdRoute
-    }
-    '/_app/_builder/data/view/$tableName/$objectId': {
-      id: '/_app/_builder/data/view/$tableName/$objectId'
-      path: '/$tableName/$objectId'
-      fullPath: '/data/view/$tableName/$objectId'
-      preLoaderRoute: typeof AppBuilderDataViewTableNameObjectIdRouteImport
-      parentRoute: typeof AppBuilderDataViewRoute
     }
     '/_app/_builder/cases/_detail/s/$caseId': {
       id: '/_app/_builder/cases/_detail/s/$caseId'
@@ -2313,29 +2235,13 @@ const AppBuilderContinuousScreeningRouteWithChildren =
     AppBuilderContinuousScreeningRouteChildren,
   )
 
-interface AppBuilderDataViewRouteChildren {
-  AppBuilderDataViewTableNameObjectIdRoute: typeof AppBuilderDataViewTableNameObjectIdRoute
-}
-
-const AppBuilderDataViewRouteChildren: AppBuilderDataViewRouteChildren = {
-  AppBuilderDataViewTableNameObjectIdRoute:
-    AppBuilderDataViewTableNameObjectIdRoute,
-}
-
-const AppBuilderDataViewRouteWithChildren =
-  AppBuilderDataViewRoute._addFileChildren(AppBuilderDataViewRouteChildren)
-
 interface AppBuilderDataRouteChildren {
   AppBuilderDataListRoute: typeof AppBuilderDataListRoute
-  AppBuilderDataSchemaRoute: typeof AppBuilderDataSchemaRoute
-  AppBuilderDataViewRoute: typeof AppBuilderDataViewRouteWithChildren
   AppBuilderDataIndexRoute: typeof AppBuilderDataIndexRoute
 }
 
 const AppBuilderDataRouteChildren: AppBuilderDataRouteChildren = {
   AppBuilderDataListRoute: AppBuilderDataListRoute,
-  AppBuilderDataSchemaRoute: AppBuilderDataSchemaRoute,
-  AppBuilderDataViewRoute: AppBuilderDataViewRouteWithChildren,
   AppBuilderDataIndexRoute: AppBuilderDataIndexRoute,
 }
 
@@ -2578,7 +2484,6 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsAnalyticsRoute: typeof AppBuilderSettingsAnalyticsRouteWithChildren
   AppBuilderSettingsApiKeysRoute: typeof AppBuilderSettingsApiKeysRoute
   AppBuilderSettingsAuditLogsRoute: typeof AppBuilderSettingsAuditLogsRoute
-  AppBuilderSettingsDataDisplayRoute: typeof AppBuilderSettingsDataDisplayRoute
   AppBuilderSettingsInboxesRoute: typeof AppBuilderSettingsInboxesRouteWithChildren
   AppBuilderSettingsIpWhitelistingRoute: typeof AppBuilderSettingsIpWhitelistingRoute
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
@@ -2594,7 +2499,6 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
     AppBuilderSettingsAnalyticsRouteWithChildren,
   AppBuilderSettingsApiKeysRoute: AppBuilderSettingsApiKeysRoute,
   AppBuilderSettingsAuditLogsRoute: AppBuilderSettingsAuditLogsRoute,
-  AppBuilderSettingsDataDisplayRoute: AppBuilderSettingsDataDisplayRoute,
   AppBuilderSettingsInboxesRoute: AppBuilderSettingsInboxesRouteWithChildren,
   AppBuilderSettingsIpWhitelistingRoute: AppBuilderSettingsIpWhitelistingRoute,
   AppBuilderSettingsScenariosRoute: AppBuilderSettingsScenariosRoute,

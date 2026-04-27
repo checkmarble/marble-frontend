@@ -2,33 +2,12 @@ import { semanticTypeTable } from '@app-builder/components/Data/SemanticTables/S
 import { dataModelNameRegex } from '@app-builder/components/Data/shared/dataModelNameValidation';
 import { semanticFieldForBack } from '@app-builder/constants/data-model';
 import { linkRelationTypes, primitiveTypes } from '@app-builder/models';
-import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
 export const applyArchetypePayloadSchema = z.object({
   name: z.string().min(1),
 });
 export type ApplyArchetypePayload = z.infer<typeof applyArchetypePayloadSchema>;
-
-export const createFieldValueSchema = z.object({
-  name: z
-    .string()
-    .min(1, {
-      message: 'NAME_MIN',
-    })
-    .regex(/^[a-z]+[a-z0-9_]*$/, {
-      message: 'NAME_REGEX',
-    })
-    .refine((value) => value !== 'id', {
-      message: 'NAME_RESERVED',
-    }),
-  description: z.string(),
-  required: z.string(),
-  type: z.enum(primitiveTypes),
-  tableId: z.string(),
-  isEnum: z.boolean(),
-  isUnique: z.boolean(),
-});
 
 export const createFieldValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
@@ -44,21 +23,6 @@ export const createFieldValuesSchema = z.object({
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]).optional()).optional(),
   semantic_type: z.enum(semanticFieldForBack).optional(),
 });
-export type CreateFieldValue = z.infer<typeof createFieldValueSchema>;
-
-export const createLinkValueSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .regex(/^[a-z]+[a-z0-9_]+$/, {
-      error: 'Only lower case alphanumeric and _, must start with a letter',
-    }),
-  parentTableId: z.uuid().min(1),
-  parentFieldId: z.uuid().min(1),
-  childTableId: z.uuid().min(1),
-  childFieldId: z.uuid().min(1),
-});
-
 export const createLinksValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
     error: 'Only lower case alphanumeric and _, must start with a letter',
@@ -70,7 +34,6 @@ export const createLinksValuesSchema = z.object({
   parent_field_id: z.uuid().optional(),
   link_type: z.enum(linkRelationTypes),
 });
-export type CreateLinkValue = z.infer<typeof createLinkValueSchema>;
 
 export const createTableValueSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
@@ -87,44 +50,11 @@ export const createTableValueSchema = z.object({
 });
 export type CreateTableValue = z.infer<typeof createTableValueSchema>;
 
-export const deleteFieldPayloadSchema = z.object({
-  fieldId: z.uuid(),
-  perform: z.boolean(),
-});
-export type DeleteFieldPayload = z.infer<typeof deleteFieldPayloadSchema>;
-
-export const deleteLinkPayloadSchema = z.object({
-  linkId: z.uuid(),
-  perform: z.boolean(),
-});
-export type DeleteLinkPayload = z.infer<typeof deleteLinkPayloadSchema>;
-
-export const deletePivotPayloadSchema = z.object({
-  pivotId: z.uuid(),
-  perform: z.boolean(),
-});
-export type DeletePivotPayload = z.infer<typeof deletePivotPayloadSchema>;
-
 export const deleteTablePayloadSchema = z.object({
   tableId: z.uuid(),
   perform: z.boolean(),
 });
 export type DeleteTablePayload = z.infer<typeof deleteTablePayloadSchema>;
-
-export const editFieldPayloadSchema = z.object({
-  description: z.string(),
-  fieldId: z.uuid(),
-  isEnum: z.boolean(),
-  isUnique: z.boolean(),
-  required: z.enum(['optional', 'required']),
-});
-export type EditFieldPayload = z.infer<typeof editFieldPayloadSchema>;
-
-export const editTablePayloadSchema = z.object({
-  description: z.string(),
-  tableId: z.uuid(),
-});
-export type EditTablePayload = z.infer<typeof editTablePayloadSchema>;
 
 export const createNavigationOptionSchema = z.object({
   sourceFieldId: z.uuid(),
@@ -133,26 +63,6 @@ export const createNavigationOptionSchema = z.object({
   orderingFieldId: z.uuid(),
 });
 export type CreateNavigationOptionValue = z.infer<typeof createNavigationOptionSchema>;
-
-export const createPivotFormSchema = z.object({
-  pivot: z.discriminatedUnion('type', [
-    z.object({
-      type: z.literal('field'),
-      fieldId: z.string(),
-      baseTableId: z.string(),
-      id: z.string(),
-      displayValue: z.string(),
-    }),
-    z.object({
-      type: z.literal('link'),
-      pathLinkIds: protectArray(z.array(z.string())),
-      baseTableId: z.string(),
-      id: z.string(),
-      displayValue: z.string(),
-    }),
-  ]),
-});
-export type CreatePivotFormValue = z.infer<typeof createPivotFormSchema>;
 
 export const listObjectsInputSchema = z.object({
   tableName: z.string(),
