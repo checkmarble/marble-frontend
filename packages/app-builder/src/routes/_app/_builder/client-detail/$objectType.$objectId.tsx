@@ -71,10 +71,8 @@ const getDataFn = createServerFn()
       };
     } catch (error) {
       if (error instanceof Response) throw error;
-      throw new Response(error instanceof Error ? error.message : String(error), {
-        status: 500,
-        headers: { 'Content-Type': 'text/plain' },
-      });
+      console.error('Failed to load client detail data', error);
+      throw new Response('Internal Server Error', { status: 500, headers: { 'Content-Type': 'text/plain' } });
     }
   });
 
