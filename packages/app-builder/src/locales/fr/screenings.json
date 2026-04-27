@@ -69,6 +69,7 @@
   "entity.property.sector": "Secteur",
   "entity.property.socialSecurityNumber": "Numéro de sécurité sociale",
   "entity.property.sourceUrl": "Source",
+  "entity.property.startDate": "Date de début",
   "entity.property.status": "Statut",
   "entity.property.summary": "Résumé",
   "entity.property.swiftBic": "Code SWIFT/BIC",
