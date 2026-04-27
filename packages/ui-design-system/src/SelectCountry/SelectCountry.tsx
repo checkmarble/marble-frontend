@@ -1,10 +1,9 @@
 import * as allCountryFlags from 'country-flag-emojis/flags';
 import type { CountryFlag } from 'country-flag-emojis/types';
-import { type ComponentProps, forwardRef, useId, useMemo } from 'react';
+import { type ComponentProps, forwardRef, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
 
-import { Input } from '../Input/Input';
-import { MenuCommand } from '../MenuCommand/MenuCommand';
+import { InternalMenuSharpFactory, MenuCommand } from '../MenuCommand/MenuCommand';
 import { type SelectTriggerProps, selectTrigger } from '../Select/Select';
 import { cn } from '../utils';
 
@@ -20,16 +19,8 @@ type MenuOmitted = 'children' | 'className';
 export type SelectCountryProps = {
   value: SelectCountryValue | null;
   onValueChange: (value: SelectCountryValue | null) => void;
-  /**
-   * When true (default), shows a text field so the user can type a country name
-   * that is not taken from the list. Clears the list selection when used.
-   */
-  allowManualName?: boolean;
-  manualNamePlaceholder?: string;
-  manualNameInputAriaLabel?: string;
   searchPlaceholder?: string;
   rootClassName?: string;
-  manualInputClassName?: string;
   placeholder?: string;
   border?: SelectTriggerProps['border'];
   borderColor?: SelectTriggerProps['borderColor'];
@@ -51,21 +42,36 @@ function itemFilterValue(c: CountryFlag) {
   return `${c.nameEnglish} ${c.isoAlpha2} ${c.isoAlpha3}`;
 }
 
+function FreeTextItem({ onSelect }: { onSelect: (name: string) => void }) {
+  const menuState = MenuCommand.State.useSharp();
+  const internalSharp = InternalMenuSharpFactory.useSharp();
+  const search = menuState.value.search.trim();
+
+  return (
+    <button
+      type="button"
+      className="text-s text-grey-primary hover:bg-purple-background-light flex h-10 w-full cursor-pointer items-center gap-2 rounded-xs px-2 font-medium"
+      onClick={() => {
+        onSelect(search);
+        internalSharp.value.onSelect();
+      }}
+    >
+      <span className="truncate italic">&ldquo;{search}&rdquo;</span>
+    </button>
+  );
+}
+
 /**
- * Searchable country selector: `MenuCommand` with combobox (cmdk) search, flag emoji + English name,
- * and optional free-text country name. List filtering uses the same search behavior as
- * `MenuCommand.Combobox` + `MenuCommand.Item` `value` strings.
+ * Searchable country selector with flag emoji + English name. When no country matches the search
+ * query, an option to use the typed text as a free-form country name is offered in place of the
+ * empty state. The selected free-form name is displayed in the trigger without a flag.
  */
 export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(function SelectCountry(
   {
     value,
     onValueChange,
-    allowManualName = true,
-    manualNamePlaceholder = 'Or type a country name',
-    manualNameInputAriaLabel = 'Enter country name manually',
     searchPlaceholder = 'Search country…',
     rootClassName,
-    manualInputClassName,
     menuContentClassName,
     placeholder = 'Select country',
     border = 'square',
@@ -83,7 +89,13 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
   ref,
 ) {
   const { countries, byIso2 } = useMemo(buildCountryList, []);
-  const manualFieldId = useId();
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const open = openProp ?? internalOpen;
+  const handleOpenChange = (next: boolean) => {
+    setInternalOpen(next);
+    onOpenChangeProp?.(next);
+  };
 
   const listIso2 = value && !value.isManual ? value.isoAlpha2 : undefined;
   const selectedFromList = listIso2 ? byIso2.get(listIso2) : undefined;
@@ -123,14 +135,17 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
     });
   };
 
+  const handleManualSelect = (name: string) => {
+    if (!name) {
+      onValueChange(null);
+    } else {
+      onValueChange({ isoAlpha2: '', isoAlpha3: '', name, isManual: true });
+    }
+  };
+
   return (
     <div className={cn('flex flex-col gap-2', rootClassName)}>
-      <MenuCommand.Menu
-        open={openProp}
-        onOpenChange={onOpenChangeProp}
-        defaultOpen={defaultOpen}
-        {...restMenuRootProps}
-      >
+      <MenuCommand.Menu open={open} onOpenChange={handleOpenChange} defaultOpen={defaultOpen} {...restMenuRootProps}>
         <MenuCommand.Trigger>
           <MenuCommand.SelectButton
             id={selectId}
@@ -157,7 +172,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
           sideOffset={4}
           className={cn('max-h-[min(300px,calc(100dvh-4rem))]', menuContentClassName)}
         >
-          <MenuCommand.Combobox placeholder={searchPlaceholder} />
+          <MenuCommand.Combobox placeholder={searchPlaceholder} filterMode="exact" />
           <MenuCommand.List className="max-h-60 min-h-0">
             {countries.map((c) => (
               <MenuCommand.Item
@@ -181,36 +196,11 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
               </MenuCommand.Item>
             ))}
             <MenuCommand.Empty>
-              <p className="text-s text-grey-secondary flex items-center justify-center p-2">No country matches</p>
+              <FreeTextItem onSelect={handleManualSelect} />
             </MenuCommand.Empty>
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
-
-      {allowManualName ? (
-        <Input
-          id={manualFieldId}
-          className={manualInputClassName}
-          value={value?.isManual ? value.name : ''}
-          placeholder={manualNamePlaceholder}
-          borderColor="greyfigma-90"
-          aria-label={manualNameInputAriaLabel}
-          disabled={disabled}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (v.length === 0) {
-              onValueChange(null);
-            } else {
-              onValueChange({
-                isoAlpha2: '',
-                isoAlpha3: '',
-                name: v,
-                isManual: true,
-              });
-            }
-          }}
-        />
-      ) : null}
     </div>
   );
 });
