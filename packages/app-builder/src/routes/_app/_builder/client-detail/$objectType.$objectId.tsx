@@ -1,10 +1,11 @@
 import { ClientDetailPage as ClientDetailPageComponent } from '@app-builder/components/ClientDetail/ClientDetailPage';
+import { ErrorComponent } from '@app-builder/components/ErrorComponent';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { setToast } from '@app-builder/services/toast.server';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { z } from 'zod/v4';
@@ -59,6 +60,7 @@ const getDataFn = createServerFn()
         userScoringAccess: entitlements.userScoring,
       };
     } catch (error) {
+      if (isRedirect(error) || error instanceof Response) throw error;
       if (isNotFoundHttpError(error)) {
         setToast({
           type: 'error',
@@ -66,17 +68,19 @@ const getDataFn = createServerFn()
         });
         throw redirect({ to: '/client-detail' });
       }
-
-      throw error;
+      console.error('Failed to load client detail data', error);
+      throw new Response('Internal Server Error', { status: 500, headers: { 'Content-Type': 'text/plain' } });
     }
   });
 
 export const Route = createFileRoute('/_app/_builder/client-detail/$objectType/$objectId')({
   loader: ({ params }) => getDataFn({ data: params }),
+  errorComponent: ({ error }) => <ErrorComponent error={error} />,
   component: ClientDetailPage,
 });
 
 function ClientDetailPage() {
+  const loaderData = Route.useLoaderData();
   const {
     objectType,
     objectId,
@@ -88,7 +92,11 @@ function ClientDetailPage() {
     scoringSettings,
     activeScore,
     userScoringAccess,
-  } = Route.useLoaderData();
+  } = loaderData;
+
+  // Guard against the concurrent-render window where the router transitions
+  // to this route before the loader result is committed to the router state.
+  if (!metadata) return null;
 
   return (
     <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
