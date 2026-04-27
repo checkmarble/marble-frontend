@@ -8,6 +8,7 @@ import {
   useNodesInitialized,
   useReactFlow,
 } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useRef } from 'react';
 import { Icon } from 'ui-icons';
 

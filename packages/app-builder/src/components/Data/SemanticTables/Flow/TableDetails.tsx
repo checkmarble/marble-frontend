@@ -17,6 +17,7 @@ import { DatatypeIcon } from '../Shared/DatatypeOption';
 import { ChangeRecord, LinkValue, SemanticTableFormValues } from '../Shared/semanticData-types';
 import { UploadTableDrawer } from '../UploadData/UploadTableDrawer';
 import { TableRecordPreviewDrawer } from './TableRecordPreviewDrawer';
+import '@xyflow/react/dist/style.css';
 
 export interface TableDetailsProps {
   tableModel: TableModel;
@@ -80,7 +81,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
   }
 
   const renderField = (field: DataModelField, extended?: boolean) => {
-    const hasHandles = fieldGroups.some((group) => group.type === 'single' && group.field.name === field.name);
+    const hasHandles = data.relationFieldNames.includes(field.name);
     return (
       <div
         key={field.id}
