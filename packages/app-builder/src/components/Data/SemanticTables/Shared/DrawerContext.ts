@@ -5,7 +5,7 @@ import type { LinkValue, SemanticTableFormValues, TableField } from './semanticD
 export const DrawerContext = createSimpleContext<{
   container: RefObject<HTMLDivElement>;
   data: unknown;
-  close: (force: boolean) => void;
+  close: () => void;
   tablesState: Record<string, SemanticTableFormValues>;
   updateTableState: (tableId: string, values: Partial<SemanticTableFormValues>) => void;
   tableIds: string[];
