@@ -1,15 +1,12 @@
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { useImportOrgFromFileMutation, useImportOrgMutation } from '@app-builder/queries/data/import-org';
 import { useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function ImportOrg({
-  children,
-  onImportSuccess,
-}: {
-  children: React.ReactNode;
-  onImportSuccess?: (data: unknown) => void;
-}) {
+export function ImportOrg({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation(['data', 'common']);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -17,6 +14,9 @@ export function ImportOrg({
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [isParsing, setIsParsing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const importFileMutation = useImportOrgFromFileMutation();
+  const importBodyMutation = useImportOrgMutation();
+  const revalidate = useLoaderRevalidator();
 
   const hasFile = selectedFile !== null;
   const hasJson = jsonContent.trim().length > 0;
@@ -33,25 +33,44 @@ export function ImportOrg({
   };
 
   const handleImport = async () => {
-    setIsParsing(true);
-    try {
-      let parsed: unknown;
-      if (hasFile) {
-        const text = await selectedFile.text();
-        parsed = JSON.parse(text);
-      } else if (hasJson) {
-        parsed = JSON.parse(jsonContent);
-      } else {
-        return;
+    if (hasFile) {
+      setIsParsing(true);
+      importFileMutation.mutate(selectedFile, {
+        onSuccess: (result) => {
+          if (result.success) {
+            revalidate();
+            toast.success(t('data:import_org.success'));
+            setIsOpen(false);
+            resetState();
+          }
+        },
+        onError: () => {
+          toast.error(t('common:errors.backend_global_error.unknown'));
+          setIsParsing(false);
+        },
+      });
+    } else if (hasJson) {
+      try {
+        setIsParsing(true);
+        const parsed = JSON.parse(jsonContent);
+        setJsonError(null);
+        importBodyMutation.mutate(parsed, {
+          onSuccess: (result) => {
+            if (result.success) {
+              toast.success(t('data:import_org.success'));
+              revalidate();
+              setIsOpen(false);
+              resetState();
+            }
+          },
+          onError: () => {
+            toast.error(t('common:errors.backend_global_error.unknown'));
+            setIsParsing(false);
+          },
+        });
+      } catch {
+        setJsonError(t('data:import_org.invalid_json'));
       }
-      setJsonError(null);
-      setIsOpen(false);
-      resetState();
-      onImportSuccess?.(parsed);
-    } catch {
-      setJsonError(t('data:import_org.invalid_json'));
-    } finally {
-      setIsParsing(false);
     }
   };
 
