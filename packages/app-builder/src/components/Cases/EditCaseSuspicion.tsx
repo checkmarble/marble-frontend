@@ -33,12 +33,21 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
 
   const form = useForm({
     onSubmit: ({ value }) => {
-      editSuspicionMutation.mutateAsync(value).then((res) => {
-        setOpenReportModal(false);
-        form.setFieldValue('reportId', res.data?.id);
-        setIsCompleted(res.data?.status === 'completed');
-        revalidate();
-      });
+      editSuspicionMutation
+        .mutateAsync(value)
+        .then((res) => {
+          if (!res.success) {
+            toast.error(t('common:errors.unknown'));
+            return;
+          }
+          setOpenReportModal(false);
+          form.setFieldValue('reportId', res.data?.id);
+          setIsCompleted(res.data?.status === 'completed');
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     defaultValues: {
       caseId: id,

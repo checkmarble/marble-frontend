@@ -2,6 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { PrevalidationCreateContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { useCreateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/create-configuration';
 import { useCallbackRef } from '@marble/shared';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '../Breadcrumbs';
 import { Page } from '../Page';
@@ -10,13 +11,18 @@ import { CreationContent } from './form/Content';
 import { Stepper } from './form/Stepper';
 
 export const CreationPage = ({ name, description }: { name: string; description: string }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { t } = useTranslation(['continuousScreening', 'common']);
   const revalidate = useLoaderRevalidator();
   const createConfigurationMutation = useCreateContinuousScreeningConfigurationMutation();
   const handleSubmit = useCallbackRef((value: PrevalidationCreateContinuousScreeningConfig) => {
-    createConfigurationMutation.mutateAsync(value).then((_) => {
-      revalidate();
-    });
+    createConfigurationMutation
+      .mutateAsync(value)
+      .then((_) => {
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   });
   const creationStepper = ContinuousScreeningConfigurationStepper.createSharp(
     'create',

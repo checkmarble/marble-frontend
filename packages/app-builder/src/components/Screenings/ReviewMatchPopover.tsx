@@ -8,6 +8,7 @@ import {
 import { handleSubmit } from '@app-builder/utils/form';
 import { RadioGroup, RadioProvider } from '@ariakit/react';
 import { useForm, useStore } from '@tanstack/react-form';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -35,9 +36,13 @@ export function ReviewMatchPopover({
       whitelist: false,
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
-      await reviewScreeningMatchMutation.mutateAsync(value);
-      onOpenChange(false);
-      revalidate();
+      try {
+        await reviewScreeningMatchMutation.mutateAsync(value);
+        onOpenChange(false);
+        revalidate();
+      } catch {
+        toast.error(t('common:errors.unknown'));
+      }
     },
     validators: {
       onSubmit: reviewScreeningMatchPayloadSchema,

@@ -6,6 +6,7 @@ import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/update-inbox-escalation';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
@@ -26,7 +27,7 @@ export const EscalationConditionsPanelContent = ({
   allInboxesMetadata,
 }: EscalationConditionsPanelContentProps) => {
   const panelSharp = PanelSharpFactory.useSharp();
-  const { t } = useTranslation(['cases']);
+  const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const updateEscalationMutation = useUpdateInboxEscalationMutation();
   const revalidate = useLoaderRevalidator();
@@ -99,8 +100,12 @@ export const EscalationConditionsPanelContent = ({
       { updates },
       {
         onSuccess: () => {
+          toast.success(t('cases:overview.panel.escalation.saved'));
           revalidate();
           panelSharp.actions.close();
+        },
+        onError: () => {
+          toast.error(t('common:errors.unknown'));
         },
       },
     );

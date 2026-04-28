@@ -1,6 +1,7 @@
 import { type AstNode } from '@app-builder/models';
 import { useGenerateRuleMutation } from '@app-builder/queries/scenarios/generate-rule';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -12,13 +13,17 @@ interface AiGenerateRuleProps {
 }
 
 export function AiGenerateRule({ scenarioId, ruleId, onFormulaGenerated }: AiGenerateRuleProps) {
-  const { t } = useTranslation(['scenarios']);
+  const { t } = useTranslation(['scenarios', 'common']);
   const [instruction, setInstruction] = useState('');
   const mutation = useGenerateRuleMutation(scenarioId);
 
   const handleGenerate = async () => {
     const result = await mutation.mutateAsync({ ruleId, instruction }).catch(() => null);
-    if (result?.success && result.ruleAst) {
+    if (result === null || !result.success) {
+      toast.error(t('scenarios:rules.ai_generate.error_generating'));
+      return;
+    }
+    if (result.ruleAst) {
       setInstruction('');
       onFormulaGenerated(result.ruleAst);
     }

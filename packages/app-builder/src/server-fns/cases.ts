@@ -38,7 +38,6 @@ import {
   updateInboxWorkflowPayloadSchema,
 } from '@app-builder/schemas/cases';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
-import { setToast } from '@app-builder/services/toast.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
@@ -69,7 +68,6 @@ export const createCaseFn = createServerFn({ method: 'POST' })
       throw redirect({ to: '/cases/$caseId', params: { caseId: fromUUIDtoSUUID(createdCase.id) } });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to create case');
     }
   });
@@ -78,9 +76,6 @@ export const closeCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(closeCasePayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
-
     const { caseId, outcome, comment } = data;
     try {
       const promises: Promise<unknown>[] = [
@@ -91,7 +86,6 @@ export const closeCaseFn = createServerFn({ method: 'POST' })
       }
       await Promise.all(promises);
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       throw new Error('Failed to close case');
     }
   });
@@ -100,9 +94,6 @@ export const openCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(openCasePayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
-
     try {
       const promises: Promise<unknown>[] = [];
       if (data.comment !== '') {
@@ -111,7 +102,6 @@ export const openCaseFn = createServerFn({ method: 'POST' })
       promises.push(context.authInfo.cases.updateCase({ caseId: data.caseId, body: { status: 'investigating' } }));
       await Promise.allSettled(promises);
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       throw new Error('Failed to open case');
     }
   });
@@ -120,16 +110,11 @@ export const escalateCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(escalateCasePayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['cases', 'common']);
-
     try {
       await context.authInfo.cases.escalateCase({ caseId: data.caseId });
-      await setToast({ type: 'success', messageKey: t('cases:case.escalated') });
       throw redirect({ to: '/cases/inboxes/$inboxId', params: { inboxId: fromUUIDtoSUUID(data.inboxId) } });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
-      await setToast({ type: 'error', messageKey: t('common:errors.unknown') });
       throw new Error('Failed to escalate case');
     }
   });
@@ -184,14 +169,9 @@ export const editSuspicionFn = createServerFn({ method: 'POST' })
     return data;
   })
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
-    const { MAX_FILE_SIZE_MB } = await import('@app-builder/hooks/useFormDropzone');
-
     const [err, raw] = await tryit(() => Promise.resolve(data))();
 
     if (err) {
-      await setToast({ type: 'error', message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }) });
       throw new Error('FormData error');
     }
 
@@ -225,7 +205,6 @@ export const editSuspicionFn = createServerFn({ method: 'POST' })
 
       return { success: true as const, errors: [] as never[], data: sar };
     } catch (error) {
-      await setToast({ type: 'error', messageKey: t('common:errors.unknown') });
       return { success: false as const, errors: [(error as Error).message] };
     }
   });
@@ -246,14 +225,9 @@ export const addCommentFn = createServerFn({ method: 'POST' })
     return data;
   })
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
-    const { MAX_FILE_SIZE_MB } = await import('@app-builder/hooks/useFormDropzone');
-
     const [err, raw] = await tryit(() => Promise.resolve(data))();
 
     if (err) {
-      await setToast({ type: 'error', message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }) });
       throw new Error('FormData error');
     }
 
@@ -285,13 +259,16 @@ export const addCommentFn = createServerFn({ method: 'POST' })
             method: 'POST',
             body,
             headers: { Authorization: `Bearer ${token}` },
+          }).then((res) => {
+            if (!res.ok) {
+              throw new Error('Failed to upload comment files');
+            }
           }),
         );
       }
 
       await Promise.all(promises);
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to add comment');
     }
   });
@@ -302,15 +279,10 @@ export const reviewDecisionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(reviewDecisionPayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common']);
-
     try {
       await context.authInfo.cases.reviewDecision(data);
-      await setToast({ type: 'success', message: t('common:success.save') });
       return { status: 'success' as const };
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       return { status: 'error' as const };
     }
   });
@@ -341,12 +313,9 @@ export const addRuleSnoozeFn = createServerFn({ method: 'POST' })
       await context.authInfo.decision.createSnoozeForDecision(decisionId, { ruleId, duration, comment });
       return { status: 'success' as const, errors: [] };
     } catch (error) {
-      await setToast({
-        type: 'error',
-        message: isStatusConflictHttpError(error)
-          ? t('cases:case_detail.add_rule_snooze.errors.duplicate_rule_snooze')
-          : t('common:errors.unknown'),
-      });
+      if (isStatusConflictHttpError(error)) {
+        return { status: 'error' as const, errors: [], error: 'duplicate_rule_snooze' as const };
+      }
       return { status: 'error' as const, errors: [] };
     }
   });
@@ -355,13 +324,9 @@ export const reviewScreeningMatchFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(reviewScreeningMatchPayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
-
     try {
       await context.authInfo.screening.updateMatchStatus(data);
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       throw new Error('Failed to review screening match');
     }
   });
@@ -370,15 +335,11 @@ export const setAllMatchesToNoHitFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ matchIds: protectArray(z.string().array()) }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
-
     try {
       await Promise.all(
         data.matchIds.map((matchId) => context.authInfo.screening.updateMatchStatus({ matchId, status: 'no_hit' })),
       );
     } catch {
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       throw new Error('Failed to review screening match');
     }
   });
@@ -421,9 +382,7 @@ export const updateAiSettingsFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.aiAssistSettings.updateAiAssistSettings(data);
-      await setToast({ type: 'success', messageKey: 'common:success.save' });
     } catch (error) {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       Sentry.captureException(error);
       throw new Error('Failed to update AI settings');
     }
@@ -641,9 +600,6 @@ export const addReviewToCaseCommentsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ caseId: z.string(), reviewId: z.string() }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
-
     const caseReviews = await context.authInfo.cases.getMostRecentCaseReview({ caseId: data.caseId });
     const caseReview = caseReviews.find((review) => review.id === data.reviewId);
 
@@ -651,9 +607,7 @@ export const addReviewToCaseCommentsFn = createServerFn({ method: 'POST' })
 
     try {
       await context.authInfo.cases.addComment({ caseId: data.caseId, body: { comment: caseReview.review.output } });
-      await setToast({ type: 'success', message: t('cases:case_detail.ai_review.actions.add_to_comment.success') });
     } catch {
-      await setToast({ type: 'error', messageKey: t('common:errors.unknown') });
       throw new Error('Failed to add review to case comments');
     }
   });
@@ -698,9 +652,6 @@ export const updateInboxEscalationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateInboxEscalationPayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['cases', 'common']);
-
     try {
       await Promise.all(
         data.updates.map(async (update) => {
@@ -711,9 +662,7 @@ export const updateInboxEscalationFn = createServerFn({ method: 'POST' })
           });
         }),
       );
-      await setToast({ type: 'success', message: t('cases:overview.panel.escalation.saved') });
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to update inbox escalation');
     }
   });
@@ -722,9 +671,6 @@ export const updateAutoAssignFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateAutoAssignPayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['cases', 'common']);
-
     try {
       const inboxEntries = Object.entries(data.inboxes) as [string, boolean][];
       await Promise.all(
@@ -744,10 +690,7 @@ export const updateAutoAssignFn = createServerFn({ method: 'POST' })
           context.authInfo.inbox.updateInboxUser(userId, { autoAssignable }),
         ),
       );
-
-      await setToast({ type: 'success', message: t('cases:overview.panel.auto_assignment.saved') });
     } catch {
-      await setToast({ type: 'error', message: t('cases:overview.panel.auto_assignment.save_error') });
       throw new Error('Failed to update auto-assign');
     }
   });
@@ -756,9 +699,6 @@ export const updateInboxWorkflowFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(updateInboxWorkflowPayloadSchema)
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['cases', 'common']);
-
     try {
       await Promise.all(
         data.updates.map(async (update) => {
@@ -771,9 +711,7 @@ export const updateInboxWorkflowFn = createServerFn({ method: 'POST' })
           });
         }),
       );
-      await setToast({ type: 'success', message: t('cases:overview.panel.workflow.saved') });
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to update inbox workflow');
     }
   });
@@ -782,19 +720,14 @@ export const getNextUnassignedCaseFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
-    const request = getRequest();
-    const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
-
     try {
       const nextCaseId = await context.authInfo.cases.getNextUnassignedCaseId({ caseId: data.caseId });
       if (!nextCaseId) {
-        await setToast({ type: 'error', message: t('cases:errors.no_next_unassigned_case') });
         throw redirect({ to: '/cases/inboxes/$inboxId', params: { inboxId: MY_INBOX_ID } });
       }
       throw redirect({ to: '/cases/$caseId', params: { caseId: fromUUIDtoSUUID(nextCaseId) } });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
-      await setToast({ type: 'error', message: t('common:errors.unknown') });
       throw redirect({ href: `/cases/inboxes/${MY_INBOX_ID}` });
     }
   });

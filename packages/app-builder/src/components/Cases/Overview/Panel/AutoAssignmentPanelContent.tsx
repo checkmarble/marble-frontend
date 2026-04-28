@@ -6,6 +6,7 @@ import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateAutoAssignMutation } from '@app-builder/queries/cases/update-auto-assign';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
@@ -92,8 +93,12 @@ export const AutoAssignmentPanelContent = ({
       { inboxes: changes.inboxes, users: changes.users },
       {
         onSuccess: () => {
+          toast.success(t('cases:overview.panel.auto_assignment.saved'));
           revalidate();
           panelSharp.actions.close();
+        },
+        onError: () => {
+          toast.error(t('common:errors.unknown'));
         },
       },
     );

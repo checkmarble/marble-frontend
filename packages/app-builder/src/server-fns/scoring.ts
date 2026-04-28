@@ -3,7 +3,6 @@ import {
   updateScoringRulesetPayloadSchema,
   updateScoringSettingsPayloadSchema,
 } from '@app-builder/schemas/user-scoring';
-import { setToast } from '@app-builder/services/toast.server';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
@@ -29,7 +28,6 @@ export const commitScoringRulesetFn = createServerFn({ method: 'POST' })
       });
     } catch (error) {
       if (error instanceof Response && error.status >= 300 && error.status < 400) throw error;
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to commit ruleset');
     }
   });
@@ -56,7 +54,6 @@ export const prepareScoringRulesetFn = createServerFn({ method: 'POST' })
     try {
       await context.authInfo.userScoring.prepareScoringRuleset(data.recordType);
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to prepare ruleset');
     }
   });
@@ -95,7 +92,6 @@ export const updateScoringSettingsFn = createServerFn({ method: 'POST' })
     try {
       await context.authInfo.userScoring.updateScoringSettings(data);
     } catch {
-      await setToast({ type: 'error', messageKey: 'common:errors.unknown' });
       throw new Error('Failed to update scoring settings');
     }
   });

@@ -11,6 +11,7 @@ import { scenarioObjectDocHref } from '@app-builder/services/documentation-href'
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal, Select, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -89,9 +90,20 @@ function CreateTestRunToContent({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createTestRunMutation.mutateAsync(value).then(() => {
-          revalidate();
-        });
+        createTestRunMutation
+          .mutateAsync(value)
+          .then((res) => {
+            if (res?.error === 'duplicate_test_run') {
+              toast.error(t('common:errors.data.duplicate_test_run'));
+            } else if (res?.error) {
+              toast.error(t('common:errors.unknown'));
+            } else {
+              revalidate();
+            }
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

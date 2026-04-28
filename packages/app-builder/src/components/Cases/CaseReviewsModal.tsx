@@ -6,6 +6,7 @@ import { useCaseReviewQuery } from '@app-builder/queries/get-case-review';
 import { useCaseReviewsQuery } from '@app-builder/queries/get-case-reviews';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn, Markdown, Modal, Tag } from 'ui-design-system';
@@ -126,7 +127,16 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
               <Icon icon="thumb-down" className="size-4" />
               {t('cases:case_detail.ai_review.actions.feedback_ko')}
             </Button>
-            <Button variant="secondary" size="small" onClick={() => addCommentMutation.mutate()}>
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() =>
+                addCommentMutation.mutate(undefined, {
+                  onSuccess: () => toast.success(t('cases:case_detail.ai_review.actions.add_to_comment.success')),
+                  onError: () => toast.error(t('common:errors.unknown')),
+                })
+              }
+            >
               <Icon icon="comment" className="size-4" />
               {t('cases:case_detail.ai_review.actions.add_to_comment')}
             </Button>

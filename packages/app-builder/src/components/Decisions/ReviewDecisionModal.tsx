@@ -9,6 +9,7 @@ import {
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Modal, TextArea } from 'ui-design-system';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
@@ -57,7 +58,17 @@ function ReviewDecisionContent({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         reviewDecisionMutation.mutate(value, {
-          onSuccess: () => setOpen(false),
+          onSuccess: (res) => {
+            if (res.status === 'error') {
+              toast.error(t('common:errors.unknown'));
+              return;
+            }
+            toast.success(t('common:success.save'));
+            setOpen(false);
+          },
+          onError: () => {
+            toast.error(t('common:errors.unknown'));
+          },
         });
       }
     },

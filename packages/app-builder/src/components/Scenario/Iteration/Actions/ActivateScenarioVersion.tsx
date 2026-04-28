@@ -11,6 +11,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, CollapsibleV2, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -75,9 +76,26 @@ function ActivateScenarioVersionContent({
       if (formApi.state.isValid) {
         const activateIterationPayload = activateIterationPayloadSchema.safeParse(value);
         if (activateIterationPayload.success) {
-          activateIterationMutation.mutateAsync(activateIterationPayload.data).then(() => {
-            revalidate();
-          });
+          activateIterationMutation
+            .mutateAsync(activateIterationPayload.data)
+            .then((res) => {
+              if (res?.error === 'validation_error') {
+                toast.error(t('scenarios:deployment_modal.activate.validation_error'));
+              } else if (res?.error === 'preparation_is_required') {
+                toast.error(t('scenarios:deployment_modal.activate.preparation_is_required_error'));
+              } else if (res?.error === 'preparation_service_occupied') {
+                toast.error(t('scenarios:deployment_modal.activate.preparation_service_occupied_error'));
+              } else if (res?.error === 'is_draft') {
+                toast.error(t('scenarios:deployment_modal.activate.is_draft_error'));
+              } else if (res?.error === 'unknown') {
+                toast.error(t('common:errors.unknown'));
+              } else {
+                revalidate();
+              }
+            })
+            .catch(() => {
+              toast.error(t('common:errors.unknown'));
+            });
         }
       }
     },

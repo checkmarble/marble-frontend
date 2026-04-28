@@ -104,6 +104,7 @@
   "review.search_parameters_subtitle": "Search parameters",
   "review.search_tag.object_added": "Initial search",
   "review.search_tag.object_updated": "Search on update",
+  "success.dismissed": "Alert dismissed successfully",
   "view.datasetSelection.callout": "Selection of lists that will be used for this continuous screening. You will receive alerts every time a new entity is put under monitoring and matches an entry on those lists, or every time a new entry on the lists matches the profile of an actively monitored entity in Marble.",
   "view.objectMapping.callout": "Below is the list of entities that can be monitored under this configuration. You can allow more entities, or add to their data mapping, by switching to edit mode.",
   "view.objectMapping.configurator.ftmEntity.subtitle": "The entity type (from whatchlists) that a \"{{marble_type}}\" maps to. During screening searches, only list entries of type \"{{list_type}}\" will be considered. Likewise, \"{{marble_type}}\" will be considered for potential matches if a new \"{{list_type}}\" is added to the lists under supervision.",

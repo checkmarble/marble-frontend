@@ -11,6 +11,7 @@ import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Markdown } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -68,7 +69,15 @@ export const CaseDetails = ({
     reviewReactionMutation.mutateAsync(reaction).then(() => revalidate());
   };
   const handleAddCommentReview = () => {
-    addReviewToCaseCommentsMutation.mutateAsync().then(() => revalidate());
+    addReviewToCaseCommentsMutation
+      .mutateAsync()
+      .then(() => {
+        toast.success(t('cases:case_detail.ai_review.actions.add_to_comment.success'));
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (

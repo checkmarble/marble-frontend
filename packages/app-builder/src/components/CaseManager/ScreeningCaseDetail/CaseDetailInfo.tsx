@@ -17,6 +17,7 @@ import { useCloseCaseMutation } from '@app-builder/queries/cases/close-case';
 import { useOpenCaseMutation } from '@app-builder/queries/cases/open-case';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useFormatDateTime } from '@app-builder/utils/format';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
@@ -30,7 +31,7 @@ type CaseDetailInfoProps = {
 };
 
 export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetailInfoProps) => {
-  const { t } = useTranslation(['cases']);
+  const { t } = useTranslation(['cases', 'common']);
   const formatDateTime = useFormatDateTime();
   const { currentUser } = useOrganizationDetails();
   const revalidate = useLoaderRevalidator();
@@ -41,15 +42,17 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
   const screening = caseDetail.continuousScreenings[0];
   const hasRemainingMatchesToExamine = screening?.matches.some((match) => match.status === 'pending');
   const handleCloseCase = () => {
-    closeCaseMutation.mutateAsync({ caseId: caseDetail.id, comment: '' }).then(() => {
-      revalidate();
-    });
+    closeCaseMutation
+      .mutateAsync({ caseId: caseDetail.id, comment: '' })
+      .then(() => revalidate())
+      .catch(() => toast.error(t('common:errors.unknown')));
   };
 
   const handleReopenCase = () => {
-    reopenCaseMutation.mutateAsync({ caseId: caseDetail.id, comment: '' }).then(() => {
-      revalidate();
-    });
+    reopenCaseMutation
+      .mutateAsync({ caseId: caseDetail.id, comment: '' })
+      .then(() => revalidate())
+      .catch(() => toast.error(t('common:errors.unknown')));
   };
 
   return (

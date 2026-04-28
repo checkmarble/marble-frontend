@@ -1,6 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useSetLanguageMutation } from '@app-builder/queries/settings/set-language';
 import { languageNames, supportedLngs } from '@app-builder/services/i18n/i18n-config';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'ui-design-system';
 
@@ -9,8 +10,9 @@ import { Select } from 'ui-design-system';
  */
 export function LanguagePicker() {
   const {
+    t,
     i18n: { language },
-  } = useTranslation<'common'>();
+  } = useTranslation<'common'>('common');
   const setLanguageMutation = useSetLanguageMutation();
   const revalidate = useLoaderRevalidator();
 
@@ -20,9 +22,14 @@ export function LanguagePicker() {
     <Select.Default
       value={language}
       onValueChange={(newPreferredLanguage: (typeof supportedLngs)[number]) => {
-        setLanguageMutation.mutateAsync({ preferredLanguage: newPreferredLanguage }).then(() => {
-          revalidate();
-        });
+        setLanguageMutation
+          .mutateAsync({ preferredLanguage: newPreferredLanguage })
+          .then(() => {
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }}
     >
       {supportedLngs.map((lng) => {

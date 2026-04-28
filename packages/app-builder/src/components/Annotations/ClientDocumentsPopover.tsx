@@ -1,7 +1,7 @@
 import { AnnotationFileDownload } from '@app-builder/components/Annotations/FileDownload';
 import { RemoveFileAnnotation } from '@app-builder/components/Annotations/RemoveFileAnnotation';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { useFormDropzone } from '@app-builder/hooks/useFormDropzone';
+import { MAX_FILE_SIZE_MB, useFormDropzone } from '@app-builder/hooks/useFormDropzone';
 import { type FileAnnotation } from '@app-builder/models';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createFileAnnotationSchema } from '@app-builder/schemas/annotations';
@@ -10,6 +10,7 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { toggle } from 'radash';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -49,13 +50,22 @@ export function ClientDocumentsPopover({
       onSubmit: createFileAnnotationSchema,
     },
     onSubmit({ value }) {
-      createAnnotationMutation.mutateAsync(value).then((result) => {
-        revalidate();
-        if (result.success) {
-          form.setFieldValue('payload.files', []);
-          onAnnotateSuccess?.();
-        }
-      });
+      createAnnotationMutation
+        .mutateAsync(value)
+        .then((result) => {
+          revalidate();
+          if (result.success) {
+            form.setFieldValue('payload.files', []);
+            onAnnotateSuccess?.();
+          } else if ('error' in result && result.error === 'file_too_large') {
+            toast.error(t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }));
+          } else {
+            toast.error(t('common:errors.unknown'));
+          }
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
   });
 

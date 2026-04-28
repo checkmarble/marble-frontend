@@ -8,6 +8,7 @@ import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screen
 import { handleSubmit, submitOnCtrlEnter } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { ReactNode, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, TextArea } from 'ui-design-system';
 
@@ -34,10 +35,15 @@ export const ReviewScreeningMatch = ({
       comment: '',
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
-      reviewScreeningMatchMutation.mutateAsync(value).then(() => {
-        setOpen(false);
-        revalidate();
-      });
+      reviewScreeningMatchMutation
+        .mutateAsync(value)
+        .then(() => {
+          setOpen(false);
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: reviewMatchPayloadSchema,

@@ -18,6 +18,7 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal, Select, TextArea } from 'ui-design-system';
 
@@ -73,13 +74,20 @@ function AddRuleSnoozeContent({
     } as AddRuleSnoozePayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        addRuleSnoozeMutation.mutateAsync(value).then((res) => {
-          if (res.status === 'success') {
-            queryClient.invalidateQueries({ queryKey: ['cases', 'rulesByPivot'] });
-            setOpen(false);
-          }
-          revalidate();
-        });
+        addRuleSnoozeMutation
+          .mutateAsync(value)
+          .then((res) => {
+            if (res.status === 'success') {
+              queryClient.invalidateQueries({ queryKey: ['cases', 'rulesByPivot'] });
+              setOpen(false);
+            } else if ('error' in res && res.error === 'duplicate_rule_snooze') {
+              toast.error(t('cases:case_detail.add_rule_snooze.errors.duplicate_rule_snooze'));
+            }
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {

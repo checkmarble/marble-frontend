@@ -9,6 +9,7 @@ import { getFieldErrors, handleSubmit, submitOnCtrlEnter } from '@app-builder/ut
 import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn, Modal } from 'ui-design-system';
@@ -23,7 +24,7 @@ export const CloseCase = ({
   disabled?: boolean;
   withoutOutcome?: boolean;
 }) => {
-  const { t } = useTranslation(casesI18n);
+  const { t } = useTranslation([...casesI18n, 'common']);
   const closeCaseMutation = useCloseCaseMutation();
   const revalidate = useLoaderRevalidator();
   const [open, setOpen] = useState(false);
@@ -35,10 +36,15 @@ export const CloseCase = ({
       outcome: undefined,
     } as CloseCasePayload,
     onSubmit: ({ value }) => {
-      closeCaseMutation.mutateAsync(value).then(() => {
-        setOpen(false);
-        revalidate();
-      });
+      closeCaseMutation
+        .mutateAsync(value)
+        .then(() => {
+          setOpen(false);
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: closeCasePayloadSchema,

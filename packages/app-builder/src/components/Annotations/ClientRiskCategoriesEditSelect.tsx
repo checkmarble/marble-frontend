@@ -6,6 +6,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { GroupedAnnotations } from 'marble-api';
 import { toggle } from 'radash';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { isDeepEqual } from 'remeda';
 import { Button, MenuCommand, Tag } from 'ui-design-system';
@@ -68,7 +69,12 @@ export function ClientRiskCategoriesEditSelect({
           revalidate();
           if (result.success) {
             onAnnotateSuccess?.();
+          } else {
+            toast.error(t('common:errors.unknown'));
           }
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
         });
     },
   });

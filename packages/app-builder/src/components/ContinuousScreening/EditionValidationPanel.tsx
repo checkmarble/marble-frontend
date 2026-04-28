@@ -4,6 +4,7 @@ import {
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
 import { useUpdateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/update-configuration';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -25,15 +26,21 @@ export type EditionValidationPanelProps = EditionValidationPanelBaseProps & {
 
 export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: EditionValidationPanelProps) => {
   const panelSharp = PanelSharpFactory.useSharp();
-  const { t } = useTranslation(['continuousScreening']);
+  const { t } = useTranslation(['continuousScreening', 'common']);
   const updateConfigurationMutation = useUpdateContinuousScreeningConfigurationMutation(baseConfig.stableId);
   const revalidate = useLoaderRevalidator();
 
   const handleValidateClick = () => {
-    updateConfigurationMutation.mutateAsync(updatedConfig).then(() => {
-      panelSharp.actions.close();
-      revalidate();
-    });
+    updateConfigurationMutation
+      .mutateAsync(updatedConfig)
+      .then(() => {
+        toast.success(t('common:success.save'));
+        panelSharp.actions.close();
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
   };
 
   return (

@@ -8,6 +8,7 @@ import { type AiSettingSchema, aiSettingSchema } from '@app-builder/models/ai-se
 import { useUpdateAiSettings } from '@app-builder/queries/cases/update-ai-settings';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -42,9 +43,15 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
       onSubmit: aiSettingSchema,
     },
     onSubmit: ({ value }) => {
-      return updateMutation.mutateAsync(value).then(() => {
-        onSuccess?.();
-      });
+      return updateMutation
+        .mutateAsync(value)
+        .then(() => {
+          toast.success(t('common:success.save'));
+          onSuccess?.();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
   });
 

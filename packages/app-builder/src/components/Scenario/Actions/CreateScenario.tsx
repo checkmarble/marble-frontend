@@ -18,6 +18,7 @@ import * as Ariakit from '@ariakit/react';
 import { useForm } from '@tanstack/react-form';
 import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -53,10 +54,15 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
       triggerObjectType: '',
     } satisfies CreateScenarioPayload,
     onSubmit: ({ value }) => {
-      createScenarioMutation.mutateAsync(value).then(() => {
-        onCreateSuccess();
-        revalidate();
-      });
+      createScenarioMutation
+        .mutateAsync(value)
+        .then(() => {
+          onCreateSuccess();
+          revalidate();
+        })
+        .catch(() => {
+          toast.error(t('common:errors.unknown'));
+        });
     },
     validators: {
       onSubmit: createScenarioPayloadSchema,

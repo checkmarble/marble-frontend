@@ -6,6 +6,7 @@ import {
 } from '@app-builder/queries/scenarios/deactivate-iteration';
 import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -43,9 +44,14 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
       if (formApi.state.isValid) {
         const payload = deactivateIterationPayloadSchema.safeParse(value);
         if (payload.success) {
-          deactivateIterationMutation.mutateAsync(payload.data).then(() => {
-            revalidate();
-          });
+          deactivateIterationMutation
+            .mutateAsync(payload.data)
+            .then(() => {
+              revalidate();
+            })
+            .catch(() => {
+              toast.error(t('common:errors.unknown'));
+            });
         }
       }
     },

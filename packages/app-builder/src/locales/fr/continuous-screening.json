@@ -104,6 +104,7 @@
   "review.search_parameters_subtitle": "Paramètres de recherche",
   "review.search_tag.object_added": "Recherche initiale",
   "review.search_tag.object_updated": "Alerte suite à mise à jour de l'entité",
+  "success.dismissed": "Alerte ignorée avec succès",
   "view.datasetSelection.callout": "Sélection des listes utilisées pour ce monitoring permanent. Vous recevrez des alertes chaque fois qu'une nouvelle entité est mise sous surveillance et correspond à une entrée de ces listes, ou chaque fois qu'une nouvelle entrée des listes correspond au profil d'une entité surveillée dans Marble.",
   "view.objectMapping.callout": "Ci-dessous, la liste des entités pouvant être mises sous monitoring dans cette configuration. Vous pouvez ajouter des entités ou compléter leur correspondance de champs en passant en mode édition.",
   "view.objectMapping.configurator.ftmEntity.subtitle": "Le type d'entité (des listes de surveillance) auquel un objet « {{marble_type}} » correspond. Lors des recherches initiales de monitoring, seules les entrées de type « {{list_type}} » seront considérées. De même, « {{marble_type}} » sera considéré pour des correspondances potentielles si un nouveau « {{list_type}} » est ajouté aux listes de surveillance.",

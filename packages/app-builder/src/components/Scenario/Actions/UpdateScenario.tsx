@@ -12,6 +12,7 @@ import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -50,10 +51,15 @@ function UpdateScenarioContent({
     defaultValues: defaultValue,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        updateScenarioMutation.mutateAsync(value).then(() => {
-          onUpdateSuccess();
-          revalidate();
-        });
+        updateScenarioMutation
+          .mutateAsync(value)
+          .then(() => {
+            onUpdateSuccess();
+            revalidate();
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
     },
     validators: {
