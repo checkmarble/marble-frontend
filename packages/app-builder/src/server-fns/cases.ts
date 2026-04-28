@@ -259,6 +259,10 @@ export const addCommentFn = createServerFn({ method: 'POST' })
             method: 'POST',
             body,
             headers: { Authorization: `Bearer ${token}` },
+          }).then((res) => {
+            if (!res.ok) {
+              throw new Error('Failed to upload comment files');
+            }
           }),
         );
       }
