@@ -34,10 +34,11 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
 
   const handleImport = async () => {
     if (hasFile) {
+      setIsParsing(true);
       importFileMutation.mutate(selectedFile, {
         onSuccess: (result) => {
-          revalidate();
           if (result.success) {
+            revalidate();
             toast.success(t('data:import_org.success'));
             setIsOpen(false);
             resetState();
@@ -45,24 +46,26 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
         },
         onError: () => {
           toast.error(t('common:errors.backend_global_error.unknown'));
+          setIsParsing(false);
         },
       });
     } else if (hasJson) {
       try {
+        setIsParsing(true);
         const parsed = JSON.parse(jsonContent);
         setJsonError(null);
         importBodyMutation.mutate(parsed, {
           onSuccess: (result) => {
-            toast.success(t('data:import_org.success'));
-
-            revalidate();
             if (result.success) {
+              toast.success(t('data:import_org.success'));
+              revalidate();
               setIsOpen(false);
               resetState();
             }
           },
           onError: () => {
             toast.error(t('common:errors.backend_global_error.unknown'));
+            setIsParsing(false);
           },
         });
       } catch {
