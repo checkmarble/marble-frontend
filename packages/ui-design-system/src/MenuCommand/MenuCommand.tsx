@@ -11,14 +11,27 @@ import { Icon } from 'ui-icons';
 import { input as inputClassname } from '../Input/Input';
 import { cn } from '../utils';
 
+export type MenuCommandFilterMode = 'default' | 'exact';
+
+function exactSubstringFilter(value: string, search: string, keywords?: string[]): number {
+  const s = search.toLowerCase();
+  if (value.toLowerCase().includes(s)) return 1;
+  if (keywords?.some((k) => k.toLowerCase().includes(s))) return 1;
+  return 0;
+}
+
 const MenuCommandSharpFactory = createSharpFactory({
   name: 'MenuCommand',
   initializer: () => ({
     search: '',
+    filterMode: 'default' as MenuCommandFilterMode,
   }),
 }).withActions({
   setSearch(api, value: string) {
     api.value.search = value;
+  },
+  setFilterMode(api, mode: MenuCommandFilterMode) {
+    api.value.filterMode = mode;
   },
 });
 
@@ -286,8 +299,11 @@ type ContentProps = React.ComponentProps<typeof Popover.Content> &
   };
 function Content({ children, className, sameWidth, collisionPadding, size = 'default', ...props }: ContentProps) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
+  const menuState = MenuCommandSharpFactory.useSharp();
   const Portal = internalSharp.value.hover ? HoverCard.Portal : Popover.Portal;
   const ContentEl = internalSharp.value.hover ? HoverCard.Content : Popover.Content;
+
+  const filter = menuState.value.filterMode === 'exact' ? exactSubstringFilter : undefined;
 
   return (
     <Portal>
@@ -300,7 +316,7 @@ function Content({ children, className, sameWidth, collisionPadding, size = 'def
         data-size={size}
         {...props}
       >
-        <Command className={cn(commandClassname({ sameWidth }))}>
+        <Command className={cn(commandClassname({ sameWidth }))} filter={filter}>
           {children}
           <InsertKeyboardNav />
         </Command>
@@ -323,14 +339,19 @@ function InsertKeyboardNav() {
 
 type ComboboxProps = Omit<React.ComponentProps<typeof Command.Input>, 'value'> & {
   iconClasses?: string;
+  filterMode?: MenuCommandFilterMode;
 };
-function Combobox({ className, onValueChange, iconClasses, ...props }: ComboboxProps) {
+function Combobox({ className, onValueChange, iconClasses, filterMode = 'default', ...props }: ComboboxProps) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
   const menuState = MenuCommandSharpFactory.useSharp();
   const setSearch = useCallbackRef((value: string) => {
     menuState.actions.setSearch(value);
     onValueChange?.(value);
   });
+
+  React.useEffect(() => {
+    menuState.actions.setFilterMode(filterMode);
+  }, [filterMode, menuState]);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Autofocus the input on render to enable the keyboard nav
