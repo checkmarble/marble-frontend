@@ -331,12 +331,12 @@ export function isScreeningReviewCompleted(screening: Screening): screening is S
 
 export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
-export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, TagProps['color']> = {
+export const SCREENING_CATEGORY_COLORS = {
   sanctions: 'red',
   peps: 'blue',
   'third-parties': 'grey',
   'adverse-media': 'yellow',
-};
+} satisfies Record<ScreeningCategory, TagProps['color']>;
 
 export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   // Sanctions

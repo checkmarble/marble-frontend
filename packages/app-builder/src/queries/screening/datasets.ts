@@ -10,6 +10,7 @@ export const useScreeningDatasetsQuery = () => {
     queryKey: ['screening', 'datasets'],
     queryFn: async () => {
       const result = await getScreeningDatasets();
+      console.log('result', result);
       return result as { datasets: OpenSanctionsCatalogDto };
     },
   });

@@ -34,6 +34,7 @@ export const DatasetSelectionRecap = () => {
         .with({ isPending: true }, () => <div>Loading...</div>)
         .with({ isError: true }, () => <div>Error</div>)
         .with({ isSuccess: true }, ({ data }) => {
+          if (!data?.datasets?.sections) return null;
           const selectedCountByTags = calculateSelectedCountByTags(data.datasets.sections, selectedDatasets);
           const entries = Object.entries(selectedCountByTags);
 

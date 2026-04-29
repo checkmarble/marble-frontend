@@ -58,8 +58,8 @@ export const ConfigurationPanel = ({
           {match(configurationStepper.value.__internals.currentStep)
             .with(0, () => <GeneralInfo stableId={baseConfig.stableId} />)
             .with(1, () => <ObjectMapping baseConfig={baseConfig} />)
-            .with(2, () => <ScoringConfiguration />)
-            .with(3, () => <DatasetSelection />)
+            .with(2, () => <DatasetSelection />)
+            .with(3, () => <ScoringConfiguration />)
             .otherwise(() => null)}
         </div>
         <FormPagination finalButtonText={t('continuousScreening:edition.validate_button')} />
