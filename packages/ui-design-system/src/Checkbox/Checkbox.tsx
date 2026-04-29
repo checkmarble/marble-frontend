@@ -44,8 +44,12 @@ export const Checkbox = forwardRef<
     color?: 'purple' | 'red';
     circle?: boolean;
     size?: 'small' | 'default';
+    stopPropagation?: boolean;
   }
->(function Checkbox({ className, color = 'purple', circle, checked, size = 'default', ...props }, ref) {
+>(function Checkbox(
+  { className, color = 'purple', circle, checked, size = 'default', stopPropagation = false, onClick, ...props },
+  ref,
+) {
   return (
     <Root
       ref={ref}
@@ -53,6 +57,10 @@ export const Checkbox = forwardRef<
       className={checkbox({ color, circle, size, className: `group ${className}` })}
       checked={checked}
       {...props}
+      onClick={(e) => {
+        if (stopPropagation) e.stopPropagation();
+        onClick?.(e);
+      }}
     >
       <Indicator asChild>
         {checked === undefined ? (

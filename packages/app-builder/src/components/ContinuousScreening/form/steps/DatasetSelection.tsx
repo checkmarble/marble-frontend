@@ -5,11 +5,39 @@ import { useListConfigQuery } from '@app-builder/queries/screening/lists-config'
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Collapsible, cn, Tag } from 'ui-design-system';
+import { Button, Checkbox, type CheckedState, Collapsible, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
+type SectionData = NonNullable<ListConfig['sections'][keyof ListConfig['sections']]>;
+type SanctionsSection = NonNullable<ListConfig['sections']['sanctions']>;
+type PepsSection = NonNullable<ListConfig['sections']['peps']>;
+type AdverseMediaSection = NonNullable<ListConfig['sections']['adverse-media']>;
+
+function getSectionLeafNames(sectionKey: ScreeningCategory, section: SectionData): string[] {
+  if (sectionKey === 'sanctions') {
+    const s = section as SanctionsSection;
+    return s.datasets.flatMap((g) => g.datasets.map((d) => d.name));
+  }
+  if (sectionKey === 'peps') {
+    const s = section as PepsSection;
+    return [...s.role, ...s.geography, ...s.position].map((i) => i.name);
+  }
+  if (sectionKey === 'adverse-media') {
+    const s = section as AdverseMediaSection;
+    return [...s.geography, ...s.category].map((i) => i.name);
+  }
+  return [];
+}
+
+function groupCheckState(names: string[], datasetsMap: Record<string, boolean>): CheckedState {
+  if (names.length === 0) return false;
+  const selected = names.filter((n) => datasetsMap[n]).length;
+  if (selected === 0) return false;
+  if (selected === names.length) return true;
+  return 'indeterminate';
+}
 
 export const DatasetSelection = () => {
   const { t } = useTranslation(['common', 'continuousScreening']);
@@ -42,16 +70,14 @@ export const DatasetSelection = () => {
                 </Button>
               </div>
             ))
-            .with({ isSuccess: true }, ({ data }) => {
-              return (
-                <div className="flex flex-col ">
-                  {data?.sections &&
-                    Object.entries(data.sections).map(([key, section]) => (
-                      <Section sectionKey={key as ScreeningCategory} section={section} />
-                    ))}
-                </div>
-              );
-            })
+            .with({ isSuccess: true }, ({ data }) => (
+              <div className="flex flex-col">
+                {data?.sections &&
+                  Object.entries(data.sections).map(([key, section]) =>
+                    section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+                  )}
+              </div>
+            ))
             .exhaustive()}
         </div>
       </div>
@@ -67,19 +93,31 @@ const SelectedListsCount = () => {
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: selectedDatasetsCount })}</span>;
 };
 
-const Section = ({
-  sectionKey,
-  section,
-}: {
-  sectionKey: ScreeningCategory;
-  section: ListConfig['sections'][keyof ListConfig['sections']];
-}) => {
+const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const leafNames = getSectionLeafNames(sectionKey, section);
+  const isEnabled = ContinuousScreeningConfigurationStepper.select((state) => !!state.data.datasets[sectionKey]);
+  const selectedCount = ContinuousScreeningConfigurationStepper.select(
+    (state) => leafNames.filter((n) => state.data.datasets[n]).length,
+  );
+
   return (
-    <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={isExpanded}>
+    <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
       <Collapsible.Title hideIcon asChild size="null">
         <span className="flex items-center justify-between" onClick={() => setIsExpanded(!isExpanded)}>
           <div className="flex gap-v2-md items-center">
+            <Checkbox
+              stopPropagation
+              size="small"
+              checked={isEnabled}
+              disabled={mode === 'view'}
+              onCheckedChange={() => {
+                stepper.value.data.datasets[sectionKey] = !stepper.value.data.datasets[sectionKey];
+              }}
+            />
             <Icon
               icon="caret-down"
               className={cn('size-4 shrink-0 rotate-0 transition-transform duration-200', isExpanded && 'rotate-180')}
@@ -88,90 +126,141 @@ const Section = ({
               {sectionKey}
             </Tag>
           </div>
-          {/* <SelectAllCheckbox section={section} /> */}
+          <span className="text-xs text-grey-50 pl-v2-md">
+            {selectedCount} / {leafNames.length}
+          </span>
         </span>
       </Collapsible.Title>
-      <Collapsible.Content className="flex flex-col border border-grey-border rounded-v2-md overflow-hidden bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-        <pre>{JSON.stringify(section, null, 2)}</pre>
+      <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+        <SectionContent sectionKey={sectionKey} section={section} />
       </Collapsible.Content>
     </Collapsible.Container>
   );
 };
 
-// const DatasetSection = ({ section }: { section: OpenSanctionsCatalogSection }) => {
-//   const [isExpanded, setIsExpanded] = useState(false);
-//   return (
-//     <Collapsible.Root className="flex flex-col gap-v2-sm group/collapsible">
-//       <Collapsible.Trigger asChild>
-//         <span className="text-s flex items-center justify-between" onClick={() => setIsExpanded(!isExpanded)}>
-//           <div className="flex gap-v2-md items-center">
-//             <Icon
-//               icon="caret-down"
-//               className="size-4 shrink-0 group-radix-state-open/collapsible:rotate-180 transition-transform duration-200"
-//             />
-//             <span className="font-semibold">{section.title}</span>
-//           </div>
-//           <SelectAllCheckbox section={section} />
-//         </span>
-//       </Collapsible.Trigger>
-//       <Collapsible.Content className="flex flex-col border border-grey-border rounded-v2-md overflow-hidden bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-//         {section.datasets.map((dataset) => (
-//           <DatasetItem key={dataset.name} dataset={dataset} />
-//         ))}
-//       </Collapsible.Content>
-//     </Collapsible.Root>
-//   );
-// };
+const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
+  if (sectionKey === 'sanctions') {
+    const s = section as SanctionsSection;
+    return (
+      <div className="flex flex-col divide-y divide-grey-border">
+        {s.datasets.map((group) => (
+          <ItemGroup key={group.name} title={group.title} items={group.datasets} />
+        ))}
+      </div>
+    );
+  }
 
-// const DatasetItem = ({ dataset }: { dataset: OpenSanctionsCatalogDataset }) => {
-//   const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
-//   const isSelected = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets[dataset.name]);
-//   const handleChange = useCallbackRef(() => {
-//     const stepperData = creationStepper.value.data;
-//     stepperData.datasets[dataset.name] = !stepperData.datasets[dataset.name];
-//   });
-//   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+  if (sectionKey === 'peps') {
+    const s = section as PepsSection;
+    const groups = [
+      { key: 'role', items: s.role },
+      { key: 'geography', items: s.geography },
+      { key: 'position', items: s.position },
+    ].filter((g) => g.items.length > 0);
+    return (
+      <div className="flex flex-col divide-y divide-grey-border">
+        {groups.map((g) => (
+          <ItemGroup key={g.key} title={g.key} items={g.items} />
+        ))}
+      </div>
+    );
+  }
 
-//   return (
-//     <div
-//       className="flex flex-row items-center justify-between p-v2-md even:bg-grey-background-light"
-//       onClick={handleChange}
-//     >
-//       <div className="flex flex-row items-center gap-v2-sm">
-//         <Checkbox size="small" checked={isSelected} disabled={mode === 'view'} />
-//         <span className="text-s">{dataset.title}</span>
-//       </div>
-//       {dataset.tag ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
-//     </div>
-//   );
-// };
+  if (sectionKey === 'adverse-media') {
+    const s = section as AdverseMediaSection;
+    const groups = [
+      { key: 'geography', items: s.geography },
+      { key: 'category', items: s.category },
+    ].filter((g) => g.items.length > 0);
+    return (
+      <div className="flex flex-col divide-y divide-grey-border">
+        {groups.map((g) => (
+          <ItemGroup key={g.key} title={g.key} items={g.items} />
+        ))}
+      </div>
+    );
+  }
 
-// const SelectAllCheckbox = ({ section }: { section: OpenSanctionsCatalogSection }) => {
-//   const { t } = useTranslation(['continuousScreening']);
-//   const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
-//   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
-//   const selectedState = ContinuousScreeningConfigurationStepper.select((state) => {
-//     const selectedCount = section.datasets.filter((dataset) => state.data.datasets[dataset.name]).length;
-//     return selectedCount === section.datasets.length ? true : selectedCount === 0 ? false : 'indeterminate';
-//   });
-//   const handleClick = useCallbackRef((e: MouseEvent) => {
-//     e.stopPropagation();
-//     const nextState = selectedState === true ? false : true;
-//     const datasetsNames = section.datasets.map((d) => d.name);
+  return null;
+};
 
-//     datasetsNames.forEach((datasetName) => {
-//       creationStepper.value.data.datasets[datasetName] = nextState;
-//     });
-//   });
+const ItemGroup = ({ title, items }: { title: string; items: { name: string; title?: string }[] }) => {
+  const { t } = useTranslation(['continuousScreening']);
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const names = items.map((i) => i.name);
+  const checkState = ContinuousScreeningConfigurationStepper.select(
+    (state): CheckedState => groupCheckState(names, state.data.datasets),
+  );
 
-//   return (
-//     <div className="flex items-center gap-v2-sm" onClick={handleClick}>
-//       <Checkbox size="small" checked={selectedState} disabled={mode === 'view'} />
-//       <span>
-//         {t(
-//           `continuousScreening:creation.datasetSelection.list.section.${selectedState === true ? 'unselect_all' : 'select_all'}`,
-//         )}
-//       </span>
-//     </div>
-//   );
-// };
+  const handleSelectAll = () => {
+    const datasets = stepper.value.data.datasets;
+    const selected = names.filter((n) => datasets[n]).length;
+    const nextValue = selected < names.length;
+    for (const name of names) {
+      stepper.value.data.datasets[name] = nextValue;
+    }
+  };
+
+  return (
+    <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
+      <Collapsible.Title hideIcon asChild size="null">
+        <div className="flex items-center gap-v2-md justify-between w-full" onClick={() => setIsExpanded(!isExpanded)}>
+          <span className="flex items-center gap-v2-sm">
+            <Icon
+              icon="caret-down"
+              className={cn('size-4 shrink-0 rotate-0 transition-transform duration-200', isExpanded && 'rotate-180')}
+            />
+            <span className="text-s font-semibold">{title}</span>
+          </span>
+          <span className="flex items-center gap-v2-sm font-normal">
+            <span className="text-s text-grey-50">
+              {t(
+                `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
+              )}
+            </span>
+            <Checkbox
+              size="small"
+              checked={checkState}
+              disabled={mode === 'view'}
+              onCheckedChange={handleSelectAll}
+              stopPropagation
+            />
+          </span>
+        </div>
+      </Collapsible.Title>
+      <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+        <div className="flex flex-col gap-v2-sm pt-v2-sm">
+          <div className="flex flex-col border border-grey-border rounded-v2-md overflow-hidden">
+            {items.map((item) => (
+              <ItemRow key={item.name} name={item.name} label={item.title ?? item.name} />
+            ))}
+          </div>
+        </div>
+      </Collapsible.Content>
+    </Collapsible.Container>
+  );
+};
+
+const ItemRow = ({ name, label }: { name: string; label: string }) => {
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+  const isSelected = ContinuousScreeningConfigurationStepper.select((state) => !!state.data.datasets[name]);
+
+  return (
+    <div
+      className={cn(
+        'flex flex-row items-center gap-v2-sm p-v2-md even:bg-grey-background-light',
+        mode !== 'view' && 'cursor-pointer',
+      )}
+      onClick={() => {
+        if (mode === 'view') return;
+        stepper.value.data.datasets[name] = !stepper.value.data.datasets[name];
+      }}
+    >
+      <Checkbox size="small" checked={isSelected} disabled={mode === 'view'} />
+      <span className="text-s">{label}</span>
+    </div>
+  );
+};
