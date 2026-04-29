@@ -113,6 +113,7 @@
   "freeform_search.limit_label": "Results Limit",
   "freeform_search.limit_warning": "There may be more results. Increase the limit to see all matches.",
   "freeform_search.name_placeholder": "Enter name to search...",
+  "freeform_search.name_required": "Name is required",
   "freeform_search.new_search": "New Search",
   "freeform_search.no_results_description": "Try adjusting your search criteria or lowering the similarity threshold.",
   "freeform_search.no_results_title": "No matches found",
