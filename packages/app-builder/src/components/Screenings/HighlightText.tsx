@@ -5,6 +5,7 @@ interface HighlightTextProps {
   text: string;
   highlight: string | undefined;
   className?: string;
+  asParagraph?: boolean;
 }
 
 /**
@@ -12,13 +13,12 @@ interface HighlightTextProps {
  * Case-insensitive comparison.
  * - "Vladimir Putin" highlights "Vladimir", "Putin", or "Vladimir Putin"
  */
-export function HighlightText({ text, highlight, className }: HighlightTextProps): ReactNode {
+export function HighlightText({ text, highlight, className, asParagraph }: HighlightTextProps): ReactNode {
   const isMatch = useMemo(() => {
     if (!highlight || highlight.length === 0) {
       return false;
     }
 
-    if (!text) return null;
     const textLower = text.toLowerCase();
     const highlightLower = highlight.toLowerCase();
 
@@ -32,9 +32,10 @@ export function HighlightText({ text, highlight, className }: HighlightTextProps
     return words.some((word) => textLower === word);
   }, [text, highlight]);
 
+  const Component = asParagraph ? 'p' : 'span';
   if (isMatch) {
-    return <mark className={clsx('bg-yellow-background rounded-sm', className)}>{text}</mark>;
+    return <Component className={clsx('bg-yellow-background rounded-sm', className)}>{text}</Component>;
   }
 
-  return <span className={className}>{text}</span>;
+  return <Component className={className}>{text}</Component>;
 }
