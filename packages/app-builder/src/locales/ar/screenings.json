@@ -131,6 +131,7 @@
   "match.ai_suggestion.probable_false_positive": "إيجابي كاذب محتمل",
   "match.associations.title": "الارتباطات",
   "match.datasets.title": "تظهر في",
+  "match.enriched_data_error": "تعذّر تحميل البيانات المُعزَّزة لهذا الكيان.",
   "match.family-member.aliases": "الأسماء المستعارة",
   "match.family-member.birth-date": "تاريخ الميلاد: {{date}}",
   "match.family-member.count": "{{count}} أفراد",

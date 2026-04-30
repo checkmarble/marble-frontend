@@ -131,6 +131,7 @@
   "match.ai_suggestion.probable_false_positive": "Faux-positif probable",
   "match.associations.title": "Associations",
   "match.datasets.title": "Sources",
+  "match.enriched_data_error": "Impossible de charger les données enrichies pour cette entité.",
   "match.family-member.aliases": "Alias",
   "match.family-member.birth-date": "Date de naissance : {{date}}",
   "match.family-member.count": "{{count}} membres",

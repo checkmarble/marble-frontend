@@ -1,10 +1,11 @@
+import { Spinner } from '@app-builder/components/Spinner';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { useGetEnrichedDataQuery } from '@app-builder/queries/screening/get-enriched-data';
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
-import { type FunctionComponent } from 'react';
+import { type FunctionComponent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { MatchDetails } from '../MatchDetails';
 import { screeningsI18n } from '../screenings-i18n';
 import { TopicTag } from '../TopicTag';
@@ -17,12 +18,13 @@ interface FreeformMatchCardProps {
 
 export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ entity, defaultOpen, searchTerm }) => {
   const { t } = useTranslation(screeningsI18n);
+  const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
 
-  const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
+  const entitySchema = entity.schema.toLowerCase();
 
   return (
-    <CollapsiblePrimitive.Root defaultOpen={defaultOpen}>
-      <div className="bg-surface-card border border-grey-border rounded-md">
+    <CollapsiblePrimitive.Root defaultOpen={defaultOpen} onOpenChange={setIsOpen}>
+      <div className="bg-surface-page border border-grey-border rounded-md">
         <div className="flex items-center justify-between gap-2 px-4 py-3">
           <CollapsiblePrimitive.Trigger className="focus-visible:text-purple-primary group flex grow items-center gap-2 rounded-sm outline-hidden transition-colors">
             <Icon
@@ -79,7 +81,7 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
                 </div>
               </div>
             ) : null}
-            <MatchDetails entity={entity} highlightText={searchTerm} />
+            <DataContent entityId={entity.id} searchTerm={searchTerm} isOpen={isOpen} />
           </div>
         </CollapsiblePrimitive.Content>
       </div>
@@ -88,3 +90,17 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
 };
 
 export default FreeformMatchCard;
+
+function DataContent({ entityId, searchTerm, isOpen }: { entityId: string; searchTerm?: string; isOpen: boolean }) {
+  const { t } = useTranslation(screeningsI18n);
+  const enrichedData = useGetEnrichedDataQuery({ entityId }, isOpen);
+  if (enrichedData.isLoading) return <Spinner className="size-6" />;
+  if (!enrichedData.data?.success) return <div>{t('screenings:match.enriched_data_error')}</div>;
+  const entity = enrichedData.data.data;
+  if (!entity) return <div>{t('screenings:match.enriched_data_error')}</div>;
+  return (
+    <div className="text-s flex flex-col gap-6 p-4">
+      <MatchDetails entity={entity} highlightText={searchTerm} />
+    </div>
+  );
+}
