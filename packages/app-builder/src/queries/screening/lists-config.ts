@@ -1,5 +1,53 @@
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
+import * as R from 'remeda';
+
+export type ListConfigFilters = {
+  sanctions?: NonNullable<ListConfig['sections']>['sanctions'];
+  peps?: NonNullable<ListConfig['sections']>['peps'];
+  'adverse-media'?: NonNullable<ListConfig['sections']>['adverse-media'];
+};
+
+function normalizeListConfig(config: ListConfig): ListConfigFilters {
+  const sanctionFilter = config.filters?.sanctions?.datasets ?? [];
+  const pepFilter = R.flat(config.filters?.peps?.topics ?? []);
+  const adverseFilter = config.filters?.adverse_media?.topics ?? [];
+
+  const sanctions = config.sections?.sanctions
+    ? sanctionFilter.length > 0
+      ? {
+          ...config.sections.sanctions,
+          datasets: config.sections.sanctions.datasets
+            .map((g) => ({ ...g, datasets: R.filter(g.datasets, (d) => sanctionFilter.includes(d.name)) }))
+            .filter((g) => g.datasets.length > 0),
+        }
+      : config.sections.sanctions
+    : undefined;
+
+  const pepsSection = config.sections?.peps;
+  const peps = pepsSection
+    ? pepFilter.length > 0
+      ? {
+          ...pepsSection,
+          role: R.filter(pepsSection.role, (i) => pepFilter.includes(i.name)),
+          geography: R.filter(pepsSection.geography, (i) => pepFilter.includes(i.name)),
+          position: R.filter(pepsSection.position, (i) => pepFilter.includes(i.name)),
+        }
+      : pepsSection
+    : undefined;
+
+  const adverseSection = config.sections?.['adverse-media'];
+  const adverseMedia = adverseSection
+    ? adverseFilter.length > 0
+      ? {
+          geography: R.filter(adverseSection.geography, (i) => adverseFilter.includes(i.name)),
+          category: R.filter(adverseSection.category, (i) => adverseFilter.includes(i.name)),
+        }
+      : adverseSection
+    : undefined;
+
+  return { sanctions, peps, 'adverse-media': adverseMedia };
+}
 
 export const useListConfigQuery = (useCase: 'screening' | 'continuous-screening') => {
   const getListConfig = useServerFn(() => getListConfigFn(useCase));
@@ -8,14 +56,14 @@ export const useListConfigQuery = (useCase: 'screening' | 'continuous-screening'
     queryKey: ['screening', 'datasets'],
     queryFn: async () => {
       const result = await getListConfig();
-      return result;
+      return normalizeListConfig(result);
     },
   });
 };
 
 type ListConfig = {
   provider: string;
-  sections: {
+  sections?: {
     sanctions?: {
       self: string;
       datasets: {
@@ -36,6 +84,17 @@ type ListConfig = {
     'adverse-media'?: {
       geography: { name: string }[];
       category: { name: string }[];
+    };
+  };
+  filters?: {
+    sanctions: {
+      datasets: string[];
+    };
+    peps: {
+      topics: string[][];
+    };
+    adverse_media: {
+      topics: string[];
     };
   };
 };
@@ -126,6 +185,17 @@ async function getListConfigFn(useCase: 'screening' | 'continuous-screening'): P
           category: [{ name: 'media.cat.one' }, { name: 'media.cat.two' }],
         },
       },
+      // filters: {
+      //   sanctions: {
+      //     datasets: ['one', 'two'],
+      //   },
+      //   peps: {
+      //     topics: [['one', 'two2']],
+      //   },
+      //   adverse_media: {
+      //     topics: ['one', 'two'],
+      //   },
+      // },
     });
   });
 }

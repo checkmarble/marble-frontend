@@ -11,10 +11,10 @@ import { Icon } from 'ui-icons';
 import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
-type SectionData = NonNullable<ListConfig['sections'][keyof ListConfig['sections']]>;
-type SanctionsSection = NonNullable<ListConfig['sections']['sanctions']>;
-type PepsSection = NonNullable<ListConfig['sections']['peps']>;
-type AdverseMediaSection = NonNullable<ListConfig['sections']['adverse-media']>;
+type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
+type SanctionsSection = NonNullable<ListConfig['sanctions']>;
+type PepsSection = NonNullable<ListConfig['peps']>;
+type AdverseMediaSection = NonNullable<ListConfig['adverse-media']>;
 
 function getSectionLeafNames(sectionKey: ScreeningCategory, section: SectionData): string[] {
   if (sectionKey === 'sanctions') {
@@ -73,8 +73,8 @@ export const DatasetSelection = () => {
             ))
             .with({ isSuccess: true }, ({ data }) => (
               <div className="flex flex-col">
-                {data?.sections &&
-                  Object.entries(data.sections).map(([key, section]) =>
+                {data &&
+                  Object.entries(data).map(([key, section]) =>
                     section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
                   )}
               </div>
