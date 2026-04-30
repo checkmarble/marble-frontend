@@ -2,10 +2,10 @@ import { Callout } from '@app-builder/components/Callout';
 import { Spinner } from '@app-builder/components/Spinner';
 import { SCREENING_CATEGORY_COLORS, ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Checkbox, type CheckedState, Collapsible, cn, Tag } from 'ui-design-system';
+import { Button, Checkbox, type CheckedState, Collapsible, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 
@@ -158,9 +158,9 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
       { key: 'position', items: s.position },
     ].filter((g) => g.items.length > 0);
     return (
-      <div className="flex flex-col divide-y divide-grey-border">
+      <div className="flex flex-col">
         {groups.map((g) => (
-          <ItemGroup key={g.key} title={g.key} items={g.items} />
+          <FilterGroupRow key={g.key} sectionKey="peps" groupKey={g.key} items={g.items} />
         ))}
       </div>
     );
@@ -173,9 +173,9 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
       { key: 'category', items: s.category },
     ].filter((g) => g.items.length > 0);
     return (
-      <div className="flex flex-col divide-y divide-grey-border">
+      <div className="flex flex-col">
         {groups.map((g) => (
-          <ItemGroup key={g.key} title={g.key} items={g.items} />
+          <FilterGroupRow key={g.key} sectionKey="adverse-media" groupKey={g.key} items={g.items} />
         ))}
       </div>
     );
@@ -262,5 +262,120 @@ const ItemRow = ({ name, label }: { name: string; label: string }) => {
       <Checkbox size="small" checked={isSelected} disabled={mode === 'view'} />
       <span className="text-s">{label}</span>
     </div>
+  );
+};
+
+const MAX_VISIBLE_TAGS = 5;
+
+function formatItemName(name: string): string {
+  const last = name.split('.').at(-1) ?? name;
+  return last.charAt(0).toUpperCase() + last.slice(1);
+}
+
+const FilterGroupRow = ({
+  sectionKey,
+  groupKey,
+  items,
+}: {
+  sectionKey: 'peps' | 'adverse-media';
+  groupKey: string;
+  items: { name: string }[];
+}) => {
+  const { t } = useTranslation(['continuousScreening']);
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
+
+  useEffect(() => {
+    const singleItem = items.length === 1 ? items[0] : null;
+    if (singleItem && mode !== 'view') {
+      stepper.value.data.datasets[singleItem.name] = true;
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const label = t(
+    `continuousScreening:creation.datasetSelection.filter.group.${sectionKey.replace(/-/g, '_')}.${groupKey}`,
+  );
+
+  return (
+    <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
+      <span className="text-s font-semibold shrink-0">{label}:</span>
+      <div className="flex items-center gap-v2-sm overflow-hidden">
+        <FilterGroupTags items={items} />
+        {mode !== 'view' && items.length > 1 && <FilterGroupMenu items={items} />}
+      </div>
+    </div>
+  );
+};
+
+const FilterGroupTags = ({ items }: { items: { name: string }[] }) => {
+  const { t } = useTranslation(['continuousScreening']);
+  const selectedNames = ContinuousScreeningConfigurationStepper.select((state) =>
+    items.filter((i) => state.data.datasets[i.name]).map((i) => i.name),
+  );
+
+  if (selectedNames.length === 0) return null;
+
+  if (selectedNames.length === items.length && items.length > 1) {
+    return (
+      <Tag color="blue" size="small">
+        {t('continuousScreening:creation.datasetSelection.filter.all')}
+      </Tag>
+    );
+  }
+
+  const visible = selectedNames.slice(0, MAX_VISIBLE_TAGS);
+  const overflow = selectedNames.length - MAX_VISIBLE_TAGS;
+
+  return (
+    <>
+      {visible.map((name) => (
+        <Tag key={name} color="blue" size="small" className="max-w-[150px] overflow-hidden">
+          <span className="truncate block">{formatItemName(name)}</span>
+        </Tag>
+      ))}
+      {overflow > 0 && (
+        <Tag color="grey" size="small">
+          +{overflow}
+        </Tag>
+      )}
+    </>
+  );
+};
+
+const FilterGroupMenu = ({ items }: { items: { name: string }[] }) => {
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const datasets = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets);
+
+  return (
+    <MenuCommand.Menu persistOnSelect>
+      <MenuCommand.Trigger>
+        <button
+          type="button"
+          className="flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0"
+        >
+          <Icon icon="plus" className="size-3" />
+        </button>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content align="end" sideOffset={4}>
+        <MenuCommand.List>
+          {items.map((item) => {
+            const isSelected = !!datasets[item.name];
+            return (
+              <MenuCommand.Item
+                key={item.name}
+                value={item.name}
+                selected={isSelected}
+                onSelect={() => {
+                  stepper.value.data.datasets[item.name] = !stepper.value.data.datasets[item.name];
+                }}
+              >
+                <span>{formatItemName(item.name)}</span>
+                {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
+              </MenuCommand.Item>
+            );
+          })}
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 };
