@@ -243,7 +243,7 @@ paths:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1freeform-search
   /screenings/freshness:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1freshness
-  /screenings/entities/{entityid}:
+  /screenings/entities/{entityId}:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1entities~1{entityId}
 
   # RULES
