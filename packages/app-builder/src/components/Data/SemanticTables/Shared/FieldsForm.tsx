@@ -3,8 +3,9 @@ import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
 import { TFunction } from 'i18next';
+import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn } from 'ui-design-system';
+import { Button, cn, ScrollArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { DatatypeIcon } from './DatatypeOption';
@@ -30,11 +31,40 @@ export function FieldsForm({
   const { isCreateDataModelFieldAvailable } = useDataModelFeatureAccess();
   const { fields, reorderFields, addField } = FieldsEditorContext.useValue();
   const { t } = useTranslation(['data']);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const handleDragEnd = useCallbackRef((result: DropResult) => {
     if (!result.destination || result.source.index === result.destination.index) return;
     reorderFields(result.source.index, result.destination.index);
   });
+
+  const handleFieldKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+      const isCmd = e.metaKey || e.ctrlKey;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (isCmd) {
+          if (index < fields.length - 1) {
+            reorderFields(index, index + 1);
+            setTimeout(() => buttonRefs.current[index + 1]?.focus(), 0);
+          }
+        } else {
+          buttonRefs.current[index + 1]?.focus();
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (isCmd) {
+          if (index > 0) {
+            reorderFields(index, index - 1);
+            setTimeout(() => buttonRefs.current[index - 1]?.focus(), 0);
+          }
+        } else {
+          buttonRefs.current[index - 1]?.focus();
+        }
+      }
+    },
+    [fields.length, reorderFields],
+  );
 
   function handleAddField() {
     const fieldId = addField('');
@@ -42,8 +72,13 @@ export function FieldsForm({
   }
 
   return (
-    <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'border border-red-primary p-v2-md')}>
-      <div className="flex items-center justify-between">
+    <section
+      className={cn(
+        'flex flex-1 min-h-0 flex-col gap-v2-md rounded-lg',
+        hasError && 'border border-red-primary p-v2-md',
+      )}
+    >
+      <div className="flex shrink-0 items-center justify-between">
         <div className="flex flex-col gap-v2-xs">
           <h4 className="text-m font-semibold">{title ?? t('data:upload_data.fields_title')}</h4>
           <p className="text-s text-grey-secondary">{description ?? t('data:upload_data.fields_description')}</p>
@@ -55,34 +90,49 @@ export function FieldsForm({
           </Button>
         )}
       </div>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId={droppableId}>
-          {(dropProvided) => (
-            <div ref={dropProvided.innerRef} {...dropProvided.droppableProps} className="flex flex-col gap-v2-sm">
-              {fields.map((field, index) => (
-                <Draggable key={field.id} draggableId={field.id} index={index}>
-                  {(dragProvided, snapshot) => (
-                    <div
-                      ref={dragProvided.innerRef}
-                      {...dragProvided.draggableProps}
-                      className={cn(snapshot.isDragging && 'opacity-80')}
-                    >
-                      <FieldRow
-                        field={field}
-                        isSelected={field.id === selectedFieldId}
-                        onSelect={() => onFieldSelect(field.id)}
-                        dragHandleProps={dragProvided.dragHandleProps}
-                        hasError={errorFieldIds?.has(field.id) ?? false}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {dropProvided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <ScrollArea.Root className="flex-1 min-h-0">
+        <ScrollArea.Viewport className="size-full">
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId={droppableId}>
+              {(dropProvided) => (
+                <div
+                  ref={dropProvided.innerRef}
+                  {...dropProvided.droppableProps}
+                  className="flex flex-col gap-v2-sm pr-v2-sm"
+                >
+                  {fields.map((field, index) => (
+                    <Draggable key={field.id} draggableId={field.id} index={index}>
+                      {(dragProvided, snapshot) => (
+                        <div
+                          ref={dragProvided.innerRef}
+                          {...dragProvided.draggableProps}
+                          className={cn(snapshot.isDragging && 'opacity-80')}
+                        >
+                          <FieldRow
+                            field={field}
+                            isSelected={field.id === selectedFieldId}
+                            onSelect={() => onFieldSelect(field.id)}
+                            dragHandleProps={dragProvided.dragHandleProps}
+                            hasError={errorFieldIds?.has(field.id) ?? false}
+                            buttonRef={(el) => {
+                              buttonRefs.current[index] = el;
+                            }}
+                            onKeyDown={(e) => handleFieldKeyDown(e, index)}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {dropProvided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar>
+          <ScrollArea.Thumb />
+        </ScrollArea.Scrollbar>
+      </ScrollArea.Root>
     </section>
   );
 }
@@ -93,12 +143,16 @@ function FieldRow({
   onSelect,
   dragHandleProps,
   hasError,
+  buttonRef,
+  onKeyDown,
 }: {
   field: TableField;
   isSelected: boolean;
   onSelect: () => void;
   dragHandleProps: React.HTMLAttributes<HTMLElement> | null | undefined;
   hasError?: boolean;
+  buttonRef?: React.Ref<HTMLButtonElement>;
+  onKeyDown?: React.KeyboardEventHandler<HTMLButtonElement>;
 }) {
   const { t } = useTranslation(['data']);
   const { mainTimestampFieldName: orderingFieldName } = FieldsEditorContext.useValue();
@@ -111,8 +165,10 @@ function FieldRow({
         <Icon icon="drag" className="size-4 text-grey-secondary cursor-grab" />
       </div>
       <button
+        ref={buttonRef}
         type="button"
         onClick={onSelect}
+        onKeyDown={onKeyDown}
         className={cn(
           'flex flex-1 items-center gap-v2-md rounded-lg border p-v2-md transition-colors',
           hasError
