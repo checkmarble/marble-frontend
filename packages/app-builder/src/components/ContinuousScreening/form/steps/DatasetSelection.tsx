@@ -4,6 +4,7 @@ import { SCREENING_CATEGORY_COLORS, ScreeningCategory } from '@app-builder/model
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, Checkbox, type CheckedState, Collapsible, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -269,7 +270,7 @@ const MAX_VISIBLE_TAGS = 5;
 
 function formatItemName(name: string): string {
   const last = name.split('.').at(-1) ?? name;
-  return last.charAt(0).toUpperCase() + last.slice(1);
+  return capitalize(last);
 }
 
 const FilterGroupRow = ({
@@ -281,7 +282,6 @@ const FilterGroupRow = ({
   groupKey: string;
   items: { name: string }[];
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
@@ -292,9 +292,7 @@ const FilterGroupRow = ({
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const label = t(
-    `continuousScreening:creation.datasetSelection.filter.group.${sectionKey.replace(/-/g, '_')}.${groupKey}`,
-  );
+  const label = capitalize(groupKey);
 
   return (
     <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
