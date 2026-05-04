@@ -122,15 +122,29 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {/* Search by name input with button */}
       <div className="flex gap-2">
-        <form.Field name="fields.name">
+        <form.Field
+          name="fields.name"
+          validators={{
+            onSubmit: ({ value }) => {
+              const v = (value as string) ?? '';
+              return v.trim().length >= 1 ? undefined : t('screenings:freeform_search.name_required');
+            },
+          }}
+        >
           {(formField) => (
-            <Input
-              name={formField.name}
-              value={(formField.state.value as string) ?? ''}
-              onChange={(e) => formField.handleChange(e.target.value)}
-              className="flex-1"
-              placeholder={t('screenings:freeform_search.name_placeholder')}
-            />
+            <div className="flex flex-1 flex-col gap-1">
+              <Input
+                name={formField.name}
+                value={(formField.state.value as string) ?? ''}
+                onChange={(e) => formField.handleChange(e.target.value)}
+                className="w-full"
+                borderColor={formField.state.meta.errors.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
+                placeholder={t('screenings:freeform_search.name_placeholder')}
+              />
+              {formField.state.meta.errors.length > 0 && (
+                <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
+              )}
+            </div>
           )}
         </form.Field>
         <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
@@ -205,7 +219,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
                     }
                   >
                     {(formField) => {
-                      if (fieldName === 'country') {
+                      if (fieldName === 'country' || fieldName === 'nationality') {
                         return (
                           <SelectCountry
                             name={formField.name}
