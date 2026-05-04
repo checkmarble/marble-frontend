@@ -26,7 +26,13 @@ export function ScreeningDetail({ screening }: { screening: Screening }) {
           {screening.request ? <SearchInput request={screening.request} /> : null}
           <div className="flex flex-col gap-2">
             {screening.matches.map((match) => (
-              <MatchCard readonly key={match.id} unreviewable={hasError || screening.partial} match={match} />
+              <MatchCard
+                readonly
+                key={match.id}
+                screening={screening}
+                unreviewable={hasError || screening.partial}
+                match={match}
+              />
             ))}
           </div>
         </div>
