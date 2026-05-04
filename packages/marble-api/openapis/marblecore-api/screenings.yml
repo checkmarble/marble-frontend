@@ -270,7 +270,7 @@
     description: >-
       Validates the caller's permissions and feature access, then enqueues a background job to
       analyse all pending matches in the screening using an LLM. After the job completes, results can be retrieved via
-      GET /screenings/{screeningId}/ai-suggestions. 
+      GET /screenings/{screeningId}/ai-suggestions.
     operationId: enqueueScreeningAiSuggestions
     parameters:
       - name: screeningId
@@ -478,6 +478,8 @@ components:
           properties:
             name:
               type: string
+        unique_counterparty_identifier:
+          type: string
         decision_id:
           type: string
           format: uuid
@@ -519,6 +521,8 @@ components:
           properties:
             name:
               type: string
+        unique_counterparty_identifier:
+          type: string
         decision_id:
           type: string
           format: uuid
@@ -561,6 +565,8 @@ components:
           properties:
             name:
               type: string
+        unique_counterparty_identifier:
+          type: string
         decision_id:
           type: string
           format: uuid
@@ -678,8 +684,6 @@ components:
           enum: ['pending', 'confirmed_hit', 'no_hit', 'skipped']
         datasets:
           type: array
-        unique_counterparty_identifier:
-          type: string
         payload:
           $ref: '#/components/schemas/ScreeningMatchPayloadDto'
         enriched:
