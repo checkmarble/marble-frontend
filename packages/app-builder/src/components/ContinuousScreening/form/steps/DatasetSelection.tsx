@@ -2,7 +2,7 @@ import { Callout } from '@app-builder/components/Callout';
 import { Spinner } from '@app-builder/components/Spinner';
 import { SCREENING_CATEGORY_COLORS, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
@@ -14,8 +14,6 @@ import { getSectionLeafNames } from '../../shared/dataset-utils';
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
 type SanctionsSection = NonNullable<ListConfig['sanctions']>;
-type PepsSection = NonNullable<ListConfig['peps']>;
-type AdverseMediaSection = NonNullable<ListConfig['adverse-media']>;
 
 function groupCheckState(names: string[], datasetsMap: Record<string, boolean>): CheckedState {
   if (names.length === 0) return false;
@@ -142,32 +140,15 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
     );
   }
 
-  if (sectionKey === 'peps') {
-    const s = section as PepsSection;
-    const groups = [
-      { key: 'role', items: s.role },
-      { key: 'geography', items: s.geography },
-      { key: 'position', items: s.position },
-    ].filter((g) => g.items.length > 0);
+  if (sectionKey === 'peps' || sectionKey === 'adverse-media') {
+    const groups = Object.entries(section)
+      .filter((entry): entry is [string, { name: string }[]] => Array.isArray(entry[1]))
+      .filter(([, items]) => items.length > 0)
+      .map(([key, items]) => ({ key, items }));
     return (
       <div className="flex flex-col">
         {groups.map((g) => (
-          <FilterGroupRow key={g.key} sectionKey="peps" groupKey={g.key} items={g.items} />
-        ))}
-      </div>
-    );
-  }
-
-  if (sectionKey === 'adverse-media') {
-    const s = section as AdverseMediaSection;
-    const groups = [
-      { key: 'geography', items: s.geography },
-      { key: 'category', items: s.category },
-    ].filter((g) => g.items.length > 0);
-    return (
-      <div className="flex flex-col">
-        {groups.map((g) => (
-          <FilterGroupRow key={g.key} sectionKey="adverse-media" groupKey={g.key} items={g.items} />
+          <FilterGroupRow key={g.key} sectionKey={sectionKey} groupKey={g.key} items={g.items} />
         ))}
       </div>
     );
@@ -289,27 +270,70 @@ const FilterGroupRow = ({
   groupKey: string;
   items: { name: string }[];
 }) => {
-  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
-
-  useEffect(() => {
-    const singleItem = items.length === 1 ? items[0] : null;
-    if (singleItem && mode !== 'view') {
-      stepper.value.data.datasets[singleItem.name] = true;
-      stepper.value.data.datasets[sectionKey] = true;
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const label = capitalize(groupKey);
 
   return (
     <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
       <span className="text-s font-semibold shrink-0">{label}:</span>
       <div className="flex items-center gap-v2-sm overflow-hidden">
-        <FilterGroupTags items={items} />
-        {mode !== 'view' && items.length > 1 && <FilterGroupMenu items={items} sectionKey={sectionKey} />}
+        {items.length === 1 && items[0] ? (
+          <SingleItemToggle item={items[0]} sectionKey={sectionKey} mode={mode} />
+        ) : (
+          <>
+            <FilterGroupTags items={items} />
+            {mode !== 'view' && <FilterGroupMenu items={items} sectionKey={sectionKey} />}
+          </>
+        )}
       </div>
     </div>
+  );
+};
+
+const SingleItemToggle = ({
+  item,
+  sectionKey,
+  mode,
+}: {
+  item: { name: string };
+  sectionKey: ScreeningCategory;
+  mode: string;
+}) => {
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const isSelected = ContinuousScreeningConfigurationStepper.select((state) => !!state.data.datasets[item.name]);
+
+  if (isSelected) {
+    return (
+      <Tag
+        color="blue"
+        size="small"
+        className={cn('max-w-[150px] overflow-hidden', mode !== 'view' && 'cursor-pointer')}
+        onClick={
+          mode !== 'view'
+            ? () => {
+                stepper.value.data.datasets[item.name] = false;
+              }
+            : undefined
+        }
+      >
+        <span className="truncate block">{formatItemName(item.name)}</span>
+      </Tag>
+    );
+  }
+
+  if (mode === 'view') return null;
+
+  return (
+    <button
+      type="button"
+      className="flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0"
+      onClick={() => {
+        stepper.value.data.datasets[item.name] = true;
+        stepper.value.data.datasets[sectionKey] = true;
+      }}
+    >
+      <Icon icon="plus" className="size-3" />
+    </button>
   );
 };
 

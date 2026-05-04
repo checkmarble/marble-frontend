@@ -3,21 +3,17 @@ import type { ListConfigFilters } from '@app-builder/queries/screening/lists-con
 
 type SectionData = NonNullable<ListConfigFilters[keyof ListConfigFilters]>;
 type SanctionsSection = NonNullable<ListConfigFilters['sanctions']>;
-type PepsSection = NonNullable<ListConfigFilters['peps']>;
-type AdverseMediaSection = NonNullable<ListConfigFilters['adverse-media']>;
 
 export function getSectionLeafNames(sectionKey: ScreeningCategory, section: SectionData): string[] {
   if (sectionKey === 'sanctions') {
     const s = section as SanctionsSection;
     return s.datasets.flatMap((g) => g.datasets.map((d) => d.name));
   }
-  if (sectionKey === 'peps') {
-    const s = section as PepsSection;
-    return [...s.role, ...s.geography, ...s.position].map((i) => i.name);
-  }
-  if (sectionKey === 'adverse-media') {
-    const s = section as AdverseMediaSection;
-    return [...s.geography, ...s.category].map((i) => i.name);
+  if (sectionKey === 'peps' || sectionKey === 'adverse-media') {
+    return Object.values(section)
+      .filter((v): v is { name: string }[] => Array.isArray(v))
+      .flat()
+      .map((i) => i.name);
   }
   return [];
 }

@@ -27,22 +27,25 @@ function normalizeListConfig(config: ListConfig): ListConfigFilters {
   const pepsSection = config.sections?.peps;
   const peps = pepsSection
     ? pepFilter.length > 0
-      ? {
-          ...pepsSection,
-          role: R.filter(pepsSection.role, (i) => pepFilter.includes(i.name)),
-          geography: R.filter(pepsSection.geography, (i) => pepFilter.includes(i.name)),
-          position: R.filter(pepsSection.position, (i) => pepFilter.includes(i.name)),
-        }
+      ? Object.fromEntries(
+          Object.entries(pepsSection).map(([key, value]) =>
+            Array.isArray(value)
+              ? [key, R.filter(value as { name: string }[], (i) => pepFilter.includes(i.name))]
+              : [key, value],
+          ),
+        )
       : pepsSection
     : undefined;
 
   const adverseSection = config.sections?.['adverse-media'];
   const adverseMedia = adverseSection
     ? adverseFilter.length > 0
-      ? {
-          geography: R.filter(adverseSection.geography, (i) => adverseFilter.includes(i.name)),
-          category: R.filter(adverseSection.category, (i) => adverseFilter.includes(i.name)),
-        }
+      ? Object.fromEntries(
+          Object.entries(adverseSection).map(([key, value]) => [
+            key,
+            R.filter(value, (i) => adverseFilter.includes(i.name)),
+          ]),
+        )
       : adverseSection
     : undefined;
 
@@ -77,13 +80,10 @@ type ListConfig = {
     };
     peps?: {
       self: string;
-      role: { name: string }[];
-      geography: { name: string }[];
-      position: { name: string }[];
+      [key: string]: { name: string }[] | string;
     };
     'adverse-media'?: {
-      geography: { name: string }[];
-      category: { name: string }[];
+      [key: string]: { name: string }[];
     };
   };
   filters?: {
