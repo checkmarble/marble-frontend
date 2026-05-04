@@ -28,6 +28,7 @@
   "creation.objectMapping.configurator.fieldMapping.explanation": "Select which field of the Marble object (on the left, as configured in the data model) maps to which standard field from the data lists (on the right). Fields that are already used in another screening configuration cannot be modified. Several Marble fields may map to the same data list field.",
   "creation.objectMapping.configurator.fieldMapping.none": "None",
   "creation.objectMapping.configurator.fieldMapping.placeholder": "Select a field",
+  "creation.objectMapping.configurator.fieldMapping.suggest": "Suggest field mappings",
   "creation.objectMapping.configurator.fieldMapping.title": "Field mapping",
   "creation.objectMapping.configurator.ftmEntity.placeholder": "Select an entity",
   "creation.objectMapping.configurator.ftmEntity.subtitle": "Select an entity type. Objects you send for screening will be searched in the lists as this type. For example, if you choose 'Person', every object you send will be searched among all physical persons in the data lists.",

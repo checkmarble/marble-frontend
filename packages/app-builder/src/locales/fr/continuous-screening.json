@@ -28,6 +28,7 @@
   "creation.objectMapping.configurator.fieldMapping.explanation": "Sélectionnez quel champ de l’objet Marble (à gauche, tel que configuré dans le modèle de données) correspond à quel champ standard des listes de données (à droite). Les champs déjà utilisés dans une autre configuration de monitoring permanent ne peuvent pas être modifiés. Plusieurs champs Marble peuvent correspondre au même champ de liste de données.",
   "creation.objectMapping.configurator.fieldMapping.none": "Aucun",
   "creation.objectMapping.configurator.fieldMapping.placeholder": "Sélectionner un champ",
+  "creation.objectMapping.configurator.fieldMapping.suggest": "Suggérer des correspondances",
   "creation.objectMapping.configurator.fieldMapping.title": "Correspondance des champs",
   "creation.objectMapping.configurator.ftmEntity.placeholder": "Sélectionner une entité",
   "creation.objectMapping.configurator.ftmEntity.subtitle": "Sélectionnez un type d’entité. Les objets seront recherchés dans les listes parmi les entrées de ce type. Par exemple, si vous choisissez « Personne », chaque objet envoyé sera recherché parmi toutes les personnes physiques des listes de données.",

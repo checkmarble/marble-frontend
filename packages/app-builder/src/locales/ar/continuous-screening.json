@@ -28,6 +28,7 @@
   "creation.objectMapping.configurator.fieldMapping.explanation": "حدِّد أي حقل من كائن Marble (على اليسار، كما هو مُعرَّف في نموذج البيانات) يقابل أي حقل معياري من قوائم البيانات (على اليمين). الحقول المستخدمة بالفعل في إعداد مراقبة آخر لا يمكن تعديلها. يمكن أن تُطابِق عدة حقول من Marble نفس الحقل في قائمة البيانات.",
   "creation.objectMapping.configurator.fieldMapping.none": "لا شيء",
   "creation.objectMapping.configurator.fieldMapping.placeholder": "اختر حقلاً",
+  "creation.objectMapping.configurator.fieldMapping.suggest": "اقترح مطابقات الحقول",
   "creation.objectMapping.configurator.fieldMapping.title": "مطابقة الحقول",
   "creation.objectMapping.configurator.ftmEntity.placeholder": "اختر كيانًا",
   "creation.objectMapping.configurator.ftmEntity.subtitle": "اختر نوع كيان. سيتم البحث في القوائم عن الكائنات التي ترسلها للفحص على أنها من هذا النوع. على سبيل المثال، إذا اخترت «شخص»، فسيتم البحث عن كل كائن ترسله ضمن جميع الأشخاص الطبيعيين في قوائم البيانات.",
