@@ -240,7 +240,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
                               onChange={(e) => formField.handleChange(e.target.value)}
                               onBlur={formField.handleBlur}
                               className="w-full"
-                              placeholder={t(`screenings:entity.property.${fieldName}`)}
+                              placeholder={t('screenings:entity.property.birthDate.format')}
                             />
                             {formField.state.meta.errors.length > 0 && (
                               <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>

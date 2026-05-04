@@ -95,8 +95,12 @@ export const freeformSearchSchema = z.discriminatedUnion('entityType', [
   }),
 ]);
 
-export type FreeformSearchInput = z.infer<typeof freeformSearchSchema>;
+export const getEnrichedDataInputSchema = z.object({
+  entityId: z.string(),
+});
+export type GetEnrichedDataInput = z.infer<typeof getEnrichedDataInputSchema>;
 
+export type FreeformSearchInput = z.infer<typeof freeformSearchSchema>;
 export type SearchActionResponse =
   | { success: true; data: ScreeningMatchPayload[] }
   | { success: false; error: unknown };
@@ -162,6 +166,18 @@ export const freeformSearchFn = createServerFn({ method: 'POST' })
       return { success: true as const, data: results as ScreeningMatchPayload[] };
     } catch {
       return { success: false as const, error: 'Freeform search failed' };
+    }
+  });
+
+export const getEnrichedDataFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(getEnrichedDataInputSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      const result = await context.authInfo.screening.enrichedData(data);
+      return { success: true as const, data: result as ScreeningMatchPayload };
+    } catch {
+      return { success: false as const, error: 'Enriched data failed' };
     }
   });
 

@@ -50,6 +50,7 @@ export interface ScreeningRepository {
     limit?: number;
   }): Promise<ScreeningMatchPayload[]>;
   getAiSuggestions(args: { screeningId: string }): Promise<ScreeningAiSuggestion[]>;
+  enrichedData(args: { entityId: string }): Promise<ScreeningMatchPayload>;
 }
 
 export function makeGetScreeningRepository() {
@@ -93,6 +94,9 @@ export function makeGetScreeningRepository() {
         },
       };
       return R.map(await marbleCoreApiClient.searchScreeningMatches(dto), adaptScreeningMatchPayload);
+    },
+    enrichedData: async ({ entityId }) => {
+      return adaptScreeningMatchPayload(await marbleCoreApiClient.getEnrichedData(entityId));
     },
     refineScreening: async ({ screeningId, entityType, fields }) => {
       const dto = {

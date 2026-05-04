@@ -137,6 +137,26 @@
                   description: Signed url to download the screening file's content
       '401':
         $ref: 'components.yml#/responses/401'
+/screenings/entities/{entityId}:
+  get:
+    tags:
+      - Screening
+    summary: Get the enriched data for an entity
+    operationId: getEnrichedData
+    parameters:
+      - name: entityId
+        description: ID of the entity to get the enriched data for
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: The enriched data for the entity
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreeningMatchPayloadDto'
 /screenings/matches/{matchId}:
   patch:
     tags:
