@@ -207,7 +207,6 @@ const ObjectMappingFtmContent = ({
     for (const property of availableProperties) {
       const key = `${ftmEntity}.${property}` as FtmEntityPropertyKey;
       const suggestion = getFtmEntitySuggestion(key);
-      console.log('suggestion', suggestion);
       if (!suggestion) continue;
 
       const field = table.fields.find(
@@ -215,7 +214,6 @@ const ObjectMappingFtmContent = ({
           f.semanticType === suggestion.semanticType &&
           (suggestion.semanticSubType ? f.semanticSubType === suggestion.semanticSubType : true),
       );
-      console.log('field', field);
       if (field && !field.ftmProperty) updatedFieldMapping[field.id] = property;
     }
 
