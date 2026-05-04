@@ -4112,6 +4112,17 @@ export function getDatasetsFreshness(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Get the enriched data for an entity
+ */
+export function getEnrichedData(entityId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningMatchPayloadDto;
+    }>(`/screenings/entities/${encodeURIComponent(entityId)}`, {
+        ...opts
+    }));
+}
+/**
  * List rules with full data
  */
 export function listScenarioIterationRules(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
