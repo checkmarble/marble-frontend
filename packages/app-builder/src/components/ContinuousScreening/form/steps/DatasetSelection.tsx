@@ -1,6 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
 import { Spinner } from '@app-builder/components/Spinner';
-import { SCREENING_CATEGORY_COLORS, ScreeningCategory } from '@app-builder/models/screening';
+import { SCREENING_CATEGORY_COLORS, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,28 +9,13 @@ import { match } from 'ts-pattern';
 import { Button, Checkbox, type CheckedState, Collapsible, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
+import { getSectionLeafNames } from '../../shared/dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
 type SanctionsSection = NonNullable<ListConfig['sanctions']>;
 type PepsSection = NonNullable<ListConfig['peps']>;
 type AdverseMediaSection = NonNullable<ListConfig['adverse-media']>;
-
-function getSectionLeafNames(sectionKey: ScreeningCategory, section: SectionData): string[] {
-  if (sectionKey === 'sanctions') {
-    const s = section as SanctionsSection;
-    return s.datasets.flatMap((g) => g.datasets.map((d) => d.name));
-  }
-  if (sectionKey === 'peps') {
-    const s = section as PepsSection;
-    return [...s.role, ...s.geography, ...s.position].map((i) => i.name);
-  }
-  if (sectionKey === 'adverse-media') {
-    const s = section as AdverseMediaSection;
-    return [...s.geography, ...s.category].map((i) => i.name);
-  }
-  return [];
-}
 
 function groupCheckState(names: string[], datasetsMap: Record<string, boolean>): CheckedState {
   if (names.length === 0) return false;
@@ -88,10 +73,10 @@ export const DatasetSelection = () => {
 
 const SelectedListsCount = () => {
   const { t } = useTranslation(['continuousScreening']);
-  const selectedDatasetsCount = ContinuousScreeningConfigurationStepper.select(
-    (state) => Object.values(state.data.datasets).filter(Boolean).length,
-  );
-  return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: selectedDatasetsCount })}</span>;
+  const listConfigQuery = useListConfigQuery('continuous-screening');
+  const datasets = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets);
+  const sectionCount = Object.keys(listConfigQuery.data ?? {}).filter((k) => !!datasets[k]).length;
+  return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: sectionCount })}</span>;
 };
 
 const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
@@ -116,7 +101,13 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
               checked={isEnabled}
               disabled={mode === 'view'}
               onCheckedChange={() => {
-                stepper.value.data.datasets[sectionKey] = !stepper.value.data.datasets[sectionKey];
+                const nextValue = !stepper.value.data.datasets[sectionKey];
+                stepper.value.data.datasets[sectionKey] = nextValue;
+                if (!nextValue) {
+                  for (const name of leafNames) {
+                    stepper.value.data.datasets[name] = false;
+                  }
+                }
               }}
             />
             <Icon
@@ -145,7 +136,7 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
     return (
       <div className="flex flex-col divide-y divide-grey-border">
         {s.datasets.map((group) => (
-          <ItemGroup key={group.name} title={group.title} items={group.datasets} />
+          <ItemGroup key={group.name} title={group.title} items={group.datasets} sectionKey={sectionKey} />
         ))}
       </div>
     );
@@ -185,7 +176,15 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
   return null;
 };
 
-const ItemGroup = ({ title, items }: { title: string; items: { name: string; title?: string }[] }) => {
+const ItemGroup = ({
+  title,
+  items,
+  sectionKey,
+}: {
+  title: string;
+  items: { name: string; title?: string }[];
+  sectionKey: ScreeningCategory;
+}) => {
   const { t } = useTranslation(['continuousScreening']);
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
@@ -201,6 +200,9 @@ const ItemGroup = ({ title, items }: { title: string; items: { name: string; tit
     const nextValue = selected < names.length;
     for (const name of names) {
       stepper.value.data.datasets[name] = nextValue;
+    }
+    if (nextValue) {
+      stepper.value.data.datasets[sectionKey] = true;
     }
   };
 
@@ -227,6 +229,7 @@ const ItemGroup = ({ title, items }: { title: string; items: { name: string; tit
               disabled={mode === 'view'}
               onCheckedChange={handleSelectAll}
               stopPropagation
+              className="mr-6"
             />
           </span>
         </div>
@@ -235,7 +238,7 @@ const ItemGroup = ({ title, items }: { title: string; items: { name: string; tit
         <div className="flex flex-col gap-v2-sm pt-v2-sm">
           <div className="flex flex-col border border-grey-border rounded-v2-md overflow-hidden">
             {items.map((item) => (
-              <ItemRow key={item.name} name={item.name} label={item.title ?? item.name} />
+              <ItemRow key={item.name} name={item.name} label={item.title ?? item.name} sectionKey={sectionKey} />
             ))}
           </div>
         </div>
@@ -244,7 +247,7 @@ const ItemGroup = ({ title, items }: { title: string; items: { name: string; tit
   );
 };
 
-const ItemRow = ({ name, label }: { name: string; label: string }) => {
+const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sectionKey: ScreeningCategory }) => {
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const isSelected = ContinuousScreeningConfigurationStepper.select((state) => !!state.data.datasets[name]);
@@ -257,7 +260,11 @@ const ItemRow = ({ name, label }: { name: string; label: string }) => {
       )}
       onClick={() => {
         if (mode === 'view') return;
-        stepper.value.data.datasets[name] = !stepper.value.data.datasets[name];
+        const nextValue = !stepper.value.data.datasets[name];
+        stepper.value.data.datasets[name] = nextValue;
+        if (nextValue) {
+          stepper.value.data.datasets[sectionKey] = true;
+        }
       }}
     >
       <Checkbox size="small" checked={isSelected} disabled={mode === 'view'} />
@@ -289,6 +296,7 @@ const FilterGroupRow = ({
     const singleItem = items.length === 1 ? items[0] : null;
     if (singleItem && mode !== 'view') {
       stepper.value.data.datasets[singleItem.name] = true;
+      stepper.value.data.datasets[sectionKey] = true;
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -299,7 +307,7 @@ const FilterGroupRow = ({
       <span className="text-s font-semibold shrink-0">{label}:</span>
       <div className="flex items-center gap-v2-sm overflow-hidden">
         <FilterGroupTags items={items} />
-        {mode !== 'view' && items.length > 1 && <FilterGroupMenu items={items} />}
+        {mode !== 'view' && items.length > 1 && <FilterGroupMenu items={items} sectionKey={sectionKey} />}
       </div>
     </div>
   );
@@ -340,7 +348,7 @@ const FilterGroupTags = ({ items }: { items: { name: string }[] }) => {
   );
 };
 
-const FilterGroupMenu = ({ items }: { items: { name: string }[] }) => {
+const FilterGroupMenu = ({ items, sectionKey }: { items: { name: string }[]; sectionKey: ScreeningCategory }) => {
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const datasets = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets);
 
@@ -364,7 +372,11 @@ const FilterGroupMenu = ({ items }: { items: { name: string }[] }) => {
                 value={item.name}
                 selected={isSelected}
                 onSelect={() => {
-                  stepper.value.data.datasets[item.name] = !stepper.value.data.datasets[item.name];
+                  const nextValue = !stepper.value.data.datasets[item.name];
+                  stepper.value.data.datasets[item.name] = nextValue;
+                  if (nextValue) {
+                    stepper.value.data.datasets[sectionKey] = true;
+                  }
                 }}
               >
                 <span>{formatItemName(item.name)}</span>
