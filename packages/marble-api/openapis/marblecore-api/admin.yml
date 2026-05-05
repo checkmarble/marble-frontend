@@ -594,6 +594,18 @@ components:
         sentry_replay_enabled:
           type: boolean
           description: Whether Sentry session replay is enabled for this organization
+        screening_providers:
+          type: object
+          properties:
+            transaction_monitoring:
+              type: string
+              enum: [opensanctions, lexisnexis]
+            continuous_monitoring:
+              type: string
+              enum: [opensanctions, lexisnexis]
+            manual:
+              type: string
+              enum: [opensanctions, lexisnexis]
     CreateOrganizationBodyDto:
       type: object
       required:
@@ -612,6 +624,18 @@ components:
           type: number
         auto_assign_queue_limit:
           type: number
+        screening_providers:
+          type: object
+          properties:
+            transaction_monitoring:
+              type: string
+              enum: [opensanctions, lexisnexis]
+            continuous_monitoring:
+              type: string
+              enum: [opensanctions, lexisnexis]
+            manual:
+              type: string
+              enum: [opensanctions, lexisnexis]
     OrganizationSubnetsDto:
       type: object
       properties:

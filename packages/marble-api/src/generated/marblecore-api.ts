@@ -8,7 +8,7 @@ import * as Oazapfts from "@oazapfts/runtime";
 import * as QS from "@oazapfts/runtime/query";
 export const defaults: Oazapfts.Defaults<Oazapfts.CustomHeaders> = {
     headers: {},
-    baseUrl: "http://localhost:8080"
+    baseUrl: "http://localhost:8080",
 };
 const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
@@ -1077,6 +1077,28 @@ export type OpenSanctionsCatalogSection = {
 export type OpenSanctionsCatalogDto = {
     sections: OpenSanctionsCatalogSection[];
 };
+export type ScreeningAvailableFiltersSection = {
+    datasets?: {
+        section?: string;
+        name: string;
+        title: string;
+    }[];
+    topics?: {
+        [key: string]: {
+            name: string;
+            title: string;
+        };
+    };
+};
+export type ScreeningAvailableFilters = {
+    provider: "opensanctions" | "lexisnexis";
+    sections: {
+        sanctions?: ScreeningAvailableFiltersSection;
+        peps?: ScreeningAvailableFiltersSection;
+        adverse_media?: ScreeningAvailableFiltersSection;
+        other?: ScreeningAvailableFiltersSection;
+    };
+};
 export type ScreeningFileDto = {
     id: string;
     filename: string;
@@ -1616,6 +1638,11 @@ export type OrganizationDto = {
     allowed_networks: string[];
     /** Whether Sentry session replay is enabled for this organization */
     sentry_replay_enabled?: boolean;
+    screening_providers?: {
+        transaction_monitoring?: "opensanctions" | "lexisnexis";
+        continuous_monitoring?: "opensanctions" | "lexisnexis";
+        manual?: "opensanctions" | "lexisnexis";
+    };
 };
 export type CreateOrganizationBodyDto = {
     name: string;
@@ -1625,6 +1652,11 @@ export type UpdateOrganizationBodyDto = {
     sanctions_threshold?: number;
     sanctions_limit?: number;
     auto_assign_queue_limit?: number;
+    screening_providers?: {
+        transaction_monitoring?: "opensanctions" | "lexisnexis";
+        continuous_monitoring?: "opensanctions" | "lexisnexis";
+        manual?: "opensanctions" | "lexisnexis";
+    };
 };
 export type OrganizationSubnetsDto = {
     /** List of CIDR subnets (x.x.x.x/yy) */
@@ -3916,6 +3948,19 @@ export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
         status: 200;
         data: OpenSanctionsCatalogDto;
     }>("/screenings/datasets", {
+        ...opts
+    }));
+}
+/**
+ * List available filter for the current provider
+ */
+export function listScreeningAvailableFilters(feature: "transaction_monitoring" | "continuous_monitoring" | "manual", opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningAvailableFilters;
+    }>(`/screenings/available-filters${QS.query(QS.explode({
+        feature
+    }))}`, {
         ...opts
     }));
 }
