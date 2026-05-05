@@ -5,7 +5,7 @@ import { useCallbackRef } from '@marble/shared';
 import { TFunction } from 'i18next';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, ScrollArea } from 'ui-design-system';
+import { Button, cn, ScrollAreaV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { DatatypeIcon } from './DatatypeOption';
@@ -90,49 +90,44 @@ export function FieldsForm({
           </Button>
         )}
       </div>
-      <ScrollArea.Root className="flex-1 min-h-0">
-        <ScrollArea.Viewport className="size-full">
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId={droppableId}>
-              {(dropProvided) => (
-                <div
-                  ref={dropProvided.innerRef}
-                  {...dropProvided.droppableProps}
-                  className="flex flex-col gap-v2-sm pr-v2-sm"
-                >
-                  {fields.map((field, index) => (
-                    <Draggable key={field.id} draggableId={field.id} index={index}>
-                      {(dragProvided, snapshot) => (
-                        <div
-                          ref={dragProvided.innerRef}
-                          {...dragProvided.draggableProps}
-                          className={cn(snapshot.isDragging && 'opacity-80')}
-                        >
-                          <FieldRow
-                            field={field}
-                            isSelected={field.id === selectedFieldId}
-                            onSelect={() => onFieldSelect(field.id)}
-                            dragHandleProps={dragProvided.dragHandleProps}
-                            hasError={errorFieldIds?.has(field.id) ?? false}
-                            buttonRef={(el) => {
-                              buttonRefs.current[index] = el;
-                            }}
-                            onKeyDown={(e) => handleFieldKeyDown(e, index)}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {dropProvided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-        </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar>
-          <ScrollArea.Thumb />
-        </ScrollArea.Scrollbar>
-      </ScrollArea.Root>
+      <ScrollAreaV2 className="flex-1 min-h-0">
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId={droppableId}>
+            {(dropProvided) => (
+              <div
+                ref={dropProvided.innerRef}
+                {...dropProvided.droppableProps}
+                className="flex flex-col gap-v2-sm pr-v2-sm"
+              >
+                {fields.map((field, index) => (
+                  <Draggable key={field.id} draggableId={field.id} index={index}>
+                    {(dragProvided, snapshot) => (
+                      <div
+                        ref={dragProvided.innerRef}
+                        {...dragProvided.draggableProps}
+                        className={cn(snapshot.isDragging && 'opacity-80')}
+                      >
+                        <FieldRow
+                          field={field}
+                          isSelected={field.id === selectedFieldId}
+                          onSelect={() => onFieldSelect(field.id)}
+                          dragHandleProps={dragProvided.dragHandleProps}
+                          hasError={errorFieldIds?.has(field.id) ?? false}
+                          buttonRef={(el) => {
+                            buttonRefs.current[index] = el;
+                          }}
+                          onKeyDown={(e) => handleFieldKeyDown(e, index)}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {dropProvided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </ScrollAreaV2>
     </section>
   );
 }

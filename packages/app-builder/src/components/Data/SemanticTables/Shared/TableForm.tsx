@@ -116,7 +116,7 @@ export function FormTable({
 
   return (
     <div className="flex flex-1 min-h-0 gap-v2-lg">
-      <div className="flex flex-1 min-h-0 flex-col gap-v2-lg">
+      <div className="flex flex-1 min-w-0 min-h-0 flex-col gap-v2-lg">
         {!tableState.tableId ? (
           <section className="flex flex-col gap-v2-md">
             <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
