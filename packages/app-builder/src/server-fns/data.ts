@@ -2,14 +2,7 @@ import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isNotFoundHttpError, isStatusConflictHttpError } from '@app-builder/models';
 import { type Case } from '@app-builder/models/cases';
-import {
-  type ClientDataListResponse,
-  type DataModel,
-  type DataModelObjectValue,
-  type DataModelWithTableOptions,
-  mergeDataModelWithTableOptions,
-  type TableModelWithOptions,
-} from '@app-builder/models/data-model';
+import { type ClientDataListResponse, type DataModel, type DataModelObjectValue } from '@app-builder/models/data-model';
 import { createAnnotationPayloadSchema } from '@app-builder/schemas/annotations';
 import {
   applyArchetypePayloadSchema,
@@ -58,28 +51,6 @@ export const getDataModelFn = createServerFn({ method: 'GET' })
   .handler(async ({ context }) => {
     const dataModel = await context.authInfo.dataModelRepository.getDataModel();
     return { dataModel } as { dataModel: DataModel };
-  });
-
-export const getDataModelWithOptionsFn = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
-  .handler(async ({ context }) => {
-    const dataModel = await context.authInfo.dataModelRepository.getDataModel();
-    const dataModelWithOptions = (await Promise.all(
-      dataModel.map<Promise<TableModelWithOptions>>((table) =>
-        context.authInfo.dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
-          return mergeDataModelWithTableOptions(table, options);
-        }),
-      ),
-    )) satisfies DataModelWithTableOptions;
-    return { dataModel: dataModelWithOptions };
-  });
-
-export const getTableOptionsFn = createServerFn({ method: 'GET' })
-  .middleware([authMiddleware])
-  .inputValidator(z.object({ tableId: z.string() }))
-  .handler(async ({ context, data }) => {
-    const tableOptions = await context.authInfo.dataModelRepository.getDataModelTableOptions(data.tableId);
-    return { tableOptions };
   });
 
 export const getObjectDetailsFn = createServerFn({ method: 'GET' })

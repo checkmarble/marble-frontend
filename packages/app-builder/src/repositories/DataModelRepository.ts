@@ -6,12 +6,10 @@ import {
   adaptCreateNavigationOptionDto,
   adaptDataModel,
   adaptDataModelObject,
-  adaptDataModelTableOptions,
   adaptDestroyDataModelReport,
   adaptExportedFields,
   adaptExportedFieldsDto,
   adaptPivot,
-  adaptSetDataModelTableOptionBodyDto,
   type ClientDataListRequestBody,
   type ClientDataListResponse,
   type CreateAnnotationBody,
@@ -19,12 +17,10 @@ import {
   createTableValueToCreateTableBody,
   type DataModel,
   type DataModelObject,
-  type DataModelTableOptions,
   type DestroyDataModelReport,
   type DestroyDataModelReportDto,
   ExportedFields,
   type Pivot,
-  type SetDataModelTableOptionsBody,
 } from '@app-builder/models';
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
@@ -41,8 +37,6 @@ export interface DataModelRepository {
   getCasesForObject(objectType: string, objectId: string): Promise<Case[]>;
   listClientObjects(args: { tableName: string; body: ClientDataListRequestBody }): Promise<ClientDataListResponse>;
   createNavigationOption(tableId: string, options: CreateNavigationOption): Promise<void>;
-  getDataModelTableOptions(tableId: string): Promise<DataModelTableOptions>;
-  setDataModelTableOptions(tableId: string, body: SetDataModelTableOptionsBody): Promise<void>;
   createAnnotation(tableName: string, objectId: string, body: CreateAnnotationBody): Promise<void>;
   deleteAnnotation(annotationId: string): Promise<void>;
   updateDataModelTableExportedFields(tableId: string, body: ExportedFields): Promise<ExportedFields>;
@@ -91,12 +85,6 @@ export function makeGetDataModelRepository() {
     },
     createNavigationOption: async (tableId, options) => {
       await marbleCoreApiClient.postDataModelTableNavigationOption(tableId, adaptCreateNavigationOptionDto(options));
-    },
-    getDataModelTableOptions: async (tableId) => {
-      return adaptDataModelTableOptions(await marbleCoreApiClient.getDataModelTableOptions(tableId));
-    },
-    setDataModelTableOptions: async (tableId, body) => {
-      await marbleCoreApiClient.setDataModelTableOptions(tableId, adaptSetDataModelTableOptionBodyDto(body));
     },
     createAnnotation: async (tableName, objectId, body) => {
       await marbleCoreApiClient.createAnnotation(tableName, objectId, adaptCreateAnnotationDto(body));

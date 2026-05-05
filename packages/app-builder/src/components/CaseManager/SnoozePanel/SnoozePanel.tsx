@@ -3,7 +3,7 @@ import { AddRuleSnooze } from '@app-builder/components/Cases/AddRuleSnooze';
 import { Nudge } from '@app-builder/components/Nudge';
 import { RuleGroup } from '@app-builder/components/Scenario/Rules/RuleGroup';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
-import { DataModelWithTableOptions } from '@app-builder/models';
+import { DataModel } from '@app-builder/models';
 import { CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { isRuleExecutionHit } from '@app-builder/models/decision';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
@@ -26,7 +26,7 @@ const findDataFromPivotValue = (pivots: PivotObject[], pivotValue: string) => {
 type SnoozePanelProps = {
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   caseDetail: CaseDetail;
-  dataModelWithTableOptions: DataModelWithTableOptions;
+  dataModel: DataModel;
   pivotObjects: PivotObject[];
   entitlements: FeatureAccesses;
 };
@@ -34,7 +34,7 @@ type SnoozePanelProps = {
 export const SnoozePanel = ({
   setDrawerContentMode,
   caseDetail,
-  dataModelWithTableOptions,
+  dataModel,
   pivotObjects,
   entitlements,
 }: SnoozePanelProps) => {
@@ -103,18 +103,14 @@ export const SnoozePanel = ({
             {Dict.entries(rulesByPivot).map(([pivotValue, rules]) => {
               if (effectiveActiveTab !== pivotValue) return null;
               const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
-              const table = dataModelWithTableOptions.find((t) => t.name === client?.pivotObjectName);
+              const table = dataModel.find((t) => t.name === client?.pivotObjectName);
 
               return (
                 <div className="mt-6 flex w-full flex-col items-start gap-6" key={`content-${pivotValue}`}>
                   {table && client ? (
                     <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                       <div className="capitalize font-semibold">{table.name}</div>
-                      <PivotObjectDetails
-                        tableModel={table}
-                        dataModel={dataModelWithTableOptions}
-                        pivotObject={client}
-                      />
+                      <PivotObjectDetails tableModel={table} dataModel={dataModel} pivotObject={client} />
                     </div>
                   ) : null}
                   <div className="border-grey-border bg-surface-card relative w-full rounded-lg border">

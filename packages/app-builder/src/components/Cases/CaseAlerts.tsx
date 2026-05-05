@@ -1,5 +1,5 @@
 import { CaseDetail, type DetailedCaseDecision } from '@app-builder/models/cases';
-import { DataModelWithTableOptions, getTriggerObjectFields } from '@app-builder/models/data-model';
+import { DataModel, getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { type ScreeningStatus } from '@app-builder/models/screening';
@@ -31,7 +31,7 @@ export const CaseAlerts = ({
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
   caseDetail: CaseDetail;
-  dataModel: DataModelWithTableOptions;
+  dataModel: DataModel;
 }) => {
   const { t } = useTranslation(casesI18n);
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
