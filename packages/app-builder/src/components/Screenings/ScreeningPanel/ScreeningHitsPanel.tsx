@@ -376,6 +376,7 @@ function PanelMatchList({
               ) : null}
               <div className="flex-1 min-w-0">
                 <MatchCard
+                  screening={screening}
                   match={screeningMatch}
                   defaultOpen={matches.length === 1}
                   hideEnrich
