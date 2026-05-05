@@ -34,6 +34,27 @@
           application/json:
             schema:
               $ref: '#/components/schemas/OpenSanctionsCatalogDto'
+/screenings/available-filters:
+  get:
+    tags:
+      - Screening
+    summary: List available filter for the current provider
+    operationId: listScreeningAvailableFilters
+    parameters:
+      - name: feature
+        description: Feature the return the filters for
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [transaction_monitoring, continuous_monitoring, manual]
+    responses:
+      '200':
+        description: Available filters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreeningAvailableFilters'
 /screenings/freshness:
   get:
     tags:
@@ -379,6 +400,49 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OpenSanctionsCatalogSection'
+    ScreeningAvailableFilters:
+      type: object
+      required: [provider, sections]
+      properties:
+        provider:
+          type: string
+          enum: [opensanctions, lexisnexis]
+        sections:
+          type: object
+          properties:
+            sanctions:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            peps:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            adverse_media:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            other:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+    ScreeningAvailableFiltersSection:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            type: object
+            required: [name, title]
+            properties:
+              section:
+                type: string
+              name:
+                type: string
+              title:
+                type: string
+        topics:
+          type: object
+          additionalProperties:
+            type: object
+            required: [name, title]
+            properties: 
+              name:
+                type: string
+              title:
+                type: string
     OpenSanctionsDatasetFreshnessDto:
       type: object
       required:
