@@ -8,6 +8,7 @@ import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { CaseReviewsModal } from '@app-builder/components/Cases/CaseReviewsModal';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { caseDetailMiddleware } from '@app-builder/middlewares/case-detail-middleware';
@@ -157,7 +158,7 @@ function CaseManagerIndexPage() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <BreadCrumbs />
+        <BreadCrumbs back={`/cases/inboxes/${MY_INBOX_ID}`} />
         <div className="flex items-center gap-2">
           <Modal.Root>
             {aiAssistEnabled === 'allowed' ? (
