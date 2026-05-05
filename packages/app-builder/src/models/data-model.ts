@@ -668,7 +668,7 @@ export function getTriggerObjectFields(
 
   return R.pipe(
     tableOptions.fieldOrder,
-    R.map((id) => tableOptions.fields.find((f) => f.id === id)),
+    R.map((name) => tableOptions.fields.find((f) => f.name === name)),
     R.filter((f): f is DataModelField => f !== undefined),
     R.map((f) => ({ id: f.id, name: f.name })),
   );
