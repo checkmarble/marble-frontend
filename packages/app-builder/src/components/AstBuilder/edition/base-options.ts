@@ -3,6 +3,7 @@ import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewIpHasFlagAstNode } from '@app-builder/models/astNode/ip';
 import { monitoringListCheckAstNodeName, NewTagCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
+import { NewRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
 import { NewTimeAddAstNode, NewTimeNowAstNode, NewTimestampExtractAstNode } from '@app-builder/models/astNode/time';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
@@ -64,6 +65,12 @@ export const CLIENT_RISK_OPTIONS = ({
   {
     astNode: NewTagCheckAstNode(monitoringListCheckAstNodeName),
     displayName: t('scenarios:monitoring_list_check.menu_label'),
+    operandType: 'ClientRisk',
+    dataType: 'Bool',
+  },
+  {
+    astNode: NewRecordRiskLevelCheckAstNode(),
+    displayName: t('scenarios:record_risk_level_check.menu_label'),
     operandType: 'ClientRisk',
     dataType: 'Bool',
   },

@@ -5,58 +5,25 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
-import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { useSaveTriggerMutation } from '@app-builder/queries/scenarios/save-trigger';
-import {
-  buildDatabaseAccessorsFromDataModel,
-  buildPayloadAccessorsFromDataModel,
-} from '@app-builder/server-fns/scenarios';
+import { getBuilderOptionsFn } from '@app-builder/server-fns/scenarios';
 import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { hasAnyEntitlement, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
-import { fromParams } from '@app-builder/utils/short-uuid';
+import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, useLoaderData } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Collapsible } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const triggerLoader = createServerFn()
-  .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
-  .handler(async function triggerLoader({ data, context }) {
-    const { customListsRepository, dataModelRepository, scenario, entitlements, continuousScreening } =
-      context.authInfo;
-
-    const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
-    const [currentScenario, customLists, dataModel, screeningConfigs] = await Promise.all([
-      scenario.getScenario({ scenarioId }),
-      customListsRepository.listCustomLists(),
-      dataModelRepository.getDataModel(),
-      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
-    ]);
-
-    return {
-      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
-      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
-      dataModel,
-      customLists,
-      triggerObjectType: currentScenario.triggerObjectType,
-      hasValidLicense: hasAnyEntitlement(entitlements),
-      hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
-      screeningConfigs,
-    };
-  });
-
 export const Route = createFileRoute(
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger',
 )({
-  loader: ({ params }) => triggerLoader({ data: { params } }),
+  loader: ({ params }) => getBuilderOptionsFn({ data: { scenarioId: fromSUUIDtoUUID(params.scenarioId) } }),
   component: Trigger,
 });
 
