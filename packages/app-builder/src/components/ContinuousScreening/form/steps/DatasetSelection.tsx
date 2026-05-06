@@ -5,7 +5,7 @@ import { type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { AvailableFeatures } from '@app-builder/server-fns/screenings';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
@@ -27,7 +27,6 @@ function groupCheckState(names: string[], datasetsMap: Record<string, boolean>):
 
 export const DatasetSelection = ({ useCase }: { useCase: AvailableFeatures }) => {
   const { t } = useTranslation(['common', 'continuousScreening']);
-  const listConfigQuery = useListConfigQuery(useCase);
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const tKey = mode === 'view' ? 'view' : 'creation';
 
@@ -37,39 +36,50 @@ export const DatasetSelection = ({ useCase }: { useCase: AvailableFeatures }) =>
         {t(`continuousScreening:${tKey}.datasetSelection.callout`)}
       </Callout>
       <div className="bg-surface-card rounded-v2-lg border border-grey-border">
-        <div className="border-b border-grey-border p-v2-md flex justify-between items-center">
-          <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
-          <SelectedListsCount listConfigQuery={listConfigQuery} />
-        </div>
-        <div className="p-v2-md overflow-y-auto">
-          {match(listConfigQuery)
-            .with({ isPending: true }, () => (
-              <div className="flex items-center justify-center h-50">
-                <Spinner className="size-10" />
-              </div>
-            ))
-            .with({ isError: true }, () => (
-              <div className="flex flex-col gap-v2-md items-center justify-center h-50">
-                <div className="">{t('common:generic_fetch_data_error')}</div>
-                <Button variant="secondary" onClick={() => listConfigQuery.refetch()}>
-                  {t('common:retry')}
-                </Button>
-              </div>
-            ))
-            .with({ isSuccess: true }, ({ data }) => (
-              <div className="flex flex-col">
-                {data &&
-                  Object.entries(data)
-                    .filter(([, section]) => section.datasets?.length || section.topics)
-                    .map(([key, section]) =>
-                      section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
-                    )}
-              </div>
-            ))
-            .exhaustive()}
-        </div>
+        <DatasetSelectionContent useCase={useCase} />
       </div>
     </div>
+  );
+};
+
+export const DatasetSelectionContent = ({ useCase }: { useCase: AvailableFeatures }) => {
+  const listConfigQuery = useListConfigQuery(useCase);
+  const { t } = useTranslation(['common', 'continuousScreening']);
+
+  return (
+    <>
+      <div className="border-b border-grey-border p-v2-md flex justify-between items-center">
+        <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
+        <SelectedListsCount listConfigQuery={listConfigQuery} />
+      </div>
+      <div className="p-v2-md overflow-y-auto">
+        {match(listConfigQuery)
+          .with({ isPending: true }, () => (
+            <div className="flex items-center justify-center h-50">
+              <Spinner className="size-10" />
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="flex flex-col gap-v2-md items-center justify-center h-50">
+              <div className="">{t('common:generic_fetch_data_error')}</div>
+              <Button variant="secondary" onClick={() => listConfigQuery.refetch()}>
+                {t('common:retry')}
+              </Button>
+            </div>
+          ))
+          .with({ isSuccess: true }, ({ data }) => (
+            <div className="flex flex-col">
+              {data &&
+                Object.entries(data)
+                  .filter(([, section]) => section.datasets?.length || section.topics)
+                  .map(([key, section]) =>
+                    section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+                  )}
+            </div>
+          ))
+          .exhaustive()}
+      </div>
+    </>
   );
 };
 
@@ -286,7 +296,7 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   );
 };
 
-const MAX_VISIBLE_TAGS = 5;
+const OVERFLOW_TAG_WIDTH_PX = 36;
 
 function formatItemName(name: string): string {
   const last = name.split('.').at(-1) ?? name;
@@ -356,14 +366,11 @@ const FilterGroupRow = ({
   return (
     <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
       <span className="text-s font-semibold shrink-0">{label}:</span>
-      <div className="flex items-center gap-v2-sm overflow-hidden flex-wrap">
+      <div className="flex items-center gap-v2-sm flex-1 min-w-0">
         {items.length === 1 && items[0] ? (
           <SingleItemToggle item={items[0]} sectionKey={sectionKey} mode={mode} onAfterChange={onAfterChange} />
         ) : (
-          <>
-            <FilterGroupTags items={items} onAfterChange={onAfterChange} />
-            {mode !== 'view' && <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />}
-          </>
+          <FilterGroupTags items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />
         )}
       </div>
     </div>
@@ -420,57 +427,135 @@ const SingleItemToggle = ({
   );
 };
 
-const FilterGroupTags = ({ items, onAfterChange }: { items: TopicItem[]; onAfterChange?: () => void }) => {
+const MENU_BUTTON_SIZE_PX = 24; // size-6 = 1.5rem = 24px
+
+const FilterGroupTags = ({
+  items,
+  sectionKey,
+  onAfterChange,
+}: {
+  items: TopicItem[];
+  sectionKey: ScreeningCategory;
+  onAfterChange?: () => void;
+}) => {
   const { t } = useTranslation(['continuousScreening']);
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
-  const selectedNames = ContinuousScreeningConfigurationStepper.select((state) =>
-    items.filter((i) => state.data.datasets[i.name]).map((i) => i.name),
+  const selectedItems = ContinuousScreeningConfigurationStepper.select((state) =>
+    items.filter((i) => state.data.datasets[i.name]),
   );
   const [isExpanded, setIsExpanded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const ghostRef = useRef<HTMLDivElement>(null);
+  const [maxVisible, setMaxVisible] = useState(selectedItems.length);
 
-  if (selectedNames.length === 0) return null;
+  const selectedKey = selectedItems.map((i) => i.name).join(',');
 
-  if (selectedNames.length === items.length && items.length > 1) {
-    return (
-      <Tag color="blue" size="small">
-        {t('continuousScreening:creation.datasetSelection.filter.all')}
-      </Tag>
-    );
-  }
+  useLayoutEffect(() => {
+    if (isExpanded) return;
+    const container = containerRef.current;
+    const ghost = ghostRef.current;
+    if (!container || !ghost) return;
 
-  const overflow = selectedNames.length - MAX_VISIBLE_TAGS;
-  const visible = isExpanded || overflow <= 0 ? selectedNames : selectedNames.slice(0, MAX_VISIBLE_TAGS);
+    const recalculate = () => {
+      const gap = parseFloat(getComputedStyle(ghost).gap) || 4;
+      // subtract menu button (size-6 = 24px) + one gap when in edit mode
+      const menuReserved = mode !== 'view' ? MENU_BUTTON_SIZE_PX + gap : 0;
+      const availableWidth = container.offsetWidth - menuReserved;
+      const tagEls = Array.from(ghost.children) as HTMLElement[];
+
+      let used = 0;
+      let count = 0;
+      for (let i = 0; i < tagEls.length; i++) {
+        const tw = tagEls[i]!.offsetWidth;
+        const gapBefore = i > 0 ? gap : 0;
+        const isLast = i === tagEls.length - 1;
+        // reserve space for overflow tag on all but the last slot
+        const needed = used + gapBefore + tw + (isLast ? 0 : gap + OVERFLOW_TAG_WIDTH_PX);
+        if (needed <= availableWidth) {
+          used += gapBefore + tw;
+          count++;
+        } else {
+          break;
+        }
+      }
+      setMaxVisible(Math.max(count, 1));
+    };
+
+    const observer = new ResizeObserver(recalculate);
+    observer.observe(container);
+    recalculate();
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isExpanded, selectedKey, mode]);
+
+  const isAllSelected = selectedItems.length === items.length && items.length > 1;
+  const overflow = isExpanded || isAllSelected ? 0 : Math.max(0, selectedItems.length - maxVisible);
+  const visible = overflow > 0 ? selectedItems.slice(0, maxVisible) : selectedItems;
 
   return (
-    <>
-      {visible.map((name) =>
-        mode !== 'view' ? (
-          <RemovableTag
-            key={name}
-            label={items.find((i) => i.name === name)?.title ?? formatItemName(name)}
-            onRemove={() => {
-              stepper.value.data.datasets[name] = false;
-              onAfterChange?.();
-            }}
-          />
-        ) : (
-          <Tag key={name} color="blue" size="small" className="max-w-[150px] overflow-hidden">
-            <span className="truncate block">{items.find((i) => i.name === name)?.title ?? formatItemName(name)}</span>
+    <div ref={containerRef} className="relative flex-1 min-w-0">
+      {/* Ghost: invisible clone of all selected tags used to measure their rendered widths */}
+      <div
+        ref={ghostRef}
+        className="flex items-center gap-v2-sm"
+        style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, right: 0, pointerEvents: 'none' }}
+        aria-hidden="true"
+      >
+        {selectedItems.map((item) => (
+          <Tag key={item.name} color="blue" size="small">
+            <span className="max-w-[20ch] truncate">{item.title ?? formatItemName(item.name)}</span>
           </Tag>
-        ),
-      )}
-      {overflow > 0 && (
-        <Tag
-          color="blue"
-          size="small"
-          className="cursor-pointer shrink-0 hover:bg-blue-58/20 transition-colors"
-          onClick={() => setIsExpanded((v) => !v)}
-        >
-          {isExpanded ? <Icon icon="minus" className="size-3" /> : `+${overflow}`}
-        </Tag>
-      )}
-    </>
+        ))}
+      </div>
+      <div className={cn('flex items-center gap-v2-sm', isExpanded && 'flex-wrap')}>
+        {isAllSelected ? (
+          <Tag color="blue" size="small">
+            {t('continuousScreening:creation.datasetSelection.filter.all')}
+          </Tag>
+        ) : (
+          <>
+            {visible.map((item) =>
+              mode !== 'view' ? (
+                <RemovableTag
+                  key={item.name}
+                  label={item.title ?? formatItemName(item.name)}
+                  onRemove={() => {
+                    stepper.value.data.datasets[item.name] = false;
+                    onAfterChange?.();
+                  }}
+                />
+              ) : (
+                <Tag key={item.name} color="blue" size="small" className="max-w-[150px] overflow-hidden">
+                  <span className="truncate block">{item.title ?? formatItemName(item.name)}</span>
+                </Tag>
+              ),
+            )}
+            {overflow > 0 && (
+              <Tag
+                color="blue"
+                size="small"
+                className="cursor-pointer shrink-0 hover:bg-blue-58/20 transition-colors"
+                onClick={() => setIsExpanded(true)}
+              >
+                +{overflow}
+              </Tag>
+            )}
+            {isExpanded && (
+              <Tag
+                color="blue"
+                size="small"
+                className="cursor-pointer shrink-0 hover:bg-blue-58/20 transition-colors"
+                onClick={() => setIsExpanded(false)}
+              >
+                <Icon icon="minus" className="size-3" />
+              </Tag>
+            )}
+          </>
+        )}
+        {mode !== 'view' && <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />}
+      </div>
+    </div>
   );
 };
 
