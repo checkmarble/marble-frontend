@@ -1,4 +1,5 @@
 import {
+  ScreeningAvailableFilters,
   type ScreeningDto,
   type ScreeningEntityDto,
   type ScreeningErrorDto,
@@ -461,4 +462,8 @@ export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', num
 export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other' | undefined => {
   const categories = R.map(topics, (topic) => SCREENING_TOPICS_MAP.get(topic) ?? 'other');
   return R.firstBy(categories, (category) => SCREENING_CATEGORY_RANKING[category]);
+};
+
+export type ScreeningAvailableFiltersAdapted = ScreeningAvailableFilters & {
+  conditional_filters?: { key: string; name: string; topics: { name: string; title: string }[] }[];
 };

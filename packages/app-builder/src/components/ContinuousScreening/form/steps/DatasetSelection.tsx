@@ -130,9 +130,29 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
 };
 
 const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
-  const { datasets, topics } = section;
+  const { datasets, topics, conditionalTopics } = section;
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
 
-  if (!datasets?.length && !topics) return null;
+  if (!datasets?.length && !topics && !conditionalTopics) return null;
+
+  function makeResetHandler(dependsOnKey: string): (() => void) | undefined {
+    if (!conditionalTopics) return undefined;
+    const dependents = Object.values(conditionalTopics).filter((ct) => ct.dependsOn === dependsOnKey);
+    const dependsOnTopics = topics?.[dependsOnKey] ?? [];
+    if (dependents.length === 0) return undefined;
+    return () => {
+      const selectedPrefixes = dependsOnTopics.filter((t) => stepper.value.data.datasets[t.name]).map((t) => t.name);
+      if (selectedPrefixes.length === 0) return;
+      for (const ct of dependents) {
+        for (const item of ct.items) {
+          const prefix = item.name.split('.')[0];
+          if (!selectedPrefixes.some((sel) => sel === prefix)) {
+            stepper.value.data.datasets[item.name] = false;
+          }
+        }
+      }
+    };
+  }
 
   return (
     <div className="flex flex-col">
@@ -141,7 +161,23 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
       ))}
       {topics &&
         Object.entries(topics).map(([key, items]) => (
-          <FilterGroupRow key={key} sectionKey={sectionKey} groupKey={key} items={items} />
+          <FilterGroupRow
+            key={key}
+            sectionKey={sectionKey}
+            groupKey={key}
+            items={items}
+            onAfterChange={makeResetHandler(key)}
+          />
+        ))}
+      {conditionalTopics &&
+        Object.entries(conditionalTopics).map(([name, { items, dependsOn }]) => (
+          <ConditionalFilterGroupRow
+            key={name}
+            sectionKey={sectionKey}
+            groupKey={name}
+            allItems={items}
+            dependsOnItems={section.topics?.[dependsOn]?.map((t) => t.name) ?? []}
+          />
         ))}
     </div>
   );
@@ -257,14 +293,14 @@ function formatItemName(name: string): string {
   return capitalize(last);
 }
 
-const RemovableTag = ({ name, onRemove }: { name: string; onRemove: () => void }) => (
+const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
   <Tag
     color="blue"
     size="small"
     className="group cursor-pointer hover:bg-blue-58/20 transition-colors"
     onClick={onRemove}
   >
-    <span className="max-w-[30ch] truncate">{formatItemName(name)}</span>
+    <span className="max-w-[20ch] truncate">{label}</span>
     <span className="grid grid-cols-[0fr] group-hover:grid-cols-[1fr] transition-[grid-template-columns] duration-150">
       <span className="overflow-hidden flex items-center">
         <Icon icon="cross" className="size-3 ml-1" />
@@ -273,28 +309,60 @@ const RemovableTag = ({ name, onRemove }: { name: string; onRemove: () => void }
   </Tag>
 );
 
+type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
+
+const ConditionalFilterGroupRow = ({
+  sectionKey,
+  groupKey,
+  allItems,
+  dependsOnItems,
+}: {
+  sectionKey: ScreeningCategory;
+  groupKey: string;
+  allItems: TopicItem[];
+  dependsOnItems: string[];
+}) => {
+  const selectedPrefixes = ContinuousScreeningConfigurationStepper.select((state) =>
+    dependsOnItems.filter((t) => state.data.datasets[t]).map((t) => t),
+  );
+
+  const filteredItems =
+    selectedPrefixes.length === 0
+      ? allItems
+      : allItems.filter((item) => {
+          const prefix = item.name.split('.')[0];
+          return selectedPrefixes.some((sel) => sel === prefix);
+        });
+
+  if (filteredItems.length === 0) return null;
+
+  return <FilterGroupRow sectionKey={sectionKey} groupKey={groupKey} items={filteredItems} />;
+};
+
 const FilterGroupRow = ({
   sectionKey,
   groupKey,
   items,
+  onAfterChange,
 }: {
   sectionKey: ScreeningCategory;
   groupKey: string;
-  items: { name: string }[];
+  items: TopicItem[];
+  onAfterChange?: () => void;
 }) => {
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const label = capitalize(groupKey);
 
   return (
-    <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
+    <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
       <span className="text-s font-semibold shrink-0">{label}:</span>
-      <div className="flex items-center gap-v2-sm overflow-hidden">
+      <div className="flex items-center gap-v2-sm overflow-hidden flex-wrap">
         {items.length === 1 && items[0] ? (
-          <SingleItemToggle item={items[0]} sectionKey={sectionKey} mode={mode} />
+          <SingleItemToggle item={items[0]} sectionKey={sectionKey} mode={mode} onAfterChange={onAfterChange} />
         ) : (
           <>
-            <FilterGroupTags items={items} />
-            {mode !== 'view' && <FilterGroupMenu items={items} sectionKey={sectionKey} />}
+            <FilterGroupTags items={items} onAfterChange={onAfterChange} />
+            {mode !== 'view' && <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />}
           </>
         )}
       </div>
@@ -306,10 +374,12 @@ const SingleItemToggle = ({
   item,
   sectionKey,
   mode,
+  onAfterChange,
 }: {
-  item: { name: string };
+  item: TopicItem;
   sectionKey: ScreeningCategory;
   mode: string;
+  onAfterChange?: () => void;
 }) => {
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const isSelected = ContinuousScreeningConfigurationStepper.select((state) => !!state.data.datasets[item.name]);
@@ -318,9 +388,10 @@ const SingleItemToggle = ({
     if (mode !== 'view') {
       return (
         <RemovableTag
-          name={item.name}
+          label={item.title ?? formatItemName(item.name)}
           onRemove={() => {
             stepper.value.data.datasets[item.name] = false;
+            onAfterChange?.();
           }}
         />
       );
@@ -341,6 +412,7 @@ const SingleItemToggle = ({
       onClick={() => {
         stepper.value.data.datasets[item.name] = true;
         stepper.value.data.datasets[sectionKey] = true;
+        onAfterChange?.();
       }}
     >
       <Icon icon="plus" className="size-3" />
@@ -348,7 +420,7 @@ const SingleItemToggle = ({
   );
 };
 
-const FilterGroupTags = ({ items }: { items: { name: string }[] }) => {
+const FilterGroupTags = ({ items, onAfterChange }: { items: TopicItem[]; onAfterChange?: () => void }) => {
   const { t } = useTranslation(['continuousScreening']);
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
@@ -376,14 +448,15 @@ const FilterGroupTags = ({ items }: { items: { name: string }[] }) => {
         mode !== 'view' ? (
           <RemovableTag
             key={name}
-            name={name}
+            label={items.find((i) => i.name === name)?.title ?? formatItemName(name)}
             onRemove={() => {
               stepper.value.data.datasets[name] = false;
+              onAfterChange?.();
             }}
           />
         ) : (
           <Tag key={name} color="blue" size="small" className="max-w-[150px] overflow-hidden">
-            <span className="truncate block">{formatItemName(name)}</span>
+            <span className="truncate block">{items.find((i) => i.name === name)?.title ?? formatItemName(name)}</span>
           </Tag>
         ),
       )}
@@ -401,9 +474,19 @@ const FilterGroupTags = ({ items }: { items: { name: string }[] }) => {
   );
 };
 
-const FilterGroupMenu = ({ items, sectionKey }: { items: { name: string }[]; sectionKey: ScreeningCategory }) => {
+const FilterGroupMenu = ({
+  items,
+  sectionKey,
+  onAfterChange,
+}: {
+  items: TopicItem[];
+  sectionKey: ScreeningCategory;
+  onAfterChange?: () => void;
+}) => {
+  const { t } = useTranslation(['continuousScreening']);
   const stepper = ContinuousScreeningConfigurationStepper.useSharp();
   const datasets = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets);
+  const allSelected = items.length > 0 && items.every((i) => !!datasets[i.name]);
 
   return (
     <MenuCommand.Menu persistOnSelect>
@@ -417,6 +500,27 @@ const FilterGroupMenu = ({ items, sectionKey }: { items: { name: string }[]; sec
       </MenuCommand.Trigger>
       <MenuCommand.Content align="end" sideOffset={4}>
         <MenuCommand.List>
+          <MenuCommand.Item
+            key="__all__"
+            value="__all__"
+            selected={allSelected}
+            onSelect={() => {
+              const nextValue = !allSelected;
+              for (const item of items) {
+                stepper.value.data.datasets[item.name] = nextValue;
+              }
+              if (nextValue) {
+                stepper.value.data.datasets[sectionKey] = true;
+              }
+              onAfterChange?.();
+            }}
+            className="border-b border-purple-primary"
+          >
+            <span className="text-purple-primary ">
+              {t(`continuousScreening:creation.datasetSelection.filter.${allSelected ? 'unselect_all' : 'select_all'}`)}
+            </span>
+            {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
+          </MenuCommand.Item>
           {items.map((item) => {
             const isSelected = !!datasets[item.name];
             return (
@@ -430,9 +534,10 @@ const FilterGroupMenu = ({ items, sectionKey }: { items: { name: string }[]; sec
                   if (nextValue) {
                     stepper.value.data.datasets[sectionKey] = true;
                   }
+                  onAfterChange?.();
                 }}
               >
-                <span>{formatItemName(item.name)}</span>
+                <span>{item.title ?? formatItemName(item.name)}</span>
                 {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
               </MenuCommand.Item>
             );

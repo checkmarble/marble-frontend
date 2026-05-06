@@ -1,8 +1,8 @@
-import { ScreeningCategory } from '@app-builder/models/screening';
+import { ScreeningAvailableFiltersAdapted, ScreeningCategory } from '@app-builder/models/screening';
 import { AvailableFeatures, getListConfigFn } from '@app-builder/server-fns/screenings';
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-import { ScreeningAvailableFilters, ScreeningAvailableFiltersSection } from 'marble-api';
+import { ScreeningAvailableFiltersSection } from 'marble-api';
 import * as R from 'remeda';
 
 type GroupedDataset = {
@@ -11,9 +11,15 @@ type GroupedDataset = {
   datasets: { name: string; title: string }[];
 };
 
+type ConditionalTopic = {
+  items: { name: string; title: string }[];
+  dependsOn: string;
+};
+
 type NormalizedSection = {
   datasets?: GroupedDataset[];
   topics?: Record<string, { name: string; title: string }[]>;
+  conditionalTopics?: Record<string, ConditionalTopic>;
 };
 
 export type ListConfigFilters = Partial<Record<ScreeningCategory, NormalizedSection>>;
@@ -26,13 +32,27 @@ function groupBySection(datasets: { section?: string; name: string; title: strin
   }));
 }
 
-function normalizeListConfig(config: ScreeningAvailableFilters): ListConfigFilters {
+function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConfigFilters {
   function normalize(section: ScreeningAvailableFiltersSection | undefined): NormalizedSection | undefined {
     if (!section) return undefined;
-    return {
+    const adaptedSection: NormalizedSection = {
       ...section,
       datasets: Array.isArray(section?.datasets) ? groupBySection(section.datasets) : undefined,
     };
+
+    if (config.conditional_filters && section.topics) {
+      for (const cf of config.conditional_filters) {
+        if (cf.key in section.topics) {
+          adaptedSection.conditionalTopics ??= {};
+          adaptedSection.conditionalTopics[cf.name] = {
+            items: cf.topics,
+            dependsOn: cf.key,
+          };
+        }
+      }
+    }
+
+    return adaptedSection;
   }
   if (!config) return {};
 
