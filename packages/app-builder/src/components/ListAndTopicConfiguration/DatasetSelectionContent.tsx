@@ -282,9 +282,9 @@ function formatItemName(name: string): string {
 
 const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
   <Tag
-    color="blue"
+    color="purple"
     size="small"
-    className="group cursor-pointer hover:bg-blue-58/20 transition-colors"
+    className="group cursor-pointer hover:bg-purple-primary/20 transition-colors"
     onClick={onRemove}
   >
     <span className="flex items-center">
@@ -300,7 +300,7 @@ const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void
 );
 
 const ViewTag = ({ label }: { label: string }) => (
-  <Tag color="blue" size="small" className="max-w-[150px] overflow-hidden">
+  <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
     <span className="truncate block">{label}</span>
   </Tag>
 );
@@ -390,7 +390,7 @@ const SingleItemToggle = ({
       );
     }
     return (
-      <Tag color="blue" size="small" className="max-w-[150px] overflow-hidden">
+      <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
         <span className="truncate block">{formatItemName(item.name)}</span>
       </Tag>
     );
@@ -491,7 +491,7 @@ const FilterGroupTags = ({
             // Must match `RemovableTag` layout width, otherwise maxVisible/overflow calc is wrong.
             <RemovableTag key={item.name} label={label} onRemove={() => undefined} />
           ) : (
-            <Tag key={item.name} color="blue" size="small">
+            <Tag key={item.name} color="purple" size="small">
               <span className="max-w-[20ch] truncate">{label}</span>
             </Tag>
           );
@@ -499,7 +499,7 @@ const FilterGroupTags = ({
       </div>
       <div className={cn('flex items-center gap-v2-sm', isExpanded && 'flex-wrap')}>
         {isAllSelected ? (
-          <Tag color="blue" size="small">
+          <Tag color="purple" size="small">
             {t('continuousScreening:creation.datasetSelection.filter.all')}
           </Tag>
         ) : (
@@ -520,9 +520,9 @@ const FilterGroupTags = ({
             )}
             {overflow > 0 && (
               <Tag
-                color="blue"
+                color="purple"
                 size="small"
-                className="cursor-pointer shrink-0 hover:bg-blue-58/20 transition-colors"
+                className="cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors"
                 onClick={() => setIsExpanded(true)}
               >
                 +{overflow}
@@ -530,9 +530,9 @@ const FilterGroupTags = ({
             )}
             {isExpanded && (
               <Tag
-                color="blue"
+                color="purple"
                 size="small"
-                className="cursor-pointer shrink-0 hover:bg-blue-58/20 transition-colors"
+                className="cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors"
                 onClick={() => setIsExpanded(false)}
               >
                 <Icon icon="minus" className="size-3" />
