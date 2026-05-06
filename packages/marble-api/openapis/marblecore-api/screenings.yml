@@ -436,13 +436,15 @@ components:
         topics:
           type: object
           additionalProperties:
-            type: object
-            required: [name, title]
-            properties: 
-              name:
-                type: string
-              title:
-                type: string
+            type: array
+            items:
+              type: object
+              required: [name, title]
+              properties: 
+                name:
+                  type: string
+                title:
+                  type: string
     OpenSanctionsDatasetFreshnessDto:
       type: object
       required:

@@ -1,7 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
+import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { Spinner } from '@app-builder/components/Spinner';
-import { SCREENING_CATEGORY_COLORS, type ScreeningCategory } from '@app-builder/models/screening';
+import { type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
+import { AvailableFeatures } from '@app-builder/server-fns/screenings';
+import { UseQueryResult } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
@@ -13,7 +16,6 @@ import { getSectionLeafNames } from '../../shared/dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
-type SanctionsSection = NonNullable<ListConfig['sanctions']>;
 
 function groupCheckState(names: string[], datasetsMap: Record<string, boolean>): CheckedState {
   if (names.length === 0) return false;
@@ -23,9 +25,9 @@ function groupCheckState(names: string[], datasetsMap: Record<string, boolean>):
   return 'indeterminate';
 }
 
-export const DatasetSelection = () => {
+export const DatasetSelection = ({ useCase }: { useCase: AvailableFeatures }) => {
   const { t } = useTranslation(['common', 'continuousScreening']);
-  const listConfigQuery = useListConfigQuery('continuous-screening');
+  const listConfigQuery = useListConfigQuery(useCase);
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const tKey = mode === 'view' ? 'view' : 'creation';
 
@@ -37,7 +39,7 @@ export const DatasetSelection = () => {
       <div className="bg-surface-card rounded-v2-lg border border-grey-border">
         <div className="border-b border-grey-border p-v2-md flex justify-between items-center">
           <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
-          <SelectedListsCount />
+          <SelectedListsCount listConfigQuery={listConfigQuery} />
         </div>
         <div className="p-v2-md overflow-y-auto">
           {match(listConfigQuery)
@@ -57,9 +59,11 @@ export const DatasetSelection = () => {
             .with({ isSuccess: true }, ({ data }) => (
               <div className="flex flex-col">
                 {data &&
-                  Object.entries(data).map(([key, section]) =>
-                    section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
-                  )}
+                  Object.entries(data)
+                    .filter(([, section]) => section.datasets?.length || section.topics)
+                    .map(([key, section]) =>
+                      section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+                    )}
               </div>
             ))
             .exhaustive()}
@@ -69,9 +73,8 @@ export const DatasetSelection = () => {
   );
 };
 
-const SelectedListsCount = () => {
+const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResult<ListConfig, Error> }) => {
   const { t } = useTranslation(['continuousScreening']);
-  const listConfigQuery = useListConfigQuery('continuous-screening');
   const datasets = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets);
   const sectionCount = Object.keys(listConfigQuery.data ?? {}).filter((k) => !!datasets[k]).length;
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: sectionCount })}</span>;
@@ -112,9 +115,7 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
               icon="caret-down"
               className={cn('size-4 shrink-0 rotate-0 transition-transform duration-200', isExpanded && 'rotate-180')}
             />
-            <Tag color={SCREENING_CATEGORY_COLORS[sectionKey] ?? 'grey'} size="small">
-              {sectionKey}
-            </Tag>
+            <DatasetTag category={sectionKey} />
           </div>
           <span className="text-xs text-grey-50 pl-v2-md">
             {selectedCount} / {leafNames.length}
@@ -129,32 +130,21 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
 };
 
 const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
-  if (sectionKey === 'sanctions') {
-    const s = section as SanctionsSection;
-    return (
-      <div className="flex flex-col divide-y divide-grey-border">
-        {s.datasets.map((group) => (
-          <ItemGroup key={group.name} title={group.title} items={group.datasets} sectionKey={sectionKey} />
-        ))}
-      </div>
-    );
-  }
+  const { datasets, topics } = section;
 
-  if (sectionKey === 'peps' || sectionKey === 'adverse-media') {
-    const groups = Object.entries(section)
-      .filter((entry): entry is [string, { name: string }[]] => Array.isArray(entry[1]))
-      .filter(([, items]) => items.length > 0)
-      .map(([key, items]) => ({ key, items }));
-    return (
-      <div className="flex flex-col">
-        {groups.map((g) => (
-          <FilterGroupRow key={g.key} sectionKey={sectionKey} groupKey={g.key} items={g.items} />
-        ))}
-      </div>
-    );
-  }
+  if (!datasets?.length && !topics) return null;
 
-  return null;
+  return (
+    <div className="flex flex-col">
+      {datasets?.map((group) => (
+        <ItemGroup key={group.name} title={group.title} items={group.datasets} sectionKey={sectionKey} />
+      ))}
+      {topics &&
+        Object.entries(topics).map(([key, items]) => (
+          <FilterGroupRow key={key} sectionKey={sectionKey} groupKey={key} items={items} />
+        ))}
+    </div>
+  );
 };
 
 const ItemGroup = ({
@@ -174,6 +164,9 @@ const ItemGroup = ({
   const checkState = ContinuousScreeningConfigurationStepper.select(
     (state): CheckedState => groupCheckState(names, state.data.datasets),
   );
+  const selectedCount = ContinuousScreeningConfigurationStepper.select(
+    (state) => names.filter((n) => state.data.datasets[n]).length,
+  );
 
   const handleSelectAll = () => {
     const datasets = stepper.value.data.datasets;
@@ -191,14 +184,17 @@ const ItemGroup = ({
     <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
       <Collapsible.Title hideIcon asChild size="null">
         <div className="flex items-center gap-v2-md justify-between w-full" onClick={() => setIsExpanded(!isExpanded)}>
-          <span className="flex items-center gap-v2-sm">
+          <span className="flex items-center gap-v2-md">
             <Icon
               icon="caret-down"
               className={cn('size-4 shrink-0 rotate-0 transition-transform duration-200', isExpanded && 'rotate-180')}
             />
-            <span className="text-s font-semibold">{title}</span>
+            <span className="text-s font-semibold">{capitalize(title)}</span>
+            <span className="text-xs text-grey-secondary">
+              {selectedCount} / {names.length}
+            </span>
           </span>
-          <span className="flex items-center gap-v2-sm font-normal">
+          <span className="flex items-center gap-v2-md font-normal">
             <span className="text-s text-grey-50">
               {t(
                 `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
@@ -261,12 +257,28 @@ function formatItemName(name: string): string {
   return capitalize(last);
 }
 
+const RemovableTag = ({ name, onRemove }: { name: string; onRemove: () => void }) => (
+  <Tag
+    color="blue"
+    size="small"
+    className="group cursor-pointer hover:bg-blue-58/20 transition-colors"
+    onClick={onRemove}
+  >
+    <span className="max-w-[30ch] truncate">{formatItemName(name)}</span>
+    <span className="grid grid-cols-[0fr] group-hover:grid-cols-[1fr] transition-[grid-template-columns] duration-150">
+      <span className="overflow-hidden flex items-center">
+        <Icon icon="cross" className="size-3 ml-1" />
+      </span>
+    </span>
+  </Tag>
+);
+
 const FilterGroupRow = ({
   sectionKey,
   groupKey,
   items,
 }: {
-  sectionKey: 'peps' | 'adverse-media';
+  sectionKey: ScreeningCategory;
   groupKey: string;
   items: { name: string }[];
 }) => {
@@ -303,19 +315,18 @@ const SingleItemToggle = ({
   const isSelected = ContinuousScreeningConfigurationStepper.select((state) => !!state.data.datasets[item.name]);
 
   if (isSelected) {
+    if (mode !== 'view') {
+      return (
+        <RemovableTag
+          name={item.name}
+          onRemove={() => {
+            stepper.value.data.datasets[item.name] = false;
+          }}
+        />
+      );
+    }
     return (
-      <Tag
-        color="blue"
-        size="small"
-        className={cn('max-w-[150px] overflow-hidden', mode !== 'view' && 'cursor-pointer')}
-        onClick={
-          mode !== 'view'
-            ? () => {
-                stepper.value.data.datasets[item.name] = false;
-              }
-            : undefined
-        }
-      >
+      <Tag color="blue" size="small" className="max-w-[150px] overflow-hidden">
         <span className="truncate block">{formatItemName(item.name)}</span>
       </Tag>
     );
@@ -339,9 +350,12 @@ const SingleItemToggle = ({
 
 const FilterGroupTags = ({ items }: { items: { name: string }[] }) => {
   const { t } = useTranslation(['continuousScreening']);
+  const stepper = ContinuousScreeningConfigurationStepper.useSharp();
+  const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
   const selectedNames = ContinuousScreeningConfigurationStepper.select((state) =>
     items.filter((i) => state.data.datasets[i.name]).map((i) => i.name),
   );
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (selectedNames.length === 0) return null;
 
@@ -353,19 +367,34 @@ const FilterGroupTags = ({ items }: { items: { name: string }[] }) => {
     );
   }
 
-  const visible = selectedNames.slice(0, MAX_VISIBLE_TAGS);
   const overflow = selectedNames.length - MAX_VISIBLE_TAGS;
+  const visible = isExpanded || overflow <= 0 ? selectedNames : selectedNames.slice(0, MAX_VISIBLE_TAGS);
 
   return (
     <>
-      {visible.map((name) => (
-        <Tag key={name} color="blue" size="small" className="max-w-[150px] overflow-hidden">
-          <span className="truncate block">{formatItemName(name)}</span>
-        </Tag>
-      ))}
+      {visible.map((name) =>
+        mode !== 'view' ? (
+          <RemovableTag
+            key={name}
+            name={name}
+            onRemove={() => {
+              stepper.value.data.datasets[name] = false;
+            }}
+          />
+        ) : (
+          <Tag key={name} color="blue" size="small" className="max-w-[150px] overflow-hidden">
+            <span className="truncate block">{formatItemName(name)}</span>
+          </Tag>
+        ),
+      )}
       {overflow > 0 && (
-        <Tag color="grey" size="small">
-          +{overflow}
+        <Tag
+          color="blue"
+          size="small"
+          className="cursor-pointer shrink-0 hover:bg-blue-58/20 transition-colors"
+          onClick={() => setIsExpanded((v) => !v)}
+        >
+          {isExpanded ? <Icon icon="minus" className="size-3" /> : `+${overflow}`}
         </Tag>
       )}
     </>

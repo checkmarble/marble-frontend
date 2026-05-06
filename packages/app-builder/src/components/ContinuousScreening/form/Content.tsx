@@ -19,7 +19,7 @@ export const CreationContent = () => {
       <div className="grow p-v2-lg pb-0 flex flex-col gap-v2-md">
         {match(creationStepper.computed.currentStep.value)
           .with(1, () => <ObjectMapping />)
-          .with(2, () => <DatasetSelection />)
+          .with(2, () => <DatasetSelection useCase="continuous_monitoring" />)
           .with(3, () => <ScoringConfiguration />)
           .otherwise(() => null)}
         <CreationContentRecap />

@@ -17,7 +17,8 @@ import {
   adaptOpenSanctionsDatasetFreshness,
   type OpenSanctionsDatasetFreshness,
 } from '@app-builder/models/screening-dataset';
-import { type OpenSanctionsCatalogDto } from 'marble-api';
+import { AvailableFeatures } from '@app-builder/server-fns/screenings';
+import { type OpenSanctionsCatalogDto, ScreeningAvailableFilters } from 'marble-api';
 import * as R from 'remeda';
 
 export interface ScreeningRepository {
@@ -51,10 +52,15 @@ export interface ScreeningRepository {
   }): Promise<ScreeningMatchPayload[]>;
   getAiSuggestions(args: { screeningId: string }): Promise<ScreeningAiSuggestion[]>;
   enrichedData(args: { entityId: string }): Promise<ScreeningMatchPayload>;
+  getAvailableFilters(args: { feature: AvailableFeatures }): Promise<ScreeningAvailableFilters>;
 }
 
 export function makeGetScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScreeningRepository => ({
+    getAvailableFilters: async ({ feature }) => {
+      const listFeature = await marbleCoreApiClient.listScreeningAvailableFilters(feature);
+      return listFeature;
+    },
     listDatasets: async () => {
       try {
         return await marbleCoreApiClient.listOpenSanctionDatasets();

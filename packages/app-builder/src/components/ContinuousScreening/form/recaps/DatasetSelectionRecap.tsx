@@ -9,7 +9,7 @@ type SectionData = NonNullable<ListConfigFilters[keyof ListConfigFilters]>;
 
 export const DatasetSelectionRecap = () => {
   const { t } = useTranslation(['continuousScreening', 'scenarios']);
-  const listConfigQuery = useListConfigQuery('continuous-screening');
+  const listConfigQuery = useListConfigQuery('continuous_monitoring');
   const datasets = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets);
 
   const enabledSections = Object.entries(listConfigQuery.data ?? {}).filter(

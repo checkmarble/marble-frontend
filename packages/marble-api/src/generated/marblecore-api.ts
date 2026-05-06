@@ -1087,7 +1087,7 @@ export type ScreeningAvailableFiltersSection = {
         [key: string]: {
             name: string;
             title: string;
-        };
+        }[];
     };
 };
 export type ScreeningAvailableFilters = {
