@@ -20,7 +20,7 @@ export const DatasetSelectionRecap = () => {
     <RecapRow>
       <span>{t('continuousScreening:creation.datasetSelection.recap.title', { count: enabledSections.length })}</span>
       {enabledSections.map(([key, section]) => {
-        const leafCount = getSectionLeafNames(key, section).filter((n) => !!datasets[n]).length;
+        const leafCount = getSectionLeafNames(section).filter((n) => !!datasets[n]).length;
         const sectionLabel = t(`scenarios:sanction.lists.${SCREENING_CATEGORY_I18N_KEY_MAP[key]}`);
         return (
           <RecapCapsule key={key}>

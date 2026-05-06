@@ -73,11 +73,11 @@ const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResu
 };
 
 const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
-  const stepper = ListAndTopicDatasetConfiguration.useSharp();
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const leafNames = getSectionLeafNames(sectionKey, section);
+  const leafNames = getSectionLeafNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const selectedCount = ListAndTopicDatasetConfiguration.select(
     (state) => leafNames.filter((n) => state.datasets[n]).length,
@@ -94,13 +94,8 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
               checked={isEnabled}
               disabled={mode === 'view'}
               onCheckedChange={() => {
-                const nextValue = !stepper.value.datasets[sectionKey];
-                stepper.value.datasets[sectionKey] = nextValue;
-                if (!nextValue) {
-                  for (const name of leafNames) {
-                    stepper.value.datasets[name] = false;
-                  }
-                }
+                const nextValue = !listConfig.value.datasets[sectionKey];
+                listConfig.value.datasets[sectionKey] = nextValue;
               }}
             />
             <Icon
@@ -123,7 +118,7 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
 
 const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
   const { datasets, topics, conditionalTopics } = section;
-  const stepper = ListAndTopicDatasetConfiguration.useSharp();
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
 
   if (!datasets?.length && !topics && !conditionalTopics) return null;
 
@@ -133,13 +128,13 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
     const dependsOnTopics = topics?.[dependsOnKey] ?? [];
     if (dependents.length === 0) return undefined;
     return () => {
-      const selectedPrefixes = dependsOnTopics.filter((t) => stepper.value.datasets[t.name]).map((t) => t.name);
+      const selectedPrefixes = dependsOnTopics.filter((t) => listConfig.value.datasets[t.name]).map((t) => t.name);
       if (selectedPrefixes.length === 0) return;
       for (const ct of dependents) {
         for (const item of ct.items) {
           const prefix = item.name.split('.')[0];
           if (!selectedPrefixes.some((sel) => sel === prefix)) {
-            stepper.value.datasets[item.name] = false;
+            listConfig.value.datasets[item.name] = false;
           }
         }
       }
@@ -185,7 +180,7 @@ const ItemGroup = ({
   sectionKey: ScreeningCategory;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
-  const stepper = ListAndTopicDatasetConfiguration.useSharp();
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const [isExpanded, setIsExpanded] = useState(false);
   const names = items.map((i) => i.name);
@@ -197,14 +192,14 @@ const ItemGroup = ({
   );
 
   const handleSelectAll = () => {
-    const datasetsMap = stepper.value.datasets;
+    const datasetsMap = listConfig.value.datasets;
     const selected = names.filter((n) => datasetsMap[n]).length;
     const nextValue = selected < names.length;
     for (const name of names) {
-      stepper.value.datasets[name] = nextValue;
+      listConfig.value.datasets[name] = nextValue;
     }
     if (nextValue) {
-      stepper.value.datasets[sectionKey] = true;
+      listConfig.value.datasets[sectionKey] = true;
     }
   };
 
@@ -253,7 +248,7 @@ const ItemGroup = ({
 };
 
 const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sectionKey: ScreeningCategory }) => {
-  const stepper = ListAndTopicDatasetConfiguration.useSharp();
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const isSelected = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[name]);
 
@@ -265,10 +260,10 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
       )}
       onClick={() => {
         if (mode === 'view') return;
-        const nextValue = !stepper.value.datasets[name];
-        stepper.value.datasets[name] = nextValue;
+        const nextValue = !listConfig.value.datasets[name];
+        listConfig.value.datasets[name] = nextValue;
         if (nextValue) {
-          stepper.value.datasets[sectionKey] = true;
+          listConfig.value.datasets[sectionKey] = true;
         }
       }}
     >
@@ -379,7 +374,7 @@ const SingleItemToggle = ({
   mode: string;
   onAfterChange?: () => void;
 }) => {
-  const stepper = ListAndTopicDatasetConfiguration.useSharp();
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const isSelected = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[item.name]);
 
   if (isSelected) {
@@ -388,7 +383,7 @@ const SingleItemToggle = ({
         <RemovableTag
           label={item.title ?? formatItemName(item.name)}
           onRemove={() => {
-            stepper.value.datasets[item.name] = false;
+            listConfig.value.datasets[item.name] = false;
             onAfterChange?.();
           }}
         />
@@ -408,8 +403,8 @@ const SingleItemToggle = ({
       type="button"
       className="flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0"
       onClick={() => {
-        stepper.value.datasets[item.name] = true;
-        stepper.value.datasets[sectionKey] = true;
+        listConfig.value.datasets[item.name] = true;
+        listConfig.value.datasets[sectionKey] = true;
         onAfterChange?.();
       }}
     >
@@ -430,7 +425,7 @@ const FilterGroupTags = ({
   onAfterChange?: () => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
-  const stepper = ListAndTopicDatasetConfiguration.useSharp();
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const selectedItems = ListAndTopicDatasetConfiguration.select((state) => items.filter((i) => state.datasets[i.name]));
   const [isExpanded, setIsExpanded] = useState(false);
@@ -515,7 +510,7 @@ const FilterGroupTags = ({
                   key={item.name}
                   label={item.title ?? formatItemName(item.name)}
                   onRemove={() => {
-                    stepper.value.datasets[item.name] = false;
+                    listConfig.value.datasets[item.name] = false;
                     onAfterChange?.();
                   }}
                 />
@@ -561,7 +556,7 @@ const FilterGroupMenu = ({
   onAfterChange?: () => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
-  const stepper = ListAndTopicDatasetConfiguration.useSharp();
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
   const allSelected = items.length > 0 && items.every((i) => !!datasets[i.name]);
 
@@ -584,10 +579,10 @@ const FilterGroupMenu = ({
             onSelect={() => {
               const nextValue = !allSelected;
               for (const item of items) {
-                stepper.value.datasets[item.name] = nextValue;
+                listConfig.value.datasets[item.name] = nextValue;
               }
               if (nextValue) {
-                stepper.value.datasets[sectionKey] = true;
+                listConfig.value.datasets[sectionKey] = true;
               }
               onAfterChange?.();
             }}
@@ -606,10 +601,10 @@ const FilterGroupMenu = ({
                 value={item.name}
                 selected={isSelected}
                 onSelect={() => {
-                  const nextValue = !stepper.value.datasets[item.name];
-                  stepper.value.datasets[item.name] = nextValue;
+                  const nextValue = !listConfig.value.datasets[item.name];
+                  listConfig.value.datasets[item.name] = nextValue;
                   if (nextValue) {
-                    stepper.value.datasets[sectionKey] = true;
+                    listConfig.value.datasets[sectionKey] = true;
                   }
                   onAfterChange?.();
                 }}
