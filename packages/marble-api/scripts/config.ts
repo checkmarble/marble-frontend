@@ -1,11 +1,11 @@
-import type * as Oazapfts from 'oazapfts';
+import type { OazapftsOptions } from 'oazapfts';
 import { join } from 'path';
 
 export interface Config {
   apiName: string;
   apiSpec: string;
   generatedApi: string;
-  apiOptions: Oazapfts.Opts;
+  apiOptions: OazapftsOptions;
 }
 
 export const GENERATED_FOLDER = join('src', 'generated');

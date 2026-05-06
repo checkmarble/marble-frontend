@@ -1,7 +1,7 @@
 type Params = Record<string, string | undefined>;
 
 import qs, { type IParseOptions } from 'qs';
-import { type UUID } from 'short-uuid';
+import { type UUID } from 'short-uuid/src/types';
 import { type ZodType, z } from 'zod/v4';
 
 import { shortUUIDSchema } from './schema/shortUUIDSchema';

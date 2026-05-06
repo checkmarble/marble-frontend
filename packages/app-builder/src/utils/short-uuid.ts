@@ -5,10 +5,11 @@
  */
 
 import { useParams } from '@tanstack/react-router';
-import shortUUID, { type UUID } from 'short-uuid';
+import { createTranslator } from 'short-uuid';
+import { type UUID } from 'short-uuid/src/types';
 import invariant from 'tiny-invariant';
 
-const translator = shortUUID();
+const translator = createTranslator();
 
 export const fromSUUIDtoUUID = (val: string) => translator.toUUID(val);
 export const fromUUIDtoSUUID = (val: string) => translator.fromUUID(val);

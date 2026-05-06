@@ -143,8 +143,8 @@ export function CreateTableFieldsStep({
 
   return (
     <FieldsEditorContext.Provider value={editorValue}>
-      <div className="flex gap-v2-lg">
-        <div className="flex min-w-0 flex-1 flex-col gap-v2-lg">
+      <div className="flex flex-1 min-h-0 gap-v2-lg">
+        <div className="min-w-0 flex-1 min-h-0 flex flex-col">
           <FieldsForm
             onFieldSelect={setSelectedFieldId}
             selectedFieldId={selectedFieldId}

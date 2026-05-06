@@ -316,7 +316,7 @@ export function EditTableDrawer({
             />
           </header>
 
-          <div className="flex-1 overflow-auto px-v2-lg py-v2-lg">
+          <div className="flex-1 overflow-hidden flex flex-col px-v2-lg py-v2-lg">
             <FormTable
               tableId={tableModel.id}
               errorFieldIds={fieldErrorIds}
