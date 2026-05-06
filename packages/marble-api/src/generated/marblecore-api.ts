@@ -1089,6 +1089,7 @@ export type ScreeningAvailableFiltersSection = {
             title: string;
         }[];
     };
+    enabled?: boolean;
 };
 export type ScreeningAvailableFilters = {
     provider: "opensanctions" | "lexisnexis";

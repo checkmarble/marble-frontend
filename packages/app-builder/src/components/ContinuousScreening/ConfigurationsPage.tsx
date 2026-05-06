@@ -8,7 +8,7 @@ import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import GridTable from '../GridTable';
 import { Page } from '../Page';
@@ -19,10 +19,13 @@ import { CopyToClipboardChip } from './CopyToClipboardChip';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
-import { Capsule } from './shared/Capsule';
 
 const CellCapsule = ({ children }: { children: React.ReactNode }) => {
-  return <Capsule className="max-w-50 truncate">{children}</Capsule>;
+  return (
+    <Tag color="grey" className="max-w-50 truncate">
+      {children}
+    </Tag>
+  );
 };
 
 export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
