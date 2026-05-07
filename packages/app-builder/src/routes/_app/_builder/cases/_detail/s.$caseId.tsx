@@ -8,6 +8,7 @@ import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { CaseReviewsModal } from '@app-builder/components/Cases/CaseReviewsModal';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { caseDetailMiddleware } from '@app-builder/middlewares/case-detail-middleware';
@@ -27,6 +28,7 @@ import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import z from 'zod';
 
 const scenarioCaseDetailLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
@@ -90,6 +92,8 @@ const scenarioCaseDetailLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId')({
+  validateSearch: z.object({ fromInbox: z.string().optional() }),
+  loaderDeps: ({ search: { fromInbox } }) => ({ fromInbox }),
   loader: ({ params }) => scenarioCaseDetailLoader({ data: { params } }),
   errorComponent: ({ error }) => {
     const navigate = useAgnosticNavigation();
@@ -127,6 +131,7 @@ function CaseManagerIndexPage() {
     isKycEnrichmentEnabled,
     reports,
   } = Route.useLoaderData();
+  const { fromInbox } = Route.useSearch();
   const { caseAiAssist: aiAssistEnabled } = entitlements;
   const { t } = useTranslation(casesI18n);
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
@@ -144,7 +149,7 @@ function CaseManagerIndexPage() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <BreadCrumbs />
+        <BreadCrumbs back={`/cases/inboxes/${fromInbox ?? MY_INBOX_ID}`} />
         <div className="flex items-center gap-2">
           <Modal.Root>
             {aiAssistEnabled === 'allowed' ? (

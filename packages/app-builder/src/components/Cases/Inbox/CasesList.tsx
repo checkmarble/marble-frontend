@@ -1,5 +1,6 @@
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -13,6 +14,7 @@ import { AssignedContributors } from './AssignedContributors';
 import { PaginationRow, SuccessCasesQuery } from './PaginationRow';
 
 export type CasesListProps = {
+  fromInboxId: string;
   casesQuery: SuccessCasesQuery;
   sorting: 'ASC' | 'DESC';
   onSortingChange: (sort: 'ASC' | 'DESC') => void;
@@ -52,6 +54,7 @@ export function CasesList({
   isPaginationSticky,
   currentPage,
   setCurrentPage,
+  fromInboxId,
 }: CasesListProps) {
   const { t } = useTranslation(['cases']);
   const language = useFormatLanguage();
@@ -59,7 +62,6 @@ export function CasesList({
   const lastPageRef = useRef<number>(0);
   const cases = casesQuery.data?.pages[currentPage]?.items ?? casesQuery.data?.pages[lastPageRef.current]?.items ?? [];
   const { orgTags } = useOrganizationTags();
-
   useEffect(() => {
     if (casesQuery.data?.pages[currentPage]?.items) {
       lastPageRef.current = currentPage;
@@ -105,7 +107,14 @@ export function CasesList({
             onKeyDown={handleRowKeyDown}
           >
             <div className="invisible">
-              <Link data-row-link to="/cases/$caseId" params={{ caseId: fromUUIDtoSUUID(caseItem.id) }} />
+              <Link
+                data-row-link
+                to="/cases/$caseId"
+                params={{ caseId: fromUUIDtoSUUID(caseItem.id) }}
+                search={{
+                  fromInbox: fromInboxId === MY_INBOX_ID ? undefined : fromUUIDtoSUUID(fromInboxId),
+                }}
+              />
             </div>
             <div className="relative p-v2-md ps-v2-xl w-25">
               <MultiSelect.Item index={index} id={caseItem.id} item={caseItem}>

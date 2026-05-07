@@ -247,6 +247,7 @@ export const InboxPage = ({
                         isPaginationSticky={!(intersection?.isIntersecting ?? true)}
                         currentPage={currentPage}
                         setCurrentPage={setCurrentPage}
+                        fromInboxId={inboxId}
                       />
                     );
                   })
