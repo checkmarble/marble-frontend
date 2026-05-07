@@ -6,46 +6,68 @@ import {
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { useSignalEffect } from '@preact/signals-react';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+function getSelectedDatasets(datasets: Record<string, boolean>): string[] {
+  return Object.keys(datasets)
+    .filter((key) => datasets[key])
+    .sort();
+}
+
+function getDatasetsKey(datasets: string[]): string {
+  return [...datasets].sort().join(',');
+}
+
 export const FieldDataset = ({
+  value,
   onChange,
   onBlur: _onBlur,
   sections: _sections,
-  defaultValue,
 }: {
-  defaultValue?: string[];
+  value?: string[];
   sections: OpenSanctionsCatalogSection[];
   onChange?: (value: string[]) => void;
   onBlur?: () => void;
 }) => {
   const { t } = useTranslation();
+  const valueKey = useMemo(() => getDatasetsKey(value ?? []), [value]);
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
-    datasets: makeDatasetsMap(defaultValue ?? []),
+    datasets: makeDatasetsMap(value ?? []),
     mode: 'edit',
   });
 
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
-  const isFirstRender = useRef(true);
+  const lastValueKeyRef = useRef(valueKey);
+  lastValueKeyRef.current = valueKey;
 
-  // useSignalEffect runs inside a preact signal effect (not React's render
-  // cycle). When dataset signals change, fn fires and calls onChange without
-  // going through React's state/render loop, so there is no feedback cycle.
+  useEffect(() => {
+    const selectedKey = getDatasetsKey(getSelectedDatasets(listSharp.value.datasets));
+    if (selectedKey === valueKey) return;
+
+    const nextDatasets = makeDatasetsMap(value ?? []);
+    listSharp.update((state) => {
+      for (const key of Object.keys(state.datasets)) {
+        delete state.datasets[key];
+      }
+      for (const [key, isSelected] of Object.entries(nextDatasets)) {
+        state.datasets[key] = isSelected;
+      }
+    });
+  }, [listSharp, value, valueKey]);
+
   useSignalEffect(() => {
-    const key = Object.keys(listSharp.value.datasets)
-      .filter((k) => listSharp.value.datasets[k])
-      .sort()
-      .join(',');
+    const selectedDatasets = getSelectedDatasets(listSharp.value.datasets);
+    const selectedKey = getDatasetsKey(selectedDatasets);
 
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (selectedKey === lastValueKeyRef.current) {
       return;
     }
 
-    onChangeRef.current?.(key === '' ? [] : key.split(','));
+    lastValueKeyRef.current = selectedKey;
+    onChangeRef.current?.(selectedDatasets);
   });
 
   return (

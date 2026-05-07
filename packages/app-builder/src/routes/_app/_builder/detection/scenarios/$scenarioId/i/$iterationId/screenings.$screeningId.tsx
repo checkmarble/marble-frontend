@@ -849,7 +849,7 @@ function ScreeningDetail() {
               <form.Field name="datasets">
                 {(field) => (
                   <FieldDataset
-                    defaultValue={field.state.value}
+                    value={field.state.value}
                     onChange={field.handleChange}
                     onBlur={field.handleBlur}
                     sections={sections}

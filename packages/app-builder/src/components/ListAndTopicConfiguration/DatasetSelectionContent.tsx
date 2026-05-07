@@ -8,7 +8,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Checkbox, type CheckedState, Collapsible, cn, MenuCommand, Tag } from 'ui-design-system';
+import { Button, Checkbox, type CheckedState, Collapsible, cn, MenuCommand, ScrollAreaV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import { getSectionLeafNames } from './dataset-utils';
@@ -34,7 +34,7 @@ export function DatasetSelectionContent({ useCase }: { useCase: AvailableFeature
         <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
         <SelectedListsCount listConfigQuery={listConfigQuery} />
       </div>
-      <div className="p-v2-md overflow-y-auto">
+      <ScrollAreaV2 className="p-v2-md" orientation="vertical">
         {match(listConfigQuery)
           .with({ isPending: true }, () => (
             <div className="flex items-center justify-center h-50">
@@ -60,7 +60,7 @@ export function DatasetSelectionContent({ useCase }: { useCase: AvailableFeature
             </div>
           ))
           .exhaustive()}
-      </div>
+      </ScrollAreaV2>
     </>
   );
 }

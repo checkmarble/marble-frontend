@@ -84,7 +84,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-surface-card border-grey-border z-50 flex w-[min(50vw,700px)] flex-col rounded-lg border shadow-lg"
+          className="bg-surface-card border-grey-border z-50 flex w-[min(50vw,700px)] flex-col rounded-lg border shadow-lg max-h-[60vh]"
           sideOffset={4}
           align="start"
         >

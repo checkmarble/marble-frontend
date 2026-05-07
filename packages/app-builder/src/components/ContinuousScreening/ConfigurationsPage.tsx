@@ -10,12 +10,12 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
 import { Page } from '../Page';
 import { PanelRoot } from '../Panel/Panel';
 import { Spinner } from '../Spinner';
 import { ConfigurationPanel } from './ConfigurationPanel';
-import { CopyToClipboardChip } from './CopyToClipboardChip';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
@@ -128,7 +128,9 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                     >
                       <GridTable.Cell className="flex gap-v2-md items-center justify-between">
                         <span className="truncate">{item.name}</span>
-                        <CopyToClipboardChip value={item.stableId} className="min-w-40" />
+                        <CopyToClipboardButton toCopy={item.stableId} className="min-w-40" size="chip" rounded>
+                          <span className="text-xs">{item.stableId}</span>
+                        </CopyToClipboardButton>
                       </GridTable.Cell>
                       <GridTable.Cell>
                         {item.datasets[0] ? <CellCapsule>{item.datasets[0]}</CellCapsule> : null}

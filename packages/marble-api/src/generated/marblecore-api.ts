@@ -1630,7 +1630,7 @@ export type OrganizationDto = {
     screening_providers?: {
         transaction_monitoring?: "opensanctions" | "lexisnexis";
         continuous_monitoring?: "opensanctions" | "lexisnexis";
-        manual?: "opensanctions" | "lexisnexis";
+        manual_search?: "opensanctions" | "lexisnexis";
     };
 };
 export type CreateOrganizationBodyDto = {
@@ -1644,7 +1644,7 @@ export type UpdateOrganizationBodyDto = {
     screening_providers?: {
         transaction_monitoring?: "opensanctions" | "lexisnexis";
         continuous_monitoring?: "opensanctions" | "lexisnexis";
-        manual?: "opensanctions" | "lexisnexis";
+        manual_search?: "opensanctions" | "lexisnexis";
     };
 };
 export type OrganizationSubnetsDto = {
