@@ -847,14 +847,7 @@ function ScreeningDetail() {
               </AstBuilder.Provider>
 
               <form.Field name="datasets">
-                {(field) => (
-                  <FieldDataset
-                    value={field.state.value}
-                    onChange={field.handleChange}
-                    onBlur={field.handleBlur}
-                    sections={sections}
-                  />
-                )}
+                {(field) => <FieldDataset value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
             </div>
           </form>

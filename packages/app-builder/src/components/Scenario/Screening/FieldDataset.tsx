@@ -5,7 +5,6 @@ import {
   makeDatasetsMap,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { useSignalEffect } from '@preact/signals-react';
-import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,17 +18,7 @@ function getDatasetsKey(datasets: string[]): string {
   return [...datasets].sort().join(',');
 }
 
-export const FieldDataset = ({
-  value,
-  onChange,
-  onBlur: _onBlur,
-  sections: _sections,
-}: {
-  value?: string[];
-  sections: OpenSanctionsCatalogSection[];
-  onChange?: (value: string[]) => void;
-  onBlur?: () => void;
-}) => {
+export const FieldDataset = ({ value, onChange }: { value?: string[]; onChange?: (value: string[]) => void }) => {
   const { t } = useTranslation();
   const valueKey = useMemo(() => getDatasetsKey(value ?? []), [value]);
 
