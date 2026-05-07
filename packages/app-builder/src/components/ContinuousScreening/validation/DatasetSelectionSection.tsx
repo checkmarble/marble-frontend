@@ -35,6 +35,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
             </div>
           ))
           .with({ isSuccess: true }, ({ data: { datasets } }) => {
+            if (!datasets?.sections) return null;
             const datasetsArray = R.pipe(
               datasets.sections,
               R.flatMap(R.prop('datasets')),
