@@ -21,7 +21,7 @@ export interface DatasetsPopoverProps {
 
 export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverProps) => {
   const { t } = useTranslation(screeningsI18n);
-  const listConfigQuery = useListConfigQuery('manual');
+  const listConfigQuery = useListConfigQuery('manual_search');
   const [open, setOpen] = useState(false);
   const [datasetsMap, setDatasetsMap] = useState<Record<string, boolean>>(() => makeDatasetsMap(selectedDatasets));
   const listSharp = useListAndTopicDatasetConfigurationSharp({ datasets: datasetsMap, mode: 'edit' });
@@ -89,7 +89,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
           align="start"
         >
           <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
-            <DatasetSelectionContent useCase="manual" />
+            <DatasetSelectionContent useCase="manual_search" />
           </ListAndTopicDatasetConfiguration.Provider>
 
           <div className="border-grey-border flex gap-2 border-t p-4">

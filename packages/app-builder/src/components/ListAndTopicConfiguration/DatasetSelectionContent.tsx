@@ -94,8 +94,10 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
               checked={isEnabled}
               disabled={mode === 'view'}
               onCheckedChange={() => {
-                const nextValue = !listConfig.value.datasets[sectionKey];
-                listConfig.value.datasets[sectionKey] = nextValue;
+                listConfig.update((state) => {
+                  const nextValue = !state.datasets[sectionKey];
+                  state.datasets[sectionKey] = nextValue;
+                });
               }}
             />
             <Icon
@@ -130,14 +132,16 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
     return () => {
       const selectedPrefixes = dependsOnTopics.filter((t) => listConfig.value.datasets[t.name]).map((t) => t.name);
       if (selectedPrefixes.length === 0) return;
-      for (const ct of dependents) {
-        for (const item of ct.items) {
-          const prefix = item.name.split('.')[0];
-          if (!selectedPrefixes.some((sel) => sel === prefix)) {
-            listConfig.value.datasets[item.name] = false;
+      listConfig.update((state) => {
+        for (const ct of dependents) {
+          for (const item of ct.items) {
+            const prefix = item.name.split('.')[0];
+            if (!selectedPrefixes.some((sel) => sel === prefix)) {
+              state.datasets[item.name] = false;
+            }
           }
         }
-      }
+      });
     };
   }
 
@@ -195,12 +199,14 @@ const ItemGroup = ({
     const datasetsMap = listConfig.value.datasets;
     const selected = names.filter((n) => datasetsMap[n]).length;
     const nextValue = selected < names.length;
-    for (const name of names) {
-      listConfig.value.datasets[name] = nextValue;
-    }
-    if (nextValue) {
-      listConfig.value.datasets[sectionKey] = true;
-    }
+    listConfig.update((state) => {
+      for (const name of names) {
+        state.datasets[name] = nextValue;
+      }
+      if (nextValue) {
+        state.datasets[sectionKey] = true;
+      }
+    });
   };
 
   return (
@@ -260,11 +266,13 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
       )}
       onClick={() => {
         if (mode === 'view') return;
-        const nextValue = !listConfig.value.datasets[name];
-        listConfig.value.datasets[name] = nextValue;
-        if (nextValue) {
-          listConfig.value.datasets[sectionKey] = true;
-        }
+        listConfig.update((state) => {
+          const nextValue = !state.datasets[name];
+          state.datasets[name] = nextValue;
+          if (nextValue) {
+            state.datasets[sectionKey] = true;
+          }
+        });
       }}
     >
       <Checkbox size="small" checked={isSelected} disabled={mode === 'view'} />
@@ -383,7 +391,9 @@ const SingleItemToggle = ({
         <RemovableTag
           label={item.title ?? formatItemName(item.name)}
           onRemove={() => {
-            listConfig.value.datasets[item.name] = false;
+            listConfig.update((state) => {
+              state.datasets[item.name] = false;
+            });
             onAfterChange?.();
           }}
         />
@@ -403,8 +413,10 @@ const SingleItemToggle = ({
       type="button"
       className="flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0"
       onClick={() => {
-        listConfig.value.datasets[item.name] = true;
-        listConfig.value.datasets[sectionKey] = true;
+        listConfig.update((state) => {
+          state.datasets[item.name] = true;
+          state.datasets[sectionKey] = true;
+        });
         onAfterChange?.();
       }}
     >
@@ -413,7 +425,7 @@ const SingleItemToggle = ({
   );
 };
 
-const MENU_BUTTON_SIZE_PX = 40; // size-6 = 1.5rem = 24px + 16px from the delete button in the tag
+const MENU_BUTTON_SIZE_PX = 24; // size-6 = 1.5rem = 24px
 
 const FilterGroupTags = ({
   items,
@@ -443,7 +455,7 @@ const FilterGroupTags = ({
 
     const recalculate = () => {
       const gap = parseFloat(getComputedStyle(ghost).gap) || 4;
-      // subtract menu button + delete button + one gap when in edit mode
+      // subtract menu button + one gap when in edit mode
       const menuReserved = mode !== 'view' ? MENU_BUTTON_SIZE_PX + gap : 0;
       const availableWidth = container.offsetWidth - menuReserved;
       const tagEls = Array.from(ghost.children) as HTMLElement[];
@@ -510,7 +522,9 @@ const FilterGroupTags = ({
                   key={item.name}
                   label={item.title ?? formatItemName(item.name)}
                   onRemove={() => {
-                    listConfig.value.datasets[item.name] = false;
+                    listConfig.update((state) => {
+                      state.datasets[item.name] = false;
+                    });
                     onAfterChange?.();
                   }}
                 />
@@ -578,12 +592,14 @@ const FilterGroupMenu = ({
             selected={allSelected}
             onSelect={() => {
               const nextValue = !allSelected;
-              for (const item of items) {
-                listConfig.value.datasets[item.name] = nextValue;
-              }
-              if (nextValue) {
-                listConfig.value.datasets[sectionKey] = true;
-              }
+              listConfig.update((state) => {
+                for (const item of items) {
+                  state.datasets[item.name] = nextValue;
+                }
+                if (nextValue) {
+                  state.datasets[sectionKey] = true;
+                }
+              });
               onAfterChange?.();
             }}
             className="border-b border-purple-primary"
@@ -601,11 +617,13 @@ const FilterGroupMenu = ({
                 value={item.name}
                 selected={isSelected}
                 onSelect={() => {
-                  const nextValue = !listConfig.value.datasets[item.name];
-                  listConfig.value.datasets[item.name] = nextValue;
-                  if (nextValue) {
-                    listConfig.value.datasets[sectionKey] = true;
-                  }
+                  listConfig.update((state) => {
+                    const nextValue = !state.datasets[item.name];
+                    state.datasets[item.name] = nextValue;
+                    if (nextValue) {
+                      state.datasets[sectionKey] = true;
+                    }
+                  });
                   onAfterChange?.();
                 }}
               >

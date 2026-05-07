@@ -1,154 +1,18 @@
 import { Callout } from '@app-builder/components/Callout';
-import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
-import { type ScreeningCategory } from '@app-builder/models/screening';
-import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import clsx from 'clsx';
-import Fuse from 'fuse.js';
+import {
+  DatasetSelectionContent,
+  ListAndTopicDatasetConfiguration,
+  makeDatasetsMap,
+} from '@app-builder/components/ListAndTopicConfiguration';
+import { useSignalEffect } from '@preact/signals-react';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
-import { diff, toggle } from 'radash';
-import { type Dispatch, memo, type SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { concat, intersection, map, pipe, unique } from 'remeda';
-import { Checkbox, CollapsibleV2, cn } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-
-import { type DatasetFiltersForm, FieldDatasetFilters } from './FieldDatasetFilters';
-
-const FieldCategory = memo(function FieldCategory({
-  section,
-  selectedIds,
-  filters,
-  updateSelectedIds,
-}: {
-  section: OpenSanctionsCatalogSection;
-  selectedIds: string[];
-  filters: DatasetFiltersForm;
-  updateSelectedIds: Dispatch<SetStateAction<string[]>>;
-}) {
-  const { t } = useTranslation(['common', 'scenarios']);
-  const [open, setOpen] = useState(false);
-  const editor = useEditorMode();
-
-  const sectionDatasetIds = useMemo(() => section.datasets.map((dataset) => dataset.name), [section.datasets]);
-
-  const selectedDatasetIds = useMemo(
-    () => intersection(sectionDatasetIds, selectedIds),
-    [sectionDatasetIds, selectedIds],
-  );
-
-  const datasetIdsToShow = useMemo(
-    () =>
-      pipe(
-        section.datasets,
-        // We filter the datasets by user search if any
-        (datasets) =>
-          filters.search !== ''
-            ? new Fuse(datasets, {
-                keys: ['title'],
-                minMatchCharLength: 3,
-                threshold: 0.2,
-              })
-                .search(filters.search)
-                .map((i) => i.item)
-            : datasets,
-        // We filter the resulted datasets by selected tags if any
-        (datasets) =>
-          filters.tags.length > 0 ? datasets.filter((d) => d.tag && filters.tags.includes(d.tag)) : datasets,
-        // We get only the ids
-        map((d) => d.name),
-        // We don't forget to add the selected dataset ids
-        concat(selectedDatasetIds),
-        // Convenience
-        unique(),
-      ),
-    [filters, section, selectedDatasetIds],
-  );
-
-  const isAllSelected = useMemo(
-    () => diff(datasetIdsToShow, selectedDatasetIds).length === 0,
-    [datasetIdsToShow, selectedDatasetIds],
-  );
-
-  return datasetIdsToShow.length > 0 ? (
-    <CollapsibleV2.Provider defaultOpen={open}>
-      <div key={section.name} className="w-full overflow-hidden rounded-lg">
-        <div className="bg-grey-background-light flex w-full items-center justify-between p-4">
-          <CollapsibleV2.Title onClick={() => setOpen(!open)} className="flex flex-row items-center gap-2">
-            <Icon
-              icon="arrow-right"
-              className={clsx('size-5', {
-                'rotate-90': open,
-              })}
-            />
-            <span className="text-s font-semibold">{section.title}</span>
-          </CollapsibleV2.Title>
-          <div className="flex items-center gap-4">
-            <span className="text-grey-secondary text-xs">
-              {isAllSelected
-                ? t('common:all_selected')
-                : selectedDatasetIds.length > 0
-                  ? t('scenarios:sanction.lists.nb_selected', {
-                      count: selectedDatasetIds.length,
-                    })
-                  : t('common:select_all')}
-            </span>
-            <Checkbox
-              disabled={editor === 'view'}
-              size="small"
-              checked={isAllSelected ? true : selectedDatasetIds.length > 0 ? 'indeterminate' : false}
-              onCheckedChange={(state) => {
-                updateSelectedIds((prev) => {
-                  let result: string[] = [...prev];
-                  const idsToToggle = state
-                    ? diff(datasetIdsToShow, result)
-                    : datasetIdsToShow.filter((id) => result.includes(id));
-                  for (const id of idsToToggle) {
-                    result = toggle(result, id);
-                  }
-                  return result;
-                });
-              }}
-            />
-          </div>
-        </div>
-        <CollapsibleV2.Content className="bg-grey-background-light w-full p-2">
-          <div
-            className={cn('rounded-lg', {
-              'border-grey-border bg-surface-card border': section.datasets.length > 0,
-            })}
-          >
-            {section.datasets
-              .filter((d) => datasetIdsToShow.includes(d.name))
-              .map((dataset) => (
-                <label
-                  key={dataset.name}
-                  className="hover:bg-grey-background-light flex cursor-pointer items-center justify-between p-2 transition-colors"
-                >
-                  <div id={dataset.name} className="flex items-center gap-2">
-                    <Checkbox
-                      disabled={editor === 'view'}
-                      size="small"
-                      checked={selectedIds.includes(dataset.name)}
-                      onCheckedChange={() => {
-                        updateSelectedIds((prev) => toggle(prev, dataset.name));
-                      }}
-                    />
-                    <span className="text-s">{dataset.title}</span>
-                  </div>
-                  {dataset.tag ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
-                </label>
-              ))}
-          </div>
-        </CollapsibleV2.Content>
-      </div>
-    </CollapsibleV2.Provider>
-  ) : null;
-});
 
 export const FieldDataset = ({
   onChange,
-  onBlur,
-  sections,
+  onBlur: _onBlur,
+  sections: _sections,
   defaultValue,
 }: {
   defaultValue?: string[];
@@ -156,13 +20,33 @@ export const FieldDataset = ({
   onChange?: (value: string[]) => void;
   onBlur?: () => void;
 }) => {
-  const [selectedIds, updateSelectedIds] = useState<string[]>(defaultValue ?? []);
-  const [filters, setFilters] = useState<DatasetFiltersForm>({ tags: [], search: '' });
   const { t } = useTranslation();
 
-  useEffect(() => {
-    onChange?.(selectedIds);
-  }, [selectedIds]);
+  const listSharp = ListAndTopicDatasetConfiguration.createSharp({
+    datasets: makeDatasetsMap(defaultValue ?? []),
+    mode: 'edit',
+  });
+
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const isFirstRender = useRef(true);
+
+  // useSignalEffect runs inside a preact signal effect (not React's render
+  // cycle). When dataset signals change, fn fires and calls onChange without
+  // going through React's state/render loop, so there is no feedback cycle.
+  useSignalEffect(() => {
+    const key = Object.keys(listSharp.value.datasets)
+      .filter((k) => listSharp.value.datasets[k])
+      .sort()
+      .join(',');
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    onChangeRef.current?.(key === '' ? [] : key.split(','));
+  });
 
   return (
     <div className="flex flex-col gap-2">
@@ -171,18 +55,9 @@ export const FieldDataset = ({
         <Callout variant="outlined">
           <p className="whitespace-pre-wrap">{t('scenarios:sanction.lists.callout')}</p>
         </Callout>
-        <FieldDatasetFilters sections={sections} filters={filters} setFilters={setFilters} />
-        <div onBlur={onBlur} className="flex flex-col gap-4">
-          {sections.map((section) => (
-            <FieldCategory
-              key={section.name}
-              section={section}
-              filters={filters}
-              selectedIds={selectedIds}
-              updateSelectedIds={updateSelectedIds}
-            />
-          ))}
-        </div>
+        <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
+          <DatasetSelectionContent useCase="transaction_monitoring" />
+        </ListAndTopicDatasetConfiguration.Provider>
       </div>
     </div>
   );

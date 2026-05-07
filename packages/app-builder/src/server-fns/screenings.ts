@@ -114,7 +114,7 @@ export type AvailableFeatures = Parameters<typeof listScreeningAvailableFilters>
 export const avalableFeatures = [
   'transaction_monitoring',
   'continuous_monitoring',
-  'manual',
+  'manual_search',
 ] as const satisfies Array<AvailableFeatures>;
 export const getAvailableFiltersSchema = z.object({ feature: z.enum(avalableFeatures) });
 export type GetAvailableFiltersInput = z.infer<typeof getAvailableFiltersSchema>;

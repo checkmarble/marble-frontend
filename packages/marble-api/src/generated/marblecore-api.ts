@@ -3943,7 +3943,7 @@ export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
 /**
  * List available filter for the current provider
  */
-export function listScreeningAvailableFilters(feature: "transaction_monitoring" | "continuous_monitoring" | "manual", opts?: Oazapfts.RequestOpts) {
+export function listScreeningAvailableFilters(feature: "transaction_monitoring" | "continuous_monitoring" | "manual_search", opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningAvailableFilters;

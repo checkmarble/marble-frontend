@@ -603,7 +603,7 @@ components:
             continuous_monitoring:
               type: string
               enum: [opensanctions, lexisnexis]
-            manual:
+            manual_search:
               type: string
               enum: [opensanctions, lexisnexis]
     CreateOrganizationBodyDto:
@@ -633,7 +633,7 @@ components:
             continuous_monitoring:
               type: string
               enum: [opensanctions, lexisnexis]
-            manual:
+            manual_search:
               type: string
               enum: [opensanctions, lexisnexis]
     OrganizationSubnetsDto:

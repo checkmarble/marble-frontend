@@ -47,7 +47,7 @@
         required: true
         schema:
           type: string
-          enum: [transaction_monitoring, continuous_monitoring, manual]
+          enum: [transaction_monitoring, continuous_monitoring, manual_search]
     responses:
       '200':
         description: Available filters
