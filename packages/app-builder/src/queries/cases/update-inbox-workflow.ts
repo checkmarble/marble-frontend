@@ -3,7 +3,7 @@ import { updateInboxWorkflowFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { updateInboxWorkflowPayloadSchema, type UpdateInboxWorkflowPayload };
+export { type UpdateInboxWorkflowPayload, updateInboxWorkflowPayloadSchema };
 
 export const useUpdateInboxWorkflowMutation = () => {
   const updateInboxWorkflow = useServerFn(updateInboxWorkflowFn);

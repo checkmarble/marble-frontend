@@ -3,7 +3,7 @@ import { updateWebhookFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { updateWebhookPayloadSchema, type UpdateWebhookPayload };
+export { type UpdateWebhookPayload, updateWebhookPayloadSchema };
 
 export const useUpdateWebhookMutation = () => {
   const updateWebhook = useServerFn(updateWebhookFn);

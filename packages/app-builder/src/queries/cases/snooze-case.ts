@@ -3,7 +3,7 @@ import { snoozeCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { snoozeCasePayloadSchema, type SnoozeCasePayload };
+export { type SnoozeCasePayload, snoozeCasePayloadSchema };
 
 export const useSnoozeCaseMutation = () => {
   const snoozeCase = useServerFn(snoozeCaseFn);

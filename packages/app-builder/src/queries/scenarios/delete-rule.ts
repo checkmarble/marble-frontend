@@ -3,7 +3,7 @@ import { deleteRuleFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { deleteRulePayloadSchema, type DeleteRulePayload };
+export { type DeleteRulePayload, deleteRulePayloadSchema };
 
 export const useDeleteRuleMutation = (scenarioId: string, iterationId: string) => {
   const deleteRule = useServerFn(deleteRuleFn);

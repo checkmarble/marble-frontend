@@ -3,7 +3,7 @@ import { archiveScenarioFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { archiveScenarioPayloadSchema, type ArchiveScenarioPayload };
+export { type ArchiveScenarioPayload, archiveScenarioPayloadSchema };
 
 export const useArchiveScenarioMutation = () => {
   const archiveScenario = useServerFn(archiveScenarioFn);

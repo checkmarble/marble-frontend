@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import toast from 'react-hot-toast';
 
-export { addToCasePayloadSchema, type AddToCasePayload, existingCaseSchema, newCaseSchema };
+export { type AddToCasePayload, addToCasePayloadSchema, existingCaseSchema, newCaseSchema };
 
 export const useAddToCaseMutation = () => {
   const addToCase = useServerFn(addToCaseFn);
