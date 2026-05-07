@@ -425,11 +425,7 @@ export const ScreeningStatusBadge = ({
   return (
     <Button variant={config.variant} size="small" className="shadow-sm" tabIndex={-1}>
       {match(screeningQuery)
-        .with({ isPending: true }, () => (
-          <div className="flex items-center justify-center p-8">
-            <Spinner className="size-4" />
-          </div>
-        ))
+        .with({ isPending: true }, () => <Spinner className="size-4" />)
         .with({ isError: true }, () => (
           <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>
         ))
