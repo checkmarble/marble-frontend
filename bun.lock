@@ -116,7 +116,7 @@
         "zustand": "^5.0.3",
       },
       "devDependencies": {
-        "@segment/analytics-next": "^1.78.1",
+        "@segment/analytics-next": "^1.83.0",
         "@sentry/cli": "^2.42.3",
         "@sentry/vite-plugin": "^3.2.2",
         "@tailwindcss/vite": "^4.2.4",
@@ -984,7 +984,7 @@
 
     "@segment/analytics-generic-utils": ["@segment/analytics-generic-utils@1.2.0", "", { "dependencies": { "tslib": "^2.4.1" } }, "sha512-DfnW6mW3YQOLlDQQdR89k4EqfHb0g/3XvBXkovH1FstUN93eL1kfW9CsDcVQyH3bAC5ZsFyjA/o/1Q2j0QeoWw=="],
 
-    "@segment/analytics-next": ["@segment/analytics-next@1.82.0", "", { "dependencies": { "@lukeed/uuid": "^2.0.0", "@segment/analytics-core": "1.8.2", "@segment/analytics-generic-utils": "1.2.0", "@segment/analytics-page-tools": "1.0.0", "@segment/analytics.js-video-plugins": "^0.2.1", "@segment/facade": "^3.4.9", "dset": "^3.1.4", "js-cookie": "3.0.1", "node-fetch": "^2.6.7", "tslib": "^2.4.1", "unfetch": "^4.1.0" } }, "sha512-oFKpS9nASZC32/cjVVtqptTmsYRBh0v9ZH7EQgGyzyUhHJ6CDNVRSR8gt5G/POg7XBIIh8Tv9FC+ZRy2ByRocQ=="],
+    "@segment/analytics-next": ["@segment/analytics-next@1.83.0", "", { "dependencies": { "@lukeed/uuid": "^2.0.0", "@segment/analytics-core": "1.8.2", "@segment/analytics-generic-utils": "1.2.0", "@segment/analytics-page-tools": "1.0.0", "@segment/analytics.js-video-plugins": "^0.2.1", "@segment/facade": "^3.4.9", "dset": "^3.1.4", "js-cookie": "3.0.1", "node-fetch": "^2.6.7", "tslib": "^2.4.1", "unfetch": "^4.1.0" } }, "sha512-HsXo3YrcS57UvG8IpamXDIiveHhLHarOUOL80rWlwpJH7nXk6RDYgSWz0ejla5UDsLLfi8tKar0WkCp+0CyJJw=="],
 
     "@segment/analytics-page-tools": ["@segment/analytics-page-tools@1.0.0", "", { "dependencies": { "tslib": "^2.4.1" } }, "sha512-o9OVB91qLB9qb0Bw1HfjmWm5AnrMNULRjx++4lBqLt8InKRX1urrRBparVlpj+yJA0sckN5ZcsfazRLuPgBYDQ=="],
 
