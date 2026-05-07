@@ -3,7 +3,7 @@ import { useDataModel } from '@app-builder/services/data/data-model';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Stepper, type StepperStep } from 'ui-design-system';
+import { Button, ScrollAreaV2, Stepper, type StepperStep } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext';
@@ -169,13 +169,19 @@ export function CreateTableDrawer({
             <Stepper steps={steps} currentStep={currentStep} />
           </header>
 
-          <div className="flex-1 overflow-auto px-v2-lg">
-            {currentStep === 0 ? <CreateTableEntityStep errorFields={tableErrorFields} /> : null}
+          <div className="flex-1 overflow-hidden flex flex-col px-v2-lg">
+            {currentStep === 0 ? (
+              <ScrollAreaV2 className="flex-1">
+                <CreateTableEntityStep errorFields={tableErrorFields} />
+              </ScrollAreaV2>
+            ) : null}
             {currentStep === 1 ? (
               <CreateTableFieldsStep errorFieldIds={fieldErrorIds} hasError={validationErrors.length > 0} />
             ) : null}
             {currentStep === 2 ? (
-              <CreateTableLinksStep errorLinkIds={linkErrorIds} hasError={validationErrors.length > 0} />
+              <ScrollAreaV2 className="flex-1">
+                <CreateTableLinksStep errorLinkIds={linkErrorIds} hasError={validationErrors.length > 0} />
+              </ScrollAreaV2>
             ) : null}
           </div>
 

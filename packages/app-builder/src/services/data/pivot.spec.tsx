@@ -274,6 +274,7 @@ function helperTable(args: Pick<TableModel, 'id' | 'fields' | 'linksToSingle' | 
     description: '',
     alias: 'alias',
     captionField: 'captionField',
+    fieldOrder: args.fields.map((f) => f.name),
   };
 }
 

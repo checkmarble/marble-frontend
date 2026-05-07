@@ -3,7 +3,7 @@ import { CloseCase } from '@app-builder/components/Cases/CloseCase';
 import { OpenCase } from '@app-builder/components/Cases/OpenCase';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser, DataModelWithTableOptions, isAdmin } from '@app-builder/models';
+import { type CurrentUser, DataModel, isAdmin } from '@app-builder/models';
 import { CaseDetail, CaseReview, DetailedCaseDecision, SuspiciousActivityReport } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
@@ -43,7 +43,7 @@ export const CaseDetails = ({
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   caseReview: CaseReview | null;
   caseDetail: CaseDetail;
-  dataModel: DataModelWithTableOptions;
+  dataModel: DataModel;
   reports: SuspiciousActivityReport[];
 }) => {
   const { t } = useTranslation(['common', 'cases']);

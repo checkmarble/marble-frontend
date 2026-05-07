@@ -1,7 +1,7 @@
 import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser, DataModelObject, type DataModelWithTableOptions } from '@app-builder/models';
+import { type CurrentUser, type DataModel, DataModelObject } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ type PivotsPanelProps = {
   currentUser: CurrentUser;
   case: CaseDetail;
   pivotObjects: PivotObject[];
-  dataModel: DataModelWithTableOptions;
+  dataModel: DataModel;
   reviewProofs: { type: string; object: DataModelObject }[];
   isKycEnrichmentEnabled: boolean;
 };

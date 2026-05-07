@@ -9,7 +9,6 @@ import {
   CreateTableBody,
   type DataModelDto,
   type DataModelObjectDto,
-  type DataModelTableOptionsDto,
   type ExportedFieldsDto,
   type FieldDto,
   FieldStatisticsDto,
@@ -18,7 +17,6 @@ import {
   type LinkToSingleDto,
   type NavigationOptionDto,
   type PivotDto,
-  type SetDataModelTableOptionsBodyDto,
   type TableDto,
   UpdateTableBodyDto,
 } from 'marble-api';
@@ -234,6 +232,7 @@ export interface TableModel {
   /** Field id of the main ordering timestamp (from table `metadata` on create / GET). */
   mainTimestampFieldName?: string;
   belongsToTableId?: string;
+  fieldOrder: string[];
 }
 
 /**
@@ -272,11 +271,15 @@ function adaptTableModel(tableDto: TableDto): TableModel {
   const belongsToTableId = readMetadataString(meta, 'belongsToTableId');
 
   const fieldOrderNames: string[] = (() => {
-    const raw = meta['fieldOrder'];
-    if (typeof raw === 'string' && raw.length > 0) {
-      return raw.split(',');
+    const rawFieldOrder = meta['fieldOrder'];
+    if (typeof rawFieldOrder === 'string' && rawFieldOrder.length > 0) {
+      return rawFieldOrder.split(',');
     }
-    return [];
+    return R.pipe(
+      raw.fields,
+      R.values(),
+      R.map((f) => f.name),
+    );
   })();
 
   const fields = R.pipe(raw.fields, R.values(), R.map(adaptDataModelField), (arr) =>
@@ -315,6 +318,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
     ),
     navigationOptions: raw.navigation_options?.map(adaptNavigationOptions),
     ftmEntity: raw.ftm_entity,
+    fieldOrder: fieldOrderNames,
   };
 }
 
@@ -655,81 +659,18 @@ export function adaptCreateNavigationOptionDto(model: CreateNavigationOption): C
   };
 }
 
-export type DataModelTableOptions = {
-  displayedFields?: string[];
-  fieldOrder: string[];
-};
-
-export function adaptDataModelTableOptions(dto: DataModelTableOptionsDto): DataModelTableOptions {
-  return {
-    displayedFields: dto.displayed_fields,
-    fieldOrder: dto.field_order,
-  };
-}
-
-export type SetDataModelTableOptionsBody = {
-  displayedFields: string[];
-  fieldOrder: string[];
-};
-
-export function adaptSetDataModelTableOptionBodyDto(
-  model: SetDataModelTableOptionsBody,
-): SetDataModelTableOptionsBodyDto {
-  return {
-    displayed_fields: model.displayedFields,
-    field_order: model.fieldOrder,
-  };
-}
-
-export type DataModelFieldWithDisplay = DataModelField & {
-  displayed: boolean;
-};
-
-export type TableModelWithOptions = Omit<TableModel, 'fields'> & {
-  options: DataModelTableOptions;
-  fields: DataModelFieldWithDisplay[];
-};
-
-export type DataModelWithTableOptions = TableModelWithOptions[];
-
-export function mergeDataModelWithTableOptions(
-  table: TableModel,
-  options: DataModelTableOptions,
-): TableModelWithOptions {
-  return {
-    ...table,
-    fields: table.fields.map((field) => {
-      return {
-        ...field,
-        displayed:
-          field.name === 'object_id'
-            ? true
-            : options.displayedFields
-              ? options.displayedFields.includes(field.id)
-              : true,
-      };
-    }),
-    options,
-  };
-}
-
 export function getTriggerObjectFields(
-  dataModelWithTableOptions: DataModelWithTableOptions,
+  dataModel: DataModel,
   triggerObjectType: string,
 ): { id: string; name: string }[] {
-  const tableOptions = dataModelWithTableOptions.find(({ name }) => name === triggerObjectType);
+  const tableOptions = dataModel.find(({ name }) => name === triggerObjectType);
+  if (!tableOptions) return [];
 
   return R.pipe(
-    // fields are already ordered
-    tableOptions?.fields.map((f) => f.id) ?? [],
-    R.filter((id) =>
-      tableOptions?.options.displayedFields ? tableOptions.options.displayedFields.includes(id) : true,
-    ),
-    R.map((id) => {
-      const field = tableOptions?.fields.find((f) => f.id === id);
-      return field ? { id, name: field.name } : null;
-    }),
-    R.filter((f): f is { id: string; name: string } => f !== null),
+    tableOptions.fieldOrder,
+    R.map((name) => tableOptions.fields.find((f) => f.name === name)),
+    R.filter((f): f is DataModelField => f !== undefined),
+    R.map((f) => ({ id: f.id, name: f.name })),
   );
 }
 

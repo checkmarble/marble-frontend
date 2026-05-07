@@ -18,6 +18,9 @@ export const eventTypes = [
   'case.rule_snooze_created',
   'case.decision_reviewed',
   'decision.created',
+  'async_decision.failed',
+  'continuous_screening.created',
+  'continuous_screening.match_reviewed',
 ] as const;
 export type EventType = (typeof eventTypes)[number];
 

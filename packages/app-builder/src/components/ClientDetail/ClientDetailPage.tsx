@@ -4,7 +4,7 @@ import { DataModelObject, isAnalyst } from '@app-builder/models';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
-import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
+import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -55,7 +55,7 @@ export const ClientDetailPage = ({
   const { t } = useTranslation(['common', 'client360', 'user-scoring']);
   const { currentUser } = useOrganizationDetails();
   const canConfigureUserScoring = isAccessible(userScoringAccess) && !isAnalyst(currentUser);
-  const dataModelQuery = useDataModelWithOptionsQuery();
+  const dataModelQuery = useDataModelQuery();
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const [showExplorer, setShowExplorer] = useState(false);
   const [isEditingDocuments, setIsEditingDocuments] = useState(false);

@@ -12,12 +12,7 @@ import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { caseDetailMiddleware } from '@app-builder/middlewares/case-detail-middleware';
-import {
-  type DataModelWithTableOptions,
-  isNotFoundHttpError,
-  mergeDataModelWithTableOptions,
-  type TableModelWithOptions,
-} from '@app-builder/models';
+import { isNotFoundHttpError } from '@app-builder/models';
 import { type CaseReview, DetailedCaseDecision } from '@app-builder/models/cases';
 import { type DataModelObject } from '@app-builder/models/data-model';
 import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
@@ -53,14 +48,6 @@ const scenarioCaseDetailLoader = createServerFn()
       aiAssistSettings.getAiAssistSettings(),
     ]);
 
-    const dataModelWithTableOptions: DataModelWithTableOptions = await Promise.all(
-      dataModel.map<Promise<TableModelWithOptions>>((table) =>
-        dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
-          return mergeDataModelWithTableOptions(table, options);
-        }),
-      ),
-    );
-
     let review: (CaseReview & { proofs: { type: string; object: DataModelObject }[] }) | null = null;
     if (mostRecentReviews.length > 0 && mostRecentReviews[0]) {
       const mostRecentReview = mostRecentReviews[0];
@@ -91,7 +78,7 @@ const scenarioCaseDetailLoader = createServerFn()
     return {
       case: caseDetail,
       pivotObjects,
-      dataModelWithTableOptions,
+      dataModel,
       currentInbox: caseInbox,
       reports,
       currentUser: user,
@@ -134,7 +121,7 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId')({
 function CaseManagerIndexPage() {
   const {
     case: details,
-    dataModelWithTableOptions,
+    dataModel,
     pivotObjects,
     currentUser,
     currentInbox,
@@ -196,7 +183,7 @@ function CaseManagerIndexPage() {
           drawerContentMode={drawerContentMode}
           setDrawerContentMode={setDrawerContentMode}
           caseReview={mostRecentReview}
-          dataModel={dataModelWithTableOptions}
+          dataModel={dataModel}
           reports={reports}
         />
         <DataModelExplorerProvider>
@@ -210,7 +197,7 @@ function CaseManagerIndexPage() {
                     key={details.id}
                     currentUser={currentUser}
                     case={details}
-                    dataModel={dataModelWithTableOptions}
+                    dataModel={dataModel}
                     pivotObjects={pivotObjects ?? []}
                     reviewProofs={mostRecentReview?.proofs ?? []}
                     isKycEnrichmentEnabled={isKycEnrichmentEnabled}
@@ -223,7 +210,7 @@ function CaseManagerIndexPage() {
                     key={details.id}
                     decision={selectedDecision}
                     setDrawerContentMode={setDrawerContentMode}
-                    dataModel={dataModelWithTableOptions}
+                    dataModel={dataModel}
                   />
                 ),
               )
@@ -232,7 +219,7 @@ function CaseManagerIndexPage() {
                   key={details.id}
                   setDrawerContentMode={setDrawerContentMode}
                   caseDetail={details}
-                  dataModelWithTableOptions={dataModelWithTableOptions}
+                  dataModel={dataModel}
                   pivotObjects={pivotObjects ?? []}
                   entitlements={entitlements}
                 />

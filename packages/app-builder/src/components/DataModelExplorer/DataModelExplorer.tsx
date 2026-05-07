@@ -1,4 +1,4 @@
-import { type DataModelWithTableOptions } from '@app-builder/models';
+import { type DataModel } from '@app-builder/models';
 import { useCallbackRef } from '@marble/shared';
 import { useState } from 'react';
 import { Button, MenuCommand, Tag } from 'ui-design-system';
@@ -10,7 +10,7 @@ import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerProps = {
   caseId?: string;
-  dataModel: DataModelWithTableOptions;
+  dataModel: DataModel;
 };
 
 function getTabUniqValue(tab: DataModelExplorerNavigationTab) {
