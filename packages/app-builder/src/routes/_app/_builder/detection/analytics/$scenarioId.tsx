@@ -17,7 +17,7 @@ import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-avail
 import { useAnalyticsDataQuery } from '@app-builder/queries/analytics/get-data';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
-import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
+import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -262,8 +262,10 @@ function Analytics() {
     };
 
     navigate({
-      from: '/detection/analytics/$scenarioId',
-      to: '.',
+      to: '/detection/analytics/$scenarioId',
+      params: {
+        scenarioId: fromUUIDtoSUUID(nextScenarioId),
+      },
       search: {
         q: btoa(JSON.stringify(nextQuery)),
       },
