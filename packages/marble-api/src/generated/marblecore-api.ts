@@ -1484,18 +1484,6 @@ export type CreateNavigationOptionDto = {
     filter_field_id?: string;
     ordering_field_id?: string;
 };
-export type DataModelTableOptionsDto = {
-    /** List of field IDs to display when navigating the table */
-    displayed_fields?: string[];
-    /** List of field IDs in their display order */
-    field_order: string[];
-};
-export type SetDataModelTableOptionsBodyDto = {
-    /** List of field IDs to display when navigating the table */
-    displayed_fields?: string[];
-    /** List of field IDs in their display order */
-    field_order: string[];
-};
 export type IngestedDataFieldDto = {
     Path: string[];
     Name: string;
@@ -4923,47 +4911,6 @@ export function postDataModelTableNavigationOption(tableId: string, createNaviga
         ...opts,
         method: "POST",
         body: createNavigationOptionDto
-    })));
-}
-/**
- * Get display options for data model tables
- */
-export function getDataModelTableOptions(tableId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: DataModelTableOptionsDto;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/data-model/tables/${encodeURIComponent(tableId)}/options`, {
-        ...opts
-    }));
-}
-/**
- * Set display options for data model tables
- */
-export function setDataModelTableOptions(tableId: string, setDataModelTableOptionsBodyDto: SetDataModelTableOptionsBodyDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/data-model/tables/${encodeURIComponent(tableId)}/options`, oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: setDataModelTableOptionsBodyDto
     })));
 }
 /**

@@ -16,7 +16,7 @@ import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/Trigg
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { ScreeningHitsPanel } from '@app-builder/components/Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '@app-builder/components/Spinner';
-import { DataModelWithTableOptions } from '@app-builder/models';
+import { DataModel } from '@app-builder/models';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { useDetailDecisionQuery } from '@app-builder/queries/decisions/detail-decision';
 import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenario-iteration-rules';
@@ -29,7 +29,7 @@ import { Icon } from 'ui-icons';
 type DecisionPanelProps = {
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   decision: DetailedCaseDecision;
-  dataModel: DataModelWithTableOptions;
+  dataModel: DataModel;
 };
 
 export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: DecisionPanelProps) {

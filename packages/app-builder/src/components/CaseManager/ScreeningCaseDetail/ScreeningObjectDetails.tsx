@@ -1,6 +1,6 @@
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { Spinner } from '@app-builder/components/Spinner';
-import { useDataModelWithOptionsQuery } from '@app-builder/queries/data/get-data-model-with-options';
+import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
@@ -14,7 +14,7 @@ type ScreeningObjectDetailsProps = {
 
 export const ScreeningObjectDetails = ({ objectType, objectId, className }: ScreeningObjectDetailsProps) => {
   const { t } = useTranslation(['common', 'continuousScreening']);
-  const dataModelQuery = useDataModelWithOptionsQuery();
+  const dataModelQuery = useDataModelQuery();
   const objectDetailsQuery = useObjectDetailsQuery(objectType, objectId);
 
   return (

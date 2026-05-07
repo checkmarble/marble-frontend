@@ -1,13 +1,7 @@
 import { CaseStatusBadge } from '@app-builder/components/Cases';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
-import {
-  type CurrentUser,
-  DataModelObject,
-  type DataModelWithTableOptions,
-  isAdmin,
-  type TableModelWithOptions,
-} from '@app-builder/models';
+import { type CurrentUser, type DataModel, DataModelObject, isAdmin, type TableModel } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
@@ -41,7 +35,7 @@ export function PivotsPanelContent({
   case: CaseDetail;
   pivotObjects: PivotObject[];
   reviewProofs: { type: string; object: DataModelObject }[];
-  dataModel: DataModelWithTableOptions;
+  dataModel: DataModel;
   onExplore: () => void;
   isKycEnrichmentEnabled: boolean;
 }) {
@@ -315,8 +309,8 @@ function RelatedCases({ currentCase, pivotValue }: { currentCase: CaseDetail; pi
 }
 
 type PivotObjectDetailsProps = {
-  tableModel: TableModelWithOptions;
-  dataModel: DataModelWithTableOptions;
+  tableModel: TableModel;
+  dataModel: DataModel;
   pivotObject: PivotObject;
 };
 export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: PivotObjectDetailsProps) {

@@ -1,4 +1,4 @@
-import { DataModelWithTableOptions, type TableModel } from '@app-builder/models';
+import { DataModel, type TableModel } from '@app-builder/models';
 import { useHierarchyQuery } from '@app-builder/queries/data/get-hierarchy';
 import { type HierarchyLeaf, type HierarchyNode, type HierarchyTreeBase } from '@app-builder/server-fns/data';
 import { UseQueryResult } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ type ObjectHierarchyProps = {
   objectId: string;
   metadata: Client360Table;
   allMetadata: Client360Table[];
-  dataModelQuery: UseQueryResult<{ dataModel: DataModelWithTableOptions }>;
+  dataModelQuery: UseQueryResult<{ dataModel: DataModel }>;
   handleExplore: (parent: HierarchyNode, child: HierarchyLeaf) => void;
 };
 

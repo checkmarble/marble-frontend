@@ -2,10 +2,10 @@ import useIntersection from '@app-builder/hooks/useIntersection';
 import {
   type ClientDataListResponse,
   type ClientObjectDetail,
-  type DataModelWithTableOptions,
+  DataModel,
   FieldStatistics,
   type NavigationOption,
-  type TableModelWithOptions,
+  TableModel,
 } from '@app-builder/models';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { parseUnknownData } from '@app-builder/utils/parse';
@@ -18,7 +18,6 @@ import {
 } from '@tanstack/react-table';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
 import { Button, cn, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -32,7 +31,7 @@ const DEFAULT_CELL_WIDTH = 300;
 export type DataTableRenderProps = {
   caseId?: string;
   item: DataModelExplorerNavigationTab;
-  dataModel: DataModelWithTableOptions;
+  dataModel: DataModel;
   navigateTo: (tabItem: DataModelExplorerNavigationTab) => void;
 };
 
@@ -129,8 +128,8 @@ function DataTablePagination({ hasNext, isLoading, onNext }: DataTablePagination
   );
 }
 
-function getColumnList(tableModel: TableModelWithOptions) {
-  return tableModel.fields.filter((f) => f.displayed).map((f) => f.name);
+function getColumnList(tableModel: TableModel) {
+  return tableModel.fields.filter((f) => !f.hidden).map((f) => f.name);
 }
 
 function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
@@ -151,7 +150,7 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
 type DataTableProps = {
   caseId?: string;
   pivotObject: DataModelExplorerNavigationTab['pivotObject'];
-  table: TableModelWithOptions;
+  table: TableModel;
   list: ClientDataListResponse['data'];
   pagination: ReactElement;
   metadata: ClientDataListResponse['metadata'] | undefined;
@@ -170,13 +169,6 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
   });
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(INITIAL_COLUMN_PINNING);
   const tableData = useMemo(() => list.map((d) => d.data), [list]);
-  const fieldOrder = useMemo(() => {
-    return R.pipe(
-      table.options.fieldOrder,
-      R.map((fieldId) => table.fields.find((f) => f.id === fieldId)?.name),
-      R.filter((fieldName): fieldName is string => !!fieldName),
-    );
-  }, [table]);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const headerRefs = useRef<Map<string, HTMLTableCellElement>>(new Map());
@@ -214,7 +206,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
 
   const reactTable = useReactTable({
     state: {
-      columnOrder: fieldOrder,
+      columnOrder: table.fieldOrder,
       columnPinning,
     },
     onColumnPinningChange: setColumnPinning,
@@ -286,7 +278,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
             </MenuCommand.Trigger>
             <MenuCommand.Content sideOffset={4} align="start" sameWidth>
               <MenuCommand.List>
-                {fieldOrder.map((fieldName) => {
+                {table.fieldOrder.map((fieldName) => {
                   const isPinned = pinnedLeft.includes(fieldName);
                   return (
                     <MenuCommand.Item key={fieldName} onSelect={() => handleToggleColumn(fieldName)}>
