@@ -6,7 +6,7 @@ import { editInboxUserAutoAssignFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { editInboxUserAutoAssignPayloadSchema, type EditInboxUserAutoAssignPayload };
+export { type EditInboxUserAutoAssignPayload, editInboxUserAutoAssignPayloadSchema };
 
 export function useEditInboxUserAutoAssignMutation() {
   const editInboxUserAutoAssign = useServerFn(editInboxUserAutoAssignFn);

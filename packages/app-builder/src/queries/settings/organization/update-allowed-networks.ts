@@ -3,7 +3,7 @@ import { updateAllowedNetworksFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { updateAllowedNetworksPayloadSchema, type UpdateAllowedNetworksPayload };
+export { type UpdateAllowedNetworksPayload, updateAllowedNetworksPayloadSchema };
 
 export const useUpdateAllowedNetworks = (organizationId: string) => {
   const updateAllowedNetworks = useServerFn(updateAllowedNetworksFn);

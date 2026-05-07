@@ -35,9 +35,10 @@ type UseBase64QueryResult<T extends ZodObject> = {
   asArray: QueryEntry<T>[];
 } & (UseBase64QueryResultSuccess<T> | UseBase64QueryResultError);
 
-export type QueryEntry<T extends ZodObject> = z.infer<T> extends infer O
-  ? Exclude<{ [K in keyof O]: [K, Exclude<NonNullable<O[K]>, undefined>] }[keyof O], undefined>
-  : never;
+export type QueryEntry<T extends ZodObject> =
+  z.infer<T> extends infer O
+    ? Exclude<{ [K in keyof O]: [K, Exclude<NonNullable<O[K]>, undefined>] }[keyof O], undefined>
+    : never;
 
 export function useBase64Query<T extends ZodObject>(
   schema: T,

@@ -3,7 +3,7 @@ import { editAssigneeFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { editAssigneePayloadSchema, type EditAssigneePayload };
+export { type EditAssigneePayload, editAssigneePayloadSchema };
 
 export const useEditAssigneeMutation = () => {
   const editAssignee = useServerFn(editAssigneeFn);
