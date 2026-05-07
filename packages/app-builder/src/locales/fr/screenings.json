@@ -242,5 +242,7 @@
   "status.error": "Erreur",
   "status.in_review": "Correspondances à examiner",
   "status.no_hit": "Aucune correspondance",
+  "status.pending": "Correspondances à examiner",
+  "status.skipped": "Ignoré",
   "success.match_enriched": "Correspondance enrichie avec succès"
 }

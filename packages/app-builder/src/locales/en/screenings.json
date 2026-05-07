@@ -242,5 +242,7 @@
   "status.error": "Error",
   "status.in_review": "Hits to review",
   "status.no_hit": "No match",
+  "status.pending": "Hits to review",
+  "status.skipped": "Skipped",
   "success.match_enriched": "Match successfully enriched"
 }
