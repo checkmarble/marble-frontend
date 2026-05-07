@@ -6,7 +6,7 @@
     "@vitejs/plugin-react": "4.3.4",
     "@vitest/coverage-v8": "^4.1.5",
     "@vitest/ui": "4.1.5",
-    "lefthook": "^1.13.0",
+    "lefthook": "^2.1.6",
     "react-refresh": "^0.18.0",
     "typescript": "5.8.2"
   },
