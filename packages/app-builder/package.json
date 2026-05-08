@@ -95,7 +95,7 @@
     "crypto-js": "^4.2.0",
     "currency-codes": "^2.2.0",
     "date-fns": "^4.1.0",
-    "decode-formdata": "^0.8.0",
+    "decode-formdata": "^0.9.0",
     "deepsignal": "^1.6.0",
     "dinero.js": "2.0.2",
     "embla-carousel-react": "^8.6.0",
