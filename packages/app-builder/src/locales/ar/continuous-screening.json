@@ -8,6 +8,7 @@
   "configurations.list.empty": "لم يتم العثور على أي إعدادات",
   "configurations.list.loading": "جارٍ تحميل الإعدادات…",
   "creation.datasetSelection.callout": "حدِّد القوائم التي سيتم استخدامها لهذا الفحص المستمر. ستتلقى تنبيهات كلما تمت إضافة إدخال جديد إلى تلك القوائم، أو تعديله، وكان يطابق ملف كيان خاضع للمراقبة في Marble.",
+  "creation.datasetSelection.filter.add": "إضافة عنصر",
   "creation.datasetSelection.filter.all": "الكل",
   "creation.datasetSelection.filter.select_all": "تحديد الكل",
   "creation.datasetSelection.filter.unselect_all": "إلغاء تحديد الكل",

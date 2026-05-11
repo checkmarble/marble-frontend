@@ -284,6 +284,7 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
         disabled={mode === 'view'}
         onClick={onClickItem}
         className="cursor-pointer"
+        stopPropagation
       />
       <span className="text-s">{label}</span>
     </div>
@@ -393,6 +394,7 @@ const SingleItemToggle = ({
 }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const isSelected = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[item.name]);
+  const { t } = useTranslation(['continuousScreening']);
 
   if (isSelected) {
     if (mode !== 'view') {
@@ -428,6 +430,7 @@ const SingleItemToggle = ({
         });
         onAfterChange?.();
       }}
+      aria-labels={t('continuousScreening:creation.datasetSelection.filter.add')}
     >
       <Icon icon="plus" className="size-3" />
     </button>

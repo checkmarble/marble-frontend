@@ -42,13 +42,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
 
   const handleApply = () => {
     const map = listSharp.value.datasets;
-    const next =
-      selectableLeafNames?.filter((name) => !!map[name]) ??
-      // Fallback: if list-config isn't loaded yet, keep only "leaf-like" keys.
-      Object.entries(map)
-        .filter(([, v]) => !!v)
-        .map(([k]) => k)
-        .filter((k) => k.includes('.'));
+    const next = selectableLeafNames?.filter((name) => !!map[name]) ?? [];
 
     onApply(next);
     setOpen(false);

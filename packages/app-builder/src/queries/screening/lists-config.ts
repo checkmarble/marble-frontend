@@ -68,7 +68,7 @@ export const useListConfigQuery = (useCase: AvailableFeatures) => {
   const getListConfig = useServerFn(() => getListConfigFn({ data: { feature: useCase } }));
 
   return useQuery({
-    queryKey: ['screening', 'datasets'],
+    queryKey: ['screening', 'datasets', useCase],
     queryFn: async () => {
       const result = await getListConfig();
       return normalizeListConfig(result);

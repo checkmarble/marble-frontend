@@ -8,6 +8,7 @@
   "configurations.list.empty": "Aucune configuration trouvée",
   "configurations.list.loading": "Chargement des configurations…",
   "creation.datasetSelection.callout": "Sélectionnez les listes à utiliser pour monitoring permanent. Vous recevrez des alertes chaque fois qu’une nouvelle entrée de ces listes correspond au profil d’une entité surveillée dans Marble.",
+  "creation.datasetSelection.filter.add": "Ajouter un sujet",
   "creation.datasetSelection.filter.all": "Tout",
   "creation.datasetSelection.filter.select_all": "Tout sélectionner",
   "creation.datasetSelection.filter.unselect_all": "Tout désélectionner",
