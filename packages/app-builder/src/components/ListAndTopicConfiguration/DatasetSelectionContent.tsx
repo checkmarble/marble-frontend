@@ -75,7 +75,6 @@ const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResu
 const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const leafNames = getSectionLeafNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
@@ -86,30 +85,32 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
   return (
     <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
       <Collapsible.Title hideIcon asChild size="null">
-        <button className="flex items-center justify-between" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="flex items-center justify-between">
           <div className="flex gap-v2-md items-center">
-            <Checkbox
-              stopPropagation
-              size="small"
-              checked={isEnabled}
-              disabled={mode === 'view'}
-              onCheckedChange={() => {
-                listConfig.update((state) => {
-                  const nextValue = !state.datasets[sectionKey];
-                  state.datasets[sectionKey] = nextValue;
-                });
-              }}
-            />
+            <span onClick={(e) => e.stopPropagation()} className="inline-flex">
+              <Checkbox
+                stopPropagation
+                size="small"
+                checked={isEnabled}
+                disabled={mode === 'view'}
+                onCheckedChange={() => {
+                  listConfig.update((state) => {
+                    const nextValue = !state.datasets[sectionKey];
+                    state.datasets[sectionKey] = nextValue;
+                  });
+                }}
+              />
+            </span>
             <Icon
               icon="caret-down"
-              className={cn('size-4 shrink-0 rotate-0 transition-transform duration-200', isExpanded && 'rotate-180')}
+              className="size-4 shrink-0 transition-transform duration-200 group-radix-state-open:rotate-180"
             />
             <DatasetTag category={sectionKey} />
           </div>
           <span className="text-xs text-grey-50 pl-v2-md">
             {selectedCount} / {leafNames.length}
           </span>
-        </button>
+        </div>
       </Collapsible.Title>
       <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         <SectionContent sectionKey={sectionKey} section={section} />
@@ -183,7 +184,6 @@ const ItemGroup = ({
   items: { name: string; title?: string }[];
   sectionKey: ScreeningCategory;
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation(['continuousScreening']);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
@@ -212,14 +212,11 @@ const ItemGroup = ({
   return (
     <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
       <Collapsible.Title hideIcon asChild size="null">
-        <button
-          className="flex items-center gap-v2-md justify-between w-full"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
+        <div className="flex items-center gap-v2-md justify-between w-full">
           <span className="flex items-center gap-v2-md">
             <Icon
               icon="caret-down"
-              className={cn('size-4 shrink-0 rotate-0 transition-transform duration-200', isExpanded && 'rotate-180')}
+              className="size-4 shrink-0 transition-transform duration-200 group-radix-state-open:rotate-180"
             />
             <span className="text-s font-semibold">{capitalize(title)}</span>
             <span className="text-xs text-grey-secondary">
@@ -232,16 +229,17 @@ const ItemGroup = ({
                 `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
               )}
             </span>
-            <Checkbox
-              size="small"
-              checked={checkState}
-              disabled={mode === 'view'}
-              onCheckedChange={handleSelectAll}
-              stopPropagation
-              className="mr-6"
-            />
+            <span onClick={(e) => e.stopPropagation()} className="inline-flex mr-6">
+              <Checkbox
+                size="small"
+                checked={checkState}
+                disabled={mode === 'view'}
+                onCheckedChange={handleSelectAll}
+                stopPropagation
+              />
+            </span>
           </span>
-        </button>
+        </div>
       </Collapsible.Title>
       <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         <div className="flex flex-col gap-v2-sm pt-v2-sm">
