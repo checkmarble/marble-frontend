@@ -259,24 +259,32 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const isSelected = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[name]);
 
+  const onClickItem = () => {
+    if (mode === 'view') return;
+    listConfig.update((state) => {
+      const nextValue = !state.datasets[name];
+      state.datasets[name] = nextValue;
+      if (nextValue) {
+        state.datasets[sectionKey] = true;
+      }
+    });
+  };
+
   return (
     <div
       className={cn(
         'flex flex-row items-center gap-v2-sm p-v2-md even:bg-grey-background-light',
         mode !== 'view' && 'cursor-pointer',
       )}
-      onClick={() => {
-        if (mode === 'view') return;
-        listConfig.update((state) => {
-          const nextValue = !state.datasets[name];
-          state.datasets[name] = nextValue;
-          if (nextValue) {
-            state.datasets[sectionKey] = true;
-          }
-        });
-      }}
+      onClick={onClickItem}
     >
-      <Checkbox size="small" checked={isSelected} disabled={mode === 'view'} />
+      <Checkbox
+        size="small"
+        checked={isSelected}
+        disabled={mode === 'view'}
+        onClick={onClickItem}
+        className="cursor-pointer"
+      />
       <span className="text-s">{label}</span>
     </div>
   );
