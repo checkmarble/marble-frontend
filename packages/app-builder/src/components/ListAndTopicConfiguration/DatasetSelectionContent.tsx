@@ -27,20 +27,6 @@ function groupCheckState(names: string[], datasetsMap: Record<string, boolean>):
 export function DatasetSelectionContent({ useCase }: { useCase: AvailableFeatures }) {
   const listConfigQuery = useListConfigQuery(useCase);
   const { t } = useTranslation(['common', 'continuousScreening']);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
-  const [expandedItemGroups, setExpandedItemGroups] = useState<Record<string, boolean>>({});
-
-  const setSectionExpanded = (sectionKey: string, isExpanded: boolean) => {
-    setExpandedSections((current) =>
-      current[sectionKey] === isExpanded ? current : { ...current, [sectionKey]: isExpanded },
-    );
-  };
-
-  const setItemGroupExpanded = (groupKey: string, isExpanded: boolean) => {
-    setExpandedItemGroups((current) =>
-      current[groupKey] === isExpanded ? current : { ...current, [groupKey]: isExpanded },
-    );
-  };
 
   return (
     <>
@@ -69,17 +55,7 @@ export function DatasetSelectionContent({ useCase }: { useCase: AvailableFeature
                 Object.entries(data)
                   .filter(([, section]) => section.datasets?.length || section.topics)
                   .map(([key, section]) =>
-                    section ? (
-                      <Section
-                        key={key}
-                        sectionKey={key as ScreeningCategory}
-                        section={section}
-                        isExpanded={!!expandedSections[key]}
-                        onExpandedChange={(isExpanded) => setSectionExpanded(key, isExpanded)}
-                        expandedItemGroups={expandedItemGroups}
-                        onItemGroupExpandedChange={setItemGroupExpanded}
-                      />
-                    ) : null,
+                    section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
                   )}
             </div>
           ))
@@ -96,23 +72,10 @@ const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResu
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: sectionCount })}</span>;
 };
 
-const Section = ({
-  sectionKey,
-  section,
-  isExpanded,
-  onExpandedChange,
-  expandedItemGroups,
-  onItemGroupExpandedChange,
-}: {
-  sectionKey: ScreeningCategory;
-  section: SectionData;
-  isExpanded: boolean;
-  onExpandedChange: (isExpanded: boolean) => void;
-  expandedItemGroups: Record<string, boolean>;
-  onItemGroupExpandedChange: (groupKey: string, isExpanded: boolean) => void;
-}) => {
+const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const leafNames = getSectionLeafNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
@@ -121,13 +84,9 @@ const Section = ({
   );
 
   return (
-    <Collapsible.Container
-      className="border-none px-v2-md py-v2-sm h-fit"
-      open={isExpanded}
-      onOpenChange={onExpandedChange}
-    >
+    <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
       <Collapsible.Title hideIcon asChild size="null">
-        <span className="flex items-center justify-between">
+        <button className="flex items-center justify-between" onClick={() => setIsExpanded(!isExpanded)}>
           <div className="flex gap-v2-md items-center">
             <Checkbox
               stopPropagation
@@ -150,31 +109,16 @@ const Section = ({
           <span className="text-xs text-grey-50 pl-v2-md">
             {selectedCount} / {leafNames.length}
           </span>
-        </span>
+        </button>
       </Collapsible.Title>
       <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-        <SectionContent
-          sectionKey={sectionKey}
-          section={section}
-          expandedItemGroups={expandedItemGroups}
-          onItemGroupExpandedChange={onItemGroupExpandedChange}
-        />
+        <SectionContent sectionKey={sectionKey} section={section} />
       </Collapsible.Content>
     </Collapsible.Container>
   );
 };
 
-const SectionContent = ({
-  sectionKey,
-  section,
-  expandedItemGroups,
-  onItemGroupExpandedChange,
-}: {
-  sectionKey: ScreeningCategory;
-  section: SectionData;
-  expandedItemGroups: Record<string, boolean>;
-  onItemGroupExpandedChange: (groupKey: string, isExpanded: boolean) => void;
-}) => {
+const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
   const { datasets, topics, conditionalTopics } = section;
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
 
@@ -203,19 +147,9 @@ const SectionContent = ({
 
   return (
     <div className="flex flex-col">
-      {datasets?.map((group) => {
-        const groupKey = `${sectionKey}:${group.name}`;
-        return (
-          <ItemGroup
-            key={group.name}
-            title={group.title}
-            items={group.datasets}
-            sectionKey={sectionKey}
-            isExpanded={!!expandedItemGroups[groupKey]}
-            onExpandedChange={(isExpanded) => onItemGroupExpandedChange(groupKey, isExpanded)}
-          />
-        );
-      })}
+      {datasets?.map((group) => (
+        <ItemGroup key={group.name} title={group.title} items={group.datasets} sectionKey={sectionKey} />
+      ))}
       {topics &&
         Object.entries(topics).map(([key, items]) => (
           <FilterGroupRow
@@ -244,15 +178,12 @@ const ItemGroup = ({
   title,
   items,
   sectionKey,
-  isExpanded,
-  onExpandedChange,
 }: {
   title: string;
   items: { name: string; title?: string }[];
   sectionKey: ScreeningCategory;
-  isExpanded: boolean;
-  onExpandedChange: (isExpanded: boolean) => void;
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation(['continuousScreening']);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
@@ -279,13 +210,12 @@ const ItemGroup = ({
   };
 
   return (
-    <Collapsible.Container
-      className="border-none px-v2-md py-v2-sm h-fit"
-      open={isExpanded}
-      onOpenChange={onExpandedChange}
-    >
+    <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
       <Collapsible.Title hideIcon asChild size="null">
-        <div className="flex items-center gap-v2-md justify-between w-full">
+        <button
+          className="flex items-center gap-v2-md justify-between w-full"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
           <span className="flex items-center gap-v2-md">
             <Icon
               icon="caret-down"
@@ -311,7 +241,7 @@ const ItemGroup = ({
               className="mr-6"
             />
           </span>
-        </div>
+        </button>
       </Collapsible.Title>
       <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         <div className="flex flex-col gap-v2-sm pt-v2-sm">
