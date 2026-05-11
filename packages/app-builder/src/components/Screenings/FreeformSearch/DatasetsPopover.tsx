@@ -41,9 +41,12 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
   }, [listConfigQuery.data]);
 
   const handleApply = () => {
+    if (!selectableLeafNames) {
+      setOpen(false);
+      return;
+    }
     const map = listSharp.value.datasets;
-    const next = selectableLeafNames?.filter((name) => !!map[name]) ?? [];
-
+    const next = selectableLeafNames?.filter((name) => !!map[name]);
     onApply(next);
     setOpen(false);
   };
@@ -102,6 +105,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply }: DatasetsPopoverPr
               size="default"
               className="flex-1 justify-center"
               onClick={handleApply}
+              disabled={!selectableLeafNames}
             >
               {t('screenings:freeform_search.apply')}
             </Button>
