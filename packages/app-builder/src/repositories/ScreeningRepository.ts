@@ -1,6 +1,7 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { isNotFoundHttpError } from '@app-builder/models/http-errors';
 import {
+  type AvailableFeatures,
   adaptScreening,
   adaptScreeningFile,
   adaptScreeningMatch,
@@ -18,7 +19,6 @@ import {
   adaptOpenSanctionsDatasetFreshness,
   type OpenSanctionsDatasetFreshness,
 } from '@app-builder/models/screening-dataset';
-import { AvailableFeatures } from '@app-builder/server-fns/screenings';
 import { type OpenSanctionsCatalogDto } from 'marble-api';
 import * as R from 'remeda';
 

@@ -33,7 +33,7 @@ export const FTM_ENTITIES_PROPERTIES = {
   Organization: ['name', 'registrationNumber', 'jurisdiction', 'country', 'email', 'phone', 'website', 'mainCountry'],
   Vessel: ['name', 'imoNumber', 'registrationNumber', 'mmsi', 'callSign', 'country', 'flag'],
   Airplane: ['name', 'registrationNumber', 'country'],
-} as const satisfies Record<FtmEntity, string[]>;
+} as const satisfies Record<FtmEntity, readonly string[]>;
 
 type FtmEntityProperty<T extends FtmEntity> = (typeof FTM_ENTITIES_PROPERTIES)[T][number];
 export type FtmEntityPropertyKey = {

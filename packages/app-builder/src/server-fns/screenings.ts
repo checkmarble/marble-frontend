@@ -1,11 +1,10 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
-import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { availableFeatures, type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getScreeningFileUploadEndpoint } from '@app-builder/utils/files';
 import { createServerFn } from '@tanstack/react-start';
-import { listScreeningAvailableFilters } from 'marble-api';
 import { z } from 'zod/v4';
 
 /** Zod schemas and types */
@@ -110,13 +109,7 @@ export type SearchActionResponse =
 
 export type RefineActionResponse = { success: true; data: Screening } | { success: false; error: unknown };
 
-export type AvailableFeatures = Parameters<typeof listScreeningAvailableFilters>[0];
-export const avalableFeatures = [
-  'transaction_monitoring',
-  'continuous_monitoring',
-  'manual_search',
-] as const satisfies Array<AvailableFeatures>;
-export const getAvailableFiltersSchema = z.object({ feature: z.enum(avalableFeatures) });
+export const getAvailableFiltersSchema = z.object({ feature: z.enum(availableFeatures) });
 export type GetAvailableFiltersInput = z.infer<typeof getAvailableFiltersSchema>;
 
 /** Server functions */

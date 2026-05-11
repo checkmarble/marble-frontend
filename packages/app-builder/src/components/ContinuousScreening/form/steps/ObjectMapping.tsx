@@ -341,7 +341,7 @@ const FtmFieldSelector = ({
 }: {
   ftmEntity: string;
   ftmProperty: string | null;
-  availableProperties: string[];
+  availableProperties: readonly string[];
   readOnly: boolean;
   onChange: (ftmProperty: string | null) => void;
 }) => {

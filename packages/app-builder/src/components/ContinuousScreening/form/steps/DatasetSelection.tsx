@@ -3,7 +3,7 @@ import {
   DatasetSelectionContent,
   ListAndTopicDatasetConfiguration,
 } from '@app-builder/components/ListAndTopicConfiguration';
-import { AvailableFeatures } from '@app-builder/server-fns/screenings';
+import { type AvailableFeatures } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 
 export const DatasetSelection = ({ useCase }: { useCase: AvailableFeatures }) => {

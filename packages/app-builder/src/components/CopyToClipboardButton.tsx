@@ -11,7 +11,7 @@ const variances = cva(
       size: {
         sm: 'p-0.5 gap-2',
         lg: 'min-h-8 gap-3 px-2',
-        chip: 'cursor-pointer border border-grey-border py-v2-xs px-v2-sm flex items-center gap-v2-xs font-semibold text-small bg-surface-card',
+        chip: 'py-v2-xs px-v2-sm gap-v2-xs font-semibold text-small bg-surface-card',
       },
       dimmed: {
         true: 'text-grey-secondary',

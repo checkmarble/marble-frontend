@@ -1,8 +1,7 @@
 import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { Spinner } from '@app-builder/components/Spinner';
-import { type ScreeningCategory } from '@app-builder/models/screening';
+import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { AvailableFeatures } from '@app-builder/server-fns/screenings';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

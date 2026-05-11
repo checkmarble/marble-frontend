@@ -1,4 +1,5 @@
 import {
+  type listScreeningAvailableFilters,
   ScreeningAvailableFilters,
   type ScreeningDto,
   type ScreeningEntityDto,
@@ -30,6 +31,13 @@ export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEnti
 export type ScreeningStatus = 'in_review' | 'confirmed_hit' | 'no_hit' | 'error';
 export type ScreeningMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
 export type OpenSanctionEntitySchema = (typeof openSanctionEntitySchemas)[number];
+
+export type AvailableFeatures = Parameters<typeof listScreeningAvailableFilters>[0];
+export const availableFeatures = [
+  'transaction_monitoring',
+  'continuous_monitoring',
+  'manual_search',
+] as const satisfies Array<AvailableFeatures>;
 
 export type OpenSanctionEntity = {
   id: string;
