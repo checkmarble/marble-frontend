@@ -3,7 +3,7 @@ import { closeCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { closeCasePayloadSchema, type CloseCasePayload };
+export { type CloseCasePayload, closeCasePayloadSchema };
 
 export const useCloseCaseMutation = () => {
   const closeCase = useServerFn(closeCaseFn);

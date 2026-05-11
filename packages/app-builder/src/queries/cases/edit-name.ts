@@ -3,7 +3,7 @@ import { editNameFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { editNamePayloadSchema, type EditNamePayload };
+export { type EditNamePayload, editNamePayloadSchema };
 
 export const useEditNameMutation = () => {
   const editName = useServerFn(editNameFn);

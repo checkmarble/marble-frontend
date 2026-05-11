@@ -5,11 +5,8 @@ import * as R from 'remeda';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export type SuccessCasesQuery = ReturnType<typeof useGetCasesQuery> extends infer T
-  ? T extends { isSuccess: true }
-    ? T
-    : never
-  : never;
+export type SuccessCasesQuery =
+  ReturnType<typeof useGetCasesQuery> extends infer T ? (T extends { isSuccess: true } ? T : never) : never;
 
 type PaginationRowProps = {
   casesQuery: SuccessCasesQuery;

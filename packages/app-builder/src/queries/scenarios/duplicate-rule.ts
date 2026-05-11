@@ -3,7 +3,7 @@ import { duplicateRuleFn } from '@app-builder/server-fns/scenarios';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { duplicateRulePayloadSchema, type DuplicateRulePayload };
+export { type DuplicateRulePayload, duplicateRulePayloadSchema };
 
 export const useDuplicateRuleMutation = (scenarioId: string, iterationId: string) => {
   const duplicateRule = useServerFn(duplicateRuleFn);

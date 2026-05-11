@@ -3,7 +3,7 @@ import { updateTagFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { updateTagPayloadSchema, type UpdateTagPayload };
+export { type UpdateTagPayload, updateTagPayloadSchema };
 
 export const useUpdateTagMutation = () => {
   const updateTag = useServerFn(updateTagFn);
