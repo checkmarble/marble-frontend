@@ -16,6 +16,8 @@ This README is a global README for the monorepo. Each package may have its own R
 
 ### Installations
 
+> **Node.js & Bun versions** are pinned in `.tool-versions` (Node ≥ 22.13, currently 22.18; Bun 1.3.1). The root `package.json` `engines` field mirrors the Node range required by our dependencies (notably `@faker-js/faker` v10). Install [mise](https://mise.jdx.dev/) to pick them up automatically.
+
 #### Install Bun
 
 [Install mise-en-place](https://mise.jdx.dev/getting-started.html) or alternatively install Bun independently

@@ -11,6 +11,9 @@
     "typescript": "5.8.2"
   },
   "license": "MIT",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0"
+  },
   "overrides": {
     "@tanstack/react-router": "1.168.21",
     "@tanstack/react-router-devtools": "1.166.13",
