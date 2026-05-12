@@ -39,6 +39,8 @@ const PublicEnvVarsSchema = z.object({
 
   // White-labeling: custom logo URL for sidebar
   CUSTOM_LOGO_URL: z.string().optional(),
+
+  CASE_MANAGER_V2_ENABLED: z.string().optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -91,6 +93,8 @@ interface ServerEnvVars {
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
   CUSTOM_LOGO_URL?: string;
+
+  CASE_MANAGER_V2_ENABLED?: string;
 }
 
 /**
@@ -109,6 +113,8 @@ interface ClientEnvVars {
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
   CUSTOM_LOGO_URL?: string;
+
+  CASE_MANAGER_V2_ENABLED?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -117,6 +123,7 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
+    CASE_MANAGER_V2_ENABLED: getServerEnv('CASE_MANAGER_V2_ENABLED'),
   };
 }
 

@@ -157,8 +157,10 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
 
   if (variant === 'full' || variant === 'icon-only') {
     return (
-      <div className={cn(badgeTextVariants({ status }), 'flex items-center gap-v2-sm text-small whitespace-nowrap')}>
-        <div className="flex items-center gap-v2-xs shrink-0">
+      <div
+        className={cn(badgeTextVariants({ status }), 'inline-flex items-center gap-v2-sm text-small whitespace-nowrap')}
+      >
+        <div className="inline-flex items-center gap-v2-xs shrink-0">
           <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
           {variant === 'full' ? <span className="font-medium">{t(`cases:case.status.${status}`)}</span> : null}
         </div>
@@ -178,7 +180,7 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
           className={cn(
             badgeTextVariants({ status }),
             badgeBorderVariants({ status }),
-            'flex items-center gap-v2-xs h-6 rounded-full px-v2-sm text-small whitespace-nowrap',
+            'inline-flex items-center gap-v2-xs h-6 rounded-full px-v2-sm text-small whitespace-nowrap',
           )}
         >
           <Icon icon={statusIconMap[status]} className="size-4 shrink-0" />

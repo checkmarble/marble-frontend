@@ -29,7 +29,7 @@ export const CtaClassName = cva(
         default: 'px-4 py-2 gap-1',
         medium: 'px-2 py-1.5 gap-1',
         xs: 'h-6 px-1 gap-[3px] text-xs w-fit font-medium',
-        small: 'px-1.5 h-7 gap-0.5 text-xs w-fit',
+        small: 'px-1.5 h-6 gap-0.5 text-xs w-fit',
         icon: 'size-6 gap-1',
         dropdown: 'p-2 gap-4',
       },
@@ -72,22 +72,22 @@ export const CtaV2ClassName = cva(
       {
         size: 'small',
         mode: 'normal',
-        class: 'px-v2-sm py-v2-xs',
+        class: 'px-v2-sm h-6',
       },
       {
         size: 'small',
         mode: 'icon',
-        class: 'p-v2-xs size-7',
+        class: 'justify-center size-6',
       },
       {
         size: 'default',
         mode: 'normal',
-        class: 'p-v2-sm h-10',
+        class: 'p-v2-sm h-8',
       },
       {
         size: 'default',
         mode: 'icon',
-        class: 'p-v2-sm size-10',
+        class: 'p-v2-sm size-8',
       },
       // Primary + Filled
       {
@@ -108,7 +108,7 @@ export const CtaV2ClassName = cva(
         variant: 'primary',
         appearance: 'link',
         class:
-          'bg-transparent border-transparent p-0 h-auto rounded-none enabled:hover:underline enabled:hover:bg-transparent text-purple-primary enabled:hover:text-purple-hover disabled:text-grey-disabled disabled:no-underline dark:text-purple-hover dark:enabled:hover:text-purple-hover dark:disabled:text-purple-disabled',
+          'bg-transparent border-transparent p-0 h-6 rounded-none enabled:hover:underline enabled:hover:bg-transparent text-purple-primary enabled:hover:text-purple-hover disabled:text-grey-disabled disabled:no-underline dark:text-purple-hover dark:enabled:hover:text-purple-hover dark:disabled:text-purple-disabled',
       },
       // Secondary + Stroked
       {
@@ -122,7 +122,7 @@ export const CtaV2ClassName = cva(
         variant: 'secondary',
         appearance: 'link',
         class:
-          'bg-transparent border-transparent p-0 h-auto rounded-none enabled:hover:underline enabled:hover:bg-transparent text-grey-secondary enabled:hover:text-grey-primary disabled:text-grey-disabled disabled:no-underline dark:text-grey-secondary dark:enabled:hover:text-grey-primary dark:disabled:text-grey-disabled',
+          'bg-transparent border-transparent p-0 h-6 rounded-none enabled:hover:underline enabled:hover:bg-transparent text-grey-secondary enabled:hover:text-grey-primary disabled:text-grey-disabled disabled:no-underline dark:text-grey-secondary dark:enabled:hover:text-grey-primary dark:disabled:text-grey-disabled',
       },
       // Warning + Filled
       {

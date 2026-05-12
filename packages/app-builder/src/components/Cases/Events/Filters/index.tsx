@@ -56,17 +56,17 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
       ) : null}
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <Button variant="secondary">
-            <Icon icon="add-circle" className="size-3.5" />
+          <Button variant="secondary" appearance="link">
+            <Icon icon="plus" className="size-4" />
             <span>Type</span>
-            {filters.types.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
+            {/*{filters.types.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
             {filters.types.length >= 3 ? (
               <Badge>{t('cases:case_detail.history.nb_selected', { count: filters.types.length })}</Badge>
             ) : (
               filters.types.map((type) => (
                 <Badge key={type}>{t(`cases:case_detail.history.event_type_category.${type}`)}</Badge>
               ))
-            )}
+            )}*/}
           </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sideOffset={4} className="max-h-[400px] max-w-[210px]" align="end">
@@ -97,8 +97,8 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
       </MenuCommand.Menu>
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <Button variant="secondary">
-            <Icon icon="add-circle" className="size-3.5" />
+          <Button variant="secondary" appearance="link">
+            <Icon icon="plus" className="size-4" />
             <span>Date</span>
             {filters.startDate || filters.endDate ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
             {filters.startDate ? (
