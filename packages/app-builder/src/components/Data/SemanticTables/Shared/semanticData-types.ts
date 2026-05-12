@@ -134,82 +134,86 @@ export function getMockValue(
   semanticType?: SemanticTypeField,
   semanticSubType?: SemanticSubTypeField | undefined,
 ) {
-  if (dataType === 'Coords') return '48.8566, 2.3522';
-  if (dataType === 'IpAddress') return '127.0.0.1';
-  if (dataType === 'Bool') return true;
-  if (!semanticType) {
-    return match(dataType)
-      .with('String', () => 'Welcome to Marble')
-      .with('Timestamp', () => '2021-01-01T14:20:00.000Z')
-      .with(P.union('Int', 'Float'), () => 12345678)
+  try {
+    if (dataType === 'Coords') return '48.8566, 2.3522';
+    if (dataType === 'IpAddress') return '127.0.0.1';
+    if (dataType === 'Bool') return true;
+    if (!semanticType) {
+      return match(dataType)
+        .with('String', () => 'Welcome to Marble')
+        .with('Timestamp', () => '2021-01-01T14:20:00.000Z')
+        .with(P.union('Int', 'Float'), () => 12345678)
+        .exhaustive();
+    }
+    const value = match(semanticType)
+      .with('text', () => 'Welcome to Marble')
+      .with('name', () =>
+        semanticSubType
+          ? match(semanticSubType as SemanticSubTypeFieldMap['name'])
+              .with('caption', () => 'Company name or John Doe Jr')
+              .with('first_name', () => 'John')
+              .with('last_name', () => 'Doe')
+              .with('middle_name', () => 'Jr')
+              .exhaustive()
+          : 'John Doe Jr',
+      )
+      .with('enum', () =>
+        semanticSubType
+          ? match(semanticSubType as SemanticSubTypeFieldMap['enum'])
+              .with('currency', () => 'EUR')
+              .with('country', () => 'FR')
+              .with('key_color_value', () => 'value from enum')
+              .with('mcc_code', () => '5219')
+              .with('autocomplete', () => 'Autocompleted value')
+              .exhaustive()
+          : 'Enum value',
+      )
+      .with('currency_code', () => 'EUR')
+      .with('foreign_key', () => 'ForeignKey')
+      .with('country', () => 'FR')
+      .with('address', () => '123 Main St, Anytown, USA')
+      .with('unique_id', () =>
+        semanticSubType
+          ? match(semanticSubType as SemanticSubTypeFieldMap['unique_id'])
+              .with('registration_number', () => 'REG1234567890')
+              .with('tax_id', () => 'TAX1234567890')
+              .with('opaque_id', () => '58e6908a-4eab-4985-8ebe-00b2f6900507')
+              .exhaustive()
+          : 'Unique ID value',
+      )
+      .with('link', () =>
+        semanticSubType
+          ? match(semanticSubType as SemanticSubTypeFieldMap['link'])
+              .with('url', () => 'https://www.google.com')
+              .with('email', () => 'john.doe@example.com')
+              .with('phone', () => '+33612345678')
+              .exhaustive()
+          : 'Link value',
+      )
+      .with('account_identifier', () =>
+        semanticSubType
+          ? match(semanticSubType as SemanticSubTypeFieldMap['account_identifier'])
+              .with('account_number', () => '12345678901234567890')
+              .with('iban', () => 'FR7612345678901234567890123')
+              .with('bic', () => 'TRZFR32AXXX')
+              .exhaustive()
+          : 'Account identifier value',
+      )
+      .with('timestamp', () => '2021-01-01T14:20:00.000Z')
+      .with('date_of_birth', () => '1990-01-01')
+      .with('last_update', () => '2021-01-01T14:20:00.000Z')
+      .with('creation_date', () => '2021-01-01T14:20:00.000Z')
+      .with('deletion_date', () => '2021-01-01T14:20:00.000Z')
+      .with('initiation_date', () => '2021-01-01T14:20:00.000Z')
+      .with('validation_date', () => '2021-01-01T14:20:00.000Z')
+      .with('number', () => 12345.6789)
+      .with('monetary_amount', () => 1234567890)
+      .with('percentage', () => 0.34)
       .exhaustive();
+    return value;
+  } catch {
+    return 'unknown value';
   }
-  const value = match(semanticType)
-    .with('text', () => 'Welcome to Marble')
-    .with('name', () =>
-      semanticSubType
-        ? match(semanticSubType as SemanticSubTypeFieldMap['name'])
-            .with('caption', () => 'Company name or John Doe Jr')
-            .with('first_name', () => 'John')
-            .with('last_name', () => 'Doe')
-            .with('middle_name', () => 'Jr')
-            .exhaustive()
-        : 'John Doe Jr',
-    )
-    .with('enum', () =>
-      semanticSubType
-        ? match(semanticSubType as SemanticSubTypeFieldMap['enum'])
-            .with('currency', () => 'EUR')
-            .with('country', () => 'FR')
-            .with('key_color_value', () => 'value from enum')
-            .with('mcc_code', () => '5219')
-            .with('autocomplete', () => 'Autocompleted value')
-            .exhaustive()
-        : 'Enum value',
-    )
-    .with('currency_code', () => 'EUR')
-    .with('foreign_key', () => 'ForeignKey')
-    .with('country', () => 'FR')
-    .with('address', () => '123 Main St, Anytown, USA')
-    .with('unique_id', () =>
-      semanticSubType
-        ? match(semanticSubType as SemanticSubTypeFieldMap['unique_id'])
-            .with('registration_number', () => 'REG1234567890')
-            .with('tax_id', () => 'TAX1234567890')
-            .with('opaque_id', () => '58e6908a-4eab-4985-8ebe-00b2f6900507')
-            .exhaustive()
-        : 'Unique ID value',
-    )
-    .with('link', () =>
-      semanticSubType
-        ? match(semanticSubType as SemanticSubTypeFieldMap['link'])
-            .with('url', () => 'https://www.google.com')
-            .with('email', () => 'john.doe@example.com')
-            .with('phone', () => '+33612345678')
-            .exhaustive()
-        : 'Link value',
-    )
-    .with('account_identifier', () =>
-      semanticSubType
-        ? match(semanticSubType as SemanticSubTypeFieldMap['account_identifier'])
-            .with('account_number', () => '12345678901234567890')
-            .with('iban', () => 'FR7612345678901234567890123')
-            .with('bic', () => 'TRZFR32AXXX')
-            .exhaustive()
-        : 'Account identifier value',
-    )
-    .with('timestamp', () => '2021-01-01T14:20:00.000Z')
-    .with('date_of_birth', () => '1990-01-01')
-    .with('last_update', () => '2021-01-01T14:20:00.000Z')
-    .with('creation_date', () => '2021-01-01T14:20:00.000Z')
-    .with('deletion_date', () => '2021-01-01T14:20:00.000Z')
-    .with('initiation_date', () => '2021-01-01T14:20:00.000Z')
-    .with('validation_date', () => '2021-01-01T14:20:00.000Z')
-    .with('number', () => 12345.6789)
-    .with('monetary_amount', () => 1234567890)
-    .with('percentage', () => 0.34)
-    .exhaustive();
-  return value;
 }
 
 /**
