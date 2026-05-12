@@ -870,12 +870,26 @@ export type ScenarioIterationDto = {
     updated_at: string;
     archived: boolean;
 };
+export type ScreeningConfigBodySectionDto = {
+    enabled?: boolean;
+    datasets?: string[];
+    topics?: {
+        [key: string]: string[];
+    };
+};
+export type ScreeningConfigBodyFiltersDto = {
+    sanctions?: ScreeningConfigBodySectionDto;
+    peps?: ScreeningConfigBodySectionDto;
+    adverse_media?: ScreeningConfigBodySectionDto;
+    other?: ScreeningConfigBodySectionDto;
+};
 export type ScreeningConfigDto = {
     id?: string;
     name?: string;
     description?: string;
     rule_group?: string;
     datasets?: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     threshold?: number;
     forced_outcome?: OutcomeDto;
     trigger_rule?: NodeDto;
@@ -1177,6 +1191,7 @@ export type CreateContinuousScreeningConfigDto = {
     inbox_id: string;
     algorithm?: string;
     datasets: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     match_threshold: number;
     match_limit: number;
     object_types: string[];

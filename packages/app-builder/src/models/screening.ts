@@ -473,5 +473,5 @@ export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other'
 };
 
 export type ScreeningAvailableFiltersAdapted = ScreeningAvailableFilters & {
-  conditional_filters?: { key: string; name: string; topics: { name: string; title: string }[] }[];
+  conditional_filters?: { key: string; name: string; topics: { name: string; key?: string; title: string }[] }[];
 };

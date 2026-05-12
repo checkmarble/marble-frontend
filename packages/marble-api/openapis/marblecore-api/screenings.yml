@@ -447,6 +447,32 @@ components:
                   type: string
         enabled:
           type: boolean
+    ScreeningConfigBodySectionDto:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        datasets:
+          type: array
+          items:
+            type: string
+        topics:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    ScreeningConfigBodyFiltersDto:
+      type: object
+      properties:
+        sanctions:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        peps:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        adverse_media:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        other:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
     OpenSanctionsDatasetFreshnessDto:
       type: object
       required:
@@ -490,6 +516,8 @@ components:
           type: array
           items:
             type: string
+        filters:
+          $ref: '#/components/schemas/ScreeningConfigBodyFiltersDto'
         threshold:
           type: integer
           minimum: 0

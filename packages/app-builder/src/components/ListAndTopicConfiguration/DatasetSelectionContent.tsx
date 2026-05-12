@@ -135,7 +135,7 @@ const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory
       listConfig.update((state) => {
         for (const ct of dependents) {
           for (const item of ct.items) {
-            const prefix = item.name.split('.')[0];
+            const prefix = item.key.split('.')[0];
             if (!selectedPrefixes.some((sel) => sel === prefix)) {
               state.datasets[item.name] = false;
             }
@@ -323,6 +323,9 @@ const ViewTag = ({ label }: { label: string }) => (
 );
 
 type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
+type ConditionalTopicItem = NonNullable<SectionData['conditionalTopics']>[keyof NonNullable<
+  SectionData['conditionalTopics']
+>]['items'][number];
 
 const ConditionalFilterGroupRow = ({
   sectionKey,
@@ -332,7 +335,7 @@ const ConditionalFilterGroupRow = ({
 }: {
   sectionKey: ScreeningCategory;
   groupKey: string;
-  allItems: TopicItem[];
+  allItems: ConditionalTopicItem[];
   dependsOnItems: string[];
 }) => {
   const selectedPrefixes = ListAndTopicDatasetConfiguration.select((state) =>
@@ -343,7 +346,7 @@ const ConditionalFilterGroupRow = ({
     selectedPrefixes.length === 0
       ? allItems
       : allItems.filter((item) => {
-          const prefix = item.name.split('.')[0];
+          const prefix = item.key.split('.')[0];
           return selectedPrefixes.some((sel) => sel === prefix);
         });
 

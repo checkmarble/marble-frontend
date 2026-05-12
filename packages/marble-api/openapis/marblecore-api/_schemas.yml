@@ -291,6 +291,10 @@ OpenSanctionsUpstreamDatasetFreshnessDto:
   $ref: screenings.yml#/components/schemas/OpenSanctionsUpstreamDatasetFreshnessDto
 OpenSanctionsCatalogDto:
   $ref: screenings.yml#/components/schemas/OpenSanctionsCatalogDto
+ScreeningConfigBodySectionDto:
+  $ref: screenings.yml#/components/schemas/ScreeningConfigBodySectionDto
+ScreeningConfigBodyFiltersDto:
+  $ref: screenings.yml#/components/schemas/ScreeningConfigBodyFiltersDto
 ScreeningConfigDto:
   $ref: screenings.yml#/components/schemas/ScreeningConfigDto
 ScreeningDto:

@@ -9,6 +9,7 @@ import {
   CreateContinuousScreeningConfigDto,
   FtmEntity,
   OpenSanctionsEntityDto,
+  ScreeningConfigBodyFiltersDto,
   ScreeningQueryDto,
 } from 'marble-api';
 import * as R from 'remeda';
@@ -79,17 +80,45 @@ export type CreateContinuousScreeningConfig = {
   mappingConfigs: CreateMappingConfig[];
 };
 
+function createContinuousScreeningFilters(selection: string[]): ScreeningConfigBodyFiltersDto {
+  const filters: ScreeningConfigBodyFiltersDto = {
+    sanctions: { enabled: false },
+    peps: { enabled: false },
+    adverse_media: { enabled: false },
+    other: { enabled: false },
+  };
+  for (const item of selection) {
+    const chunks = item.split(':');
+    const section = chunks[0] as keyof ScreeningConfigBodyFiltersDto;
+    if (!filters[section]) continue;
+    if (chunks.length === 1) filters[section].enabled = true;
+    if (chunks.length < 3) continue;
+    const type = chunks[1];
+    if (type !== 'dataset' && type !== 'topic') continue;
+    const name = chunks[2] as string;
+    if (!name) continue;
+    if (type === 'dataset') filters[section].datasets?.push(name);
+    const value = chunks[3] as string;
+    if (!value) continue;
+    if (type === 'topic') filters[section].topics?.[name]?.push(value);
+  }
+  console.log('filters', filters);
+  return filters;
+}
+
 export function adaptCreateContinuousScreeningConfigDto(
   configuration: CreateContinuousScreeningConfig,
 ): CreateContinuousScreeningConfigDto {
+  const datasets = Object.entries(configuration.datasets)
+    .filter(([_, value]) => value)
+    .map(([key]) => key);
   return {
     name: configuration.name,
     description: configuration.description,
     object_types: configuration.mappingConfigs.map((mc) => mc.objectType),
     algorithm: configuration.algorithm,
-    datasets: Object.entries(configuration.datasets)
-      .filter(([_, value]) => value)
-      .map(([key]) => key),
+    datasets: [],
+    filters: createContinuousScreeningFilters(datasets),
     inbox_id: configuration.inboxId,
     match_threshold: configuration.matchThreshold,
     match_limit: configuration.matchLimit,
