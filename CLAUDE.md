@@ -29,7 +29,7 @@ cd packages/app-builder && bun run generate-routes
 
 ```
 packages/
-  app-builder/         # Main Remix application (routes, components, queries)
+  app-builder/         # Main TanStack Start application (routes, components, queries, server-fns)
   backoffice/          # Backoffice application
   ui-design-system/    # Reusable UI components (Button, Modal, Select, etc.)
   ui-icons/            # Icon components
@@ -43,7 +43,8 @@ packages/
 ## Tech Stack
 
 - **Bun** - Package manager and runtime
-- **Remix** - Full-stack React framework
+- **TanStack Start** - SSR React framework (Vite + Nitro)
+- **TanStack Router** - File-based routing
 - **React 18** - UI library
 - **Radix UI** - Headless UI primitives
 - **Tailwind CSS 4** - Styling
@@ -56,10 +57,10 @@ packages/
 
 ```
 packages/app-builder/src/
-  routes/           # Remix flat routes (_builder+, _auth+, ressources+)
+  routes/           # TanStack Router file-based routes (_app/, ressources/)
+  server-fns/       # createServerFn handlers called via React Query (auth, cases, etc.)
   components/       # Feature components (Cases/, Decisions/, etc.)
-  core/             # createServerFn, data(), request utilities
-  middlewares/      # authMiddleware, handleRedirectMiddleware
+  middlewares/      # authMiddleware, servicesMiddleware, caseDetailMiddleware
   contexts/         # React contexts
   queries/          # TanStack Query hooks (one file per query)
   repositories/     # Data access layer
@@ -88,9 +89,10 @@ import { match } from 'ts-pattern';
 ```
 
 ### Routes
-- Flat routes with `+` folders: `_builder+/cases+/$caseId.tsx`
-- Use `handle` for breadcrumbs
-- Loaders for data fetching
+- File-based routing: `_app/_builder/cases.$caseId.tsx` (underscore prefix = layout route, `$param` = dynamic segment, dot-separated filename = nested URL path)
+- Define routes with `createFileRoute('/_app/_builder/cases')({ staticData, loader, component })`
+- Use `staticData.BreadCrumbs` (array of render functions) for breadcrumbs
+- Loaders: inline `createServerFn().middleware([authMiddleware]).handler(...)` passed to the route's `loader` option
 
 ## Task Management
 

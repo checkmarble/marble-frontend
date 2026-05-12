@@ -101,20 +101,11 @@ export function MyComponent() {
 }
 ```
 
-### In Route Handles
-
-Declare namespaces in `handle.i18n`:
-
-```typescript
-export const handle = {
-  i18n: ['common', 'cases', 'navigation'] satisfies Namespace,
-};
-```
-
 ### Server-Side Translation
 
 ```typescript
 const { i18nextService: { getFixedT } } = context.services;
+const request = getRequest(); // from '@tanstack/react-start/server'
 const t = await getFixedT(request, ['common', 'data']);
 
 setToastMessage(session, {
@@ -122,6 +113,8 @@ setToastMessage(session, {
   message: t('data:apply_archetype.success'),
 });
 ```
+
+i18n namespaces no longer live in a `handle` export — each component just calls `useTranslation([...])` with the namespaces it needs. Server functions get the request via `getRequest()` to resolve the per-request `t`.
 
 ### Adding i18n Keys
 
@@ -181,10 +174,15 @@ setToastMessage(toastSession, {
   message: t('common:errors.unknown'),
 });
 
-// Return with Set-Cookie header to persist toast
-return data({ success: false, errors: [] }, [
-  ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
-]);
+// Return with Set-Cookie header to persist toast (TanStack Start pattern)
+import { setResponseHeaders } from '@tanstack/react-start/server';
+
+setResponseHeaders(
+  new Headers({
+    'Set-Cookie': await toastSessionService.commitSession(toastSession),
+  }),
+);
+return { success: false, errors: [] };
 ```
 
 ---

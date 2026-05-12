@@ -1,33 +1,35 @@
 # Data Fetching Patterns
 
-Data fetching architecture: loaders, actions, queries, mutations, and repositories.
+Data fetching architecture in TanStack Start: route loaders, server functions, queries, mutations, and repositories.
 
 ---
 
 ## Architecture
 
 ```
-Route loader/action -> Repository -> API Client
-Component -> Query Hook -> fetch(resource route) -> Route loader -> Repository -> API Client
+Route loader (createServerFn)        -> Repository -> API Client     (SSR data for page render)
+Component -> Query Hook -> fetch(    -> server-fn (createServerFn)    -> Repository -> API Client
+                              OR
+                           resource route in routes/ressources/)
 ```
 
-- **Loaders/Actions**: Server-side, access repositories via middleware context
-- **Query Hooks**: Client-side, fetch from Remix resource routes (`ressources+/`)
-- **Repositories**: Abstract API calls, transform DTOs with adapters
+- **Route loaders**: server-side, inline `createServerFn` chains, passed via `createFileRoute({ loader })`, accessed in components via `Route.useLoaderData()`
+- **Server functions** (`server-fns/{domain}.ts`): server-side handlers called from React Query (mutations, on-demand fetches)
+- **Resource file routes** (`routes/ressources/...`): for downloads, streams, anything returning a raw `Response`
+- **Repositories**: abstract API calls, transform DTOs with adapters
 
 ---
 
-## Loaders
-
-### With createServerFn + Middleware (preferred for new code)
+## Route Loaders
 
 ```typescript
-import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { createFileRoute } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
 
-export const loader = createServerFn(
-  [authMiddleware],
-  async function casesLoader({ request, context }) {
+const casesLoader = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
     const { user, entitlements, inbox: inboxRepository } = context.authInfo;
     const inboxes = await inboxRepository.listInboxesMetadata();
 
@@ -36,101 +38,85 @@ export const loader = createServerFn(
       inboxes,
       entitlements: { autoAssignment: entitlements.autoAssignment },
     };
-  },
-);
+  });
+
+export const Route = createFileRoute('/_app/_builder/cases/')({
+  loader: () => casesLoader(),
+  component: CasesPage,
+});
 ```
 
 Key points:
+- Chain syntax: `createServerFn().middleware([...]).handler(async ({ context }) => {...})`
 - `context.authInfo` provides authenticated user, repositories, entitlements
-- `context.services` provides toastSessionService, i18nextService, etc.
-- Middleware chain builds context: `[handleRedirectMiddleware, authMiddleware]`
-
-### Plain Remix Loader (legacy pattern, still common)
-
-```typescript
-import { type LoaderFunctionArgs } from '@remix-run/node';
-import { initServerServices } from '@app-builder/services/init.server';
-
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { inbox } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-
-  const inboxes = await inbox.listInboxesMetadata();
-  return Response.json(inboxes);
-}
-```
+- `context.services` provides `toastSessionService`, `i18nextService`, `authService`
+- Need the raw request? `import { getRequest } from '@tanstack/react-start/server'` then call `getRequest()` inside the handler
+- `authMiddleware` already handles auth redirects (throws `redirect()` from `@tanstack/react-router`) — no separate `handleRedirectMiddleware`
 
 ---
 
-## Actions
+## Server Functions (mutations & on-demand fetches)
 
-### With createServerFn + Middleware + Toast
+Server functions live in `packages/app-builder/src/server-fns/{domain}.ts` and are called by React Query hooks.
 
 ```typescript
-import { createServerFn, data } from '@app-builder/core/requests';
+// server-fns/lists.ts
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
+import { setResponseHeaders } from '@tanstack/react-start/server';
 import { z } from 'zod/v4';
 
-export const action = createServerFn(
-  [handleRedirectMiddleware, authMiddleware],
-  async function createListAction({ request, context }) {
+const createListPayloadSchema = z.object({ name: z.string().min(1) });
+
+export const createListFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(createListPayloadSchema)
+  .handler(async ({ context, data }) => {
     const { toastSessionService } = context.services;
-    const toastSession = await toastSessionService.getSession(request);
-    const rawPayload = await request.json();
-
-    const payload = createListPayloadSchema.safeParse(rawPayload);
-    if (!payload.success) {
-      return { success: false, errors: z.treeifyError(payload.error) };
-    }
-
     try {
-      const result = await context.authInfo.customListsRepository.createCustomList(payload.data);
-      return redirect(
-        getRoute('/detection/lists/:listId', { listId: fromUUIDtoSUUID(result.id) }),
-      );
-    } catch (error) {
-      setToastMessage(toastSession, {
-        type: 'error',
-        messageKey: isStatusConflictHttpError(error)
-          ? 'common:errors.list.duplicate_list_name'
-          : 'common:errors.unknown',
+      const result = await context.authInfo.customListsRepository.createCustomList(data);
+      throw redirect({
+        href: `/detection/lists/${fromUUIDtoSUUID(result.id)}`,
       });
-
-      return data({ success: false, errors: [] }, [
-        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
-      ]);
+    } catch (error) {
+      if (isStatusConflictHttpError(error)) {
+        const toastSession = await toastSessionService.getSession();
+        setToastMessage(toastSession, {
+          type: 'error',
+          messageKey: 'common:errors.list.duplicate_list_name',
+        });
+        setResponseHeaders(
+          new Headers({
+            'Set-Cookie': await toastSessionService.commitSession(toastSession),
+          }),
+        );
+        return { success: false, errors: [] };
+      }
+      throw error;
     }
-  },
-);
+  });
 ```
 
 Key points:
-- `data(payload, headers)` returns data with custom headers (e.g., Set-Cookie)
-- `setToastMessage()` flashes a toast into the session
-- `z.treeifyError()` converts Zod errors to a structured tree
-- Common middleware stack: `[handleRedirectMiddleware, authMiddleware]`
+- `.inputValidator(schema)` validates `data` on the server before the handler runs; the handler receives `{ context, data }` where `data` is the parsed result
+- `redirect()` from `@tanstack/react-router` is thrown (not returned) to trigger navigation
+- `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` sets headers like `Set-Cookie` — there is no `data()` helper
+- For Set-Cookie patterns, set the header then return a plain object
+- Call from the client: `createListFn({ data: { name: 'My List' } })`
 
-### Plain Remix Action (simpler cases)
+### Calling from React Query
 
 ```typescript
-import { type ActionFunctionArgs } from '@remix-run/node';
+import { useMutation } from '@tanstack/react-query';
+import { createListFn } from '@app-builder/server-fns/lists';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const [raw, { cases }] = await Promise.all([
-    request.json(),
-    authService.isAuthenticated(request, { failureRedirect: getRoute('/sign-in') }),
-  ]);
-
-  const { success, data, error } = editNamePayloadSchema.safeParse(raw);
-  if (!success) return { success: false, errors: z.treeifyError(error) };
-
-  await cases.updateCase({ caseId: data.caseId, body: { name: data.name } });
-  return { success: true, errors: [] };
+export function useCreateListMutation() {
+  return useMutation({
+    mutationKey: ['lists', 'create'],
+    mutationFn: (payload: { name: string }) => createListFn({ data: payload }),
+  });
 }
 ```
 
@@ -138,25 +124,19 @@ export async function action({ request }: ActionFunctionArgs) {
 
 ## Query Hooks
 
-One file per query in `queries/{domain}/`. Queries fetch from resource routes.
+One file per query in `queries/{domain}/`. Queries call server functions directly, or fetch from resource file routes for downloads.
 
-### Basic Query
+### Basic Query (server function)
 
 ```typescript
 // queries/scenarios/scenario-iteration-rules.ts
+import { getScenarioIterationRulesFn } from '@app-builder/server-fns/scenarios';
 import { useQuery } from '@tanstack/react-query';
-import { getRoute } from '@app-builder/utils/routes';
-
-const endpoint = (id: string) =>
-  getRoute('/ressources/scenarios/:scenarioIterationId/rules', { scenarioIterationId: id });
 
 export function useScenarioIterationRules(scenarioIterationId: string) {
   return useQuery({
     queryKey: ['scenario-iteration-rules', scenarioIterationId],
-    queryFn: async () => {
-      const response = await fetch(endpoint(scenarioIterationId));
-      return response.json() as Promise<{ rules: ScenarioIterationRule[] }>;
-    },
+    queryFn: () => getScenarioIterationRulesFn({ data: { scenarioIterationId } }),
   });
 }
 ```
@@ -165,6 +145,7 @@ export function useScenarioIterationRules(scenarioIterationId: string) {
 
 ```typescript
 // queries/cases/get-cases.ts
+import { getCasesFn } from '@app-builder/server-fns/cases';
 import { useInfiniteQuery, keepPreviousData } from '@tanstack/react-query';
 
 export function useGetCasesQuery(
@@ -175,14 +156,8 @@ export function useGetCasesQuery(
 ) {
   return useInfiniteQuery({
     queryKey: ['cases', 'get-cases', inboxId, filters, limit, order],
-    queryFn: async ({ pageParam }) => {
-      const qs = QueryString.stringify(
-        { ...filters, offsetId: pageParam, limit, order },
-        { skipNulls: true, addQueryPrefix: true },
-      );
-      const response = await fetch(endpoint(inboxId, qs));
-      return response.json() as Promise<PaginatedResponse<Case>>;
-    },
+    queryFn: ({ pageParam }) =>
+      getCasesFn({ data: { inboxId, filters, limit, order, offsetId: pageParam } }),
     initialPageParam: null as string | null,
     getNextPageParam: (page) =>
       page?.hasNextPage ? page.items[page.items.length - 1]?.id : null,
@@ -197,6 +172,7 @@ export function useGetCasesQuery(
 
 ```typescript
 // queries/cases/edit-name.ts
+import { editCaseNameFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
@@ -211,13 +187,7 @@ export function useEditNameMutation() {
 
   return useMutation({
     mutationKey: ['cases', 'edit-name'],
-    mutationFn: async (payload: EditNamePayload) => {
-      const response = await fetch(endpoint, {
-        method: 'PATCH',
-        body: JSON.stringify(payload),
-      });
-      return response.json();
-    },
+    mutationFn: (payload: EditNamePayload) => editCaseNameFn({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
     },
@@ -227,22 +197,16 @@ export function useEditNameMutation() {
 
 ### Mutation with Navigation
 
-Some mutations redirect based on server response:
-
 ```typescript
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+
 export function useCreateScenarioMutation() {
   const navigate = useAgnosticNavigation();
 
   return useMutation({
-    mutationFn: async (data: CreateScenarioPayload) => {
-      const response = await fetch(endpoint, { method: 'POST', body: JSON.stringify(data) });
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-      return result;
+    mutationFn: (data: CreateScenarioPayload) => createScenarioFn({ data }),
+    onSuccess: (result) => {
+      if (result?.redirectTo) navigate(result.redirectTo);
     },
   });
 }
@@ -262,7 +226,6 @@ export interface CaseRepository {
   updateCase(args: { caseId: string; body: CaseUpdateBody }): Promise<CaseDetail>;
 }
 
-// Factory function receives API client
 export function makeGetCaseRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): CaseRepository => ({
     listCases: async ({ dateRange, inboxIds, statuses, ...rest }) => {
@@ -324,6 +287,8 @@ queryClient.invalidateQueries({ queryKey: ['cases'] }); // all case queries
 
 | Middleware | Purpose |
 |-----------|---------|
-| `authMiddleware` | Auth check, provides `context.authInfo` (user, repositories, entitlements) |
-| `handleRedirectMiddleware` | Handles redirects in server functions |
-| `servicesMiddleware` | Provides `context.services` (toast, i18n, auth session) |
+| `authMiddleware` | Auth check, redirects to `/sign-in` on failure; provides `context.authInfo` (user, repositories, entitlements) |
+| `servicesMiddleware` | Provides `context.services` (toastSessionService, i18nextService, authService) |
+| `caseDetailMiddleware` | Adds case-detail context for case-scoped server functions |
+
+Compose middleware via the chain: `createServerFn().middleware([servicesMiddleware, authMiddleware]).handler(...)`. `authMiddleware` already includes `servicesMiddleware` internally, so most handlers only need `[authMiddleware]`.

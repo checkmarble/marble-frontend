@@ -8,7 +8,8 @@ Layered architecture and naming conventions for the Marble app-builder.
 
 ```
 packages/app-builder/src/
-  routes/            # Remix routes (flat structure with + folders)
+  routes/            # TanStack Router file-based routes (_app/, ressources/)
+  server-fns/        # createServerFn handlers called via React Query
   components/        # App-specific UI components (by domain)
   queries/           # TanStack Query hooks (one file per query)
   repositories/      # Data access layer (interfaces + factory functions)
@@ -21,8 +22,7 @@ packages/app-builder/src/
   types/             # TypeScript types
   constants/         # Constants
   locales/           # i18n translations (en/, fr/, ar/)
-  middlewares/       # Server middleware (auth, redirect)
-  core/              # Framework core (requests, middleware types)
+  middlewares/       # Server middleware (auth, services, case detail)
 ```
 
 ---
@@ -31,15 +31,16 @@ packages/app-builder/src/
 
 | Layer | Purpose | Example |
 |-------|---------|---------|
-| **routes/** | Remix routes, loaders, actions | `_builder+/cases+/$caseId+/_index.tsx` |
+| **routes/** | TanStack Router file-based routes + inline loaders | `_app/_builder/cases.$caseId.tsx` |
+| **server-fns/** | `createServerFn` handlers called via React Query | `cases.ts`, `lists.ts`, `auth.ts` |
 | **components/** | UI components grouped by domain | `Cases/CaseDetails.tsx`, `AstBuilder/Root.tsx` |
 | **queries/** | TanStack Query hooks (one per file) | `cases/get-cases.ts`, `cases/edit-name.ts` |
 | **repositories/** | API call abstraction + DTO transforms | `CaseRepository.ts` (interface + factory) |
 | **services/** | Business logic | `init.server.ts` (service initialization) |
 | **models/** | Types + adapters | `cases.ts` (Case interface + adaptCase) |
-| **middlewares/** | Server middleware | `auth-middleware.ts`, `handle-redirect-middleware.ts` |
+| **middlewares/** | Server middleware | `auth-middleware.ts`, `services-middleware.ts`, `case-detail-middleware.ts` |
 
-Data flows: `routes -> components -> queries -> fetch(resource routes) -> repositories -> API`
+Data flows: `route loaders -> repositories -> API` for SSR data; `components -> query hooks -> server-fns (or resource routes) -> repositories -> API` for on-demand data and mutations.
 
 ---
 
@@ -131,7 +132,7 @@ models/
 | Repositories | PascalCase.ts | `CaseRepository.ts` |
 | Models | kebab-case.ts | `cases.ts` |
 | Hooks | camelCase.ts | `useCurrentUser.ts` |
-| Routes | Remix convention | `_builder+/cases+/$caseId+/_index.tsx` |
+| Routes | TanStack Router convention | `_app/_builder/cases.$caseId.tsx` |
 | Schemas | kebab-case.ts | `lists.ts` |
 | Server utils | `.server.ts` suffix | `update-rule.server.ts` |
 
