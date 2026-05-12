@@ -93,6 +93,18 @@ export type FamilyPersonEntity = OpenSanctionEntity & {
   } & Record<string, string[]>;
 };
 
+export type FamilyRelativeEntity = OpenSanctionEntity & {
+  schema: 'Family';
+  properties: {
+    person?: PersonEntity[];
+    endData?: string[];
+    relative?: string[];
+    sourceUrl?: string[];
+    startDate?: string[];
+    relationship?: string[];
+  } & Record<string, string[]>;
+};
+
 export type AssociationEntity = OpenSanctionEntity & {
   schema: 'Associate';
   target: boolean;
@@ -143,6 +155,7 @@ export type ScreeningMatchPayload = {
   properties: {
     sanctions?: ScreeningSanctionEntity[];
     familyPerson?: FamilyPersonEntity[];
+    familyRelative?: FamilyRelativeEntity[];
     associations?: AssociationEntity[];
     membershipMember?: MembershipMemberEntity[];
   } & Record<string, string[]>;
