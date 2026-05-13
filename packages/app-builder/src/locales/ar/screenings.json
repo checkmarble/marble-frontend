@@ -97,6 +97,7 @@
   "error.match_already_enriched": "تم إثراء المطابقة مسبقًا",
   "freeform_search.additional_fields": "حقول إضافية",
   "freeform_search.advanced_options": "خيارات متقدمة",
+  "freeform_search.all_entities": "جميع الكيانات",
   "freeform_search.apply": "تطبيق",
   "freeform_search.birth_date_invalid": "صيغة غير صالحة. استخدم YYYY أو YYYY-MM-DD",
   "freeform_search.clear": "مسح",

@@ -97,6 +97,7 @@
   "error.match_already_enriched": "Correspondance déjà enrichie",
   "freeform_search.additional_fields": "Champs supplémentaires",
   "freeform_search.advanced_options": "Options avancées",
+  "freeform_search.all_entities": "Toutes les entités",
   "freeform_search.apply": "Appliquer",
   "freeform_search.birth_date_invalid": "Format invalide. Utilisez AAAA ou AAAA-MM-JJ",
   "freeform_search.clear": "Effacer",
