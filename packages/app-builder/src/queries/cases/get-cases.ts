@@ -5,7 +5,7 @@ import { getCasesFn } from '@app-builder/server-fns/cases';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { filtersSchema, type Filters };
+export { type Filters, filtersSchema };
 
 export const useGetCasesQuery = (
   inboxId: string,

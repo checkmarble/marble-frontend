@@ -3,7 +3,7 @@ import { updateUserFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { updateUserPayloadSchema, type UpdateUserPayload };
+export { type UpdateUserPayload, updateUserPayloadSchema };
 
 export const useUpdateUserMutation = () => {
   const updateUser = useServerFn(updateUserFn);

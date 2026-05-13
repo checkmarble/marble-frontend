@@ -3,7 +3,7 @@ import { applyArchetypeFn } from '@app-builder/server-fns/data';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { applyArchetypePayloadSchema, type ApplyArchetypePayload };
+export { type ApplyArchetypePayload, applyArchetypePayloadSchema };
 
 export const useApplyArchetypeMutation = () => {
   const applyArchetype = useServerFn(applyArchetypeFn);

@@ -4,7 +4,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { createNavigationOptionSchema, type CreateNavigationOptionValue };
+export { type CreateNavigationOptionValue, createNavigationOptionSchema };
 
 type CreateNavigationOptionWithTableId = CreateNavigationOptionValue & {
   tableId: string;

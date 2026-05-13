@@ -4,7 +4,7 @@ import { reviewDecisionFn } from '@app-builder/server-fns/cases';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { reviewDecisionPayloadSchema, type ReviewDecisionPayload };
+export { type ReviewDecisionPayload, reviewDecisionPayloadSchema };
 
 export const useReviewDecisionMutation = () => {
   const reviewDecision = useServerFn(reviewDecisionFn);

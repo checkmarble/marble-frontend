@@ -3,7 +3,7 @@ import { deleteExportedFieldFn } from '@app-builder/server-fns/settings';
 import { useMutation } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { exportedFieldSchema as deleteExportedFieldSchema, type ExportedFieldPayload as DeleteExportedFieldPayload };
+export { type ExportedFieldPayload as DeleteExportedFieldPayload, exportedFieldSchema as deleteExportedFieldSchema };
 
 export const useDeleteFilterMutation = () => {
   const deleteExportedField = useServerFn(deleteExportedFieldFn);

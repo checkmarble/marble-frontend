@@ -3,7 +3,7 @@ import { massUpdateCasesFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { massUpdateCasesPayloadSchema, type MassUpdateCasesPayload };
+export { type MassUpdateCasesPayload, massUpdateCasesPayloadSchema };
 
 export const useMassUpdateCasesMutation = () => {
   const massUpdateCases = useServerFn(massUpdateCasesFn);

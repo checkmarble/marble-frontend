@@ -3,7 +3,7 @@ import { createCaseFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export { createCasePayloadSchema, type CreateCasePayload };
+export { type CreateCasePayload, createCasePayloadSchema };
 
 export const useCreateCaseMutation = () => {
   const createCase = useServerFn(createCaseFn);

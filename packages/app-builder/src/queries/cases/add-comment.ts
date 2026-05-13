@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { serialize } from 'object-to-formdata';
 
-export { addCommentPayloadSchema, type AddCommentPayload };
+export { type AddCommentPayload, addCommentPayloadSchema };
 
 export const useAddCommentMutation = () => {
   const addComment = useServerFn(addCommentFn);
