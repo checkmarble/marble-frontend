@@ -8,11 +8,12 @@ export type ThresholdRangeStep = {
 };
 
 export type ThresholdRangeProps = {
-  title: string;
+  title?: string;
   description?: string;
   values: ThresholdRangeStep[];
   value: number | undefined;
   onChange: (value: number) => void;
+  min?: number;
   max?: number;
   initialColor: string;
   name?: string;
@@ -38,7 +39,7 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function getSegments(steps: ThresholdRangeStep[], initialColor: string) {
+function getSegments(steps: ThresholdRangeStep[], min: number, initialColor: string) {
   const firstStep = steps[0];
   if (!firstStep) return [];
 
@@ -47,7 +48,7 @@ function getSegments(steps: ThresholdRangeStep[], initialColor: string) {
   if (firstStep.value > 0) {
     segments.push({
       key: `initial-${firstStep.value}`,
-      startValue: 0,
+      startValue: min,
       endValue: firstStep.value,
       fromColor: initialColor,
       toColor: firstStep.color,
@@ -78,6 +79,7 @@ export function ThresholdRange({
   values,
   value,
   onChange,
+  min = 0,
   max = 100,
   initialColor,
   name,
@@ -91,12 +93,12 @@ export function ThresholdRange({
     throw new Error('ThresholdRange requires at least one step.');
   }
 
-  const normalizedMax = Math.max(max, steps[steps.length - 1]!.value, 1);
+  const normalizedMax = Math.max(max, steps.at(-1)!.value, 1);
   const firstStep = steps[0]!;
-  const lastStep = steps[steps.length - 1]!;
+  const lastStep = steps.at(-1)!;
   const activeIndex = steps.findIndex((step) => step.value === value);
   const activeStep = activeIndex >= 0 ? steps[activeIndex] : undefined;
-  const segments = getSegments(steps, initialColor);
+  const segments = getSegments(steps, min, initialColor);
 
   const selectStepAtIndex = (index: number) => {
     if (disabled) return;
@@ -170,7 +172,7 @@ export function ThresholdRange({
       {name ? <input type="hidden" name={name} value={value ?? ''} /> : null}
 
       <div className="flex flex-col gap-4">
-        <div className="text-grey-primary text-s font-medium">{title}</div>
+        {title ? <div className="text-grey-primary text-s font-medium">{title}</div> : null}
 
         <div
           role="slider"

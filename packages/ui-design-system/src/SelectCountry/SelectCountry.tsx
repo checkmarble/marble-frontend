@@ -99,6 +99,12 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
 
   const listIso3 = value && !value.isManual ? value.isoAlpha3 : undefined;
   const selectedFromList = listIso3 ? byIso3.get(listIso3) : undefined;
+  const hasValue = value !== null;
+  const handleClear = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onValueChange(null);
+  };
   const displayTrigger = () => {
     if (value?.isManual) {
       return (
@@ -143,7 +149,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
   };
 
   return (
-    <div className={cn('flex flex-col gap-2', rootClassName)}>
+    <div className={cn('relative flex flex-col gap-2', rootClassName)}>
       <MenuCommand.Menu open={open} onOpenChange={handleOpenChange} defaultOpen={defaultOpen} {...restMenuRootProps}>
         <MenuCommand.Trigger>
           <MenuCommand.SelectButton
@@ -152,6 +158,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
             name={name}
             disabled={disabled}
             onBlur={onBlur}
+            noArrow={hasValue && !disabled}
             className={cn(
               selectTrigger({
                 border,
@@ -159,12 +166,31 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
                 backgroundColor: disabled ? 'disabled' : 'enabled',
               }),
               'min-w-0 w-full',
+              hasValue && !disabled && 'pr-14',
               className,
             )}
           >
             {displayTrigger()}
           </MenuCommand.SelectButton>
         </MenuCommand.Trigger>
+        {hasValue && !disabled ? (
+          <>
+            <button
+              type="button"
+              aria-label="Clear selection"
+              className="text-grey-secondary hover:text-grey-primary absolute right-7 top-0 flex h-10 items-center"
+              onClick={handleClear}
+            >
+              <Icon icon="cross" className="size-4" />
+            </button>
+            <span
+              aria-hidden
+              className="text-grey-primary pointer-events-none absolute right-2 top-0 flex h-10 items-center"
+            >
+              <Icon icon="caret-down" className="size-4 shrink-0" />
+            </span>
+          </>
+        ) : null}
         <MenuCommand.Content
           align="start"
           sameWidth

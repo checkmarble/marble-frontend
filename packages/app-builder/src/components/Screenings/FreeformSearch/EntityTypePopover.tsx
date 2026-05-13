@@ -1,23 +1,25 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
+import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
 import { useStore } from '@tanstack/react-form';
 import clsx from 'clsx';
 import CountryFlag from 'country-flag-emojis';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
+import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { setAdditionalFields, useFormManuallSearch } from './FreeformSearchForm';
 
-export const EntityTypePopover = () => {
+export const EntityTypePopover = ({ disabled, onApply }: { disabled: boolean; onApply: () => void }) => {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
   const form = useFormManuallSearch();
   const value = useStore(form.store, (state) => state.values.entityType);
-  const tagRef = useRef<HTMLDivElement>(null);
+  const fields = useStore(form.store, (state) => state.values.fields);
+  const { ref: tagRef, dimensions } = useResizeObserver<HTMLDivElement>({ observeHeight: false });
 
   const handleSelect = (schema: SearchableSchema) => {
     form.setFieldValue('entityType', schema);
@@ -28,17 +30,44 @@ export const EntityTypePopover = () => {
   const hasSelection = value && value !== 'Thing';
   const schemas = R.keys(SEARCH_ENTITIES);
 
+  const filterTags = hasSelection
+    ? SEARCH_ENTITIES[value].fields
+        .filter((f) => f !== 'name')
+        .map((fieldName) => {
+          const fieldValue = (fields as Record<string, string | undefined>)[fieldName];
+          if (!fieldValue) return null;
+          const label = getFilterTagLabel(fieldName, fieldValue, t);
+          if (!label) return null;
+          return (
+            <Tag
+              key={fieldName}
+              color={disabled ? 'grey' : 'purple'}
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="font-medium">{label}</span>
+            </Tag>
+          );
+        })
+        .filter(Boolean)
+    : null;
+
   return (
     <div className="flex items-center gap-2 relative">
       <Popover.Root open={open} onOpenChange={setOpen}>
-        <Popover.Trigger asChild>
-          <Tag color="purple" className="cursor-pointer" ref={tagRef}>
-            <span className="font-medium">
-              {hasSelection
-                ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
-                : t('screenings:freeform_search.all_entities')}
-            </span>
-          </Tag>
+        <Popover.Trigger asChild disabled={disabled}>
+          <div className="flex items-center gap-2 flex-wrap" ref={tagRef}>
+            <Tag
+              color={disabled ? 'grey' : 'purple'}
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="font-medium">
+                {hasSelection
+                  ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
+                  : t('screenings:freeform_search.all_entities')}
+              </span>
+            </Tag>
+            {filterTags}
+          </div>
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
@@ -78,12 +107,20 @@ export const EntityTypePopover = () => {
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
-      {hasSelection && <AdditionalEntityTypePopover offset={tagRef.current?.offsetWidth ?? 0} />}
+      {hasSelection && <AdditionalEntityTypePopover offset={dimensions.width} disabled={disabled} onApply={onApply} />}
     </div>
   );
 };
 
-function AdditionalEntityTypePopover({ offset }: { offset: number }) {
+function AdditionalEntityTypePopover({
+  offset,
+  disabled,
+  onApply,
+}: {
+  offset: number;
+  disabled: boolean;
+  onApply: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const form = useFormManuallSearch();
   const entityType = useStore(form.store, (state) => state.values.entityType);
@@ -92,8 +129,14 @@ function AdditionalEntityTypePopover({ offset }: { offset: number }) {
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <Icon icon="plus" className="size-4 text-purple-primary cursor-pointer" />
+      <Popover.Trigger asChild disabled={disabled}>
+        <Icon
+          icon="plus"
+          className={cn(
+            'size-4 text-purple-primary cursor-pointer ',
+            disabled && 'text-grey-placeholder opacity-50 cursor-not-allowed ',
+          )}
+        />
       </Popover.Trigger>
       <Popover.Content
         className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
@@ -165,10 +208,88 @@ function AdditionalEntityTypePopover({ offset }: { offset: number }) {
               </form.Field>
             );
           })}
+          {/* Actions */}
+          <div
+            className="flex 
+           gap-2"
+          >
+            {/* Apply button */}
+            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting}
+                  variant="primary"
+                  size="default"
+                  className="w-full justify-center"
+                  onClick={() => {
+                    setOpen(false);
+                    onApply();
+                  }}
+                >
+                  {isSubmitting ? (
+                    <Icon icon="spinner" className="size-5 animate-spin" />
+                  ) : (
+                    <>
+                      {t('screenings:freeform_search.apply')}
+                      <Icon icon="search" className="size-5" />
+                    </>
+                  )}
+                </Button>
+              )}
+            </form.Subscribe>
+            <Button
+              type="button"
+              variant="secondary"
+              size="default"
+              className="w-full justify-center"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              {t('common:cancel')}
+            </Button>
+            {/* Clear filters button - only show when filters are active */}
+            {/* hasActiveFilters && (
+          <Button
+            type="button"
+            variant="secondary"
+            size="default"
+            onClick={handleClearFilters}
+            className="w-full justify-center"
+          >
+            <Icon icon="cross" className="size-5" />
+            {t('screenings:freeform_search.clear_filters')}
+          </Button>
+        )*/}
+          </div>
         </div>
       </Popover.Content>
     </Popover.Root>
   );
+}
+
+function getFilterTagLabel(
+  fieldName: string,
+  value: string,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string | null {
+  switch (fieldName) {
+    case 'country':
+    case 'nationality':
+    case 'birthDate':
+      return value;
+    case 'passportNumber':
+      return t('screenings:freeform_search.tag.passport', { value });
+    case 'address': {
+      const truncated = value.length > 15 ? `${value.slice(0, 15)}…` : value;
+      return t('screenings:freeform_search.tag.address', { value: truncated });
+    }
+    case 'registrationNumber':
+      return t('screenings:freeform_search.tag.registration', { value });
+    default:
+      return null;
+  }
 }
 
 function countryFormStringToValue(raw: string): SelectCountryValue | null {
