@@ -97,12 +97,19 @@ function createContinuousScreeningFilters(selection: string[]): ScreeningConfigB
     if (type !== 'dataset' && type !== 'topic') continue;
     const name = chunks[2] as string;
     if (!name) continue;
-    if (type === 'dataset') filters[section].datasets?.push(name);
+    if (type === 'dataset') {
+      if (!filters[section].datasets) filters[section].datasets = [];
+      filters[section].datasets.push(name);
+      continue;
+    }
     const value = chunks[3] as string;
     if (!value) continue;
-    if (type === 'topic') filters[section].topics?.[name]?.push(value);
+    if (type === 'topic') {
+      if (!filters[section].topics) filters[section].topics = {};
+      if (!filters[section].topics[name]) filters[section].topics[name] = [];
+      filters[section].topics[name].push(value);
+    }
   }
-  console.log('filters', filters);
   return filters;
 }
 
