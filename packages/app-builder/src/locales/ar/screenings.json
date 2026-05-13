@@ -241,8 +241,8 @@
   "status.confirmed_hit": "مطابقة مؤكدة",
   "status.error": "خطأ",
   "status.in_review": "مطابقات للمراجعة",
-  "status.no_hit": "لا توجد مطابقة",
-  "status.pending": "مطابقات للمراجعة",
+  "status.no_hit": "({{count}}) لا تطابق",
+  "status.pending": "({{count}}) مطابقات للمراجعة",
   "status.skipped": "تم تجاهلها",
   "success.match_enriched": "تم إثراء المطابقة بنجاح"
 }

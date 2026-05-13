@@ -444,10 +444,7 @@ export const ScreeningStatusBadge = ({
               {Object.entries(matchCount)
                 .filter(([, count]) => count > 0)
                 .map(([status, count]) => (
-                  <div key={status}>
-                    {t(`screenings:status.${status}`)}
-                    {` (${count})`}
-                  </div>
+                  <div key={status}>{t(`screenings:status.${status}`, { count })}</div>
                 ))}
               <Icon icon="eye" className="size-4 shrink-0" />
             </>
