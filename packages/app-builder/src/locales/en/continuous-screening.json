@@ -93,7 +93,7 @@
   "review.entity_details.title": "Entity details",
   "review.entity_details.view_all": "View all",
   "review.entity_type_label": "Entity type",
-  "review.indirect_subtitle": "New entity under {{category}}",
+  "review.indirect_subtitle": "New entity under {{category}} lists",
   "review.information_title": "Information",
   "review.matches.match_label": "Match",
   "review.matches.partial_search_button": "Load more to finalize",

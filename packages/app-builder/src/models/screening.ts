@@ -318,14 +318,65 @@ export function isScreeningReviewCompleted(screening: Screening): screening is S
 
 export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
-export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, TagProps['color']> = {
+export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory | 'other', TagProps['color']> = {
   sanctions: 'red',
   peps: 'blue',
   'third-parties': 'grey',
   'adverse-media': 'yellow',
+  other: 'grey',
 };
 
-export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
+export const OS_TOPICS_KEYS = [
+  'sanction',
+  'sanction.linked',
+  'sanction.counter',
+  'asset.frozen',
+  'role.pep',
+  'role.pol',
+  'role.rca',
+  'role.judge',
+  'role.civil',
+  'role.diplo',
+  'role.spy',
+  'role.lawyer',
+  'role.acct',
+  'role.journo',
+  'role.act',
+  'role.lobby',
+  'gov.head',
+  'crime',
+  'crime.fraud',
+  'crime.cyber',
+  'crime.fin',
+  'crime.env',
+  'crime.theft',
+  'crime.war',
+  'crime.boss',
+  'crime.terror',
+  'crime.traffick',
+  'crime.traffick.drug',
+  'crime.traffick.human',
+  'forced.labor',
+  'wanted',
+  'corp.disqual',
+  'reg.action',
+  'reg.warn',
+  'debarment',
+  'pol.party',
+  'pol.union',
+  'mil',
+  'export.control',
+  'export.risk',
+  'poi',
+] as const;
+
+export type OpenSanctionTopic = (typeof OS_TOPICS_KEYS)[number];
+
+export function isOpenSanctionTopic(topic: string): topic is OpenSanctionTopic {
+  return (OS_TOPICS_KEYS as ReadonlyArray<string>).includes(topic);
+}
+
+export const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory | 'other'>([
   // Sanctions
   ['sanction', 'sanctions'],
   ['sanction.linked', 'sanctions'],
@@ -428,8 +479,8 @@ export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] 
       categories.add(value as ScreeningCategory);
     } else {
       // Legacy: look up individual topic in the map
-      const category = SCREENING_TOPICS_MAP.get(value);
-      if (category) {
+      const category = OS_SCREENING_TOPICS_MAP.get(value);
+      if (category && category !== 'other') {
         categories.add(category);
       }
     }
@@ -446,6 +497,6 @@ export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', num
 };
 
 export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other' | undefined => {
-  const categories = R.map(topics, (topic) => SCREENING_TOPICS_MAP.get(topic) ?? 'other');
+  const categories = R.map(topics, (topic) => OS_SCREENING_TOPICS_MAP.get(topic) ?? 'other');
   return R.firstBy(categories, (category) => SCREENING_CATEGORY_RANKING[category]);
 };
