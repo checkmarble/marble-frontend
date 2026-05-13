@@ -241,6 +241,8 @@
   "status.confirmed_hit": "Correspondance confirmée",
   "status.error": "Erreur",
   "status.in_review": "Correspondances à examiner",
-  "status.no_hit": "Aucune correspondance",
+  "status.no_hit": "Aucune correspondance ({{count}})",
+  "status.pending": "Correspondances à examiner ({{count}})",
+  "status.skipped": "Ignoré",
   "success.match_enriched": "Correspondance enrichie avec succès"
 }
