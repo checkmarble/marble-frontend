@@ -4,8 +4,8 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { screeningsI18n } from '../screenings-i18n';
 
 export interface EntityTypePopoverProps {
@@ -28,22 +28,16 @@ export const EntityTypePopover = ({ value, onApply }: EntityTypePopoverProps) =>
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
-        <button
-          type="button"
-          className={clsx(
-            'text-s flex w-full items-center justify-between rounded px-2 py-2',
-            hasSelection
-              ? 'bg-purple-background-light text-purple-primary'
-              : 'border-grey-border text-grey-secondary bg-surface-card border',
-          )}
-        >
-          <span className="font-medium">
-            {hasSelection
-              ? t(`screenings:refine_modal.schema.${value.toLowerCase() as Lowercase<NonNullable<typeof value>>}`)
-              : t('screenings:freeform_search.entity_type_label')}
-          </span>
-          <Icon icon="caret-down" className="size-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <Tag color="blue">
+            <span className="font-medium">
+              {hasSelection
+                ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
+                : t('screenings:freeform_search.all_entities')}
+            </span>
+          </Tag>
+          {hasSelection && <Icon icon="plus" className="size-4" />}
+        </div>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content

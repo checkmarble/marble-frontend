@@ -97,6 +97,7 @@
   "error.match_already_enriched": "Match already enriched",
   "freeform_search.additional_fields": "Additional Fields",
   "freeform_search.advanced_options": "Advanced options",
+  "freeform_search.all_entities": "All entities",
   "freeform_search.apply": "Apply",
   "freeform_search.birth_date_invalid": "Invalid format. Use YYYY or YYYY-MM-DD",
   "freeform_search.clear": "Clear",
