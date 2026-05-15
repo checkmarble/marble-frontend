@@ -15,6 +15,7 @@ import {
   cn,
   Input,
   MenuCommand,
+  Popover,
   ScrollAreaV2,
   Switch,
   Tag,
@@ -44,6 +45,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
   const listConfigQuery = useListConfigQuery(useCase);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const { t } = useTranslation(['common', 'continuousScreening', 'screenings']);
+  const [activeSectionKey, setActiveSectionKey] = useState<ScreeningCategory | null>(null);
 
   const renderSections = (data: ListConfig) => {
     const sections = Object.entries(data).filter(([, section]) => section.datasets?.length || section.topics);
@@ -56,21 +58,53 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
           )}
         </div>
       ))
-      .with('popover', () => (
-        <MenuCommand.List>
-          {sections.map(([key, section]) =>
-            section ? (
-              <Section
-                key={key}
-                sectionKey={key as ScreeningCategory}
-                section={section}
-                onApply={onApply}
-                onCancel={onCancel}
-              />
-            ) : null,
-          )}
-        </MenuCommand.List>
-      ))
+      .with('popover', () => {
+        const activeSection = activeSectionKey ? data[activeSectionKey] : null;
+        return (
+          <Popover.Root
+            open={!!activeSectionKey}
+            onOpenChange={(open) => {
+              if (!open) setActiveSectionKey(null);
+            }}
+          >
+            <Popover.Anchor asChild>
+              <div className="flex flex-col">
+                {sections.map(([key, section]) =>
+                  section ? (
+                    <Section
+                      key={key}
+                      sectionKey={key as ScreeningCategory}
+                      section={section}
+                      isActive={activeSectionKey === key}
+                      onSelect={() => setActiveSectionKey(key as ScreeningCategory)}
+                    />
+                  ) : null,
+                )}
+              </div>
+            </Popover.Anchor>
+            {activeSectionKey && activeSection && (
+              <Popover.Content
+                side="right"
+                align="start"
+                sideOffset={24}
+                alignOffset={-18}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+                className="w-fit min-w-[500px] max-w-[60vw] p-0 overflow-hidden flex flex-col"
+              >
+                <SectionPanel
+                  sectionKey={activeSectionKey}
+                  section={activeSection}
+                  onApply={onApply}
+                  onCancel={() => {
+                    setActiveSectionKey(null);
+                    onCancel?.();
+                  }}
+                />
+              </Popover.Content>
+            )}
+          </Popover.Root>
+        );
+      })
       .exhaustive();
   };
 
@@ -114,22 +148,15 @@ const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResu
 type SectionProps = {
   sectionKey: ScreeningCategory;
   section: SectionData;
-  onApply?: () => void;
-  onCancel?: () => void;
+  isActive?: boolean;
+  onSelect?: () => void;
 };
 
-const Section = ({ sectionKey, section, onApply, onCancel }: SectionProps) => {
+const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
-
-  const categoryLabel = match(sectionKey)
-    .with('peps', () => t('scenarios:sanction.lists.peps'))
-    .with('third-parties', () => t('scenarios:sanction.lists.third_parties'))
-    .with('sanctions', () => t('scenarios:sanction.lists.sanctions'))
-    .with('adverse-media', () => t('scenarios:sanction.lists.adverse_media'))
-    .otherwise(() => t('scenarios:sanction.lists.other'));
 
   const leafNames = getSectionLeafNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
@@ -174,65 +201,86 @@ const Section = ({ sectionKey, section, onApply, onCancel }: SectionProps) => {
       </Collapsible.Container>
     ))
     .with('popover', () => (
-      <MenuCommand.SubMenu
-        hover={false}
-        arrow
-        persistOnSelect
-        trigger={
-          <span className="flex items-center justify-between gap-v2-md w-full">
-            <DatasetTag category={sectionKey} />
-            <span className="text-xs text-grey-50">
-              {t('continuousScreening:creation.datasetSelection.lists', { count: leafNames.length })}
-            </span>
-          </span>
-        }
-        className="w-fit min-w-[500px] max-w-[60vw] max-h-[60vh]"
+      <button
+        type="button"
+        onClick={() => onSelect?.()}
+        className={cn(
+          'flex h-10 w-full flex-row items-center justify-between gap-2 rounded-xs p-2 outline-hidden',
+          'hover:bg-purple-background-light cursor-pointer',
+          isActive && 'bg-purple-background-light',
+        )}
       >
-        <div className="flex flex-col h-full">
-          <div className="flex-1 min-h-0 overflow-auto">
-            <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
-              <Switch
-                id="section-switch"
-                checked={isEnabled}
-                disabled={mode === 'view'}
-                onCheckedChange={(checked) => {
-                  listConfig.update((state) => {
-                    state.datasets[sectionKey] = checked;
-                    if (!checked) {
-                      for (const name of leafNames) {
-                        state.datasets[name] = false;
-                      }
-                    }
-                  });
-                }}
-              />
-              <label
-                htmlFor="section-switch"
-                className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}
-              >
-                {t('continuousScreening:creation.datasetSelection.section.activate', { category: categoryLabel })}
-              </label>
-            </div>
-            {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
-          </div>
-          <div className="border-t border-grey-border flex gap-2 p-4">
-            <Button
-              type="button"
-              variant="secondary"
-              size="default"
-              className="flex-1 justify-center"
-              onClick={onCancel}
-            >
-              {t('common:cancel')}
-            </Button>
-            <Button type="button" variant="primary" size="default" className="flex-1 justify-center" onClick={onApply}>
-              {t('screenings:freeform_search.apply')}
-            </Button>
-          </div>
-        </div>
-      </MenuCommand.SubMenu>
+        <DatasetTag category={sectionKey} />
+        <span className="flex items-center gap-v2-md">
+          <span className="text-xs text-grey-50">
+            {t('continuousScreening:creation.datasetSelection.lists', { count: leafNames.length })}
+          </span>
+          <Icon icon="arrow-right" className="size-4 text-grey-50" />
+        </span>
+      </button>
     ))
     .exhaustive();
+};
+
+type SectionPanelProps = {
+  sectionKey: ScreeningCategory;
+  section: SectionData;
+  onApply?: () => void;
+  onCancel?: () => void;
+};
+
+const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelProps) => {
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
+  const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
+  const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
+  const leafNames = getSectionLeafNames(section);
+
+  const categoryLabel = match(sectionKey)
+    .with('peps', () => t('scenarios:sanction.lists.peps'))
+    .with('third-parties', () => t('scenarios:sanction.lists.third_parties'))
+    .with('sanctions', () => t('scenarios:sanction.lists.sanctions'))
+    .with('adverse-media', () => t('scenarios:sanction.lists.adverse_media'))
+    .otherwise(() => t('scenarios:sanction.lists.other'));
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-auto">
+        <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
+          <Switch
+            id={`section-switch-${sectionKey}`}
+            checked={isEnabled}
+            disabled={mode === 'view'}
+            onCheckedChange={(checked) => {
+              listConfig.update((state) => {
+                state.datasets[sectionKey] = checked;
+                if (!checked) {
+                  for (const name of leafNames) {
+                    state.datasets[name] = false;
+                  }
+                }
+              });
+            }}
+          />
+          <label
+            htmlFor={`section-switch-${sectionKey}`}
+            className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}
+          >
+            {t('continuousScreening:creation.datasetSelection.section.activate', { category: categoryLabel })}
+          </label>
+        </div>
+        {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
+      </div>
+      <div className="border-t border-grey-border flex gap-2 p-4">
+        <Button type="button" variant="secondary" size="default" className="flex-1 justify-center" onClick={onCancel}>
+          {t('common:cancel')}
+        </Button>
+        <Button type="button" variant="primary" size="default" className="flex-1 justify-center" onClick={onApply}>
+          {t('screenings:freeform_search.apply')}
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 type SectionContentProps = { sectionKey: ScreeningCategory; section: SectionData };
@@ -284,7 +332,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const isDatasetsEmpty = hasSearch && (!filteredDatasets || filteredDatasets.length === 0);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       {hasDatasets && (
         <div className="px-v2-md py-v2-sm">
           <Input
@@ -677,7 +725,7 @@ const FilterGroupTags = ({
   return (
     <div
       ref={containerRef}
-      className={cn('relative flex-1 min-w-0', variant === 'popover' && 'flex flex-col gap-v2-sm overflow-x-hidden')}
+      className={cn('flex-1 min-w-0', variant === 'popover' && 'flex flex-col gap-v2-sm overflow-x-hidden')}
     >
       {/* Ghost: invisible clone of all selected tags used to measure their rendered widths */}
       <div
@@ -794,25 +842,69 @@ const FilterGroupMenu = ({
     onAfterChange?.();
   }
 
+  const toggleAll = () => {
+    const nextValue = !allSelected;
+    listConfig.update((state) => {
+      for (const item of items) {
+        state.datasets[item.name] = nextValue;
+      }
+      if (nextValue) {
+        state.datasets[sectionKey] = true;
+      }
+    });
+    onAfterChange?.();
+  };
+
+  if (variant === 'popover') {
+    return (
+      <div className="rounded-v2-md border border-grey-border bg-grey-background-light p-v2-sm flex flex-col gap-v2-xs">
+        <button
+          type="button"
+          onClick={toggleAll}
+          className="flex h-10 items-center justify-between gap-2 rounded-xs p-2 hover:bg-purple-background-light cursor-pointer"
+        >
+          <span className="text-purple-primary">
+            {t(`continuousScreening:creation.datasetSelection.filter.${allSelected ? 'unselect_all' : 'select_all'}`)}
+          </span>
+          {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
+        </button>
+        {items.map((item) => {
+          const isSelected = !!datasets[item.name];
+          const itemName = item.title ?? formatItemName(item.name);
+          return (
+            <label
+              key={item.name}
+              htmlFor={`filter-group-menu-item-${item.name}`}
+              className={cn(
+                'flex h-10 flex-row items-center gap-v2-sm rounded-xs p-2 cursor-pointer text-s hover:bg-purple-background-light',
+                mode === 'view' && 'cursor-not-allowed',
+                isSelected && 'bg-purple-background-light',
+              )}
+            >
+              <Checkbox
+                id={`filter-group-menu-item-${item.name}`}
+                checked={isSelected}
+                size="small"
+                onClick={() => handleClickItem(item)}
+                disabled={mode === 'view'}
+                stopPropagation
+              />
+              {itemName}
+            </label>
+          );
+        })}
+      </div>
+    );
+  }
+
   const itemsList = (
     <MenuCommand.List>
       <MenuCommand.Item
         key="__all__"
         value="__all__"
         selected={allSelected}
-        onSelect={() => {
-          const nextValue = !allSelected;
-          listConfig.update((state) => {
-            for (const item of items) {
-              state.datasets[item.name] = nextValue;
-            }
-            if (nextValue) {
-              state.datasets[sectionKey] = true;
-            }
-          });
-          onAfterChange?.();
-        }}
-        className={variant === 'default' ? 'border-b border-purple-primary' : ''}
+        onSelect={toggleAll}
+        className="border-b border-purple-primary"
       >
         <span className="text-purple-primary ">
           {t(`continuousScreening:creation.datasetSelection.filter.${allSelected ? 'unselect_all' : 'select_all'}`)}
@@ -830,38 +922,13 @@ const FilterGroupMenu = ({
             onSelect={() => handleClickItem(item)}
             disabled={mode === 'view'}
           >
-            {variant === 'default' ? (
-              <>
-                <span>{itemName}</span>
-                {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
-              </>
-            ) : (
-              <label
-                htmlFor={`filter-group-menu-item-${item.name}`}
-                className={cn(
-                  'flex flex-row items-center gap-v2-sm cursor-pointer text-s',
-                  mode === 'view' && 'cursor-not-allowed pointer-none:',
-                )}
-              >
-                <Checkbox
-                  id={`filter-group-menu-item-${item.name}`}
-                  checked={isSelected}
-                  size="small"
-                  onClick={() => handleClickItem(item)}
-                  disabled={mode === 'view'}
-                />
-                {itemName}
-              </label>
-            )}
+            <span>{itemName}</span>
+            {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
           </MenuCommand.Item>
         );
       })}
     </MenuCommand.List>
   );
-
-  if (variant === 'popover') {
-    return <div className="rounded-v2-md border border-grey-border bg-grey-background-light p-v2-sm">{itemsList}</div>;
-  }
 
   return (
     <MenuCommand.Menu persistOnSelect>
