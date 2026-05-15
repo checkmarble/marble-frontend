@@ -58,7 +58,15 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
       .with('popover', () => (
         <MenuCommand.List>
           {sections.map(([key, section]) =>
-            section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+            section ? (
+              <Section
+                key={key}
+                sectionKey={key as ScreeningCategory}
+                section={section}
+                onApply={onApply}
+                onCancel={onCancel}
+              />
+            ) : null,
           )}
         </MenuCommand.List>
       ))
@@ -91,16 +99,6 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
           .with({ isSuccess: true }, ({ data }) => (data ? renderSections(data) : null))
           .exhaustive()}
       </ScrollAreaV2>
-      {variant === 'popover' && (
-        <div className="border-t border-grey-border flex gap-2 p-4">
-          <Button type="button" variant="secondary" size="default" className="flex-1 justify-center" onClick={onCancel}>
-            {t('common:cancel')}
-          </Button>
-          <Button type="button" variant="primary" size="default" className="flex-1 justify-center" onClick={onApply}>
-            {t('screenings:freeform_search.apply')}
-          </Button>
-        </div>
-      )}
     </>
   );
 }
@@ -112,13 +110,18 @@ const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResu
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: sectionCount })}</span>;
 };
 
-type SectionProps = { sectionKey: ScreeningCategory; section: SectionData };
+type SectionProps = {
+  sectionKey: ScreeningCategory;
+  section: SectionData;
+  onApply?: () => void;
+  onCancel?: () => void;
+};
 
-const Section = ({ sectionKey, section }: SectionProps) => {
+const Section = ({ sectionKey, section, onApply, onCancel }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
-  const { t } = useTranslation(['continuousScreening']);
+  const { t } = useTranslation(['common', 'continuousScreening', 'screenings']);
 
   const leafNames = getSectionLeafNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
@@ -174,9 +177,27 @@ const Section = ({ sectionKey, section }: SectionProps) => {
             </span>
           </span>
         }
-        className="w-fit min-w-[300px] max-w-[60vw] max-h-[60vh]"
+        className="w-fit min-w-[500px] max-w-[60vw] max-h-[60vh]"
       >
-        <SectionContent sectionKey={sectionKey} section={section} />
+        <div className="flex flex-col h-full">
+          <div className="flex-1 min-h-0 overflow-auto">
+            <SectionContent sectionKey={sectionKey} section={section} />
+          </div>
+          <div className="border-t border-grey-border flex gap-2 p-4">
+            <Button
+              type="button"
+              variant="secondary"
+              size="default"
+              className="flex-1 justify-center"
+              onClick={onCancel}
+            >
+              {t('common:cancel')}
+            </Button>
+            <Button type="button" variant="primary" size="default" className="flex-1 justify-center" onClick={onApply}>
+              {t('screenings:freeform_search.apply')}
+            </Button>
+          </div>
+        </div>
       </MenuCommand.SubMenu>
     ))
     .exhaustive();
@@ -212,6 +233,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
     };
   }
 
+  const hasDatasets = !!datasets?.length;
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const hasSearch = normalizedSearch.length > 0;
   const itemMatches = (name: string, title?: string) =>
@@ -226,84 +248,57 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
         }))
         .filter((group) => group.datasets.length > 0);
 
-  const filteredTopics = !hasSearch
-    ? topics
-    : topics
-      ? Object.fromEntries(
-          Object.entries(topics)
-            .map(([key, items]) => [key, items.filter((item) => itemMatches(item.name, item.title))] as const)
-            .filter(([, items]) => items.length > 0),
-        )
-      : undefined;
-
-  const filteredConditionalTopics = !hasSearch
-    ? conditionalTopics
-    : conditionalTopics
-      ? Object.fromEntries(
-          Object.entries(conditionalTopics)
-            .map(
-              ([name, value]) =>
-                [name, { ...value, items: value.items.filter((item) => itemMatches(item.name, item.title)) }] as const,
-            )
-            .filter(([, value]) => value.items.length > 0),
-        )
-      : undefined;
-
-  const isEmpty =
-    hasSearch &&
-    (!filteredDatasets || filteredDatasets.length === 0) &&
-    (!filteredTopics || Object.keys(filteredTopics).length === 0) &&
-    (!filteredConditionalTopics || Object.keys(filteredConditionalTopics).length === 0);
+  const isDatasetsEmpty = hasSearch && (!filteredDatasets || filteredDatasets.length === 0);
 
   return (
     <div className="flex flex-col">
-      <div className="px-v2-md py-v2-sm">
-        <Input
-          placeholder={t('continuousScreening:creation.datasetSelection.search_placeholder')}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          endAdornment={hasSearch ? 'cross' : undefined}
-          adornmentClassName="size-5"
-          onAdornmentClick={hasSearch ? () => setSearchTerm('') : undefined}
-        />
-      </div>
-      {isEmpty ? (
+      {hasDatasets && (
+        <div className="px-v2-md py-v2-sm">
+          <Input
+            placeholder={t('continuousScreening:creation.datasetSelection.search_placeholder')}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            endAdornment={hasSearch ? 'cross' : undefined}
+            adornmentClassName="size-5"
+            onAdornmentClick={hasSearch ? () => setSearchTerm('') : undefined}
+          />
+        </div>
+      )}
+      {isDatasetsEmpty ? (
         <div className="text-s text-grey-50 px-v2-md py-v2-md">
           {t('continuousScreening:creation.datasetSelection.search_empty')}
         </div>
       ) : (
-        <>
-          {filteredDatasets?.map((group) => (
-            <ItemGroup
-              key={group.name}
-              title={group.title}
-              items={group.datasets}
-              sectionKey={sectionKey}
-              forceOpen={hasSearch}
-            />
-          ))}
-          {filteredTopics &&
-            Object.entries(filteredTopics).map(([key, items]) => (
-              <FilterGroupRow
-                key={key}
-                sectionKey={sectionKey}
-                groupKey={key}
-                items={items}
-                onAfterChange={makeResetHandler(key)}
-              />
-            ))}
-          {filteredConditionalTopics &&
-            Object.entries(filteredConditionalTopics).map(([name, { items, dependsOn }]) => (
-              <ConditionalFilterGroupRow
-                key={name}
-                sectionKey={sectionKey}
-                groupKey={name}
-                allItems={items}
-                dependsOnItems={section.topics?.[dependsOn]?.map((t) => t.name) ?? []}
-              />
-            ))}
-        </>
+        filteredDatasets?.map((group) => (
+          <ItemGroup
+            key={group.name}
+            title={group.title}
+            items={group.datasets}
+            sectionKey={sectionKey}
+            forceOpen={hasSearch}
+          />
+        ))
       )}
+      {topics &&
+        Object.entries(topics).map(([key, items]) => (
+          <FilterGroupRow
+            key={key}
+            sectionKey={sectionKey}
+            groupKey={key}
+            items={items}
+            onAfterChange={makeResetHandler(key)}
+          />
+        ))}
+      {conditionalTopics &&
+        Object.entries(conditionalTopics).map(([name, { items, dependsOn }]) => (
+          <ConditionalFilterGroupRow
+            key={name}
+            sectionKey={sectionKey}
+            groupKey={name}
+            allItems={items}
+            dependsOnItems={section.topics?.[dependsOn]?.map((t) => t.name) ?? []}
+          />
+        ))}
     </div>
   );
 };
