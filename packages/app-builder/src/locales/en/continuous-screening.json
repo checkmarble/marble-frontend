@@ -27,6 +27,7 @@
   "creation.datasetSelection.recap.title_zero": "0 lists used",
   "creation.datasetSelection.search_empty": "No list matches your search",
   "creation.datasetSelection.search_placeholder": "Search list...",
+  "creation.datasetSelection.section.activate": "Activate search by {{category}}",
   "creation.modal.description_placeholder": "Description",
   "creation.modal.name_placeholder": "Name",
   "creation.modal.title": "New continuous screening",

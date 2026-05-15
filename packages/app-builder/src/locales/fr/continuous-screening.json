@@ -27,6 +27,7 @@
   "creation.datasetSelection.recap.title_zero": "0 listes utilisées",
   "creation.datasetSelection.search_empty": "Aucune liste ne correspond à votre recherche",
   "creation.datasetSelection.search_placeholder": "Rechercher une liste...",
+  "creation.datasetSelection.section.activate": "Activer la recherche par {{category}}",
   "creation.modal.description_placeholder": "Description",
   "creation.modal.name_placeholder": "Nom",
   "creation.modal.title": "Nouveau monitoring permanent",

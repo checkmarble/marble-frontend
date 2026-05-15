@@ -16,6 +16,7 @@ import {
   Input,
   MenuCommand,
   ScrollAreaV2,
+  Switch,
   Tag,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -121,7 +122,14 @@ const Section = ({ sectionKey, section, onApply, onCancel }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
-  const { t } = useTranslation(['common', 'continuousScreening', 'screenings']);
+  const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
+
+  const categoryLabel = match(sectionKey)
+    .with('peps', () => t('scenarios:sanction.lists.peps'))
+    .with('third-parties', () => t('scenarios:sanction.lists.third_parties'))
+    .with('sanctions', () => t('scenarios:sanction.lists.sanctions'))
+    .with('adverse-media', () => t('scenarios:sanction.lists.adverse_media'))
+    .otherwise(() => t('scenarios:sanction.lists.other'));
 
   const leafNames = getSectionLeafNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
@@ -181,7 +189,21 @@ const Section = ({ sectionKey, section, onApply, onCancel }: SectionProps) => {
       >
         <div className="flex flex-col h-full">
           <div className="flex-1 min-h-0 overflow-auto">
-            <SectionContent sectionKey={sectionKey} section={section} />
+            <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
+              <Switch
+                checked={isEnabled}
+                disabled={mode === 'view'}
+                onCheckedChange={(checked) => {
+                  listConfig.update((state) => {
+                    state.datasets[sectionKey] = checked;
+                  });
+                }}
+              />
+              <span className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}>
+                {t('continuousScreening:creation.datasetSelection.section.activate', { category: categoryLabel })}
+              </span>
+            </div>
+            {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
           </div>
           <div className="border-t border-grey-border flex gap-2 p-4">
             <Button
