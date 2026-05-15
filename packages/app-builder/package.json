@@ -75,7 +75,7 @@
     "@segment/snippet": "^5.2.1",
     "@sentry/node": "^10.47.0",
     "@sentry/react": "^10.47.0",
-    "@sentry/tanstackstart-react": "^10.47.0",
+    "@sentry/tanstackstart-react": "^10.51.0",
     "@swan-io/boxed": "^3.2.0",
     "@tanstack/react-form": "^1.29.1",
     "@tanstack/react-query": "^5.99.2",
