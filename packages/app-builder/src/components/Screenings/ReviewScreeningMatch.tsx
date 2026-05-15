@@ -100,7 +100,7 @@ export const ReviewScreeningMatch = ({
             }}
           </form.Field>
           {/* TODO: Whitelisting */}
-          {currentStatus === 'no_hit' && !!screeningMatch.uniqueCounterpartyIdentifier ? (
+          {currentStatus === 'no_hit' && screeningMatch.uniqueCounterpartyIdentifier ? (
             <form.Field name="whitelist">
               {(field) => {
                 return (
