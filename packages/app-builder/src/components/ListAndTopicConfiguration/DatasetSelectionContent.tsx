@@ -23,16 +23,46 @@ function groupCheckState(names: string[], datasetsMap: Record<string, boolean>):
   return 'indeterminate';
 }
 
-export function DatasetSelectionContent({ useCase }: { useCase: AvailableFeatures }) {
+type DatasetSelectionContentProps = {
+  useCase: AvailableFeatures;
+  onApply?: () => void;
+  onCancel?: () => void;
+};
+
+export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetSelectionContentProps) {
   const listConfigQuery = useListConfigQuery(useCase);
-  const { t } = useTranslation(['common', 'continuousScreening']);
+  const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
+  const { t } = useTranslation(['common', 'continuousScreening', 'screenings']);
+
+  const renderSections = (data: ListConfig) => {
+    const sections = Object.entries(data).filter(([, section]) => section.datasets?.length || section.topics);
+
+    return match(variant)
+      .with('default', () => (
+        <div className="flex flex-col">
+          {sections.map(([key, section]) =>
+            section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+          )}
+        </div>
+      ))
+      .with('popover', () => (
+        <MenuCommand.List>
+          {sections.map(([key, section]) =>
+            section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+          )}
+        </MenuCommand.List>
+      ))
+      .exhaustive();
+  };
 
   return (
     <>
-      <div className="border-b border-grey-border p-v2-md flex justify-between items-center">
-        <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
-        <SelectedListsCount listConfigQuery={listConfigQuery} />
-      </div>
+      {variant === 'default' && (
+        <div className="border-b border-grey-border p-v2-md flex justify-between items-center">
+          <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
+          <SelectedListsCount listConfigQuery={listConfigQuery} />
+        </div>
+      )}
       <ScrollAreaV2 className="p-v2-md" orientation="vertical">
         {match(listConfigQuery)
           .with({ isPending: true }, () => (
@@ -48,18 +78,19 @@ export function DatasetSelectionContent({ useCase }: { useCase: AvailableFeature
               </Button>
             </div>
           ))
-          .with({ isSuccess: true }, ({ data }) => (
-            <div className="flex flex-col">
-              {data &&
-                Object.entries(data)
-                  .filter(([, section]) => section.datasets?.length || section.topics)
-                  .map(([key, section]) =>
-                    section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
-                  )}
-            </div>
-          ))
+          .with({ isSuccess: true }, ({ data }) => (data ? renderSections(data) : null))
           .exhaustive()}
       </ScrollAreaV2>
+      {variant === 'popover' && (
+        <div className="border-t border-grey-border flex gap-2 p-4">
+          <Button type="button" variant="secondary" size="default" className="flex-1 justify-center" onClick={onCancel}>
+            {t('common:cancel')}
+          </Button>
+          <Button type="button" variant="primary" size="default" className="flex-1 justify-center" onClick={onApply}>
+            {t('screenings:freeform_search.apply')}
+          </Button>
+        </div>
+      )}
     </>
   );
 }
@@ -71,9 +102,13 @@ const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResu
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: sectionCount })}</span>;
 };
 
-const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
+type SectionProps = { sectionKey: ScreeningCategory; section: SectionData };
+
+const Section = ({ sectionKey, section }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
+  const { t } = useTranslation(['continuousScreening']);
 
   const leafNames = getSectionLeafNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
@@ -81,44 +116,64 @@ const Section = ({ sectionKey, section }: { sectionKey: ScreeningCategory; secti
     (state) => leafNames.filter((n) => state.datasets[n]).length,
   );
 
-  return (
-    <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
-      <Collapsible.Title hideIcon asChild size="null">
-        <div className="flex items-center justify-between">
-          <div className="flex gap-v2-md items-center">
-            <span onClick={(e) => e.stopPropagation()} className="inline-flex">
-              <Checkbox
-                stopPropagation
-                size="small"
-                checked={isEnabled}
-                disabled={mode === 'view'}
-                onCheckedChange={() => {
-                  listConfig.update((state) => {
-                    const nextValue = !state.datasets[sectionKey];
-                    state.datasets[sectionKey] = nextValue;
-                  });
-                }}
+  return match(variant)
+    .with('default', () => (
+      <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
+        <Collapsible.Title hideIcon asChild size="null">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-v2-md items-center">
+              <span onClick={(e) => e.stopPropagation()} className="inline-flex">
+                <Checkbox
+                  stopPropagation
+                  size="small"
+                  checked={isEnabled}
+                  disabled={mode === 'view'}
+                  onCheckedChange={() => {
+                    listConfig.update((state) => {
+                      const nextValue = !state.datasets[sectionKey];
+                      state.datasets[sectionKey] = nextValue;
+                    });
+                  }}
+                />
+              </span>
+              <Icon
+                icon="caret-down"
+                className="size-4 shrink-0 transition-transform duration-200 group-radix-state-open:rotate-180"
               />
+              <DatasetTag category={sectionKey} />
+            </div>
+            <span className="text-xs text-grey-50 pl-v2-md">
+              {selectedCount} / {leafNames.length}
             </span>
-            <Icon
-              icon="caret-down"
-              className="size-4 shrink-0 transition-transform duration-200 group-radix-state-open:rotate-180"
-            />
-            <DatasetTag category={sectionKey} />
           </div>
-          <span className="text-xs text-grey-50 pl-v2-md">
-            {selectedCount} / {leafNames.length}
+        </Collapsible.Title>
+        <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+          <SectionContent sectionKey={sectionKey} section={section} />
+        </Collapsible.Content>
+      </Collapsible.Container>
+    ))
+    .with('popover', () => (
+      <MenuCommand.SubMenu
+        hover={false}
+        arrow
+        trigger={
+          <span className="flex items-center justify-between gap-v2-md w-full">
+            <DatasetTag category={sectionKey} />
+            <span className="text-xs text-grey-50">
+              {t('continuousScreening:creation.datasetSelection.lists', { count: leafNames.length })}
+            </span>
           </span>
-        </div>
-      </Collapsible.Title>
-      <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+        }
+        className="w-fit max-w-[60vw] max-h-[60vh]"
+      >
         <SectionContent sectionKey={sectionKey} section={section} />
-      </Collapsible.Content>
-    </Collapsible.Container>
-  );
+      </MenuCommand.SubMenu>
+    ))
+    .exhaustive();
 };
 
-const SectionContent = ({ sectionKey, section }: { sectionKey: ScreeningCategory; section: SectionData }) => {
+type SectionContentProps = { sectionKey: ScreeningCategory; section: SectionData };
+const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const { datasets, topics, conditionalTopics } = section;
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
 
@@ -193,7 +248,6 @@ const ItemGroup = ({
   const selectedCount = ListAndTopicDatasetConfiguration.select(
     (state) => names.filter((n) => state.datasets[n]).length,
   );
-
   const handleSelectAll = () => {
     const datasetsMap = listConfig.value.datasets;
     const selected = names.filter((n) => datasetsMap[n]).length;
@@ -241,8 +295,8 @@ const ItemGroup = ({
         </div>
       </Collapsible.Title>
       <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-        <div className="flex flex-col gap-v2-sm pt-v2-sm">
-          <div className="flex flex-col border border-grey-border rounded-v2-md overflow-hidden">
+        <div className="flex flex-col gap-v2-sm">
+          <div className="flex flex-col overflow-hidden border border-grey-border rounded-v2-md ">
             {items.map((item) => (
               <ItemRow key={item.name} name={item.name} label={item.title ?? item.name} sectionKey={sectionKey} />
             ))}

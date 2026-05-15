@@ -18,6 +18,8 @@
   "creation.datasetSelection.list.section.select_all": "تحديد الكل",
   "creation.datasetSelection.list.section.unselect_all": "إلغاء تحديد الكل",
   "creation.datasetSelection.list.title": "القوائم",
+  "creation.datasetSelection.lists_one": "قائمة {{count}}",
+  "creation.datasetSelection.lists_other": "قوائم {{count}}",
   "creation.datasetSelection.recap.section_items_one": "({{count}} عنصر)",
   "creation.datasetSelection.recap.section_items_other": "({{count}} عناصر)",
   "creation.datasetSelection.recap.title_one": "القائمة المستخدمة ({{count}}):",

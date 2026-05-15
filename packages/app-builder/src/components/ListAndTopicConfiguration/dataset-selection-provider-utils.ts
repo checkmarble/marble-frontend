@@ -1,6 +1,7 @@
 import {
   ListAndTopicDatasetConfiguration,
   ListAndTopicDatasetConfigurationMode,
+  ListAndTopicDatasetConfigurationVariant,
 } from './context/ListAndTopicDatasetConfiguration';
 
 export function makeDatasetsMap(selected: string[]): Record<string, boolean> {
@@ -10,9 +11,11 @@ export function makeDatasetsMap(selected: string[]): Record<string, boolean> {
 export function useListAndTopicDatasetConfigurationSharp(params: {
   datasets: Record<string, boolean>;
   mode: ListAndTopicDatasetConfigurationMode;
+  variant?: ListAndTopicDatasetConfigurationVariant;
 }) {
   return ListAndTopicDatasetConfiguration.createSharp({
     datasets: params.datasets,
     mode: params.mode,
+    variant: params.variant,
   });
 }

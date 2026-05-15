@@ -18,6 +18,8 @@
   "creation.datasetSelection.list.section.select_all": "Tout sélectionner",
   "creation.datasetSelection.list.section.unselect_all": "Tout désélectionner",
   "creation.datasetSelection.list.title": "Listes",
+  "creation.datasetSelection.lists_one": "{{count}} liste",
+  "creation.datasetSelection.lists_other": "{{count}} listes",
   "creation.datasetSelection.recap.section_items_one": "({{count}} élément)",
   "creation.datasetSelection.recap.section_items_other": "({{count}} éléments)",
   "creation.datasetSelection.recap.title_one": "{{count}} liste utilisée :",
