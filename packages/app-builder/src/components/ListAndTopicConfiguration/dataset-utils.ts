@@ -12,3 +12,12 @@ export function getSectionLeafNames(section: SectionData): string[] {
   // Note: `sectionKey` is intentionally not included: it's the section toggle, not a leaf item.
   return [...new Set([...datasetNames, ...topicNames, ...conditionalTopicNames])];
 }
+
+export function formatDatasetTitle(title: string): string {
+  const last = title.includes(':')
+    ? (title.split(':').at(-1) ?? title)
+    : title.includes('.')
+      ? (title.split('.').at(-1) ?? title)
+      : title;
+  return last.replace(/_/g, ' ');
+}

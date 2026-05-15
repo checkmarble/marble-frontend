@@ -12,6 +12,7 @@ import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
+import { formatDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
 import { PanelRoot } from '../Panel/Panel';
 import { Spinner } from '../Spinner';
@@ -133,7 +134,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                         </CopyToClipboardButton>
                       </GridTable.Cell>
                       <GridTable.Cell>
-                        {item.datasets[0] ? <CellCapsule>{item.datasets[0]}</CellCapsule> : null}
+                        {item.datasets[0] ? <CellCapsule>{formatDatasetTitle(item.datasets[0])}</CellCapsule> : null}
                         {item.datasets.length > 1 ? <CellCapsule>+{item.datasets.length - 1}</CellCapsule> : null}
                       </GridTable.Cell>
                       <GridTable.Cell className="overflow-x-auto">

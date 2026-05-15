@@ -21,7 +21,7 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
-import { getSectionLeafNames } from './dataset-utils';
+import { formatDatasetTitle, getSectionLeafNames } from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
@@ -177,6 +177,7 @@ const Section = ({ sectionKey, section, onApply, onCancel }: SectionProps) => {
       <MenuCommand.SubMenu
         hover={false}
         arrow
+        persistOnSelect
         trigger={
           <span className="flex items-center justify-between gap-v2-md w-full">
             <DatasetTag category={sectionKey} />
@@ -191,17 +192,26 @@ const Section = ({ sectionKey, section, onApply, onCancel }: SectionProps) => {
           <div className="flex-1 min-h-0 overflow-auto">
             <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
               <Switch
+                id="section-switch"
                 checked={isEnabled}
                 disabled={mode === 'view'}
                 onCheckedChange={(checked) => {
                   listConfig.update((state) => {
                     state.datasets[sectionKey] = checked;
+                    if (!checked) {
+                      for (const name of leafNames) {
+                        state.datasets[name] = false;
+                      }
+                    }
                   });
                 }}
               />
-              <span className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}>
+              <label
+                htmlFor="section-switch"
+                className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}
+              >
                 {t('continuousScreening:creation.datasetSelection.section.activate', { category: categoryLabel })}
-              </span>
+              </label>
             </div>
             {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
           </div>
@@ -259,7 +269,8 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const hasSearch = normalizedSearch.length > 0;
   const itemMatches = (name: string, title?: string) =>
-    (title ?? name).toLowerCase().includes(normalizedSearch) || name.toLowerCase().includes(normalizedSearch);
+    (title ? formatDatasetTitle(title) : name).toLowerCase().includes(normalizedSearch) ||
+    name.toLowerCase().includes(normalizedSearch);
 
   const filteredDatasets = !hasSearch
     ? datasets
@@ -379,13 +390,14 @@ const ItemGroup = ({
             </span>
           </span>
           <span className="flex items-center gap-v2-md font-normal">
-            <span className="text-s text-grey-50">
+            <label htmlFor="select-all-checkbox" className="text-s text-grey-50">
               {t(
                 `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
               )}
-            </span>
+            </label>
             <span onClick={(e) => e.stopPropagation()} className="inline-flex mr-6">
               <Checkbox
+                id="select-all-checkbox"
                 size="small"
                 checked={checkState}
                 disabled={mode === 'view'}
@@ -426,14 +438,15 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   };
 
   return (
-    <div
+    <label
+      htmlFor={`item-checkbox-${name}`}
       className={cn(
-        'flex flex-row items-center gap-v2-sm p-v2-md even:bg-grey-background-light',
+        'flex flex-row items-center gap-v2-sm p-v2-md even:bg-grey-background-light text-s',
         mode !== 'view' && 'cursor-pointer',
       )}
-      onClick={onClickItem}
     >
       <Checkbox
+        id={`item-checkbox-${name}`}
         size="small"
         checked={isSelected}
         disabled={mode === 'view'}
@@ -441,8 +454,8 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
         className="cursor-pointer"
         stopPropagation
       />
-      <span className="text-s">{label}</span>
-    </div>
+      {label}
+    </label>
   );
 };
 
@@ -527,7 +540,7 @@ const FilterGroupRow = ({
 
   return (
     <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
-      <span className="text-s font-semibold shrink-0">{label}:</span>
+      <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
       <div className="flex items-center gap-v2-sm flex-1 min-w-0">
         {items.length === 1 && items[0] ? (
           <SingleItemToggle item={items[0]} sectionKey={sectionKey} mode={mode} onAfterChange={onAfterChange} />
@@ -609,8 +622,10 @@ const FilterGroupTags = ({
   const { t } = useTranslation(['continuousScreening']);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const selectedItems = ListAndTopicDatasetConfiguration.select((state) => items.filter((i) => state.datasets[i.name]));
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
   const [maxVisible, setMaxVisible] = useState(selectedItems.length);
@@ -660,7 +675,10 @@ const FilterGroupTags = ({
   const visible = overflow > 0 ? selectedItems.slice(0, maxVisible) : selectedItems;
 
   return (
-    <div ref={containerRef} className="relative flex-1 min-w-0">
+    <div
+      ref={containerRef}
+      className={cn('relative flex-1 min-w-0', variant === 'popover' && 'flex flex-col gap-v2-sm overflow-x-hidden')}
+    >
       {/* Ghost: invisible clone of all selected tags used to measure their rendered widths */}
       <div
         ref={ghostRef}
@@ -724,8 +742,26 @@ const FilterGroupTags = ({
             )}
           </>
         )}
-        {mode !== 'view' && <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />}
+        {mode !== 'view' && variant !== 'popover' && (
+          <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />
+        )}
+        {mode !== 'view' && variant === 'popover' && (
+          <button
+            type="button"
+            className={cn(
+              'flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0',
+              isMenuOpen && 'bg-purple-background-light border-purple-primary text-purple-primary',
+            )}
+            onClick={() => setIsMenuOpen((open) => !open)}
+            aria-expanded={isMenuOpen}
+          >
+            <Icon icon="plus" className="size-3" />
+          </button>
+        )}
       </div>
+      {mode !== 'view' && variant === 'popover' && isMenuOpen && (
+        <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />
+      )}
     </div>
   );
 };
@@ -740,9 +776,92 @@ const FilterGroupMenu = ({
   onAfterChange?: () => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
+  const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
+  const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const allSelected = items.length > 0 && items.every((i) => !!datasets[i.name]);
+
+  function handleClickItem(item: TopicItem) {
+    if (mode === 'view') return;
+    listConfig.update((state) => {
+      const nextValue = !state.datasets[item.name];
+      state.datasets[item.name] = nextValue;
+      if (nextValue) {
+        state.datasets[sectionKey] = true;
+      }
+    });
+    onAfterChange?.();
+  }
+
+  const itemsList = (
+    <MenuCommand.List>
+      <MenuCommand.Item
+        key="__all__"
+        value="__all__"
+        selected={allSelected}
+        onSelect={() => {
+          const nextValue = !allSelected;
+          listConfig.update((state) => {
+            for (const item of items) {
+              state.datasets[item.name] = nextValue;
+            }
+            if (nextValue) {
+              state.datasets[sectionKey] = true;
+            }
+          });
+          onAfterChange?.();
+        }}
+        className={variant === 'default' ? 'border-b border-purple-primary' : ''}
+      >
+        <span className="text-purple-primary ">
+          {t(`continuousScreening:creation.datasetSelection.filter.${allSelected ? 'unselect_all' : 'select_all'}`)}
+        </span>
+        {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
+      </MenuCommand.Item>
+      {items.map((item) => {
+        const isSelected = !!datasets[item.name];
+        const itemName = item.title ?? formatItemName(item.name);
+        return (
+          <MenuCommand.Item
+            key={item.name}
+            value={item.name}
+            selected={isSelected}
+            onSelect={() => handleClickItem(item)}
+            disabled={mode === 'view'}
+          >
+            {variant === 'default' ? (
+              <>
+                <span>{itemName}</span>
+                {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
+              </>
+            ) : (
+              <label
+                htmlFor={`filter-group-menu-item-${item.name}`}
+                className={cn(
+                  'flex flex-row items-center gap-v2-sm cursor-pointer text-s',
+                  mode === 'view' && 'cursor-not-allowed pointer-none:',
+                )}
+              >
+                <Checkbox
+                  id={`filter-group-menu-item-${item.name}`}
+                  checked={isSelected}
+                  size="small"
+                  onClick={() => handleClickItem(item)}
+                  disabled={mode === 'view'}
+                />
+                {itemName}
+              </label>
+            )}
+          </MenuCommand.Item>
+        );
+      })}
+    </MenuCommand.List>
+  );
+
+  if (variant === 'popover') {
+    return <div className="rounded-v2-md border border-grey-border bg-grey-background-light p-v2-sm">{itemsList}</div>;
+  }
 
   return (
     <MenuCommand.Menu persistOnSelect>
@@ -755,54 +874,7 @@ const FilterGroupMenu = ({
         </button>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="end" sideOffset={4}>
-        <MenuCommand.List>
-          <MenuCommand.Item
-            key="__all__"
-            value="__all__"
-            selected={allSelected}
-            onSelect={() => {
-              const nextValue = !allSelected;
-              listConfig.update((state) => {
-                for (const item of items) {
-                  state.datasets[item.name] = nextValue;
-                }
-                if (nextValue) {
-                  state.datasets[sectionKey] = true;
-                }
-              });
-              onAfterChange?.();
-            }}
-            className="border-b border-purple-primary"
-          >
-            <span className="text-purple-primary ">
-              {t(`continuousScreening:creation.datasetSelection.filter.${allSelected ? 'unselect_all' : 'select_all'}`)}
-            </span>
-            {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
-          </MenuCommand.Item>
-          {items.map((item) => {
-            const isSelected = !!datasets[item.name];
-            return (
-              <MenuCommand.Item
-                key={item.name}
-                value={item.name}
-                selected={isSelected}
-                onSelect={() => {
-                  listConfig.update((state) => {
-                    const nextValue = !state.datasets[item.name];
-                    state.datasets[item.name] = nextValue;
-                    if (nextValue) {
-                      state.datasets[sectionKey] = true;
-                    }
-                  });
-                  onAfterChange?.();
-                }}
-              >
-                <span>{item.title ?? formatItemName(item.name)}</span>
-                {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
-              </MenuCommand.Item>
-            );
-          })}
-        </MenuCommand.List>
+        {itemsList}
       </MenuCommand.Content>
     </MenuCommand.Menu>
   );
