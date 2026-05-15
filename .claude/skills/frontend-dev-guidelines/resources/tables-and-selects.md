@@ -10,12 +10,12 @@ Tables use TanStack React Table with virtual scrolling via `useVirtualTable` fro
 
 ### Canonical Example
 
-Reference: `routes/_builder+/detection+/lists+/_index.tsx`
+Reference: `routes/_app/_builder/detection/lists.tsx`
 
 ```typescript
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { Table, useVirtualTable } from 'ui-design-system';
-import { Link } from '@remix-run/react';
+import { Link } from '@tanstack/react-router';
 
 const columnHelper = createColumnHelper<CustomList>();
 
