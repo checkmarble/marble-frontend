@@ -185,7 +185,7 @@ export type BuilderOptionsResource = {
 export function buildPayloadAccessorsFromDataModel(dataModel: DataModel, triggerObjectType: string): PayloadAstNode[] {
   const table = dataModel.find((t) => t.name === triggerObjectType);
   if (!table) return [];
-  return table.fields.filter((f) => !f.hidden).map((f) => NewPayloadAstNode(f.name));
+  return table.fields.map((f) => NewPayloadAstNode(f.name));
 }
 
 export function buildDatabaseAccessorsFromDataModel(
