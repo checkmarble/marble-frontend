@@ -122,7 +122,7 @@
     "react-dom": "^18.3.1",
     "react-dropzone-esm": "^15.2.0",
     "react-hot-toast": "^2.5.2",
-    "react-i18next": "^15.4.1",
+    "react-i18next": "^17.0.6",
     "@xyflow/react": "^12.10.2",
     "remeda": "^2.21.2",
     "sharpstate": "^0.0.13",
