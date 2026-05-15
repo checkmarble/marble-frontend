@@ -6,7 +6,7 @@ TanStack Router file-based routing patterns used in the Marble app. Routes are a
 
 ## Route Structure
 
-```
+```text
 packages/app-builder/src/routes/
 ├── __root.tsx                       # Root route (createRootRouteWithContext)
 ├── index.tsx                        # /

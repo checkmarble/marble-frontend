@@ -6,7 +6,7 @@ Data fetching architecture in TanStack Start: route loaders, server functions, q
 
 ## Architecture
 
-```
+```text
 Route loader (createServerFn)        -> Repository -> API Client     (SSR data for page render)
 Component -> Query Hook -> fetch(    -> server-fn (createServerFn)    -> Repository -> API Client
                               OR
@@ -151,10 +151,15 @@ export function useGetCasesQuery(
 
 ## Mutations
 
+Mutation hooks live in `queries/{domain}/`. They wrap a server function with `useMutation`, invalidate queries in `onSuccess`, and surface user feedback via `react-hot-toast` in `onSuccess` / `onError` (see [common-patterns#toast-notifications](common-patterns.md#toast-notifications)).
+
 ```typescript
 // queries/cases/edit-name.ts
 import { editCaseNameFn } from '@app-builder/server-fns/cases';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
+import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 import { z } from 'zod/v4';
 
 export const editNamePayloadSchema = z.object({
@@ -164,17 +169,30 @@ export const editNamePayloadSchema = z.object({
 type EditNamePayload = z.infer<typeof editNamePayloadSchema>;
 
 export function useEditNameMutation() {
+  const editCaseName = useServerFn(editCaseNameFn);
   const queryClient = useQueryClient();
+  const { t } = useTranslation(['common']);
 
   return useMutation({
     mutationKey: ['cases', 'edit-name'],
-    mutationFn: (payload: EditNamePayload) => editCaseNameFn({ data: payload }),
+    mutationFn: (payload: EditNamePayload) => editCaseName({ data: payload }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cases'] });
+      toast.success(t('common:success.save'));
+    },
+    onError: (error) => {
+      // Use error.message when the server function throws a typed/translated message
+      // Fall back to a generic key for unexpected failures
+      toast.error(error.message ?? t('common:errors.unknown'));
     },
   });
 }
 ```
+
+Key points:
+- Wrap the server function with `useServerFn` so client-side middleware (request context, headers) runs correctly
+- Invalidate the broadest relevant query prefix in `onSuccess` to refresh derived UI
+- For error messages with i18n keys, throw a translated string from the server function and re-display it client-side, or branch on the error in `onError` to pick a specific i18n key
 
 ### Mutation with Navigation
 

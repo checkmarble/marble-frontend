@@ -104,8 +104,10 @@ export function MyComponent() {
 ### Server-Side Translation
 
 ```typescript
+import { getRequest } from '@tanstack/react-start/server';
+
 const { i18nextService: { getFixedT } } = context.services;
-const request = getRequest(); // from '@tanstack/react-start/server'
+const request = getRequest();
 const t = await getFixedT(request, ['common', 'data']);
 
 throw new Error(t('data:apply_archetype.error.invalid_payload'));
