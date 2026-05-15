@@ -1,14 +1,30 @@
 ---
 paths:
-  - "**/ressources+/**"
+  - "**/routes/ressources/**"
+  - "**/server-fns/**"
 ---
 
-# Resource Route Conventions
+# Server Endpoint Conventions
 
-- Use `createServerFn` from `core/requests.ts` + `authMiddleware` from `middlewares/auth-middleware.ts` — NOT legacy `initServerServices`/`ActionFunctionArgs`/`json()`
-- **Default to `[handleRedirectMiddleware, authMiddleware]`** for routes called via React Query/useFetcher — the redirect middleware intercepts auth redirects (3xx to `/sign-in`) and converts them to `{ redirectTo }` so the client can navigate properly
-- Use `[authMiddleware]` alone for mutation actions (delete, create, revoke) or data-fetching endpoints that handle auth errors programmatically
-- Access auth context via `context.authInfo` (repositories, user) and services via `context.services`
-- Use `data()` from `core/requests.ts` instead of Remix's `json()` for responses with headers
+Two patterns coexist for server endpoints called from the client:
+
+## Server Functions (preferred for new React Query endpoints)
+
+- Export from `server-fns/{domain}.ts` using `createServerFn({ method: 'POST' })` from `@tanstack/react-start`
+- Chain: `.middleware([authMiddleware]).inputValidator(zodSchema).handler(async ({ context, data }) => { ... })`
+- Call from React Query: `mutationFn: (payload) => myServerFn({ data: payload })`
+- Access auth via `context.authInfo` (repositories, user); services via `context.services`
+- Set response headers via `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` — no `data()` helper exists
+- Redirects: `throw redirect({ href, statusCode })` from `@tanstack/react-router`; `authMiddleware` already handles auth-redirect cases
+- Reference: `server-fns/cases.ts`, `server-fns/auth.ts`
+
+## Resource File Routes (downloads, streams, file-typed responses)
+
+- File at `routes/ressources/{domain}/...ts` using `createFileRoute('/ressources/...')({ server: { handlers: { GET: async ({ request, params }) => new Response(...) } } })`
+- Return raw `Response` objects (e.g., for CSV downloads, file streaming)
+- Reference: `routes/ressources/lists/download-csv-file.$listId.ts`
+
+## General
+
 - `apiClient` on `context.authInfo` is deprecated — add repository methods instead
-- References: `routes/ressources+/lists+/create.tsx` (with redirect middleware), `routes/ressources+/data+/deleteTable.tsx` (auth only)
+- Do NOT use `initServerServices` / `ActionFunctionArgs` / `LoaderFunctionArgs` / Remix `handle` / Remix `json()` for new code — a few legacy download routes still use `initServerServices` but new code should not

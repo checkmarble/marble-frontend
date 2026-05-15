@@ -1,6 +1,6 @@
 ---
 name: frontend-dev-guidelines
-description: Use when writing, editing, or creating components, pages, routes, forms, tables, modals, queries, hooks, loaders, or actions in packages/app-builder or packages/ui-design-system. Covers React patterns, TanStack Query/Form, Radix UI, virtual tables, MenuCommand, Tailwind color tokens, file organization, and TypeScript standards. Basic conventions (imports, styling, i18n, resource route middleware) are in .claude/rules/ — this skill provides the deep reference patterns and code examples.
+description: Use when writing, editing, or creating components, pages, routes, forms, tables, modals, queries, hooks, loaders, or server functions in packages/app-builder or packages/ui-design-system. Covers TanStack Start + TanStack Router (createFileRoute, staticData, file-based routing), createServerFn, React patterns, TanStack Query/Form, Radix UI, virtual tables, MenuCommand, Tailwind color tokens, file organization, and TypeScript standards. Basic conventions (imports, styling, i18n, route middleware) are in .claude/rules/ — this skill provides the deep reference patterns and code examples.
 ---
 
 # Frontend Development Guidelines
@@ -62,8 +62,8 @@ Read these when working on specific areas:
 | Topic | Resource | When to read |
 |-------|----------|-------------|
 | Component patterns | [component-patterns.md](resources/component-patterns.md) | Writing/editing components |
-| Data fetching | [data-fetching.md](resources/data-fetching.md) | Queries, mutations, loaders, actions |
-| Routing | [routing-guide.md](resources/routing-guide.md) | Routes, breadcrumbs, navigation |
+| Data fetching | [data-fetching.md](resources/data-fetching.md) | Queries, mutations, loaders, server functions |
+| Routing | [routing-guide.md](resources/routing-guide.md) | TanStack Router routes, breadcrumbs, navigation |
 | Styling | [styling-guide.md](resources/styling-guide.md) | Color tokens, surface tokens, dark mode |
 | Tables & selects | [tables-and-selects.md](resources/tables-and-selects.md) | Virtual tables, MenuCommand dropdowns |
 | Forms & modals | [forms-and-modals.md](resources/forms-and-modals.md) | TanStack Form, Modal, Panel |
