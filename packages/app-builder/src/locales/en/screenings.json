@@ -128,7 +128,7 @@
   "freeform_search.tag.address": "Address : {{value}}",
   "freeform_search.tag.passport": "passport : {{value}}",
   "freeform_search.tag.registration": "registration : {{value}}",
-  "freeform_search.threshold_description": "Minimum similarity score (40-80). Higher values return fewer but more accurate results.",
+  "freeform_search.threshold_description": "Minimum similarity score. Higher values return fewer but more accurate results.",
   "freeform_search.threshold_label": "Similarity Threshold",
   "freeform_search.title": "Screening Search",
   "initial_query": "Initial query",

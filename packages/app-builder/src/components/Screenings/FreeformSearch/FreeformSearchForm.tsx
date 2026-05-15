@@ -156,11 +156,12 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               form.handleSubmit();
             }}
             values={[
-              { value: 40, label: '', color: 'var(--color-red-secondary)' },
-              { value: 50, label: '', color: 'var(--color-orange-secondary)' },
-              { value: 60, label: '', color: 'var(--color-yellow-primary)' },
-              { value: 70, label: '', color: 'var(--color-green-disabled)' },
-              { value: 80, label: '80', color: 'var(--color-green-primary)' },
+              { value: 40, label: '40%', color: 'var(--color-red-secondary)' },
+              { value: 50, label: '50%', color: 'var(--color-orange-secondary)' },
+              { value: 60, label: '60%', color: 'var(--color-yellow-primary)' },
+              { value: 70, label: '70%', color: 'var(--color-green-disabled)' },
+              { value: 80, label: '80%', color: 'var(--color-green-primary)' },
+              { value: 90, label: '90%', color: 'var(--color-green-hover)' },
             ]}
             initialColor="var(--color-red-hover)"
           />

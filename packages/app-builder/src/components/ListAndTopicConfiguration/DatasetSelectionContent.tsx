@@ -803,7 +803,7 @@ const FilterGroupTags = ({
             onClick={() => setIsMenuOpen((open) => !open)}
             aria-expanded={isMenuOpen}
           >
-            <Icon icon="plus" className="size-3" />
+            <Icon icon={isMenuOpen ? 'minus' : 'plus'} className="size-3" />
           </button>
         )}
       </div>

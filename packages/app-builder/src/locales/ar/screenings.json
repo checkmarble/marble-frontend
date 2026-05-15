@@ -128,7 +128,7 @@
   "freeform_search.tag.address": "العنوان : {{value}}",
   "freeform_search.tag.passport": "جواز السفر : {{value}}",
   "freeform_search.tag.registration": "التسجيل : {{value}}",
-  "freeform_search.threshold_description": "الحد الأدنى لدرجة التشابه (40-80). القيم الأعلى تعيد نتائج أقل ولكن أكثر دقة.",
+  "freeform_search.threshold_description": "الحد الأدنى لدرجة التشابه. القيم الأعلى تعيد نتائج أقل ولكن أكثر دقة.",
   "freeform_search.threshold_label": "حد التشابه",
   "freeform_search.title": "بحث الفحص",
   "initial_query": "الاستعلام الأولي",
