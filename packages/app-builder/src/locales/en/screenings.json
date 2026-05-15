@@ -241,6 +241,8 @@
   "status.confirmed_hit": "Confirmed hit",
   "status.error": "Error",
   "status.in_review": "Hits to review",
-  "status.no_hit": "No match",
+  "status.no_hit": "No match ({{count}})",
+  "status.pending": "Hits to review ({{count}})",
+  "status.skipped": "Skipped",
   "success.match_enriched": "Match successfully enriched"
 }

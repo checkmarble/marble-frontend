@@ -4,10 +4,12 @@ import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { type ScreeningStatus } from '@app-builder/models/screening';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
+import { useScreeningDetailQuery } from '@app-builder/queries/screening/get-screening-detail';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
@@ -183,28 +185,34 @@ export const AlertCard = ({
             <div className="flex flex-col gap-1">
               <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
               <div className="flex flex-col gap-2">
-                {decision.screenings.map((screening) => (
-                  <div key={screening.id} className="flex items-center gap-2">
-                    <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
-                    <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPanelScreeningId(screening.id);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                {decision.screenings.map((screening) => {
+                  return (
+                    <div key={screening.id} className="flex items-center gap-2">
+                      <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
+                      <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => {
                           e.stopPropagation();
                           setPanelScreeningId(screening.id);
-                        }
-                      }}
-                    >
-                      <ScreeningStatusBadge status={screening.status} count={screening.count} />
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.stopPropagation();
+                            setPanelScreeningId(screening.id);
+                          }
+                        }}
+                      >
+                        <ScreeningStatusBadge
+                          status={screening.status}
+                          decisionId={decision.id}
+                          screeningId={screening.id}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ) : null}
@@ -390,8 +398,17 @@ const screeningLabelColors: Record<'confirmed_hit' | 'no_hit', string> = {
   no_hit: 'text-green-primary',
 };
 
-export const ScreeningStatusBadge = ({ status, count }: { status: ScreeningStatus; count: number }) => {
+export const ScreeningStatusBadge = ({
+  status,
+  decisionId,
+  screeningId,
+}: {
+  status: ScreeningStatus;
+  decisionId: string;
+  screeningId: string;
+}) => {
   const { t } = useTranslation(casesI18n);
+  const screeningQuery = useScreeningDetailQuery(decisionId, screeningId, true);
 
   // confirmed_hit and no_hit render as borderless inline labels with eye icon
   if (status === 'confirmed_hit' || status === 'no_hit') {
@@ -407,9 +424,32 @@ export const ScreeningStatusBadge = ({ status, count }: { status: ScreeningStatu
 
   return (
     <Button variant={config.variant} size="small" className="shadow-sm" tabIndex={-1}>
-      {t(`screenings:status.${status}`)}
-      {status === 'in_review' && count > 0 ? ` (${count})` : ''}
-      <Icon icon="eye" className="size-4 shrink-0" />
+      {match(screeningQuery)
+        .with({ isPending: true }, () => <Spinner className="size-4" />)
+        .with({ isError: true }, () => (
+          <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>
+        ))
+        .otherwise((query) => {
+          const screeningData = query.data;
+          if (!screeningData) {
+            return <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>;
+          }
+          const matchCount = R.pipe(
+            screeningData.matches,
+            R.groupBy((m) => m.status),
+            R.mapValues((group) => group.length),
+          );
+          return (
+            <>
+              {Object.entries(matchCount)
+                .filter(([, count]) => count > 0)
+                .map(([status, count]) => (
+                  <div key={status}>{t(`screenings:status.${status}`, { count })}</div>
+                ))}
+              <Icon icon="eye" className="size-4 shrink-0" />
+            </>
+          );
+        })}
     </Button>
   );
 };
