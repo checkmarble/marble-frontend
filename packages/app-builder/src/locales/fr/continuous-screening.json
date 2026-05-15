@@ -25,6 +25,8 @@
   "creation.datasetSelection.recap.title_one": "{{count}} liste utilisée :",
   "creation.datasetSelection.recap.title_other": "{{count}} listes utilisées :",
   "creation.datasetSelection.recap.title_zero": "0 listes utilisées",
+  "creation.datasetSelection.search_empty": "Aucune liste ne correspond à votre recherche",
+  "creation.datasetSelection.search_placeholder": "Rechercher une liste...",
   "creation.modal.description_placeholder": "Description",
   "creation.modal.name_placeholder": "Nom",
   "creation.modal.title": "Nouveau monitoring permanent",

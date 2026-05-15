@@ -25,6 +25,8 @@
   "creation.datasetSelection.recap.title_one": "القائمة المستخدمة ({{count}}):",
   "creation.datasetSelection.recap.title_other": "القوائم المستخدمة ({{count}}):",
   "creation.datasetSelection.recap.title_zero": "القوائم المستخدمة: 0",
+  "creation.datasetSelection.search_empty": "لا توجد قائمة تطابق بحثك",
+  "creation.datasetSelection.search_placeholder": "ابحث عن قائمة...",
   "creation.modal.description_placeholder": "الوصف",
   "creation.modal.name_placeholder": "الاسم",
   "creation.modal.title": "فحص مستمر جديد",

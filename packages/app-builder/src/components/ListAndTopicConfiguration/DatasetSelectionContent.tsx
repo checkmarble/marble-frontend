@@ -7,7 +7,17 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Checkbox, type CheckedState, Collapsible, cn, MenuCommand, ScrollAreaV2, Tag } from 'ui-design-system';
+import {
+  Button,
+  Checkbox,
+  type CheckedState,
+  Collapsible,
+  cn,
+  Input,
+  MenuCommand,
+  ScrollAreaV2,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import { getSectionLeafNames } from './dataset-utils';
@@ -164,7 +174,7 @@ const Section = ({ sectionKey, section }: SectionProps) => {
             </span>
           </span>
         }
-        className="w-fit max-w-[60vw] max-h-[60vh]"
+        className="w-fit min-w-[300px] max-w-[60vw] max-h-[60vh]"
       >
         <SectionContent sectionKey={sectionKey} section={section} />
       </MenuCommand.SubMenu>
@@ -176,6 +186,8 @@ type SectionContentProps = { sectionKey: ScreeningCategory; section: SectionData
 const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const { datasets, topics, conditionalTopics } = section;
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
+  const { t } = useTranslation(['continuousScreening']);
+  const [searchTerm, setSearchTerm] = useState('');
 
   if (!datasets?.length && !topics && !conditionalTopics) return null;
 
@@ -200,31 +212,98 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
     };
   }
 
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const hasSearch = normalizedSearch.length > 0;
+  const itemMatches = (name: string, title?: string) =>
+    (title ?? name).toLowerCase().includes(normalizedSearch) || name.toLowerCase().includes(normalizedSearch);
+
+  const filteredDatasets = !hasSearch
+    ? datasets
+    : datasets
+        ?.map((group) => ({
+          ...group,
+          datasets: group.datasets.filter((item) => itemMatches(item.name, item.title)),
+        }))
+        .filter((group) => group.datasets.length > 0);
+
+  const filteredTopics = !hasSearch
+    ? topics
+    : topics
+      ? Object.fromEntries(
+          Object.entries(topics)
+            .map(([key, items]) => [key, items.filter((item) => itemMatches(item.name, item.title))] as const)
+            .filter(([, items]) => items.length > 0),
+        )
+      : undefined;
+
+  const filteredConditionalTopics = !hasSearch
+    ? conditionalTopics
+    : conditionalTopics
+      ? Object.fromEntries(
+          Object.entries(conditionalTopics)
+            .map(
+              ([name, value]) =>
+                [name, { ...value, items: value.items.filter((item) => itemMatches(item.name, item.title)) }] as const,
+            )
+            .filter(([, value]) => value.items.length > 0),
+        )
+      : undefined;
+
+  const isEmpty =
+    hasSearch &&
+    (!filteredDatasets || filteredDatasets.length === 0) &&
+    (!filteredTopics || Object.keys(filteredTopics).length === 0) &&
+    (!filteredConditionalTopics || Object.keys(filteredConditionalTopics).length === 0);
+
   return (
     <div className="flex flex-col">
-      {datasets?.map((group) => (
-        <ItemGroup key={group.name} title={group.title} items={group.datasets} sectionKey={sectionKey} />
-      ))}
-      {topics &&
-        Object.entries(topics).map(([key, items]) => (
-          <FilterGroupRow
-            key={key}
-            sectionKey={sectionKey}
-            groupKey={key}
-            items={items}
-            onAfterChange={makeResetHandler(key)}
-          />
-        ))}
-      {conditionalTopics &&
-        Object.entries(conditionalTopics).map(([name, { items, dependsOn }]) => (
-          <ConditionalFilterGroupRow
-            key={name}
-            sectionKey={sectionKey}
-            groupKey={name}
-            allItems={items}
-            dependsOnItems={section.topics?.[dependsOn]?.map((t) => t.name) ?? []}
-          />
-        ))}
+      <div className="px-v2-md py-v2-sm">
+        <Input
+          placeholder={t('continuousScreening:creation.datasetSelection.search_placeholder')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          endAdornment={hasSearch ? 'cross' : undefined}
+          adornmentClassName="size-5"
+          onAdornmentClick={hasSearch ? () => setSearchTerm('') : undefined}
+        />
+      </div>
+      {isEmpty ? (
+        <div className="text-s text-grey-50 px-v2-md py-v2-md">
+          {t('continuousScreening:creation.datasetSelection.search_empty')}
+        </div>
+      ) : (
+        <>
+          {filteredDatasets?.map((group) => (
+            <ItemGroup
+              key={group.name}
+              title={group.title}
+              items={group.datasets}
+              sectionKey={sectionKey}
+              forceOpen={hasSearch}
+            />
+          ))}
+          {filteredTopics &&
+            Object.entries(filteredTopics).map(([key, items]) => (
+              <FilterGroupRow
+                key={key}
+                sectionKey={sectionKey}
+                groupKey={key}
+                items={items}
+                onAfterChange={makeResetHandler(key)}
+              />
+            ))}
+          {filteredConditionalTopics &&
+            Object.entries(filteredConditionalTopics).map(([name, { items, dependsOn }]) => (
+              <ConditionalFilterGroupRow
+                key={name}
+                sectionKey={sectionKey}
+                groupKey={name}
+                allItems={items}
+                dependsOnItems={section.topics?.[dependsOn]?.map((t) => t.name) ?? []}
+              />
+            ))}
+        </>
+      )}
     </div>
   );
 };
@@ -233,10 +312,12 @@ const ItemGroup = ({
   title,
   items,
   sectionKey,
+  forceOpen = false,
 }: {
   title: string;
   items: { name: string; title?: string }[];
   sectionKey: ScreeningCategory;
+  forceOpen?: boolean;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
@@ -263,7 +344,11 @@ const ItemGroup = ({
   };
 
   return (
-    <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
+    <Collapsible.Container
+      key={forceOpen ? 'open' : 'closed'}
+      className="border-none px-v2-md py-v2-sm h-fit"
+      defaultOpen={forceOpen}
+    >
       <Collapsible.Title hideIcon asChild size="null">
         <div className="flex items-center gap-v2-md justify-between w-full">
           <span className="flex items-center gap-v2-md">
