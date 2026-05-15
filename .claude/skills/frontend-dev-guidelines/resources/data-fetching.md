@@ -49,7 +49,7 @@ export const Route = createFileRoute('/_app/_builder/cases/')({
 Key points:
 - Chain syntax: `createServerFn().middleware([...]).handler(async ({ context }) => {...})`
 - `context.authInfo` provides authenticated user, repositories, entitlements
-- `context.services` provides `toastSessionService`, `i18nextService`, `authService`
+- `context.services` provides `authService`, `featureAccessService`, `i18nextService` (no `toastSessionService` — toasts are client-side)
 - Need the raw request? `import { getRequest } from '@tanstack/react-start/server'` then call `getRequest()` inside the handler
 - `authMiddleware` already handles auth redirects (throws `redirect()` from `@tanstack/react-router`) — no separate `handleRedirectMiddleware`
 
@@ -65,7 +65,6 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { setResponseHeaders } from '@tanstack/react-start/server';
 import { z } from 'zod/v4';
 
 const createListPayloadSchema = z.object({ name: z.string().min(1) });
@@ -74,36 +73,18 @@ export const createListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(createListPayloadSchema)
   .handler(async ({ context, data }) => {
-    const { toastSessionService } = context.services;
-    try {
-      const result = await context.authInfo.customListsRepository.createCustomList(data);
-      throw redirect({
-        href: `/detection/lists/${fromUUIDtoSUUID(result.id)}`,
-      });
-    } catch (error) {
-      if (isStatusConflictHttpError(error)) {
-        const toastSession = await toastSessionService.getSession();
-        setToastMessage(toastSession, {
-          type: 'error',
-          messageKey: 'common:errors.list.duplicate_list_name',
-        });
-        setResponseHeaders(
-          new Headers({
-            'Set-Cookie': await toastSessionService.commitSession(toastSession),
-          }),
-        );
-        return { success: false, errors: [] };
-      }
-      throw error;
-    }
+    const result = await context.authInfo.customListsRepository.createCustomList(data);
+    throw redirect({
+      href: `/detection/lists/${fromUUIDtoSUUID(result.id)}`,
+    });
   });
 ```
 
 Key points:
 - `.inputValidator(schema)` validates `data` on the server before the handler runs; the handler receives `{ context, data }` where `data` is the parsed result
 - `redirect()` from `@tanstack/react-router` is thrown (not returned) to trigger navigation
-- `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` sets headers like `Set-Cookie` — there is no `data()` helper
-- For Set-Cookie patterns, set the header then return a plain object
+- `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` sets headers like `Set-Cookie` — there is no `data()` helper. Used for things like persisted preferences, **not** for toast flash sessions (those no longer exist)
+- For error feedback, let the server function throw; surface the message client-side via the mutation's `onError` (see [common-patterns#toast-notifications](common-patterns.md#toast-notifications))
 - Call from the client: `createListFn({ data: { name: 'My List' } })`
 
 ### Calling from React Query
@@ -288,7 +269,7 @@ queryClient.invalidateQueries({ queryKey: ['cases'] }); // all case queries
 | Middleware | Purpose |
 |-----------|---------|
 | `authMiddleware` | Auth check, redirects to `/sign-in` on failure; provides `context.authInfo` (user, repositories, entitlements) |
-| `servicesMiddleware` | Provides `context.services` (toastSessionService, i18nextService, authService) |
+| `servicesMiddleware` | Provides `context.services` (authService, featureAccessService, i18nextService) and `context.appConfig` |
 | `caseDetailMiddleware` | Adds case-detail context for case-scoped server functions |
 
 Compose middleware via the chain: `createServerFn().middleware([servicesMiddleware, authMiddleware]).handler(...)`. `authMiddleware` already includes `servicesMiddleware` internally, so most handlers only need `[authMiddleware]`.

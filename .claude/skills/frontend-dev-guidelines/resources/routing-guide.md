@@ -16,9 +16,16 @@ packages/app-builder/src/routes/
 │   ├── _builder.tsx                 # Main builder layout (sidebar, nav)
 │   ├── _builder/
 │   │   ├── cases.tsx                # /cases layout
-│   │   ├── cases.$caseId.tsx        # /cases/:caseId
-│   │   ├── detection.lists.tsx      # /detection/lists
-│   │   └── settings.api-keys.tsx    # /settings/api-keys
+│   │   ├── cases/
+│   │   │   ├── index.tsx            # /cases
+│   │   │   ├── $caseId.tsx          # /cases/:caseId
+│   │   │   └── inboxes.$inboxId.tsx # /cases/inboxes/:inboxId
+│   │   ├── detection.tsx            # /detection layout
+│   │   ├── detection/
+│   │   │   └── lists.tsx            # /detection/lists
+│   │   ├── settings.tsx             # /settings layout
+│   │   └── settings/
+│   │       └── api-keys.tsx         # /settings/api-keys
 │   ├── _auth.tsx                    # Auth layout
 │   └── _auth/
 │       ├── sign-in.tsx              # /sign-in
@@ -37,8 +44,10 @@ Mutation endpoints called via React Query live in `packages/app-builder/src/serv
 | Pattern | Meaning | Example |
 |---------|---------|---------|
 | `_name.tsx` | Layout route (renders `<Outlet />` for children) | `_app.tsx`, `_builder.tsx` |
-| `$param` | Dynamic segment | `cases.$caseId.tsx` → `/cases/:caseId` |
-| `dot.separated.tsx` | Nested URL path under the parent layout | `detection.lists.tsx` → `/detection/lists` |
+| `$param` | Dynamic segment | `cases/$caseId.tsx` → `/cases/:caseId` |
+| `parent/child.tsx` | Subdirectory nesting under a parent layout | `detection/lists.tsx` → `/detection/lists` |
+| `dot.separated.tsx` | Combine static + dynamic segments in one filename | `cases/inboxes.$inboxId.tsx` → `/cases/inboxes/:inboxId` |
+| `name_.tsx` (trailing underscore) | Break out of the parent layout while keeping the URL | `settings/webhooks_.$webhookId.tsx` |
 | `index.tsx` | Index route at parent's path | `_app/_builder/index.tsx` |
 | `$.tsx` | Catch-all splat route | `$.tsx` for 404 |
 | `.server.ts` | Pure server utility (not a route, no `createFileRoute`) | `update-rule.server.ts` |

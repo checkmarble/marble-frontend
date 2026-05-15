@@ -108,11 +108,10 @@ const { i18nextService: { getFixedT } } = context.services;
 const request = getRequest(); // from '@tanstack/react-start/server'
 const t = await getFixedT(request, ['common', 'data']);
 
-setToastMessage(session, {
-  type: 'success',
-  message: t('data:apply_archetype.success'),
-});
+throw new Error(t('data:apply_archetype.error.invalid_payload'));
 ```
+
+Use server-side `t` for messages embedded in thrown errors or returned data. Toasts themselves are surfaced client-side from mutation callbacks (see [Toast Notifications](#toast-notifications) below).
 
 i18n namespaces no longer live in a `handle` export — each component just calls `useTranslation([...])` with the namespaces it needs. Server functions get the request via `getRequest()` to resolve the per-request `t`.
 
@@ -145,45 +144,35 @@ Size with `size-{n}`, color via `text-{color}`.
 
 ## Toast Notifications
 
-### Client-Side (react-hot-toast)
+Toasts are **client-side only**, fired from React Query mutation callbacks (`onSuccess` / `onError`) or `mutateAsync().then(...).catch(...)`. There is no server-side flash session — server functions throw errors, the client decides what to show.
 
 ```typescript
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
-toast.success('Case created successfully');
-toast.error('Failed to create case');
-toast.error(t('common:errors.unknown'));
+const { t } = useTranslation(['common']);
+const createMutation = useCreateTagMutation();
+
+// In a form submit / handler:
+createMutation
+  .mutateAsync(value)
+  .then(() => {
+    toast.success(t('common:success.save'));
+    onSuccess();
+  })
+  .catch(() => {
+    toast.error(t('common:errors.unknown'));
+  });
+
+// Or via useMutation options:
+useMutation({
+  mutationFn: createTagFn,
+  onSuccess: () => toast.success(t('common:success.save')),
+  onError: () => toast.error(t('common:errors.unknown')),
+});
 ```
 
-### Server-Side (session flash)
-
-Used in actions to show toasts after redirect:
-
-```typescript
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
-
-// With i18n key (preferred)
-setToastMessage(toastSession, {
-  type: 'success',
-  messageKey: 'common:success.save',
-});
-
-// With direct message
-setToastMessage(toastSession, {
-  type: 'error',
-  message: t('common:errors.unknown'),
-});
-
-// Return with Set-Cookie header to persist toast (TanStack Start pattern)
-import { setResponseHeaders } from '@tanstack/react-start/server';
-
-setResponseHeaders(
-  new Headers({
-    'Set-Cookie': await toastSessionService.commitSession(toastSession),
-  }),
-);
-return { success: false, errors: [] };
-```
+For server-side errors that need to surface specific messages, throw a typed error from the server function and inspect it in the client `onError` handler.
 
 ---
 
