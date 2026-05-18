@@ -13,6 +13,7 @@ import {
   type MonitoringListCheckAstNode,
 } from '@app-builder/models/astNode/monitoring-list-check';
 import { type IsMultipleOfAstNode, isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
+import { isRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import {
   type FuzzyMatchComparatorAstNode,
   isFuzzyMatchComparator,
@@ -102,6 +103,10 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
 
   if (isMonitoringListCheckAstNode(astNode)) {
     return getMonitoringListCheckDisplayName(astNode, context);
+  }
+
+  if (isRecordRiskLevelCheckAstNode(astNode)) {
+    return context.t('scenarios:record_risk_level_check.menu_label');
   }
 
   if (isUndefinedAstNode(astNode)) {

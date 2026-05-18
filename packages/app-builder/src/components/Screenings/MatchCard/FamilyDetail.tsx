@@ -1,11 +1,21 @@
-import { FamilyPersonEntity } from '@app-builder/models/screening';
+import { FamilyPersonEntity, FamilyRelativeEntity, PersonEntity } from '@app-builder/models/screening';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
 import { TopicTag } from '../TopicTag';
 
-export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEntity[] }) => {
+export type RelationType = 'familyPerson' | 'familyRelative';
+export type RelationEntity<T extends RelationType> = T extends 'familyPerson'
+  ? FamilyPersonEntity[]
+  : FamilyRelativeEntity[];
+
+export type FamilyDetailProps<T extends RelationType> = {
+  relation: T;
+  familyMembers: RelationEntity<T>;
+};
+
+export function FamilyDetail<T extends RelationType>({ familyMembers, relation }: FamilyDetailProps<T>) {
   const formatDateTime = useFormatDateTime();
 
   const { t } = useTranslation(['screenings']);
@@ -20,7 +30,9 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
         <Collapsible.Content>
           <div className="flex flex-col gap-2">
             {familyMembers.map((member, memberIndex) => {
-              return member.properties.relative?.map(({ id, properties }, idx) => {
+              const entities = member.properties[relation === 'familyPerson' ? 'relative' : 'person'] as PersonEntity[];
+
+              return entities?.map(({ id, properties }, idx) => {
                 if (!properties.name?.[0]) return null;
                 const rel =
                   member.properties.relationship
@@ -39,12 +51,7 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                           <div className="text-sm text-grey-70 font-medium">{properties.caption}</div>
                         ) : (
                           <div className="col-span-full flex w-full flex-wrap gap-1">
-                            <span>
-                              {properties.firstName?.slice(0, 3).join(' ')} {properties['secondName']?.[0]}
-                            </span>
-                            <span className="font-semibold">
-                              {properties.lastName?.slice(0, 3).join(' ') ?? 'unknown'}
-                            </span>
+                            <span>{properties.alias?.[0] ?? properties.name?.[0]}</span>
                           </div>
                         )}
                         <div className="text-sm text-grey-70 font-medium">
@@ -79,4 +86,4 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
       </Collapsible.Container>
     </div>
   );
-};
+}
