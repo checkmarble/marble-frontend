@@ -15,6 +15,7 @@ import {
   type ScreeningMatchStatus,
 } from '@app-builder/models/screening';
 import { adaptScreeningAiSuggestion, type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
+import { createScreeningFilters } from '@app-builder/models/screening-config';
 import {
   adaptOpenSanctionsDatasetFreshness,
   type OpenSanctionsDatasetFreshness,
@@ -144,7 +145,8 @@ export function makeGetScreeningRepository() {
         query: {
           [entityType]: fields,
         },
-        datasets,
+        datasets: [],
+        filters: createScreeningFilters(datasets ?? []),
         threshold,
       };
       const results = await marbleCoreApiClient.freeformSearch(dto, { limit });

@@ -197,7 +197,7 @@ function ScreeningDetail() {
   const { t } = useTranslation([...scenarioI18n, 'common', 'decisions']);
   const router = useRouter();
   const { isNew = false } = Route.useSearch();
-  const { sections, entitlements, screeningId, builderOptions } = Route.useLoaderData();
+  const { entitlements, screeningId, builderOptions } = Route.useLoaderData();
   const editor = useEditorMode();
 
   const { currentScenario: scenario } = useDetectionScenarioData();
