@@ -3,6 +3,7 @@ import { mapValues } from 'radash';
 
 import { type AstNode, adaptAstNode, adaptNodeDto } from './astNode/ast-node';
 import { type Outcome } from './outcome';
+import { ScreeningCategory } from './screening';
 
 export type ScreeningConfig = Partial<{
   id: string;
@@ -54,7 +55,7 @@ export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
 }
 
 export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfigDto {
-  return {
+  const configDto = {
     id: config.id,
     name: config.name,
     description: config.description,
@@ -79,7 +80,15 @@ export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfi
         }
       : undefined,
   };
+  return configDto;
 }
+
+const ConvertSectionNameToDto: Record<ScreeningCategory, keyof ScreeningConfigBodyFiltersDto> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  'third-parties': 'other',
+  'adverse-media': 'adverse_media',
+};
 
 export function createScreeningFilters(selection: string[]): ScreeningConfigBodyFiltersDto {
   const filters: ScreeningConfigBodyFiltersDto = {
@@ -90,7 +99,8 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
   };
   for (const item of selection) {
     const chunks = item.split(':');
-    const section = chunks[0] as keyof ScreeningConfigBodyFiltersDto;
+    const sectionChuk = chunks[0] as ScreeningCategory;
+    const section = ConvertSectionNameToDto[sectionChuk];
     if (!filters[section]) continue;
     if (chunks.length === 1) filters[section].enabled = true;
     if (chunks.length < 3) continue;
@@ -101,6 +111,7 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
     if (type === 'dataset') {
       if (!filters[section].datasets) filters[section].datasets = [];
       filters[section].datasets.push(name);
+      filters[section].enabled = true;
       continue;
     }
     const value = chunks[3] as string;
@@ -109,6 +120,7 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
       if (!filters[section].topics) filters[section].topics = {};
       if (!filters[section].topics[name]) filters[section].topics[name] = [];
       filters[section].topics[name].push(value);
+      filters[section].enabled = true;
     }
   }
   return filters;
@@ -116,10 +128,11 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
 
 export function getDatasetFromFilters(filters: ScreeningConfigBodyFiltersDto): string[] {
   return Object.entries(filters).flatMap(([section, data]) => {
+    const sections = data.enabled ? [section] : [];
     const datasets = data.datasets?.map((dataset) => `${section}:dataset:${dataset}`) ?? [];
     const topics = Object.entries(data.topics ?? {}).flatMap(([topic, values]) => {
       return values.map((value) => `${section}:topic:${topic}:${value}`);
     });
-    return [...datasets, ...topics];
+    return [...sections, ...datasets, ...topics];
   });
 }
