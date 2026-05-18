@@ -14,11 +14,13 @@ import {
 import { type CustomListAccessAstNode, isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isIpHasFlag } from '@app-builder/models/astNode/ip';
+import { isRecordRiskLevelCheckAstNode, RecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import { type FuzzyMatchComparatorAstNode, isFuzzyMatchComparator } from '@app-builder/models/astNode/strings';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
+import { isMaxRiskLevelInRange, SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS } from '@app-builder/models/scoring';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
 import clsx from 'clsx';
@@ -128,12 +130,44 @@ function OperandDescription({ node }: OperandDescriptionProps) {
   if (isIpHasFlag(node)) {
     return <Description description={t('scenarios:edit_ip_has_flag.description')} />;
   }
+  if (isRecordRiskLevelCheckAstNode(node) && node.children[0].constant.length > 0) {
+    return <RecordRiskLevelDescription node={node} />;
+  }
 }
 
 function Description({ description }: { description: string }) {
   return description ? (
     <p className="text-grey-secondary max-w-[300px] text-xs font-normal first-letter:capitalize">{description}</p>
   ) : null;
+}
+
+function RecordRiskLevelDescription({ node }: { node: IdLessAstNode<RecordRiskLevelCheckAstNode> }) {
+  const { t } = useTranslation(['user-scoring']);
+  const scoringSettings = AstBuilderDataSharpFactory.select((s) => s.data.scoringSettings);
+
+  if (!scoringSettings || !isMaxRiskLevelInRange(scoringSettings.maxRiskLevel)) {
+    return null;
+  }
+
+  const levelColorsMap = SCORING_LEVELS_COLORS[scoringSettings.maxRiskLevel];
+  const levelLabelsMap = SCORING_LEVELS_LABEL_KEYS[scoringSettings.maxRiskLevel];
+
+  return (
+    <>
+      <div className="flex gap-v2-xs items-center">
+        {node.children[0].constant.map((level) => (
+          <div
+            key={level}
+            className="flex gap-v2-xs items-center border rounded-full px-v2-sm py-v2-xs text-small"
+            style={{ borderColor: levelColorsMap[level] }}
+          >
+            <div className="size-4 rounded-full" style={{ backgroundColor: levelColorsMap[level] }} />
+            <span>{t(levelLabelsMap[level])}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 }
 
 type AggregatorDescriptionProps = {

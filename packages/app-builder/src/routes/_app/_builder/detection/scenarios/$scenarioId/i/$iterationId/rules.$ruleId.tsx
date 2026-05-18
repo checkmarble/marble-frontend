@@ -13,16 +13,9 @@ import useIntersection from '@app-builder/hooks/useIntersection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
-import {
-  buildDatabaseAccessorsFromDataModel,
-  buildPayloadAccessorsFromDataModel,
-} from '@app-builder/server-fns/scenarios';
+import { getBuilderOptionsFn } from '@app-builder/server-fns/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import {
-  hasAnyEntitlement,
-  isAiRuleBuildingAvailable,
-  isContinuousScreeningAvailable,
-} from '@app-builder/services/feature-access';
+import { isAiRuleBuildingAvailable } from '@app-builder/services/feature-access';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { useDebouncedCallbackRef } from '@marble/shared';
@@ -46,33 +39,17 @@ const ruleLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(paramsSchema)
   .handler(async function ruleLoader({ data, context }) {
-    const {
-      customListsRepository,
-      dataModelRepository,
-      scenario,
-      scenarioIterationRuleRepository,
-      entitlements,
-      continuousScreening,
-    } = context.authInfo;
+    const { scenarioIterationRuleRepository, entitlements } = context.authInfo;
 
-    const [currentScenario, dataModel, customLists, rule, screeningConfigs] = await Promise.all([
-      scenario.getScenario({ scenarioId: data.scenarioId }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
+    const [rule, builderOptions] = await Promise.all([
       scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }),
-      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
+      getBuilderOptionsFn({ data: { scenarioId: data.scenarioId } }),
     ]);
 
     return {
-      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
-      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
-      dataModel,
-      customLists,
-      isAiRuleDescriptionEnabled: isAiRuleBuildingAvailable(entitlements),
       rule,
-      hasValidLicense: hasAnyEntitlement(entitlements),
-      hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
-      screeningConfigs,
+      isAiRuleDescriptionEnabled: isAiRuleBuildingAvailable(entitlements),
+      builderOptions,
     };
   });
 
@@ -156,17 +133,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
 });
 
 function RuleDetail() {
-  const {
-    databaseAccessors,
-    payloadAccessors,
-    dataModel,
-    customLists,
-    isAiRuleDescriptionEnabled,
-    rule,
-    hasValidLicense,
-    hasContinuousScreening,
-    screeningConfigs,
-  } = Route.useLoaderData();
+  const { isAiRuleDescriptionEnabled, rule, builderOptions } = Route.useLoaderData();
 
   const { t } = useTranslation([...scenarioI18n, 'common']);
   const iterationId = useParam('iterationId');
@@ -250,18 +217,6 @@ function RuleDetail() {
 
     setIsDebouncing(true);
     innerHandleFormulaChange(value);
-  };
-
-  const options = {
-    databaseAccessors,
-    payloadAccessors,
-    dataModel,
-    customLists,
-    triggerObjectType: currentScenario.triggerObjectType,
-    rule,
-    hasValidLicense,
-    hasContinuousScreening,
-    screeningConfigs,
   };
 
   return (
@@ -397,7 +352,7 @@ function RuleDetail() {
                           key={formulaKey}
                           type="rule"
                           scenarioId={currentScenario.id}
-                          options={options}
+                          options={builderOptions}
                           onBlur={field.handleBlur}
                           onChange={(node) => {
                             field.handleChange(node);
