@@ -9,7 +9,6 @@ import {
   CreateContinuousScreeningConfigDto,
   FtmEntity,
   OpenSanctionsEntityDto,
-  ScreeningConfigBodyFiltersDto,
   ScreeningQueryDto,
 } from 'marble-api';
 import * as R from 'remeda';
@@ -20,6 +19,7 @@ import {
   OpenSanctionEntitySchema,
   ScreeningMatchPayload,
 } from './screening';
+import { createScreeningFilters } from './screening-config';
 
 export type ContinuousScreeningConfig = {
   id: string;
@@ -80,39 +80,6 @@ export type CreateContinuousScreeningConfig = {
   mappingConfigs: CreateMappingConfig[];
 };
 
-function createContinuousScreeningFilters(selection: string[]): ScreeningConfigBodyFiltersDto {
-  const filters: ScreeningConfigBodyFiltersDto = {
-    sanctions: { enabled: false },
-    peps: { enabled: false },
-    adverse_media: { enabled: false },
-    other: { enabled: false },
-  };
-  for (const item of selection) {
-    const chunks = item.split(':');
-    const section = chunks[0] as keyof ScreeningConfigBodyFiltersDto;
-    if (!filters[section]) continue;
-    if (chunks.length === 1) filters[section].enabled = true;
-    if (chunks.length < 3) continue;
-    const type = chunks[1];
-    if (type !== 'dataset' && type !== 'topic') continue;
-    const name = chunks[2] as string;
-    if (!name) continue;
-    if (type === 'dataset') {
-      if (!filters[section].datasets) filters[section].datasets = [];
-      filters[section].datasets.push(name);
-      continue;
-    }
-    const value = chunks[3] as string;
-    if (!value) continue;
-    if (type === 'topic') {
-      if (!filters[section].topics) filters[section].topics = {};
-      if (!filters[section].topics[name]) filters[section].topics[name] = [];
-      filters[section].topics[name].push(value);
-    }
-  }
-  return filters;
-}
-
 export function adaptCreateContinuousScreeningConfigDto(
   configuration: CreateContinuousScreeningConfig,
 ): CreateContinuousScreeningConfigDto {
@@ -125,7 +92,7 @@ export function adaptCreateContinuousScreeningConfigDto(
     object_types: configuration.mappingConfigs.map((mc) => mc.objectType),
     algorithm: configuration.algorithm,
     datasets: [],
-    filters: createContinuousScreeningFilters(datasets),
+    filters: createScreeningFilters(datasets),
     inbox_id: configuration.inboxId,
     match_threshold: configuration.matchThreshold,
     match_limit: configuration.matchLimit,
