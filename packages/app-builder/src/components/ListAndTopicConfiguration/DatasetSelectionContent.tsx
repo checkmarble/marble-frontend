@@ -649,7 +649,7 @@ const SingleItemToggle = ({
         });
         onAfterChange?.();
       }}
-      aria-labels={t('continuousScreening:creation.datasetSelection.filter.add')}
+      aria-label={t('continuousScreening:creation.datasetSelection.filter.add')}
     >
       <Icon icon="plus" className="size-3" />
     </button>

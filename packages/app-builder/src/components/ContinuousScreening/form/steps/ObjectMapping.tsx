@@ -214,7 +214,7 @@ const ObjectMappingFtmContent = ({
           f.semanticType === suggestion.semanticType &&
           (suggestion.semanticSubType ? f.semanticSubType === suggestion.semanticSubType : true),
       );
-      if (field && !field.ftmProperty) updatedFieldMapping[field.id] = property;
+      if (field && !field.ftmProperty && !updatedFieldMapping[field.id]) updatedFieldMapping[field.id] = property;
     }
 
     onUpdate({ ...mappingConfig, fieldMapping: updatedFieldMapping });

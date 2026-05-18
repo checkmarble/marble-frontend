@@ -154,7 +154,7 @@ function AdditionalEntityTypePopover({
                 validators={
                   fieldName === 'birthDate'
                     ? {
-                        onBlur: ({ value }) => {
+                        onChange: ({ value }) => {
                           const v = (value as string) ?? '';
                           if (!v) return undefined;
                           return /^\d{4}(-\d{2}-\d{2})?$/.test(v)

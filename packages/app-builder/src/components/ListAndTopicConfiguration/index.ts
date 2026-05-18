@@ -4,5 +4,5 @@ export {
   type ListAndTopicDatasetConfigurationVariant,
 } from './context/ListAndTopicDatasetConfiguration';
 export { DatasetSelectionContent } from './DatasetSelectionContent';
-export { makeDatasetsMap, useListAndTopicDatasetConfigurationSharp } from './dataset-selection-provider-utils';
+export { makeDatasetsMap } from './dataset-selection-provider-utils';
 export { getSectionLeafNames } from './dataset-utils';

@@ -3,7 +3,6 @@ import {
   getSectionLeafNames,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
-  useListAndTopicDatasetConfigurationSharp,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
@@ -31,7 +30,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
   const listConfigQuery = useListConfigQuery('manual_search');
   const [open, setOpen] = useState(false);
   const [datasetsMap, setDatasetsMap] = useState<Record<string, boolean>>(() => makeDatasetsMap(selectedDatasets));
-  const listSharp = useListAndTopicDatasetConfigurationSharp({
+  const listSharp = ListAndTopicDatasetConfiguration.createSharp({
     datasets: datasetsMap,
     mode: 'edit',
     variant: 'popover',
@@ -40,6 +39,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
 
   // Reset temp selection when popover opens
   const handleOpenChange = (isOpen: boolean) => {
+    if (disabled) return;
     if (isOpen) {
       setDatasetsMap(makeDatasetsMap(selectedDatasets));
     }

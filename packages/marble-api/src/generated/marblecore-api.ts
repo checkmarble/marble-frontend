@@ -1170,6 +1170,7 @@ export type ContinuousScreeningConfigDto = {
     object_types: string[];
     algorithm: string;
     datasets: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     match_threshold: number;
     match_limit: number;
     enabled: boolean;
@@ -1203,6 +1204,7 @@ export type UpdateContinuousScreeningConfigDto = {
     inbox_id?: string;
     algorithm?: string;
     datasets?: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     match_threshold?: number;
     match_limit?: number;
     enabled?: boolean;

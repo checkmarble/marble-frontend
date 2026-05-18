@@ -69,7 +69,7 @@ export function makeGetScreeningRepository() {
       //       { name: 'africa', title: 'Africa' },
       //       { name: 'asia', title: 'Asia' },
       //       { name: 'europe', title: 'Europe' },
-      //       { name: 'north-aerica', title: 'North America' },
+      //       { name: 'north-america', title: 'North America' },
       //       { name: 'south-america', title: 'South America' },
       //       { name: 'oceania', title: 'Oceania' },
       //     ],
