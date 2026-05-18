@@ -22,7 +22,7 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
-import { formatDatasetTitle, getSectionLeafNames } from './dataset-utils';
+import { formatDatasetTitle, formatTopicLabel, getSectionLeafNames } from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
@@ -48,7 +48,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
   const [activeSectionKey, setActiveSectionKey] = useState<ScreeningCategory | null>(null);
 
   const renderSections = (data: ListConfig) => {
-    const sections = Object.entries(data).filter(([, section]) => section.datasets?.length || section.topics);
+    const sections = Object.entries(data).filter(([, section]) => section?.datasets?.length || section?.topics);
 
     return match(variant)
       .with('default', () => (
@@ -432,7 +432,7 @@ const ItemGroup = ({
               icon="caret-down"
               className="size-4 shrink-0 transition-transform duration-200 group-radix-state-open:rotate-180"
             />
-            <span className="text-s font-semibold">{capitalize(title)}</span>
+            <span className="text-s font-semibold">{formatDatasetTitle(title)}</span>
             <span className="text-xs text-grey-secondary">
               {selectedCount} / {names.length}
             </span>
@@ -524,7 +524,7 @@ const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void
     <span className="flex items-center">
       {/* Keep layout width stable (no flex-wrap flicker) while animating the visual centering. */}
       <span className="max-w-[20ch] truncate text-center flex-1 translate-x-[9px] group-hover:translate-x-0 transition-transform duration-150">
-        {label}
+        {formatTopicLabel(label)}
       </span>
       <span className="inline-flex items-center justify-center w-4 ml-1 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-150">
         <Icon icon="cross" className="size-3" />
@@ -535,7 +535,7 @@ const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void
 
 const ViewTag = ({ label }: { label: string }) => (
   <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
-    <span className="truncate block">{label}</span>
+    <span className="truncate block">{formatTopicLabel(label)}</span>
   </Tag>
 );
 
@@ -922,7 +922,7 @@ const FilterGroupMenu = ({
             onSelect={() => handleClickItem(item)}
             disabled={mode === 'view'}
           >
-            <span>{itemName}</span>
+            <span>{formatTopicLabel(itemName)}</span>
             {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
           </MenuCommand.Item>
         );
@@ -940,7 +940,7 @@ const FilterGroupMenu = ({
           <Icon icon="plus" className="size-3" />
         </button>
       </MenuCommand.Trigger>
-      <MenuCommand.Content align="end" sideOffset={4}>
+      <MenuCommand.Content align="start" sideOffset={4}>
         {itemsList}
       </MenuCommand.Content>
     </MenuCommand.Menu>

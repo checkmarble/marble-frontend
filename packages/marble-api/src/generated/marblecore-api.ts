@@ -1092,6 +1092,7 @@ export type OpenSanctionsCatalogDto = {
     sections: OpenSanctionsCatalogSection[];
 };
 export type ScreeningAvailableFiltersSection = {
+    self?: string;
     datasets?: {
         section?: string;
         name: string;

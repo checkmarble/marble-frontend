@@ -421,6 +421,8 @@ components:
     ScreeningAvailableFiltersSection:
       type: object
       properties:
+        self:
+          type: string
         datasets:
           type: array
           items:

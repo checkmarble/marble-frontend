@@ -21,3 +21,7 @@ export function formatDatasetTitle(title: string): string {
       : title;
   return last.replace(/_/g, ' ');
 }
+
+export function formatTopicLabel(label: string) {
+  return label.split('.').at(-1) ?? label;
+}
