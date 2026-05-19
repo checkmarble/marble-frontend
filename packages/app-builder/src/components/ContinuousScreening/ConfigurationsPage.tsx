@@ -8,21 +8,25 @@ import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
+import { formatDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
 import { PanelRoot } from '../Panel/Panel';
 import { Spinner } from '../Spinner';
 import { ConfigurationPanel } from './ConfigurationPanel';
-import { CopyToClipboardChip } from './CopyToClipboardChip';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
-import { Capsule } from './shared/Capsule';
 
 const CellCapsule = ({ children }: { children: React.ReactNode }) => {
-  return <Capsule className="max-w-50 truncate">{children}</Capsule>;
+  return (
+    <Tag color="grey" className="max-w-50 truncate">
+      {children}
+    </Tag>
+  );
 };
 
 export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
@@ -125,10 +129,12 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                     >
                       <GridTable.Cell className="flex gap-v2-md items-center justify-between">
                         <span className="truncate">{item.name}</span>
-                        <CopyToClipboardChip value={item.stableId} className="min-w-40" />
+                        <CopyToClipboardButton toCopy={item.stableId} className="min-w-40" size="chip" rounded>
+                          <span className="text-xs">{item.stableId}</span>
+                        </CopyToClipboardButton>
                       </GridTable.Cell>
                       <GridTable.Cell>
-                        {item.datasets[0] ? <CellCapsule>{item.datasets[0]}</CellCapsule> : null}
+                        {item.datasets[0] ? <CellCapsule>{formatDatasetTitle(item.datasets[0])}</CellCapsule> : null}
                         {item.datasets.length > 1 ? <CellCapsule>+{item.datasets.length - 1}</CellCapsule> : null}
                       </GridTable.Cell>
                       <GridTable.Cell className="overflow-x-auto">

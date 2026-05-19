@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { BreadCrumbs } from '../Breadcrumbs';
 import { Page } from '../Page';
 import { ContinuousScreeningConfigurationStepper } from './context/CreationStepper';
+import { ListAndTopicDatasetConfigurationBridge } from './context/ListAndTopicDatasetConfigurationBridge';
 import { CreationContent } from './form/Content';
 import { Stepper } from './form/Stepper';
 
@@ -42,17 +43,19 @@ export const CreationPage = ({ name, description }: { name: string; description:
 
   return (
     <ContinuousScreeningConfigurationStepper.Provider value={creationStepper}>
-      <Page.Main>
-        <Page.Header className="justify-between">
-          <BreadCrumbs />
-          <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:creation.stepper.${stepName}`)} />
-        </Page.Header>
-        <Page.Container>
-          <Page.ContentV2 paddingLess>
-            <CreationContent />
-          </Page.ContentV2>
-        </Page.Container>
-      </Page.Main>
+      <ListAndTopicDatasetConfigurationBridge>
+        <Page.Main>
+          <Page.Header className="justify-between">
+            <BreadCrumbs />
+            <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:creation.stepper.${stepName}`)} />
+          </Page.Header>
+          <Page.Container>
+            <Page.ContentV2 paddingLess>
+              <CreationContent />
+            </Page.ContentV2>
+          </Page.Container>
+        </Page.Main>
+      </ListAndTopicDatasetConfigurationBridge>
     </ContinuousScreeningConfigurationStepper.Provider>
   );
 };
