@@ -1,5 +1,5 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type ScreeningMatch } from '@app-builder/models/screening';
+import { Screening, type ScreeningMatch } from '@app-builder/models/screening';
 import {
   type ReviewScreeningMatchPayload,
   reviewScreeningMatchPayloadSchema,
@@ -10,16 +10,18 @@ import { RadioGroup, RadioProvider } from '@ariakit/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, TextArea } from 'ui-design-system';
+import { Button, MenuCommand, Switch, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { RadioItem } from './StatusRadioGroup';
 import { screeningsI18n } from './screenings-i18n';
 
 export function ReviewMatchPopover({
+  screening,
   screeningMatch,
   open,
   onOpenChange,
 }: {
+  screening: Screening;
   screeningMatch: ScreeningMatch;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -33,7 +35,7 @@ export function ReviewMatchPopover({
       matchId: screeningMatch.id,
       status: 'no_hit',
       comment: '',
-      whitelist: false,
+      whitelist: true,
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
       try {
@@ -65,7 +67,7 @@ export function ReviewMatchPopover({
           <Icon icon="caret-down" className="size-4" />
         </Button>
       </MenuCommand.Trigger>
-      <MenuCommand.Content align="end" sideOffset={4} className="w-[320px]">
+      <MenuCommand.Content align="end" sideOffset={4} className="w-[420px]">
         <form className="flex flex-col gap-2 p-4" onSubmit={handleSubmit(form)}>
           <span className="text-s font-medium">{t('screenings:review_modal.status_label')}</span>
 
@@ -103,6 +105,25 @@ export function ReviewMatchPopover({
               />
             )}
           </form.Field>
+
+          {currentStatus === 'no_hit' && screening.uniqueCounterpartyIdentifier ? (
+            <form.Field name="whitelist">
+              {(field) => {
+                return (
+                  <div className="flex flex-col gap-2">
+                    <span className="flex items-center gap-2">
+                      <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
+                      {t('screenings:review_modal.whitelist_label')}
+                    </span>
+                    <div className="border-grey-border bg-grey-background-light flex flex-col gap-2 rounded-sm border p-2">
+                      <span className="font-semibold">{t('screenings:match.unique_counterparty_identifier')}</span>
+                      <span>{screening.uniqueCounterpartyIdentifier}</span>
+                    </div>
+                  </div>
+                );
+              }}
+            </form.Field>
+          ) : null}
 
           <div className="grid grid-cols-2 gap-2">
             <Button
