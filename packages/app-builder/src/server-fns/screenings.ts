@@ -236,3 +236,50 @@ export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
       headers,
     });
   });
+
+/** Freeform Search Presets */
+
+const FreeformSearchPresetSchema = z.object({
+  datasets: z.array(z.string()).optional(),
+  threshold: z.number().min(0).max(100).optional(),
+  limit: z.number().min(10).max(50).optional(),
+});
+
+export type FreeformSearchPreset = z.infer<typeof FreeformSearchPresetSchema>;
+// TODO: replace with the endpoint call when available
+const FFSMap = new Map<string, FreeformSearchPreset>();
+
+export const getListFreeFormSearchPresetsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    // const result = await context.authInfo.screening.getListFreeFormSearch();
+    const result = Array.from(FFSMap.keys());
+    return result;
+  });
+
+export const getFreeFormSearchPresetFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ name: z.string() }))
+  .handler(async ({ context, data }) => {
+    // const result = await context.authInfo.screening.getFreeFormSearchPreset();
+    const result = FFSMap.get(data.name);
+    return result;
+  });
+
+export const createFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ name: z.string(), value: FreeformSearchPresetSchema }))
+  .handler(async ({ context, data }) => {
+    // const result = await context.authInfo.screening.createFreeFormSearchPreset();
+    FFSMap.set(data.name, data.value);
+    return { success: true };
+  });
+
+export const deleteFreeFormSearchPresetFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ name: z.string() }))
+  .handler(async ({ context, data }) => {
+    // const result = await context.authInfo.screening.deleteFreeFormSearchPreset();
+    FFSMap.delete(data.name);
+    return { success: true };
+  });

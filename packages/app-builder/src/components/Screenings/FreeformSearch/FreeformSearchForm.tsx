@@ -1,12 +1,17 @@
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
-import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
+import {
+  useCreateFreeFormSearchPresetMutation,
+  useFreeformSearchMutation,
+  useListFreeFormSearchPresetsQuery,
+} from '@app-builder/queries/screening/freeform-search';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
+import { createSimpleContext } from '@marble/shared';
 import { useForm, useStore } from '@tanstack/react-form';
-import { createContext, type FunctionComponent, useContext, useRef, useState } from 'react';
+import { type FunctionComponent, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, ThresholdRange } from 'ui-design-system';
+import { Button, Input, Popover, SelectV2, ThresholdRange } from 'ui-design-system';
 import { screeningsI18n } from '../screenings-i18n';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
@@ -42,10 +47,11 @@ function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInp
 
 export type ManualSearchFormInstance = ReturnType<typeof useManualSearchForm>;
 
-const ManualSearchFormContext = createContext<ManualSearchFormInstance | null>(null);
+const ManualSearchFormContext = createSimpleContext<ManualSearchFormInstance>('ManualSearchFormContext');
 
 export function useFormManuallSearch() {
-  const form = useContext(ManualSearchFormContext);
+  const { useValue } = ManualSearchFormContext;
+  const form = useValue();
   if (!form) throw new Error('useFormManuallSearch must be used within FreeformSearchForm');
   return form;
 }
@@ -54,6 +60,11 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
   const { t } = useTranslation(screeningsI18n);
   const searchMutation = useFreeformSearchMutation();
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>([]);
+  const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery();
+  const [selectedPreset, setSelectedPreset] = useState<string | undefined>(undefined);
+  const [savePresetPopoverOpen, setSavePresetPopoverOpen] = useState(false);
+  const [presetName, setPresetName] = useState('');
+  const [presetNameError, setPresetNameError] = useState<string | undefined>(undefined);
 
   const form = useManualSearchForm({
     onSubmit: async (value) => {
@@ -75,6 +86,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
       }
     },
   });
+  const createFreeFormSearchPresetMutation = useCreateFreeFormSearchPresetMutation();
 
   const threshold = useStore(form.store, (state) => state.values.threshold);
   const entityType = useStore(form.store, (state) => state.values.entityType);
@@ -89,7 +101,40 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
   const handleClearFilters = () => {
     form.reset();
+    setSelectedPreset(undefined);
     setSelectedDatasets([]);
+  };
+
+  const handleSaveFilters = async () => {
+    const trimmedName = presetName.trim();
+    if (!trimmedName) {
+      setPresetNameError(t('screenings:freeform_search.preset_name_required'));
+      return;
+    }
+    const result = await createFreeFormSearchPresetMutation.mutateAsync({
+      name: trimmedName,
+      value: {
+        datasets: selectedDatasets,
+        threshold,
+        limit,
+      },
+    });
+    if (result.success) {
+      listFreeFormSearchPresetsQuery.refetch();
+      setSavePresetPopoverOpen(false);
+      setPresetName('');
+      setPresetNameError(undefined);
+    } else {
+      toast.error(t('common:errors.unknown'));
+    }
+  };
+
+  const handleSavePresetPopoverChange = (isOpen: boolean) => {
+    setSavePresetPopoverOpen(isOpen);
+    if (!isOpen) {
+      setPresetName('');
+      setPresetNameError(undefined);
+    }
   };
 
   const hasActiveFilters =
@@ -141,6 +186,15 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
           <EntityTypePopover disabled={searchMutation.isPending} onApply={() => form.handleSubmit()} />
         </div>
         <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
+          {listFreeFormSearchPresetsQuery?.data?.length ? (
+            <SelectV2
+              options={listFreeFormSearchPresetsQuery.data.map((preset) => ({ label: preset, value: preset }))}
+              placeholder={t('screenings:freeform_search.preset_placeholder')}
+              value={selectedPreset}
+              onChange={(value) => setSelectedPreset(value)}
+              className="w-full"
+            />
+          ) : null}
           <DatasetsPopover
             selectedDatasets={selectedDatasets}
             onApply={setSelectedDatasets}
@@ -182,6 +236,36 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               <Button variant="secondary" appearance="link" size="default" onClick={handleClearFilters}>
                 {t('screenings:freeform_search.clear_filters')}
               </Button>
+              <Popover.Root open={savePresetPopoverOpen} onOpenChange={handleSavePresetPopoverChange}>
+                <Popover.Trigger asChild>
+                  <Button variant="primary" appearance="link" size="default">
+                    {t('screenings:freeform_search.save_filters')}
+                  </Button>
+                </Popover.Trigger>
+                <Popover.Content side="bottom" align="end" sideOffset={4} className="w-[280px] p-4">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSaveFilters();
+                    }}
+                    className="flex flex-col gap-2"
+                  >
+                    <Input
+                      autoFocus
+                      value={presetName}
+                      onChange={(e) => {
+                        setPresetName(e.target.value);
+                        if (presetNameError) setPresetNameError(undefined);
+                      }}
+                      placeholder={t('screenings:freeform_search.preset_name_placeholder')}
+                      borderColor={presetNameError ? 'redfigma-47' : 'greyfigma-90'}
+                      disabled={createFreeFormSearchPresetMutation.isPending}
+                    />
+                    {presetNameError ? <span className="text-red-primary text-xs">{presetNameError}</span> : null}
+                  </form>
+                </Popover.Content>
+              </Popover.Root>
             </div>
           )}
         </div>
