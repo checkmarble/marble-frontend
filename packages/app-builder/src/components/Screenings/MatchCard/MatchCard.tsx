@@ -1,5 +1,5 @@
 import { EnrichMatchButton } from '@app-builder/components/Screenings/EnrichMatchButton';
-import { type ScreeningMatch } from '@app-builder/models/screening';
+import { Screening, type ScreeningMatch } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { TopicTag } from '../TopicTag';
 import { CommentLine } from './CommentLine';
 
 type MatchCardProps = {
+  screening: Screening;
   match: ScreeningMatch;
   readonly?: boolean;
   unreviewable?: boolean;
@@ -23,6 +24,7 @@ type MatchCardProps = {
 };
 
 export const MatchCard = ({
+  screening,
   match,
   readonly,
   unreviewable,
@@ -63,7 +65,12 @@ export const MatchCard = ({
                 {unreviewable ? (
                   <Tag color="grey">{t('screenings:match.not_reviewable')}</Tag>
                 ) : canReview ? (
-                  <ReviewMatchPopover screeningMatch={match} open={isPopoverOpen} onOpenChange={setIsPopoverOpen} />
+                  <ReviewMatchPopover
+                    screening={screening}
+                    screeningMatch={match}
+                    open={isPopoverOpen}
+                    onOpenChange={setIsPopoverOpen}
+                  />
                 ) : (
                   <StatusTag status={match.status} disabled />
                 )}

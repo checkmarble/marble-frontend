@@ -169,7 +169,6 @@ export type ScreeningMatch = {
   status: ScreeningMatchStatus;
   enriched: boolean;
   // datasets: unknown[];
-  uniqueCounterpartyIdentifier?: string;
   payload: ScreeningMatchPayload;
   comments: {
     id: string;
@@ -187,7 +186,6 @@ export function adaptScreeningMatch(dto: ScreeningMatchDto): ScreeningMatch {
     status: dto.status,
     enriched: dto.enriched,
     payload: adaptScreeningMatchPayload(dto.payload),
-    uniqueCounterpartyIdentifier: dto.unique_counterparty_identifier,
     comments: R.map(dto.comments, (comment) => ({
       id: comment.id,
       authorId: comment.author_id,
@@ -234,6 +232,7 @@ type BaseScreening = {
   config: {
     name: string;
   };
+  uniqueCounterpartyIdentifier?: string;
   decisionId: string;
   partial: boolean;
   isManual: boolean;
@@ -263,6 +262,7 @@ export function adaptScreening(dto: ScreeningDto): Screening {
   const baseScreening: BaseScreening = {
     id: dto.id,
     decisionId: dto.decision_id,
+    uniqueCounterpartyIdentifier: dto.unique_counterparty_identifier,
     partial: dto.partial,
     isManual: dto.is_manual,
     matches: R.map(dto.matches, adaptScreeningMatch),
