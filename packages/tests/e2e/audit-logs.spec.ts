@@ -7,7 +7,9 @@ test('Audit logs page loads for admin', async ({ page }) => {
 
   // Loader silently redirects non-admins to `/`, so pin the URL to catch a
   // permission regression that would otherwise render the home page fine.
-  await expect(page).toHaveURL(/\/settings\/audit-logs$/);
+  // `validateSearch` materializes default query params (`?q=&limit=25`) on
+  // first paint, so anchor on the path-segment terminator, not end-of-string.
+  await expect(page).toHaveURL(/\/settings\/audit-logs(?:\?|$)/);
 
   await expect(page.getByRole('heading', { name: 'Audit logs' })).toBeVisible();
 
