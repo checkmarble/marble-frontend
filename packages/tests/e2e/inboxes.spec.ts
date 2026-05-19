@@ -21,7 +21,7 @@ test('Create an inbox', async ({ page }) => {
   await dialog.getByRole('textbox').and(dialog.locator('[name="name"]')).fill(inboxName);
   await dialog.getByRole('button', { name: 'Create new inbox' }).click();
 
-  await page.waitForURL('/settings/inboxes/**');
+  await page.waitForURL(/\/settings\/inboxes\/[^/]+$/);
   await waitForHydration(page);
   await expect(page.locator('body')).toContainText(inboxName);
 

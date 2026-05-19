@@ -27,7 +27,7 @@ test.fixme('Create a webhook', async ({ page }) => {
   await dialog.getByRole('button', { name: 'Create new webhook' }).click();
 
   // The server function redirects to the new webhook's detail page.
-  await page.waitForURL('/settings/webhooks/**');
+  await page.waitForURL(/\/settings\/webhooks\/[^/]+$/);
   await waitForHydration(page);
   await expect(page.locator('body')).toContainText(webhookUrl);
 });
