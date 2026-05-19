@@ -1028,7 +1028,6 @@ export type ScreeningMatchDto = {
     query_ids: string[];
     status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
     datasets: any;
-    unique_counterparty_identifier?: string;
     payload: ScreeningMatchPayloadDto;
     enriched: boolean;
     comments: {
@@ -1043,6 +1042,7 @@ export type ScreeningSuccessDto = {
     config: {
         name: string;
     };
+    unique_counterparty_identifier?: string;
     decision_id: string;
     status: "in_review" | "confirmed_hit";
     request: ScreeningRequestDto;
@@ -1056,6 +1056,7 @@ export type ScreeningErrorDto = {
     config: {
         name: string;
     };
+    unique_counterparty_identifier?: string;
     decision_id: string;
     status: "error";
     request?: ScreeningRequestDto;
@@ -1070,6 +1071,7 @@ export type ScreeningDto = ScreeningSuccessDto | {
     config: {
         name: string;
     };
+    unique_counterparty_identifier?: string;
     decision_id: string;
     status: "no_hit";
     request?: ScreeningRequestDto;
