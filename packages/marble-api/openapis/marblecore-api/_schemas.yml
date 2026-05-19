@@ -281,12 +281,20 @@ OpenSanctionsCatalogDataset:
   $ref: screenings.yml#/components/schemas/OpenSanctionsCatalogDataset
 OpenSanctionsCatalogSection:
   $ref: screenings.yml#/components/schemas/OpenSanctionsCatalogSection
+ScreeningAvailableFilters:
+  $ref: screenings.yml#/components/schemas/ScreeningAvailableFilters
+ScreeningAvailableFiltersSection:
+  $ref: screenings.yml#/components/schemas/ScreeningAvailableFiltersSection
 OpenSanctionsDatasetFreshnessDto:
   $ref: screenings.yml#/components/schemas/OpenSanctionsDatasetFreshnessDto
 OpenSanctionsUpstreamDatasetFreshnessDto:
   $ref: screenings.yml#/components/schemas/OpenSanctionsUpstreamDatasetFreshnessDto
 OpenSanctionsCatalogDto:
   $ref: screenings.yml#/components/schemas/OpenSanctionsCatalogDto
+ScreeningConfigBodySectionDto:
+  $ref: screenings.yml#/components/schemas/ScreeningConfigBodySectionDto
+ScreeningConfigBodyFiltersDto:
+  $ref: screenings.yml#/components/schemas/ScreeningConfigBodyFiltersDto
 ScreeningConfigDto:
   $ref: screenings.yml#/components/schemas/ScreeningConfigDto
 ScreeningDto:

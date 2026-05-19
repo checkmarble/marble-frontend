@@ -1,6 +1,6 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 import { useState } from 'react';
-
+import { capitalize } from 'remeda';
 import { Tabs, tabClassName } from './Tabs';
 
 const Story: Meta<typeof Tabs> = {
@@ -24,7 +24,7 @@ export const Default: StoryFn<typeof Tabs> = () => {
             data-status={activeTab === tab ? 'active' : undefined}
             onClick={() => setActiveTab(tab)}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {capitalize(tab)}
           </button>
         ))}
       </Tabs>
