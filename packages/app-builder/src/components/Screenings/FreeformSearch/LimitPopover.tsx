@@ -58,7 +58,6 @@ export const LimitPopover = ({ disabled, originalValue, onApply }: LimitPopoverP
               onChange={(value) => form.setFieldValue('limit', value)}
               values={LIMIT_OPTIONS.map((option) => ({
                 value: option,
-                label: option.toString(),
                 color: 'var(--color-purple-primary)',
               }))}
               initialColor="var(--color-purple-primary)"
