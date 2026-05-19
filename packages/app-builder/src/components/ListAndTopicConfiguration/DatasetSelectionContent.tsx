@@ -889,7 +889,7 @@ const FilterGroupMenu = ({
                 disabled={mode === 'view'}
                 stopPropagation
               />
-              {itemName}
+              {formatItemName(itemName)}
             </label>
           );
         })}
