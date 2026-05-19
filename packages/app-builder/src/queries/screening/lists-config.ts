@@ -2,7 +2,7 @@ import { AvailableFeatures, ScreeningAvailableFiltersAdapted, ScreeningCategory 
 import { getListConfigFn } from '@app-builder/server-fns/screenings';
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
-import { ScreeningAvailableFilters, ScreeningAvailableFiltersSection } from 'marble-api';
+import { ScreeningAvailableFiltersSection } from 'marble-api';
 import * as R from 'remeda';
 
 type GroupedDataset = {
@@ -33,20 +33,8 @@ function groupBySection(datasets: { section?: string; name: string; title: strin
 }
 
 function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConfigFilters {
-  function normalize(
-    section: ScreeningAvailableFiltersSection | undefined,
-    type: keyof ScreeningAvailableFilters['sections'],
-  ): NormalizedSection | undefined {
+  function normalize(section: ScreeningAvailableFiltersSection | undefined): NormalizedSection | undefined {
     if (!section) return undefined;
-    // complete all items name with section and key (sanctions, peps, adverse_medias)
-    for (const dataset of section.datasets ?? []) {
-      dataset.name = `${type}:dataset:${dataset.name}`;
-    }
-    for (const [key, topic] of Object.entries(section.topics ?? {})) {
-      for (const item of topic) {
-        item.name = `${type}:topic:${key}:${item.name}`;
-      }
-    }
     const adaptedSection: NormalizedSection = {
       ...section,
       datasets: Array.isArray(section?.datasets) ? groupBySection(section.datasets) : undefined,
@@ -58,8 +46,8 @@ function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConf
           adaptedSection.conditionalTopics ??= {};
           adaptedSection.conditionalTopics[cf.name] = {
             items: cf.topics.map((t) => ({
-              name: `${type}:topic:${cf.key}:${cf.name}:${t.name}`,
-              key: `${type}:topic:${cf.key}:${t.name}`,
+              name: t.name,
+              key: t.name,
               title: t.title,
             })),
             dependsOn: cf.key,
@@ -73,10 +61,10 @@ function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConf
   if (!config) return {};
 
   return {
-    sanctions: normalize(config.sections.sanctions, 'sanctions'),
-    peps: normalize(config.sections.peps, 'peps'),
-    'adverse-media': normalize(config.sections.adverse_media, 'adverse_media'),
-    'third-parties': normalize(config.sections.other, 'other'),
+    sanctions: normalize(config.sections.sanctions),
+    peps: normalize(config.sections.peps),
+    'adverse-media': normalize(config.sections.adverse_media),
+    'third-parties': normalize(config.sections.other),
   };
 }
 
