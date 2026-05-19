@@ -149,19 +149,23 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
           <ThresholdRange
             title={t('screenings:freeform_search.threshold_label')}
-            description={t('screenings:freeform_search.threshold_description')}
+            defaultDescription={t('screenings:freeform_search.threshold_description')}
             value={threshold}
             onChange={(value) => {
               form.setFieldValue('threshold', value);
               form.handleSubmit();
             }}
             values={[
-              { value: 40, label: '40%', color: 'var(--color-red-secondary)' },
-              { value: 50, label: '50%', color: 'var(--color-orange-secondary)' },
-              { value: 60, label: '60%', color: 'var(--color-yellow-primary)' },
-              { value: 70, label: '70%', color: 'var(--color-green-disabled)' },
-              { value: 80, label: '80%', color: 'var(--color-green-primary)' },
-              { value: 90, label: '90%', color: 'var(--color-green-hover)' },
+              { value: 40, label: t('screenings:freeform_search.threshold.40'), color: 'var(--color-red-secondary)' },
+              {
+                value: 50,
+                label: t('screenings:freeform_search.threshold.50'),
+                color: 'var(--color-orange-secondary)',
+              },
+              { value: 60, label: t('screenings:freeform_search.threshold.60'), color: 'var(--color-yellow-primary)' },
+              { value: 70, label: t('screenings:freeform_search.threshold.70'), color: 'var(--color-green-disabled)' },
+              { value: 80, label: t('screenings:freeform_search.threshold.80'), color: 'var(--color-green-primary)' },
+              { value: 90, label: t('screenings:freeform_search.threshold.90'), color: 'var(--color-green-hover)' },
             ]}
             initialColor="var(--color-red-hover)"
           />
@@ -175,12 +179,9 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
           />
           {hasActiveFilters && (
             <div className="flex gap-2">
-              <Button variant="secondary" size="default" onClick={handleClearFilters}>
+              <Button variant="secondary" appearance="link" size="default" onClick={handleClearFilters}>
                 {t('screenings:freeform_search.clear_filters')}
               </Button>
-              {/* <Button variant="primary" size="default" onClick={handleSaveFilters}>
-                {t('screenings:freeform_search.save_filters')}
-              </Button> */}
             </div>
           )}
         </div>

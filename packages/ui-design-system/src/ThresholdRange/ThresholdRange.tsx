@@ -9,7 +9,7 @@ export type ThresholdRangeStep = {
 
 export type ThresholdRangeProps = {
   title?: string;
-  description?: string;
+  defaultDescription?: string;
   values: ThresholdRangeStep[];
   value: number | undefined;
   onChange: (value: number) => void;
@@ -28,11 +28,6 @@ const ACTIVE_DOT_SIZE = 16;
 
 function getSortedSteps(values: ThresholdRangeStep[]) {
   return [...values].sort((a, b) => a.value - b.value);
-}
-
-function getStepLabel(step: ThresholdRangeStep | undefined) {
-  if (!step) return '';
-  return step.label && step.label.length > 0 ? step.label : step.value.toString();
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -75,7 +70,7 @@ function getSegments(steps: ThresholdRangeStep[], min: number, initialColor: str
 
 export function ThresholdRange({
   title,
-  description,
+  defaultDescription,
   values,
   value,
   onChange,
@@ -181,7 +176,7 @@ export function ThresholdRange({
           aria-valuemin={firstStep.value}
           aria-valuemax={lastStep.value}
           aria-valuenow={value}
-          aria-valuetext={getStepLabel(activeStep)}
+          aria-valuetext={activeStep?.value.toString() ?? ''}
           className={cn(
             'rounded-lg px-2 pb-2 pt-3 focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-purple-primary',
             disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
@@ -232,7 +227,7 @@ export function ThresholdRange({
                     key={step.value}
                     type="button"
                     tabIndex={-1}
-                    aria-label={`${title} ${getStepLabel(step)}`}
+                    aria-label={`${title} ${step.value.toString()}`}
                     disabled={disabled}
                     className={cn(
                       'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-0 p-0',
@@ -262,7 +257,7 @@ export function ThresholdRange({
                   color: activeStep.color,
                 }}
               >
-                {getStepLabel(activeStep)}
+                {activeStep.value.toString()}
               </div>
             ) : null}
 
@@ -274,13 +269,15 @@ export function ThresholdRange({
                   transform: 'translateX(-50%)',
                 }}
               >
-                {getStepLabel(lastStep)}
+                {lastStep.value.toString()}
               </div>
             ) : null}
           </div>
         </div>
 
-        {description ? <p className="text-grey-placeholder text-xs leading-tight">{description}</p> : null}
+        {activeStep?.label || defaultDescription ? (
+          <p className="text-grey-placeholder text-xs leading-tight">{activeStep?.label ?? defaultDescription}</p>
+        ) : null}
       </div>
     </div>
   );

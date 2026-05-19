@@ -40,7 +40,7 @@ function renderThresholdRange(overrides: Partial<ComponentProps<typeof Threshold
     root?.render(
       <ThresholdRange
         title="Seuil de match"
-        description="Lorem ipsum signification match"
+        defaultDescription="Lorem ipsum signification match"
         initialColor="var(--color-red-primary)"
         value={50}
         onChange={onChange}

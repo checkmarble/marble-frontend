@@ -53,7 +53,7 @@ export const LimitPopover = ({ disabled, originalValue, onApply }: LimitPopoverP
           {/* Limit options */}
           <div className="flex flex-col gap-2 p-4">
             <ThresholdRange
-              description={t('screenings:freeform_search.limit_description')}
+              defaultDescription={t('screenings:freeform_search.limit_description')}
               value={value}
               onChange={(value) => form.setFieldValue('limit', value)}
               values={LIMIT_OPTIONS.map((option) => ({
