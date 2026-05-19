@@ -1,4 +1,4 @@
-import { type SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
+import { SearchableSchema } from '@app-builder/constants/screening-entity';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,8 +12,8 @@ export const FieldEntityType = ({
   entityType,
   onChange,
 }: {
-  entityType?: keyof typeof SEARCH_ENTITIES;
-  onChange: (entityType: keyof typeof SEARCH_ENTITIES) => void;
+  entityType?: SearchableSchema;
+  onChange: (entityType: SearchableSchema) => void;
 }) => {
   const editor = useEditorMode();
   const { t } = useTranslation(scenarioI18n);
@@ -24,14 +24,7 @@ export const FieldEntityType = ({
       <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <Button variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
-            <span className="text-grey-primary text-s font-medium">
-              {match(entityType)
-                .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
-                .with('Person', () => t('scenarios:edit_sanction.entity_type.person'))
-                .with('Organization', () => t('scenarios:edit_sanction.entity_type.organization'))
-                .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
-                .otherwise(() => entityType)}
-            </span>
+            <span className="text-grey-primary text-s font-medium">{getEntityName(entityType)}</span>
             <Icon icon="caret-down" className="text-grey-secondary size-4" />
           </Button>
         </MenuCommand.Trigger>
@@ -55,3 +48,13 @@ export const FieldEntityType = ({
     </div>
   );
 };
+
+export function getEntityName(entityType?: SearchableSchema) {
+  const { t } = useTranslation(scenarioI18n);
+  return match(entityType)
+    .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
+    .with('Person', () => t('scenarios:edit_sanction.entity_type.person'))
+    .with('Organization', () => t('scenarios:edit_sanction.entity_type.organization'))
+    .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
+    .otherwise(() => entityType ?? 'Thing');
+}

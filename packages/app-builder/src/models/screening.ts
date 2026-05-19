@@ -1,3 +1,4 @@
+import { SearchableSchema } from '@app-builder/constants/screening-entity';
 import {
   type listScreeningAvailableFilters,
   ScreeningAvailableFilters,
@@ -475,3 +476,36 @@ export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other'
 export type ScreeningAvailableFiltersAdapted = ScreeningAvailableFilters & {
   conditional_filters?: { key: string; name: string; topics: { name: string; key?: string; title: string }[] }[];
 };
+
+export interface SavedScreeningSearchInputs {
+  entityType: SearchableSchema;
+  fields: Record<string, string>;
+  datasets: string[];
+  threshold?: number;
+  limit?: number;
+}
+
+export interface SavedScreeningSearch {
+  id: string;
+  name: string;
+  ownerId: string;
+  createdAt: string;
+  inputs: SavedScreeningSearchInputs;
+  results: ScreeningMatchPayload[];
+}
+
+export interface SavedScreeningSearchFilters {
+  fromDate?: string;
+  toDate?: string;
+  name?: string;
+  ownerId?: string;
+  limit?: number;
+  page?: number;
+}
+
+export interface SavedScreeningSearchPage {
+  items: SavedScreeningSearch[];
+  total: number;
+  page: number;
+  limit: number;
+}

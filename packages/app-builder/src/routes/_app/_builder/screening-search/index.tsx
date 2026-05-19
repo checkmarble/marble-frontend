@@ -8,6 +8,7 @@ import {
   PrintResults,
   PrintSearchSummary,
 } from '@app-builder/components/Screenings/FreeformSearch/FreeformSearchPrint';
+import { SaveSearch } from '@app-builder/components/Screenings/FreeformSearch/SaveSearch';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import * as Sentry from '@sentry/react';
@@ -57,19 +58,22 @@ function ScreeningSearchIndexPage() {
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold">{t('navigation:screening_search')}</h1>
             {hasResults && (
-              <PrintView
-                title={t('screenings:print.title')}
-                trigger={
-                  <Button variant="secondary">
-                    <Icon icon="download" className="size-4" />
-                    {t('screenings:print.open_print_view')}
-                  </Button>
-                }
-              >
-                <PrintHeader title={t('screenings:print.title')} userName={userName} />
-                <PrintSearchSummary searchInputs={searchState.inputs} />
-                <PrintResults results={searchState.results} />
-              </PrintView>
+              <div className="flex items-center gap-v2-sm">
+                <SaveSearch search={searchState} />
+                <PrintView
+                  title={t('screenings:print.title')}
+                  trigger={
+                    <Button variant="secondary">
+                      <Icon icon="download" className="size-4" />
+                      {t('screenings:print.open_print_view')}
+                    </Button>
+                  }
+                >
+                  <PrintHeader title={t('screenings:print.title')} userName={userName} />
+                  <PrintSearchSummary searchInputs={searchState.inputs} />
+                  <PrintResults results={searchState.results} />
+                </PrintView>
+              </div>
             )}
           </div>
           <FreeformSearchPage onSearchComplete={handleSearchComplete} />

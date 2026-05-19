@@ -1,6 +1,13 @@
+import { SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
-import { availableFeatures, type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
+import {
+  availableFeatures,
+  type SavedScreeningSearch,
+  type SavedScreeningSearchPage,
+  type Screening,
+  type ScreeningMatchPayload,
+} from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getScreeningFileUploadEndpoint } from '@app-builder/utils/files';
@@ -102,6 +109,29 @@ export const getEnrichedDataInputSchema = z.object({
 });
 export type GetEnrichedDataInput = z.infer<typeof getEnrichedDataInputSchema>;
 
+export const saveFreeformSearchSchema = z.object({
+  name: z.string().min(1).max(120),
+  inputs: z.object({
+    entityType: z.enum(Object.keys(SEARCH_ENTITIES) as [SearchableSchema]),
+    fields: z.record(z.string(), z.string()),
+    datasets: z.array(z.string()),
+    threshold: z.number().min(0).max(100).optional(),
+    limit: z.number().min(10).max(50).optional(),
+  }),
+  results: z.array(z.any()),
+});
+export type SaveFreeformSearchInput = z.infer<typeof saveFreeformSearchSchema>;
+
+export const savedSearchFiltersSchema = z.object({
+  fromDate: z.string().optional(),
+  toDate: z.string().optional(),
+  name: z.string().optional(),
+  ownerId: z.string().optional(),
+  limit: z.number().min(1).max(100).optional(),
+  page: z.number().min(1).optional(),
+});
+export type SavedSearchFiltersInput = z.infer<typeof savedSearchFiltersSchema>;
+
 export type FreeformSearchInput = z.infer<typeof freeformSearchSchema>;
 export type SearchActionResponse =
   | { success: true; data: ScreeningMatchPayload[] }
@@ -181,6 +211,46 @@ export const freeformSearchFn = createServerFn({ method: 'POST' })
       return { success: true as const, data: results as ScreeningMatchPayload[] };
     } catch {
       return { success: false as const, error: 'Freeform search failed' };
+    }
+  });
+
+export const saveFreeformSearchFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(saveFreeformSearchSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      const saved = await context.authInfo.screening.saveScreeningSearch({
+        name: data.name,
+        inputs: data.inputs,
+        results: data.results as ScreeningMatchPayload[],
+      });
+      return { success: true as const, data: saved as SavedScreeningSearch };
+    } catch {
+      return { success: false as const, error: 'Save freeform search failed' };
+    }
+  });
+
+export const listSavedFreeformSearchesFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(savedSearchFiltersSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      const page = await context.authInfo.screening.listSavedScreeningSearches(data);
+      return { success: true as const, data: page as SavedScreeningSearchPage };
+    } catch {
+      return { success: false as const, error: 'List saved searches failed' };
+    }
+  });
+
+export const deleteSavedFreeformSearchFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ id: z.string() }))
+  .handler(async ({ context, data }) => {
+    try {
+      await context.authInfo.screening.deleteSavedScreeningSearch({ id: data.id });
+      return { success: true as const };
+    } catch {
+      return { success: false as const, error: 'Delete saved search failed' };
     }
   });
 
