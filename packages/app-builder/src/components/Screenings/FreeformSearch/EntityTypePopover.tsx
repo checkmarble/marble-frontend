@@ -209,10 +209,7 @@ function AdditionalEntityTypePopover({
             );
           })}
           {/* Actions */}
-          <div
-            className="flex 
-           gap-2"
-          >
+          <div className="flex gap-2">
             {/* Apply button */}
             <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
               {([canSubmit, isSubmitting]) => (
@@ -249,19 +246,6 @@ function AdditionalEntityTypePopover({
             >
               {t('common:cancel')}
             </Button>
-            {/* Clear filters button - only show when filters are active */}
-            {/* hasActiveFilters && (
-          <Button
-            type="button"
-            variant="secondary"
-            size="default"
-            onClick={handleClearFilters}
-            className="w-full justify-center"
-          >
-            <Icon icon="cross" className="size-5" />
-            {t('screenings:freeform_search.clear_filters')}
-          </Button>
-        )*/}
           </div>
         </div>
       </Popover.Content>
