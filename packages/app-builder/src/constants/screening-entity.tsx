@@ -14,7 +14,7 @@ export type PropertyForSchema<
 
 export type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
 
-export const SEARCH_ENTITIES = {
+export const SEARCH_ENTITIES: { [k in SearchableSchema]: { fields: PropertyForSchema<k>[] } } = {
   Thing: { fields: ['name'] },
   Person: {
     fields: ['name', 'birthDate', 'nationality', 'passportNumber', 'address'],
@@ -25,7 +25,7 @@ export const SEARCH_ENTITIES = {
   Vehicle: {
     fields: ['name', 'registrationNumber'],
   },
-} satisfies { [k in SearchableSchema]: { fields: PropertyForSchema<k>[] } };
+} as const;
 
 export const schemaProperties = {
   Thing: [
