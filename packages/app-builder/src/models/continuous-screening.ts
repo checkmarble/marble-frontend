@@ -19,6 +19,7 @@ import {
   OpenSanctionEntitySchema,
   ScreeningMatchPayload,
 } from './screening';
+import { createScreeningFilters } from './screening-config';
 
 export type ContinuousScreeningConfig = {
   id: string;
@@ -82,14 +83,16 @@ export type CreateContinuousScreeningConfig = {
 export function adaptCreateContinuousScreeningConfigDto(
   configuration: CreateContinuousScreeningConfig,
 ): CreateContinuousScreeningConfigDto {
+  const datasets = Object.entries(configuration.datasets)
+    .filter(([_, value]) => value)
+    .map(([key]) => key);
   return {
     name: configuration.name,
     description: configuration.description,
     object_types: configuration.mappingConfigs.map((mc) => mc.objectType),
     algorithm: configuration.algorithm,
-    datasets: Object.entries(configuration.datasets)
-      .filter(([_, value]) => value)
-      .map(([key]) => key),
+    datasets: [],
+    filters: createScreeningFilters(datasets),
     inbox_id: configuration.inboxId,
     match_threshold: configuration.matchThreshold,
     match_limit: configuration.matchLimit,

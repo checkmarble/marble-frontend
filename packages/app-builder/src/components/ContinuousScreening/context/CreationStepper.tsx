@@ -73,8 +73,8 @@ export const ContinuousScreeningConfigurationStepper = buildStepper({
   steps: [
     { name: 'generalInfo', schema: generalInfoStepSchema },
     { name: 'objectMapping', schema: objectMappingStepSchema },
-    { name: 'scoringConfiguration', schema: scoringConfigurationStepSchema },
     { name: 'datasetSelection', schema: datasetSelectionStepSchema },
+    { name: 'scoringConfiguration', schema: scoringConfigurationStepSchema },
   ] as const,
   validator: createContinuousScreeningConfigSchema,
 });

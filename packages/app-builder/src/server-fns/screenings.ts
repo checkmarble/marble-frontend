@@ -1,11 +1,13 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
-import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { availableFeatures, type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getScreeningFileUploadEndpoint } from '@app-builder/utils/files';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
+
+/** Zod schemas and types */
 
 export const refineSearchSchema = z.discriminatedUnion('entityType', [
   z.object({
@@ -106,6 +108,19 @@ export type SearchActionResponse =
   | { success: false; error: unknown };
 
 export type RefineActionResponse = { success: true; data: Screening } | { success: false; error: unknown };
+
+export const getAvailableFiltersSchema = z.object({ feature: z.enum(availableFeatures) });
+export type GetAvailableFiltersInput = z.infer<typeof getAvailableFiltersSchema>;
+
+/** Server functions */
+
+export const getListConfigFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(getAvailableFiltersSchema)
+  .handler(async ({ context, data }) => {
+    const filter = await context.authInfo.screening.getAvailableFilters({ feature: data.feature });
+    return filter;
+  });
 
 export const getScreeningAiSuggestionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])

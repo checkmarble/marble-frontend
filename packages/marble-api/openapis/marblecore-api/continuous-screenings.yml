@@ -295,6 +295,8 @@ components:
           type: array
           items:
             type: string
+        filters:
+          $ref: 'screenings.yml#/components/schemas/ScreeningConfigBodyFiltersDto'
         match_threshold:
           type: integer
         match_limit:
@@ -335,7 +337,6 @@ components:
           items:
             $ref: '#/components/schemas/ContinuousScreeningMappingFieldDto'
 
-
     CreateContinuousScreeningConfigDto:
       type: object
       required:
@@ -360,6 +361,8 @@ components:
           minItems: 1
           items:
             type: string
+        filters:
+          $ref: 'screenings.yml#/components/schemas/ScreeningConfigBodyFiltersDto'
         match_threshold:
           type: integer
           minimum: 0
@@ -394,6 +397,8 @@ components:
           minItems: 1
           items:
             type: string
+        filters:
+          $ref: 'screenings.yml#/components/schemas/ScreeningConfigBodyFiltersDto'
         match_threshold:
           type: integer
           minimum: 0

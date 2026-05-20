@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, Collapsible } from 'ui-design-system';
+import { formatDatasetTitle } from '../../ListAndTopicConfiguration/dataset-utils';
 import { DatasetTag } from '../../Screenings/DatasetTag';
 import { Spinner } from '../../Spinner';
 import { EditionValidationPanelBaseProps } from '../EditionValidationPanel';
@@ -35,6 +36,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
             </div>
           ))
           .with({ isSuccess: true }, ({ data: { datasets } }) => {
+            if (!datasets?.sections) return null;
             const datasetsArray = R.pipe(
               datasets.sections,
               R.flatMap(R.prop('datasets')),
@@ -50,7 +52,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
                       const dataset = datasetsArray.find((d) => d.name === k);
                       return (
                         <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{dataset?.title ?? k}</span>
+                          <span>{formatDatasetTitle(dataset?.title ?? k)}</span>
                           {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
                         </div>
                       );
@@ -69,7 +71,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
                       const dataset = datasetsArray.find((d) => d.name === k);
                       return (
                         <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{dataset?.title ?? k}</span>
+                          <span>{dataset?.title ? formatDatasetTitle(dataset.title) : k}</span>
                           {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
                         </div>
                       );

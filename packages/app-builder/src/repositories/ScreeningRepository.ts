@@ -1,25 +1,27 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { isNotFoundHttpError } from '@app-builder/models/http-errors';
 import {
+  type AvailableFeatures,
   adaptScreening,
   adaptScreeningFile,
   adaptScreeningMatch,
   adaptScreeningMatchPayload,
   type OpenSanctionEntitySchema,
   type Screening,
+  ScreeningAvailableFiltersAdapted,
   type ScreeningFile,
   type ScreeningMatch,
   type ScreeningMatchPayload,
   type ScreeningMatchStatus,
 } from '@app-builder/models/screening';
 import { adaptScreeningAiSuggestion, type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
+import { createScreeningFilters } from '@app-builder/models/screening-config';
 import {
   adaptOpenSanctionsDatasetFreshness,
   type OpenSanctionsDatasetFreshness,
 } from '@app-builder/models/screening-dataset';
 import { type OpenSanctionsCatalogDto } from 'marble-api';
 import * as R from 'remeda';
-
 export interface ScreeningRepository {
   listScreenings(args: { decisionId: string }): Promise<Screening[]>;
   listDatasets(): Promise<OpenSanctionsCatalogDto>;
@@ -51,10 +53,35 @@ export interface ScreeningRepository {
   }): Promise<ScreeningMatchPayload[]>;
   getAiSuggestions(args: { screeningId: string }): Promise<ScreeningAiSuggestion[]>;
   enrichedData(args: { entityId: string }): Promise<ScreeningMatchPayload>;
+  getAvailableFilters(args: { feature: AvailableFeatures }): Promise<ScreeningAvailableFiltersAdapted>;
 }
 
 export function makeGetScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScreeningRepository => ({
+    getAvailableFilters: async ({ feature }) => {
+      const listFeature: ScreeningAvailableFiltersAdapted =
+        await marbleCoreApiClient.listScreeningAvailableFilters(feature);
+
+      // listFeature.conditional_filters = [
+      //   {
+      //     key: 'kind_of_peps',
+      //     name: 'kind_of_peps_options',
+      //     topics: [
+      //       { name: 'primary.option1', title: 'Primary PEP option 1' },
+      //       { name: 'primary.option2', title: 'Primary PEP option 2' },
+      //       { name: 'primary.option3', title: 'Primary PEP option 3' },
+      //       { name: 'primary.option4', title: 'Primary PEP option 4' },
+      //       { name: 'option5', title: 'Any PEP option 5' },
+      //       { name: 'option6', title: 'Any PEP option 6' },
+      //       { name: 'option7', title: 'Any PEP option 7' },
+      //       { name: 'option8', title: 'Any PEP option 8' },
+      //       { name: 'option9', title: 'Any PEP option 9' },
+      //       { name: 'option10', title: 'Any PEP option 10' },
+      //     ],
+      //   },
+      // ];
+      return listFeature;
+    },
     listDatasets: async () => {
       try {
         return await marbleCoreApiClient.listOpenSanctionDatasets();
@@ -118,7 +145,8 @@ export function makeGetScreeningRepository() {
         query: {
           [entityType]: fields,
         },
-        datasets,
+        datasets: [],
+        filters: createScreeningFilters(datasets ?? []),
         threshold,
       };
       const results = await marbleCoreApiClient.freeformSearch(dto, { limit });

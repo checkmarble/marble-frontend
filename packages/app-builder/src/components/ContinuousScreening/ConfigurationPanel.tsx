@@ -14,6 +14,7 @@ import {
   PartialCreateContinuousScreeningConfig,
 } from './context/CreationStepper';
 import { FormPagination } from './context/FormPagination';
+import { ListAndTopicDatasetConfigurationBridge } from './context/ListAndTopicDatasetConfigurationBridge';
 import { Stepper } from './form/Stepper';
 import { DatasetSelection } from './form/steps/DatasetSelection';
 import { GeneralInfo } from './form/steps/GeneralInfo';
@@ -53,16 +54,18 @@ export const ConfigurationPanel = ({
   return (
     <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col">
       <ContinuousScreeningConfigurationStepper.Provider value={configurationStepper}>
-        <ConfigurationPanelHeader />
-        <div className="p-v2-lg grow">
-          {match(configurationStepper.value.__internals.currentStep)
-            .with(0, () => <GeneralInfo stableId={baseConfig.stableId} />)
-            .with(1, () => <ObjectMapping baseConfig={baseConfig} />)
-            .with(2, () => <ScoringConfiguration />)
-            .with(3, () => <DatasetSelection />)
-            .otherwise(() => null)}
-        </div>
-        <FormPagination finalButtonText={t('continuousScreening:edition.validate_button')} />
+        <ListAndTopicDatasetConfigurationBridge>
+          <ConfigurationPanelHeader />
+          <div className="p-v2-lg grow">
+            {match(configurationStepper.value.__internals.currentStep)
+              .with(0, () => <GeneralInfo stableId={baseConfig.stableId} />)
+              .with(1, () => <ObjectMapping baseConfig={baseConfig} />)
+              .with(2, () => <DatasetSelection useCase="continuous_monitoring" />)
+              .with(3, () => <ScoringConfiguration />)
+              .otherwise(() => null)}
+          </div>
+          <FormPagination finalButtonText={t('continuousScreening:edition.validate_button')} />
+        </ListAndTopicDatasetConfigurationBridge>
       </ContinuousScreeningConfigurationStepper.Provider>
     </PanelContainer>
   );

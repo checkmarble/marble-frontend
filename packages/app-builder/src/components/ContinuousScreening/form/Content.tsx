@@ -19,8 +19,8 @@ export const CreationContent = () => {
       <div className="grow p-v2-lg pb-0 flex flex-col gap-v2-md">
         {match(creationStepper.computed.currentStep.value)
           .with(1, () => <ObjectMapping />)
-          .with(2, () => <ScoringConfiguration />)
-          .with(3, () => <DatasetSelection />)
+          .with(2, () => <DatasetSelection useCase="continuous_monitoring" />)
+          .with(3, () => <ScoringConfiguration />)
           .otherwise(() => null)}
         <CreationContentRecap />
       </div>
@@ -42,8 +42,8 @@ const CreationContentRecap = () => {
       })}
     >
       {currentStep >= 1 ? <ObjectMappingRecap /> : null}
-      {currentStep >= 2 ? <ScoringConfigurationRecap /> : null}
-      {currentStep >= 3 ? <DatasetSelectionRecap /> : null}
+      {currentStep >= 2 ? <DatasetSelectionRecap /> : null}
+      {currentStep >= 3 ? <ScoringConfigurationRecap /> : null}
     </div>
   );
 };

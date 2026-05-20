@@ -34,6 +34,27 @@
           application/json:
             schema:
               $ref: '#/components/schemas/OpenSanctionsCatalogDto'
+/screenings/available-filters:
+  get:
+    tags:
+      - Screening
+    summary: List available filter for the current provider
+    operationId: listScreeningAvailableFilters
+    parameters:
+      - name: feature
+        description: Feature the return the filters for
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [transaction_monitoring, continuous_monitoring, manual_search]
+    responses:
+      '200':
+        description: Available filters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreeningAvailableFilters'
 /screenings/freshness:
   get:
     tags:
@@ -379,6 +400,81 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OpenSanctionsCatalogSection'
+    ScreeningAvailableFilters:
+      type: object
+      required: [provider, sections]
+      properties:
+        provider:
+          type: string
+          enum: [opensanctions, lexisnexis]
+        sections:
+          type: object
+          properties:
+            sanctions:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            peps:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            adverse_media:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            other:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+    ScreeningAvailableFiltersSection:
+      type: object
+      properties:
+        self:
+          type: string
+        datasets:
+          type: array
+          items:
+            type: object
+            required: [name, title]
+            properties:
+              section:
+                type: string
+              name:
+                type: string
+              title:
+                type: string
+        topics:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              required: [name, title]
+              properties: 
+                name:
+                  type: string
+                title:
+                  type: string
+        enabled:
+          type: boolean
+    ScreeningConfigBodySectionDto:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        datasets:
+          type: array
+          items:
+            type: string
+        topics:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    ScreeningConfigBodyFiltersDto:
+      type: object
+      properties:
+        sanctions:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        peps:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        adverse_media:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        other:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
     OpenSanctionsDatasetFreshnessDto:
       type: object
       required:
@@ -422,6 +518,8 @@ components:
           type: array
           items:
             type: string
+        filters:
+          $ref: '#/components/schemas/ScreeningConfigBodyFiltersDto'
         threshold:
           type: integer
           minimum: 0
