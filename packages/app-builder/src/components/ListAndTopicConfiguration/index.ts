@@ -4,5 +4,15 @@ export {
   type ListAndTopicDatasetConfigurationVariant,
 } from './context/ListAndTopicDatasetConfiguration';
 export { DatasetSelectionContent } from './DatasetSelectionContent';
-export { makeDatasetsMap } from './dataset-selection-provider-utils';
+export {
+  buildDatasetKey,
+  buildTopicKey,
+  clearSectionSelections,
+  getCanonicalSelectedKeys,
+  isDatasetKeySelected,
+  isTopicKeySelected,
+  makeDatasetsMap,
+  setDatasetKey,
+  setTopicKey,
+} from './dataset-selection-provider-utils';
 export { getSectionLeafNames } from './dataset-utils';

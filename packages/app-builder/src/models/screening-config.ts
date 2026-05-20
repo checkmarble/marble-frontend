@@ -90,6 +90,13 @@ const ConvertSectionNameToDto: Record<ScreeningCategory, keyof ScreeningConfigBo
   'adverse-media': 'adverse_media',
 };
 
+const DtoSectionToCategory: Record<keyof ScreeningConfigBodyFiltersDto, ScreeningCategory> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  adverse_media: 'adverse-media',
+  other: 'third-parties',
+};
+
 export function createScreeningFilters(selection: string[]): ScreeningConfigBodyFiltersDto {
   const filters: ScreeningConfigBodyFiltersDto = {
     sanctions: { enabled: false },
@@ -127,7 +134,9 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
 }
 
 export function getDatasetFromFilters(filters: ScreeningConfigBodyFiltersDto): string[] {
-  return Object.entries(filters).flatMap(([section, data]) => {
+  return Object.entries(filters).flatMap(([dtoSection, data]) => {
+    const section =
+      DtoSectionToCategory[dtoSection as keyof ScreeningConfigBodyFiltersDto] ?? (dtoSection as ScreeningCategory);
     const sections = data.enabled ? [section] : [];
     const datasets = data.datasets?.map((dataset) => `${section}:dataset:${dataset}`) ?? [];
     const topics = Object.entries(data.topics ?? {}).flatMap(([topic, values]) => {

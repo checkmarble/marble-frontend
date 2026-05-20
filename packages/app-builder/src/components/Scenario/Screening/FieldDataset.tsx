@@ -1,6 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import {
   DatasetSelectionContent,
+  getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
 } from '@app-builder/components/ListAndTopicConfiguration';
@@ -9,9 +10,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function getSelectedDatasets(datasets: Record<string, boolean>): string[] {
-  return Object.keys(datasets)
-    .filter((key) => datasets[key])
-    .sort();
+  return getCanonicalSelectedKeys(datasets);
 }
 
 function getDatasetsKey(datasets: string[]): string {

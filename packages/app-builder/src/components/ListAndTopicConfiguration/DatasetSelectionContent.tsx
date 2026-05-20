@@ -22,6 +22,13 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
+import {
+  clearSectionSelections,
+  isDatasetKeySelected,
+  isTopicKeySelected,
+  setDatasetKey,
+  setTopicKey,
+} from './dataset-selection-provider-utils';
 import { formatDatasetTitle, formatTopicLabel, getSectionLeafNames } from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
@@ -234,7 +241,6 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
-  const leafNames = getSectionLeafNames(section);
 
   const categoryLabel = match(sectionKey)
     .with('peps', () => t('scenarios:sanction.lists.peps'))
@@ -255,9 +261,7 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
               listConfig.update((state) => {
                 state.datasets[sectionKey] = checked;
                 if (!checked) {
-                  for (const name of leafNames) {
-                    state.datasets[name] = false;
-                  }
+                  clearSectionSelections(state.datasets, sectionKey);
                 }
               });
             }}
@@ -411,7 +415,7 @@ const ItemGroup = ({
     const nextValue = selected < names.length;
     listConfig.update((state) => {
       for (const name of names) {
-        state.datasets[name] = nextValue;
+        setDatasetKey(state.datasets, sectionKey, name, nextValue);
       }
       if (nextValue) {
         state.datasets[sectionKey] = true;
@@ -472,13 +476,15 @@ const ItemGroup = ({
 const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sectionKey: ScreeningCategory }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
-  const isSelected = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[name]);
+  const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
+    isDatasetKeySelected(state.datasets, sectionKey, name),
+  );
 
   const onClickItem = () => {
     if (mode === 'view') return;
     listConfig.update((state) => {
-      const nextValue = !state.datasets[name];
-      state.datasets[name] = nextValue;
+      const nextValue = !isDatasetKeySelected(state.datasets, sectionKey, name);
+      setDatasetKey(state.datasets, sectionKey, name, nextValue);
       if (nextValue) {
         state.datasets[sectionKey] = true;
       }
@@ -591,9 +597,15 @@ const FilterGroupRow = ({
       <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
       <div className="flex items-center gap-v2-sm flex-1 min-w-0">
         {items.length === 1 && items[0] ? (
-          <SingleItemToggle item={items[0]} sectionKey={sectionKey} mode={mode} onAfterChange={onAfterChange} />
+          <SingleItemToggle
+            item={items[0]}
+            sectionKey={sectionKey}
+            topicGroup={groupKey}
+            mode={mode}
+            onAfterChange={onAfterChange}
+          />
         ) : (
-          <FilterGroupTags items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />
+          <FilterGroupTags items={items} sectionKey={sectionKey} topicGroup={groupKey} onAfterChange={onAfterChange} />
         )}
       </div>
     </div>
@@ -603,16 +615,20 @@ const FilterGroupRow = ({
 const SingleItemToggle = ({
   item,
   sectionKey,
+  topicGroup,
   mode,
   onAfterChange,
 }: {
   item: TopicItem;
   sectionKey: ScreeningCategory;
+  topicGroup: string;
   mode: string;
   onAfterChange?: () => void;
 }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
-  const isSelected = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[item.name]);
+  const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
+    isTopicKeySelected(state.datasets, sectionKey, topicGroup, item.name),
+  );
   const { t } = useTranslation(['continuousScreening']);
 
   if (isSelected) {
@@ -622,7 +638,7 @@ const SingleItemToggle = ({
           label={item.title ?? formatItemName(item.name)}
           onRemove={() => {
             listConfig.update((state) => {
-              state.datasets[item.name] = false;
+              setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
             });
             onAfterChange?.();
           }}
@@ -644,7 +660,7 @@ const SingleItemToggle = ({
       className="flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0"
       onClick={() => {
         listConfig.update((state) => {
-          state.datasets[item.name] = true;
+          setTopicKey(state.datasets, sectionKey, topicGroup, item.name, true);
           state.datasets[sectionKey] = true;
         });
         onAfterChange?.();
@@ -661,17 +677,21 @@ const MENU_BUTTON_SIZE_PX = 24; // size-6 = 1.5rem = 24px
 const FilterGroupTags = ({
   items,
   sectionKey,
+  topicGroup,
   onAfterChange,
 }: {
   items: TopicItem[];
   sectionKey: ScreeningCategory;
+  topicGroup: string;
   onAfterChange?: () => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
-  const selectedItems = ListAndTopicDatasetConfiguration.select((state) => items.filter((i) => state.datasets[i.name]));
+  const selectedItems = ListAndTopicDatasetConfiguration.select((state) =>
+    items.filter((i) => isTopicKeySelected(state.datasets, sectionKey, topicGroup, i.name)),
+  );
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -759,7 +779,7 @@ const FilterGroupTags = ({
                   label={item.title ?? formatItemName(item.name)}
                   onRemove={() => {
                     listConfig.update((state) => {
-                      state.datasets[item.name] = false;
+                      setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
                     });
                     onAfterChange?.();
                   }}
@@ -791,7 +811,12 @@ const FilterGroupTags = ({
           </>
         )}
         {mode !== 'view' && variant !== 'popover' && (
-          <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />
+          <FilterGroupMenu
+            items={items}
+            sectionKey={sectionKey}
+            topicGroup={topicGroup}
+            onAfterChange={onAfterChange}
+          />
         )}
         {mode !== 'view' && variant === 'popover' && (
           <button
@@ -808,7 +833,7 @@ const FilterGroupTags = ({
         )}
       </div>
       {mode !== 'view' && variant === 'popover' && isMenuOpen && (
-        <FilterGroupMenu items={items} sectionKey={sectionKey} onAfterChange={onAfterChange} />
+        <FilterGroupMenu items={items} sectionKey={sectionKey} topicGroup={topicGroup} onAfterChange={onAfterChange} />
       )}
     </div>
   );
@@ -817,10 +842,12 @@ const FilterGroupTags = ({
 const FilterGroupMenu = ({
   items,
   sectionKey,
+  topicGroup,
   onAfterChange,
 }: {
   items: TopicItem[];
   sectionKey: ScreeningCategory;
+  topicGroup: string;
   onAfterChange?: () => void;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
@@ -828,13 +855,14 @@ const FilterGroupMenu = ({
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
-  const allSelected = items.length > 0 && items.every((i) => !!datasets[i.name]);
+  const allSelected =
+    items.length > 0 && items.every((i) => isTopicKeySelected(datasets, sectionKey, topicGroup, i.name));
 
   function handleClickItem(item: TopicItem) {
     if (mode === 'view') return;
     listConfig.update((state) => {
-      const nextValue = !state.datasets[item.name];
-      state.datasets[item.name] = nextValue;
+      const nextValue = !isTopicKeySelected(state.datasets, sectionKey, topicGroup, item.name);
+      setTopicKey(state.datasets, sectionKey, topicGroup, item.name, nextValue);
       if (nextValue) {
         state.datasets[sectionKey] = true;
       }
@@ -846,7 +874,7 @@ const FilterGroupMenu = ({
     const nextValue = !allSelected;
     listConfig.update((state) => {
       for (const item of items) {
-        state.datasets[item.name] = nextValue;
+        setTopicKey(state.datasets, sectionKey, topicGroup, item.name, nextValue);
       }
       if (nextValue) {
         state.datasets[sectionKey] = true;

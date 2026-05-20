@@ -1,3 +1,4 @@
+import { buildDatasetKey } from '@app-builder/components/ListAndTopicConfiguration';
 import { AvailableFeatures, ScreeningAvailableFiltersAdapted, ScreeningCategory } from '@app-builder/models/screening';
 import { getListConfigFn } from '@app-builder/server-fns/screenings';
 import { useQuery } from '@tanstack/react-query';
@@ -23,21 +24,28 @@ type NormalizedSection = {
 };
 
 export type ListConfigFilters = Partial<Record<ScreeningCategory, NormalizedSection>>;
+type SectionKeys = keyof ListConfigFilters;
 
-function groupBySection(datasets: { section?: string; name: string; title: string }[]): GroupedDataset[] {
+function groupBySection(
+  datasets: { section?: string; name: string; title: string }[],
+  name: SectionKeys,
+): GroupedDataset[] {
   return Object.entries(R.groupBy(datasets, (d) => d.section ?? d.name)).map(([section, items]) => ({
-    name: section,
+    name: buildDatasetKey(name, section),
     title: section,
     datasets: items.map(({ name, title }) => ({ name, title })),
   }));
 }
 
 function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConfigFilters {
-  function normalize(section: ScreeningAvailableFiltersSection | undefined): NormalizedSection | undefined {
+  function normalize(
+    section: ScreeningAvailableFiltersSection | undefined,
+    name: SectionKeys,
+  ): NormalizedSection | undefined {
     if (!section) return undefined;
     const adaptedSection: NormalizedSection = {
       ...section,
-      datasets: Array.isArray(section?.datasets) ? groupBySection(section.datasets) : undefined,
+      datasets: Array.isArray(section?.datasets) ? groupBySection(section.datasets, name) : undefined,
     };
 
     if (config.conditional_filters && section.topics) {
@@ -61,10 +69,10 @@ function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConf
   if (!config) return {};
 
   return {
-    sanctions: normalize(config.sections.sanctions),
-    peps: normalize(config.sections.peps),
-    'adverse-media': normalize(config.sections.adverse_media),
-    'third-parties': normalize(config.sections.other),
+    sanctions: normalize(config.sections.sanctions, 'sanctions'),
+    peps: normalize(config.sections.peps, 'peps'),
+    'adverse-media': normalize(config.sections.adverse_media, 'adverse-media'),
+    'third-parties': normalize(config.sections.other, 'third-parties'),
   };
 }
 
