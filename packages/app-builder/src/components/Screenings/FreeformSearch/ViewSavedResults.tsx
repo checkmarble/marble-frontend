@@ -204,10 +204,14 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
   const isYou = currentUser.actorIdentity.userId === search.ownerId;
 
   return (
-    <Collapsible.Container defaultOpen={false} className="bg-surface-card">
-      <Collapsible.Title size="small">
+    <Collapsible.Container defaultOpen={false} className="bg-surface-card border-none">
+      <Collapsible.Title size="small" hideIcon>
         <div className="flex flex-1 items-center gap-v2-sm">
-          <span className="font-semibold text-grey-primary">{search.name}</span>
+          <Icon
+            icon="smallarrow-up"
+            className={'size-5 group-radix-state-open:rotate-180 transition-transform duration-200'}
+          />
+          <span className="text-grey-primary">{search.name}</span>
           {owner ? (
             <span className="inline-flex items-center gap-v2-xs">
               <Avatar size="xs" firstName={owner.firstName} lastName={owner.lastName} />
@@ -219,12 +223,12 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
           ) : (
             <span className="text-s text-grey-secondary">{search.ownerId}</span>
           )}
-          <span className="text-grey-placeholder">•</span>
-          <span className="text-s text-grey-secondary">
+          <span className="text-grey-border">•</span>
+          <span className="text-s text-grey-placeholder">
             {formatDateTimeWithoutPresets(search.createdAt, { language, dateStyle: 'short' })}
           </span>
-          <span className="text-grey-placeholder">•</span>
-          <span className="text-s text-grey-secondary">
+          <span className="text-grey-border">•</span>
+          <span className="text-s text-grey-placeholder">
             {t('screenings:freeform_search.results_count', { count: search.results.length })}
           </span>
         </div>

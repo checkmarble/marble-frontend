@@ -8,7 +8,13 @@ import {
   type SemanticTypeField,
 } from '@app-builder/models';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
-import { formatAge, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatAge,
+  formatCountryName,
+  formatNumber,
+  useFormatDateTime,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
@@ -290,6 +296,7 @@ function StringCity() {
 
 function StringCountry() {
   const value = useStringValue();
+  const language = useFormatLanguage();
   if (!value) return <EmptyValue />;
   const result = tryCatch(() => CountryFlag.byCountryCode(value.toUpperCase()));
   if (!result.ok) return <span>{value}</span>;
@@ -297,7 +304,7 @@ function StringCountry() {
   return (
     <span className="inline-flex items-center gap-1">
       <span>{country.flag}</span>
-      <span>{country.nameEnglish}</span>
+      <span>{formatCountryName(country.isoAlpha2, language)}</span>
     </span>
   );
 }

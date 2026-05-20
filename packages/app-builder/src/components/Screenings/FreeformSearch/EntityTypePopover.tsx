@@ -1,5 +1,6 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
+import { formatCountryName } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
 import { useStore } from '@tanstack/react-form';
@@ -125,7 +126,7 @@ function AdditionalEntityTypePopover({
   const form = useFormManuallSearch();
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const entityTypeFields = entityType ? SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name') : [];
-  const { t } = useTranslation(screeningsI18n);
+  const { t, i18n } = useTranslation(screeningsI18n);
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -172,7 +173,7 @@ function AdditionalEntityTypePopover({
                         name={formField.name}
                         rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
                         className="w-full"
-                        value={countryFormStringToValue((formField.state.value as string) ?? '')}
+                        value={countryFormStringToValue((formField.state.value as string) ?? '', i18n.language)}
                         onValueChange={(v) => formField.handleChange(countryValueToFormString(v))}
                         placeholder={t(`screenings:entity.property.${fieldName}`)}
                       />
@@ -276,7 +277,7 @@ function getFilterTagLabel(
   }
 }
 
-function countryFormStringToValue(raw: string): SelectCountryValue | null {
+function countryFormStringToValue(raw: string, language: string): SelectCountryValue | null {
   const trimmed = raw.trim();
   if (trimmed === '') return null;
   const cc = trimmed.length <= 3 ? trimmed.toUpperCase() : trimmed;
@@ -286,7 +287,7 @@ function countryFormStringToValue(raw: string): SelectCountryValue | null {
     return {
       isoAlpha2: c.isoAlpha2,
       isoAlpha3: c.isoAlpha3,
-      name: c.nameEnglish,
+      name: formatCountryName(c.isoAlpha2, language) ?? c.nameEnglish,
       isManual: false,
     };
   }

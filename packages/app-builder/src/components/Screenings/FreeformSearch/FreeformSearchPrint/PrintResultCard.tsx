@@ -59,11 +59,6 @@ export const PrintResultCard: FunctionComponent<PrintResultCardProps> = ({ entit
 
         {/* Match Details */}
         <MatchDetails entity={entity} />
-
-        {/* OpenSanctions Link - visible as text for print */}
-        <div className="mt-2 text-xs text-grey-placeholder">
-          OpenSanctions: https://www.opensanctions.org/entities/{entity.id}
-        </div>
       </div>
     </div>
   );

@@ -3,7 +3,14 @@ import { useSetLanguageMutation } from '@app-builder/queries/settings/set-langua
 import { languageNames, supportedLngs } from '@app-builder/services/i18n/i18n-config';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Select } from 'ui-design-system';
+import { type SelectOption, SelectV2 } from 'ui-design-system';
+
+type SupportedLngs = (typeof supportedLngs)[number];
+
+const languageOptions: SelectOption<SupportedLngs>[] = supportedLngs.map((lng) => ({
+  value: lng,
+  label: <span dir={languageNames[lng].dir}>{languageNames[lng].name}</span>,
+}));
 
 /**
  * The component is hidden when there is only one language available.
@@ -11,7 +18,7 @@ import { Select } from 'ui-design-system';
 export function LanguagePicker() {
   const {
     t,
-    i18n: { language },
+    i18n: { language, changeLanguage },
   } = useTranslation<'common'>('common');
   const setLanguageMutation = useSetLanguageMutation();
   const revalidate = useLoaderRevalidator();
@@ -19,26 +26,21 @@ export function LanguagePicker() {
   if (supportedLngs.every((lng: string) => lng.startsWith('en'))) return null;
 
   return (
-    <Select.Default
-      value={language}
-      onValueChange={(newPreferredLanguage: (typeof supportedLngs)[number]) => {
+    <SelectV2
+      options={languageOptions}
+      value={language as SupportedLngs}
+      onChange={(newPreferredLanguage) => {
         setLanguageMutation
           .mutateAsync({ preferredLanguage: newPreferredLanguage })
           .then(() => {
             revalidate();
+            changeLanguage(newPreferredLanguage);
           })
           .catch(() => {
             toast.error(t('common:errors.unknown'));
           });
       }}
-    >
-      {supportedLngs.map((lng) => {
-        return (
-          <Select.DefaultItem dir={languageNames[lng].dir} key={lng} value={lng}>
-            {languageNames[lng].name}
-          </Select.DefaultItem>
-        );
-      })}
-    </Select.Default>
+      placeholder={languageNames['en-GB'].name}
+    />
   );
 }

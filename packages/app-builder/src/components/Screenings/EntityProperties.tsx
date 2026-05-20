@@ -68,7 +68,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                 defaultValue: property,
               })}
             </span>
-            <span className="break-words">
+            <span className="wrap-break-word">
               {values.length > 0 ? (
                 <>
                   {values.map((v, i) => (
