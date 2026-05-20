@@ -249,7 +249,11 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
           <HighlightText text={value} highlight={ctx.highlightText} />
         );
       case 'url':
-        return <ExternalLink href={value}>{value}</ExternalLink>;
+        return (
+          <ExternalLink className="break-all" href={value}>
+            {value}
+          </ExternalLink>
+        );
       case 'country':
         try {
           return <span>{intlCountry.of(value.toUpperCase())}</span>;
@@ -260,7 +264,7 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
         return <time dateTime={value}>{intlDate.format(new Date(value))}</time>;
       case 'wikidataId':
         return (
-          <ExternalLink href={`https://wikidata.org/wiki/${value}`} className="normal-case">
+          <ExternalLink href={`https://wikidata.org/wiki/${value}`} className="normal-case break-al">
             {value}
           </ExternalLink>
         );

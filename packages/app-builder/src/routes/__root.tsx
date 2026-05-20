@@ -21,6 +21,7 @@ import clsx from 'clsx';
 import { type i18n } from 'i18next';
 import { ReactNode, useEffect, useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
+import { I18nProvider } from 'ui-design-system';
 import { iconsSVGSpriteHref, logosSVGSpriteHref } from 'ui-icons';
 
 interface RouterContext {
@@ -109,19 +110,21 @@ function RootShell({ children }: { children: ReactNode }) {
         className="bg-surface-page selection:text-grey-white selection:bg-purple-primary h-screen w-full overflow-hidden antialiased text-grey-primary"
       >
         <I18nextProvider i18n={i18n}>
-          <NonceProvider value={nonce}>
-            <FormatContext.Provider value={{ locale, timezone }}>
-              <CsrfContext.Provider value={csrf}>
-                <ThemeProvider defaultTheme={theme}>
-                  {appConfig ? (
-                    <AppConfigContext.Provider value={appConfig}>{children}</AppConfigContext.Provider>
-                  ) : (
-                    children
-                  )}
-                </ThemeProvider>
-              </CsrfContext.Provider>
-            </FormatContext.Provider>
-          </NonceProvider>
+          <I18nProvider>
+            <NonceProvider value={nonce}>
+              <FormatContext.Provider value={{ locale, timezone }}>
+                <CsrfContext.Provider value={csrf}>
+                  <ThemeProvider defaultTheme={theme}>
+                    {appConfig ? (
+                      <AppConfigContext.Provider value={appConfig}>{children}</AppConfigContext.Provider>
+                    ) : (
+                      children
+                    )}
+                  </ThemeProvider>
+                </CsrfContext.Provider>
+              </FormatContext.Provider>
+            </NonceProvider>
+          </I18nProvider>
         </I18nextProvider>
         <script
           nonce={nonce}
