@@ -4,12 +4,12 @@ import { type SavedScreeningSearch } from '@app-builder/models/screening';
 import { useSavedFreeformSearchesQuery } from '@app-builder/queries/screening/freeform-search';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
 import { useDebouncedCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import { Avatar, Button, Collapsible, cn, Input, MenuCommand, Separator } from 'ui-design-system';
+import { Avatar, Button, Collapsible, cn, Input, MenuCommand, Separator, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FreeformMatchCard } from './FreeformMatchCard';
 
@@ -38,6 +38,35 @@ function toIsoRange(value: DateRangeFilterValue): { fromDate?: string; toDate?: 
 
 const PAGE_SIZES = [25, 50, 100] as const;
 type PageSize = (typeof PAGE_SIZES)[number];
+
+function FilterPill({
+  icon,
+  label,
+  onClear,
+  clearAriaLabel,
+}: {
+  icon: 'calendar-month' | 'user';
+  label: string;
+  onClear: () => void;
+  clearAriaLabel: string;
+}) {
+  return (
+    <Tag color="purple" size="big" className="w-full justify-between">
+      <span className="inline-flex items-center gap-v2-xs truncate">
+        <Icon icon={icon} className="size-4 shrink-0" />
+        <span className="truncate font-medium">{label}</span>
+      </span>
+      <Button
+        role="button"
+        aria-label={clearAriaLabel}
+        className="hover:text-purple-hover shrink-0 cursor-pointer"
+        onClick={onClear}
+      >
+        <Icon icon="cross" className="size-4" />
+      </Button>
+    </Tag>
+  );
+}
 
 export const ViewSavedResults = () => {
   const { t } = useTranslation(['screenings', 'common']);
@@ -223,8 +252,8 @@ function PeriodFilter({
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<DateRangeFilterValue>(value);
 
-  const label = (() => {
-    if (!value) return t('screenings:freeform_search.saved_results.select_period');
+  const selectedLabel = (() => {
+    if (!value) return null;
     if (value.type === 'static') {
       const from = value.startDate
         ? formatDateTimeWithoutPresets(value.startDate, { language, dateStyle: 'short' })
@@ -232,9 +261,18 @@ function PeriodFilter({
       const to = value.endDate ? formatDateTimeWithoutPresets(value.endDate, { language, dateStyle: 'short' }) : '…';
       return `${from} → ${to}`;
     }
-    return value.fromNow;
+    return formatDuration(value.fromNow, language);
   })();
 
+  if (selectedLabel)
+    return (
+      <FilterPill
+        icon="calendar-month"
+        label={selectedLabel}
+        onClear={() => onChange(null)}
+        clearAriaLabel={t('screenings:freeform_search.clear')}
+      />
+    );
   return (
     <MenuCommand.Menu
       open={open}
@@ -247,7 +285,7 @@ function PeriodFilter({
         <Button variant="secondary" appearance="stroked" className="w-full justify-between">
           <span className="inline-flex items-center gap-v2-xs">
             <Icon icon="calendar-month" className="size-4" />
-            <span className="truncate">{label}</span>
+            <span className="truncate">{t('screenings:freeform_search.saved_results.select_period')}</span>
           </span>
           <Icon
             icon="smallarrow-up"
@@ -308,15 +346,22 @@ function OwnerFilter({
   const [open, setOpen] = useState(false);
   const owner = value ? getOrgUserById(value) : undefined;
 
+  const ownerLabel = owner ? `${owner.firstName} ${owner.lastName}`.trim() : null;
+
+  if (ownerLabel)
+    return (
+      <FilterPill
+        icon="user"
+        label={ownerLabel}
+        onClear={() => onChange(undefined)}
+        clearAriaLabel={t('screenings:freeform_search.clear')}
+      />
+    );
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
         <Button variant="secondary" appearance="stroked" className="w-full justify-between">
-          <span className="truncate">
-            {owner
-              ? `${owner.firstName} ${owner.lastName}`.trim()
-              : t('screenings:freeform_search.saved_results.select_owner')}
-          </span>
+          <span className="truncate">{t('screenings:freeform_search.saved_results.select_owner')}</span>
           <Icon
             icon="smallarrow-up"
             className={cn('size-4 transition-transform duration-200 rotate-180', open && 'rotate-0')}

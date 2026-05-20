@@ -62,6 +62,7 @@ export const SaveSearch = ({ search }: { search: FreeformSearchState }) => {
         <form onSubmit={handleSubmit(form)}>
           <Modal.Title>{t('screenings:freeform_search.save.title')}</Modal.Title>
           <div className="flex flex-col gap-v2-md p-v2-md">
+            <Modal.Description>{t('screenings:freeform_search.save.description')}</Modal.Description>
             <div className="bg-grey-02 flex flex-col gap-2 rounded-md">
               <h3 className="text-s text-grey-primary font-semibold">
                 {t('screenings:freeform_search.save.summary_title')}
@@ -76,7 +77,11 @@ export const SaveSearch = ({ search }: { search: FreeformSearchState }) => {
                 ))}
                 <SummaryRow
                   label={t('screenings:freeform_search.save.datasets')}
-                  value={String(search.inputs.datasets.length)}
+                  value={
+                    search.inputs.datasets.length
+                      ? String(search.inputs.datasets.length)
+                      : t('screenings:freeform_search.datasets_all')
+                  }
                 />
                 {search.inputs.threshold !== undefined ? (
                   <SummaryRow
