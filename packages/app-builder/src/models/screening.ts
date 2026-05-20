@@ -10,6 +10,7 @@ import {
   type ScreeningRequestDto,
 } from 'marble-api';
 import * as R from 'remeda';
+import { match, P } from 'ts-pattern';
 import { TagProps } from 'ui-design-system';
 
 export const matchEntitySchemas = [
@@ -348,6 +349,104 @@ export const SCREENING_CATEGORY_COLORS = {
   other: 'grey',
 } satisfies Record<ScreeningCategory | 'other', TagProps['color']>;
 
+const LEXIS_TOPIC_KEYS = [
+  'alive',
+  'deceased',
+  'sanctions',
+  'adverse_media',
+  'adverse_media.kind.media',
+  'adverse_media.kind.enforcement',
+  'adverse_media.category.administrative',
+  'adverse_media.category.aircraft_hijacking',
+  'adverse_media.category.antitrust_violations',
+  'adverse_media.category.arms_trafficking',
+  'adverse_media.category.asset_freeze',
+  'adverse_media.category.bank_fraud',
+  'adverse_media.category.bribery',
+  'adverse_media.category.burglary',
+  'adverse_media.category.conspiracy',
+  'adverse_media.category.corruption',
+  'adverse_media.category.counterfeiting',
+  'adverse_media.category.crimes_against_humanity',
+  'adverse_media.category.cybercrime',
+  'adverse_media.category.debarred',
+  'adverse_media.category.disciplined',
+  'adverse_media.category.disqualified',
+  'adverse_media.category.drug_trafficking',
+  'adverse_media.category.embezzlement',
+  'adverse_media.category.end_use_control',
+  'adverse_media.category.environmental_crimes',
+  'adverse_media.category.espionage',
+  'adverse_media.category.excluded_party',
+  'adverse_media.category.explosives',
+  'adverse_media.category.extortion_racketeering',
+  'adverse_media.category.financial_crimes',
+  'adverse_media.category.forgery',
+  'adverse_media.category.fraud',
+  'adverse_media.category.fugitive',
+  'adverse_media.category.gambling_operations',
+  'adverse_media.category.healthcare_fraud',
+  'adverse_media.category.human_rights_abuse',
+  'adverse_media.category.human_trafficking',
+  'adverse_media.category.isis_foreign_support',
+  'adverse_media.category.insider_trading',
+  'adverse_media.category.insurance_fraud',
+  'adverse_media.category.interstate_commerce',
+  'adverse_media.category.kidnapping',
+  'adverse_media.category.labor_violations',
+  'adverse_media.category.money_laundering',
+  'adverse_media.category.mortgage_fraud',
+  'adverse_media.category.most_wanted',
+  'adverse_media.category.murder',
+  'adverse_media.category.organized_crime',
+  'adverse_media.category.peonage',
+  'adverse_media.category.pharma_trafficking',
+  'adverse_media.category.piracy',
+  'adverse_media.category.pollution',
+  'adverse_media.category.pornography',
+  'adverse_media.category.price_manipulation',
+  'adverse_media.category.rico',
+  'adverse_media.category.securities_fraud',
+  'adverse_media.category.smuggling',
+  'adverse_media.category.stolen_property',
+  'adverse_media.category.tax_evasion',
+  'adverse_media.category.terrorism',
+  'adverse_media.category.unauthorized',
+  'adverse_media.category.war_crimes',
+  'adverse_media.category.wire_fraud',
+  'adverse_media.category.weapons_mass_destruction',
+  'pep.kind.primary',
+  'pep.kind.secondary',
+  'pep.status.active',
+  'pep.status.inactive',
+  'pep.category.chief_of_state',
+  'pep.category.diplomat',
+  'pep.category.govt_branch_member',
+  'pep.category.intelligence',
+  'pep.category.intl_org_leadership',
+  'pep.category.judiciary',
+  'pep.category.law_enforce_authority',
+  'pep.category.legislature',
+  'pep.category.military',
+  'pep.category.ngo_leadership',
+  'pep.category.senior_party_member',
+  'pep.category.traditional_leadership',
+  'pep.category.union_leadership',
+  'pep.category.manager_state_owned_enterprise',
+  'pep.category.manager_sovereign_wealth_fund',
+  'pep.category.associate',
+  'pep.category.attorney',
+  'pep.category.family_member',
+  'pep.category.pep_controlled_business',
+  'pep.category.state_owned_enterprise',
+];
+
+export type LexisTopic = (typeof LEXIS_TOPIC_KEYS)[number];
+
+export function isLexisTopic(topic: string): topic is LexisTopic {
+  return (LEXIS_TOPIC_KEYS as ReadonlyArray<string>).includes(topic);
+}
+
 export const OS_TOPICS_KEYS = [
   'sanction',
   'sanction.linked',
@@ -392,13 +491,13 @@ export const OS_TOPICS_KEYS = [
   'poi',
 ] as const;
 
-export type OpenSanctionTopic = (typeof OS_TOPICS_KEYS)[number];
+type OpenSanctionTopic = (typeof OS_TOPICS_KEYS)[number];
 
 export function isOpenSanctionTopic(topic: string): topic is OpenSanctionTopic {
   return (OS_TOPICS_KEYS as ReadonlyArray<string>).includes(topic);
 }
 
-export const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory | 'other'>([
+const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory | 'other'>([
   // Sanctions
   ['sanction', 'sanctions'],
   ['sanction.linked', 'sanctions'],
@@ -472,6 +571,28 @@ export const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory | 'othe
   ['rel', 'third-parties'],
 ]);
 
+function openSanctionsTopicToCategory(topic: string): ScreeningCategory | 'other' {
+  let category = OS_SCREENING_TOPICS_MAP.get(topic);
+  if (!category) {
+    console.warn(`No category found for topic: ${topic}`);
+    category = 'other';
+  }
+  return category;
+}
+
+export function openSanctionsTopicToColor(topic: string): TagProps['color'] {
+  const category = openSanctionsTopicToCategory(topic);
+  return SCREENING_CATEGORY_COLORS[category];
+}
+
+export function lexisTopicToColor(topic: string): TagProps['color'] {
+  return match(topic)
+    .with(P.string.startsWith('adverse_media'), () => SCREENING_CATEGORY_COLORS['adverse-media'])
+    .with(P.string.startsWith('sanctions'), () => SCREENING_CATEGORY_COLORS['sanctions'])
+    .with(P.string.startsWith('pep'), () => SCREENING_CATEGORY_COLORS['peps'])
+    .otherwise(() => SCREENING_CATEGORY_COLORS['other']);
+}
+
 /**
  * Maps ScreeningCategory to i18n key suffix.
  * ScreeningCategory uses hyphens, i18n keys use underscores.
@@ -510,7 +631,7 @@ export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] 
   return Array.from(categories);
 }
 
-export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {
+const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {
   sanctions: 1,
   'adverse-media': 2,
   peps: 3,
