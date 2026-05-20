@@ -1,9 +1,10 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
+import { formatCountryName } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
 import CountryFlag from 'country-flag-emojis';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
@@ -136,87 +137,10 @@ function AdditionalEntityTypePopover({
   onFieldChange,
 }: AdditionalEntityTypePopoverProps) {
   const [open, setOpen] = useState(false);
-  const entityTypeFields = SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name');
-  const { t } = useTranslation(screeningsI18n);
-
-  const [draftFields, setDraftFields] = useState<Record<string, string>>(() =>
-    getDraftFieldsFromCommitted(entityTypeFields, committedFields),
-  );
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const lastProcessedOpenRequest = useRef(0);
-  const hasSelection = entityType && entityType !== 'Thing';
-
-  const filterTags = hasSelection
-    ? SEARCH_ENTITIES[entityType].fields
-        .filter((f) => f !== 'name')
-        .map((fieldName) => {
-          const fieldValue = committedFields[fieldName];
-          if (!fieldValue) return null;
-          const label = getFilterTagLabel(fieldName, fieldValue, t);
-          if (!label) return null;
-          return (
-            <Tag
-              key={fieldName}
-              color={disabled ? 'grey' : 'purple'}
-              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span className="font-medium">{label}</span>
-            </Tag>
-          );
-        })
-        .filter(Boolean)
-    : null;
-
-  useEffect(() => {
-    if (openRequest <= lastProcessedOpenRequest.current || disabled) return;
-    lastProcessedOpenRequest.current = openRequest;
-    setDraftFields(getDraftFieldsFromCommitted(entityTypeFields, committedFields));
-    setFieldErrors({});
-    setOpen(true);
-  }, [openRequest, disabled]);
-
-  const handleOpenChange = useCallback(
-    (isOpen: boolean) => {
-      if (disabled) return;
-      if (isOpen) {
-        setDraftFields(getDraftFieldsFromCommitted(entityTypeFields, committedFields));
-        setFieldErrors({});
-      }
-      setOpen(isOpen);
-    },
-    [committedFields, disabled, entityTypeFields],
-  );
-
-  const updateDraftField = (fieldName: string, value: string) => {
-    setDraftFields((prev) => ({ ...prev, [fieldName]: value }));
-    setFieldErrors((prev) => {
-      if (!prev[fieldName]) return prev;
-      const next = { ...prev };
-      delete next[fieldName];
-      return next;
-    });
-  };
-
-  const handleApply = () => {
-    const errors: Record<string, string> = {};
-    for (const fieldName of entityTypeFields) {
-      if (fieldName === 'birthDate' && !validateBirthDate(draftFields[fieldName] ?? '')) {
-        errors[fieldName] = t('screenings:freeform_search.birth_date_invalid');
-      }
-    }
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-    for (const fieldName of entityTypeFields) {
-      onFieldChange(fieldName, draftFields[fieldName] ?? '');
-    }
-    setOpen(false);
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
-  };
+  const form = useFormManuallSearch();
+  const entityType = useStore(form.store, (state) => state.values.entityType);
+  const entityTypeFields = entityType ? SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name') : [];
+  const { t, i18n } = useTranslation(screeningsI18n);
 
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
@@ -244,44 +168,65 @@ function AdditionalEntityTypePopover({
         <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1 p-2">
           {entityTypeFields.map((fieldName, index) => {
             const isLastOdd = index === entityTypeFields.length - 1 && entityTypeFields.length % 2 === 1;
-            const value = draftFields[fieldName] ?? '';
-
-            if (fieldName === 'country' || fieldName === 'nationality') {
-              return (
-                <SelectCountry
-                  key={fieldName}
-                  name={fieldName}
-                  rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
-                  className="w-full"
-                  value={countryFormStringToValue(value)}
-                  onValueChange={(v) => updateDraftField(fieldName, countryValueToFormString(v))}
-                  placeholder={t(`screenings:entity.property.${fieldName}`)}
-                />
-              );
-            }
-            if (fieldName === 'birthDate') {
-              return (
-                <div key={fieldName} className={cn('flex flex-col gap-1', isLastOdd && 'col-span-2 lg:col-span-1')}>
-                  <Input
-                    name={fieldName}
-                    value={value}
-                    onChange={(e) => updateDraftField(fieldName, e.target.value)}
-                    className="w-full"
-                    placeholder={t('screenings:entity.property.birthDate.format')}
-                  />
-                  {fieldErrors[fieldName] && <span className="text-red-primary text-xs">{fieldErrors[fieldName]}</span>}
-                </div>
-              );
-            }
             return (
-              <Input
+              <form.Field
                 key={fieldName}
-                name={fieldName}
-                value={value}
-                onChange={(e) => updateDraftField(fieldName, e.target.value)}
-                className={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
-                placeholder={t(`screenings:entity.property.${fieldName}`)}
-              />
+                name={`fields.${fieldName}`}
+                validators={
+                  fieldName === 'birthDate'
+                    ? {
+                        onChange: ({ value }) => {
+                          const v = (value as string) ?? '';
+                          if (!v) return undefined;
+                          return /^\d{4}(-\d{2}-\d{2})?$/.test(v)
+                            ? undefined
+                            : t('screenings:freeform_search.birth_date_invalid');
+                        },
+                      }
+                    : undefined
+                }
+              >
+                {(formField) => {
+                  if (fieldName === 'country' || fieldName === 'nationality') {
+                    return (
+                      <SelectCountry
+                        name={formField.name}
+                        rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                        className="w-full"
+                        value={countryFormStringToValue((formField.state.value as string) ?? '', i18n.language)}
+                        onValueChange={(v) => formField.handleChange(countryValueToFormString(v))}
+                        placeholder={t(`screenings:entity.property.${fieldName}`)}
+                      />
+                    );
+                  }
+                  if (fieldName === 'birthDate') {
+                    return (
+                      <div className={cn('flex flex-col gap-1', isLastOdd && 'col-span-2 lg:col-span-1')}>
+                        <Input
+                          name={formField.name}
+                          value={(formField.state.value as string) ?? ''}
+                          onChange={(e) => formField.handleChange(e.target.value)}
+                          onBlur={formField.handleBlur}
+                          className="w-full"
+                          placeholder={t('screenings:entity.property.birthDate.format')}
+                        />
+                        {formField.state.meta.errors.length > 0 && (
+                          <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
+                        )}
+                      </div>
+                    );
+                  }
+                  return (
+                    <Input
+                      name={formField.name}
+                      value={(formField.state.value as string) ?? ''}
+                      onChange={(e) => formField.handleChange(e.target.value)}
+                      className={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                      placeholder={t(`screenings:entity.property.${fieldName}`)}
+                    />
+                  );
+                }}
+              </form.Field>
             );
           })}
           {/* Actions */}
@@ -335,7 +280,7 @@ function getFilterTagLabel(
   }
 }
 
-function countryFormStringToValue(raw: string): SelectCountryValue | null {
+function countryFormStringToValue(raw: string, language: string): SelectCountryValue | null {
   const trimmed = raw.trim();
   if (trimmed === '') return null;
   const cc = trimmed.length <= 3 ? trimmed.toUpperCase() : trimmed;
@@ -345,7 +290,7 @@ function countryFormStringToValue(raw: string): SelectCountryValue | null {
     return {
       isoAlpha2: c.isoAlpha2,
       isoAlpha3: c.isoAlpha3,
-      name: c.nameEnglish,
+      name: formatCountryName(c.isoAlpha2, language) ?? c.nameEnglish,
       isManual: false,
     };
   }

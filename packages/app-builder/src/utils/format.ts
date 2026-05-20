@@ -129,3 +129,8 @@ export function formatDateRelative(date: string | Date, options: { language: str
 export function formatPercentage(percentage: number, language: string) {
   return Intl.NumberFormat(language, { style: 'percent', maximumFractionDigits: 0 }).format(percentage / 100);
 }
+
+export function formatCountryName(countryIso2: string, language: string) {
+  const intlCountry = new Intl.DisplayNames(language, { type: 'region' });
+  return intlCountry.of(countryIso2);
+}

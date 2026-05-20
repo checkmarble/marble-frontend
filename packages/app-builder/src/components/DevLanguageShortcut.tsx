@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 export function DevLanguageShortcut() {
   const {
     t,
-    i18n: { language },
+    i18n: { language, changeLanguage },
   } = useTranslation(['common']);
   const setLanguageMutation = useSetLanguageMutation();
   const revalidate = useLoaderRevalidator();
@@ -27,7 +27,13 @@ export function DevLanguageShortcut() {
         if (!nextLang) return;
         setLanguageMutation.mutate(
           { preferredLanguage: nextLang },
-          { onSuccess: () => revalidate(), onError: () => toast.error(t('common:errors.unknown')) },
+          {
+            onSuccess: () => {
+              changeLanguage(nextLang);
+              revalidate();
+            },
+            onError: () => toast.error(t('common:errors.unknown')),
+          },
         );
       }
     };
