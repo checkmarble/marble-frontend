@@ -741,8 +741,9 @@ const FilterGroupTags = ({
   const isAllSelected = selectedItems.length === items.length && items.length > 1;
   const overflow = isExpanded || isAllSelected ? 0 : Math.max(0, selectedItems.length - maxVisible);
   const visible = overflow > 0 ? selectedItems.slice(0, maxVisible) : selectedItems;
+  const useAnchoredMenu = mode !== 'view' && variant !== 'popover';
 
-  return (
+  const tagsContent = (
     <div
       ref={containerRef}
       className={cn('flex-1 min-w-0', variant === 'popover' && 'flex flex-col gap-v2-sm overflow-x-hidden')}
@@ -810,8 +811,9 @@ const FilterGroupTags = ({
             )}
           </>
         )}
-        {mode !== 'view' && variant !== 'popover' && (
+        {useAnchoredMenu && (
           <FilterGroupMenu
+            anchored
             items={items}
             sectionKey={sectionKey}
             topicGroup={topicGroup}
@@ -822,7 +824,7 @@ const FilterGroupTags = ({
           <button
             type="button"
             className={cn(
-              'flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0',
+              'flex items-center justify-center size-6 rounded-full hover:bg-grey-background-light shrink-0',
               isMenuOpen && 'bg-purple-background-light border-purple-primary text-purple-primary',
             )}
             onClick={() => setIsMenuOpen((open) => !open)}
@@ -837,6 +839,16 @@ const FilterGroupTags = ({
       )}
     </div>
   );
+
+  if (useAnchoredMenu) {
+    return (
+      <MenuCommand.Menu persistOnSelect>
+        <MenuCommand.Anchor asChild>{tagsContent}</MenuCommand.Anchor>
+      </MenuCommand.Menu>
+    );
+  }
+
+  return tagsContent;
 };
 
 const FilterGroupMenu = ({
@@ -844,11 +856,13 @@ const FilterGroupMenu = ({
   sectionKey,
   topicGroup,
   onAfterChange,
+  anchored = false,
 }: {
   items: TopicItem[];
   sectionKey: ScreeningCategory;
   topicGroup: string;
   onAfterChange?: () => void;
+  anchored?: boolean;
 }) => {
   const { t } = useTranslation(['continuousScreening']);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
@@ -958,12 +972,12 @@ const FilterGroupMenu = ({
     </MenuCommand.List>
   );
 
-  return (
-    <MenuCommand.Menu persistOnSelect>
+  const menuTriggerAndContent = (
+    <>
       <MenuCommand.Trigger>
         <button
           type="button"
-          className="flex items-center justify-center size-6 rounded-full border border-grey-border hover:bg-grey-background-light shrink-0"
+          className="flex items-center justify-center size-6 rounded-full hover:bg-grey-background-light shrink-0"
         >
           <Icon icon="plus" className="size-3" />
         </button>
@@ -971,6 +985,12 @@ const FilterGroupMenu = ({
       <MenuCommand.Content align="start" sideOffset={4}>
         {itemsList}
       </MenuCommand.Content>
-    </MenuCommand.Menu>
+    </>
   );
+
+  if (anchored) {
+    return menuTriggerAndContent;
+  }
+
+  return <MenuCommand.Menu persistOnSelect>{menuTriggerAndContent}</MenuCommand.Menu>;
 };
