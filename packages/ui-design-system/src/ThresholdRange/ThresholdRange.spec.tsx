@@ -79,6 +79,70 @@ describe('ThresholdRange', () => {
     expect(onChange).toHaveBeenCalledWith(60);
   });
 
+  it('dragging the active thumb picks the nearest configured values', () => {
+    const { onChange } = renderThresholdRange({ value: 40 });
+    const rail = container?.querySelector('[data-testid="threshold-range-rail"]') as HTMLDivElement | null;
+    const thumb = container?.querySelector('[data-testid="threshold-range-thumb-active"]');
+    expect(rail).toBeTruthy();
+    expect(thumb).toBeTruthy();
+
+    vi.spyOn(rail!, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 12,
+      top: 0,
+      right: 100,
+      bottom: 12,
+      left: 0,
+      toJSON: () => ({}),
+    });
+
+    act(() => {
+      thumb?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: 50, pointerId: 1 }));
+      rail?.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 63, pointerId: 1 }));
+      rail?.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 75, pointerId: 1 }));
+      rail?.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: 75, pointerId: 1 }));
+    });
+
+    expect(onChange).toHaveBeenNthCalledWith(1, 50);
+    expect(onChange).toHaveBeenNthCalledWith(2, 60);
+    expect(onChange).toHaveBeenNthCalledWith(3, 70);
+    expect(onChange).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not revert to the previous step when the drag ends', () => {
+    const { onChange } = renderThresholdRange({ value: 60 });
+    const rail = container?.querySelector('[data-testid="threshold-range-rail"]') as HTMLDivElement | null;
+    const thumb = container?.querySelector('[data-testid="threshold-range-thumb-active"]');
+    const previousStepButton = container?.querySelector('button[aria-label="Seuil de match 60"]');
+    expect(rail).toBeTruthy();
+    expect(thumb).toBeTruthy();
+    expect(previousStepButton).toBeTruthy();
+
+    vi.spyOn(rail!, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 12,
+      top: 0,
+      right: 100,
+      bottom: 12,
+      left: 0,
+      toJSON: () => ({}),
+    });
+
+    act(() => {
+      thumb?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: 70, pointerId: 1 }));
+      rail?.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 75, pointerId: 1 }));
+      rail?.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: 75, pointerId: 1 }));
+      previousStepButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+
+    expect(onChange).not.toHaveBeenCalledWith(60);
+    expect(onChange).toHaveBeenLastCalledWith(70);
+  });
+
   it('clicking the rail picks the nearest configured value', () => {
     const { onChange } = renderThresholdRange();
     const rail = container?.querySelector('[data-testid="threshold-range-rail"]') as HTMLDivElement | null;
@@ -124,10 +188,13 @@ describe('ThresholdRange', () => {
     const { onChange } = renderThresholdRange({ disabled: true });
     const rail = container?.querySelector('[data-testid="threshold-range-rail"]');
     const button = container?.querySelector('button[aria-label="Seuil de match 60"]');
+    const thumb = container?.querySelector('[data-testid="threshold-range-thumb-active"]');
 
     act(() => {
       button?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       rail?.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 63 }));
+      thumb?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: 63 }));
+      thumb?.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 75 }));
       getSlider().dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
     });
 

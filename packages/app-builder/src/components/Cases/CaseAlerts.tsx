@@ -98,10 +98,14 @@ export const AlertCard = ({
   const formatDateTime = useFormatDateTime();
   const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
 
+  // Defensive default: legacy cached decisions (pre-adapter) can be served by
+  // TanStack Query with `screenings` missing, which would crash every .find()/
+  // .map()/.length read below.
+  const screenings = decision.screenings ?? [];
   const hitRules = decision.rules.filter((r) => r.outcome === 'hit');
   const isPendingReview = decision.outcome === 'block_and_review' && decision.reviewStatus === 'pending';
 
-  const openScreening = decision.screenings.find((s) => s.id === panelScreeningId);
+  const openScreening = screenings.find((s) => s.id === panelScreeningId);
 
   return (
     <>
@@ -142,7 +146,7 @@ export const AlertCard = ({
               ) : null}
             </div>
             {isPendingReview ? (
-              <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
+              <ReviewDecisionModal decisionId={decision.id} screening={screenings[0]}>
                 <Button variant="primary" size="small" onClick={(e) => e.stopPropagation()}>
                   {t('cases:decisions.approve_or_decline')}
                 </Button>
@@ -181,11 +185,11 @@ export const AlertCard = ({
           ) : null}
 
           {/* Row 4: Status on hits (screenings) */}
-          {decision.screenings.length > 0 ? (
+          {screenings.length > 0 ? (
             <div className="flex flex-col gap-1">
               <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
               <div className="flex flex-col gap-2">
-                {decision.screenings.map((screening) => {
+                {screenings.map((screening) => {
                   return (
                     <div key={screening.id} className="flex items-center gap-2">
                       <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
