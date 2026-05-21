@@ -79,7 +79,7 @@ export function EditTimeAdd(props: Omit<OperandEditModalProps, 'node'>) {
             validationStatus={getValidationStatus(evaluation, node.namedChildren.sign.id)}
           />
           <Input
-            value={durationData.value.duration || ''}
+            value={durationData.value.duration ?? ''}
             onChange={(e) => {
               const value = Number.isFinite(e.target.valueAsNumber) ? e.target.valueAsNumber : 0;
               node.namedChildren.duration.constant = getTemporalDuration(value, durationData.value.durationUnit);
