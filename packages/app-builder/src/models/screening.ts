@@ -447,6 +447,15 @@ export function isLexisTopic(topic: string): topic is LexisTopic {
   return (LEXIS_TOPIC_KEYS as ReadonlyArray<string>).includes(topic);
 }
 
+// Some topics are present for filtering but are not directly useful to display (e.g. "pep active"), or may may duplicate too much information for useful display (e.g. "pep and pep.primary")
+// so we ignore some of them for display in the UI
+export function lexisTopicIgnoreDisplay(topic: LexisTopic): boolean {
+  if (['alive', 'pep.status.active', 'adverse_media'].includes(topic)) {
+    return true;
+  }
+  return false;
+}
+
 export const OS_TOPICS_KEYS = [
   'sanction',
   'sanction.linked',

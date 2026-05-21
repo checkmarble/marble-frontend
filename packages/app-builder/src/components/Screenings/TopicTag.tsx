@@ -1,6 +1,7 @@
 import {
   isLexisTopic,
   isOpenSanctionTopic,
+  lexisTopicIgnoreDisplay,
   lexisTopicToColor,
   openSanctionsTopicToColor,
 } from '@app-builder/models/screening';
@@ -22,6 +23,9 @@ export const TopicTag = ({ topic, className }: { topic: string; className?: stri
   }
 
   if (isLexisTopic(topic)) {
+    if (lexisTopicIgnoreDisplay(topic)) {
+      return null;
+    }
     return <Tag color={lexisTopicToColor(topic)}>{t(`screeningTopics:lexis.${topic}`, { defaultValue: topic })}</Tag>;
   }
 
