@@ -11,6 +11,7 @@ const variances = cva(
       size: {
         sm: 'p-0.5 gap-2',
         lg: 'min-h-8 gap-3 px-2',
+        chip: 'py-v2-xs px-v2-sm gap-v2-xs font-semibold text-small bg-surface-card',
       },
       dimmed: {
         true: 'text-grey-secondary',
@@ -48,7 +49,7 @@ export const CopyToClipboardButton = forwardRef<HTMLButtonElement, CopyToClipboa
         <Icon
           icon="copy"
           className={cn('shrink-0 text-current', {
-            'size-4': size === undefined || size === 'lg',
+            'size-4': size === undefined || size === 'lg' || size === 'chip',
             'size-3': size === 'sm',
           })}
         />

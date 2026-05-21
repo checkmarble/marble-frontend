@@ -1,5 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
-import { FTM_ENTITIES, FTM_ENTITIES_PROPERTIES } from '@app-builder/constants/ftm-entities';
+import {
+  FTM_ENTITIES,
+  FTM_ENTITIES_PROPERTIES,
+  FtmEntityPropertyKey,
+  getFtmEntitySuggestion,
+} from '@app-builder/constants/ftm-entities';
 import { ContinuousScreeningConfig } from '@app-builder/models/continuous-screening';
 import { TableModel } from '@app-builder/models/data-model';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
@@ -194,6 +199,27 @@ const ObjectMappingFtmContent = ({
   const ftmEntity = table.ftmEntity ?? mappingConfig.ftmEntity;
   const availableProperties = ftmEntity ? FTM_ENTITIES_PROPERTIES[ftmEntity] : [];
 
+  const handleSuggest = () => {
+    if (!ftmEntity) return;
+
+    const updatedFieldMapping = { ...mappingConfig.fieldMapping };
+
+    for (const property of availableProperties) {
+      const key = `${ftmEntity}.${property}` as FtmEntityPropertyKey;
+      const suggestion = getFtmEntitySuggestion(key);
+      if (!suggestion) continue;
+
+      const field = table.fields.find(
+        (f) =>
+          f.semanticType === suggestion.semanticType &&
+          (suggestion.semanticSubType ? f.semanticSubType === suggestion.semanticSubType : true),
+      );
+      if (field && !field.ftmProperty && !updatedFieldMapping[field.id]) updatedFieldMapping[field.id] = property;
+    }
+
+    onUpdate({ ...mappingConfig, fieldMapping: updatedFieldMapping });
+  };
+
   return (
     <>
       <FTMEntitySelector
@@ -210,10 +236,15 @@ const ObjectMappingFtmContent = ({
       />
       {ftmEntity ? (
         <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-lg bg-surface-card">
-          <div className="flex items-center justify-between p-v2-md border-b border-grey-border">
-            <div className="text-h3 font-semibold">
+          <div className="flex items-center gap-4 p-v2-md border-b border-grey-border">
+            <h3 className="text-h3 font-semibold">
               {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.title')}
-            </div>
+            </h3>
+            {mode !== 'view' && (
+              <Button variant="primary" appearance="stroked" onClick={handleSuggest}>
+                {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.suggest')}
+              </Button>
+            )}
           </div>
           <div className="grid grid-cols-[auto_40px_1fr] gap-v2-sm p-v2-md">
             {table.fields
@@ -310,7 +341,7 @@ const FtmFieldSelector = ({
 }: {
   ftmEntity: string;
   ftmProperty: string | null;
-  availableProperties: string[];
+  availableProperties: readonly string[];
   readOnly: boolean;
   onChange: (ftmProperty: string | null) => void;
 }) => {

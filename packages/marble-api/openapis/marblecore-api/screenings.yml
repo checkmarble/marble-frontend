@@ -34,6 +34,27 @@
           application/json:
             schema:
               $ref: '#/components/schemas/OpenSanctionsCatalogDto'
+/screenings/available-filters:
+  get:
+    tags:
+      - Screening
+    summary: List available filter for the current provider
+    operationId: listScreeningAvailableFilters
+    parameters:
+      - name: feature
+        description: Feature the return the filters for
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [transaction_monitoring, continuous_monitoring, manual_search]
+    responses:
+      '200':
+        description: Available filters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreeningAvailableFilters'
 /screenings/freshness:
   get:
     tags:
@@ -290,7 +311,7 @@
     description: >-
       Validates the caller's permissions and feature access, then enqueues a background job to
       analyse all pending matches in the screening using an LLM. After the job completes, results can be retrieved via
-      GET /screenings/{screeningId}/ai-suggestions. 
+      GET /screenings/{screeningId}/ai-suggestions.
     operationId: enqueueScreeningAiSuggestions
     parameters:
       - name: screeningId
@@ -379,6 +400,81 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OpenSanctionsCatalogSection'
+    ScreeningAvailableFilters:
+      type: object
+      required: [provider, sections]
+      properties:
+        provider:
+          type: string
+          enum: [opensanctions, lexisnexis]
+        sections:
+          type: object
+          properties:
+            sanctions:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            peps:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            adverse_media:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            other:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+    ScreeningAvailableFiltersSection:
+      type: object
+      properties:
+        self:
+          type: string
+        datasets:
+          type: array
+          items:
+            type: object
+            required: [name, title]
+            properties:
+              section:
+                type: string
+              name:
+                type: string
+              title:
+                type: string
+        topics:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              required: [name, title]
+              properties: 
+                name:
+                  type: string
+                title:
+                  type: string
+        enabled:
+          type: boolean
+    ScreeningConfigBodySectionDto:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        datasets:
+          type: array
+          items:
+            type: string
+        topics:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    ScreeningConfigBodyFiltersDto:
+      type: object
+      properties:
+        sanctions:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        peps:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        adverse_media:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        other:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
     OpenSanctionsDatasetFreshnessDto:
       type: object
       required:
@@ -422,6 +518,8 @@ components:
           type: array
           items:
             type: string
+        filters:
+          $ref: '#/components/schemas/ScreeningConfigBodyFiltersDto'
         threshold:
           type: integer
           minimum: 0
@@ -498,6 +596,8 @@ components:
           properties:
             name:
               type: string
+        unique_counterparty_identifier:
+          type: string
         decision_id:
           type: string
           format: uuid
@@ -539,6 +639,8 @@ components:
           properties:
             name:
               type: string
+        unique_counterparty_identifier:
+          type: string
         decision_id:
           type: string
           format: uuid
@@ -581,6 +683,8 @@ components:
           properties:
             name:
               type: string
+        unique_counterparty_identifier:
+          type: string
         decision_id:
           type: string
           format: uuid
@@ -698,8 +802,6 @@ components:
           enum: ['pending', 'confirmed_hit', 'no_hit', 'skipped']
         datasets:
           type: array
-        unique_counterparty_identifier:
-          type: string
         payload:
           $ref: '#/components/schemas/ScreeningMatchPayloadDto'
         enriched:

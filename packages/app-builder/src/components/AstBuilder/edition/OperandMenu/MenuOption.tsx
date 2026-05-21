@@ -4,6 +4,8 @@ import { Nudge } from '@app-builder/components/Nudge';
 import { type AstNode, getDataTypeIcon, injectIdToNode } from '@app-builder/models';
 import { isAggregation } from '@app-builder/models/astNode/aggregation';
 import { isIpHasFlag } from '@app-builder/models/astNode/ip';
+import { monitoringListCheckAstNodeName } from '@app-builder/models/astNode/monitoring-list-check';
+import { recordRiskLevelCheckAstNodeName } from '@app-builder/models/astNode/risk';
 import { isRestrictedAggregator } from '@app-builder/models/modale-operators';
 import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,16 +38,26 @@ export function MenuOption({
   const fieldPath = showFieldPath ? getDataAccessorPath(option.astNode) : null;
 
   const hasContinuousScreening = AstBuilderDataSharpFactory.select((s) => s.data.hasContinuousScreening);
+  const hasScoringRuleset = AstBuilderDataSharpFactory.select((s) => s.data.hasScoringRuleset);
 
   // Check if this is a restricted aggregator option
   const isRestrictedOption =
     isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
-  const isRestrictedClientRisk = option.operandType === 'ClientRisk' && !hasContinuousScreening;
+  const isRestrictedClientRisk =
+    option.operandType === 'ClientRisk' &&
+    option.astNode.name === monitoringListCheckAstNodeName &&
+    !hasContinuousScreening;
   const showNudge = (isRestrictedOption && !hasValidLicense) || isRestrictedClientRisk;
   const showIpNudge = isIpHasFlag(option.astNode) && !hasValidLicense;
+  const disabledScoringCheck = option.astNode.name === recordRiskLevelCheckAstNodeName && !hasScoringRuleset;
 
   return (
-    <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>
+    <MenuCommand.Item
+      disabled={disabledScoringCheck}
+      className="group"
+      value={value}
+      onSelect={() => onSelect(injectIdToNode(option.astNode))}
+    >
       <div className="grid w-full grid-cols-[20px_1fr] gap-1">
         {leftIcon ? <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} /> : null}
         <div className="col-start-2 flex flex-row gap-1 overflow-hidden">

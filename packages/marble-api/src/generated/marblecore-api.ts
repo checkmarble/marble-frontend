@@ -870,12 +870,26 @@ export type ScenarioIterationDto = {
     updated_at: string;
     archived: boolean;
 };
+export type ScreeningConfigBodySectionDto = {
+    enabled?: boolean;
+    datasets?: string[];
+    topics?: {
+        [key: string]: string[];
+    };
+};
+export type ScreeningConfigBodyFiltersDto = {
+    sanctions?: ScreeningConfigBodySectionDto;
+    peps?: ScreeningConfigBodySectionDto;
+    adverse_media?: ScreeningConfigBodySectionDto;
+    other?: ScreeningConfigBodySectionDto;
+};
 export type ScreeningConfigDto = {
     id?: string;
     name?: string;
     description?: string;
     rule_group?: string;
     datasets?: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     threshold?: number;
     forced_outcome?: OutcomeDto;
     trigger_rule?: NodeDto;
@@ -1014,7 +1028,6 @@ export type ScreeningMatchDto = {
     query_ids: string[];
     status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
     datasets: any;
-    unique_counterparty_identifier?: string;
     payload: ScreeningMatchPayloadDto;
     enriched: boolean;
     comments: {
@@ -1029,6 +1042,7 @@ export type ScreeningSuccessDto = {
     config: {
         name: string;
     };
+    unique_counterparty_identifier?: string;
     decision_id: string;
     status: "in_review" | "confirmed_hit";
     request: ScreeningRequestDto;
@@ -1042,6 +1056,7 @@ export type ScreeningErrorDto = {
     config: {
         name: string;
     };
+    unique_counterparty_identifier?: string;
     decision_id: string;
     status: "error";
     request?: ScreeningRequestDto;
@@ -1056,6 +1071,7 @@ export type ScreeningDto = ScreeningSuccessDto | {
     config: {
         name: string;
     };
+    unique_counterparty_identifier?: string;
     decision_id: string;
     status: "no_hit";
     request?: ScreeningRequestDto;
@@ -1076,6 +1092,30 @@ export type OpenSanctionsCatalogSection = {
 };
 export type OpenSanctionsCatalogDto = {
     sections: OpenSanctionsCatalogSection[];
+};
+export type ScreeningAvailableFiltersSection = {
+    self?: string;
+    datasets?: {
+        section?: string;
+        name: string;
+        title: string;
+    }[];
+    topics?: {
+        [key: string]: {
+            name: string;
+            title: string;
+        }[];
+    };
+    enabled?: boolean;
+};
+export type ScreeningAvailableFilters = {
+    provider: "opensanctions" | "lexisnexis";
+    sections: {
+        sanctions?: ScreeningAvailableFiltersSection;
+        peps?: ScreeningAvailableFiltersSection;
+        adverse_media?: ScreeningAvailableFiltersSection;
+        other?: ScreeningAvailableFiltersSection;
+    };
 };
 export type ScreeningFileDto = {
     id: string;
@@ -1133,6 +1173,7 @@ export type ContinuousScreeningConfigDto = {
     object_types: string[];
     algorithm: string;
     datasets: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     match_threshold: number;
     match_limit: number;
     enabled: boolean;
@@ -1154,6 +1195,7 @@ export type CreateContinuousScreeningConfigDto = {
     inbox_id: string;
     algorithm?: string;
     datasets: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     match_threshold: number;
     match_limit: number;
     object_types: string[];
@@ -1165,6 +1207,7 @@ export type UpdateContinuousScreeningConfigDto = {
     inbox_id?: string;
     algorithm?: string;
     datasets?: string[];
+    filters?: ScreeningConfigBodyFiltersDto;
     match_threshold?: number;
     match_limit?: number;
     enabled?: boolean;
@@ -1604,6 +1647,11 @@ export type OrganizationDto = {
     allowed_networks: string[];
     /** Whether Sentry session replay is enabled for this organization */
     sentry_replay_enabled?: boolean;
+    screening_providers?: {
+        transaction_monitoring?: "opensanctions" | "lexisnexis";
+        continuous_monitoring?: "opensanctions" | "lexisnexis";
+        manual_search?: "opensanctions" | "lexisnexis";
+    };
 };
 export type CreateOrganizationBodyDto = {
     name: string;
@@ -1613,6 +1661,11 @@ export type UpdateOrganizationBodyDto = {
     sanctions_threshold?: number;
     sanctions_limit?: number;
     auto_assign_queue_limit?: number;
+    screening_providers?: {
+        transaction_monitoring?: "opensanctions" | "lexisnexis";
+        continuous_monitoring?: "opensanctions" | "lexisnexis";
+        manual_search?: "opensanctions" | "lexisnexis";
+    };
 };
 export type OrganizationSubnetsDto = {
     /** List of CIDR subnets (x.x.x.x/yy) */
@@ -3904,6 +3957,19 @@ export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
         status: 200;
         data: OpenSanctionsCatalogDto;
     }>("/screenings/datasets", {
+        ...opts
+    }));
+}
+/**
+ * List available filter for the current provider
+ */
+export function listScreeningAvailableFilters(feature: "transaction_monitoring" | "continuous_monitoring" | "manual_search", opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningAvailableFilters;
+    }>(`/screenings/available-filters${QS.query(QS.explode({
+        feature
+    }))}`, {
         ...opts
     }));
 }

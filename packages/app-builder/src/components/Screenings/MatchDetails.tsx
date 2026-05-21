@@ -96,7 +96,11 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
       ) : null}
 
       {entity.schema === 'Person' && entity.properties?.['familyPerson']?.length ? (
-        <FamilyDetail familyMembers={entity.properties['familyPerson']} />
+        <FamilyDetail relation="familyPerson" familyMembers={entity.properties['familyPerson']} />
+      ) : null}
+
+      {entity.schema === 'Person' && entity.properties?.['familyRelative']?.length ? (
+        <FamilyDetail relation="familyRelative" familyMembers={entity.properties['familyRelative']} />
       ) : null}
     </div>
   );

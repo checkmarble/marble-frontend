@@ -32,5 +32,6 @@ export * from './Table/Table';
 export * from './Tabs/Tabs';
 export * from './Tag/Tag';
 export * from './TextArea/TextArea';
+export * from './ThresholdRange/ThresholdRange';
 export * from './Tooltip/Tooltip';
 export * from './utils';

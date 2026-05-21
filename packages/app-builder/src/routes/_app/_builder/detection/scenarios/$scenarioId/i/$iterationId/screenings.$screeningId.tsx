@@ -28,13 +28,9 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, ScreeningOutcome } from '@app-builder/models/outcome';
-import {
-  type BuilderOptionsResource,
-  buildDatabaseAccessorsFromDataModel,
-  buildPayloadAccessorsFromDataModel,
-} from '@app-builder/server-fns/scenarios';
+import { getBuilderOptionsFn } from '@app-builder/server-fns/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { isAccessible, isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
+import { isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
@@ -63,26 +59,18 @@ const screeningLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(screeningLoaderDataSchema)
   .handler(async function screeningLoader({ data, context }) {
-    const { customListsRepository, dataModelRepository, scenario, screening, continuousScreening, entitlements } =
-      context.authInfo;
+    const { entitlements, screening } = context.authInfo;
 
-    const [currentScenario, dataModel, customLists, { sections }, screeningConfigs] = await Promise.all([
-      scenario.getScenario({ scenarioId: data.scenarioId }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
+    const [{ sections }, builderOptions] = await Promise.all([
       screening.listDatasets(),
-      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
+      getBuilderOptionsFn({ data: { scenarioId: data.scenarioId } }),
     ]);
 
     return {
-      databaseAccessors: buildDatabaseAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
-      payloadAccessors: buildPayloadAccessorsFromDataModel(dataModel, currentScenario.triggerObjectType),
-      dataModel,
-      customLists,
+      screeningId: data.screeningId,
       sections,
       entitlements,
-      screeningConfigs,
-      screeningId: data.screeningId,
+      builderOptions,
     };
   });
 
@@ -209,16 +197,7 @@ function ScreeningDetail() {
   const { t } = useTranslation([...scenarioI18n, 'common', 'decisions']);
   const router = useRouter();
   const { isNew = false } = Route.useSearch();
-  const {
-    databaseAccessors,
-    payloadAccessors,
-    dataModel,
-    customLists,
-    sections,
-    entitlements,
-    screeningConfigs: continuousScreeningConfigs,
-    screeningId,
-  } = Route.useLoaderData();
+  const { entitlements, screeningId, builderOptions } = Route.useLoaderData();
   const editor = useEditorMode();
 
   const { currentScenario: scenario } = useDetectionScenarioData();
@@ -295,16 +274,6 @@ function ScreeningDetail() {
       preprocessing: screeningConfig?.preprocessing,
     } as EditScreeningForm,
   });
-
-  const options: BuilderOptionsResource = {
-    databaseAccessors,
-    payloadAccessors,
-    dataModel,
-    customLists,
-    triggerObjectType: scenario.triggerObjectType,
-    hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
-    screeningConfigs: continuousScreeningConfigs,
-  };
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const query = useStore(form.store, (state) => state.values.query);
@@ -460,7 +429,7 @@ function ScreeningDetail() {
                       <FieldAstFormula
                         type="screening"
                         scenarioId={scenario.id}
-                        options={options}
+                        options={builderOptions}
                         onBlur={field.handleBlur}
                         onChange={field.handleChange}
                         astNode={field.state.value}
@@ -534,7 +503,7 @@ function ScreeningDetail() {
                 <form.Field name="counterPartyId">
                   {(field) => (
                     <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
-                      <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
+                      <AstBuilder.Provider scenarioId={scenario.id} initialData={builderOptions} mode={editor}>
                         <FieldNode
                           value={field.state.value}
                           onChange={field.handleChange}
@@ -548,7 +517,7 @@ function ScreeningDetail() {
                 </form.Field>
               </div>
 
-              <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
+              <AstBuilder.Provider scenarioId={scenario.id} initialData={builderOptions} mode={editor}>
                 <div className="flex flex-col gap-2">
                   <span className="text-s font-semibold">{t('scenarios:sanction.match_settings.title')}</span>
                   <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
@@ -597,7 +566,7 @@ function ScreeningDetail() {
                               onBlur={field.handleBlur}
                               onChange={field.handleChange}
                               editor={editor}
-                              customLists={customLists}
+                              customLists={builderOptions.customLists}
                             />
                           )}
                         </form.Field>
@@ -878,14 +847,7 @@ function ScreeningDetail() {
               </AstBuilder.Provider>
 
               <form.Field name="datasets">
-                {(field) => (
-                  <FieldDataset
-                    defaultValue={field.state.value}
-                    onChange={field.handleChange}
-                    onBlur={field.handleBlur}
-                    sections={sections}
-                  />
-                )}
+                {(field) => <FieldDataset value={field.state.value} onChange={field.handleChange} />}
               </form.Field>
             </div>
           </form>

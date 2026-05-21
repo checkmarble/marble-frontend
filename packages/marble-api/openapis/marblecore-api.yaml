@@ -223,6 +223,8 @@ paths:
     $ref: ./marblecore-api/screenings.yml#/~1screenings
   /screenings/datasets:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1datasets
+  /screenings/available-filters:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1available-filters
   /screenings/{screeningId}/files:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1{screeningId}~1files
   /screenings/{screeningId}/files/{fileId}:

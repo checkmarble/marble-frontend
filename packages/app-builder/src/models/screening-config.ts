@@ -1,8 +1,9 @@
-import { type ScreeningConfigDto } from 'marble-api';
+import { ScreeningConfigBodyFiltersDto, type ScreeningConfigDto } from 'marble-api';
 import { mapValues } from 'radash';
 
 import { type AstNode, adaptAstNode, adaptNodeDto } from './astNode/ast-node';
 import { type Outcome } from './outcome';
+import { ScreeningCategory } from './screening';
 
 export type ScreeningConfig = Partial<{
   id: string;
@@ -34,7 +35,7 @@ export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
     name: dto.name,
     description: dto.description,
     ruleGroup: dto.rule_group,
-    datasets: dto.datasets,
+    datasets: dto.filters ? getDatasetFromFilters(dto.filters) : (dto?.datasets ?? []),
     threshold: dto.threshold,
     forcedOutcome: dto.forced_outcome,
     triggerRule: dto.trigger_rule ? adaptAstNode(dto.trigger_rule) : undefined,
@@ -54,12 +55,13 @@ export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
 }
 
 export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfigDto {
-  return {
+  const configDto = {
     id: config.id,
     name: config.name,
     description: config.description,
     rule_group: config.ruleGroup,
-    datasets: config.datasets,
+    datasets: [],
+    filters: createScreeningFilters(config.datasets ?? []),
     threshold: config.threshold,
     forced_outcome: config.forcedOutcome,
     trigger_rule: config.triggerRule ? adaptNodeDto(config.triggerRule) : undefined,
@@ -78,4 +80,68 @@ export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfi
         }
       : undefined,
   };
+  return configDto;
+}
+
+const ConvertSectionNameToDto: Record<ScreeningCategory, keyof ScreeningConfigBodyFiltersDto> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  'third-parties': 'other',
+  'adverse-media': 'adverse_media',
+};
+
+const DtoSectionToCategory: Record<keyof ScreeningConfigBodyFiltersDto, ScreeningCategory> = {
+  sanctions: 'sanctions',
+  peps: 'peps',
+  adverse_media: 'adverse-media',
+  other: 'third-parties',
+};
+
+export function createScreeningFilters(selection: string[]): ScreeningConfigBodyFiltersDto {
+  const filters: ScreeningConfigBodyFiltersDto = {
+    sanctions: { enabled: false },
+    peps: { enabled: false },
+    adverse_media: { enabled: false },
+    other: { enabled: false },
+  };
+  for (const item of selection) {
+    const chunks = item.split(':');
+    const sectionChuk = chunks[0] as ScreeningCategory;
+    const section = ConvertSectionNameToDto[sectionChuk];
+    if (!filters[section]) continue;
+    if (chunks.length === 1) filters[section].enabled = true;
+    if (chunks.length < 3) continue;
+    const type = chunks[1];
+    if (type !== 'dataset' && type !== 'topic') continue;
+    const name = chunks[2] as string;
+    if (!name) continue;
+    if (type === 'dataset') {
+      if (!filters[section].datasets) filters[section].datasets = [];
+      filters[section].datasets.push(name);
+      filters[section].enabled = true;
+      continue;
+    }
+    const value = chunks[3] as string;
+    if (!value) continue;
+    if (type === 'topic') {
+      if (!filters[section].topics) filters[section].topics = {};
+      if (!filters[section].topics[name]) filters[section].topics[name] = [];
+      filters[section].topics[name].push(value);
+      filters[section].enabled = true;
+    }
+  }
+  return filters;
+}
+
+export function getDatasetFromFilters(filters: ScreeningConfigBodyFiltersDto): string[] {
+  return Object.entries(filters).flatMap(([dtoSection, data]) => {
+    const section =
+      DtoSectionToCategory[dtoSection as keyof ScreeningConfigBodyFiltersDto] ?? (dtoSection as ScreeningCategory);
+    const sections = data.enabled ? [section] : [];
+    const datasets = data.datasets?.map((dataset) => `${section}:dataset:${dataset}`) ?? [];
+    const topics = Object.entries(data.topics ?? {}).flatMap(([topic, values]) => {
+      return values.map((value) => `${section}:topic:${topic}:${value}`);
+    });
+    return [...sections, ...datasets, ...topics];
+  });
 }

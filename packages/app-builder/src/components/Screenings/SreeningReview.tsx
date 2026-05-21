@@ -69,6 +69,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
         {screening.matches.map((screeningMatch) => (
           <MatchCard
             key={screeningMatch.id}
+            screening={screening}
             match={screeningMatch}
             unreviewable={hasError}
             defaultOpen={screening.matches.length === 1}

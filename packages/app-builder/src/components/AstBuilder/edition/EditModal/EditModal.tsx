@@ -3,6 +3,7 @@ import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-no
 import { isIpHasFlag } from '@app-builder/models/astNode/ip';
 import { isMonitoringListCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
+import { isRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { type ParseKeys } from 'i18next';
@@ -17,6 +18,7 @@ import { EditFuzzyMatchComparator } from './modals/FuzzyMatchComparator/FuzzyMat
 import { EditIpHasFlag } from './modals/IpHasFlag/IpHasFlag';
 import { EditIsMultipleOf } from './modals/IsMultipleOf/IsMultipleOf';
 import { EditMonitoringListCheck } from './modals/MonitoringListCheck/MonitoringListCheck';
+import { EditRecordRiskLevelCheck } from './modals/RecordRiskLevelCheck/RecordRiskLevelCheck';
 import { EditStringTemplate } from './modals/StringTemplate/StringTemplate';
 import { EditTimeAdd } from './modals/TimeAdd/TimeAdd';
 import { EditTimestampExtract } from './modals/TimestampExtract/TimestampExtract';
@@ -59,6 +61,7 @@ export function OperandEditModal({ node, ...props }: OperandEditModalProps) {
         .when(isFuzzyMatchFilterOptionsAstNode, () => <EditFuzzyMatchAggregation {...props} />)
         .when(isMonitoringListCheckAstNode, () => <EditMonitoringListCheck {...props} />)
         .when(isIpHasFlag, () => <EditIpHasFlag {...props} />)
+        .when(isRecordRiskLevelCheckAstNode, () => <EditRecordRiskLevelCheck {...props} />)
         .exhaustive()}
     </AstBuilderNodeSharpFactory.Provider>
   );
