@@ -24,7 +24,7 @@ export const CopyToClipboardChip = ({
       )}
       onClick={(e) => {
         e.stopPropagation();
-        onClick();
+        onClick(e);
       }}
       {...clipboardProps}
     >
