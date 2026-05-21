@@ -9,7 +9,9 @@ export function useGetCopyToClipboard() {
         value,
       },
     }),
-    onClick: async () => {
+    onClick: async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      e.preventDefault();
       try {
         await navigator.clipboard.writeText(value);
         toast.success(() => (

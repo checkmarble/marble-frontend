@@ -1,3 +1,4 @@
+import { getCanonicalSelectedKeys } from '@app-builder/components/ListAndTopicConfiguration/dataset-selection-provider-utils';
 import {
   ContinuousScreeningConfigDto,
   ContinuousScreeningDto,
@@ -19,7 +20,7 @@ import {
   OpenSanctionEntitySchema,
   ScreeningMatchPayload,
 } from './screening';
-import { createScreeningFilters } from './screening-config';
+import { createScreeningFilters, getDatasetFromFilters } from './screening-config';
 
 export type ContinuousScreeningConfig = {
   id: string;
@@ -36,6 +37,7 @@ export type ContinuousScreeningConfig = {
 };
 
 export function adaptContinuousScreeningConfig(config: ContinuousScreeningConfigDto): ContinuousScreeningConfig {
+  const datasets = config.filters ? getDatasetFromFilters(config.filters) : (config.datasets ?? []);
   return {
     id: config.id,
     stableId: config.stable_id,
@@ -44,7 +46,7 @@ export function adaptContinuousScreeningConfig(config: ContinuousScreeningConfig
     inboxId: config.inbox_id,
     objectTypes: config.object_types,
     algorithm: config.algorithm,
-    datasets: config.datasets,
+    datasets,
     matchThreshold: config.match_threshold,
     matchLimit: config.match_limit,
     enabled: config.enabled,
@@ -83,9 +85,7 @@ export type CreateContinuousScreeningConfig = {
 export function adaptCreateContinuousScreeningConfigDto(
   configuration: CreateContinuousScreeningConfig,
 ): CreateContinuousScreeningConfigDto {
-  const datasets = Object.entries(configuration.datasets)
-    .filter(([_, value]) => value)
-    .map(([key]) => key);
+  const datasets = getCanonicalSelectedKeys(configuration.datasets);
   return {
     name: configuration.name,
     description: configuration.description,

@@ -28,7 +28,10 @@ export function useCaseDecisionsQuery(caseId: string) {
       }>;
     },
     initialPageParam: null as string | null,
-    getNextPageParam: (lastPage, _pages) => {
+    getNextPageParam: (lastPage) => {
+      // TanStack Query types `lastPage` as TPage but actually passes `undefined`
+      // when `pages` is empty (no successful fetches yet) — guard against that.
+      if (!lastPage) return null;
       return lastPage.pagination.hasMore ? lastPage.pagination.cursorId : null;
     },
   });

@@ -1,18 +1,13 @@
 import { Callout } from '@app-builder/components/Callout';
 import {
   DatasetSelectionContent,
+  getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { useSignalEffect } from '@preact/signals-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-
-function getSelectedDatasets(datasets: Record<string, boolean>): string[] {
-  return Object.keys(datasets)
-    .filter((key) => datasets[key])
-    .sort();
-}
 
 function getDatasetsKey(datasets: string[]): string {
   return [...datasets].sort().join(',');
@@ -33,7 +28,7 @@ export const FieldDataset = ({ value, onChange }: { value?: string[]; onChange?:
   lastValueKeyRef.current = valueKey;
 
   useEffect(() => {
-    const selectedKey = getDatasetsKey(getSelectedDatasets(listSharp.value.datasets));
+    const selectedKey = getDatasetsKey(getCanonicalSelectedKeys(listSharp.value.datasets));
     if (selectedKey === valueKey) return;
 
     const nextDatasets = makeDatasetsMap(value ?? []);
@@ -48,7 +43,7 @@ export const FieldDataset = ({ value, onChange }: { value?: string[]; onChange?:
   }, [listSharp, value, valueKey]);
 
   useSignalEffect(() => {
-    const selectedDatasets = getSelectedDatasets(listSharp.value.datasets);
+    const selectedDatasets = getCanonicalSelectedKeys(listSharp.value.datasets);
     const selectedKey = getDatasetsKey(selectedDatasets);
 
     if (selectedKey === lastValueKeyRef.current) {

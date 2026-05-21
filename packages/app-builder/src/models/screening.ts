@@ -578,6 +578,11 @@ const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory | 'other'>([
   ['fin.fund', 'third-parties'],
   ['role.oligarch', 'third-parties'],
   ['rel', 'third-parties'],
+
+  // New camelCase / dotted-hierarchy schema roots. Descendants (e.g. `pep.primary.legislature`,
+  // `adverseMedia.enforcements`) are resolved via prefix walk in `getCategoryForTopic`.
+  ['pep', 'peps'],
+  ['adverseMedia', 'adverse-media'],
 ]);
 
 function openSanctionsTopicToCategory(topic: string): ScreeningCategory | 'other' {
@@ -603,17 +608,53 @@ export function lexisTopicToColor(topic: string): TagProps['color'] {
 }
 
 /**
+ * Attribute flags returned alongside topics that describe the entity (state),
+ * not its categorization. They have no associated category and must not render
+ * as a topic tag. Treated as known/expected, so no warning is emitted.
+ */
+const SCREENING_NON_TOPIC_FLAGS = new Set<string>(['isAlive']);
+
+/**
+ * Resolve a screening topic string to its `ScreeningCategory`. Tries an exact
+ * match first, then walks up the dotted hierarchy (`a.b.c` → `a.b` → `a`).
+ * Returns `undefined` for known non-topic flags and for fully unrecognized
+ * topics — callers should treat both as "no tag to render".
+ */
+export function getCategoryForTopic(topic: string): ScreeningCategory | 'other' | undefined {
+  if (SCREENING_NON_TOPIC_FLAGS.has(topic)) return undefined;
+
+  const exact = OS_SCREENING_TOPICS_MAP.get(topic);
+  if (exact) return exact;
+
+  const parts = topic.split('.');
+  for (let i = parts.length - 1; i > 0; i--) {
+    const prefix = parts.slice(0, i).join('.');
+    const category = OS_SCREENING_TOPICS_MAP.get(prefix);
+    if (category) return category;
+  }
+
+  return undefined;
+}
+
+/**
  * Maps ScreeningCategory to i18n key suffix.
  * ScreeningCategory uses hyphens, i18n keys use underscores.
  */
-export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
+export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory | 'other', string> = {
   sanctions: 'sanctions',
   peps: 'peps',
   'third-parties': 'third_parties',
   'adverse-media': 'adverse_media',
+  other: 'other',
 };
 
-export const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
+export const SCREENING_CATEGORIES: (ScreeningCategory | 'other')[] = [
+  'sanctions',
+  'peps',
+  'third-parties',
+  'adverse-media',
+  'other',
+];
 
 /**
  * Convert topic filters from the API back to categories for UI display.
@@ -621,18 +662,18 @@ export const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', '
  * - Category values directly: ['sanctions', 'peps']
  * - Individual topics (legacy): ['sanction', 'sanction.linked', 'role.pep']
  */
-export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] {
+export function topicsToCategories(topicFilters: string[]): (ScreeningCategory | 'other')[] {
   if (topicFilters.length === 0) return [];
 
-  const categories = new Set<ScreeningCategory>();
+  const categories = new Set<ScreeningCategory | 'other'>();
   for (const value of topicFilters) {
     // Check if it's already a category
     if (SCREENING_CATEGORIES.includes(value as ScreeningCategory)) {
       categories.add(value as ScreeningCategory);
     } else {
       // Legacy: look up individual topic in the map
-      const category = OS_SCREENING_TOPICS_MAP.get(value);
-      if (category && category !== 'other') {
+      const category = getCategoryForTopic(value);
+      if (category) {
         categories.add(category);
       }
     }
@@ -649,7 +690,7 @@ const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = 
 };
 
 export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other' | undefined => {
-  const categories = R.map(topics, (topic) => OS_SCREENING_TOPICS_MAP.get(topic) ?? 'other');
+  const categories = R.map(topics, (topic) => getCategoryForTopic(topic) ?? 'other');
   return R.firstBy(categories, (category) => SCREENING_CATEGORY_RANKING[category]);
 };
 

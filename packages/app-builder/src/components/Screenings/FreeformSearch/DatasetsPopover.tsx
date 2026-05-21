@@ -1,5 +1,6 @@
 import {
   DatasetSelectionContent,
+  getCanonicalSelectedKeys,
   getSectionLeafNames,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
@@ -46,20 +47,8 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
     setOpen(isOpen);
   };
 
-  const selectableLeafNames = useMemo(() => {
-    const data = listConfigQuery.data;
-    if (!data) return undefined;
-    return Object.values(data).flatMap((section) => (section ? getSectionLeafNames(section) : []));
-  }, [listConfigQuery.data]);
-
   const handleApply = () => {
-    if (!selectableLeafNames) {
-      setOpen(false);
-      return;
-    }
-    const map = listSharp.value.datasets;
-    const next = selectableLeafNames?.filter((name) => !!map[name]);
-    onApply(next);
+    onApply(getCanonicalSelectedKeys(listSharp.value.datasets));
     setOpen(false);
   };
 
@@ -70,17 +59,18 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
 
   const hasSelection = selectedDatasets.length > 0;
 
+  const selectionMap = useMemo(() => makeDatasetsMap(selectedDatasets), [selectedDatasets]);
+
   const sectionTags = useMemo(() => {
     const data = listConfigQuery.data;
     if (!data || !hasSelection) return [];
-    const selectedSet = new Set(selectedDatasets);
     return Object.entries(data).flatMap(([key, section]) => {
       if (!section) return [];
-      const count = getSectionLeafNames(section).filter((n) => selectedSet.has(n)).length;
+      const count = getSectionLeafNames(section).filter((n) => selectionMap[n]).length;
       if (count === 0) return [];
       return [{ key: key as ScreeningCategory, count }];
     });
-  }, [listConfigQuery.data, selectedDatasets, hasSelection]);
+  }, [listConfigQuery.data, selectionMap, hasSelection]);
 
   return (
     <div className="flex items-center gap-2 relative">

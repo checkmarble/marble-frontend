@@ -1,5 +1,6 @@
 import {
   type DataTypeKey,
+  isSemanticTypeField,
   type SemanticSubTypeField,
   SemanticTypeField,
   semanticTypesByDataType,
@@ -268,13 +269,13 @@ export function FieldDetailPanel({
                 value={field.semanticType}
                 placeholder={t('data:upload_data.field_semantic_placeholder')}
                 onChange={(value) => {
-                  const newSemanticType = value as SemanticTypeField;
-                  const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, newSemanticType);
+                  if (!isSemanticTypeField(value)) return;
+                  const subOpts = getSemanticSubOptions(field.dataType as DataTypeKey, value);
                   const isCurrentSubTypeValid = subOpts?.some((opt) => opt.value === field.semanticSubType) ?? false;
                   const firstSubType = subOpts?.[0]?.value as SemanticSubTypeField | undefined;
                   setHasBeenChangedManually(true);
                   update({
-                    semanticType: newSemanticType,
+                    semanticType: value,
                     semanticSubType: isCurrentSubTypeValid ? field.semanticSubType : firstSubType,
                   });
                 }}

@@ -138,7 +138,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               </form.Field>
             </div>
           </form>
-          <EntityTypePopover disabled={searchMutation.isPending} onApply={() => form.handleSubmit()} />
+          <EntityTypePopover disabled={searchMutation.isPending} onApply={form.handleSubmit} />
         </div>
         <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
           <DatasetsPopover

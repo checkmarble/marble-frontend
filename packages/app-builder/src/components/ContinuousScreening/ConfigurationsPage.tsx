@@ -12,6 +12,7 @@ import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
+import { makeDatasetsMap } from '../ListAndTopicConfiguration/dataset-selection-provider-utils';
 import { formatDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
 import { PanelRoot } from '../Panel/Panel';
@@ -55,6 +56,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
   };
 
   const handleRowClick = (baseConfig: ContinuousScreeningConfig) => {
+    const datasetsMap = makeDatasetsMap(baseConfig.datasets);
     const newConfig = {
       name: baseConfig.name,
       description: baseConfig.description ?? '',
@@ -63,7 +65,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
       matchLimit: baseConfig.matchLimit,
       inboxId: baseConfig.inboxId,
       inboxName: null,
-      datasets: Object.fromEntries(baseConfig.datasets.map((dataset) => [dataset, true])),
+      datasets: datasetsMap,
     };
     setEditingConfig(baseConfig);
     setDraft(newConfig);
