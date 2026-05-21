@@ -43,5 +43,16 @@ test('Authentication', async ({ page }) => {
 
   await expect(page.locator('nav').getByRole('link', { name: 'Detection' })).toBeVisible();
 
+  // First-login release-notes modal blocks every downstream spec by overlaying the page.
+  // Pre-seed the snooze localStorage key (see VersionUpdateModalContainer.tsx) so the modal
+  // never opens. Pre-seeding (vs awaiting the modal + clicking dismiss) avoids racing the
+  // async version check, which doesn't always settle before storageState is captured.
+  await page.evaluate(() => {
+    localStorage.setItem(
+      'version-snooze',
+      JSON.stringify({ expiry: Date.now() + 365 * 24 * 60 * 60 * 1000, version: 'e2e' }),
+    );
+  });
+
   await page.context().storageState({ path: authState, indexedDB: true });
 });

@@ -31,12 +31,13 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                 </div>
                 <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-surface-card">
                   <div className="flex flex-col gap-2">
-                    <div className="col-span-full flex w-full flex-wrap gap-1">
-                      <span>
-                        {properties.firstName?.slice(0, 3).join(' ')} {properties['secondName']?.[0]}
-                      </span>
-                      <span className="font-semibold">{properties.lastName?.slice(0, 3).join(' ') ?? 'unknown'}</span>
-                    </div>
+                    {properties.caption?.length > 0 ? (
+                      <div className="text-sm text-grey-70 font-medium">{properties.caption}</div>
+                    ) : (
+                      <div className="col-span-full flex w-full flex-wrap gap-1">
+                        <span>{properties.alias?.[0] ?? properties.name?.[0]}</span>
+                      </div>
+                    )}
                     <div className="text-sm text-grey-70 font-medium">{rel}</div>
                     <div className="col-span-full flex w-full flex-wrap gap-1">
                       {properties.topics?.map((topic: string) => (

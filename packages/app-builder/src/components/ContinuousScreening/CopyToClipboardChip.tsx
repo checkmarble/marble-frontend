@@ -1,7 +1,9 @@
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
+/**
+ * @deprecated use CopyToClipboardButton instead (with size = chip and rounded = true)
+ */
 export const CopyToClipboardChip = ({
   value,
   className,

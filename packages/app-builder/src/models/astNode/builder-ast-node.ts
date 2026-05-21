@@ -16,6 +16,7 @@ import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor
 import { type IpHasFlagAstNode, isIpHasFlag } from './ip';
 import { isMonitoringListCheckAstNode, type MonitoringListCheckAstNode } from './monitoring-list-check';
 import { type IsMultipleOfAstNode, isIsMultipleOf } from './multiple-of';
+import { isRecordRiskLevelCheckAstNode, type RecordRiskLevelCheckAstNode } from './risk';
 import {
   type FuzzyMatchComparatorAstNode,
   isFuzzyMatchComparator,
@@ -32,7 +33,8 @@ export type EditableAstNode =
   | StringTemplateAstNode
   | FuzzyMatchFilterOptionsAstNode
   | MonitoringListCheckAstNode
-  | IpHasFlagAstNode;
+  | IpHasFlagAstNode
+  | RecordRiskLevelCheckAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -48,7 +50,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isIsMultipleOf(node) ||
     isStringTemplateAstNode(node) ||
     isMonitoringListCheckAstNode(node) ||
-    isIpHasFlag(node)
+    isIpHasFlag(node) ||
+    isRecordRiskLevelCheckAstNode(node)
   );
 }
 

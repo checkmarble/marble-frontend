@@ -66,6 +66,8 @@ export function ScoringRuleEditPanel({
       hasValidLicense,
       hasContinuousScreening: false,
       screeningConfigs: [],
+      hasScoringRuleset: false,
+      scoringSettings: null,
     }),
     [dataModel, entityType, customLists, databaseAccessors, payloadAccessors, hasValidLicense],
   );

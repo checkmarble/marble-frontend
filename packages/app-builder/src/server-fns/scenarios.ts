@@ -19,6 +19,7 @@ import {
 } from '@app-builder/models/node-evaluation';
 import { type RuleSnoozeInformation } from '@app-builder/models/rule-snooze';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
+import { type ScoringSettings } from '@app-builder/models/scoring';
 import {
   IsDraftError,
   PreparationIsRequiredError,
@@ -180,6 +181,8 @@ export type BuilderOptionsResource = {
   hasValidLicense?: boolean;
   hasContinuousScreening?: boolean;
   screeningConfigs: ContinuousScreeningConfig[];
+  hasScoringRuleset: boolean;
+  scoringSettings: ScoringSettings | null;
 };
 
 export function buildPayloadAccessorsFromDataModel(dataModel: DataModel, triggerObjectType: string): PayloadAstNode[] {
@@ -313,15 +316,18 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ scenarioId: z.string() }))
   .handler(async ({ context, data }): Promise<BuilderOptionsResource> => {
-    const { scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements } =
+    const { scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements, userScoring } =
       context.authInfo;
 
-    const [currentScenario, customLists, dataModel, screeningConfigs] = await Promise.all([
-      scenario.getScenario({ scenarioId: data.scenarioId }),
-      customListsRepository.listCustomLists(),
-      dataModelRepository.getDataModel(),
-      isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
-    ]);
+    const [currentScenario, customLists, dataModel, screeningConfigs, scoringRulesets, scoringSettings] =
+      await Promise.all([
+        scenario.getScenario({ scenarioId: data.scenarioId }),
+        customListsRepository.listCustomLists(),
+        dataModelRepository.getDataModel(),
+        isContinuousScreeningAvailable(entitlements) ? continuousScreening.listConfigurations() : Promise.resolve([]),
+        userScoring.listRulesets(),
+        userScoring.getSettings(),
+      ]);
 
     return {
       triggerObjectType: currentScenario.triggerObjectType,
@@ -332,6 +338,8 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
       hasValidLicense: hasAnyEntitlement(entitlements),
       hasContinuousScreening: isContinuousScreeningAvailable(entitlements),
       screeningConfigs,
+      hasScoringRuleset: scoringRulesets.length > 0,
+      scoringSettings,
     };
   });
 

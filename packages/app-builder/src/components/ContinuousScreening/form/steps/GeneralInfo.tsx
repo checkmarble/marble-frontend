@@ -1,6 +1,6 @@
+import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { useTranslation } from 'react-i18next';
 import { Input, TextArea } from 'ui-design-system';
-import { CopyToClipboardChip } from '../../CopyToClipboardChip';
 import { ContinuousScreeningConfigurationStepper } from '../../context/CreationStepper';
 
 export const GeneralInfo = ({ stableId }: { stableId: string }) => {
@@ -14,7 +14,9 @@ export const GeneralInfo = ({ stableId }: { stableId: string }) => {
       <div className="grid grid-cols-[3fr_2fr] gap-v2-lg">
         <Input readOnly={mode === 'view'} value={name.value} onChange={(e) => (name.value = e.target.value)} />
         <div className="self-center">
-          <CopyToClipboardChip value={stableId} className="self-center text-xxs" />
+          <CopyToClipboardButton toCopy={stableId} size="chip" rounded>
+            <span className="text-xs">{stableId}</span>
+          </CopyToClipboardButton>
         </div>
       </div>
       <TextArea

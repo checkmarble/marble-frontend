@@ -1,4 +1,6 @@
 import {
+  type listScreeningAvailableFilters,
+  ScreeningAvailableFilters,
   type ScreeningDto,
   type ScreeningEntityDto,
   type ScreeningErrorDto,
@@ -29,6 +31,13 @@ export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEnti
 export type ScreeningStatus = 'in_review' | 'confirmed_hit' | 'no_hit' | 'error';
 export type ScreeningMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
 export type OpenSanctionEntitySchema = (typeof openSanctionEntitySchemas)[number];
+
+export type AvailableFeatures = Parameters<typeof listScreeningAvailableFilters>[0];
+export const availableFeatures = [
+  'transaction_monitoring',
+  'continuous_monitoring',
+  'manual_search',
+] as const satisfies Array<AvailableFeatures>;
 
 export type OpenSanctionEntity = {
   id: string;
@@ -93,6 +102,18 @@ export type FamilyPersonEntity = OpenSanctionEntity & {
   } & Record<string, string[]>;
 };
 
+export type FamilyRelativeEntity = OpenSanctionEntity & {
+  schema: 'Family';
+  properties: {
+    person?: PersonEntity[];
+    endData?: string[];
+    relative?: string[];
+    sourceUrl?: string[];
+    startDate?: string[];
+    relationship?: string[];
+  } & Record<string, string[]>;
+};
+
 export type AssociationEntity = OpenSanctionEntity & {
   schema: 'Associate';
   target: boolean;
@@ -143,6 +164,7 @@ export type ScreeningMatchPayload = {
   properties: {
     sanctions?: ScreeningSanctionEntity[];
     familyPerson?: FamilyPersonEntity[];
+    familyRelative?: FamilyRelativeEntity[];
     associations?: AssociationEntity[];
     membershipMember?: MembershipMemberEntity[];
   } & Record<string, string[]>;
@@ -169,7 +191,6 @@ export type ScreeningMatch = {
   status: ScreeningMatchStatus;
   enriched: boolean;
   // datasets: unknown[];
-  uniqueCounterpartyIdentifier?: string;
   payload: ScreeningMatchPayload;
   comments: {
     id: string;
@@ -187,7 +208,6 @@ export function adaptScreeningMatch(dto: ScreeningMatchDto): ScreeningMatch {
     status: dto.status,
     enriched: dto.enriched,
     payload: adaptScreeningMatchPayload(dto.payload),
-    uniqueCounterpartyIdentifier: dto.unique_counterparty_identifier,
     comments: R.map(dto.comments, (comment) => ({
       id: comment.id,
       authorId: comment.author_id,
@@ -234,6 +254,7 @@ type BaseScreening = {
   config: {
     name: string;
   };
+  uniqueCounterpartyIdentifier?: string;
   decisionId: string;
   partial: boolean;
   isManual: boolean;
@@ -263,6 +284,7 @@ export function adaptScreening(dto: ScreeningDto): Screening {
   const baseScreening: BaseScreening = {
     id: dto.id,
     decisionId: dto.decision_id,
+    uniqueCounterpartyIdentifier: dto.unique_counterparty_identifier,
     partial: dto.partial,
     isManual: dto.is_manual,
     matches: R.map(dto.matches, adaptScreeningMatch),
@@ -318,12 +340,12 @@ export function isScreeningReviewCompleted(screening: Screening): screening is S
 
 export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
-export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, TagProps['color']> = {
+export const SCREENING_CATEGORY_COLORS = {
   sanctions: 'red',
   peps: 'blue',
   'third-parties': 'grey',
   'adverse-media': 'yellow',
-};
+} satisfies Record<ScreeningCategory, TagProps['color']>;
 
 export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   // Sanctions
@@ -448,4 +470,8 @@ export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', num
 export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other' | undefined => {
   const categories = R.map(topics, (topic) => SCREENING_TOPICS_MAP.get(topic) ?? 'other');
   return R.firstBy(categories, (category) => SCREENING_CATEGORY_RANKING[category]);
+};
+
+export type ScreeningAvailableFiltersAdapted = ScreeningAvailableFilters & {
+  conditional_filters?: { key: string; name: string; topics: { name: string; key?: string; title: string }[] }[];
 };

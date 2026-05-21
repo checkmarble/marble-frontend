@@ -32,6 +32,7 @@ const collapsibleTitle = cva('group flex cursor-pointer items-center justify-bet
     size: {
       default: 'p-4 lg:p-6',
       small: 'p-4',
+      null: 'p-0',
     },
   },
   defaultVariants: {
@@ -41,25 +42,24 @@ const collapsibleTitle = cva('group flex cursor-pointer items-center justify-bet
 
 export type CollapsibleTriggerProps = VariantProps<typeof collapsibleTitle> & RadixCollapsibleProps;
 
-const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(function CollapsibleTitle(
-  { className, children, size, ...props },
-  ref,
-) {
-  return (
-    <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
-      <div className="focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-primary">
-        {children}
-        <button>
-          <Icon
-            icon="smallarrow-up"
-            aria-hidden
-            className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
-          />
-        </button>
-      </div>
-    </Trigger>
-  );
-});
+const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps & { hideIcon?: boolean }>(
+  function CollapsibleTitle({ className, children, size, hideIcon = false, ...props }, ref) {
+    return (
+      <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
+        <div className="focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-primary">
+          {children}
+          {!hideIcon && (
+            <Icon
+              icon="smallarrow-up"
+              aria-hidden
+              className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
+            />
+          )}
+        </div>
+      </Trigger>
+    );
+  },
+);
 
 const content =
   'border-grey-border border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';
