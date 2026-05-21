@@ -24,6 +24,7 @@ export const EntityTypePopover = ({ disabled, onApply }: { disabled: boolean; on
   const handleSelect = (schema: SearchableSchema) => {
     form.setFieldValue('entityType', schema);
     form.setFieldValue('fields', setAdditionalFields(SEARCH_ENTITIES[schema].fields, form.state.values.fields));
+    onApply();
     setOpen(false);
   };
 
