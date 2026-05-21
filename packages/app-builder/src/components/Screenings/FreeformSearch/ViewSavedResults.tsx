@@ -279,7 +279,7 @@ function InputTags({ input }: { input: SavedScreeningSearch['inputs'] }) {
 function InputTag({ label, values }: { label?: string; values: string | string[] }) {
   if (values.length === 0) return null;
   return (
-    <Tag color="white" appearance="monospace" className="gap-v2-xs flex-wrap h-fit justify-start">
+    <Tag color="white" appearance="monospace" className="gap-v2-xs">
       {label ? <span>{label}</span> : null}
       {Array.isArray(values) ? (
         <span>
