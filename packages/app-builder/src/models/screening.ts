@@ -506,7 +506,7 @@ export function isOpenSanctionTopic(topic: string): topic is OpenSanctionTopic {
   return (OS_TOPICS_KEYS as ReadonlyArray<string>).includes(topic);
 }
 
-const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory | 'other'>([
+const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   // Sanctions
   ['sanction', 'sanctions'],
   ['sanction.linked', 'sanctions'],
@@ -585,11 +585,11 @@ const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory | 'other'>([
   ['adverseMedia', 'adverse-media'],
 ]);
 
-function openSanctionsTopicToCategory(topic: string): ScreeningCategory | 'other' {
+function openSanctionsTopicToCategory(topic: string): ScreeningCategory {
   let category = OS_SCREENING_TOPICS_MAP.get(topic);
   if (!category) {
     console.warn(`No category found for topic: ${topic}`);
-    category = 'other';
+    category = 'third-parties';
   }
   return category;
 }
@@ -620,7 +620,7 @@ const SCREENING_NON_TOPIC_FLAGS = new Set<string>(['isAlive']);
  * Returns `undefined` for known non-topic flags and for fully unrecognized
  * topics — callers should treat both as "no tag to render".
  */
-export function getCategoryForTopic(topic: string): ScreeningCategory | 'other' | undefined {
+export function getCategoryForTopic(topic: string): ScreeningCategory | undefined {
   if (SCREENING_NON_TOPIC_FLAGS.has(topic)) return undefined;
 
   const exact = OS_SCREENING_TOPICS_MAP.get(topic);
@@ -636,25 +636,20 @@ export function getCategoryForTopic(topic: string): ScreeningCategory | 'other' 
   return undefined;
 }
 
+// export function screeningRiskTag
+
 /**
  * Maps ScreeningCategory to i18n key suffix.
  * ScreeningCategory uses hyphens, i18n keys use underscores.
  */
-export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory | 'other', string> = {
+export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> = {
   sanctions: 'sanctions',
   peps: 'peps',
   'third-parties': 'third_parties',
   'adverse-media': 'adverse_media',
-  other: 'other',
 };
 
-export const SCREENING_CATEGORIES: (ScreeningCategory | 'other')[] = [
-  'sanctions',
-  'peps',
-  'third-parties',
-  'adverse-media',
-  'other',
-];
+export const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
 
 /**
  * Convert topic filters from the API back to categories for UI display.
@@ -662,10 +657,10 @@ export const SCREENING_CATEGORIES: (ScreeningCategory | 'other')[] = [
  * - Category values directly: ['sanctions', 'peps']
  * - Individual topics (legacy): ['sanction', 'sanction.linked', 'role.pep']
  */
-export function topicsToCategories(topicFilters: string[]): (ScreeningCategory | 'other')[] {
+export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] {
   if (topicFilters.length === 0) return [];
 
-  const categories = new Set<ScreeningCategory | 'other'>();
+  const categories = new Set<ScreeningCategory>();
   for (const value of topicFilters) {
     // Check if it's already a category
     if (SCREENING_CATEGORIES.includes(value as ScreeningCategory)) {
