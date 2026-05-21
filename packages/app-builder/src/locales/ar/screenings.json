@@ -49,6 +49,7 @@
   "entity.property.modifiedAt": "تم التعديل في",
   "entity.property.motherName": "اسم الأم",
   "entity.property.name": "الاسم",
+  "entity.property.name.short": "الاسم",
   "entity.property.nameSuffix": "لاحقة الاسم",
   "entity.property.nationality": "الجنسية",
   "entity.property.nationality.short": "الجنسية",
