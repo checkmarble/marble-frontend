@@ -8,6 +8,7 @@ export * from './Combobox/Combobox';
 export * from './Command/Command';
 export * from './contexts/FormattingContext';
 export * from './contexts/I18nContext';
+export * from './ExpandableGroupTagLine/ExpandableGroupTagLine';
 export * from './FiltersBar/FiltersBar';
 export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';

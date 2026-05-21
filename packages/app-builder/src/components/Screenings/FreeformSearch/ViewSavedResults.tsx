@@ -6,10 +6,20 @@ import { useOrganizationDetails } from '@app-builder/services/organization/organ
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import { Avatar, Button, Collapsible, cn, Input, MenuCommand, Separator, Tag } from 'ui-design-system';
+import {
+  Avatar,
+  Button,
+  Collapsible,
+  cn,
+  ExpandableGroupTagLine,
+  Input,
+  MenuCommand,
+  Separator,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FreeformMatchCard } from './FreeformMatchCard';
 
@@ -213,16 +223,56 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
   );
 }
 
+const inputTagOverflowButtonClassName = 'cursor-pointer shrink-0';
+
 function InputTags({ input }: { input: SavedScreeningSearch['inputs'] }) {
   const { t } = useTranslation(['screenings']);
+
+  const tagItems = useMemo(() => {
+    const items: ReactNode[] = [];
+
+    if (input.entityType) {
+      items.push(
+        <InputTag
+          key="entity"
+          label={`${t('screenings:freeform_search.saved_results.entity')}:`}
+          values={input.entityType}
+        />,
+      );
+    }
+
+    const datasets = input.datasets.filter((d) => d.indexOf(':') <= 0);
+    if (datasets.length > 0) {
+      items.push(<InputTag key="datasets" values={datasets} />);
+    }
+
+    for (const [field, value] of Object.entries(input.fields)) {
+      if (value) {
+        items.push(
+          <InputTag key={field} label={`${t(`screenings:entity.property.${field}.short`)}:`} values={value} />,
+        );
+      }
+    }
+
+    return items;
+  }, [input, t]);
+
+  if (tagItems.length === 0) return null;
+
   return (
-    <div className="flex flex-wrap gap-v2-xs">
-      <InputTag label={t('screenings:freeform_search.saved_results.entity') + ':'} values={input.entityType} />
-      <InputTag values={input.datasets.filter((d) => d.indexOf(':') <= 0)} />
-      {Object.entries(input.fields).map(([field, value]) => (
-        <InputTag key={field} label={t(`screenings:entity.property.${field}.short`) + ':'} values={value} />
-      ))}
-    </div>
+    <ExpandableGroupTagLine
+      items={tagItems}
+      moreButton={(overflow, onExpand) => (
+        <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onExpand}>
+          +{overflow}
+        </Tag>
+      )}
+      lessButton={(onCollapse) => (
+        <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onCollapse}>
+          <Icon icon="minus" className="size-3" />
+        </Tag>
+      )}
+    />
   );
 }
 

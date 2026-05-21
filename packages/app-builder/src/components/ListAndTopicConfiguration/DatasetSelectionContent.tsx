@@ -3,7 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
@@ -13,6 +13,7 @@ import {
   type CheckedState,
   Collapsible,
   cn,
+  ExpandableGroupTagLine,
   Input,
   MenuCommand,
   Popover,
@@ -529,8 +530,6 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   );
 };
 
-const OVERFLOW_TAG_WIDTH_PX = 36;
-
 function formatItemName(name: string): string {
   const last = name.split('.').at(-1) ?? name;
   return capitalize(last);
@@ -751,8 +750,6 @@ const SingleItemToggle = ({
   );
 };
 
-const MENU_BUTTON_SIZE_PX = 24; // size-6 = 1.5rem = 24px
-
 const FilterGroupTags = ({
   items,
   sectionKey,
@@ -771,124 +768,43 @@ const FilterGroupTags = ({
   const selectedItems = ListAndTopicDatasetConfiguration.select((state) =>
     items.filter((i) => isTopicKeySelected(state.datasets, sectionKey, topicGroup, i.name)),
   );
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const ghostRef = useRef<HTMLDivElement>(null);
-  const [maxVisible, setMaxVisible] = useState(selectedItems.length);
 
   const selectedKey = selectedItems.map((i) => i.name).join(',');
 
-  useLayoutEffect(() => {
-    if (isExpanded) return;
-    const container = containerRef.current;
-    const ghost = ghostRef.current;
-    if (!container || !ghost) return;
-
-    const recalculate = () => {
-      const gap = parseFloat(getComputedStyle(ghost).gap) || 4;
-      // subtract menu button + one gap when in edit mode
-      const menuReserved = mode !== 'view' ? MENU_BUTTON_SIZE_PX + gap : 0;
-      const availableWidth = container.offsetWidth - menuReserved;
-      const tagEls = Array.from(ghost.children) as HTMLElement[];
-
-      let used = 0;
-      let count = 0;
-      for (let i = 0; i < tagEls.length; i++) {
-        const tw = tagEls[i]!.offsetWidth;
-        const gapBefore = i > 0 ? gap : 0;
-        const isLast = i === tagEls.length - 1;
-        // reserve space for overflow tag on all but the last slot
-        const needed = used + gapBefore + tw + (isLast ? 0 : gap + OVERFLOW_TAG_WIDTH_PX);
-        if (needed <= availableWidth) {
-          used += gapBefore + tw;
-          count++;
-        } else {
-          break;
-        }
-      }
-      setMaxVisible(Math.max(count, 1));
-    };
-
-    const observer = new ResizeObserver(recalculate);
-    observer.observe(container);
-    recalculate();
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isExpanded, selectedKey, mode]);
+  const tagItems = useMemo(
+    () =>
+      selectedItems.map((item) => {
+        const label = item.title ?? formatItemName(item.name);
+        return mode !== 'view' ? (
+          <RemovableTag
+            key={item.name}
+            label={label}
+            onRemove={() => {
+              listConfig.update((state) => {
+                setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
+              });
+              onAfterChange?.();
+            }}
+          />
+        ) : (
+          <ViewTag key={item.name} label={label} />
+        );
+      }),
+    [selectedItems, selectedKey, mode, listConfig, sectionKey, topicGroup, onAfterChange],
+  );
 
   const isAllSelected = selectedItems.length === items.length && items.length > 1;
-  const overflow = isExpanded || isAllSelected ? 0 : Math.max(0, selectedItems.length - maxVisible);
-  const visible = overflow > 0 ? selectedItems.slice(0, maxVisible) : selectedItems;
-  const useAnchoredMenu = mode !== 'view' && variant !== 'popover';
 
-  const tagsContent = (
-    <div
-      ref={containerRef}
-      className={cn('flex-1 min-w-0', variant === 'popover' && 'flex flex-col gap-v2-sm overflow-x-hidden')}
-    >
-      {/* Ghost: invisible clone of all selected tags used to measure their rendered widths */}
-      <div
-        ref={ghostRef}
-        className="flex items-center gap-v2-sm invisible absolute top-0 left-0 right-0 pointer-events-none"
-        aria-hidden="true"
-      >
-        {selectedItems.map((item) => {
-          const label = item.title ?? formatItemName(item.name);
-          return mode !== 'view' ? (
-            // Must match `RemovableTag` layout width, otherwise maxVisible/overflow calc is wrong.
-            <RemovableTag key={item.name} label={label} onRemove={() => undefined} />
-          ) : (
-            <Tag key={item.name} color="purple" size="small">
-              <span className="max-w-[20ch] truncate">{label}</span>
-            </Tag>
-          );
-        })}
-      </div>
-      <div className={cn('flex items-center gap-v2-sm', isExpanded && 'flex-wrap')}>
+  return (
+    <div className={cn('flex flex-1 min-w-0', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
+      <div className="flex min-w-0 items-center gap-v2-sm">
         {isAllSelected ? (
           <Tag color="purple" size="small">
             {t('continuousScreening:creation.datasetSelection.filter.all')}
           </Tag>
         ) : (
-          <>
-            {visible.map((item) =>
-              mode !== 'view' ? (
-                <RemovableTag
-                  key={item.name}
-                  label={item.title ?? formatItemName(item.name)}
-                  onRemove={() => {
-                    listConfig.update((state) => {
-                      setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
-                    });
-                    onAfterChange?.();
-                  }}
-                />
-              ) : (
-                <ViewTag key={item.name} label={item.title ?? formatItemName(item.name)} />
-              ),
-            )}
-            {overflow > 0 && (
-              <Tag
-                color="purple"
-                size="small"
-                className="cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors"
-                onClick={() => setIsExpanded(true)}
-              >
-                +{overflow}
-              </Tag>
-            )}
-            {isExpanded && (
-              <Tag
-                color="purple"
-                size="small"
-                className="cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors"
-                onClick={() => setIsExpanded(false)}
-              >
-                <Icon icon="minus" className="size-3" />
-              </Tag>
-            )}
-          </>
+          <ExpandableGroupTagLine items={tagItems} />
         )}
         {useAnchoredMenu && (
           <FilterGroupMenu
@@ -903,8 +819,8 @@ const FilterGroupTags = ({
           <button
             type="button"
             className={cn(
-              'flex items-center justify-center size-6 rounded-full hover:bg-grey-background-light shrink-0',
-              isMenuOpen && 'bg-purple-background-light border-purple-primary text-purple-primary',
+              'flex size-6 shrink-0 items-center justify-center rounded-full border border-grey-border hover:bg-grey-background-light',
+              isMenuOpen && 'border-purple-primary bg-purple-background-light text-purple-primary',
             )}
             onClick={() => setIsMenuOpen((open) => !open)}
             aria-expanded={isMenuOpen}
