@@ -39,35 +39,6 @@ function toIsoRange(value: DateRangeFilterValue): { fromDate?: string; toDate?: 
 const PAGE_SIZES = [25, 50, 100] as const;
 type PageSize = (typeof PAGE_SIZES)[number];
 
-function FilterPill({
-  icon,
-  label,
-  onClear,
-  clearAriaLabel,
-}: {
-  icon: 'calendar-month' | 'user';
-  label: string;
-  onClear: () => void;
-  clearAriaLabel: string;
-}) {
-  return (
-    <Tag color="purple" size="big" className="w-full justify-between">
-      <span className="inline-flex items-center gap-v2-xs truncate">
-        <Icon icon={icon} className="size-4 shrink-0" />
-        <span className="truncate font-medium">{label}</span>
-      </span>
-      <Button
-        role="button"
-        aria-label={clearAriaLabel}
-        className="hover:text-purple-hover shrink-0 cursor-pointer"
-        onClick={onClear}
-      >
-        <Icon icon="cross" className="size-4" />
-      </Button>
-    </Tag>
-  );
-}
-
 export const ViewSavedResults = () => {
   const { t } = useTranslation(['screenings', 'common']);
   const [open, setOpen] = useState(false);
@@ -204,13 +175,9 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
   const isYou = currentUser.actorIdentity.userId === search.ownerId;
 
   return (
-    <Collapsible.Container defaultOpen={false} className="bg-surface-card border-none">
-      <Collapsible.Title size="small" hideIcon>
-        <div className="flex flex-1 items-center gap-v2-sm">
-          <Icon
-            icon="smallarrow-up"
-            className={'size-5 group-radix-state-open:rotate-180 transition-transform duration-200'}
-          />
+    <Collapsible.Container defaultOpen={false} className="bg-grey-background-light">
+      <Collapsible.Title size="small" iconPosition="left" className="grid">
+        <div className="flex flex-1 flex-wrap items-center gap-v2-sm">
           <span className="text-grey-primary">{search.name}</span>
           {owner ? (
             <span className="inline-flex items-center gap-v2-xs">
@@ -223,7 +190,9 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
           ) : (
             <span className="text-s text-grey-secondary">{search.ownerId}</span>
           )}
-          <span className="text-grey-border">•</span>
+          <InputTags input={search.inputs} />
+        </div>
+        <div className="flex items-center gap-v2-xs">
           <span className="text-s text-grey-placeholder">
             {formatDateTimeWithoutPresets(search.createdAt, { language, dateStyle: 'short' })}
           </span>
@@ -241,6 +210,36 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
         </div>
       </Collapsible.Content>
     </Collapsible.Container>
+  );
+}
+
+function InputTags({ input }: { input: SavedScreeningSearch['inputs'] }) {
+  const { t } = useTranslation(['screenings']);
+  return (
+    <div className="flex flex-wrap gap-v2-xs">
+      <InputTag label={t('screenings:freeform_search.saved_results.entity') + ':'} values={input.entityType} />
+      <InputTag values={input.datasets.filter((d) => d.indexOf(':') <= 0)} />
+      {Object.entries(input.fields).map(([field, value]) => (
+        <InputTag key={field} label={t(`screenings:entity.property.${field}.short`) + ':'} values={value} />
+      ))}
+    </div>
+  );
+}
+
+function InputTag({ label, values }: { label?: string; values: string | string[] }) {
+  if (values.length === 0) return null;
+  return (
+    <Tag color="white" appearance="monospace" className="gap-v2-xs">
+      {label ? <span>{label}</span> : null}
+      {Array.isArray(values) ? (
+        <span>
+          <span>{values.slice(0, 2).join(', ')}</span>
+          {values.length > 2 ? <span>{` +${values.length - 2}`}</span> : null}
+        </span>
+      ) : (
+        <span>{values}</span>
+      )}
+    </Tag>
   );
 }
 
@@ -476,5 +475,35 @@ function ViewSavedResultsPaginationRow({
         </Button>
       </div>
     </div>
+  );
+}
+
+function FilterPill({
+  icon,
+  label,
+  onClear,
+  clearAriaLabel,
+}: {
+  icon: 'calendar-month' | 'user';
+  label: string;
+  onClear: () => void;
+  clearAriaLabel: string;
+}) {
+  return (
+    <Tag color="purple" size="big" className="w-full justify-between bg-purple-primary/20">
+      <span className="inline-flex items-center gap-v2-xs truncate">
+        <Icon icon={icon} className="size-4 shrink-0" />
+        <span className="truncate font-medium">{label}</span>
+      </span>
+      <Button
+        role="button"
+        appearance="link"
+        aria-label={clearAriaLabel}
+        className="hover:text-purple-hover shrink-0 cursor-pointer"
+        onClick={onClear}
+      >
+        <Icon icon="cross" className="size-4" />
+      </Button>
+    </Tag>
   );
 }

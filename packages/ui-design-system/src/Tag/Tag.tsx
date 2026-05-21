@@ -17,18 +17,27 @@ export const tagClassName = cva('inline-flex items-center justify-center border 
       orange: 'text-orange-primary border-orange-primary',
       red: 'text-red-primary border-red-primary',
       grey: 'text-grey-placeholder border-grey-border',
+      white: 'text-grey-primary border-grey-border',
+    },
+    appearance: {
+      default: null,
+      monospace: 'font-mono font-normal bg-grey-white rounded-sm',
     },
   },
   defaultVariants: {
     color: 'purple',
     size: 'small',
+    appearance: 'default',
   },
 });
 
 export type TagProps = ComponentProps<'span'> & VariantProps<typeof tagClassName>;
 
-export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag({ size, color, className, ...props }, ref) {
-  return <span ref={ref} className={cn(tagClassName({ size, color }), className)} {...props} />;
+export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
+  { size, color, appearance, className, ...props },
+  ref,
+) {
+  return <span ref={ref} className={cn(tagClassName({ size, color, appearance }), className)} {...props} />;
 });
 
 export default Tag;

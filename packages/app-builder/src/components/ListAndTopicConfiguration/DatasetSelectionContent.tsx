@@ -185,7 +185,7 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   return match(variant)
     .with('default', () => (
       <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
-        <Collapsible.Title hideIcon asChild size="null">
+        <Collapsible.Title iconPosition="hidden" asChild size="null">
           <div className="flex items-center justify-between">
             <div className="flex gap-v2-md items-center">
               <span onClick={(e) => e.stopPropagation()} className="inline-flex">
@@ -449,13 +449,9 @@ const ItemGroup = ({
       className="border-none px-v2-md py-v2-sm h-fit"
       defaultOpen={forceOpen}
     >
-      <Collapsible.Title hideIcon asChild size="null">
+      <Collapsible.Title iconPosition="left" asChild size="null">
         <div className="flex items-center gap-v2-md justify-between w-full">
           <span className="flex items-center gap-v2-md">
-            <Icon
-              icon="caret-down"
-              className="size-4 shrink-0 transition-transform duration-200 group-radix-state-open:rotate-180"
-            />
             <span className="text-s font-semibold">{formatDatasetTitle(title)}</span>
             <span className="text-xs text-grey-secondary">
               {selectedCount} / {names.length}
