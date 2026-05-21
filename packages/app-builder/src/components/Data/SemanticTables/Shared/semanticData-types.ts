@@ -209,7 +209,7 @@ export function getMockValue(
       .with('number', () => 12345.6789)
       .with('monetary_amount', () => 1234567890)
       .with('percentage', () => 0.34)
-      .exhaustive();
+      .otherwise(() => 'unknown value');
     return value;
   } catch {
     return 'unknown value';

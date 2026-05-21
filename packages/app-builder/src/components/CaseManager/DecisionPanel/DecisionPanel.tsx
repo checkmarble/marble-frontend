@@ -39,7 +39,9 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
 
   const [showHitOnly, setShowHitOnly] = useState(true);
   const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
-  const panelScreening = decision.screenings.find((s) => s.id === panelScreeningId) ?? null;
+  // Defensive default — see CaseAlerts.tsx for rationale.
+  const screenings = decision.screenings ?? [];
+  const panelScreening = screenings.find((s) => s.id === panelScreeningId) ?? null;
   const [objectLink, setObjectLink] = useState<{
     tableName: string;
     objectId: string;
@@ -86,7 +88,7 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
               />
             </div>
             {isPendingReview ? (
-              <ReviewDecisionModal decisionId={decision.id} screening={decision.screenings[0]}>
+              <ReviewDecisionModal decisionId={decision.id} screening={screenings[0]}>
                 <Button variant="primary" size="small">
                   {t('cases:decisions.approve_or_decline')}
                 </Button>
@@ -102,11 +104,11 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
       </div>
 
       {/* Screenings Rules */}
-      {decision.screenings.length > 0 ? (
+      {screenings.length > 0 ? (
         <div className="flex flex-col gap-2">
           <span className="text-m text-grey-primary font-medium">{t('cases:decisions.screenings_rules')}</span>
           <div className="flex flex-col gap-2">
-            {decision.screenings.map((screening) => (
+            {screenings.map((screening) => (
               <div key={screening.id} className="flex items-center gap-2">
                 <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
                 <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>

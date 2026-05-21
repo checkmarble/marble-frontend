@@ -154,51 +154,56 @@ export function adaptSemanticField(
   semanticType: SemanticTypeField | undefined,
   subType?: SemanticSubTypeField,
 ): FieldSemanticType | undefined {
-  return match(semanticType)
-    .with(undefined, () => undefined)
-    .with('text', () => undefined)
-    .with('name', () =>
-      match(subType as SemanticSubTypeFieldMap['name'] | undefined)
-        .with(undefined, () => undefined)
-        .with('first_name', () => 'first_name' as const)
-        .with('middle_name', () => 'middle_name' as const)
-        .with('last_name', () => 'last_name' as const)
-        .with('caption', () => 'name' as const)
-        .exhaustive(),
-    )
-    .with('enum', () => 'enum' as const)
-    .with('currency_code', () => 'currency' as const)
-    .with('foreign_key', () => 'foreign_key' as const)
-    .with('country', () => 'country' as const)
-    .with('address', () => 'address' as const)
-    .with('unique_id', () => 'id' as const)
-    .with('link', () =>
-      match(subType as SemanticSubTypeFieldMap['link'] | undefined)
-        .with(undefined, () => undefined)
-        .with('url', () => 'url' as const)
-        .with('email', () => 'email' as const)
-        .with('phone', () => 'phone_number' as const)
-        .exhaustive(),
-    )
-    .with('account_identifier', () =>
-      match(subType as SemanticSubTypeFieldMap['account_identifier'] | undefined)
-        .with(undefined, () => undefined)
-        .with('account_number', () => 'account_number' as const)
-        .with('iban', () => 'iban' as const)
-        .with('bic', () => 'bic' as const)
-        .exhaustive(),
-    )
-    .with('timestamp', () => undefined)
-    .with('date_of_birth', () => 'date_of_birth' as const)
-    .with('last_update', () => 'last_update' as const)
-    .with('creation_date', () => 'creation_date' as const)
-    .with('deletion_date', () => 'deletion_date' as const)
-    .with('initiation_date', () => 'initiation_date' as const)
-    .with('validation_date', () => 'validation_date' as const)
-    .with('number', () => undefined)
-    .with('monetary_amount', () => 'monetary_amount' as const)
-    .with('percentage', () => 'percentage' as const)
-    .exhaustive();
+  return (
+    match(semanticType)
+      .with(undefined, () => undefined)
+      .with('text', () => undefined)
+      .with('name', () =>
+        match(subType as SemanticSubTypeFieldMap['name'] | undefined)
+          .with(undefined, () => undefined)
+          .with('first_name', () => 'first_name' as const)
+          .with('middle_name', () => 'middle_name' as const)
+          .with('last_name', () => 'last_name' as const)
+          .with('caption', () => 'name' as const)
+          .exhaustive(),
+      )
+      .with('enum', () => 'enum' as const)
+      .with('currency_code', () => 'currency' as const)
+      .with('foreign_key', () => 'foreign_key' as const)
+      .with('country', () => 'country' as const)
+      .with('address', () => 'address' as const)
+      .with('unique_id', () => 'id' as const)
+      .with('link', () =>
+        match(subType as SemanticSubTypeFieldMap['link'] | undefined)
+          .with(undefined, () => undefined)
+          .with('url', () => 'url' as const)
+          .with('email', () => 'email' as const)
+          .with('phone', () => 'phone_number' as const)
+          .exhaustive(),
+      )
+      .with('account_identifier', () =>
+        match(subType as SemanticSubTypeFieldMap['account_identifier'] | undefined)
+          .with(undefined, () => undefined)
+          .with('account_number', () => 'account_number' as const)
+          .with('iban', () => 'iban' as const)
+          .with('bic', () => 'bic' as const)
+          .exhaustive(),
+      )
+      .with('timestamp', () => undefined)
+      .with('date_of_birth', () => 'date_of_birth' as const)
+      .with('last_update', () => 'last_update' as const)
+      .with('creation_date', () => 'creation_date' as const)
+      .with('deletion_date', () => 'deletion_date' as const)
+      .with('initiation_date', () => 'initiation_date' as const)
+      .with('validation_date', () => 'validation_date' as const)
+      .with('number', () => undefined)
+      .with('monetary_amount', () => 'monetary_amount' as const)
+      .with('percentage', () => 'percentage' as const)
+      // Defensive fallback: upstream casts (e.g. `value as SemanticTypeField` in
+      // FieldDetailPanel) can let a SemanticSubTypeField like "email" leak in here.
+      // Returning undefined drops the bad value on save instead of crashing.
+      .otherwise(() => undefined)
+  );
 }
 
 export function adaptCreateTableValue(values: SemanticTableFormValues): CreateTableValue {
