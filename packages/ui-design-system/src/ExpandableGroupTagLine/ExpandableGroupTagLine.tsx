@@ -1,4 +1,4 @@
-import { type ReactNode, useLayoutEffect, useRef, useState } from 'react';
+import { type MouseEvent, type ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { Tag } from '../Tag/Tag';
 import { cn } from '../utils';
@@ -9,11 +9,11 @@ const overflowButtonClassName = 'cursor-pointer shrink-0 hover:bg-purple-primary
 
 export interface ExpandableGroupTagLineProps {
   items: ReactNode[];
-  moreButton?: (overflow: number, onExpand: () => void) => ReactNode;
-  lessButton?: (onCollapse: () => void) => ReactNode;
+  moreButton?: (overflow: number, onExpand: (event: MouseEvent) => void) => ReactNode;
+  lessButton?: (onCollapse: (event: MouseEvent) => void) => ReactNode;
 }
 
-function DefaultMoreButton({ overflow, onExpand }: { overflow: number; onExpand: () => void }) {
+function DefaultMoreButton({ overflow, onExpand }: { overflow: number; onExpand: (event: MouseEvent) => void }) {
   return (
     <Tag color="purple" size="small" className={overflowButtonClassName} onClick={onExpand}>
       +{overflow}
@@ -21,7 +21,7 @@ function DefaultMoreButton({ overflow, onExpand }: { overflow: number; onExpand:
   );
 }
 
-function DefaultLessButton({ onCollapse }: { onCollapse: () => void }) {
+function DefaultLessButton({ onCollapse }: { onCollapse: (event: MouseEvent) => void }) {
   return (
     <Tag color="purple" size="small" className={overflowButtonClassName} onClick={onCollapse}>
       <Icon icon="minus" className="size-3" />
@@ -72,8 +72,14 @@ export function ExpandableGroupTagLine({ items, moreButton, lessButton }: Expand
   const overflow = isExpanded ? 0 : Math.max(0, items.length - maxVisible);
   const visibleItems = overflow > 0 ? items.slice(0, maxVisible) : items;
 
-  const handleExpand = () => setIsExpanded(true);
-  const handleCollapse = () => setIsExpanded(false);
+  const handleExpand = (event: MouseEvent) => {
+    event.stopPropagation();
+    setIsExpanded(true);
+  };
+  const handleCollapse = (event: MouseEvent) => {
+    event.stopPropagation();
+    setIsExpanded(false);
+  };
 
   return (
     <div ref={containerRef} className="relative flex-1 min-w-0">
