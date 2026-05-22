@@ -10,7 +10,6 @@ import { Tag } from 'ui-design-system';
 
 export const TopicTag = ({ topic, className }: { topic: string; className?: string }) => {
   const { t } = useTranslation(['screeningTopics']);
-  console.log(topic);
 
   if (topic.startsWith('filter.')) {
     return null;

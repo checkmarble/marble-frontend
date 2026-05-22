@@ -37,8 +37,8 @@ interface TopicsDisplayProps {
 }
 
 export function getFilteredAndSortedTopics(topics: string[]): string[] {
-  const hasPepPrimary = topics.includes('pep.primary');
-  return topics.filter((topic) => !(hasPepPrimary && topic === 'pep.secondary')).sort(sortTopics);
+  const hasPepPrimary = topics.includes('pep.kind.primary');
+  return topics.filter((topic) => !(hasPepPrimary && topic === 'pep.kind.secondary')).sort(sortTopics);
 }
 
 export function TopicsDisplay({ entity, containerClassName }: TopicsDisplayProps) {

@@ -1,6 +1,7 @@
 import { AssociationEntity } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { TopicTag } from '../TopicTag';
 
 export const Associations = ({ associations }: { associations: AssociationEntity[] }) => {
@@ -39,11 +40,13 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                       </div>
                     )}
                     <div className="text-sm text-grey-70 font-medium">{rel}</div>
-                    <div className="col-span-full flex w-full flex-wrap gap-1">
-                      {properties.topics?.map((topic: string) => (
-                        <TopicTag key={`${id}-${topic}`} topic={topic} />
-                      ))}
-                    </div>
+                    {properties.topics?.length ? (
+                      <div className="col-span-full flex w-full flex-wrap gap-1">
+                        {getFilteredAndSortedTopics(properties.topics).map((topic: string) => (
+                          <TopicTag key={`${id}-${topic}`} topic={topic} />
+                        ))}
+                      </div>
+                    ) : null}
                     {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (
                       <div className="col-span-full flex w-full flex-col gap-1">
                         <div className="font-semibold">{t('screenings:match.family.source.label')}</div>

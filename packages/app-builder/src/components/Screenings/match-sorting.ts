@@ -6,12 +6,20 @@ const topicCategoryPriority: Record<string, number> = {
   adverse_media: 2,
 };
 
+function getDisplayedTopics(topics: string[]): string[] {
+  const hasPepPrimary = topics.includes('pep.primary');
+  return topics.filter((topic) => !(hasPepPrimary && topic === 'pep.secondary'));
+}
+
 function getMatchTopicPriority(entity: ScreeningMatchPayload): number {
   const topics = entity.properties?.['topics'] ?? [];
   if (topics.length === 0) return 999;
 
+  const displayedTopics = getDisplayedTopics(topics);
+  if (displayedTopics.length === 0) return 999;
+
   const minPriority = Math.min(
-    ...topics.map((topic) => {
+    ...displayedTopics.map((topic) => {
       const category = topic.split('.')[0];
       return topicCategoryPriority[category] ?? 999;
     }),
