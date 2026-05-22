@@ -1,7 +1,7 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { Screening, ScreeningMatch } from '@app-builder/models/screening';
-import { type ScreeningMatchPayload, type ScreeningStatus } from '@app-builder/models/screening';
+import { type ScreeningStatus } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { useInvalidateCaseDecisions } from '@app-builder/queries/cases/list-decisions';
 import { useBulkReviewMatchesMutation } from '@app-builder/queries/screening/bulk-review-matches';
@@ -25,6 +25,7 @@ import { Icon } from 'ui-icons';
 import { PanelContainer, PanelContent, PanelRoot } from '../../Panel/Panel';
 import { Spinner } from '../../Spinner';
 import { MatchCard } from '../MatchCard';
+import { sortScreeningMatchesByTopics } from '../match-sorting';
 import { ScreeningStatusTag } from '../ScreeningStatusTag';
 import { screeningsI18n } from '../screenings-i18n';
 import { PanelSearchDetails } from './PanelSearchDetails';
@@ -362,7 +363,7 @@ function PanelMatchList({
       ) : null}
 
       <div className="flex flex-col gap-2 mt-2">
-        {matches.map((screeningMatch) => {
+        {matches.sort(sortScreeningMatchesByTopics).map((screeningMatch) => {
           const isPending = screeningMatch.status === 'pending';
           const showCheckbox = showSelectControls && isPending;
 

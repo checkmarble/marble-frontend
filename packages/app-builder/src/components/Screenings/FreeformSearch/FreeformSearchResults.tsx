@@ -1,9 +1,9 @@
-import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 
 import { Callout } from '../../Callout';
+import { sortPayloadsByTopics } from '../match-sorting';
 import { screeningsI18n } from '../screenings-i18n';
 import { FreeformMatchCard } from './FreeformMatchCard';
 import { DEFAULT_LIMIT } from './LimitPopover';
@@ -54,7 +54,7 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
           )}
         </div>
 
-        {data.map((entity) => (
+        {data.sort(sortPayloadsByTopics).map((entity) => (
           <FreeformMatchCard key={entity.id} entity={entity} defaultOpen={data.length === 1} searchTerm={searchTerm} />
         ))}
       </div>
