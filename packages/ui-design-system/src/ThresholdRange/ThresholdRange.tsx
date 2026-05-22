@@ -1,4 +1,5 @@
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, PointerEvent } from 'react';
+import { useRef, useState } from 'react';
 import { cn } from 'ui-design-system';
 
 export type ThresholdRangeStep = {
@@ -82,6 +83,9 @@ export function ThresholdRange({
   disabled = false,
   className,
 }: ThresholdRangeProps) {
+  const railRef = useRef<HTMLDivElement>(null);
+  const hasDraggedRef = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
   const steps = getSortedSteps(values);
 
   if (steps.length === 0) {
@@ -123,6 +127,39 @@ export function ThresholdRange({
     });
 
     selectStepAtIndex(nearestIndex);
+  };
+
+  const updateFromPointer = (clientX: number) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    selectNearestStep(clientX, rail);
+  };
+
+  const endThumbDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const rail = railRef.current;
+    if (rail?.hasPointerCapture(event.pointerId)) {
+      rail.releasePointerCapture(event.pointerId);
+    }
+    setIsDragging(false);
+  };
+
+  const handleActiveThumbPointerDown = (event: PointerEvent<HTMLButtonElement>) => {
+    if (disabled) return;
+    const rail = railRef.current;
+    if (!rail) return;
+    event.preventDefault();
+    event.stopPropagation();
+    hasDraggedRef.current = false;
+    rail.setPointerCapture(event.pointerId);
+    setIsDragging(true);
+    updateFromPointer(event.clientX);
+  };
+
+  const handleRailPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const rail = railRef.current;
+    if (!rail?.hasPointerCapture(event.pointerId)) return;
+    hasDraggedRef.current = true;
+    updateFromPointer(event.clientX);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -180,16 +217,27 @@ export function ThresholdRange({
           className={cn(
             'rounded-lg px-2 pb-2 pt-3 focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-purple-primary',
             disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+            isDragging && 'select-none',
           )}
           onKeyDown={handleKeyDown}
           onBlur={onBlur}
         >
           <div className="relative px-3 pb-2">
             <div
+              ref={railRef}
               data-testid="threshold-range-rail"
               className="bg-grey-border relative w-full rounded-full"
               style={{ height: `${RAIL_HEIGHT}px` }}
-              onClick={(event) => selectNearestStep(event.clientX, event.currentTarget)}
+              onClick={(event) => {
+                if (hasDraggedRef.current) {
+                  hasDraggedRef.current = false;
+                  return;
+                }
+                selectNearestStep(event.clientX, event.currentTarget);
+              }}
+              onPointerMove={handleRailPointerMove}
+              onPointerUp={endThumbDrag}
+              onPointerCancel={endThumbDrag}
             >
               {segments.map((segment) => {
                 const start = (segment.startValue / normalizedMax) * 100;
@@ -229,9 +277,16 @@ export function ThresholdRange({
                     tabIndex={-1}
                     aria-label={`${title} ${step.value.toString()}`}
                     disabled={disabled}
+                    data-testid={isActive ? 'threshold-range-thumb-active' : undefined}
                     className={cn(
-                      'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-0 p-0',
-                      disabled ? 'cursor-not-allowed' : 'cursor-pointer',
+                      'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-0 p-0 touch-none',
+                      disabled
+                        ? 'cursor-not-allowed'
+                        : isActive
+                          ? isDragging
+                            ? 'cursor-grabbing'
+                            : 'cursor-grab'
+                          : 'cursor-pointer',
                     )}
                     style={{
                       left: `${position}%`,
@@ -241,8 +296,13 @@ export function ThresholdRange({
                     }}
                     onClick={(event) => {
                       event.stopPropagation();
+                      if (hasDraggedRef.current) {
+                        hasDraggedRef.current = false;
+                        return;
+                      }
                       selectStepAtIndex(index);
                     }}
+                    onPointerDown={isActive ? handleActiveThumbPointerDown : undefined}
                   />
                 );
               })}
