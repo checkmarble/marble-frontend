@@ -11,21 +11,10 @@ import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
+import { setAdditionalFields } from '../set-additional-fields';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
 import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
-
-export function setAdditionalFields(
-  fields: string[],
-  prev: FreeformSearchInput['fields'],
-): FreeformSearchInput['fields'] {
-  const result: Record<string, string> = {};
-  for (const field of fields) {
-    const prevValue = prev as Record<string, string | undefined>;
-    result[field] = prevValue[field] ?? '';
-  }
-  return result as FreeformSearchInput['fields'];
-}
 
 interface FreeformSearchFormProps {
   onSearchComplete: (results: ScreeningMatchPayload[], searchInputs: FreeformSearchInput) => void;
@@ -36,7 +25,7 @@ function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInp
   return useForm({
     defaultValues: {
       entityType: 'Thing',
-      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {} as FreeformSearchInput['fields']),
+      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {}) as FreeformSearchInput['fields'],
       limit: DEFAULT_LIMIT,
       threshold: org.sanctionThreshold ?? 70,
     } as FreeformSearchInput,
@@ -82,6 +71,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
   const threshold = useStore(form.store, (state) => state.values.threshold);
   const entityType = useStore(form.store, (state) => state.values.entityType);
+  const fields = useStore(form.store, (state) => state.values.fields);
   const limit = useStore(form.store, (state) => state.values.limit);
   const originalLimit = useRef(limit ?? DEFAULT_LIMIT);
 
@@ -135,7 +125,24 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               </form.Field>
             </div>
           </form>
-          <EntityTypePopover disabled={searchMutation.isPending} />
+          <EntityTypePopover
+            disabled={searchMutation.isPending}
+            entityType={entityType}
+            fields={fields as Record<string, string | undefined>}
+            onEntityTypeChange={(schema) => {
+              form.setFieldValue('entityType', schema);
+              form.setFieldValue(
+                'fields',
+                setAdditionalFields(
+                  SEARCH_ENTITIES[schema].fields,
+                  fields as Record<string, string | undefined>,
+                ) as FreeformSearchInput['fields'],
+              );
+            }}
+            onFieldChange={(fieldName, value) => {
+              form.setFieldValue(`fields.${fieldName}` as 'fields.name', value);
+            }}
+          />
         </div>
         <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
           <ScreeningThreshold

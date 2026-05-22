@@ -2,54 +2,45 @@ import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/s
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
-import { useStore } from '@tanstack/react-form';
 import clsx from 'clsx';
 import CountryFlag from 'country-flag-emojis';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
-import { setAdditionalFields, useFormManuallSearch } from './FreeformSearchForm';
 
-export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
+export interface EntityTypePopoverProps {
+  disabled: boolean;
+  entityType: SearchableSchema | undefined;
+  fields: Record<string, string | undefined>;
+  onEntityTypeChange: (entityType: SearchableSchema) => void;
+  onFieldChange: (fieldName: string, value: string) => void;
+}
+
+export function EntityTypePopover({
+  disabled,
+  entityType,
+  fields,
+  onEntityTypeChange,
+  onFieldChange,
+}: EntityTypePopoverProps) {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
-  const form = useFormManuallSearch();
-  const value = useStore(form.store, (state) => state.values.entityType);
-  const fields = useStore(form.store, (state) => state.values.fields);
+  const [additionalFieldsOpenRequest, setAdditionalFieldsOpenRequest] = useState(0);
   const { ref: tagRef, dimensions } = useResizeObserver<HTMLDivElement>({ observeHeight: false });
 
   const handleSelect = (schema: SearchableSchema) => {
-    form.setFieldValue('entityType', schema);
-    form.setFieldValue('fields', setAdditionalFields(SEARCH_ENTITIES[schema].fields, form.state.values.fields));
+    onEntityTypeChange(schema);
     setOpen(false);
+    if (schema !== 'Thing') {
+      setAdditionalFieldsOpenRequest((count) => count + 1);
+    }
   };
 
-  const hasSelection = value && value !== 'Thing';
+  const hasSelection = entityType && entityType !== 'Thing';
   const schemas = R.keys(SEARCH_ENTITIES);
-
-  const filterTags = hasSelection
-    ? SEARCH_ENTITIES[value].fields
-        .filter((f) => f !== 'name')
-        .map((fieldName) => {
-          const fieldValue = (fields as Record<string, string | undefined>)[fieldName];
-          if (!fieldValue) return null;
-          const label = getFilterTagLabel(fieldName, fieldValue, t);
-          if (!label) return null;
-          return (
-            <Tag
-              key={fieldName}
-              color={disabled ? 'grey' : 'purple'}
-              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span className="font-medium">{label}</span>
-            </Tag>
-          );
-        })
-        .filter(Boolean)
-    : null;
 
   return (
     <div className="flex items-center gap-2 relative">
@@ -62,11 +53,10 @@ export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
             >
               <span className="font-medium">
                 {hasSelection
-                  ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
+                  ? t(`screenings:refine_modal.schema.${entityType.toLowerCase()}`)
                   : t('screenings:freeform_search.all_entities')}
               </span>
             </Tag>
-            {filterTags}
           </div>
         </Popover.Trigger>
         <Popover.Portal>
@@ -80,7 +70,7 @@ export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
               {schemas.map((schema) => {
                 const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
                 const fieldForSchema = SEARCH_ENTITIES[schema].fields;
-                const isSelected = value === schema;
+                const isSelected = entityType === schema;
 
                 return (
                   <button
@@ -107,10 +97,19 @@ export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
-      {hasSelection && <AdditionalEntityTypePopover offset={dimensions.width} disabled={disabled} />}
+      {hasSelection && (
+        <AdditionalEntityTypePopover
+          offset={dimensions.width}
+          disabled={disabled}
+          entityType={entityType}
+          fields={fields}
+          openRequest={additionalFieldsOpenRequest}
+          onFieldChange={onFieldChange}
+        />
+      )}
     </div>
   );
-};
+}
 
 function getDraftFieldsFromCommitted(
   entityTypeFields: string[],
@@ -124,18 +123,62 @@ function validateBirthDate(value: string): boolean {
   return /^\d{4}(-\d{2}-\d{2})?$/.test(value);
 }
 
-function AdditionalEntityTypePopover({ offset, disabled }: { offset: number; disabled: boolean }) {
+interface AdditionalEntityTypePopoverProps {
+  offset: number;
+  disabled: boolean;
+  entityType: SearchableSchema;
+  fields: Record<string, string | undefined>;
+  openRequest: number;
+  onFieldChange: (fieldName: string, value: string) => void;
+}
+
+function AdditionalEntityTypePopover({
+  offset,
+  disabled,
+  entityType,
+  fields: committedFields,
+  openRequest,
+  onFieldChange,
+}: AdditionalEntityTypePopoverProps) {
   const [open, setOpen] = useState(false);
-  const form = useFormManuallSearch();
-  const entityType = useStore(form.store, (state) => state.values.entityType);
-  const committedFields = useStore(form.store, (state) => state.values.fields) as Record<string, string | undefined>;
-  const entityTypeFields = entityType ? SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name') : [];
+  const entityTypeFields = SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name');
   const { t } = useTranslation(screeningsI18n);
 
   const [draftFields, setDraftFields] = useState<Record<string, string>>(() =>
     getDraftFieldsFromCommitted(entityTypeFields, committedFields),
   );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const lastProcessedOpenRequest = useRef(0);
+  const hasSelection = entityType && entityType !== 'Thing';
+
+  const filterTags = hasSelection
+    ? SEARCH_ENTITIES[entityType].fields
+        .filter((f) => f !== 'name')
+        .map((fieldName) => {
+          const fieldValue = committedFields[fieldName];
+          if (!fieldValue) return null;
+          const label = getFilterTagLabel(fieldName, fieldValue, t);
+          if (!label) return null;
+          return (
+            <Tag
+              key={fieldName}
+              color={disabled ? 'grey' : 'purple'}
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="font-medium">{label}</span>
+            </Tag>
+          );
+        })
+        .filter(Boolean)
+    : null;
+
+  useEffect(() => {
+    if (openRequest <= lastProcessedOpenRequest.current || disabled) return;
+    lastProcessedOpenRequest.current = openRequest;
+    setDraftFields(getDraftFieldsFromCommitted(entityTypeFields, committedFields));
+    setFieldErrors({});
+    setOpen(true);
+  }, [openRequest, disabled]);
 
   const handleOpenChange = useCallback(
     (isOpen: boolean) => {
@@ -171,7 +214,7 @@ function AdditionalEntityTypePopover({ offset, disabled }: { offset: number; dis
       return;
     }
     for (const fieldName of entityTypeFields) {
-      form.setFieldValue(`fields.${fieldName}`, draftFields[fieldName] ?? '');
+      onFieldChange(fieldName, draftFields[fieldName] ?? '');
     }
     setOpen(false);
   };
@@ -183,13 +226,16 @@ function AdditionalEntityTypePopover({ offset, disabled }: { offset: number; dis
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild disabled={disabled}>
-        <Icon
-          icon="plus"
-          className={cn(
-            'size-4 text-purple-primary cursor-pointer ',
-            disabled && 'text-grey-placeholder opacity-50 cursor-not-allowed ',
-          )}
-        />
+        <div className="flex items-center gap-2 flex-wrap">
+          {filterTags}
+          <Icon
+            icon="plus"
+            className={cn(
+              'size-4 text-purple-primary cursor-pointer ',
+              disabled && 'text-grey-placeholder opacity-50 cursor-not-allowed ',
+            )}
+          />
+        </div>
       </Popover.Trigger>
       <Popover.Content
         className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
