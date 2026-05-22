@@ -99,11 +99,18 @@ export function setTopicKey(
   datasets[buildTopicKey(sectionKey, topicGroup, value)] = selected;
 }
 
-export function clearSectionSelections(datasets: Record<string, boolean>, sectionKey: ScreeningCategory): void {
+export function clearSectionSelections(
+  datasets: Record<string, boolean>,
+  sectionKey: ScreeningCategory,
+  leafNames?: string[],
+): void {
   datasets[sectionKey] = false;
   for (const key of Object.keys(datasets)) {
     if (key.startsWith(`${sectionKey}:`)) {
       datasets[key] = false;
     }
+  }
+  for (const name of leafNames ?? []) {
+    datasets[name] = false;
   }
 }
