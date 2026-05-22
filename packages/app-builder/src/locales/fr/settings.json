@@ -106,6 +106,7 @@
   "scenario_sanction_limit_placeholder": "5",
   "scenario_sanction_settings": "Paramètres de filtrage",
   "scenario_sanction_threshold": "Score de similarité minimum (%)",
+  "scenario_sanction_threshold_actual": "Valeur actuelle",
   "scenario_sanction_threshold_placeholder": "80",
   "scenarios": "Scénarios",
   "scenarios.filters.new_filter.create.button.label": "Ajouter un filtre",

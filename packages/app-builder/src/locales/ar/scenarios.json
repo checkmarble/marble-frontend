@@ -441,6 +441,7 @@
   "sanction.lists.callout": "حدد القوائم ذات الصلة بعملك",
   "sanction.lists.nb_selected_one": "تم اختيار {{count}}",
   "sanction.lists.nb_selected_other": "تم اختيار {{count}}",
+  "sanction.lists.no_lists_selected": "لم يتم اختيار أي قائمة",
   "sanction.lists.other": "آخر",
   "sanction.lists.peps": "الأشخاص المكشوفون سياسيًا (PEP)",
   "sanction.lists.sanctions": "العقوبات",

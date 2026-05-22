@@ -66,22 +66,19 @@ export const LimitPopover = ({ disabled, originalValue, onApply }: LimitPopoverP
           </div>
           {/* Actions */}
           <div className="border-grey-border flex gap-2 border-t p-4">
-            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-              {([canSubmit, isSubmitting]) => (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="default"
-                  className="flex-1 justify-center"
-                  onClick={() => {
-                    form.setFieldValue('limit', originalValue);
-                    setOpen(false);
-                  }}
-                >
-                  {t('common:cancel')}
-                </Button>
-              )}
-            </form.Subscribe>
+            <Button
+              type="button"
+              variant="secondary"
+              size="default"
+              className="flex-1 justify-center"
+              onClick={() => {
+                form.setFieldValue('limit', originalValue);
+                setOpen(false);
+              }}
+            >
+              {t('common:cancel')}
+            </Button>
+
             <Button
               type="button"
               variant="primary"

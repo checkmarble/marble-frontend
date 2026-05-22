@@ -1,12 +1,15 @@
+import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useForm, useStore } from '@tanstack/react-form';
 import { createContext, type FunctionComponent, useContext, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, ThresholdRange } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
@@ -29,12 +32,13 @@ interface FreeformSearchFormProps {
 }
 
 function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInput) => void | Promise<void> }) {
+  const { org } = useOrganizationDetails();
   return useForm({
     defaultValues: {
       entityType: 'Thing',
       fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {} as FreeformSearchInput['fields']),
       limit: DEFAULT_LIMIT,
-      threshold: 60,
+      threshold: org.sanctionThreshold ?? 70,
     } as FreeformSearchInput,
     onSubmit: ({ value }) => onSubmit(value),
   });
@@ -122,13 +126,6 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
                       className="w-full"
                       borderColor={formField.state.meta.errors.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
                       placeholder={t('screenings:freeform_search.name_placeholder')}
-                      onBlur={() => form.handleSubmit()}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          form.handleSubmit();
-                        }
-                      }}
                     />
                     {formField.state.meta.errors.length > 0 && (
                       <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
@@ -138,52 +135,54 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               </form.Field>
             </div>
           </form>
-          <EntityTypePopover disabled={searchMutation.isPending} onApply={form.handleSubmit} />
+          <EntityTypePopover disabled={searchMutation.isPending} />
         </div>
         <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
+          <ScreeningThreshold
+            threshold={threshold}
+            onChange={(value) => {
+              form.setFieldValue('threshold', value);
+            }}
+            title={t('screenings:freeform_search.threshold_label')}
+          />
           <DatasetsPopover
             selectedDatasets={selectedDatasets}
             onApply={setSelectedDatasets}
             disabled={searchMutation.isPending}
-          />
-
-          <ThresholdRange
-            title={t('screenings:freeform_search.threshold_label')}
-            defaultDescription={t('screenings:freeform_search.threshold_description')}
-            value={threshold}
-            onChange={(value) => {
-              form.setFieldValue('threshold', value);
-              form.handleSubmit();
-            }}
-            values={[
-              { value: 40, label: t('screenings:freeform_search.threshold.40'), color: 'var(--color-red-secondary)' },
-              {
-                value: 50,
-                label: t('screenings:freeform_search.threshold.50'),
-                color: 'var(--color-orange-secondary)',
-              },
-              { value: 60, label: t('screenings:freeform_search.threshold.60'), color: 'var(--color-yellow-primary)' },
-              { value: 70, label: t('screenings:freeform_search.threshold.70'), color: 'var(--color-green-disabled)' },
-              { value: 80, label: t('screenings:freeform_search.threshold.80'), color: 'var(--color-green-primary)' },
-              { value: 90, label: t('screenings:freeform_search.threshold.90'), color: 'var(--color-green-hover)' },
-            ]}
-            initialColor="var(--color-red-hover)"
           />
           <LimitPopover
             disabled={searchMutation.isPending}
             originalValue={originalLimit.current}
             onApply={(value) => {
               originalLimit.current = value;
-              form.handleSubmit();
             }}
           />
+        </div>
+        <div className="flex gap-2 justify-end">
           {hasActiveFilters && (
             <div className="flex gap-2">
-              <Button variant="secondary" appearance="link" size="default" onClick={handleClearFilters}>
+              <Button variant="secondary" appearance="stroked" size="default" onClick={handleClearFilters}>
                 {t('screenings:freeform_search.clear_filters')}
               </Button>
             </div>
           )}
+          <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            {([canSubmit, isSubmitting]) => {
+              return (
+                <Button
+                  variant="primary"
+                  size="default"
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting}
+                  onClick={handleSubmit}
+                  className="flex items-center gap-v2-xs"
+                >
+                  <span>{t('screenings:freeform_search.submit')}</span>
+                  {isSubmitting && <Icon icon="spinner" className="size-5 animate-spin" />}
+                </Button>
+              );
+            }}
+          </form.Subscribe>
         </div>
       </div>
     </ManualSearchFormContext.Provider>

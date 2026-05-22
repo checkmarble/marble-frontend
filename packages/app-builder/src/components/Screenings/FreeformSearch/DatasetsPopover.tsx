@@ -66,9 +66,11 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
     if (!data || !hasSelection) return [];
     return Object.entries(data).flatMap(([key, section]) => {
       if (!section) return [];
+      const sectionKey = key as ScreeningCategory;
+      const isSectionEnabled = !!selectionMap[sectionKey];
       const count = getSectionLeafNames(section).filter((n) => selectionMap[n]).length;
-      if (count === 0) return [];
-      return [{ key: key as ScreeningCategory, count }];
+      if (!isSectionEnabled && count === 0) return [];
+      return [{ key: sectionKey, count, isEmpty: isSectionEnabled && count === 0 }];
     });
   }, [listConfigQuery.data, selectionMap, hasSelection]);
 
@@ -79,28 +81,29 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
           <div className="flex items-center gap-2 flex-wrap" ref={tagRef}>
             {hasSelection ? (
               <>
-                {sectionTags.map(({ key, count }) => (
+                {sectionTags.map(({ key, count, isEmpty }) => (
                   <Tag
                     key={key}
-                    color={disabled ? 'grey' : 'purple'}
+                    color={disabled ? 'grey' : isEmpty ? 'orange' : 'purple'}
                     className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="font-medium capitalize">
                       {t(`scenarios:sanction.lists.${SECTION_I18N_KEYS[key]}`)}
-                      {count > 1 ? ` (${count})` : ''}
+                      {isEmpty
+                        ? ` (${t('scenarios:sanction.lists.no_lists_selected')})`
+                        : count > 1
+                          ? ` (${count})`
+                          : ''}
                     </span>
                   </Tag>
                 ))}
                 <Icon icon="plus" className="size-4 text-grey-secondary" />
               </>
             ) : (
-              <Tag
-                color={disabled ? 'grey' : 'purple'}
-                className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span className="font-medium">{t('screenings:freeform_search.filter_by_list')}</span>
-                <Icon icon="plus" className="size-4" />
-              </Tag>
+              <span className="flex items-center gap-1 text-grey-placeholder cursor-pointer">
+                <Icon icon="plus" className="size-4  " />
+                <span>{t('screenings:freeform_search.filter_by_list')}</span>
+              </span>
             )}
           </div>
         </MenuCommand.Trigger>

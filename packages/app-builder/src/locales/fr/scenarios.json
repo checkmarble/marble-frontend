@@ -441,6 +441,7 @@
   "sanction.lists.callout": "Sélectionnez des listes pertinentes pour ce scénario.",
   "sanction.lists.nb_selected_one": "({{count}} sélectionnée)",
   "sanction.lists.nb_selected_other": "({{count}} sélectionnées)",
+  "sanction.lists.no_lists_selected": "Aucune liste sélectionnée",
   "sanction.lists.other": "autres",
   "sanction.lists.peps": "PPE",
   "sanction.lists.sanctions": "sanctions",
