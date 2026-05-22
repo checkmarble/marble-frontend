@@ -29,7 +29,7 @@ import {
   setDatasetKey,
   setTopicKey,
 } from './dataset-selection-provider-utils';
-import { formatDatasetTitle, formatTopicLabel, getSectionLeafNames } from './dataset-utils';
+import { formatDatasetTitle, formatTopicLabel, getDatasetNames } from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
@@ -165,10 +165,10 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
 
-  const leafNames = getSectionLeafNames(section);
+  const datasetNames = getDatasetNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const selectedCount = ListAndTopicDatasetConfiguration.select(
-    (state) => leafNames.filter((n) => state.datasets[n]).length,
+    (state) => datasetNames.filter((n) => state.datasets[n]).length,
   );
 
   return match(variant)
@@ -197,9 +197,11 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
               />
               <DatasetTag category={sectionKey} />
             </div>
-            <span className="text-xs text-grey-50 pl-v2-md">
-              {selectedCount} / {leafNames.length}
-            </span>
+            {datasetNames.length > 0 && (
+              <span className="text-xs text-grey-50 pl-v2-md">
+                {selectedCount} / {datasetNames.length}
+              </span>
+            )}
           </div>
         </Collapsible.Title>
         <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
@@ -218,12 +220,14 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
         )}
       >
         <DatasetTag category={sectionKey} />
-        <span className="flex items-center gap-v2-md">
-          <span className="text-xs text-grey-50">
-            {t('continuousScreening:creation.datasetSelection.lists', { count: leafNames.length })}
+        {datasetNames.length > 0 && (
+          <span className="flex items-center gap-v2-md">
+            <span className="text-xs text-grey-50">
+              {t('continuousScreening:creation.datasetSelection.lists', { count: datasetNames.length })}
+            </span>
+            <Icon icon="arrow-right" className="size-4 text-grey-50" />
           </span>
-          <Icon icon="arrow-right" className="size-4 text-grey-50" />
-        </span>
+        )}
       </button>
     ))
     .exhaustive();

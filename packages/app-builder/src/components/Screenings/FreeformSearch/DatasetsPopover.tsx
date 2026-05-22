@@ -84,16 +84,12 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
                 {sectionTags.map(({ key, count, isEmpty }) => (
                   <Tag
                     key={key}
-                    color={disabled ? 'grey' : isEmpty ? 'orange' : 'purple'}
+                    color={disabled ? 'grey' : 'purple'}
                     className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="font-medium capitalize">
                       {t(`scenarios:sanction.lists.${SECTION_I18N_KEYS[key]}`)}
-                      {isEmpty
-                        ? ` (${t('scenarios:sanction.lists.no_lists_selected')})`
-                        : count > 1
-                          ? ` (${count})`
-                          : ''}
+                      {isEmpty ? ` (${t('scenarios:sanction.lists.no_lists_selected')})` : ` (${count})`}
                     </span>
                   </Tag>
                 ))}
