@@ -7,8 +7,8 @@ const topicCategoryPriority: Record<string, number> = {
 };
 
 function getDisplayedTopics(topics: string[]): string[] {
-  const hasPepPrimary = topics.includes('pep.primary');
-  return topics.filter((topic) => !(hasPepPrimary && topic === 'pep.secondary'));
+  const hasPepPrimary = topics.includes('pep.kind.primary');
+  return topics.filter((topic) => !(hasPepPrimary && topic === 'pep.kind.secondary'));
 }
 
 function getMatchTopicPriority(entity: ScreeningMatchPayload): number {

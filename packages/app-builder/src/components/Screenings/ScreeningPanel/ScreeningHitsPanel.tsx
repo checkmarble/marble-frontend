@@ -363,7 +363,7 @@ function PanelMatchList({
       ) : null}
 
       <div className="flex flex-col gap-2 mt-2">
-        {matches.sort(sortScreeningMatchesByTopics).map((screeningMatch) => {
+        {[...matches].sort(sortScreeningMatchesByTopics).map((screeningMatch) => {
           const isPending = screeningMatch.status === 'pending';
           const showCheckbox = showSelectControls && isPending;
 

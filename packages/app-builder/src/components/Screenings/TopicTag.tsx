@@ -17,7 +17,9 @@ export const TopicTag = ({ topic, className }: { topic: string; className?: stri
 
   if (isOpenSanctionTopic(topic)) {
     return (
-      <Tag color={openSanctionsTopicToColor(topic)}>{t(`screeningTopics:os.${topic}`, { defaultValue: topic })}</Tag>
+      <Tag color={openSanctionsTopicToColor(topic)} className={className}>
+        {t(`screeningTopics:os.${topic}`, { defaultValue: topic })}
+      </Tag>
     );
   }
 
@@ -25,7 +27,11 @@ export const TopicTag = ({ topic, className }: { topic: string; className?: stri
     if (lexisTopicIgnoreDisplay(topic)) {
       return null;
     }
-    return <Tag color={lexisTopicToColor(topic)}>{t(`screeningTopics:lexis.${topic}`, { defaultValue: topic })}</Tag>;
+    return (
+      <Tag color={lexisTopicToColor(topic)} className={className}>
+        {t(`screeningTopics:lexis.${topic}`, { defaultValue: topic })}
+      </Tag>
+    );
   }
 
   return (

@@ -55,7 +55,7 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
           )}
         </div>
 
-        {data.sort(sortPayloadsByTopics).map((entity) => (
+        {[...data].sort(sortPayloadsByTopics).map((entity) => (
           <FreeformMatchCard key={entity.id} entity={entity} defaultOpen={data.length === 1} searchTerm={searchTerm} />
         ))}
       </div>
