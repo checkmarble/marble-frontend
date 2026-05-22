@@ -20,7 +20,7 @@ function getMatchTopicPriority(entity: ScreeningMatchPayload): number {
 
   const minPriority = Math.min(
     ...displayedTopics.map((topic) => {
-      const category = topic.split('.')[0];
+      const category = topic.split('.')[0] ?? '';
       return topicCategoryPriority[category] ?? 999;
     }),
   );

@@ -1,3 +1,4 @@
+import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';

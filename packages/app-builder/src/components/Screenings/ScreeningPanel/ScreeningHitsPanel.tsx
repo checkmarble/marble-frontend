@@ -1,7 +1,7 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { Screening, ScreeningMatch } from '@app-builder/models/screening';
-import { type ScreeningStatus } from '@app-builder/models/screening';
+import { type ScreeningMatchPayload, type ScreeningStatus } from '@app-builder/models/screening';
 import { type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { useInvalidateCaseDecisions } from '@app-builder/queries/cases/list-decisions';
 import { useBulkReviewMatchesMutation } from '@app-builder/queries/screening/bulk-review-matches';
