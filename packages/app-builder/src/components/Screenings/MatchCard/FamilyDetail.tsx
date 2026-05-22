@@ -3,6 +3,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
+import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { TopicTag } from '../TopicTag';
 
 export type RelationType = 'familyPerson' | 'familyRelative';
@@ -70,11 +71,13 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
                             </span>
                           )}
                         </div>
-                        <div className="col-span-full flex w-full flex-wrap gap-1">
-                          {properties['topics']?.map((topic) => (
-                            <TopicTag key={`${id}-${topic}`} topic={topic} />
-                          ))}
-                        </div>
+                        {properties['topics']?.length ? (
+                          <div className="col-span-full flex w-full flex-wrap gap-1">
+                            {getFilteredAndSortedTopics(properties['topics']).map((topic) => (
+                              <TopicTag key={`${id}-${topic}`} topic={topic} />
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   </div>

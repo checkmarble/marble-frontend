@@ -8,7 +8,7 @@ import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { MatchDetails } from '../MatchDetails';
 import { screeningsI18n } from '../screenings-i18n';
-import { TopicTag } from '../TopicTag';
+import { TopicsDisplay } from '../TopicsDisplay';
 
 interface FreeformMatchCardProps {
   entity: ScreeningMatchPayload;
@@ -46,9 +46,7 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
                 })}
               </Tag>
               <div className="col-span-full flex w-full flex-wrap gap-1">
-                {entity.properties?.['topics']?.map((topic) => (
-                  <TopicTag key={`${entity.id}-${topic}`} topic={topic} />
-                ))}
+                <TopicsDisplay entity={entity} />
               </div>
             </div>
           </CollapsiblePrimitive.Trigger>

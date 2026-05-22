@@ -5,7 +5,7 @@ import { Tag } from 'ui-design-system';
 
 import { MatchDetails } from '../../MatchDetails';
 import { screeningsI18n } from '../../screenings-i18n';
-import { TopicTag } from '../../TopicTag';
+import { TopicsDisplay } from '../../TopicsDisplay';
 
 interface PrintResultCardProps {
   entity: ScreeningMatchPayload;
@@ -25,19 +25,23 @@ export const PrintResultCard: FunctionComponent<PrintResultCardProps> = ({ entit
       <div className="flex flex-wrap items-center gap-2 px-3 py-2 border-b border-grey-border bg-grey-background-light/30">
         <span className="text-s font-semibold text-grey-primary">{entity.caption}</span>
         <span className="text-s text-grey-placeholder">
-          {t(`screenings:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}
+          {t(`screenings:entity.schema.${entitySchema}`, {
+            defaultValue: entitySchema,
+          })}
         </span>
-        <Tag color="grey">{t('screenings:match.similarity', { percent: Math.round(entity.score * 100) })}</Tag>
+        <Tag color="grey">
+          {t('screenings:match.similarity', {
+            percent: Math.round(entity.score * 100),
+          })}
+        </Tag>
       </div>
 
       {/* Topics */}
-      {entity.properties?.['topics'] && entity.properties['topics'].length > 0 && (
-        <div className="flex flex-wrap gap-1 px-3 py-1 border-b border-grey-border">
-          {entity.properties['topics'].map((topic) => (
-            <TopicTag key={`${entity.id}-${topic}`} topic={topic} />
-          ))}
+      {entity.properties?.['topics']?.length ? (
+        <div className="border-b border-grey-border px-3 py-1">
+          <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-1" />
         </div>
-      )}
+      ) : null}
 
       {/* Content - Always expanded */}
       <div className="text-s p-3">

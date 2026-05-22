@@ -9,7 +9,7 @@ import { MatchDetails } from '../MatchDetails';
 import { ReviewMatchPopover } from '../ReviewMatchPopover';
 import { StatusTag } from '../StatusTag';
 import { screeningsI18n } from '../screenings-i18n';
-import { TopicTag } from '../TopicTag';
+import { TopicsDisplay } from '../TopicsDisplay';
 import { CommentLine } from './CommentLine';
 
 type MatchCardProps = {
@@ -80,10 +80,8 @@ export const MatchCard = ({
         </div>
       </Collapsible.Title>
       {entity.properties['topics']?.length ? (
-        <div className="flex flex-wrap gap-1 px-4 pb-3">
-          {entity.properties['topics'].map((topic) => (
-            <TopicTag key={`${match.id}-${topic}`} topic={topic} />
-          ))}
+        <div className="px-4 pb-3">
+          <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-1" />
         </div>
       ) : null}
       <Collapsible.Content>
