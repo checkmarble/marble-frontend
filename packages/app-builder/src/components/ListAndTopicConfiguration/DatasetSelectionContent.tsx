@@ -39,7 +39,7 @@ import {
   getSpecialTopicValue,
   isSpecialTopic,
   sortTopicGroupEntries,
-  TopicItem,
+  type TopicItem,
 } from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;

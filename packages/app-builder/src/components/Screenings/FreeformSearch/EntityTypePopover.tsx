@@ -226,7 +226,11 @@ function AdditionalEntityTypePopover({
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild disabled={disabled}>
-        <div className="flex items-center gap-2 flex-wrap">
+        <button
+          type="button"
+          className="flex items-center gap-2 flex-wrap"
+          aria-label={t('screenings:freeform_search.advanced_filters')}
+        >
           {filterTags}
           <Icon
             icon="plus"
@@ -235,7 +239,7 @@ function AdditionalEntityTypePopover({
               disabled && 'text-grey-placeholder opacity-50 cursor-not-allowed ',
             )}
           />
-        </div>
+        </button>
       </Popover.Trigger>
       <Popover.Content
         className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
