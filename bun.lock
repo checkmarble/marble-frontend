@@ -122,7 +122,7 @@
         "@tailwindcss/vite": "^4.2.4",
         "@tanstack/devtools-vite": "^0.6.0",
         "@tanstack/react-devtools": "^0.10.2",
-        "@tanstack/react-form-devtools": "^0.2.24",
+        "@tanstack/react-form-devtools": "^0.2.27",
         "@tanstack/react-query-devtools": "5.83.1",
         "@tanstack/react-router-devtools": "1.166.13",
         "@tanstack/router-plugin": "1.167.35",
