@@ -4,9 +4,9 @@ import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
-import { PluginOption } from 'vite';
+import type { PluginOption } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type Plugin } from 'vitest/config';
 
 const isSentryConfigured = !!process.env['SENTRY_AUTH_TOKEN'];
 const isTest = !!process.env['VITEST'];
@@ -20,37 +20,39 @@ const externalNativeModules: PluginOption = {
   },
 };
 
+// Cast bridges vite@7 plugin types (used at runtime, required by @tanstack/react-start)
+// to vite@6 types that vitest@3.0.9's `defineConfig` still expects.
+const plugins = [
+  ...(isTest
+    ? []
+    : [
+        devtools(),
+        tanstackStart(),
+        nitro({
+          config: {
+            preset: 'node-server',
+          },
+        }),
+        ...(isSentryConfigured
+          ? sentryVitePlugin({
+              telemetry: false,
+              release: {
+                setCommits: { auto: true },
+              },
+              sourcemaps: {
+                filesToDeleteAfterUpload: ['./build/**/*.map'],
+              },
+            })
+          : []),
+      ]),
+  externalNativeModules,
+  tailwindcss(),
+  viteTsConfigPaths(),
+  viteReact(),
+] as Plugin[];
+
 export default defineConfig({
-  plugins: [
-    ...(isTest
-      ? []
-      : [
-          devtools(),
-          tanstackStart(),
-          nitro({
-            config: {
-              preset: 'node-server',
-            },
-          }),
-          ...(isSentryConfigured
-            ? [
-                sentryVitePlugin({
-                  telemetry: false,
-                  release: {
-                    setCommits: { auto: true },
-                  },
-                  sourcemaps: {
-                    filesToDeleteAfterUpload: ['./build/**/*.map'],
-                  },
-                }),
-              ]
-            : []),
-        ]),
-    externalNativeModules,
-    tailwindcss(),
-    viteTsConfigPaths(),
-    viteReact(),
-  ],
+  plugins,
   server: {
     port: 3000,
   },
