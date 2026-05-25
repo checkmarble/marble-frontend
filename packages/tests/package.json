@@ -17,7 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.51.0",
-    "@types/node": "22.7.7",
+    "@types/node": "25.6.2",
     "knex": "^3.1.0",
     "pg": "^8.13.3",
     "playwright": "^1.51.0",
