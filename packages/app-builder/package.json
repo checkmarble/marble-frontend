@@ -99,7 +99,7 @@
     "deepsignal": "^1.6.0",
     "dinero.js": "2.0.2",
     "embla-carousel-react": "^8.6.0",
-    "firebase": "^12.12.1",
+    "firebase": "^12.13.0",
     "fuse.js": "^7.1.0",
     "i18next": "^23.16.8",
     "i18next-browser-languagedetector": "^8.0.4",
