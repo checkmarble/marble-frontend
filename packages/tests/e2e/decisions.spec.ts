@@ -109,3 +109,66 @@ test('Clearing a chip via the X removes the URL param', async ({ page }) => {
   // so the chip's button disappears entirely.
   await expect(chipTrigger).toHaveCount(0);
 });
+
+test('Applying outcome filter renders an Outcome chip', async ({ page }) => {
+  await page.goto('/detection/decisions');
+  await waitForHydration(page);
+
+  await filtersTrigger(page).click();
+  await page.locator('[role=menuitem]', { hasText: /^Outcome$/ }).click();
+
+  // OutcomeAndReviewStatusFilter opens a SelectWithCombobox — select "Decline"
+  // The outcome badge text is `outcome.tag.declined.label` = "Decline"
+  await page
+    .getByRole('option', { name: /Decline/ })
+    .first()
+    .click();
+
+  // Close the outcome popover (does not auto-close on selection)
+  await page.keyboard.press('Escape');
+  await waitForHydration(page);
+
+  // `getFilterTKey('outcomeAndReviewStatus')` → 'decisions:outcome' → "Outcome"
+  await expect(page.locator('button', { hasText: /^Outcome$/ })).toBeVisible();
+});
+
+test('Two filters stack independently as chips', async ({ page }) => {
+  // Start with a pre-set triggerObjectId in the URL
+  const triggerObjectId = crypto.randomUUID();
+  await page.goto(`/detection/decisions?triggerObjectId=${triggerObjectId}`);
+  await waitForHydration(page);
+
+  // Verify first chip
+  await expect(page.locator('button', { hasText: `Object ID: ${triggerObjectId}` })).toBeVisible();
+
+  // Add Outcome filter
+  await filtersTrigger(page).click();
+  await page.locator('[role=menuitem]', { hasText: /^Outcome$/ }).click();
+  await page
+    .getByRole('option', { name: /Decline/ })
+    .first()
+    .click();
+  await page.keyboard.press('Escape');
+  await waitForHydration(page);
+
+  // Both chips must be visible simultaneously
+  await expect(page.locator('button', { hasText: `Object ID: ${triggerObjectId}` })).toBeVisible();
+  await expect(page.locator('button', { hasText: /^Outcome$/ })).toBeVisible();
+});
+
+test('Clear filters link removes all filter chips', async ({ page }) => {
+  const triggerObjectId = crypto.randomUUID();
+  await page.goto(`/detection/decisions?triggerObjectId=${triggerObjectId}`);
+  await waitForHydration(page);
+
+  await expect(page.locator('button', { hasText: `Object ID: ${triggerObjectId}` })).toBeVisible();
+
+  // `ClearAllFiltersLink` renders as `<a href="/detection/decisions">` with
+  // "Clear filters" text. The "Decisions" tab in the navigation also points to
+  // the same href, so we must filter by visible text. `force: true` bypasses
+  // actionability checks — the link can be overlapped by the chip flex row.
+  await page.locator('a[href="/detection/decisions"]', { hasText: 'Clear filters' }).click({ force: true });
+
+  await page.waitForURL((url) => !url.searchParams.has('triggerObjectId'));
+  await expect(page.locator('button', { hasText: `Object ID: ${triggerObjectId}` })).toHaveCount(0);
+});
