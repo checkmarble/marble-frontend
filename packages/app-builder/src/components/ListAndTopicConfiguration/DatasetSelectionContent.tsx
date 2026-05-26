@@ -798,8 +798,8 @@ const FilterGroupTags = ({
   const isAllSelected = selectedItems.length === items.length && items.length > 1;
 
   const tagsContent = (
-    <div className={cn('flex flex-1 min-w-0', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
-      <div className="flex min-w-0 items-center gap-v2-sm">
+    <div className={cn('flex min-w-0', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden items-start')}>
+      <div className="flex min-w-0 items-center gap-v2-xs">
         {isAllSelected ? (
           <Tag color="purple" size="small">
             {t('continuousScreening:creation.datasetSelection.filter.all')}
@@ -807,21 +807,13 @@ const FilterGroupTags = ({
         ) : (
           <ExpandableGroupTagLine items={tagItems} />
         )}
-        {useAnchoredMenu && (
-          <FilterGroupMenu
-            anchored
-            items={items}
-            sectionKey={sectionKey}
-            topicGroup={topicGroup}
-            onAfterChange={onAfterChange}
-          />
-        )}
+
         {mode !== 'view' && variant === 'popover' && (
           <button
             type="button"
             className={cn(
-              'flex size-6 shrink-0 items-center justify-center rounded-full border border-grey-border hover:bg-grey-background-light',
-              isMenuOpen && 'border-purple-primary bg-purple-background-light text-purple-primary',
+              'flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-grey-background-light',
+              isMenuOpen && 'bg-purple-background-light text-purple-primary',
             )}
             onClick={() => setIsMenuOpen((open) => !open)}
             aria-expanded={isMenuOpen}

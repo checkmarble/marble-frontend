@@ -103,7 +103,6 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
   const threshold = useStore(form.store, (state) => state.values.threshold);
   const entityType = useStore(form.store, (state) => state.values.entityType);
-  const fields = useStore(form.store, (state) => state.values.fields);
   const limit = useStore(form.store, (state) => state.values.limit);
   const originalLimit = useRef(limit ?? DEFAULT_LIMIT);
 
@@ -158,24 +157,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               </form.Field>
             </div>
           </form>
-          <EntityTypePopover
-            disabled={searchMutation.isPending}
-            entityType={entityType}
-            fields={fields as Record<string, string | undefined>}
-            onEntityTypeChange={(schema) => {
-              form.setFieldValue('entityType', schema);
-              form.setFieldValue(
-                'fields',
-                setAdditionalFields(
-                  SEARCH_ENTITIES[schema].fields,
-                  fields as Record<string, string | undefined>,
-                ) as FreeformSearchInput['fields'],
-              );
-            }}
-            onFieldChange={(fieldName, value) => {
-              form.setFieldValue(`fields.${fieldName}` as 'fields.name', value);
-            }}
-          />
+          <EntityTypePopover disabled={searchMutation.isPending} />
         </div>
         <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
           <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">

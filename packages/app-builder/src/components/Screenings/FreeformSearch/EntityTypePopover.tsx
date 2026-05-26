@@ -2,14 +2,15 @@ import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/s
 import { formatCountryName } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
-import clsx from 'clsx';
+import { useStore } from '@tanstack/react-form';
 import CountryFlag from 'country-flag-emojis';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
+import { useFormManuallSearch } from './FreeformSearchForm';
 
 export interface EntityTypePopoverProps {
   disabled: boolean;
@@ -19,26 +20,22 @@ export interface EntityTypePopoverProps {
   onFieldChange: (fieldName: string, value: string) => void;
 }
 
-export function EntityTypePopover({
-  disabled,
-  entityType,
-  fields,
-  onEntityTypeChange,
-  onFieldChange,
-}: EntityTypePopoverProps) {
+export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
+  const form = useFormManuallSearch();
+  const value = useStore(form.store, (state) => state.values.entityType);
   const [additionalFieldsOpenRequest, setAdditionalFieldsOpenRequest] = useState(0);
 
   const handleSelect = (schema: SearchableSchema) => {
-    onEntityTypeChange(schema);
+    form.setFieldValue('entityType', schema);
     setOpen(false);
     if (schema !== 'Thing') {
       setAdditionalFieldsOpenRequest((count) => count + 1);
     }
   };
 
-  const hasSelection = entityType && entityType !== 'Thing';
+  const hasSelection = value && value !== 'Thing';
   const schemas = R.keys(SEARCH_ENTITIES);
 
   return (
@@ -52,7 +49,7 @@ export function EntityTypePopover({
             >
               <span className="font-medium">
                 {hasSelection
-                  ? t(`screenings:refine_modal.schema.${entityType.toLowerCase()}`)
+                  ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
                   : t('screenings:freeform_search.all_entities')}
               </span>
             </Tag>
@@ -69,14 +66,14 @@ export function EntityTypePopover({
               {schemas.map((schema) => {
                 const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
                 const fieldForSchema = SEARCH_ENTITIES[schema].fields;
-                const isSelected = entityType === schema;
+                const isSelected = value === schema;
 
                 return (
                   <button
                     key={schema}
                     type="button"
                     onClick={() => handleSelect(schema)}
-                    className={clsx(
+                    className={cn(
                       'text-s flex w-full items-center gap-2 rounded px-3 py-2 text-left',
                       isSelected ? 'bg-purple-background-light text-purple-primary' : 'hover:bg-grey-background-light',
                     )}
@@ -96,54 +93,51 @@ export function EntityTypePopover({
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
-      {hasSelection && (
-        <AdditionalEntityTypePopover
-          disabled={disabled}
-          entityType={entityType}
-          fields={fields}
-          openRequest={additionalFieldsOpenRequest}
-          onFieldChange={onFieldChange}
-        />
-      )}
+      {hasSelection && <AdditionalEntityTypePopover disabled={disabled} openRequest={additionalFieldsOpenRequest} />}
     </div>
   );
-}
+};
 
-function getDraftFieldsFromCommitted(
-  entityTypeFields: string[],
-  committedFields: Record<string, string | undefined>,
-): Record<string, string> {
-  return Object.fromEntries(entityTypeFields.map((fieldName) => [fieldName, committedFields[fieldName] ?? '']));
-}
-
-function validateBirthDate(value: string): boolean {
-  if (!value) return true;
-  return /^\d{4}(-\d{2}-\d{2})?$/.test(value);
-}
-
-interface AdditionalEntityTypePopoverProps {
-  disabled: boolean;
-  entityType: SearchableSchema;
-  fields: Record<string, string | undefined>;
-  openRequest: number;
-  onFieldChange: (fieldName: string, value: string) => void;
-}
-
-function AdditionalEntityTypePopover({
-  disabled,
-  entityType,
-  fields: committedFields,
-  openRequest,
-  onFieldChange,
-}: AdditionalEntityTypePopoverProps) {
+function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: boolean; openRequest: number }) {
   const [open, setOpen] = useState(false);
   const form = useFormManuallSearch();
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const entityTypeFields = entityType ? SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name') : [];
   const { t, i18n } = useTranslation(screeningsI18n);
+  const fields = useStore(form.store, (state) => state.values.fields);
+  const lastProcessedOpenRequest = useRef(0);
+
+  useEffect(() => {
+    if (openRequest <= lastProcessedOpenRequest.current || disabled) return;
+    lastProcessedOpenRequest.current = openRequest;
+    setOpen(true);
+  }, [openRequest, disabled]);
+
+  const hasSelection = entityType && entityType !== 'Thing';
+
+  const filterTags = hasSelection
+    ? SEARCH_ENTITIES[entityType].fields
+        .filter((f) => f !== 'name')
+        .map((fieldName) => {
+          const fieldValue = (fields as Record<string, string | undefined>)[fieldName];
+          if (!fieldValue) return null;
+          const label = getFilterTagLabel(fieldName, fieldValue, t);
+          if (!label) return null;
+          return (
+            <Tag
+              key={fieldName}
+              color={disabled ? 'grey' : 'purple'}
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="font-medium">{label}</span>
+            </Tag>
+          );
+        })
+        .filter(Boolean)
+    : null;
 
   return (
-    <Popover.Root open={open} onOpenChange={handleOpenChange}>
+    <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild disabled={disabled}>
         <button
           type="button"
@@ -162,7 +156,7 @@ function AdditionalEntityTypePopover({
       </Popover.Trigger>
       <Popover.Content
         className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
-        sideOffset={4}
+        sideOffset={8}
         align="start"
       >
         <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1 p-2">
@@ -231,22 +225,36 @@ function AdditionalEntityTypePopover({
           })}
           {/* Actions */}
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="primary"
-              size="default"
-              className="w-full justify-center"
-              onClick={handleApply}
-            >
-              {t('screenings:freeform_search.apply')}
-            </Button>
-
+            {/* Apply button */}
+            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting}
+                  variant="primary"
+                  size="default"
+                  className="w-full justify-center"
+                  onClick={() => setOpen(false)}
+                >
+                  {isSubmitting ? (
+                    <Icon icon="spinner" className="size-5 animate-spin" />
+                  ) : (
+                    <>
+                      {t('screenings:freeform_search.apply')}
+                      <Icon icon="search" className="size-5" />
+                    </>
+                  )}
+                </Button>
+              )}
+            </form.Subscribe>
             <Button
               type="button"
               variant="secondary"
               size="default"
               className="w-full justify-center"
-              onClick={handleCancel}
+              onClick={() => {
+                setOpen(false);
+              }}
             >
               {t('common:cancel')}
             </Button>

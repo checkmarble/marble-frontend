@@ -34,44 +34,42 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
           <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="font-semibold">{entity.caption}</span>
 
-              <span>
-                {t(`screenings:entity.schema.${entitySchema}`, {
-                  defaultValue: entitySchema,
-                })}
-              </span>
-              <Tag color="grey">
-                {t('screenings:match.similarity', {
-                  percent: Math.round(entity.score * 100),
-                })}
-              </Tag>
-              <div className="col-span-full flex w-full flex-wrap gap-1">
-                <TopicsDisplay entity={entity} />
+            <span>
+              {t(`screenings:entity.schema.${entitySchema}`, {
+                defaultValue: entitySchema,
+              })}
+            </span>
+            <Tag color="grey">
+              {t('screenings:match.similarity', {
+                percent: Math.round(entity.score * 100),
+              })}
+            </Tag>
+            <div className="col-span-full flex w-full flex-wrap gap-1">
+              <TopicsDisplay entity={entity} />
+            </div>
+          </div>
+        </CollapsiblePrimitive.Trigger>
+      </div>
+
+      <CollapsiblePrimitive.Content className="data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up overflow-hidden">
+        <div className="text-s flex flex-col gap-6 p-4">
+          {entitySchema === 'person' && entity.datasets?.length ? (
+            <div className="grid grid-cols-[168px_1fr] gap-2">
+              <div className="font-bold">{t('screenings:match.datasets.title')}</div>
+              <div>
+                <ul>
+                  {entity.datasets.map((name, index) => (
+                    <li className="break-all" key={`dataset-${index}`}>
+                      {name}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </CollapsiblePrimitive.Trigger>
-          
+          ) : null}
+          <DataContent entityId={entity.id} searchTerm={searchTerm} isOpen={isOpen} />
         </div>
-
-        <CollapsiblePrimitive.Content className="data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up overflow-hidden">
-          <div className="text-s flex flex-col gap-6 p-4">
-            {entitySchema === 'person' && entity.datasets?.length ? (
-              <div className="grid grid-cols-[168px_1fr] gap-2">
-                <div className="font-bold">{t('screenings:match.datasets.title')}</div>
-                <div>
-                  <ul>
-                    {entity.datasets.map((name, index) => (
-                      <li className="break-all" key={`dataset-${index}`}>
-                        {name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            ) : null}
-            <DataContent entityId={entity.id} searchTerm={searchTerm} isOpen={isOpen} />
-          </div>
-        </CollapsiblePrimitive.Content>
-      </div>
+      </CollapsiblePrimitive.Content>
     </CollapsiblePrimitive.Root>
   );
 };
