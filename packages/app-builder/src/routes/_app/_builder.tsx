@@ -1,7 +1,6 @@
 import { navigationI18n, SidebarLink } from '@app-builder/components';
 import { LeftSidebar, LeftSidebarSharpFactory, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
-import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpdate';
@@ -110,7 +109,6 @@ function Builder() {
           <OrganizationTagsContextProvider orgTags={orgTags}>
             <OrganizationObjectTagsContextProvider tags={orgObjectTags}>
               <div className="flex h-screen flex-1 flex-col">
-                <DatasetFreshnessBanner />
                 <div className="flex flex-1 flex-row overflow-hidden">
                   <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
                     <LeftSidebar>

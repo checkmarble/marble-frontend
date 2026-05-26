@@ -12,7 +12,6 @@
   "collapse": "Collapse",
   "copy": "Copy",
   "create": "Create",
-  "dataset_freshness_banner": "The data used for your sanction screening is not up-to-date (last version published at {{ lastExport }} has not been pulled yet). Consult your platform team if the issue does not resolve itself soon.",
   "delete": "Delete",
   "description": "Description",
   "documents": "Documents",
