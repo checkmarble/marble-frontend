@@ -769,6 +769,7 @@ const FilterGroupTags = ({
     items.filter((i) => isTopicKeySelected(state.datasets, sectionKey, topicGroup, i.name)),
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const useAnchoredMenu = variant === 'popover';
 
   const selectedKey = selectedItems.map((i) => i.name).join(',');
 
@@ -796,7 +797,7 @@ const FilterGroupTags = ({
 
   const isAllSelected = selectedItems.length === items.length && items.length > 1;
 
-  return (
+  const tagsContent = (
     <div className={cn('flex flex-1 min-w-0', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
       <div className="flex min-w-0 items-center gap-v2-sm">
         {isAllSelected ? (
