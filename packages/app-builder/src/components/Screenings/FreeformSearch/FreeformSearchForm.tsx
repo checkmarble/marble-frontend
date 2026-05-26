@@ -116,6 +116,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
   const handleClearFilters = () => {
     form.reset();
     setSelectedDatasets([]);
+    originalLimit.current = DEFAULT_LIMIT;
   };
 
   const hasActiveFilters =
