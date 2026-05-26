@@ -10,6 +10,7 @@ import {
   type ScreeningRequestDto,
 } from 'marble-api';
 import * as R from 'remeda';
+import { match, P } from 'ts-pattern';
 import { TagProps } from 'ui-design-system';
 
 export const matchEntitySchemas = [
@@ -345,9 +346,167 @@ export const SCREENING_CATEGORY_COLORS = {
   peps: 'blue',
   'third-parties': 'grey',
   'adverse-media': 'yellow',
-} satisfies Record<ScreeningCategory, TagProps['color']>;
+  other: 'grey',
+} satisfies Record<ScreeningCategory | 'other', TagProps['color']>;
 
-export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
+const LEXIS_TOPIC_KEYS = [
+  'alive',
+  'deceased',
+  'sanctions',
+  'adverse_media',
+  'adverse_media.kind.media',
+  'adverse_media.kind.enforcement',
+  'adverse_media.category.administrative',
+  'adverse_media.category.aircraft_hijacking',
+  'adverse_media.category.antitrust_violations',
+  'adverse_media.category.arms_trafficking',
+  'adverse_media.category.asset_freeze',
+  'adverse_media.category.bank_fraud',
+  'adverse_media.category.bribery',
+  'adverse_media.category.burglary',
+  'adverse_media.category.conspiracy',
+  'adverse_media.category.corruption',
+  'adverse_media.category.counterfeiting',
+  'adverse_media.category.crimes_against_humanity',
+  'adverse_media.category.cybercrime',
+  'adverse_media.category.debarred',
+  'adverse_media.category.disciplined',
+  'adverse_media.category.disqualified',
+  'adverse_media.category.drug_trafficking',
+  'adverse_media.category.embezzlement',
+  'adverse_media.category.end_use_control',
+  'adverse_media.category.environmental_crimes',
+  'adverse_media.category.espionage',
+  'adverse_media.category.excluded_party',
+  'adverse_media.category.explosives',
+  'adverse_media.category.extortion_racketeering',
+  'adverse_media.category.financial_crimes',
+  'adverse_media.category.forgery',
+  'adverse_media.category.fraud',
+  'adverse_media.category.fugitive',
+  'adverse_media.category.gambling_operations',
+  'adverse_media.category.healthcare_fraud',
+  'adverse_media.category.human_rights_abuse',
+  'adverse_media.category.human_trafficking',
+  'adverse_media.category.isis_foreign_support',
+  'adverse_media.category.insider_trading',
+  'adverse_media.category.insurance_fraud',
+  'adverse_media.category.interstate_commerce',
+  'adverse_media.category.kidnapping',
+  'adverse_media.category.labor_violations',
+  'adverse_media.category.money_laundering',
+  'adverse_media.category.mortgage_fraud',
+  'adverse_media.category.most_wanted',
+  'adverse_media.category.murder',
+  'adverse_media.category.organized_crime',
+  'adverse_media.category.peonage',
+  'adverse_media.category.pharma_trafficking',
+  'adverse_media.category.piracy',
+  'adverse_media.category.pollution',
+  'adverse_media.category.pornography',
+  'adverse_media.category.price_manipulation',
+  'adverse_media.category.rico',
+  'adverse_media.category.securities_fraud',
+  'adverse_media.category.smuggling',
+  'adverse_media.category.stolen_property',
+  'adverse_media.category.tax_evasion',
+  'adverse_media.category.terrorism',
+  'adverse_media.category.unauthorized',
+  'adverse_media.category.war_crimes',
+  'adverse_media.category.wire_fraud',
+  'adverse_media.category.weapons_mass_destruction',
+  'pep.kind.primary',
+  'pep.kind.secondary',
+  'pep.status.active',
+  'pep.status.inactive',
+  'pep.category.chief_of_state',
+  'pep.category.diplomat',
+  'pep.category.govt_branch_member',
+  'pep.category.intelligence',
+  'pep.category.intl_org_leadership',
+  'pep.category.judiciary',
+  'pep.category.law_enforce_authority',
+  'pep.category.legislature',
+  'pep.category.military',
+  'pep.category.ngo_leadership',
+  'pep.category.senior_party_member',
+  'pep.category.traditional_leadership',
+  'pep.category.union_leadership',
+  'pep.category.manager_state_owned_enterprise',
+  'pep.category.manager_sovereign_wealth_fund',
+  'pep.category.associate',
+  'pep.category.attorney',
+  'pep.category.family_member',
+  'pep.category.pep_controlled_business',
+  'pep.category.state_owned_enterprise',
+];
+
+export type LexisTopic = (typeof LEXIS_TOPIC_KEYS)[number];
+
+export function isLexisTopic(topic: string): topic is LexisTopic {
+  return (LEXIS_TOPIC_KEYS as ReadonlyArray<string>).includes(topic);
+}
+
+// Some topics are present for filtering but are not directly useful to display (e.g. "pep active"), or may may duplicate too much information for useful display (e.g. "pep and pep.primary")
+// so we ignore some of them for display in the UI
+export function lexisTopicIgnoreDisplay(topic: LexisTopic): boolean {
+  if (['alive', 'pep.status.active', 'adverse_media'].includes(topic)) {
+    return true;
+  }
+  return false;
+}
+
+export const OS_TOPICS_KEYS = [
+  'sanction',
+  'sanction.linked',
+  'sanction.counter',
+  'asset.frozen',
+  'role.pep',
+  'role.pol',
+  'role.rca',
+  'role.judge',
+  'role.civil',
+  'role.diplo',
+  'role.spy',
+  'role.lawyer',
+  'role.acct',
+  'role.journo',
+  'role.act',
+  'role.lobby',
+  'gov.head',
+  'crime',
+  'crime.fraud',
+  'crime.cyber',
+  'crime.fin',
+  'crime.env',
+  'crime.theft',
+  'crime.war',
+  'crime.boss',
+  'crime.terror',
+  'crime.traffick',
+  'crime.traffick.drug',
+  'crime.traffick.human',
+  'forced.labor',
+  'wanted',
+  'corp.disqual',
+  'reg.action',
+  'reg.warn',
+  'debarment',
+  'pol.party',
+  'pol.union',
+  'mil',
+  'export.control',
+  'export.risk',
+  'poi',
+] as const;
+
+type OpenSanctionTopic = (typeof OS_TOPICS_KEYS)[number];
+
+export function isOpenSanctionTopic(topic: string): topic is OpenSanctionTopic {
+  return (OS_TOPICS_KEYS as ReadonlyArray<string>).includes(topic);
+}
+
+const OS_SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   // Sanctions
   ['sanction', 'sanctions'],
   ['sanction.linked', 'sanctions'],
@@ -363,14 +522,21 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['role.diplo', 'peps'],
   ['role.spy', 'peps'],
   ['gov.head', 'peps'],
-
-  // Third-parties
-  ['fin.advisor', 'third-parties'],
-  ['role.lawyer', 'third-parties'],
-  ['role.acct', 'third-parties'],
-  ['role.journo', 'third-parties'],
-  ['role.act', 'third-parties'],
-  ['role.lobby', 'third-parties'],
+  ['gov', 'peps'],
+  ['gov.national', 'peps'],
+  ['gov.state', 'peps'],
+  ['gov.muni', 'peps'],
+  ['gov.soe', 'peps'],
+  ['gov.igo', 'peps'],
+  ['gov.admin', 'peps'],
+  ['gov.executive', 'peps'],
+  ['gov.legislative', 'peps'],
+  ['gov.judicial', 'peps'],
+  ['gov.security', 'peps'],
+  ['gov.financial', 'peps'],
+  ['pol.party', 'peps'],
+  ['pol.union', 'peps'],
+  ['mil', 'peps'],
 
   // Adverse media
   ['crime', 'adverse-media'],
@@ -391,29 +557,20 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['reg.action', 'adverse-media'],
   ['reg.warn', 'adverse-media'],
   ['debarment', 'adverse-media'],
-  ['pol.party', 'third-parties'],
-  ['pol.union', 'third-parties'],
-  ['mil', 'adverse-media'],
   ['export.control', 'adverse-media'],
   ['export.risk', 'adverse-media'],
-  ['poi', 'third-parties'],
 
-  // Default to adverse-media for ambiguous/government/corporate
+  // Default to third parties for ambiguous/corporate
+  ['fin.advisor', 'third-parties'],
+  ['role.lawyer', 'third-parties'],
+  ['role.acct', 'third-parties'],
+  ['role.journo', 'third-parties'],
+  ['role.act', 'third-parties'],
+  ['role.lobby', 'third-parties'],
+  ['poi', 'third-parties'],
   ['corp.offshore', 'third-parties'],
   ['corp.shell', 'third-parties'],
   ['corp.public', 'third-parties'],
-  ['gov', 'third-parties'],
-  ['gov.national', 'third-parties'],
-  ['gov.state', 'third-parties'],
-  ['gov.muni', 'third-parties'],
-  ['gov.soe', 'third-parties'],
-  ['gov.igo', 'third-parties'],
-  ['gov.admin', 'third-parties'],
-  ['gov.executive', 'third-parties'],
-  ['gov.legislative', 'third-parties'],
-  ['gov.judicial', 'third-parties'],
-  ['gov.security', 'third-parties'],
-  ['gov.financial', 'third-parties'],
   ['fin', 'third-parties'],
   ['fin.bank', 'third-parties'],
   ['fin.fund', 'third-parties'],
@@ -425,6 +582,28 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['pep', 'peps'],
   ['adverseMedia', 'adverse-media'],
 ]);
+
+function openSanctionsTopicToCategory(topic: string): ScreeningCategory {
+  let category = OS_SCREENING_TOPICS_MAP.get(topic);
+  if (!category) {
+    console.warn(`No category found for topic: ${topic}`);
+    category = 'third-parties';
+  }
+  return category;
+}
+
+export function openSanctionsTopicToColor(topic: string): TagProps['color'] {
+  const category = openSanctionsTopicToCategory(topic);
+  return SCREENING_CATEGORY_COLORS[category];
+}
+
+export function lexisTopicToColor(topic: string): TagProps['color'] {
+  return match(topic)
+    .with(P.string.startsWith('adverse_media'), () => SCREENING_CATEGORY_COLORS['adverse-media'])
+    .with(P.string.startsWith('sanctions'), () => SCREENING_CATEGORY_COLORS['sanctions'])
+    .with(P.string.startsWith('pep'), () => SCREENING_CATEGORY_COLORS['peps'])
+    .otherwise(() => SCREENING_CATEGORY_COLORS['other']);
+}
 
 /**
  * Attribute flags returned alongside topics that describe the entity (state),
@@ -442,18 +621,20 @@ const SCREENING_NON_TOPIC_FLAGS = new Set<string>(['isAlive']);
 export function getCategoryForTopic(topic: string): ScreeningCategory | undefined {
   if (SCREENING_NON_TOPIC_FLAGS.has(topic)) return undefined;
 
-  const exact = SCREENING_TOPICS_MAP.get(topic);
+  const exact = OS_SCREENING_TOPICS_MAP.get(topic);
   if (exact) return exact;
 
   const parts = topic.split('.');
   for (let i = parts.length - 1; i > 0; i--) {
     const prefix = parts.slice(0, i).join('.');
-    const category = SCREENING_TOPICS_MAP.get(prefix);
+    const category = OS_SCREENING_TOPICS_MAP.get(prefix);
     if (category) return category;
   }
 
   return undefined;
 }
+
+// export function screeningRiskTag
 
 /**
  * Maps ScreeningCategory to i18n key suffix.
@@ -493,7 +674,7 @@ export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] 
   return Array.from(categories);
 }
 
-export const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {
+const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = {
   sanctions: 1,
   'adverse-media': 2,
   peps: 3,

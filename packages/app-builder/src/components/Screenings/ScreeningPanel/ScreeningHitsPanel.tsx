@@ -25,6 +25,7 @@ import { Icon } from 'ui-icons';
 import { PanelContainer, PanelContent, PanelRoot } from '../../Panel/Panel';
 import { Spinner } from '../../Spinner';
 import { MatchCard } from '../MatchCard';
+import { sortScreeningMatchesByTopics } from '../match-sorting';
 import { ScreeningStatusTag } from '../ScreeningStatusTag';
 import { screeningsI18n } from '../screenings-i18n';
 import { PanelSearchDetails } from './PanelSearchDetails';
@@ -362,7 +363,7 @@ function PanelMatchList({
       ) : null}
 
       <div className="flex flex-col gap-2 mt-2">
-        {matches.map((screeningMatch) => {
+        {[...matches].sort(sortScreeningMatchesByTopics).map((screeningMatch) => {
           const isPending = screeningMatch.status === 'pending';
           const showCheckbox = showSelectControls && isPending;
 

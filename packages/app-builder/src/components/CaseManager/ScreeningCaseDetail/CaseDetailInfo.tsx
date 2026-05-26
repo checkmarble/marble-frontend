@@ -130,7 +130,7 @@ function ScreeningCaseSubtitle({ screening }: { screening: ContinuousScreening }
           if (!category) return null;
 
           return t(`continuousScreening:review.indirect_subtitle`, {
-            category: t(`screeningTopics:${category}`),
+            category: t(`screeningTopics:screening_case.category.${category}`),
           });
         })
         .when(isDirectContinuousScreening, (directScreening) => {
