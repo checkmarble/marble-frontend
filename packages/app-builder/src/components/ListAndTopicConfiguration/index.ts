@@ -8,11 +8,20 @@ export {
   buildDatasetKey,
   buildTopicKey,
   clearSectionSelections,
+  completeGlobalTopicSelections,
   getCanonicalSelectedKeys,
   isDatasetKeySelected,
+  isGlobalTopicSwitchSelected,
   isTopicKeySelected,
   makeDatasetsMap,
   setDatasetKey,
+  setGlobalTopicSwitch,
   setTopicKey,
+  syncSharpDatasets,
 } from './dataset-selection-provider-utils';
-export { getSectionLeafNames } from './dataset-utils';
+export {
+  type GlobalTopicConfig,
+  getAvailableGlobalTopicConfigs,
+  getGlobalTopicConfigs,
+  getSectionLeafNames,
+} from './dataset-utils';

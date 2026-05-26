@@ -1,5 +1,4 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
-import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
@@ -29,7 +28,6 @@ export function EntityTypePopover({
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
   const [additionalFieldsOpenRequest, setAdditionalFieldsOpenRequest] = useState(0);
-  const { ref: tagRef, dimensions } = useResizeObserver<HTMLDivElement>({ observeHeight: false });
 
   const handleSelect = (schema: SearchableSchema) => {
     onEntityTypeChange(schema);
@@ -46,7 +44,7 @@ export function EntityTypePopover({
     <div className="flex items-center gap-2 relative">
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild disabled={disabled}>
-          <div className="flex items-center gap-2 flex-wrap" ref={tagRef}>
+          <div className="flex items-center gap-2 flex-wrap">
             <Tag
               color={disabled ? 'grey' : 'purple'}
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -99,7 +97,6 @@ export function EntityTypePopover({
       </Popover.Root>
       {hasSelection && (
         <AdditionalEntityTypePopover
-          offset={dimensions.width}
           disabled={disabled}
           entityType={entityType}
           fields={fields}
@@ -124,7 +121,6 @@ function validateBirthDate(value: string): boolean {
 }
 
 interface AdditionalEntityTypePopoverProps {
-  offset: number;
   disabled: boolean;
   entityType: SearchableSchema;
   fields: Record<string, string | undefined>;
@@ -133,7 +129,6 @@ interface AdditionalEntityTypePopoverProps {
 }
 
 function AdditionalEntityTypePopover({
-  offset,
   disabled,
   entityType,
   fields: committedFields,
@@ -243,9 +238,8 @@ function AdditionalEntityTypePopover({
       </Popover.Trigger>
       <Popover.Content
         className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
-        sideOffset={8}
+        sideOffset={4}
         align="start"
-        alignOffset={-(offset + 8)} // 8px is the gap
       >
         <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1 p-2">
           {entityTypeFields.map((fieldName, index) => {

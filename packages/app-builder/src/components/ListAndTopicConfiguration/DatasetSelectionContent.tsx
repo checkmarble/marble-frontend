@@ -34,9 +34,9 @@ import {
   formatTopicLabel,
   getDatasetNames,
   getSectionLeafNames,
-  getSpecialTopicEntry,
   getSpecialTopicLabel,
   getSpecialTopicValue,
+  isGlobalTopic,
   isSpecialTopic,
   sortTopicGroupEntries,
   type TopicItem,
@@ -609,20 +609,17 @@ const FilterGroupRow = ({
   onAfterChange?: () => void;
 }) => {
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const withGlobalTopics = ListAndTopicDatasetConfiguration.select((state) => state.withGlobalTopics);
   const label = capitalize(groupKey);
   const singleItem = items.length === 1 ? items[0] : undefined;
+
+  if (isGlobalTopic(groupKey) && !withGlobalTopics) return null;
 
   return (
     <>
       {isSpecialTopic(groupKey) ? (
         <div className="px-v2-md py-v2-sm">
-          <SpecialTopicSwitch
-            item={getSpecialTopicEntry(groupKey)!}
-            sectionKey={sectionKey}
-            topicGroup={groupKey}
-            mode={mode}
-            onAfterChange={onAfterChange}
-          />
+          <SpecialTopicSwitch sectionKey={sectionKey} topicGroup={groupKey} mode={mode} onAfterChange={onAfterChange} />
         </div>
       ) : (
         <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
@@ -652,13 +649,11 @@ const FilterGroupRow = ({
 };
 
 const SpecialTopicSwitch = ({
-  item,
   sectionKey,
   topicGroup,
   mode,
   onAfterChange,
 }: {
-  item: TopicItem;
   sectionKey: ScreeningCategory;
   topicGroup: string;
   mode: string;

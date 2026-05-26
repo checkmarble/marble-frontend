@@ -1,11 +1,19 @@
+import {
+  completeGlobalTopicSelections,
+  getCanonicalSelectedKeys,
+  ListAndTopicDatasetConfiguration,
+  makeDatasetsMap,
+  syncSharpDatasets,
+} from '@app-builder/components/ListAndTopicConfiguration';
 import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useForm, useStore } from '@tanstack/react-form';
-import { createContext, type FunctionComponent, useContext, useRef, useState } from 'react';
+import { createContext, type FunctionComponent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
@@ -46,13 +54,37 @@ export function useFormManuallSearch() {
 export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete }) => {
   const { t } = useTranslation(screeningsI18n);
   const searchMutation = useFreeformSearchMutation();
+  const listConfigQuery = useListConfigQuery('manual_search');
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>([]);
+  const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
+
+  const listSharp = ListAndTopicDatasetConfiguration.createSharp({
+    datasets: makeDatasetsMap(selectedDatasets),
+    mode: 'edit',
+    variant: 'popover',
+    withGlobalTopics: false,
+  });
+
+  useEffect(() => {
+    listSharp.update((state) => {
+      syncSharpDatasets(state.datasets, selectedDatasets);
+    });
+  }, [listSharp, selectedDatasetsKey, selectedDatasets]);
 
   const form = useManualSearchForm({
     onSubmit: async (value) => {
+      let datasets = selectedDatasets;
+
+      if (listConfigQuery.data) {
+        listSharp.update((state) => {
+          completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
+        });
+        datasets = getCanonicalSelectedKeys(listSharp.value.datasets);
+      }
+
       const submitValue: FreeformSearchInput = {
         ...value,
-        datasets: selectedDatasets.length > 0 ? selectedDatasets : undefined,
+        datasets: datasets.length > 0 ? datasets : undefined,
         limit: value.limit ?? DEFAULT_LIMIT,
       };
 
@@ -144,27 +176,31 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
             }}
           />
         </div>
-        <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
-          <ScreeningThreshold
-            threshold={threshold}
-            onChange={(value) => {
-              form.setFieldValue('threshold', value);
-            }}
-            title={t('screenings:freeform_search.threshold_label')}
-          />
-          <DatasetsPopover
-            selectedDatasets={selectedDatasets}
-            onApply={setSelectedDatasets}
-            disabled={searchMutation.isPending}
-          />
-          <LimitPopover
-            disabled={searchMutation.isPending}
-            originalValue={originalLimit.current}
-            onApply={(value) => {
-              originalLimit.current = value;
-            }}
-          />
-        </div>
+        <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
+          <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
+            <ScreeningThreshold
+              threshold={threshold}
+              onChange={(value) => {
+                form.setFieldValue('threshold', value);
+              }}
+              title={t('screenings:freeform_search.threshold_label')}
+            />
+            <DatasetsPopover
+              selectedDatasets={selectedDatasets}
+              onApply={setSelectedDatasets}
+              disabled={searchMutation.isPending}
+            />
+            <LimitPopover
+              disabled={searchMutation.isPending}
+              originalValue={originalLimit.current}
+              selectedDatasets={selectedDatasets}
+              onApply={(value) => {
+                originalLimit.current = value;
+              }}
+              onApplyDatasets={setSelectedDatasets}
+            />
+          </div>
+        </ListAndTopicDatasetConfiguration.Provider>
         <div className="flex gap-2 justify-end">
           {hasActiveFilters && (
             <div className="flex gap-2">

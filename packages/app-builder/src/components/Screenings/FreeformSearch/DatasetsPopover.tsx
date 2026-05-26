@@ -4,6 +4,7 @@ import {
   getSectionLeafNames,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
+  syncSharpDatasets,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
@@ -29,20 +30,16 @@ export interface DatasetsPopoverProps {
 export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: DatasetsPopoverProps) => {
   const { t } = useTranslation([...screeningsI18n, 'scenarios']);
   const listConfigQuery = useListConfigQuery('manual_search');
+  const listSharp = ListAndTopicDatasetConfiguration.useSharp();
   const [open, setOpen] = useState(false);
-  const [datasetsMap, setDatasetsMap] = useState<Record<string, boolean>>(() => makeDatasetsMap(selectedDatasets));
-  const listSharp = ListAndTopicDatasetConfiguration.createSharp({
-    datasets: datasetsMap,
-    mode: 'edit',
-    variant: 'popover',
-  });
   const tagRef = useRef<HTMLDivElement>(null);
 
-  // Reset temp selection when popover opens
   const handleOpenChange = (isOpen: boolean) => {
     if (disabled) return;
     if (isOpen) {
-      setDatasetsMap(makeDatasetsMap(selectedDatasets));
+      listSharp.update((state) => {
+        syncSharpDatasets(state.datasets, selectedDatasets);
+      });
     }
     setOpen(isOpen);
   };
@@ -53,7 +50,9 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
   };
 
   const handleCancel = () => {
-    setDatasetsMap(makeDatasetsMap(selectedDatasets));
+    listSharp.update((state) => {
+      syncSharpDatasets(state.datasets, selectedDatasets);
+    });
     setOpen(false);
   };
 
@@ -104,9 +103,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
           </div>
         </MenuCommand.Trigger>
         <MenuCommand.Content align="start" sideOffset={4} className="w-[280px]">
-          <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
-            <DatasetSelectionContent useCase="manual_search" onApply={handleApply} onCancel={handleCancel} />
-          </ListAndTopicDatasetConfiguration.Provider>
+          <DatasetSelectionContent useCase="manual_search" onApply={handleApply} onCancel={handleCancel} />
         </MenuCommand.Content>
       </MenuCommand.Menu>
     </div>
