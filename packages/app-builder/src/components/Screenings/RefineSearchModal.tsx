@@ -18,14 +18,7 @@ import { type z } from 'zod/v4';
 import { MatchResult } from './MatchResult';
 import { ScreeningStatusTag } from './ScreeningStatusTag';
 import { screeningsI18n } from './screenings-i18n';
-
-export function setAdditionalFields(fields: string[], prev: Record<string, string>) {
-  const additionalFields = {} as Record<string, string>;
-  for (const field of fields) {
-    additionalFields[field] = prev[field] ?? '';
-  }
-  return additionalFields;
-}
+import { setAdditionalFields } from './set-additional-fields';
 
 export type RefineSearchModalProps = {
   open: boolean;

@@ -107,6 +107,7 @@
   "scenario_sanction_limit_placeholder": "5",
   "scenario_sanction_settings": "إعدادات الفحص",
   "scenario_sanction_threshold": "الحد الأدنى لدرجة التشابه (٪)",
+  "scenario_sanction_threshold_actual": "القيمة الحالية",
   "scenario_sanction_threshold_placeholder": "80",
   "scenarios": "السيناريوهات",
   "scenarios.filters.new_filter.create.button.label": "إضافة فلتر جديد",

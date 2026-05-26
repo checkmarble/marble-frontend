@@ -3,7 +3,6 @@ import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { DeleteScreeningRule } from '@app-builder/components/Scenario/Screening/Actions/DeleteScreeningRule';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
@@ -16,6 +15,7 @@ import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/Field
 import { FieldSkipIfUnder } from '@app-builder/components/Scenario/Screening/FieldSkipIfUnder';
 import { FieldToolTip } from '@app-builder/components/Scenario/Screening/FieldToolTip';
 import { ScreeningTermIgnoreList } from '@app-builder/components/Scenario/Screening/ScreeningTermIgnoreList';
+import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
@@ -245,7 +245,8 @@ function ScreeningDetail() {
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
         mutation
-          .mutateAsync(value)
+          // leave threshold undefined if it is the same as the organization threshold
+          .mutateAsync({ ...value, threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold })
           .then(() => {
             setHasBeenSaved(true);
             toast.success(t('common:success.save'));
@@ -265,7 +266,7 @@ function ScreeningDetail() {
       description: screeningConfig?.description ?? '',
       ruleGroup: screeningConfig?.ruleGroup ?? 'Screening',
       datasets: screeningConfig?.datasets ?? [],
-      threshold: screeningConfig?.threshold,
+      threshold: screeningConfig?.threshold ?? org.sanctionThreshold ?? 70,
       forcedOutcome: (screeningConfig?.forcedOutcome as ScreeningOutcome) ?? 'block_and_review',
       triggerRule: screeningConfig?.triggerRule,
       entityType: screeningConfig?.entityType,
@@ -439,40 +440,27 @@ function ScreeningDetail() {
                   </form.Field>
                 </div>
                 <div className="bg-surface-card border-grey-border flex flex-col gap-2 rounded-md border p-4">
-                  <div className="text-s flex items-center">
-                    {t('scenarios:edit_sanction.consideration_matchings')}
-                    <form.Field
-                      name="threshold"
-                      validators={{
-                        onChange: editScreeningFormSchema.shape.threshold,
-                        onBlur: editScreeningFormSchema.shape.threshold,
-                      }}
-                    >
-                      {(field) => (
-                        <div className="flex flex-col gap-1">
-                          <FormInput
-                            type="number"
-                            name={field.name}
-                            onBlur={field.handleBlur}
-                            min={50}
-                            max={100}
-                            disabled={editor === 'view'}
-                            className="z-0 ml-2 mr-1 w-14 py-1.5"
-                            defaultValue={field.state.value}
-                            onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                            valid={field.state.meta.errors?.length === 0}
-                          />
-                          <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                        </div>
-                      )}
-                    </form.Field>
-                    <Trans
-                      t={t}
-                      i18nKey="scenarios:edit_sanction.default_value"
-                      components={{ Style: <span className="m-1 font-semibold" /> }}
-                      values={{ threshold: org.sanctionThreshold }}
-                    />
-                  </div>
+                  <form.Field
+                    name="threshold"
+                    validators={{
+                      onChange: editScreeningFormSchema.shape.threshold,
+                      onBlur: editScreeningFormSchema.shape.threshold,
+                    }}
+                  >
+                    {(field) => (
+                      <div className="flex flex-col gap-1">
+                        <ScreeningThreshold
+                          threshold={field.state.value}
+                          onChange={(value) => form.setFieldValue(field.name, value)}
+                          title={t('scenarios:edit_sanction.consideration_matchings')}
+                          disabled={editor === 'view'}
+                        />
+
+                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                      </div>
+                    )}
+                  </form.Field>
+
                   <div className="flex items-center gap-2">
                     <span className="text-s">{t('scenarios:sanction_forced_outcome_heading')}</span>
                     <form.Field name="forcedOutcome">

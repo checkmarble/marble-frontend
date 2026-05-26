@@ -112,6 +112,7 @@
   "freeform_search.entity_type_placeholder": "Select entity type...",
   "freeform_search.fields_for_entity": "Fields for {{entity}}",
   "freeform_search.filter_by_list": "Filter by list",
+  "freeform_search.include_deceased": "Include deceased",
   "freeform_search.initial_state": "Enter search criteria and click Search to find matches.",
   "freeform_search.limit_description": "Maximum number of results to return (10-50).",
   "freeform_search.limit_label": "Results Limit {{limit}}",

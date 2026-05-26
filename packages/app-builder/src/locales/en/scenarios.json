@@ -441,6 +441,7 @@
   "sanction.lists.callout": "Select lists that are relevant to the scenario",
   "sanction.lists.nb_selected_one": "{{count}} selected",
   "sanction.lists.nb_selected_other": "{{count}} selected",
+  "sanction.lists.no_lists_selected": "All",
   "sanction.lists.other": "other",
   "sanction.lists.peps": "PEP",
   "sanction.lists.sanctions": "sanctions",

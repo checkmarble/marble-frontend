@@ -2,6 +2,7 @@ import { CalloutV2, CollapsiblePaper, Page } from '@app-builder/components';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { FormSelectTimezone } from '@app-builder/components/Settings/FormSelectTimezone';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -147,17 +148,10 @@ function Scenarios() {
                   <form.Field name="sanctionThreshold">
                     {(field) => (
                       <div className="flex flex-col gap-4">
-                        <FormLabel name={field.name} className="text-m" valid={field.state.meta.errors.length === 0}>
-                          {t('settings:scenario_sanction_threshold')}
-                        </FormLabel>
-                        <FormInput
-                          defaultValue={field.state.value}
-                          type="number"
-                          name={field.name}
-                          onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                          placeholder={t('settings:scenario_sanction_threshold_placeholder')}
-                          valid={field.state.meta.errors.length === 0}
+                        <ScreeningThreshold
+                          threshold={field.state.value}
+                          onChange={(value) => form.setFieldValue(field.name, value)}
+                          title={t('settings:scenario_sanction_threshold')}
                         />
                         <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                       </div>
