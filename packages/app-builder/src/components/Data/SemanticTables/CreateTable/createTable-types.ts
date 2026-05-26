@@ -165,7 +165,7 @@ export function adaptSemanticField(
           .with('middle_name', () => 'middle_name' as const)
           .with('last_name', () => 'last_name' as const)
           .with('caption', () => 'name' as const)
-          .exhaustive(),
+          .otherwise(() => undefined),
       )
       .with('enum', () => 'enum' as const)
       .with('currency_code', () => 'currency' as const)
@@ -179,7 +179,7 @@ export function adaptSemanticField(
           .with('url', () => 'url' as const)
           .with('email', () => 'email' as const)
           .with('phone', () => 'phone_number' as const)
-          .exhaustive(),
+          .otherwise(() => undefined),
       )
       .with('account_identifier', () =>
         match(subType as SemanticSubTypeFieldMap['account_identifier'] | undefined)
@@ -187,7 +187,7 @@ export function adaptSemanticField(
           .with('account_number', () => 'account_number' as const)
           .with('iban', () => 'iban' as const)
           .with('bic', () => 'bic' as const)
-          .exhaustive(),
+          .otherwise(() => undefined),
       )
       .with('timestamp', () => undefined)
       .with('date_of_birth', () => 'date_of_birth' as const)
