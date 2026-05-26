@@ -29,7 +29,18 @@ import {
   setDatasetKey,
   setTopicKey,
 } from './dataset-selection-provider-utils';
-import { formatDatasetTitle, formatTopicLabel, getSectionLeafNames } from './dataset-utils';
+import {
+  formatDatasetTitle,
+  formatTopicLabel,
+  getDatasetNames,
+  getSectionLeafNames,
+  getSpecialTopicLabel,
+  getSpecialTopicValue,
+  isGlobalTopic,
+  isSpecialTopic,
+  sortTopicGroupEntries,
+  type TopicItem,
+} from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
@@ -165,10 +176,10 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
 
-  const leafNames = getSectionLeafNames(section);
+  const datasetNames = getDatasetNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const selectedCount = ListAndTopicDatasetConfiguration.select(
-    (state) => leafNames.filter((n) => state.datasets[n]).length,
+    (state) => datasetNames.filter((n) => state.datasets[n]).length,
   );
 
   return match(variant)
@@ -186,7 +197,11 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                   onCheckedChange={() => {
                     listConfig.update((state) => {
                       const nextValue = !state.datasets[sectionKey];
-                      state.datasets[sectionKey] = nextValue;
+                      if (nextValue) {
+                        state.datasets[sectionKey] = true;
+                      } else {
+                        clearSectionSelections(state.datasets, sectionKey, getSectionLeafNames(section));
+                      }
                     });
                   }}
                 />
@@ -197,9 +212,11 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
               />
               <DatasetTag category={sectionKey} />
             </div>
-            <span className="text-xs text-grey-50 pl-v2-md">
-              {selectedCount} / {leafNames.length}
-            </span>
+            {datasetNames.length > 0 && (
+              <span className="text-xs text-grey-50 pl-v2-md">
+                {selectedCount} / {datasetNames.length}
+              </span>
+            )}
           </div>
         </Collapsible.Title>
         <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
@@ -218,12 +235,14 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
         )}
       >
         <DatasetTag category={sectionKey} />
-        <span className="flex items-center gap-v2-md">
-          <span className="text-xs text-grey-50">
-            {t('continuousScreening:creation.datasetSelection.lists', { count: leafNames.length })}
+        {datasetNames.length > 0 && (
+          <span className="flex items-center gap-v2-md">
+            <span className="text-xs text-grey-50">
+              {t('continuousScreening:creation.datasetSelection.lists', { count: datasetNames.length })}
+            </span>
+            <Icon icon="arrow-right" className="size-4 text-grey-50" />
           </span>
-          <Icon icon="arrow-right" className="size-4 text-grey-50" />
-        </span>
+        )}
       </button>
     ))
     .exhaustive();
@@ -259,9 +278,10 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
             disabled={mode === 'view'}
             onCheckedChange={(checked) => {
               listConfig.update((state) => {
-                state.datasets[sectionKey] = checked;
-                if (!checked) {
-                  clearSectionSelections(state.datasets, sectionKey);
+                if (checked) {
+                  state.datasets[sectionKey] = true;
+                } else {
+                  clearSectionSelections(state.datasets, sectionKey, getSectionLeafNames(section));
                 }
               });
             }}
@@ -365,7 +385,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
         ))
       )}
       {topics &&
-        Object.entries(topics).map(([key, items]) => (
+        sortTopicGroupEntries(Object.entries(topics)).map(([key, items]) => (
           <FilterGroupRow
             key={key}
             sectionKey={sectionKey}
@@ -545,7 +565,6 @@ const ViewTag = ({ label }: { label: string }) => (
   </Tag>
 );
 
-type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
 type ConditionalTopicItem = NonNullable<SectionData['conditionalTopics']>[keyof NonNullable<
   SectionData['conditionalTopics']
 >]['items'][number];
@@ -590,24 +609,88 @@ const FilterGroupRow = ({
   onAfterChange?: () => void;
 }) => {
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const withGlobalTopics = ListAndTopicDatasetConfiguration.select((state) => state.withGlobalTopics);
   const label = capitalize(groupKey);
+  const singleItem = items.length === 1 ? items[0] : undefined;
+
+  if (isGlobalTopic(groupKey) && !withGlobalTopics) return null;
 
   return (
-    <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
-      <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
-      <div className="flex items-center gap-v2-sm flex-1 min-w-0">
-        {items.length === 1 && items[0] ? (
-          <SingleItemToggle
-            item={items[0]}
-            sectionKey={sectionKey}
-            topicGroup={groupKey}
-            mode={mode}
-            onAfterChange={onAfterChange}
-          />
-        ) : (
-          <FilterGroupTags items={items} sectionKey={sectionKey} topicGroup={groupKey} onAfterChange={onAfterChange} />
-        )}
-      </div>
+    <>
+      {isSpecialTopic(groupKey) ? (
+        <div className="px-v2-md py-v2-sm">
+          <SpecialTopicSwitch sectionKey={sectionKey} topicGroup={groupKey} mode={mode} onAfterChange={onAfterChange} />
+        </div>
+      ) : (
+        <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
+          <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
+          <div className="flex items-center gap-v2-sm flex-1 min-w-0">
+            {singleItem ? (
+              <SingleItemToggle
+                item={singleItem}
+                sectionKey={sectionKey}
+                topicGroup={groupKey}
+                mode={mode}
+                onAfterChange={onAfterChange}
+              />
+            ) : (
+              <FilterGroupTags
+                items={items}
+                sectionKey={sectionKey}
+                topicGroup={groupKey}
+                onAfterChange={onAfterChange}
+              />
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const SpecialTopicSwitch = ({
+  sectionKey,
+  topicGroup,
+  mode,
+  onAfterChange,
+}: {
+  sectionKey: ScreeningCategory;
+  topicGroup: string;
+  mode: string;
+  onAfterChange?: () => void;
+}) => {
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
+  const topicValue = getSpecialTopicValue(topicGroup);
+  const labelKey = getSpecialTopicLabel(topicGroup);
+  const switchId = `special-topic-${sectionKey}-${topicGroup}-${topicValue}`;
+  const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
+    isTopicKeySelected(state.datasets, sectionKey, topicGroup, topicValue),
+  );
+  const { t } = useTranslation(['continuousScreening']);
+
+  if (mode === 'view' && !isSelected) return null;
+
+  return (
+    <div className="flex items-center gap-v2-sm">
+      <Switch
+        id={switchId}
+        checked={isSelected}
+        disabled={mode === 'view'}
+        onCheckedChange={(checked) => {
+          listConfig.update((state) => {
+            setTopicKey(state.datasets, sectionKey, topicGroup, topicValue, checked);
+            if (checked) {
+              state.datasets[sectionKey] = true;
+            }
+          });
+          onAfterChange?.();
+        }}
+      />
+      {labelKey ? (
+        <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
+          {t(labelKey)}
+        </label>
+      ) : null}
     </div>
   );
 };

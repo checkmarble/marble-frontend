@@ -1,73 +1,60 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
-import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
-import { useStore } from '@tanstack/react-form';
 import clsx from 'clsx';
 import CountryFlag from 'country-flag-emojis';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
-import { setAdditionalFields, useFormManuallSearch } from './FreeformSearchForm';
 
-export const EntityTypePopover = ({ disabled, onApply }: { disabled: boolean; onApply: () => void }) => {
+export interface EntityTypePopoverProps {
+  disabled: boolean;
+  entityType: SearchableSchema | undefined;
+  fields: Record<string, string | undefined>;
+  onEntityTypeChange: (entityType: SearchableSchema) => void;
+  onFieldChange: (fieldName: string, value: string) => void;
+}
+
+export function EntityTypePopover({
+  disabled,
+  entityType,
+  fields,
+  onEntityTypeChange,
+  onFieldChange,
+}: EntityTypePopoverProps) {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
-  const form = useFormManuallSearch();
-  const value = useStore(form.store, (state) => state.values.entityType);
-  const fields = useStore(form.store, (state) => state.values.fields);
-  const { ref: tagRef, dimensions } = useResizeObserver<HTMLDivElement>({ observeHeight: false });
+  const [additionalFieldsOpenRequest, setAdditionalFieldsOpenRequest] = useState(0);
 
   const handleSelect = (schema: SearchableSchema) => {
-    form.setFieldValue('entityType', schema);
-    form.setFieldValue('fields', setAdditionalFields(SEARCH_ENTITIES[schema].fields, form.state.values.fields));
-    onApply();
+    onEntityTypeChange(schema);
     setOpen(false);
+    if (schema !== 'Thing') {
+      setAdditionalFieldsOpenRequest((count) => count + 1);
+    }
   };
 
-  const hasSelection = value && value !== 'Thing';
+  const hasSelection = entityType && entityType !== 'Thing';
   const schemas = R.keys(SEARCH_ENTITIES);
-
-  const filterTags = hasSelection
-    ? SEARCH_ENTITIES[value].fields
-        .filter((f) => f !== 'name')
-        .map((fieldName) => {
-          const fieldValue = (fields as Record<string, string | undefined>)[fieldName];
-          if (!fieldValue) return null;
-          const label = getFilterTagLabel(fieldName, fieldValue, t);
-          if (!label) return null;
-          return (
-            <Tag
-              key={fieldName}
-              color={disabled ? 'grey' : 'purple'}
-              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span className="font-medium">{label}</span>
-            </Tag>
-          );
-        })
-        .filter(Boolean)
-    : null;
 
   return (
     <div className="flex items-center gap-2 relative">
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild disabled={disabled}>
-          <div className="flex items-center gap-2 flex-wrap" ref={tagRef}>
+          <div className="flex items-center gap-2 flex-wrap">
             <Tag
               color={disabled ? 'grey' : 'purple'}
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="font-medium">
                 {hasSelection
-                  ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
+                  ? t(`screenings:refine_modal.schema.${entityType.toLowerCase()}`)
                   : t('screenings:freeform_search.all_entities')}
               </span>
             </Tag>
-            {filterTags}
           </div>
         </Popover.Trigger>
         <Popover.Portal>
@@ -81,7 +68,7 @@ export const EntityTypePopover = ({ disabled, onApply }: { disabled: boolean; on
               {schemas.map((schema) => {
                 const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
                 const fieldForSchema = SEARCH_ENTITIES[schema].fields;
-                const isSelected = value === schema;
+                const isSelected = entityType === schema;
 
                 return (
                   <button
@@ -108,142 +95,213 @@ export const EntityTypePopover = ({ disabled, onApply }: { disabled: boolean; on
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
-      {hasSelection && <AdditionalEntityTypePopover offset={dimensions.width} disabled={disabled} onApply={onApply} />}
+      {hasSelection && (
+        <AdditionalEntityTypePopover
+          disabled={disabled}
+          entityType={entityType}
+          fields={fields}
+          openRequest={additionalFieldsOpenRequest}
+          onFieldChange={onFieldChange}
+        />
+      )}
     </div>
   );
-};
+}
+
+function getDraftFieldsFromCommitted(
+  entityTypeFields: string[],
+  committedFields: Record<string, string | undefined>,
+): Record<string, string> {
+  return Object.fromEntries(entityTypeFields.map((fieldName) => [fieldName, committedFields[fieldName] ?? '']));
+}
+
+function validateBirthDate(value: string): boolean {
+  if (!value) return true;
+  return /^\d{4}(-\d{2}-\d{2})?$/.test(value);
+}
+
+interface AdditionalEntityTypePopoverProps {
+  disabled: boolean;
+  entityType: SearchableSchema;
+  fields: Record<string, string | undefined>;
+  openRequest: number;
+  onFieldChange: (fieldName: string, value: string) => void;
+}
 
 function AdditionalEntityTypePopover({
-  offset,
   disabled,
-  onApply,
-}: {
-  offset: number;
-  disabled: boolean;
-  onApply: () => void;
-}) {
+  entityType,
+  fields: committedFields,
+  openRequest,
+  onFieldChange,
+}: AdditionalEntityTypePopoverProps) {
   const [open, setOpen] = useState(false);
-  const form = useFormManuallSearch();
-  const entityType = useStore(form.store, (state) => state.values.entityType);
-  const entityTypeFields = entityType ? SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name') : [];
+  const entityTypeFields = SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name');
   const { t } = useTranslation(screeningsI18n);
 
+  const [draftFields, setDraftFields] = useState<Record<string, string>>(() =>
+    getDraftFieldsFromCommitted(entityTypeFields, committedFields),
+  );
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const lastProcessedOpenRequest = useRef(0);
+  const hasSelection = entityType && entityType !== 'Thing';
+
+  const filterTags = hasSelection
+    ? SEARCH_ENTITIES[entityType].fields
+        .filter((f) => f !== 'name')
+        .map((fieldName) => {
+          const fieldValue = committedFields[fieldName];
+          if (!fieldValue) return null;
+          const label = getFilterTagLabel(fieldName, fieldValue, t);
+          if (!label) return null;
+          return (
+            <Tag
+              key={fieldName}
+              color={disabled ? 'grey' : 'purple'}
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="font-medium">{label}</span>
+            </Tag>
+          );
+        })
+        .filter(Boolean)
+    : null;
+
+  useEffect(() => {
+    if (openRequest <= lastProcessedOpenRequest.current || disabled) return;
+    lastProcessedOpenRequest.current = openRequest;
+    setDraftFields(getDraftFieldsFromCommitted(entityTypeFields, committedFields));
+    setFieldErrors({});
+    setOpen(true);
+  }, [openRequest, disabled]);
+
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      if (disabled) return;
+      if (isOpen) {
+        setDraftFields(getDraftFieldsFromCommitted(entityTypeFields, committedFields));
+        setFieldErrors({});
+      }
+      setOpen(isOpen);
+    },
+    [committedFields, disabled, entityTypeFields],
+  );
+
+  const updateDraftField = (fieldName: string, value: string) => {
+    setDraftFields((prev) => ({ ...prev, [fieldName]: value }));
+    setFieldErrors((prev) => {
+      if (!prev[fieldName]) return prev;
+      const next = { ...prev };
+      delete next[fieldName];
+      return next;
+    });
+  };
+
+  const handleApply = () => {
+    const errors: Record<string, string> = {};
+    for (const fieldName of entityTypeFields) {
+      if (fieldName === 'birthDate' && !validateBirthDate(draftFields[fieldName] ?? '')) {
+        errors[fieldName] = t('screenings:freeform_search.birth_date_invalid');
+      }
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+    for (const fieldName of entityTypeFields) {
+      onFieldChange(fieldName, draftFields[fieldName] ?? '');
+    }
+    setOpen(false);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild disabled={disabled}>
-        <Icon
-          icon="plus"
-          className={cn(
-            'size-4 text-purple-primary cursor-pointer ',
-            disabled && 'text-grey-placeholder opacity-50 cursor-not-allowed ',
-          )}
-        />
+        <button
+          type="button"
+          className="flex items-center gap-2 flex-wrap"
+          aria-label={t('screenings:freeform_search.advanced_filters')}
+        >
+          {filterTags}
+          <Icon
+            icon="plus"
+            className={cn(
+              'size-4 text-purple-primary cursor-pointer ',
+              disabled && 'text-grey-placeholder opacity-50 cursor-not-allowed ',
+            )}
+          />
+        </button>
       </Popover.Trigger>
       <Popover.Content
         className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
-        sideOffset={8}
+        sideOffset={4}
         align="start"
-        alignOffset={-(offset + 8)} // 8px is the gap
       >
         <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1 p-2">
           {entityTypeFields.map((fieldName, index) => {
             const isLastOdd = index === entityTypeFields.length - 1 && entityTypeFields.length % 2 === 1;
+            const value = draftFields[fieldName] ?? '';
+
+            if (fieldName === 'country' || fieldName === 'nationality') {
+              return (
+                <SelectCountry
+                  key={fieldName}
+                  name={fieldName}
+                  rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                  className="w-full"
+                  value={countryFormStringToValue(value)}
+                  onValueChange={(v) => updateDraftField(fieldName, countryValueToFormString(v))}
+                  placeholder={t(`screenings:entity.property.${fieldName}`)}
+                />
+              );
+            }
+            if (fieldName === 'birthDate') {
+              return (
+                <div key={fieldName} className={cn('flex flex-col gap-1', isLastOdd && 'col-span-2 lg:col-span-1')}>
+                  <Input
+                    name={fieldName}
+                    value={value}
+                    onChange={(e) => updateDraftField(fieldName, e.target.value)}
+                    className="w-full"
+                    placeholder={t('screenings:entity.property.birthDate.format')}
+                  />
+                  {fieldErrors[fieldName] && <span className="text-red-primary text-xs">{fieldErrors[fieldName]}</span>}
+                </div>
+              );
+            }
             return (
-              <form.Field
+              <Input
                 key={fieldName}
-                name={`fields.${fieldName}`}
-                validators={
-                  fieldName === 'birthDate'
-                    ? {
-                        onChange: ({ value }) => {
-                          const v = (value as string) ?? '';
-                          if (!v) return undefined;
-                          return /^\d{4}(-\d{2}-\d{2})?$/.test(v)
-                            ? undefined
-                            : t('screenings:freeform_search.birth_date_invalid');
-                        },
-                      }
-                    : undefined
-                }
-              >
-                {(formField) => {
-                  if (fieldName === 'country' || fieldName === 'nationality') {
-                    return (
-                      <SelectCountry
-                        name={formField.name}
-                        rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
-                        className="w-full"
-                        value={countryFormStringToValue((formField.state.value as string) ?? '')}
-                        onValueChange={(v) => formField.handleChange(countryValueToFormString(v))}
-                        placeholder={t(`screenings:entity.property.${fieldName}`)}
-                      />
-                    );
-                  }
-                  if (fieldName === 'birthDate') {
-                    return (
-                      <div className={cn('flex flex-col gap-1', isLastOdd && 'col-span-2 lg:col-span-1')}>
-                        <Input
-                          name={formField.name}
-                          value={(formField.state.value as string) ?? ''}
-                          onChange={(e) => formField.handleChange(e.target.value)}
-                          onBlur={formField.handleBlur}
-                          className="w-full"
-                          placeholder={t('screenings:entity.property.birthDate.format')}
-                        />
-                        {formField.state.meta.errors.length > 0 && (
-                          <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
-                        )}
-                      </div>
-                    );
-                  }
-                  return (
-                    <Input
-                      name={formField.name}
-                      value={(formField.state.value as string) ?? ''}
-                      onChange={(e) => formField.handleChange(e.target.value)}
-                      className={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
-                      placeholder={t(`screenings:entity.property.${fieldName}`)}
-                    />
-                  );
-                }}
-              </form.Field>
+                name={fieldName}
+                value={value}
+                onChange={(e) => updateDraftField(fieldName, e.target.value)}
+                className={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
+                placeholder={t(`screenings:entity.property.${fieldName}`)}
+              />
             );
           })}
           {/* Actions */}
           <div className="flex gap-2">
-            {/* Apply button */}
-            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-              {([canSubmit, isSubmitting]) => (
-                <Button
-                  type="submit"
-                  disabled={!canSubmit || isSubmitting}
-                  variant="primary"
-                  size="default"
-                  className="w-full justify-center"
-                  onClick={() => {
-                    setOpen(false);
-                    onApply();
-                  }}
-                >
-                  {isSubmitting ? (
-                    <Icon icon="spinner" className="size-5 animate-spin" />
-                  ) : (
-                    <>
-                      {t('screenings:freeform_search.apply')}
-                      <Icon icon="search" className="size-5" />
-                    </>
-                  )}
-                </Button>
-              )}
-            </form.Subscribe>
+            <Button
+              type="button"
+              variant="primary"
+              size="default"
+              className="w-full justify-center"
+              onClick={handleApply}
+            >
+              {t('screenings:freeform_search.apply')}
+            </Button>
+
             <Button
               type="button"
               variant="secondary"
               size="default"
               className="w-full justify-center"
-              onClick={() => {
-                setOpen(false);
-              }}
+              onClick={handleCancel}
             >
               {t('common:cancel')}
             </Button>

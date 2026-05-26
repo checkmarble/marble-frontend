@@ -1,40 +1,41 @@
+import {
+  completeGlobalTopicSelections,
+  getCanonicalSelectedKeys,
+  ListAndTopicDatasetConfiguration,
+  makeDatasetsMap,
+  syncSharpDatasets,
+} from '@app-builder/components/ListAndTopicConfiguration';
+import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useForm, useStore } from '@tanstack/react-form';
-import { createContext, type FunctionComponent, useContext, useRef, useState } from 'react';
+import { createContext, type FunctionComponent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, ThresholdRange } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
+import { setAdditionalFields } from '../set-additional-fields';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
 import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
-
-export function setAdditionalFields(
-  fields: string[],
-  prev: FreeformSearchInput['fields'],
-): FreeformSearchInput['fields'] {
-  const result: Record<string, string> = {};
-  for (const field of fields) {
-    const prevValue = prev as Record<string, string | undefined>;
-    result[field] = prevValue[field] ?? '';
-  }
-  return result as FreeformSearchInput['fields'];
-}
 
 interface FreeformSearchFormProps {
   onSearchComplete: (results: ScreeningMatchPayload[], searchInputs: FreeformSearchInput) => void;
 }
 
 function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInput) => void | Promise<void> }) {
+  const { org } = useOrganizationDetails();
   return useForm({
     defaultValues: {
       entityType: 'Thing',
-      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {} as FreeformSearchInput['fields']),
+      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {}) as FreeformSearchInput['fields'],
       limit: DEFAULT_LIMIT,
-      threshold: 60,
+      threshold: org.sanctionThreshold ?? 70,
     } as FreeformSearchInput,
     onSubmit: ({ value }) => onSubmit(value),
   });
@@ -53,13 +54,37 @@ export function useFormManuallSearch() {
 export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete }) => {
   const { t } = useTranslation(screeningsI18n);
   const searchMutation = useFreeformSearchMutation();
+  const listConfigQuery = useListConfigQuery('manual_search');
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>([]);
+  const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
+
+  const listSharp = ListAndTopicDatasetConfiguration.createSharp({
+    datasets: makeDatasetsMap(selectedDatasets),
+    mode: 'edit',
+    variant: 'popover',
+    withGlobalTopics: false,
+  });
+
+  useEffect(() => {
+    listSharp.update((state) => {
+      syncSharpDatasets(state.datasets, selectedDatasets);
+    });
+  }, [listSharp, selectedDatasetsKey, selectedDatasets]);
 
   const form = useManualSearchForm({
     onSubmit: async (value) => {
+      let datasets = selectedDatasets;
+
+      if (listConfigQuery.data) {
+        listSharp.update((state) => {
+          completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
+        });
+        datasets = getCanonicalSelectedKeys(listSharp.value.datasets);
+      }
+
       const submitValue: FreeformSearchInput = {
         ...value,
-        datasets: selectedDatasets.length > 0 ? selectedDatasets : undefined,
+        datasets: datasets.length > 0 ? datasets : undefined,
         limit: value.limit ?? DEFAULT_LIMIT,
       };
 
@@ -78,6 +103,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
   const threshold = useStore(form.store, (state) => state.values.threshold);
   const entityType = useStore(form.store, (state) => state.values.entityType);
+  const fields = useStore(form.store, (state) => state.values.fields);
   const limit = useStore(form.store, (state) => state.values.limit);
   const originalLimit = useRef(limit ?? DEFAULT_LIMIT);
 
@@ -90,6 +116,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
   const handleClearFilters = () => {
     form.reset();
     setSelectedDatasets([]);
+    originalLimit.current = DEFAULT_LIMIT;
   };
 
   const hasActiveFilters =
@@ -122,13 +149,6 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
                       className="w-full"
                       borderColor={formField.state.meta.errors.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
                       placeholder={t('screenings:freeform_search.name_placeholder')}
-                      onBlur={() => form.handleSubmit()}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          form.handleSubmit();
-                        }
-                      }}
                     />
                     {formField.state.meta.errors.length > 0 && (
                       <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
@@ -138,52 +158,75 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
               </form.Field>
             </div>
           </form>
-          <EntityTypePopover disabled={searchMutation.isPending} onApply={form.handleSubmit} />
+          <EntityTypePopover
+            disabled={searchMutation.isPending}
+            entityType={entityType}
+            fields={fields as Record<string, string | undefined>}
+            onEntityTypeChange={(schema) => {
+              form.setFieldValue('entityType', schema);
+              form.setFieldValue(
+                'fields',
+                setAdditionalFields(
+                  SEARCH_ENTITIES[schema].fields,
+                  fields as Record<string, string | undefined>,
+                ) as FreeformSearchInput['fields'],
+              );
+            }}
+            onFieldChange={(fieldName, value) => {
+              form.setFieldValue(`fields.${fieldName}` as 'fields.name', value);
+            }}
+          />
         </div>
-        <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
-          <DatasetsPopover
-            selectedDatasets={selectedDatasets}
-            onApply={setSelectedDatasets}
-            disabled={searchMutation.isPending}
-          />
-
-          <ThresholdRange
-            title={t('screenings:freeform_search.threshold_label')}
-            defaultDescription={t('screenings:freeform_search.threshold_description')}
-            value={threshold}
-            onChange={(value) => {
-              form.setFieldValue('threshold', value);
-              form.handleSubmit();
-            }}
-            values={[
-              { value: 40, label: t('screenings:freeform_search.threshold.40'), color: 'var(--color-red-secondary)' },
-              {
-                value: 50,
-                label: t('screenings:freeform_search.threshold.50'),
-                color: 'var(--color-orange-secondary)',
-              },
-              { value: 60, label: t('screenings:freeform_search.threshold.60'), color: 'var(--color-yellow-primary)' },
-              { value: 70, label: t('screenings:freeform_search.threshold.70'), color: 'var(--color-green-disabled)' },
-              { value: 80, label: t('screenings:freeform_search.threshold.80'), color: 'var(--color-green-primary)' },
-              { value: 90, label: t('screenings:freeform_search.threshold.90'), color: 'var(--color-green-hover)' },
-            ]}
-            initialColor="var(--color-red-hover)"
-          />
-          <LimitPopover
-            disabled={searchMutation.isPending}
-            originalValue={originalLimit.current}
-            onApply={(value) => {
-              originalLimit.current = value;
-              form.handleSubmit();
-            }}
-          />
+        <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
+          <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
+            <ScreeningThreshold
+              threshold={threshold}
+              onChange={(value) => {
+                form.setFieldValue('threshold', value);
+              }}
+              title={t('screenings:freeform_search.threshold_label')}
+            />
+            <DatasetsPopover
+              selectedDatasets={selectedDatasets}
+              onApply={setSelectedDatasets}
+              disabled={searchMutation.isPending}
+            />
+            <LimitPopover
+              disabled={searchMutation.isPending}
+              originalValue={originalLimit.current}
+              selectedDatasets={selectedDatasets}
+              onApply={(value) => {
+                originalLimit.current = value;
+              }}
+              onApplyDatasets={setSelectedDatasets}
+            />
+          </div>
+        </ListAndTopicDatasetConfiguration.Provider>
+        <div className="flex gap-2 justify-end">
           {hasActiveFilters && (
             <div className="flex gap-2">
-              <Button variant="secondary" appearance="link" size="default" onClick={handleClearFilters}>
+              <Button variant="secondary" appearance="stroked" size="default" onClick={handleClearFilters}>
                 {t('screenings:freeform_search.clear_filters')}
               </Button>
             </div>
           )}
+          <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+            {([canSubmit, isSubmitting]) => {
+              return (
+                <Button
+                  variant="primary"
+                  size="default"
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting}
+                  onClick={handleSubmit}
+                  className="flex items-center gap-v2-xs"
+                >
+                  <span>{t('screenings:freeform_search.submit')}</span>
+                  {isSubmitting && <Icon icon="spinner" className="size-5 animate-spin" />}
+                </Button>
+              );
+            }}
+          </form.Subscribe>
         </div>
       </div>
     </ManualSearchFormContext.Provider>
