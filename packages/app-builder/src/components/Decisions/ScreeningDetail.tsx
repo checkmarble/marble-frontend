@@ -17,7 +17,11 @@ export function ScreeningDetail({ screening }: { screening: Screening }) {
       <Collapsible.Title>
         <div className="flex grow items-center justify-between">
           <span>{screening.config.name}</span>
-          <ScreeningStatusTag status={screening.status} className="h-8" />
+          <ScreeningStatusTag
+            status={screening.status}
+            pendingHitCount={screening.matches.filter((m) => m.status === 'pending').length}
+            className="h-8"
+          />
         </div>
       </Collapsible.Title>
       <Collapsible.Content>

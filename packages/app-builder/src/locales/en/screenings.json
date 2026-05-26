@@ -278,9 +278,8 @@
   "start_reviewing": "Start reviewing",
   "status.confirmed_hit": "Confirmed hit",
   "status.error": "Error",
-  "status.in_review": "Hits to review",
-  "status.no_hit": "No match ({{count}})",
-  "status.pending": "Hits to review ({{count}})",
+  "status.in_review": "Hits to review ({{count}})",
+  "status.no_hit": "No match",
   "status.skipped": "Skipped",
   "success.match_enriched": "Match successfully enriched"
 }
