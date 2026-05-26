@@ -126,7 +126,12 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
                     }
                   }}
                 >
-                  <ScreeningStatusBadge status={screening.status} decisionId={decision.id} screeningId={screening.id} />
+                  <ScreeningStatusBadge
+                    status={screening.status}
+                    decisionId={decision.id}
+                    screeningId={screening.id}
+                    nbHits={screening.count}
+                  />
                 </div>
               </div>
             ))}

@@ -124,7 +124,7 @@ export function RefineSearchModal({
                         t={t}
                         i18nKey="screenings:refine_modal.no_match_callout"
                         components={{
-                          Status: <ScreeningStatusTag status="no_hit" />,
+                          Status: <ScreeningStatusTag status="no_hit" pendingHitCount={0} />,
                         }}
                       />
                     </div>

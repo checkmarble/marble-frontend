@@ -173,7 +173,10 @@ export function ScreeningHitsPanel({
           />
           <div className="flex flex-1 items-center gap-2">
             <h2 className="text-xl font-semibold text-grey-primary tracking-[-0.8px] leading-0">{currentName}</h2>
-            <ScreeningStatusTag status={currentStatus} />
+            <ScreeningStatusTag
+              status={currentStatus}
+              pendingHitCount={screeningQuery.data?.matches.filter((m) => m.status === 'pending').length}
+            />
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {showBulkButton ? (

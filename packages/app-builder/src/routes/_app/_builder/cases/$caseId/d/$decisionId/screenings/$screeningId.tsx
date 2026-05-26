@@ -109,7 +109,10 @@ export const Route = createFileRoute('/_app/_builder/cases/$caseId/d/$decisionId
             >
               <span className="line-clamp-2 text-start">{screening.config.name}</span>
             </BreadCrumbLink>
-            <ScreeningStatusTag status={screening.status} />
+            <ScreeningStatusTag
+              status={screening.status}
+              pendingHitCount={screening.matches.filter((m) => m.status === 'pending').length}
+            />
           </div>
         );
       },
