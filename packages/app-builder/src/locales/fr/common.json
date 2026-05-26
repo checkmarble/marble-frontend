@@ -12,6 +12,7 @@
   "collapse": "Replier",
   "copy": "Copier",
   "create": "Créer",
+  "dataset_freshness_banner": "Les données utilisées pour le filtrage des listes ne sont pas à jour (la dernière version publiée le {{lastExport}} n'a pas encore été récupérée). Contactez votre équipe technique si le problème persiste.",
   "delete": "Supprimer",
   "description": "Description",
   "documents": "Documents",

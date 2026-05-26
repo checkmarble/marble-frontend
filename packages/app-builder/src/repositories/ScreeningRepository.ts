@@ -16,11 +16,16 @@ import {
 } from '@app-builder/models/screening';
 import { adaptScreeningAiSuggestion, type ScreeningAiSuggestion } from '@app-builder/models/screening-ai-suggestion';
 import { createScreeningFilters } from '@app-builder/models/screening-config';
+import {
+  adaptOpenSanctionsDatasetFreshness,
+  type OpenSanctionsDatasetFreshness,
+} from '@app-builder/models/screening-dataset';
 import { type OpenSanctionsCatalogDto } from 'marble-api';
 import * as R from 'remeda';
 export interface ScreeningRepository {
   listScreenings(args: { decisionId: string }): Promise<Screening[]>;
   listDatasets(): Promise<OpenSanctionsCatalogDto>;
+  getDatasetFreshness(): Promise<OpenSanctionsDatasetFreshness>;
   updateMatchStatus(args: {
     matchId: string;
     status: Extract<ScreeningMatchStatus, 'no_hit' | 'confirmed_hit'>;
@@ -84,6 +89,9 @@ export function makeGetScreeningRepository() {
         // Return empty catalog if datasets service fails (404, 500, etc.)
         return { sections: [] };
       }
+    },
+    getDatasetFreshness: async () => {
+      return adaptOpenSanctionsDatasetFreshness(await marbleCoreApiClient.getDatasetsFreshness());
     },
     listScreenings: async ({ decisionId }) => {
       try {
