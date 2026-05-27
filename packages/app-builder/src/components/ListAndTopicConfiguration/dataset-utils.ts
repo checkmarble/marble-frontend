@@ -14,22 +14,39 @@ export type GlobalTopicConfig = {
   label: string;
 };
 
-// Topics that are displyed as a switch button with a label
-const SPECIAL_TOPICS: Record<string, TopicItem> = {
-  kind: { name: 'pep.kind.primary', title: 'continuousScreening:topics.kind.primary' },
-  status: { name: 'pep.status.active', title: 'continuousScreening:topics.status.exclude_inactive' },
-} as const;
+type SpecialTopicConfig = TopicItem & {
+  section: ScreeningCategory;
+  groupKey: string;
+};
+
+// Topics that are displayed as a switch button with a label.
+// Scoped to a specific (section, group) pair: the same group key (e.g. "kind")
+// can exist in multiple sections, so we match on both to avoid promoting
+// unrelated groups (e.g. adverse-media's "kind") to a switch.
+const SPECIAL_TOPICS: SpecialTopicConfig[] = [
+  {
+    section: 'peps',
+    groupKey: 'kind',
+    name: 'pep.kind.primary',
+    title: 'continuousScreening:topics.kind.primary',
+  },
+  {
+    section: 'peps',
+    groupKey: 'status',
+    name: 'pep.status.active',
+    title: 'continuousScreening:topics.status.exclude_inactive',
+  },
+];
 
 type SectionData = NonNullable<ListConfigFilters[keyof ListConfigFilters]>;
 
-function getSpecialTopicConfig(groupKey: string) {
-  const byKey = SPECIAL_TOPICS[groupKey.toLowerCase()];
-  if (byKey) return byKey;
-  return Object.values(SPECIAL_TOPICS).find((t) => formatTopicLabel(t.name) === groupKey);
+function getSpecialTopicConfig(sectionKey: ScreeningCategory, groupKey: string) {
+  const normalized = groupKey.toLowerCase();
+  return SPECIAL_TOPICS.find((t) => t.section === sectionKey && t.groupKey === normalized);
 }
 
-export function isSpecialTopic(groupKey: string) {
-  return getSpecialTopicConfig(groupKey) !== undefined;
+export function isSpecialTopic(sectionKey: ScreeningCategory, groupKey: string) {
+  return getSpecialTopicConfig(sectionKey, groupKey) !== undefined;
 }
 
 function buildGlobalTopicConfig(groupKey: string, items: TopicItem[]): GlobalTopicConfig {
@@ -51,21 +68,21 @@ export function getAvailableGlobalTopicConfigs(listConfig: ListConfigFilters): G
 }
 
 // sort topics to put the switch button topics at the top
-export function sortTopicGroupEntries<T>(entries: [string, T][]): [string, T][] {
+export function sortTopicGroupEntries<T>(sectionKey: ScreeningCategory, entries: [string, T][]): [string, T][] {
   return [...entries].sort(([keyA], [keyB]) => {
-    const aSpecial = isSpecialTopic(keyA);
-    const bSpecial = isSpecialTopic(keyB);
+    const aSpecial = isSpecialTopic(sectionKey, keyA);
+    const bSpecial = isSpecialTopic(sectionKey, keyB);
     if (aSpecial !== bSpecial) return aSpecial ? -1 : 1;
     return keyA.localeCompare(keyB, undefined, { sensitivity: 'base' });
   });
 }
 
-export function getSpecialTopicLabel(groupKey: string) {
-  return getSpecialTopicConfig(groupKey)?.title;
+export function getSpecialTopicLabel(sectionKey: ScreeningCategory, groupKey: string) {
+  return getSpecialTopicConfig(sectionKey, groupKey)?.title;
 }
 
-export function getSpecialTopicValue(groupKey: string) {
-  return getSpecialTopicConfig(groupKey)?.name ?? groupKey;
+export function getSpecialTopicValue(sectionKey: ScreeningCategory, groupKey: string) {
+  return getSpecialTopicConfig(sectionKey, groupKey)?.name ?? groupKey;
 }
 
 /** Returns the set of composite wire keys for every leaf item (dataset + topic + conditional topic) in a section. */
