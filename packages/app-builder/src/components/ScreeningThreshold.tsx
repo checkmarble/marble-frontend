@@ -11,6 +11,7 @@ export const ScreeningThreshold = ({ threshold, onChange, title, disabled }: Scr
   const { t } = useTranslation(['common', 'scenarios']);
 
   const values = [
+    { value: 0, color: 'var(--color-red-hover)' },
     { value: 40, label: t('screenings:freeform_search.threshold.40'), color: 'var(--color-red-secondary)' },
     {
       value: 50,

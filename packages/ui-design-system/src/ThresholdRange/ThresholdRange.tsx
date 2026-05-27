@@ -243,7 +243,7 @@ export function ThresholdRange({
             <div
               ref={railRef}
               data-testid="threshold-range-rail"
-              className="bg-grey-border relative w-full rounded-full"
+              className="bg-grey-border relative w-full rounded-full before:absolute before:inset-x-0 before:-top-5 before:-bottom-5 before:content-['']"
               style={{ height: `${RAIL_HEIGHT}px` }}
               onClick={(event) => {
                 if (hasDraggedRef.current) {
