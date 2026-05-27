@@ -3,6 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { UseQueryResult } from '@tanstack/react-query';
+import { TFunction } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
@@ -42,6 +43,7 @@ import {
   getDatasetNames,
   getSpecialTopicLabel,
   getSpecialTopicValue,
+  hasTranslation,
   isSpecialTopic,
   sortTopicGroupEntries,
   type TopicItem,
@@ -549,7 +551,10 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   );
 };
 
-function formatItemName(name: string): string {
+function formatItemName(name: string, t: TFunction<'continuousScreening'>): string {
+  const translation = hasTranslation(name);
+  if (translation) return t(translation);
+
   const last = name.split('.').at(-1) ?? name;
   return capitalize(last);
 }
@@ -731,7 +736,7 @@ const SingleItemToggle = ({
     if (mode !== 'view') {
       return (
         <RemovableTag
-          label={item.title ?? formatItemName(item.name)}
+          label={item.title ?? formatItemName(item.name, t)}
           onRemove={() => {
             listConfig.update((state) => {
               setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
@@ -743,7 +748,7 @@ const SingleItemToggle = ({
     }
     return (
       <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
-        <span className="truncate block">{formatItemName(item.name)}</span>
+        <span className="truncate block">{formatItemName(item.name, t)}</span>
       </Tag>
     );
   }
@@ -793,7 +798,7 @@ const FilterGroupTags = ({
   const tagItems = useMemo(
     () =>
       selectedItems.map((item) => {
-        const label = item.title ?? formatItemName(item.name);
+        const label = item.title ?? formatItemName(item.name, t);
         return mode !== 'view' ? (
           <RemovableTag
             key={item.name}
@@ -930,7 +935,7 @@ const FilterGroupMenu = ({
         </button>
         {items.map((item) => {
           const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
-          const itemName = item.title ?? formatItemName(item.name);
+          const itemName = item.title ?? formatItemName(item.name, t);
           return (
             <label
               key={item.name}
@@ -949,7 +954,7 @@ const FilterGroupMenu = ({
                 disabled={mode === 'view'}
                 stopPropagation
               />
-              {formatItemName(itemName)}
+              {formatItemName(itemName, t)}
             </label>
           );
         })}
@@ -973,7 +978,7 @@ const FilterGroupMenu = ({
       </MenuCommand.Item>
       {items.map((item) => {
         const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
-        const itemName = item.title ?? formatItemName(item.name);
+        const itemName = item.title ?? formatItemName(item.name, t);
         return (
           <MenuCommand.Item
             key={item.name}

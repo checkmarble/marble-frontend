@@ -113,3 +113,33 @@ export function formatDatasetTitle(title: string): string {
 export function formatTopicLabel(label: string) {
   return label.split('.').at(-1) ?? label;
 }
+
+const FILTER_TRANSLATION_MAP = {
+  'filter.pep.category.govt_branch_member': 'continuousScreening:filter.pep.category.govt_branch_member',
+  'filter.pep.category.family_member': 'continuousScreening:filter.pep.category.family_member',
+  'filter.pep.category.manager_state_owned_enterprise':
+    'continuousScreening:filter.pep.category.manager_state_owned_enterprise',
+  'filter.pep.category.legislature': 'continuousScreening:filter.pep.category.legislature',
+  'filter.pep.category.state_owned_enterprise': 'continuousScreening:filter.pep.category.state_owned_enterprise',
+  'filter.pep.category.diplomat': 'continuousScreening:filter.pep.category.diplomat',
+  'filter.pep.category.judiciary': 'continuousScreening:filter.pep.category.judiciary',
+  'filter.pep.category.senior_party_member': 'continuousScreening:filter.pep.category.senior_party_member',
+  'filter.pep.category.associate': 'continuousScreening:filter.pep.category.associate',
+  'filter.pep.category.pep_controlled_business': 'continuousScreening:filter.pep.category.pep_controlled_business',
+  'filter.pep.category.intl_org_leadership': 'continuousScreening:filter.pep.category.intl_org_leadership',
+  'filter.pep.category.military': 'continuousScreening:filter.pep.category.military',
+  'filter.pep.category.law_enforce_authority': 'continuousScreening:filter.pep.category.law_enforce_authority',
+  'filter.pep.category.ngo_leadership': 'continuousScreening:filter.pep.category.ngo_leadership',
+  'filter.pep.category.chief_of_state': 'continuousScreening:filter.pep.category.chief_of_state',
+  'filter.pep.category.intelligence': 'continuousScreening:filter.pep.category.intelligence',
+  'filter.pep.category.manager_sovereign_wealth_fund':
+    'continuousScreening:filter.pep.category.manager_sovereign_wealth_fund',
+  'filter.pep.category.traditional_leadership': 'continuousScreening:filter.pep.category.traditional_leadership',
+  'filter.pep.category.union_leadership': 'continuousScreening:filter.pep.category.union_leadership',
+  'filter.pep.category.attorney': 'continuousScreening:filter.pep.category.attorney',
+} as const;
+
+export function hasTranslation(key: string) {
+  const hasKey = Object.keys(FILTER_TRANSLATION_MAP).includes(key);
+  return hasKey ? FILTER_TRANSLATION_MAP[key as keyof typeof FILTER_TRANSLATION_MAP] : undefined;
+}
