@@ -5,13 +5,18 @@ import {
   ContinuousScreeningConfig,
   CreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
+import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
 
 export interface ContinuousScreeningRepository {
   listConfigurations(): Promise<ContinuousScreeningConfig[]>;
-  createConfiguration(configuration: CreateContinuousScreeningConfig): Promise<ContinuousScreeningConfig>;
+  createConfiguration(
+    configuration: CreateContinuousScreeningConfig,
+    listConfig?: ListConfigFilters,
+  ): Promise<ContinuousScreeningConfig>;
   updateConfiguration(
     stableId: string,
     configuration: CreateContinuousScreeningConfig,
+    listConfig?: ListConfigFilters,
   ): Promise<ContinuousScreeningConfig>;
   getConfiguration(stableId: string): Promise<ContinuousScreeningConfig>;
   updateMatchStatus(payload: { matchId: string; status: 'confirmed_hit' | 'no_hit'; comment?: string }): Promise<any>;
@@ -25,16 +30,16 @@ export function makeGetContinuousScreeningRepository() {
       const configurations = await marbleCoreApiClient.listContinuousScreeningConfigs();
       return configurations.map(adaptContinuousScreeningConfig);
     },
-    createConfiguration: async (configuration) => {
+    createConfiguration: async (configuration, listConfig) => {
       const result = await marbleCoreApiClient.createContinuousScreeningConfig(
-        adaptCreateContinuousScreeningConfigDto(configuration),
+        adaptCreateContinuousScreeningConfigDto(configuration, listConfig),
       );
       return adaptContinuousScreeningConfig(result);
     },
-    updateConfiguration: async (stableId, configuration) => {
+    updateConfiguration: async (stableId, configuration, listConfig) => {
       const result = await marbleCoreApiClient.updateContinuousScreeningConfig(
         stableId,
-        adaptCreateContinuousScreeningConfigDto(configuration),
+        adaptCreateContinuousScreeningConfigDto(configuration, listConfig),
       );
       return adaptContinuousScreeningConfig(result);
     },

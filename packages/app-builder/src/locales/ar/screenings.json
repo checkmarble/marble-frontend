@@ -120,7 +120,7 @@
   "freeform_search.entity_type_placeholder": "اختر نوع الكيان...",
   "freeform_search.fields_for_entity": "حقول {{entity}}",
   "freeform_search.filter_by_list": "تصفية حسب القائمة",
-  "freeform_search.include_deceased": "تضمين المتوفين",
+  "freeform_search.global.liveness": "تضمين المتوفين",
   "freeform_search.initial_state": "أدخل معايير البحث وانقر على بحث للعثور على المطابقات.",
   "freeform_search.limit_description": "الحد الأقصى لعدد النتائج المُرجعة (10-50).",
   "freeform_search.limit_label": "{{limit}} حد النتائج",

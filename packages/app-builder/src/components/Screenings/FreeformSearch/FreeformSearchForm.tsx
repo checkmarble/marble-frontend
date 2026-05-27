@@ -63,14 +63,16 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     datasets: makeDatasetsMap(selectedDatasets),
     mode: 'edit',
     variant: 'popover',
-    withGlobalTopics: false,
   });
 
   useEffect(() => {
     listSharp.update((state) => {
       syncSharpDatasets(state.datasets, selectedDatasets);
+      if (listConfigQuery.data) {
+        completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
+      }
     });
-  }, [listSharp, selectedDatasetsKey, selectedDatasets]);
+  }, [listSharp, selectedDatasetsKey, selectedDatasets, listConfigQuery.data]);
 
   const form = useManualSearchForm({
     onSubmit: async (value) => {

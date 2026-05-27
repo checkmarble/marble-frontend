@@ -64,6 +64,9 @@ export const LimitPopover = ({
       setDraftLimit(committedLimit ?? DEFAULT_LIMIT);
       listSharp.update((state) => {
         syncSharpDatasets(state.datasets, selectedDatasets);
+        if (listConfig) {
+          completeGlobalTopicSelections(state.datasets, listConfig);
+        }
       });
     } else {
       setDraftLimit(undefined);
@@ -99,22 +102,28 @@ export const LimitPopover = ({
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
-        {hasCustomValue ? (
-          <Tag
-            color={disabled ? 'grey' : 'purple'}
-            className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            ref={tagRef}
-          >
-            <span className="font-medium">
-              {t('screenings:freeform_search.limit_label', { limit: committedLimit })}
-            </span>
-          </Tag>
-        ) : (
-          <span className="flex items-center gap-1 text-grey-placeholder cursor-pointer">
+        <div className="flex items-center gap-v2-sm cursor-pointer">
+          {includeDeceasedSelected && (
+            <Tag color={disabled ? 'grey' : 'purple'}>
+              <span className="font-medium">{t('screenings:freeform_search.global.liveness')}</span>
+            </Tag>
+          )}
+          {committedLimit !== DEFAULT_LIMIT && (
+            <Tag
+              color={disabled ? 'grey' : 'purple'}
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              ref={tagRef}
+            >
+              <span className="font-medium">
+                {t('screenings:freeform_search.limit_label', { limit: committedLimit })}
+              </span>
+            </Tag>
+          )}
+          <span className="flex items-center gap-1 text-grey-placeholder">
             <Icon icon="plus" className="size-4  " />
-            <span>{t('screenings:freeform_search.advanced_filters')}</span>
+            {!hasCustomValue && <span>{t('screenings:freeform_search.advanced_filters')}</span>}
           </span>
-        )}
+        </div>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content

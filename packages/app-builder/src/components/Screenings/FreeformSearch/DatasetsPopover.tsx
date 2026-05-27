@@ -1,4 +1,5 @@
 import {
+  completeGlobalTopicSelections,
   DatasetSelectionContent,
   getCanonicalSelectedKeys,
   getSectionLeafNames,
@@ -19,6 +20,7 @@ const SECTION_I18N_KEYS: Record<ScreeningCategory, string> = {
   peps: 'peps',
   'adverse-media': 'adverse_media',
   'third-parties': 'third_parties',
+  global: 'global',
 };
 
 export interface DatasetsPopoverProps {
@@ -39,6 +41,9 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
     if (isOpen) {
       listSharp.update((state) => {
         syncSharpDatasets(state.datasets, selectedDatasets);
+        if (listConfigQuery.data) {
+          completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
+        }
       });
     }
     setOpen(isOpen);
@@ -56,21 +61,23 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
     setOpen(false);
   };
 
-  const hasSelection = selectedDatasets.length > 0;
+  const hasSelection = selectedDatasets.filter((d) => !d.startsWith('global')).length > 0;
 
   const selectionMap = useMemo(() => makeDatasetsMap(selectedDatasets), [selectedDatasets]);
 
   const sectionTags = useMemo(() => {
     const data = listConfigQuery.data;
     if (!data || !hasSelection) return [];
-    return Object.entries(data).flatMap(([key, section]) => {
-      if (!section) return [];
-      const sectionKey = key as ScreeningCategory;
-      const isSectionEnabled = !!selectionMap[sectionKey];
-      const count = getSectionLeafNames(section).filter((n) => selectionMap[n]).length;
-      if (!isSectionEnabled && count === 0) return [];
-      return [{ key: sectionKey, count, isEmpty: isSectionEnabled && count === 0 }];
-    });
+    return Object.entries(data)
+      .filter(([key]) => key !== 'global')
+      .flatMap(([key, section]) => {
+        if (!section) return [];
+        const sectionKey = key as ScreeningCategory;
+        const isSectionEnabled = !!selectionMap[sectionKey];
+        const count = getSectionLeafNames(section).filter((n) => selectionMap[n]).length;
+        if (!isSectionEnabled && count === 0) return [];
+        return [{ key: sectionKey, count, isEmpty: isSectionEnabled && count === 0 }];
+      });
   }, [listConfigQuery.data, selectionMap, hasSelection]);
 
   return (

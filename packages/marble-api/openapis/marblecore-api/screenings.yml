@@ -418,6 +418,8 @@ components:
               $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
             other:
               $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            global:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
     ScreeningAvailableFiltersSection:
       type: object
       properties:
@@ -474,6 +476,8 @@ components:
         adverse_media:
           $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
         other:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        global:
           $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
     OpenSanctionsDatasetFreshnessDto:
       type: object

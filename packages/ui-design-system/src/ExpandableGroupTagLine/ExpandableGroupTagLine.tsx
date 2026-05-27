@@ -5,12 +5,13 @@ import { cn } from '../utils';
 
 const OVERFLOW_TAG_WIDTH_PX = 36;
 
-const overflowButtonClassName = 'cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors';
+const overflowButtonClassName = 'cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors min-w-min';
 
 export interface ExpandableGroupTagLineProps {
   items: ReactNode[];
   moreButton?: (overflow: number, onExpand: (event: MouseEvent) => void) => ReactNode;
   lessButton?: (onCollapse: (event: MouseEvent) => void) => ReactNode;
+  classname?: string;
 }
 
 function DefaultMoreButton({ overflow, onExpand }: { overflow: number; onExpand: (event: MouseEvent) => void }) {
@@ -29,7 +30,7 @@ function DefaultLessButton({ onCollapse }: { onCollapse: (event: MouseEvent) => 
   );
 }
 
-export function ExpandableGroupTagLine({ items, moreButton, lessButton }: ExpandableGroupTagLineProps) {
+export function ExpandableGroupTagLine({ items, moreButton, lessButton, classname }: ExpandableGroupTagLineProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
@@ -82,7 +83,7 @@ export function ExpandableGroupTagLine({ items, moreButton, lessButton }: Expand
   };
 
   return (
-    <div ref={containerRef} className="relative flex-1 min-w-0">
+    <div ref={containerRef} className={cn('relative min-w-0 w-full flex-1', classname)}>
       <div
         ref={ghostRef}
         className="pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-v2-sm"

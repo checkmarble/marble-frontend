@@ -88,6 +88,7 @@ const ConvertSectionNameToDto: Record<ScreeningCategory, keyof ScreeningConfigBo
   peps: 'peps',
   'third-parties': 'other',
   'adverse-media': 'adverse_media',
+  global: 'global',
 };
 
 const DtoSectionToCategory: Record<keyof ScreeningConfigBodyFiltersDto, ScreeningCategory> = {
@@ -95,6 +96,7 @@ const DtoSectionToCategory: Record<keyof ScreeningConfigBodyFiltersDto, Screenin
   peps: 'peps',
   adverse_media: 'adverse-media',
   other: 'third-parties',
+  global: 'global',
 };
 
 export function createScreeningFilters(selection: string[]): ScreeningConfigBodyFiltersDto {
@@ -103,6 +105,7 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
     peps: { enabled: false },
     adverse_media: { enabled: false },
     other: { enabled: false },
+    global: { enabled: false },
   };
   for (const item of selection) {
     const chunks = item.split(':');

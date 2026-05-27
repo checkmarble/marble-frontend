@@ -2,6 +2,10 @@ import type { ListConfigFilters } from '@app-builder/queries/screening/lists-con
 
 export type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
 
+// All fields derived from listConfig.global.topics + conventions:
+// - keys[0]: always persisted when the global topic switch is active
+// - keys[1] / value: persisted when the switch is ON
+// - label: `screenings:freeform_search.global.${groupKey}`
 export type GlobalTopicConfig = {
   groupKey: string;
   keys: string[];
@@ -15,16 +19,6 @@ const SPECIAL_TOPICS: Record<string, TopicItem> = {
   status: { name: 'pep.status.active', title: 'continuousScreening:topics.status.exclude_inactive' },
 } as const;
 
-// Topics that exist in all sections and are displayed as a global switch button
-const GLOBAL_TOPICS: GlobalTopicConfig[] = [
-  {
-    groupKey: 'person',
-    keys: ['is_alive', 'is_deceased'],
-    value: 'is_deceased',
-    label: 'screenings:freeform_search.include_deceased',
-  },
-];
-
 type SectionData = NonNullable<ListConfigFilters[keyof ListConfigFilters]>;
 
 function getSpecialTopicConfig(groupKey: string) {
@@ -37,20 +31,22 @@ export function isSpecialTopic(groupKey: string) {
   return getSpecialTopicConfig(groupKey) !== undefined;
 }
 
-export function getGlobalTopicConfigs(): GlobalTopicConfig[] {
-  return GLOBAL_TOPICS;
+function buildGlobalTopicConfig(groupKey: string, items: TopicItem[]): GlobalTopicConfig {
+  const keys = items.map((i) => i.name);
+  return {
+    groupKey,
+    keys,
+    value: keys[1] ?? '',
+    label: `screenings:freeform_search.global.${groupKey}`,
+  };
 }
 
-export function isGlobalTopic(groupKey: string) {
-  return GLOBAL_TOPICS.some((config) => config.groupKey === groupKey);
-}
-
-export function isGlobalTopicConfigAvailable(config: GlobalTopicConfig, listConfig: ListConfigFilters) {
-  return Object.values(listConfig).some((section) => section?.topics?.[config.groupKey] != null);
-}
-
-export function getAvailableGlobalTopicConfigs(listConfig: ListConfigFilters) {
-  return GLOBAL_TOPICS.filter((config) => isGlobalTopicConfigAvailable(config, listConfig));
+export function getAvailableGlobalTopicConfigs(listConfig: ListConfigFilters): GlobalTopicConfig[] {
+  const globalTopics = listConfig.global?.topics;
+  if (!globalTopics) return [];
+  return Object.entries(globalTopics)
+    .filter(([, items]) => items.length >= 2)
+    .map(([groupKey, items]) => buildGlobalTopicConfig(groupKey, items));
 }
 
 // sort topics to put the switch button topics at the top

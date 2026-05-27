@@ -50,6 +50,14 @@ export function getCanonicalSelectedKeys(datasets: Record<string, boolean>): str
   const selected = Object.keys(datasets).filter((k) => datasets[k]);
 
   return selected
+    .filter((key) => key !== 'global')
+    .filter((key) => {
+      const globalTopicMatch = key.match(/^global:topic:[^:]+:(.+)$/);
+      if (globalTopicMatch?.[1] && selected.includes(globalTopicMatch[1])) {
+        return false;
+      }
+      return true;
+    })
     .filter((key) => {
       if (key.includes(':')) return true;
       const hasDatasetComposite = selected.some((k) => k.endsWith(`:dataset:${key}`));
@@ -128,8 +136,27 @@ export function syncSharpDatasets(datasets: Record<string, boolean>, selected: s
   }
 }
 
-function getInactiveGlobalTopicItemName(config: GlobalTopicConfig): string | undefined {
-  return config.keys.find((key) => key !== config.value);
+function getDefaultGlobalTopicItemName(config: GlobalTopicConfig): string | undefined {
+  return config.keys[0];
+}
+
+function getSwitchGlobalTopicItemName(config: GlobalTopicConfig): string | undefined {
+  return config.keys[1] ?? config.value;
+}
+
+function clearGlobalTopicSelection(datasets: Record<string, boolean>, config: GlobalTopicConfig): void {
+  delete datasets['global'];
+
+  for (const key of config.keys) {
+    delete datasets[key];
+    delete datasets[buildTopicKey('global', config.groupKey, key)];
+  }
+}
+
+function hasGlobalTopicEngagement(datasets: Record<string, boolean>, config: GlobalTopicConfig): boolean {
+  return config.keys.some(
+    (key) => !!datasets[key] || !!datasets[buildTopicKey('global', config.groupKey, key)] || datasets['global'],
+  );
 }
 
 export function isGlobalTopicSwitchSelected(
@@ -137,13 +164,10 @@ export function isGlobalTopicSwitchSelected(
   config: GlobalTopicConfig,
   listConfig: ListConfigFilters,
 ): boolean {
-  for (const [sectionKey, section] of Object.entries(listConfig)) {
-    if (!section?.topics?.[config.groupKey]) continue;
-    if (isTopicKeySelected(datasets, sectionKey as ScreeningCategory, config.groupKey, config.value)) {
-      return true;
-    }
-  }
-  return false;
+  if (!listConfig.global?.topics?.[config.groupKey]) return false;
+  const switchItemName = getSwitchGlobalTopicItemName(config);
+  if (!switchItemName) return false;
+  return !!datasets[switchItemName];
 }
 
 export function setGlobalTopicSwitch(
@@ -152,22 +176,41 @@ export function setGlobalTopicSwitch(
   checked: boolean,
   listConfig: ListConfigFilters,
 ): void {
-  const activeItemName = checked ? config.value : getInactiveGlobalTopicItemName(config);
-  const inactiveItemName = checked ? getInactiveGlobalTopicItemName(config) : config.value;
-  if (!activeItemName || !inactiveItemName) return;
+  if (!listConfig.global?.topics?.[config.groupKey]) return;
+  const defaultItemName = getDefaultGlobalTopicItemName(config);
+  const switchItemName = getSwitchGlobalTopicItemName(config);
+  if (!defaultItemName || !switchItemName) return;
 
-  for (const [sectionKey, section] of Object.entries(listConfig)) {
-    if (!section?.topics?.[config.groupKey]) continue;
-    const category = sectionKey as ScreeningCategory;
-    setTopicKey(datasets, category, config.groupKey, activeItemName, true);
-    setTopicKey(datasets, category, config.groupKey, inactiveItemName, false);
-    datasets[category] = true;
+  clearGlobalTopicSelection(datasets, config);
+
+  datasets[defaultItemName] = true;
+
+  if (checked) {
+    datasets[switchItemName] = true;
   }
 }
 
 export function completeGlobalTopicSelections(datasets: Record<string, boolean>, listConfig: ListConfigFilters): void {
   for (const config of getAvailableGlobalTopicConfigs(listConfig)) {
+    if (!hasGlobalTopicEngagement(datasets, config)) continue;
     const checked = isGlobalTopicSwitchSelected(datasets, config, listConfig);
     setGlobalTopicSwitch(datasets, config, checked, listConfig);
   }
+}
+
+export function expandSelectionWithGlobalTopicFilterKeys(selection: string[], listConfig: ListConfigFilters): string[] {
+  const globalConfigs = getAvailableGlobalTopicConfigs(listConfig);
+  const globalBareKeys = new Set(globalConfigs.flatMap((config) => config.keys));
+
+  const nonGlobalBareKeys = selection.filter((key) => !globalBareKeys.has(key));
+  const globalFilterKeys = globalConfigs.flatMap((config) =>
+    config.keys.filter((key) => selection.includes(key)).map((key) => buildTopicKey('global', config.groupKey, key)),
+  );
+
+  return [...nonGlobalBareKeys, ...globalFilterKeys].sort();
+}
+
+/** Strips falsy entries from the datasets map before persistence. */
+export function sanitizeTruthyDatasets(datasets: Record<string, boolean>): Record<string, boolean> {
+  return Object.fromEntries(Object.entries(datasets).filter(([, selected]) => selected));
 }

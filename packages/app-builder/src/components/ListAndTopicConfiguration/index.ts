@@ -9,11 +9,13 @@ export {
   buildTopicKey,
   clearSectionSelections,
   completeGlobalTopicSelections,
+  expandSelectionWithGlobalTopicFilterKeys,
   getCanonicalSelectedKeys,
   isDatasetKeySelected,
   isGlobalTopicSwitchSelected,
   isTopicKeySelected,
   makeDatasetsMap,
+  sanitizeTruthyDatasets,
   setDatasetKey,
   setGlobalTopicSwitch,
   setTopicKey,
@@ -22,6 +24,5 @@ export {
 export {
   type GlobalTopicConfig,
   getAvailableGlobalTopicConfigs,
-  getGlobalTopicConfigs,
   getSectionLeafNames,
 } from './dataset-utils';

@@ -26,18 +26,21 @@ import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetC
 import {
   clearSectionSelections,
   isDatasetKeySelected,
+  isGlobalTopicSwitchSelected,
   isTopicKeySelected,
   setDatasetKey,
+  setGlobalTopicSwitch,
   setTopicKey,
 } from './dataset-selection-provider-utils';
 import {
   formatDatasetTitle,
   formatTopicLabel,
+  type GlobalTopicConfig,
+  getAvailableGlobalTopicConfigs,
   getDatasetNames,
   getSectionLeafNames,
   getSpecialTopicLabel,
   getSpecialTopicValue,
-  isGlobalTopic,
   isSpecialTopic,
   sortTopicGroupEntries,
   type TopicItem,
@@ -67,16 +70,28 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
   const [activeSectionKey, setActiveSectionKey] = useState<ScreeningCategory | null>(null);
 
   const renderSections = (data: ListConfig) => {
-    const sections = Object.entries(data).filter(([, section]) => section?.datasets?.length || section?.topics);
+    const sections = Object.entries(data).filter(
+      ([key, section]) => key !== 'global' && (section?.datasets?.length || section?.topics),
+    );
 
     return match(variant)
-      .with('default', () => (
-        <div className="flex flex-col">
-          {sections.map(([key, section]) =>
-            section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
-          )}
-        </div>
-      ))
+      .with('default', () => {
+        const availableGlobalTopicConfigs = getAvailableGlobalTopicConfigs(data);
+        return (
+          <div className="flex flex-col">
+            {availableGlobalTopicConfigs.length > 0 && (
+              <div className="flex flex-col gap-v2-sm px-v2-md py-v2-sm">
+                {availableGlobalTopicConfigs.map((config) => (
+                  <GlobalTopicSwitch key={config.groupKey} config={config} listConfig={data} />
+                ))}
+              </div>
+            )}
+            {sections.map(([key, section]) =>
+              section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+            )}
+          </div>
+        );
+      })
       .with('popover', () => {
         const activeSection = activeSectionKey ? data[activeSectionKey] : null;
         return (
@@ -267,6 +282,7 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
     .with('third-parties', () => t('scenarios:sanction.lists.third_parties'))
     .with('sanctions', () => t('scenarios:sanction.lists.sanctions'))
     .with('adverse-media', () => t('scenarios:sanction.lists.adverse_media'))
+    .with('global', () => t('scenarios:sanction.lists.global'))
     .otherwise(() => t('scenarios:sanction.lists.other'));
 
   return (
@@ -604,11 +620,10 @@ const FilterGroupRow = ({
   onAfterChange?: () => void;
 }) => {
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
-  const withGlobalTopics = ListAndTopicDatasetConfiguration.select((state) => state.withGlobalTopics);
   const label = capitalize(groupKey);
   const singleItem = items.length === 1 ? items[0] : undefined;
 
-  if (isGlobalTopic(groupKey) && !withGlobalTopics) return null;
+  if (sectionKey === 'global') return null;
 
   return (
     <>
@@ -619,7 +634,7 @@ const FilterGroupRow = ({
       ) : (
         <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
           <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
-          <div className="flex items-center gap-v2-sm flex-1 min-w-0">
+          <div className="flex min-w-0 flex-1 items-center gap-v2-sm">
             {singleItem ? (
               <SingleItemToggle
                 item={singleItem}
@@ -769,8 +784,7 @@ const FilterGroupTags = ({
     items.filter((i) => isTopicKeySelected(state.datasets, sectionKey, topicGroup, i.name)),
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const useAnchoredMenu = variant === 'popover';
-
+  const useAnchoredMenu = mode !== 'view' && variant !== 'popover';
   const selectedKey = selectedItems.map((i) => i.name).join(',');
 
   const tagItems = useMemo(
@@ -799,7 +813,7 @@ const FilterGroupTags = ({
 
   const tagsContent = (
     <div className={cn('flex min-w-0 w-full flex-1', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
-      <div className="flex min-w-0 w-full items-center gap-v2-xs overflow-hidden">
+      <div className="flex min-w-0 w-full items-center gap-v2-xs flex-1">
         {isAllSelected ? (
           <Tag color="purple" size="small">
             {t('continuousScreening:creation.datasetSelection.filter.all')}
@@ -824,6 +838,15 @@ const FilterGroupTags = ({
       </div>
       {mode !== 'view' && variant === 'popover' && isMenuOpen && (
         <FilterGroupMenu items={items} sectionKey={sectionKey} topicGroup={topicGroup} onAfterChange={onAfterChange} />
+      )}
+      {useAnchoredMenu && (
+        <FilterGroupMenu
+          anchored
+          items={items}
+          sectionKey={sectionKey}
+          topicGroup={topicGroup}
+          onAfterChange={onAfterChange}
+        />
       )}
     </div>
   );
@@ -981,4 +1004,32 @@ const FilterGroupMenu = ({
   }
 
   return <MenuCommand.Menu persistOnSelect>{menuTriggerAndContent}</MenuCommand.Menu>;
+};
+
+const GlobalTopicSwitch = ({ config, listConfig }: { config: GlobalTopicConfig; listConfig: ListConfig }) => {
+  const listSharp = ListAndTopicDatasetConfiguration.useSharp();
+  const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const { t } = useTranslation(['screenings']);
+  const switchId = `global-topic-${config.groupKey}`;
+  const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
+    isGlobalTopicSwitchSelected(state.datasets, config, listConfig),
+  );
+
+  return (
+    <div className="flex items-center gap-v2-sm">
+      <Switch
+        id={switchId}
+        checked={isSelected}
+        disabled={mode === 'view'}
+        onCheckedChange={(checked) => {
+          listSharp.update((state) => {
+            setGlobalTopicSwitch(state.datasets, config, checked, listConfig);
+          });
+        }}
+      />
+      <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
+        {t(config.label)}
+      </label>
+    </div>
+  );
 };

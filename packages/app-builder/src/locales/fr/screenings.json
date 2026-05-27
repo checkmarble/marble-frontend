@@ -120,7 +120,7 @@
   "freeform_search.entity_type_placeholder": "Sélectionner un type d'entité...",
   "freeform_search.fields_for_entity": "Champs pour {{entity}}",
   "freeform_search.filter_by_list": "Filtrer par liste",
-  "freeform_search.include_deceased": "Inclure les personnes décédées",
+  "freeform_search.global.liveness": "Inclure les personnes décédées",
   "freeform_search.initial_state": "Entrez vos critères de recherche et cliquez sur Rechercher.",
   "freeform_search.limit_description": "Nombre maximum de résultats à retourner (10-50).",
   "freeform_search.limit_label": "Limite de résultats {{limit}}",

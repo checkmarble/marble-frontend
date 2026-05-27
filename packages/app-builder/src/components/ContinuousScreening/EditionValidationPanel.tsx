@@ -1,9 +1,14 @@
+import {
+  completeGlobalTopicSelections,
+  sanitizeTruthyDatasets,
+} from '@app-builder/components/ListAndTopicConfiguration';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   ContinuousScreeningConfig,
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
 import { useUpdateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/update-configuration';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -28,11 +33,20 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: 
   const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening', 'common']);
   const updateConfigurationMutation = useUpdateContinuousScreeningConfigurationMutation(baseConfig.stableId);
+  const listConfigQuery = useListConfigQuery('continuous_monitoring');
   const revalidate = useLoaderRevalidator();
 
   const handleValidateClick = () => {
+    const datasets = { ...updatedConfig.datasets };
+    if (listConfigQuery.data) {
+      completeGlobalTopicSelections(datasets, listConfigQuery.data);
+    }
+
     updateConfigurationMutation
-      .mutateAsync(updatedConfig)
+      .mutateAsync({
+        ...updatedConfig,
+        datasets: sanitizeTruthyDatasets(datasets),
+      })
       .then(() => {
         toast.success(t('common:success.save'));
         panelSharp.actions.close();

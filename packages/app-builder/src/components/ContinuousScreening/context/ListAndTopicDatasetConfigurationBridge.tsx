@@ -1,7 +1,9 @@
 import {
+  completeGlobalTopicSelections,
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
 } from '@app-builder/components/ListAndTopicConfiguration';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { ContinuousScreeningConfigurationStepper } from './CreationStepper';
 
@@ -18,6 +20,7 @@ export function ListAndTopicDatasetConfigurationBridge({ children }: { children:
   const wizardMode = ContinuousScreeningConfigurationStepper.select((s) => s.__internals.mode);
   const datasetsMap = wizard.value.data.datasets;
   const datasetsMapKey = useMemo(() => getDatasetsMapKey(datasetsMap), [datasetsMap]);
+  const listConfigQuery = useListConfigQuery('continuous_monitoring');
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
     datasets: datasetsMap,
@@ -40,8 +43,18 @@ export function ListAndTopicDatasetConfigurationBridge({ children }: { children:
       for (const key of Object.keys(nextDatasets)) {
         state.datasets[key] = !!nextDatasets[key];
       }
+      if (listConfigQuery.data) {
+        completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
+      }
     });
-  }, [listSharp, datasetsMap, datasetsMapKey]);
+  }, [listSharp, datasetsMap, datasetsMapKey, listConfigQuery.data]);
+
+  useEffect(() => {
+    if (!listConfigQuery.data) return;
+    listSharp.update((state) => {
+      completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
+    });
+  }, [listSharp, listConfigQuery.data]);
 
   return (
     <ListAndTopicDatasetConfiguration.Provider value={listSharp}>{children}</ListAndTopicDatasetConfiguration.Provider>
