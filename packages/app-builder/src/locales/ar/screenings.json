@@ -278,9 +278,8 @@
   "start_reviewing": "ابدأ المراجعة",
   "status.confirmed_hit": "مطابقة مؤكدة",
   "status.error": "خطأ",
-  "status.in_review": "مطابقات للمراجعة",
-  "status.no_hit": "({{count}}) لا تطابق",
-  "status.pending": "({{count}}) مطابقات للمراجعة",
+  "status.in_review": "({{count}}) مطابقات للمراجعة",
+  "status.no_hit": "لا تطابق",
   "status.skipped": "تم تجاهلها",
   "success.match_enriched": "تم إثراء المطابقة بنجاح"
 }

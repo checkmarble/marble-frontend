@@ -9,7 +9,6 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
@@ -212,6 +211,7 @@ export const AlertCard = ({
                           status={screening.status}
                           decisionId={decision.id}
                           screeningId={screening.id}
+                          nbHits={screening.count}
                         />
                       </div>
                     </div>
@@ -406,10 +406,12 @@ export const ScreeningStatusBadge = ({
   status,
   decisionId,
   screeningId,
+  nbHits,
 }: {
   status: ScreeningStatus;
   decisionId: string;
   screeningId: string;
+  nbHits: number;
 }) => {
   const { t } = useTranslation(casesI18n);
   const screeningQuery = useScreeningDetailQuery(decisionId, screeningId, true);
@@ -438,18 +440,10 @@ export const ScreeningStatusBadge = ({
           if (!screeningData) {
             return <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>;
           }
-          const matchCount = R.pipe(
-            screeningData.matches,
-            R.groupBy((m) => m.status),
-            R.mapValues((group) => group.length),
-          );
+
           return (
             <>
-              {Object.entries(matchCount)
-                .filter(([, count]) => count > 0)
-                .map(([status, count]) => (
-                  <div key={status}>{t(`screenings:status.${status}`, { count })}</div>
-                ))}
+              <div key={status}>{t(`screenings:status.${status}`, { count: nbHits })}</div>
               <Icon icon="eye" className="size-4 shrink-0" />
             </>
           );

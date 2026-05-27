@@ -18,13 +18,22 @@ const screeningStatusMapping = {
   }
 >;
 
-export function ScreeningStatusTag({ status, className }: { status: ScreeningStatus; className?: string }) {
+export function ScreeningStatusTag({
+  status,
+  pendingHitCount,
+  className,
+}: {
+  status: ScreeningStatus;
+  pendingHitCount?: number;
+  className?: string;
+}) {
   const { t } = useTranslation(screeningsI18n);
   const screeningStatus = screeningStatusMapping[status];
 
   return (
     <Tag color={screeningStatus.color} className={className}>
-      {t(screeningStatus.tKey)}
+      {/* <Trans t={t} i18nKey={screeningStatus.tKey} values={{ count: pendingHitCount ?? 0 }} /> */}
+      {t(screeningStatus.tKey, { count: pendingHitCount ?? 0 })}
     </Tag>
   );
 }
