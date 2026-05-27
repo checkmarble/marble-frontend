@@ -52,7 +52,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
                       const dataset = datasetsArray.find((d) => d.name === k);
                       return (
                         <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{formatDatasetTitle(dataset?.title ?? k)}</span>
+                          <span>{formatDatasetTitle(dataset?.title ?? k, t)}</span>
                           {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
                         </div>
                       );
@@ -71,7 +71,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
                       const dataset = datasetsArray.find((d) => d.name === k);
                       return (
                         <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{dataset?.title ? formatDatasetTitle(dataset.title) : k}</span>
+                          <span>{formatDatasetTitle(dataset?.title ?? k, t)}</span>
                           {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
                         </div>
                       );

@@ -363,7 +363,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const hasSearch = normalizedSearch.length > 0;
   const itemMatches = (name: string, title?: string) =>
-    (title ? formatDatasetTitle(title) : name).toLowerCase().includes(normalizedSearch) ||
+    (title ? formatDatasetTitle(title, t) : name).toLowerCase().includes(normalizedSearch) ||
     name.toLowerCase().includes(normalizedSearch);
 
   const filteredDatasets = !hasSearch
@@ -476,7 +476,7 @@ const ItemGroup = ({
       <Collapsible.Title iconPosition="left" asChild size="null">
         <div className="flex items-center gap-v2-md justify-between w-full">
           <span className="flex items-center gap-v2-md">
-            <span className="text-s font-semibold">{formatDatasetTitle(title)}</span>
+            <span className="text-s font-semibold">{formatDatasetTitle(title, t)}</span>
             <span className="text-xs text-grey-secondary">
               {selectedCount} / {names.length}
             </span>
@@ -551,11 +551,12 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   );
 };
 
-function formatItemName(name: string, t: TFunction<'continuousScreening'>): string {
-  const translation = hasTranslation(name);
+function formatItemName(item: { name: string; title?: string }, t: TFunction<'continuousScreening'>): string {
+  const label = item.title ?? item.name;
+  const translation = hasTranslation(label);
   if (translation) return t(translation);
 
-  const last = name.split('.').at(-1) ?? name;
+  const last = label.split('.').at(-1) ?? label;
   return capitalize(last);
 }
 
@@ -632,6 +633,7 @@ const FilterGroupRow = ({
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const label = capitalize(groupKey);
   const singleItem = items.length === 1 ? items[0] : undefined;
+  const { t } = useTranslation(['continuousScreening']);
 
   if (sectionKey === 'global') return null;
 
@@ -643,7 +645,7 @@ const FilterGroupRow = ({
         </div>
       ) : (
         <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
-          <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
+          <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label, t)}:</span>
           <div className="flex min-w-0 flex-1 items-center gap-v2-sm">
             {singleItem ? (
               <SingleItemToggle
@@ -736,7 +738,7 @@ const SingleItemToggle = ({
     if (mode !== 'view') {
       return (
         <RemovableTag
-          label={item.title ?? formatItemName(item.name, t)}
+          label={formatItemName(item, t)}
           onRemove={() => {
             listConfig.update((state) => {
               setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
@@ -748,7 +750,7 @@ const SingleItemToggle = ({
     }
     return (
       <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
-        <span className="truncate block">{formatItemName(item.name, t)}</span>
+        <span className="truncate block">{formatItemName(item, t)}</span>
       </Tag>
     );
   }
@@ -798,7 +800,8 @@ const FilterGroupTags = ({
   const tagItems = useMemo(
     () =>
       selectedItems.map((item) => {
-        const label = item.title ?? formatItemName(item.name, t);
+        console.log({ item });
+        const label = formatItemName(item, t);
         return mode !== 'view' ? (
           <RemovableTag
             key={item.name}
@@ -935,7 +938,6 @@ const FilterGroupMenu = ({
         </button>
         {items.map((item) => {
           const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
-          const itemName = item.title ?? formatItemName(item.name, t);
           return (
             <label
               key={item.name}
@@ -954,7 +956,7 @@ const FilterGroupMenu = ({
                 disabled={mode === 'view'}
                 stopPropagation
               />
-              {formatItemName(itemName, t)}
+              {formatItemName(item, t)}
             </label>
           );
         })}
@@ -978,7 +980,6 @@ const FilterGroupMenu = ({
       </MenuCommand.Item>
       {items.map((item) => {
         const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
-        const itemName = item.title ?? formatItemName(item.name, t);
         return (
           <MenuCommand.Item
             key={item.name}
@@ -987,7 +988,7 @@ const FilterGroupMenu = ({
             onSelect={() => handleClickItem(item)}
             disabled={mode === 'view'}
           >
-            <span>{formatTopicLabel(itemName)}</span>
+            <span>{formatItemName(item, t)}</span>
             {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
           </MenuCommand.Item>
         );

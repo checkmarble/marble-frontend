@@ -132,7 +132,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                           <ExpandableGroupTagLine
                             items={item.datasets.map((d) => (
                               <Tag key={d} color="grey">
-                                {formatDatasetTitle(d)}
+                                {formatDatasetTitle(d, t)}
                               </Tag>
                             ))}
                           />

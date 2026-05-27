@@ -1,5 +1,6 @@
 import type { ScreeningCategory } from '@app-builder/models/screening';
 import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
+import { TFunction } from 'i18next';
 
 export type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
 
@@ -101,12 +102,16 @@ export function getDatasetNames(section: SectionData) {
   return (section.datasets ?? []).flatMap((g) => g.datasets.map((d) => d.name));
 }
 
-export function formatDatasetTitle(title: string): string {
+export function formatDatasetTitle(title: string, t: TFunction): string {
   const last = title.includes(':')
     ? (title.split(':').at(-1) ?? title)
     : title.includes('.')
       ? (title.split('.').at(-1) ?? title)
       : title;
+
+  console.log('last', last);
+  const translation = hasTranslation(last);
+  if (translation) return t(translation);
   return last.replace(/_/g, ' ');
 }
 
@@ -137,6 +142,8 @@ const FILTER_TRANSLATION_MAP = {
   'filter.pep.category.traditional_leadership': 'continuousScreening:filter.pep.category.traditional_leadership',
   'filter.pep.category.union_leadership': 'continuousScreening:filter.pep.category.union_leadership',
   'filter.pep.category.attorney': 'continuousScreening:filter.pep.category.attorney',
+  'filter.alive': 'continuousScreening:filter.alive',
+  'filter.deceased': 'continuousScreening:filter.deceased',
 } as const;
 
 export function hasTranslation(key: string) {
