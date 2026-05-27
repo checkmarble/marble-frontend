@@ -110,6 +110,7 @@ function Lists() {
               {listFeatureAccess.isDeleteListValueAvailable ? (
                 <DeleteListValueModal listId={customList.id} listValueId={row.original.id} value={value}>
                   <button
+                    data-test="delete-list-value-trigger"
                     className="group-hover:text-grey-primary text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
                     tabIndex={-1}

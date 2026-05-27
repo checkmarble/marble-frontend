@@ -98,10 +98,10 @@ test('Clearing a chip via the X removes the URL param', async ({ page }) => {
   const chipTrigger = page.locator('button', { hasText: `Object ID: ${triggerObjectId}` });
   await expect(chipTrigger).toBeVisible();
 
-  // `FilterItem.Clear` is an unlabeled `<button>` containing only a cross
-  // icon — it has no accessible name, so target it via its sibling
-  // relationship to the trigger inside `FilterItem.Root`.
-  await chipTrigger.locator('xpath=following-sibling::button[1]').click();
+  // `FilterItem.Clear` carries `data-test="filter-item-clear"` from the
+  // component definition. Scope to the chip's `FilterItem.Root` to target the
+  // matching clear button (there's one per active chip).
+  await chipTrigger.locator('..').locator('[data-test="filter-item-clear"]').click();
 
   await expect(page).not.toHaveURL(/triggerObjectId=/);
 
@@ -163,11 +163,10 @@ test('Clear filters link removes all filter chips', async ({ page }) => {
 
   await expect(page.locator('button', { hasText: `Object ID: ${triggerObjectId}` })).toBeVisible();
 
-  // `ClearAllFiltersLink` renders as `<a href="/detection/decisions">` with
-  // "Clear filters" text. The "Decisions" tab in the navigation also points to
-  // the same href, so we must filter by visible text. `force: true` bypasses
-  // actionability checks — the link can be overlapped by the chip flex row.
-  await page.locator('a[href="/detection/decisions"]', { hasText: 'Clear filters' }).click({ force: true });
+  // `ClearAllFiltersLink` carries `data-test="clear-all-filters-link"`.
+  // `force: true` bypasses actionability checks — the link can be overlapped
+  // by the chip flex row when many chips wrap onto multiple lines.
+  await page.locator('[data-test="clear-all-filters-link"]').click({ force: true });
 
   await page.waitForURL((url) => !url.searchParams.has('triggerObjectId'));
   await expect(page.locator('button', { hasText: `Object ID: ${triggerObjectId}` })).toHaveCount(0);

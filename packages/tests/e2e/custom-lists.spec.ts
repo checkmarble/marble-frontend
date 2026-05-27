@@ -88,10 +88,10 @@ test('Delete a list value', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Value' }).waitFor({ state: 'hidden' });
   await expect(page.locator('table')).toContainText(value);
 
-  // Delete the value — each row has a hidden delete button revealed on hover
-  // The button has name="delete" and a sr-only "Delete" span for accessibility
+  // Delete the value — each row has a hidden delete button revealed on hover,
+  // tagged with `data-test="delete-list-value-trigger"`.
   const valueRow = page.locator('tr', { hasText: value });
-  await valueRow.locator('button[name="delete"]').click();
+  await valueRow.locator('[data-test="delete-list-value-trigger"]').click();
   const modal = page.getByRole('dialog');
   await modal.waitFor();
   await modal.getByRole('button', { name: 'Delete' }).click();

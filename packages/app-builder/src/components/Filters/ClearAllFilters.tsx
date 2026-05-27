@@ -11,7 +11,12 @@ export const ClearAllFiltersLink = forwardRef<HTMLAnchorElement, Omit<RemixLinkP
   function ClearAllFiltersButton(props, ref) {
     const { t } = useTranslation(filtersI18n);
     return (
-      <Link className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')} ref={ref} {...props}>
+      <Link
+        data-test="clear-all-filters-link"
+        className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')}
+        ref={ref}
+        {...props}
+      >
         <Icon icon="cross" className="size-5" />
         <span className="line-clamp-1">{t('filters:clear_filters')}</span>
       </Link>

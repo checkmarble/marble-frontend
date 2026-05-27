@@ -71,6 +71,7 @@ const FilterItemClear = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<'
   return (
     <button
       ref={ref}
+      data-test="filter-item-clear"
       className={clsx(
         'focus:border-purple-primary dark:focus:border-purple-hover -ml-1 h-full rounded-sm border border-solid border-transparent px-2 outline-hidden',
         className,

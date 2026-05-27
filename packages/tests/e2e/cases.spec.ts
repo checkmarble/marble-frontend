@@ -22,10 +22,7 @@ async function setupInbox(page: import('@playwright/test').Page): Promise<{ inbo
 // Returns the case name.
 async function createCase(page: import('@playwright/test').Page, inboxName: string): Promise<string> {
   const caseName = crypto.randomUUID();
-  // CaseRightPanel.Trigger = Radix Dialog.Trigger → aria-haspopup="dialog".
-  // The page has 3 dialog triggers (InboxSelector, AddNewFilter, CreateCase);
-  // only CreateCase has `mode="icon"` which adds Tailwind's `aspect-square`.
-  await page.locator('button[aria-haspopup="dialog"].aspect-square').click();
+  await page.locator('[data-test="create-case-trigger"]').click();
 
   // Scope all form interactions to the right panel (Radix Dialog) — the inbox
   // page also has a top-level inbox filter combobox we'd otherwise collide with.
@@ -50,7 +47,7 @@ test('Cases list page loads', async ({ page }) => {
   await expect(page).toHaveURL(new RegExp(`/cases/inboxes/${inboxId}`));
   // The toolbar chrome must render (search input + the icon-only create-case button)
   await expect(page.getByPlaceholder('Search by name')).toBeVisible();
-  await expect(page.locator('button[aria-haspopup="dialog"].aspect-square')).toBeVisible();
+  await expect(page.locator('[data-test="create-case-trigger"]')).toBeVisible();
 });
 
 test('Create a case', async ({ page }) => {

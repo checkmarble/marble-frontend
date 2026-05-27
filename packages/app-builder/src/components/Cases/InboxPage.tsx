@@ -207,7 +207,13 @@ export const InboxPage = ({
                       }}
                     />
                     <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                      <Button size="default" variant="primary" appearance="stroked" mode="icon">
+                      <Button
+                        size="default"
+                        variant="primary"
+                        appearance="stroked"
+                        mode="icon"
+                        data-test="create-case-trigger"
+                      >
                         <Icon icon="plus" className="size-4" />
                       </Button>
                     </CaseRightPanel.Trigger>
