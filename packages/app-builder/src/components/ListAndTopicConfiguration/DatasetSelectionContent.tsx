@@ -798,8 +798,8 @@ const FilterGroupTags = ({
   const isAllSelected = selectedItems.length === items.length && items.length > 1;
 
   const tagsContent = (
-    <div className={cn('flex min-w-0', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden items-start')}>
-      <div className="flex min-w-0 items-center gap-v2-xs">
+    <div className={cn('flex min-w-0 w-full flex-1', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
+      <div className="flex min-w-0 w-full items-center gap-v2-xs overflow-hidden">
         {isAllSelected ? (
           <Tag color="purple" size="small">
             {t('continuousScreening:creation.datasetSelection.filter.all')}

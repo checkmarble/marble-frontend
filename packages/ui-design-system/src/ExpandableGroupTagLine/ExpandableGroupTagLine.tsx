@@ -90,7 +90,7 @@ export function ExpandableGroupTagLine({ items, moreButton, lessButton }: Expand
       >
         {items}
       </div>
-      <div className={cn('flex items-center gap-v2-sm', isExpanded && 'flex-wrap')}>
+      <div className={cn('flex min-w-0 items-center gap-v2-sm', isExpanded ? 'flex-wrap' : 'overflow-hidden')}>
         {visibleItems}
         {overflow > 0 &&
           (moreButton ? (
