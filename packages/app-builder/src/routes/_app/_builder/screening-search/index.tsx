@@ -8,8 +8,9 @@ import {
   PrintResults,
   PrintSearchSummary,
 } from '@app-builder/components/Screenings/FreeformSearch/FreeformSearchPrint';
-import { SaveSearch } from '@app-builder/components/Screenings/FreeformSearch/SaveSearch';
-import { ViewSavedResults } from '@app-builder/components/Screenings/FreeformSearch/ViewSavedResults';
+// TODO: Uncomment when the save search and view saved results are implemented
+// import { SaveSearch } from '@app-builder/components/Screenings/FreeformSearch/SaveSearch';
+// import { ViewSavedResults } from '@app-builder/components/Screenings/FreeformSearch/ViewSavedResults';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import * as Sentry from '@sentry/react';
@@ -74,10 +75,10 @@ function ScreeningSearchIndexPage() {
                     <PrintSearchSummary searchInputs={searchState.inputs} />
                     <PrintResults results={searchState.results} />
                   </PrintView>
-                  <SaveSearch search={searchState} />
+                  {/* <SaveSearch search={searchState} /> */}
                 </>
               )}
-              <ViewSavedResults />
+              {/* <ViewSavedResults /> */}
             </div>
           </div>
           <FreeformSearchPage onSearchComplete={handleSearchComplete} />
