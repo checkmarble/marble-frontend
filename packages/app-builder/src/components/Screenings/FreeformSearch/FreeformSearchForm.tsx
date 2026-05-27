@@ -1,5 +1,4 @@
 import {
-  completeGlobalTopicSelections,
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
@@ -9,7 +8,6 @@ import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
-import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useForm, useStore } from '@tanstack/react-form';
@@ -55,7 +53,6 @@ export function useFormManuallSearch() {
 export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete }) => {
   const { t } = useTranslation(screeningsI18n);
   const searchMutation = useFreeformSearchMutation();
-  const listConfigQuery = useListConfigQuery('manual_search');
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>([]);
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
 
@@ -68,22 +65,12 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
   useEffect(() => {
     listSharp.update((state) => {
       syncSharpDatasets(state.datasets, selectedDatasets);
-      if (listConfigQuery.data) {
-        completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
-      }
     });
-  }, [listSharp, selectedDatasetsKey, selectedDatasets, listConfigQuery.data]);
+  }, [listSharp, selectedDatasetsKey, selectedDatasets]);
 
   const form = useManualSearchForm({
     onSubmit: async (value) => {
-      let datasets = selectedDatasets;
-
-      if (listConfigQuery.data) {
-        listSharp.update((state) => {
-          completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
-        });
-        datasets = getCanonicalSelectedKeys(listSharp.value.datasets);
-      }
+      const datasets = getCanonicalSelectedKeys(listSharp.value.datasets);
 
       const submitValue: FreeformSearchInput = {
         ...value,

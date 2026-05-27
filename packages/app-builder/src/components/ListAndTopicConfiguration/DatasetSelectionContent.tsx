@@ -24,6 +24,8 @@ import {
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import {
+  buildDatasetKey,
+  buildTopicKey,
   clearSectionSelections,
   isDatasetKeySelected,
   isGlobalTopicSwitchSelected,
@@ -38,7 +40,6 @@ import {
   type GlobalTopicConfig,
   getAvailableGlobalTopicConfigs,
   getDatasetNames,
-  getSectionLeafNames,
   getSpecialTopicLabel,
   getSpecialTopicValue,
   isSpecialTopic,
@@ -49,11 +50,11 @@ import {
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
 
-function groupCheckState(names: string[], datasetsMap: Record<string, boolean>): CheckedState {
-  if (names.length === 0) return false;
-  const selected = names.filter((n) => datasetsMap[n]).length;
+function groupCheckState(keys: string[], datasetsMap: Record<string, boolean>): CheckedState {
+  if (keys.length === 0) return false;
+  const selected = keys.filter((k) => datasetsMap[k]).length;
   if (selected === 0) return false;
-  if (selected === names.length) return true;
+  if (selected === keys.length) return true;
   return 'indeterminate';
 }
 
@@ -82,7 +83,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
             {availableGlobalTopicConfigs.length > 0 && (
               <div className="flex flex-col gap-v2-sm px-v2-md py-v2-sm">
                 {availableGlobalTopicConfigs.map((config) => (
-                  <GlobalTopicSwitch key={config.groupKey} config={config} listConfig={data} />
+                  <GlobalTopicSwitch key={config.groupKey} config={config} />
                 ))}
               </div>
             )}
@@ -195,7 +196,7 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const datasetNames = getDatasetNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const selectedCount = ListAndTopicDatasetConfiguration.select(
-    (state) => datasetNames.filter((n) => state.datasets[n]).length,
+    (state) => datasetNames.filter((n) => state.datasets[buildDatasetKey(sectionKey, n)]).length,
   );
 
   return match(variant)
@@ -216,7 +217,7 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                       if (nextValue) {
                         state.datasets[sectionKey] = true;
                       } else {
-                        clearSectionSelections(state.datasets, sectionKey, getSectionLeafNames(section));
+                        clearSectionSelections(state.datasets, sectionKey);
                       }
                     });
                   }}
@@ -298,7 +299,7 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
                 if (checked) {
                   state.datasets[sectionKey] = true;
                 } else {
-                  clearSectionSelections(state.datasets, sectionKey, getSectionLeafNames(section));
+                  clearSectionSelections(state.datasets, sectionKey);
                 }
               });
             }}
@@ -335,18 +336,20 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
 
   function makeResetHandler(dependsOnKey: string): (() => void) | undefined {
     if (!conditionalTopics) return undefined;
-    const dependents = Object.values(conditionalTopics).filter((ct) => ct.dependsOn === dependsOnKey);
+    const dependents = Object.entries(conditionalTopics).filter(([, ct]) => ct.dependsOn === dependsOnKey);
     const dependsOnTopics = topics?.[dependsOnKey] ?? [];
     if (dependents.length === 0) return undefined;
     return () => {
-      const selectedPrefixes = dependsOnTopics.filter((t) => listConfig.value.datasets[t.name]).map((t) => t.name);
+      const selectedPrefixes = dependsOnTopics
+        .filter((t) => listConfig.value.datasets[buildTopicKey(sectionKey, dependsOnKey, t.name)])
+        .map((t) => t.name);
       if (selectedPrefixes.length === 0) return;
       listConfig.update((state) => {
-        for (const ct of dependents) {
+        for (const [conditionalGroup, ct] of dependents) {
           for (const item of ct.items) {
             const prefix = item.key.split('.')[0];
             if (!selectedPrefixes.some((sel) => sel === prefix)) {
-              state.datasets[item.name] = false;
+              state.datasets[buildTopicKey(sectionKey, conditionalGroup, item.name)] = false;
             }
           }
         }
@@ -418,6 +421,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
             sectionKey={sectionKey}
             groupKey={name}
             allItems={items}
+            dependsOnGroup={dependsOn}
             dependsOnItems={section.topics?.[dependsOn]?.map((t) => t.name) ?? []}
           />
         ))}
@@ -440,16 +444,17 @@ const ItemGroup = ({
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const names = items.map((i) => i.name);
+  const keys = names.map((n) => buildDatasetKey(sectionKey, n));
   const checkState = ListAndTopicDatasetConfiguration.select(
-    (state): CheckedState => groupCheckState(names, state.datasets),
+    (state): CheckedState => groupCheckState(keys, state.datasets),
   );
   const selectedCount = ListAndTopicDatasetConfiguration.select(
-    (state) => names.filter((n) => state.datasets[n]).length,
+    (state) => keys.filter((k) => state.datasets[k]).length,
   );
   const handleSelectAll = () => {
     const datasetsMap = listConfig.value.datasets;
-    const selected = names.filter((n) => datasetsMap[n]).length;
-    const nextValue = selected < names.length;
+    const selected = keys.filter((k) => datasetsMap[k]).length;
+    const nextValue = selected < keys.length;
     listConfig.update((state) => {
       for (const name of names) {
         setDatasetKey(state.datasets, sectionKey, name, nextValue);
@@ -474,22 +479,20 @@ const ItemGroup = ({
               {selectedCount} / {names.length}
             </span>
           </span>
-          <span className="flex items-center gap-v2-md font-normal">
-            <label htmlFor="select-all-checkbox" className="text-s text-grey-50">
+          <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-v2-md font-normal">
+            <label htmlFor={`select-all-checkbox-${title}`} className="text-s text-grey-50">
               {t(
                 `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
               )}
             </label>
-            <span onClick={(e) => e.stopPropagation()} className="inline-flex mr-6">
-              <Checkbox
-                id="select-all-checkbox"
-                size="small"
-                checked={checkState}
-                disabled={mode === 'view'}
-                onCheckedChange={handleSelectAll}
-                stopPropagation
-              />
-            </span>
+            <Checkbox
+              id={`select-all-checkbox-${title}`}
+              size="small"
+              checked={checkState}
+              disabled={mode === 'view'}
+              onCheckedChange={handleSelectAll}
+              stopPropagation
+            />
           </span>
         </div>
       </Collapsible.Title>
@@ -584,15 +587,17 @@ const ConditionalFilterGroupRow = ({
   sectionKey,
   groupKey,
   allItems,
+  dependsOnGroup,
   dependsOnItems,
 }: {
   sectionKey: ScreeningCategory;
   groupKey: string;
   allItems: ConditionalTopicItem[];
+  dependsOnGroup: string;
   dependsOnItems: string[];
 }) => {
   const selectedPrefixes = ListAndTopicDatasetConfiguration.select((state) =>
-    dependsOnItems.filter((t) => state.datasets[t]).map((t) => t),
+    dependsOnItems.filter((t) => state.datasets[buildTopicKey(sectionKey, dependsOnGroup, t)]),
   );
 
   const filteredItems =
@@ -922,7 +927,7 @@ const FilterGroupMenu = ({
           {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
         </button>
         {items.map((item) => {
-          const isSelected = !!datasets[item.name];
+          const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
           const itemName = item.title ?? formatItemName(item.name);
           return (
             <label
@@ -965,7 +970,7 @@ const FilterGroupMenu = ({
         {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
       </MenuCommand.Item>
       {items.map((item) => {
-        const isSelected = !!datasets[item.name];
+        const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
         const itemName = item.title ?? formatItemName(item.name);
         return (
           <MenuCommand.Item
@@ -1006,13 +1011,13 @@ const FilterGroupMenu = ({
   return <MenuCommand.Menu persistOnSelect>{menuTriggerAndContent}</MenuCommand.Menu>;
 };
 
-const GlobalTopicSwitch = ({ config, listConfig }: { config: GlobalTopicConfig; listConfig: ListConfig }) => {
+const GlobalTopicSwitch = ({ config }: { config: GlobalTopicConfig }) => {
   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const { t } = useTranslation(['screenings']);
   const switchId = `global-topic-${config.groupKey}`;
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
-    isGlobalTopicSwitchSelected(state.datasets, config, listConfig),
+    isGlobalTopicSwitchSelected(state.datasets, config),
   );
 
   return (
@@ -1023,7 +1028,7 @@ const GlobalTopicSwitch = ({ config, listConfig }: { config: GlobalTopicConfig; 
         disabled={mode === 'view'}
         onCheckedChange={(checked) => {
           listSharp.update((state) => {
-            setGlobalTopicSwitch(state.datasets, config, checked, listConfig);
+            setGlobalTopicSwitch(state.datasets, config, checked);
           });
         }}
       />

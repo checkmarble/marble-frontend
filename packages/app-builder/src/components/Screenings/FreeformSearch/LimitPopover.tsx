@@ -1,5 +1,4 @@
 import {
-  completeGlobalTopicSelections,
   type GlobalTopicConfig,
   getAvailableGlobalTopicConfigs,
   getCanonicalSelectedKeys,
@@ -51,9 +50,7 @@ export const LimitPopover = ({
   const availableGlobalTopicConfigs = listConfig ? getAvailableGlobalTopicConfigs(listConfig) : [];
   const includeDeceasedSelected =
     listConfig != null &&
-    availableGlobalTopicConfigs.some((config) =>
-      isGlobalTopicSwitchSelected(listSharp.value.datasets, config, listConfig),
-    );
+    availableGlobalTopicConfigs.some((config) => isGlobalTopicSwitchSelected(listSharp.value.datasets, config));
 
   const hasCustomValue =
     (committedLimit !== undefined && committedLimit !== DEFAULT_LIMIT) || !!includeDeceasedSelected;
@@ -64,9 +61,6 @@ export const LimitPopover = ({
       setDraftLimit(committedLimit ?? DEFAULT_LIMIT);
       listSharp.update((state) => {
         syncSharpDatasets(state.datasets, selectedDatasets);
-        if (listConfig) {
-          completeGlobalTopicSelections(state.datasets, listConfig);
-        }
       });
     } else {
       setDraftLimit(undefined);
@@ -87,9 +81,6 @@ export const LimitPopover = ({
     const nextLimit = value ?? DEFAULT_LIMIT;
 
     if (listConfig) {
-      listSharp.update((state) => {
-        completeGlobalTopicSelections(state.datasets, listConfig);
-      });
       onApplyDatasets(getCanonicalSelectedKeys(listSharp.value.datasets));
     }
 
@@ -132,10 +123,9 @@ export const LimitPopover = ({
           align="start"
         >
           <div className="flex flex-col gap-2 p-4">
-            {listConfig &&
-              availableGlobalTopicConfigs.map((config) => (
-                <GlobalTopicSwitch key={config.groupKey} config={config} listConfig={listConfig} />
-              ))}
+            {availableGlobalTopicConfigs.map((config) => (
+              <GlobalTopicSwitch key={config.groupKey} config={config} />
+            ))}
             <ThresholdRange
               defaultDescription={t('screenings:freeform_search.limit_description')}
               value={value}
@@ -175,18 +165,12 @@ export const LimitPopover = ({
   );
 };
 
-function GlobalTopicSwitch({
-  config,
-  listConfig,
-}: {
-  config: GlobalTopicConfig;
-  listConfig: NonNullable<ReturnType<typeof useListConfigQuery>['data']>;
-}) {
+function GlobalTopicSwitch({ config }: { config: GlobalTopicConfig }) {
   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
   const { t } = useTranslation(screeningsI18n);
   const switchId = `global-topic-${config.groupKey}`;
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
-    isGlobalTopicSwitchSelected(state.datasets, config, listConfig),
+    isGlobalTopicSwitchSelected(state.datasets, config),
   );
 
   return (
@@ -196,7 +180,7 @@ function GlobalTopicSwitch({
         checked={isSelected}
         onCheckedChange={(checked) => {
           listSharp.update((state) => {
-            setGlobalTopicSwitch(state.datasets, config, checked, listConfig);
+            setGlobalTopicSwitch(state.datasets, config, checked);
           });
         }}
       />

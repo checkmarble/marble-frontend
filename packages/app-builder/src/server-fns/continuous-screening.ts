@@ -1,7 +1,6 @@
 import { createContinuousScreeningConfigSchema } from '@app-builder/components/ContinuousScreening/context/CreationStepper';
 import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { normalizeListConfig } from '@app-builder/queries/screening/lists-config';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { redirect } from '@tanstack/react-router';
@@ -52,15 +51,11 @@ export const createContinuousScreeningConfigurationFn = createServerFn({ method:
         inboxId = payload.inboxId;
       }
 
-      const availableFilters = await context.authInfo.screening.getAvailableFilters({
-        feature: 'continuous_monitoring',
+      await context.authInfo.continuousScreening.createConfiguration({
+        ...payload,
+        inboxId,
+        datasets: sanitizeTruthyDatasets(payload.datasets),
       });
-      const listConfig = normalizeListConfig(availableFilters);
-
-      await context.authInfo.continuousScreening.createConfiguration(
-        { ...payload, inboxId, datasets: sanitizeTruthyDatasets(payload.datasets) },
-        listConfig,
-      );
 
       throw redirect({ to: '/continuous-screening/configurations' });
     } catch (error) {
@@ -119,9 +114,9 @@ export const updateContinuousScreeningConfigurationFn = createServerFn({ method:
       inboxId = payload.inboxId;
     }
 
-    await context.authInfo.continuousScreening.updateConfiguration(
-      configStableId,
-      { ...payload, inboxId, datasets: sanitizeTruthyDatasets(payload.datasets) },
-      normalizeListConfig(await context.authInfo.screening.getAvailableFilters({ feature: 'continuous_monitoring' })),
-    );
+    await context.authInfo.continuousScreening.updateConfiguration(configStableId, {
+      ...payload,
+      inboxId,
+      datasets: sanitizeTruthyDatasets(payload.datasets),
+    });
   });

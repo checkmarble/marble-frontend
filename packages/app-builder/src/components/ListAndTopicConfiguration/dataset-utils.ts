@@ -1,3 +1,4 @@
+import type { ScreeningCategory } from '@app-builder/models/screening';
 import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
 
 export type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
@@ -67,15 +68,16 @@ export function getSpecialTopicValue(groupKey: string) {
   return getSpecialTopicConfig(groupKey)?.name ?? groupKey;
 }
 
-export function getSectionLeafNames(section: SectionData) {
-  const datasetNames = getDatasetNames(section);
-  const topicNames = Object.values(section.topics ?? {}).flatMap((items) => items.map((i) => i.name));
-  const conditionalTopicNames = Object.values(section.conditionalTopics ?? {}).flatMap((ct) =>
-    ct.items.map((i) => i.name),
+/** Returns the set of composite wire keys for every leaf item (dataset + topic + conditional topic) in a section. */
+export function getSectionLeafKeys(section: SectionData, sectionKey: ScreeningCategory): string[] {
+  const datasetKeys = (section.datasets ?? []).flatMap((g) => g.datasets.map((d) => `${sectionKey}:dataset:${d.name}`));
+  const topicKeys = Object.entries(section.topics ?? {}).flatMap(([group, items]) =>
+    items.map((i) => `${sectionKey}:topic:${group}:${i.name}`),
   );
-
-  // Note: `sectionKey` is intentionally not included: it's the section toggle, not a leaf item.
-  return [...new Set([...datasetNames, ...topicNames, ...conditionalTopicNames])];
+  const conditionalTopicKeys = Object.entries(section.conditionalTopics ?? {}).flatMap(([group, ct]) =>
+    ct.items.map((i) => `${sectionKey}:topic:${group}:${i.name}`),
+  );
+  return [...new Set([...datasetKeys, ...topicKeys, ...conditionalTopicKeys])];
 }
 
 export function getDatasetNames(section: SectionData) {

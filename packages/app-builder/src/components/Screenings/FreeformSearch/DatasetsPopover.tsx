@@ -1,8 +1,7 @@
 import {
-  completeGlobalTopicSelections,
   DatasetSelectionContent,
   getCanonicalSelectedKeys,
-  getSectionLeafNames,
+  getSectionLeafKeys,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
   syncSharpDatasets,
@@ -41,9 +40,6 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
     if (isOpen) {
       listSharp.update((state) => {
         syncSharpDatasets(state.datasets, selectedDatasets);
-        if (listConfigQuery.data) {
-          completeGlobalTopicSelections(state.datasets, listConfigQuery.data);
-        }
       });
     }
     setOpen(isOpen);
@@ -74,7 +70,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
         if (!section) return [];
         const sectionKey = key as ScreeningCategory;
         const isSectionEnabled = !!selectionMap[sectionKey];
-        const count = getSectionLeafNames(section).filter((n) => selectionMap[n]).length;
+        const count = getSectionLeafKeys(section, sectionKey).filter((k) => selectionMap[k]).length;
         if (!isSectionEnabled && count === 0) return [];
         return [{ key: sectionKey, count, isEmpty: isSectionEnabled && count === 0 }];
       });

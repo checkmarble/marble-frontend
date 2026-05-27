@@ -13,13 +13,21 @@ function getDatasetsKey(datasets: string[]): string {
   return [...datasets].sort().join(',');
 }
 
-export const FieldDataset = ({ value, onChange }: { value?: string[]; onChange?: (value: string[]) => void }) => {
+export const FieldDataset = ({
+  value,
+  onChange,
+  readOnly = false,
+}: {
+  value?: string[];
+  onChange?: (value: string[]) => void;
+  readOnly?: boolean;
+}) => {
   const { t } = useTranslation();
   const valueKey = useMemo(() => getDatasetsKey(value ?? []), [value]);
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
     datasets: makeDatasetsMap(value ?? []),
-    mode: 'edit',
+    mode: readOnly ? 'view' : 'edit',
   });
 
   const onChangeRef = useRef(onChange);

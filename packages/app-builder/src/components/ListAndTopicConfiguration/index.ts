@@ -8,8 +8,6 @@ export {
   buildDatasetKey,
   buildTopicKey,
   clearSectionSelections,
-  completeGlobalTopicSelections,
-  expandSelectionWithGlobalTopicFilterKeys,
   getCanonicalSelectedKeys,
   isDatasetKeySelected,
   isGlobalTopicSwitchSelected,
@@ -24,5 +22,5 @@ export {
 export {
   type GlobalTopicConfig,
   getAvailableGlobalTopicConfigs,
-  getSectionLeafNames,
+  getSectionLeafKeys,
 } from './dataset-utils';

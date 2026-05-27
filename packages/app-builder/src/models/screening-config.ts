@@ -140,7 +140,8 @@ export function getDatasetFromFilters(filters: ScreeningConfigBodyFiltersDto): s
   return Object.entries(filters).flatMap(([dtoSection, data]) => {
     const section =
       DtoSectionToCategory[dtoSection as keyof ScreeningConfigBodyFiltersDto] ?? (dtoSection as ScreeningCategory);
-    const sections = data.enabled ? [section] : [];
+    // The bare 'global' section key is implicit on the wire (enabled when any global topic is present) and is not stored in the UI selection map.
+    const sections = data.enabled && section !== 'global' ? [section] : [];
     const datasets = data.datasets?.map((dataset) => `${section}:dataset:${dataset}`) ?? [];
     const topics = Object.entries(data.topics ?? {}).flatMap(([topic, values]) => {
       return values.map((value) => `${section}:topic:${topic}:${value}`);
