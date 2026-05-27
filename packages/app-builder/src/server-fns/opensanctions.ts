@@ -39,6 +39,13 @@ async function getDatasetFreshnessInfo(
 export const getDatasetFreshnessFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
+    // The OpenSanctions dataset on the managed Marble SaaS is operated by the platform team
+    // and kept in sync upstream — surfacing the freshness warning there would be noise for
+    // end users who can't act on it. Self-hosted operators do need to see it.
+    if (context.appConfig.isManagedMarble) {
+      return { datasetFreshnessInfo: null };
+    }
+
     let datasetFreshnessInfo: { lastExport: string } | null = null;
     try {
       datasetFreshnessInfo = await getDatasetFreshnessInfo(context.authInfo.screening, context.authInfo.scenario);
