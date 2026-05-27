@@ -1,6 +1,7 @@
 import type { KeyboardEvent, PointerEvent } from 'react';
 import { useRef, useState } from 'react';
 import { cn } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export type ThresholdRangeStep = {
   value: number;
@@ -21,6 +22,7 @@ export type ThresholdRangeProps = {
   onBlur?: () => void;
   disabled?: boolean;
   className?: string;
+  learnMoreUrl?: string;
 };
 
 const RAIL_HEIGHT = 4;
@@ -82,6 +84,7 @@ export function ThresholdRange({
   onBlur,
   disabled = false,
   className,
+  learnMoreUrl,
 }: ThresholdRangeProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const hasDraggedRef = useRef(false);
@@ -204,7 +207,21 @@ export function ThresholdRange({
       {name ? <input type="hidden" name={name} value={value ?? ''} /> : null}
 
       <div className="flex flex-col gap-4">
-        {title ? <div className="text-grey-primary text-s font-medium">{title}</div> : null}
+        {title ? (
+          <div className="flex items-center gap-1">
+            <span className="text-grey-primary text-s font-medium">{title}</span>
+            {learnMoreUrl ? (
+              <a
+                href={learnMoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-grey-50 text-purple-primary hover:text-purple-hover"
+              >
+                <Icon icon="helpcenter" className="size-4" />
+              </a>
+            ) : null}
+          </div>
+        ) : null}
 
         <div
           role="slider"

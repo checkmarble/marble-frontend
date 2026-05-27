@@ -39,6 +39,7 @@ export const ScreeningThreshold = ({ threshold, onChange, title, disabled }: Scr
       values={values}
       initialColor="var(--color-red-hover)"
       disabled={disabled}
+      learnMoreUrl="https://docs.checkmarble.com/docs/search-scoring-algorithm"
     />
   );
 };
