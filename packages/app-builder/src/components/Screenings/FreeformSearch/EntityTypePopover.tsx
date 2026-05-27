@@ -2,7 +2,6 @@ import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/s
 import { formatCountryName } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
-import { useStore } from '@tanstack/react-form';
 import CountryFlag from 'country-flag-emojis';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,25 +9,23 @@ import * as R from 'remeda';
 import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
-import { useFormManuallSearch } from './FreeformSearchForm';
+import { setAdditionalFields } from '../set-additional-fields';
+import { useEntitySearchForm, useEntitySearchFormStore } from './entity-search-form-context';
 
 export interface EntityTypePopoverProps {
   disabled: boolean;
-  entityType: SearchableSchema | undefined;
-  fields: Record<string, string | undefined>;
-  onEntityTypeChange: (entityType: SearchableSchema) => void;
-  onFieldChange: (fieldName: string, value: string) => void;
 }
 
-export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
+export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
-  const form = useFormManuallSearch();
-  const value = useStore(form.store, (state) => state.values.entityType);
+  const form = useEntitySearchForm();
+  const value = useEntitySearchFormStore((state) => state.values.entityType);
   const [additionalFieldsOpenRequest, setAdditionalFieldsOpenRequest] = useState(0);
 
   const handleSelect = (schema: SearchableSchema) => {
     form.setFieldValue('entityType', schema);
+    form.setFieldValue('fields', setAdditionalFields(SEARCH_ENTITIES[schema].fields, form.state.values.fields));
     setOpen(false);
     if (schema !== 'Thing') {
       setAdditionalFieldsOpenRequest((count) => count + 1);
@@ -64,7 +61,7 @@ export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
             {/* Entity type list */}
             <div className="max-h-[300px] overflow-y-auto p-2">
               {schemas.map((schema) => {
-                const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
+                const schemaKey = schema.toLowerCase();
                 const fieldForSchema = SEARCH_ENTITIES[schema].fields;
                 const isSelected = value === schema;
 
@@ -100,11 +97,14 @@ export const EntityTypePopover = ({ disabled }: { disabled: boolean }) => {
 
 function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: boolean; openRequest: number }) {
   const [open, setOpen] = useState(false);
-  const form = useFormManuallSearch();
-  const entityType = useStore(form.store, (state) => state.values.entityType);
-  const entityTypeFields = entityType ? SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name') : [];
+  const form = useEntitySearchForm();
+  const entityType = useEntitySearchFormStore((state) => state.values.entityType);
+  const entityTypeFields =
+    entityType && entityType in SEARCH_ENTITIES
+      ? SEARCH_ENTITIES[entityType].fields.filter((f: string) => f !== 'name')
+      : [];
   const { t, i18n } = useTranslation(screeningsI18n);
-  const fields = useStore(form.store, (state) => state.values.fields);
+  const fields = useEntitySearchFormStore((state) => state.values.fields);
   const lastProcessedOpenRequest = useRef(0);
 
   useEffect(() => {
@@ -117,9 +117,9 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
 
   const filterTags = hasSelection
     ? SEARCH_ENTITIES[entityType].fields
-        .filter((f) => f !== 'name')
-        .map((fieldName) => {
-          const fieldValue = (fields as Record<string, string | undefined>)[fieldName];
+        .filter((f: string) => f !== 'name')
+        .map((fieldName: string) => {
+          const fieldValue = fields[fieldName];
           if (!fieldValue) return null;
           const label = getFilterTagLabel(fieldName, fieldValue, t);
           if (!label) return null;

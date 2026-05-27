@@ -22,6 +22,7 @@ import { screeningsI18n } from '../screenings-i18n';
 import { setAdditionalFields } from '../set-additional-fields';
 import { DatasetsPopover } from './DatasetsPopover';
 import { EntityTypePopover } from './EntityTypePopover';
+import { EntitySearchFormProvider } from './entity-search-form-context';
 import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
 
 interface FreeformSearchFormProps {
@@ -33,7 +34,7 @@ function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInp
   return useForm({
     defaultValues: {
       entityType: 'Thing',
-      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {}) as FreeformSearchInput['fields'],
+      fields: setAdditionalFields(SEARCH_ENTITIES['Thing'].fields, {}),
       limit: DEFAULT_LIMIT,
       threshold: org.sanctionThreshold ?? 70,
     } as FreeformSearchInput,
@@ -125,92 +126,94 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
 
   return (
     <ManualSearchFormContext.Provider value={form}>
-      <div className="flex flex-col gap-4">
-        <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
-          <form onSubmit={handleSubmit}>
-            {/* Search by name input with button */}
-            <div className="flex gap-2">
-              <form.Field
-                name="fields.name"
-                validators={{
-                  onSubmit: ({ value }) => {
-                    const v = (value as string) ?? '';
-                    return v.trim().length >= 1 ? undefined : t('screenings:freeform_search.name_required');
-                  },
-                }}
-              >
-                {(formField) => (
-                  <div className="flex flex-1 flex-col gap-1">
-                    <Input
-                      name={formField.name}
-                      value={(formField.state.value as string) ?? ''}
-                      onChange={(e) => formField.handleChange(e.target.value)}
-                      className="w-full"
-                      borderColor={formField.state.meta.errors.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
-                      placeholder={t('screenings:freeform_search.name_placeholder')}
-                    />
-                    {formField.state.meta.errors.length > 0 && (
-                      <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
-                    )}
-                  </div>
-                )}
-              </form.Field>
-            </div>
-          </form>
-          <EntityTypePopover disabled={searchMutation.isPending} />
-        </div>
-        <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
+      <EntitySearchFormProvider form={form}>
+        <div className="flex flex-col gap-4">
           <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
-            <ScreeningThreshold
-              threshold={threshold}
-              onChange={(value) => {
-                form.setFieldValue('threshold', value);
-              }}
-              title={t('screenings:freeform_search.threshold_label')}
-            />
-            <DatasetsPopover
-              selectedDatasets={selectedDatasets}
-              onApply={setSelectedDatasets}
-              disabled={searchMutation.isPending}
-            />
-            <LimitPopover
-              disabled={searchMutation.isPending}
-              originalValue={originalLimit.current}
-              selectedDatasets={selectedDatasets}
-              onApply={(value) => {
-                originalLimit.current = value;
-              }}
-              onApplyDatasets={setSelectedDatasets}
-            />
-          </div>
-        </ListAndTopicDatasetConfiguration.Provider>
-        <div className="flex gap-2 justify-end">
-          {hasActiveFilters && (
-            <div className="flex gap-2">
-              <Button variant="secondary" appearance="stroked" size="default" onClick={handleClearFilters}>
-                {t('screenings:freeform_search.clear_filters')}
-              </Button>
-            </div>
-          )}
-          <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-            {([canSubmit, isSubmitting]) => {
-              return (
-                <Button
-                  variant="primary"
-                  size="default"
-                  type="submit"
-                  disabled={!canSubmit || isSubmitting}
-                  onClick={handleSubmit}
-                  className="flex items-center gap-v2-xs"
+            <form onSubmit={handleSubmit}>
+              {/* Search by name input with button */}
+              <div className="flex gap-2">
+                <form.Field
+                  name="fields.name"
+                  validators={{
+                    onSubmit: ({ value }) => {
+                      const v = (value as string) ?? '';
+                      return v.trim().length >= 1 ? undefined : t('screenings:freeform_search.name_required');
+                    },
+                  }}
                 >
-                  <span>{t('screenings:freeform_search.submit')}</span>
-                  {isSubmitting && <Icon icon="spinner" className="size-5 animate-spin" />}
+                  {(formField) => (
+                    <div className="flex flex-1 flex-col gap-1">
+                      <Input
+                        name={formField.name}
+                        value={(formField.state.value as string) ?? ''}
+                        onChange={(e) => formField.handleChange(e.target.value)}
+                        className="w-full"
+                        borderColor={formField.state.meta.errors.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
+                        placeholder={t('screenings:freeform_search.name_placeholder')}
+                      />
+                      {formField.state.meta.errors.length > 0 && (
+                        <span className="text-red-primary text-xs">{formField.state.meta.errors[0]}</span>
+                      )}
+                    </div>
+                  )}
+                </form.Field>
+              </div>
+            </form>
+            <EntityTypePopover disabled={searchMutation.isPending} />
+          </div>
+          <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
+            <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
+              <ScreeningThreshold
+                threshold={threshold}
+                onChange={(value) => {
+                  form.setFieldValue('threshold', value);
+                }}
+                title={t('screenings:freeform_search.threshold_label')}
+              />
+              <DatasetsPopover
+                selectedDatasets={selectedDatasets}
+                onApply={setSelectedDatasets}
+                disabled={searchMutation.isPending}
+              />
+              <LimitPopover
+                disabled={searchMutation.isPending}
+                originalValue={originalLimit.current}
+                selectedDatasets={selectedDatasets}
+                onApply={(value) => {
+                  originalLimit.current = value;
+                }}
+                onApplyDatasets={setSelectedDatasets}
+              />
+            </div>
+          </ListAndTopicDatasetConfiguration.Provider>
+          <div className="flex gap-2 justify-end">
+            {hasActiveFilters && (
+              <div className="flex gap-2">
+                <Button variant="secondary" appearance="stroked" size="default" onClick={handleClearFilters}>
+                  {t('screenings:freeform_search.clear_filters')}
                 </Button>
-              );
-            }}
-          </form.Subscribe>
+              </div>
+            )}
+            <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+              {([canSubmit, isSubmitting]) => {
+                return (
+                  <Button
+                    variant="primary"
+                    size="default"
+                    type="submit"
+                    disabled={!canSubmit || isSubmitting}
+                    onClick={handleSubmit}
+                    className="flex items-center gap-v2-xs"
+                  >
+                    <span>{t('screenings:freeform_search.submit')}</span>
+                    {isSubmitting && <Icon icon="spinner" className="size-5 animate-spin" />}
+                  </Button>
+                );
+              }}
+            </form.Subscribe>
+          </div>
         </div>
-      </div>
+      </EntitySearchFormProvider>
     </ManualSearchFormContext.Provider>
   );
 };
