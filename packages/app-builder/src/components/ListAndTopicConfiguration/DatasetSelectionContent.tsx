@@ -683,8 +683,6 @@ const SpecialTopicSwitch = ({
   );
   const { t } = useTranslation(['continuousScreening']);
 
-  if (mode === 'view' && !isSelected) return null;
-
   return (
     <div className="flex items-center gap-v2-sm">
       <Switch
@@ -816,42 +814,46 @@ const FilterGroupTags = ({
 
   const isAllSelected = selectedItems.length === items.length && items.length > 1;
 
+  const trailingTrigger =
+    mode !== 'view' &&
+    (variant === 'popover' ? (
+      <button
+        type="button"
+        className={cn(
+          'flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-grey-background-light',
+          isMenuOpen && 'bg-purple-background-light text-purple-primary',
+        )}
+        onClick={() => setIsMenuOpen((open) => !open)}
+        aria-expanded={isMenuOpen}
+      >
+        <Icon icon={isMenuOpen ? 'minus' : 'plus'} className="size-3" />
+      </button>
+    ) : (
+      <FilterGroupMenu
+        anchored
+        items={items}
+        sectionKey={sectionKey}
+        topicGroup={topicGroup}
+        onAfterChange={onAfterChange}
+      />
+    ));
+
   const tagsContent = (
     <div className={cn('flex min-w-0 w-full flex-1', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
       <div className="flex min-w-0 w-full items-center gap-v2-xs flex-1">
         {isAllSelected ? (
-          <Tag color="purple" size="small">
-            {t('continuousScreening:creation.datasetSelection.filter.all')}
-          </Tag>
+          <>
+            <Tag color="purple" size="small">
+              {t('continuousScreening:creation.datasetSelection.filter.all')}
+            </Tag>
+            {trailingTrigger}
+          </>
         ) : (
-          <ExpandableGroupTagLine items={tagItems} />
-        )}
-
-        {mode !== 'view' && variant === 'popover' && (
-          <button
-            type="button"
-            className={cn(
-              'flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-grey-background-light',
-              isMenuOpen && 'bg-purple-background-light text-purple-primary',
-            )}
-            onClick={() => setIsMenuOpen((open) => !open)}
-            aria-expanded={isMenuOpen}
-          >
-            <Icon icon={isMenuOpen ? 'minus' : 'plus'} className="size-3" />
-          </button>
+          <ExpandableGroupTagLine items={tagItems} trailing={trailingTrigger} />
         )}
       </div>
       {mode !== 'view' && variant === 'popover' && isMenuOpen && (
         <FilterGroupMenu items={items} sectionKey={sectionKey} topicGroup={topicGroup} onAfterChange={onAfterChange} />
-      )}
-      {useAnchoredMenu && (
-        <FilterGroupMenu
-          anchored
-          items={items}
-          sectionKey={sectionKey}
-          topicGroup={topicGroup}
-          onAfterChange={onAfterChange}
-        />
       )}
     </div>
   );

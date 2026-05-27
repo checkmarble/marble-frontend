@@ -12,6 +12,7 @@ export interface ExpandableGroupTagLineProps {
   moreButton?: (overflow: number, onExpand: (event: MouseEvent) => void) => ReactNode;
   lessButton?: (onCollapse: (event: MouseEvent) => void) => ReactNode;
   classname?: string;
+  trailing?: ReactNode;
 }
 
 function DefaultMoreButton({ overflow, onExpand }: { overflow: number; onExpand: (event: MouseEvent) => void }) {
@@ -30,7 +31,13 @@ function DefaultLessButton({ onCollapse }: { onCollapse: (event: MouseEvent) => 
   );
 }
 
-export function ExpandableGroupTagLine({ items, moreButton, lessButton, classname }: ExpandableGroupTagLineProps) {
+export function ExpandableGroupTagLine({
+  items,
+  moreButton,
+  lessButton,
+  classname,
+  trailing,
+}: ExpandableGroupTagLineProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
@@ -100,6 +107,7 @@ export function ExpandableGroupTagLine({ items, moreButton, lessButton, classnam
             <DefaultMoreButton overflow={overflow} onExpand={handleExpand} />
           ))}
         {isExpanded && (lessButton ? lessButton(handleCollapse) : <DefaultLessButton onCollapse={handleCollapse} />)}
+        {trailing}
       </div>
     </div>
   );
