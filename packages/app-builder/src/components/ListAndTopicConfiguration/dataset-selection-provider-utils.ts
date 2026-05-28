@@ -181,3 +181,36 @@ export function applyAliveDeceasedDefaults(
     }
   }
 }
+
+/** Keeps the bare section flag aligned with whether any leaf item in the section is selected. */
+export function syncSectionEnabledFromLeaves(
+  datasets: Record<string, boolean>,
+  sectionKey: ScreeningCategory,
+  section: SelectableSection,
+): void {
+  datasets[sectionKey] = getSelectableSectionLeafKeys(sectionKey, section).some((key) => datasets[key]);
+}
+
+function getSelectableSectionLeafKeys(sectionKey: ScreeningCategory, section: SelectableSection): string[] {
+  const keys: string[] = [];
+
+  for (const group of section.datasets ?? []) {
+    for (const item of group.datasets) {
+      keys.push(buildDatasetKey(sectionKey, item.name));
+    }
+  }
+
+  for (const [topicGroup, items] of Object.entries(section.topics ?? {})) {
+    for (const item of items) {
+      keys.push(buildTopicKey(sectionKey, topicGroup, item.name));
+    }
+  }
+
+  for (const [topicGroup, { items }] of Object.entries(section.conditionalTopics ?? {})) {
+    for (const item of items) {
+      keys.push(buildTopicKey(sectionKey, topicGroup, item.name));
+    }
+  }
+
+  return keys;
+}

@@ -17,6 +17,7 @@ export {
   setDatasetKey,
   setGlobalTopicSwitch,
   setTopicKey,
+  syncSectionEnabledFromLeaves,
   syncSharpDatasets,
 } from './dataset-selection-provider-utils';
 export {
