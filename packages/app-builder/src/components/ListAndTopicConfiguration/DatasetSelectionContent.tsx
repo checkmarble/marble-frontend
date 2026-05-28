@@ -2,7 +2,6 @@ import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { UseQueryResult } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
@@ -24,7 +23,6 @@ import {
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import {
-  applyAliveDeceasedDefaults,
   buildDatasetKey,
   buildTopicKey,
   clearSectionSelections,
@@ -47,7 +45,7 @@ import {
   useDatasetTitle,
 } from './dataset-utils';
 
-type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
+type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>['filters'];
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
 
 function groupCheckState(keys: string[], datasetsMap: Record<string, boolean>): CheckedState {
@@ -75,7 +73,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
     const data = listConfigQuery.data;
     if (!data) return;
     listConfig.update((state) => {
-      applyAliveDeceasedDefaults(state.datasets, data, useCase);
+      // applyAliveDeceasedDefaults(state.datasets, data, useCase);
     });
   }, [listConfigQuery.data, useCase, listConfig]);
 
@@ -177,17 +175,17 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
               </Button>
             </div>
           ))
-          .with({ isSuccess: true }, ({ data }) => (data ? renderSections(data) : null))
+          .with({ isSuccess: true }, ({ data }) => (data ? renderSections(data.filters) : null))
           .exhaustive()}
       </ScrollAreaV2>
     </>
   );
 }
 
-const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResult<ListConfig, Error> }) => {
+const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: ReturnType<typeof useListConfigQuery> }) => {
   const { t } = useTranslation(['continuousScreening']);
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
-  const sectionCount = Object.keys(listConfigQuery.data ?? {}).filter((k) => !!datasets[k]).length;
+  const sectionCount = Object.keys(listConfigQuery.data?.filters ?? {}).filter((k) => !!datasets[k]).length;
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: sectionCount })}</span>;
 };
 

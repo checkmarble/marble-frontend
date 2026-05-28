@@ -2,6 +2,9 @@ import {
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
 } from '@app-builder/components/ListAndTopicConfiguration';
+import { Spinner } from '@app-builder/components/Spinner';
+import { type AvailableFeatures, type ScreeningProviders } from '@app-builder/models/screening';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { ContinuousScreeningConfigurationStepper } from './CreationStepper';
 
@@ -13,7 +16,37 @@ function getDatasetsMapKey(datasets: Record<string, boolean>): string {
   return getCanonicalSelectedKeys(datasets).join(',');
 }
 
-export function ListAndTopicDatasetConfigurationBridge({ children }: { children: ReactNode }) {
+export function ListAndTopicDatasetConfigurationBridge({
+  useCase,
+  children,
+}: {
+  useCase: AvailableFeatures;
+  children: ReactNode;
+}) {
+  const listConfigQuery = useListConfigQuery(useCase);
+
+  if (!listConfigQuery.data) {
+    return (
+      <div className="flex items-center justify-center h-50">
+        <Spinner className="size-10" />
+      </div>
+    );
+  }
+
+  return (
+    <ListAndTopicDatasetConfigurationBridgeInner provider={listConfigQuery.data.provider}>
+      {children}
+    </ListAndTopicDatasetConfigurationBridgeInner>
+  );
+}
+
+function ListAndTopicDatasetConfigurationBridgeInner({
+  provider,
+  children,
+}: {
+  provider: ScreeningProviders;
+  children: ReactNode;
+}) {
   const wizard = ContinuousScreeningConfigurationStepper.useSharp();
   const wizardMode = ContinuousScreeningConfigurationStepper.select((s) => s.__internals.mode);
   const datasetsMap = wizard.value.data.datasets;
@@ -22,6 +55,7 @@ export function ListAndTopicDatasetConfigurationBridge({ children }: { children:
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
     datasets: datasetsMap,
     mode: wizardMode,
+    provider,
   });
 
   useEffect(() => {

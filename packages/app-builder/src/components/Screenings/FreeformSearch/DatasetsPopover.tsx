@@ -64,7 +64,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
   const sectionTags = useMemo(() => {
     const data = listConfigQuery.data;
     if (!data || !hasSelection) return [];
-    return Object.entries(data)
+    return Object.entries(data.filters)
       .filter(([key]) => key !== 'global')
       .flatMap(([key, section]) => {
         if (!section) return [];

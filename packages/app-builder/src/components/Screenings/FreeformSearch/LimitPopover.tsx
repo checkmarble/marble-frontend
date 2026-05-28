@@ -47,7 +47,7 @@ export const LimitPopover = ({
   const tagRef = useRef<HTMLDivElement>(null);
 
   const listConfig = listConfigQuery.data;
-  const availableGlobalTopicConfigs = listConfig ? getAvailableGlobalTopicConfigs(listConfig) : [];
+  const availableGlobalTopicConfigs = listConfig ? getAvailableGlobalTopicConfigs(listConfig.filters) : [];
   const includeDeceasedSelected =
     listConfig != null &&
     availableGlobalTopicConfigs.some((config) => isGlobalTopicSwitchSelected(listSharp.value.datasets, config));

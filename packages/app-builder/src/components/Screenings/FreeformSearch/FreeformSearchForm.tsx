@@ -67,6 +67,8 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     datasets: makeDatasetsMap(selectedDatasets),
     mode: 'edit',
     variant: 'popover',
+    provider: 'lexisnexis',
+    // provider,
   });
 
   useEffect(() => {

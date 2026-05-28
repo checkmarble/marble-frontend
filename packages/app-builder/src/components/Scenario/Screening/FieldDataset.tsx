@@ -5,6 +5,9 @@ import {
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
 } from '@app-builder/components/ListAndTopicConfiguration';
+import { Spinner } from '@app-builder/components/Spinner';
+import { type ScreeningProviders } from '@app-builder/models/screening';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { useSignalEffect } from '@preact/signals-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,21 +16,54 @@ function getDatasetsKey(datasets: string[]): string {
   return [...datasets].sort().join(',');
 }
 
-export const FieldDataset = ({
-  value,
-  onChange,
-  readOnly = false,
-}: {
+type FieldDatasetProps = {
   value?: string[];
   onChange?: (value: string[]) => void;
   readOnly?: boolean;
-}) => {
+};
+
+export const FieldDataset = ({ value, onChange, readOnly = false }: FieldDatasetProps) => {
   const { t } = useTranslation();
+  const listConfigQuery = useListConfigQuery('transaction_monitoring');
+
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-s font-semibold">{t('scenarios:sanction.lists.title')}</span>
+      <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
+        <Callout variant="outlined">
+          <p className="whitespace-pre-wrap">{t('scenarios:sanction.lists.callout')}</p>
+        </Callout>
+        {listConfigQuery.data ? (
+          <FieldDatasetInner
+            provider={listConfigQuery.data.provider}
+            value={value}
+            onChange={onChange}
+            readOnly={readOnly}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-50">
+            <Spinner className="size-10" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const FieldDatasetInner = ({
+  provider,
+  value,
+  onChange,
+  readOnly,
+}: {
+  provider: ScreeningProviders;
+} & FieldDatasetProps) => {
   const valueKey = useMemo(() => getDatasetsKey(value ?? []), [value]);
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
     datasets: makeDatasetsMap(value ?? []),
     mode: readOnly ? 'view' : 'edit',
+    provider,
   });
 
   const onChangeRef = useRef(onChange);
@@ -63,16 +99,8 @@ export const FieldDataset = ({
   });
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-s font-semibold">{t('scenarios:sanction.lists.title')}</span>
-      <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
-        <Callout variant="outlined">
-          <p className="whitespace-pre-wrap">{t('scenarios:sanction.lists.callout')}</p>
-        </Callout>
-        <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
-          <DatasetSelectionContent useCase="transaction_monitoring" />
-        </ListAndTopicDatasetConfiguration.Provider>
-      </div>
-    </div>
+    <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
+      <DatasetSelectionContent useCase="transaction_monitoring" />
+    </ListAndTopicDatasetConfiguration.Provider>
   );
 };
