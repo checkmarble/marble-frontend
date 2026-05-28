@@ -1,4 +1,4 @@
-import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
+import { DatasetTag, useDatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
@@ -29,6 +29,7 @@ import {
   isDatasetKeySelected,
   // isGlobalTopicSwitchSelected,
   isTopicKeySelected,
+  selectAllInSection,
   setDatasetKey,
   // setGlobalTopicSwitch,
   setTopicKey,
@@ -200,6 +201,8 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
+
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
 
   const datasetNames = getDatasetNames(section);
@@ -224,7 +227,11 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                     listConfig.update((state) => {
                       const nextValue = !state.datasets[sectionKey];
                       if (nextValue) {
-                        state.datasets[sectionKey] = true;
+                        if (provider === 'opensanctions') {
+                          selectAllInSection(state.datasets, sectionKey, section, true);
+                        } else {
+                          state.datasets[sectionKey] = true;
+                        }
                       } else {
                         clearSectionSelections(state.datasets, sectionKey);
                       }
@@ -284,16 +291,10 @@ type SectionPanelProps = {
 const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
-
-  const categoryLabel = match(sectionKey)
-    .with('peps', () => t('scenarios:sanction.lists.peps'))
-    .with('third-parties', () => t('scenarios:sanction.lists.third_parties'))
-    .with('sanctions', () => t('scenarios:sanction.lists.sanctions'))
-    .with('adverse-media', () => t('scenarios:sanction.lists.adverse_media'))
-    .with('global', () => t('scenarios:sanction.lists.global'))
-    .otherwise(() => t('scenarios:sanction.lists.other'));
+  const { getLaTagLabel } = useDatasetTag();
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
@@ -306,7 +307,11 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
             onCheckedChange={(checked) => {
               listConfig.update((state) => {
                 if (checked) {
-                  state.datasets[sectionKey] = true;
+                  if (provider === 'opensanctions') {
+                    selectAllInSection(state.datasets, sectionKey, section, true);
+                  } else {
+                    state.datasets[sectionKey] = true;
+                  }
                 } else {
                   clearSectionSelections(state.datasets, sectionKey);
                 }
@@ -317,7 +322,9 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
             htmlFor={`section-switch-${sectionKey}`}
             className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}
           >
-            {t('continuousScreening:creation.datasetSelection.section.activate', { category: categoryLabel })}
+            {t('continuousScreening:creation.datasetSelection.section.activate', {
+              category: getLaTagLabel(sectionKey),
+            })}
           </label>
         </div>
         {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}

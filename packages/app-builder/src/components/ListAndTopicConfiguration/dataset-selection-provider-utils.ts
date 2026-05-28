@@ -76,6 +76,44 @@ export function clearSectionSelections(datasets: Record<string, boolean>, sectio
   }
 }
 
+type SelectableSection = {
+  datasets?: { datasets: { name: string }[] }[];
+  topics?: Record<string, { name: string }[]>;
+  conditionalTopics?: Record<string, { items: { name: string }[] }>;
+};
+
+/**
+ * Marks the section flag and every dataset / topic / conditional-topic available
+ * in `section` as `selected`. Unlike `setSectionSelections`, this enumerates the
+ * section's full catalogue rather than only flipping keys already in the map.
+ */
+export function selectAllInSection(
+  datasets: Record<string, boolean>,
+  sectionKey: ScreeningCategory,
+  section: SelectableSection,
+  selected: boolean,
+): void {
+  datasets[sectionKey] = selected;
+
+  for (const group of section.datasets ?? []) {
+    for (const item of group.datasets) {
+      datasets[buildDatasetKey(sectionKey, item.name)] = selected;
+    }
+  }
+
+  for (const [topicGroup, items] of Object.entries(section.topics ?? {})) {
+    for (const item of items) {
+      datasets[buildTopicKey(sectionKey, topicGroup, item.name)] = selected;
+    }
+  }
+
+  for (const [topicGroup, { items }] of Object.entries(section.conditionalTopics ?? {})) {
+    for (const item of items) {
+      datasets[buildTopicKey(sectionKey, topicGroup, item.name)] = selected;
+    }
+  }
+}
+
 export function syncSharpDatasets(datasets: Record<string, boolean>, selected: string[]): void {
   const nextDatasets = makeDatasetsMap(selected);
 
