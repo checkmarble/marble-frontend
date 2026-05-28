@@ -12,6 +12,7 @@ export function ScreeningErrors({ screening }: { screening: ScreeningError }) {
         <span className="font-semibold">
           {t('screenings:error_label', {
             count: screening.errorCodes.length,
+            name: screening.config.name,
           })}
         </span>
         {screening.errorCodes.map((errorCode) => (
