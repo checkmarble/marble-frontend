@@ -1,4 +1,3 @@
-import { formatCountryName } from '@app-builder/utils/format';
 import * as allCountryFlags from 'country-flag-emojis/flags';
 import type { CountryFlag } from 'country-flag-emojis/types';
 import { type ComponentProps, forwardRef, useMemo, useState } from 'react';
@@ -7,6 +6,7 @@ import { useI18n } from '../contexts/I18nContext';
 import { InternalMenuSharpFactory, MenuCommand } from '../MenuCommand/MenuCommand';
 import { type SelectTriggerProps, selectTrigger } from '../Select/Select';
 import { cn } from '../utils';
+import { formatCountryName } from '../utils/formatCountryName';
 
 export type SelectCountryValue = {
   isoAlpha2: string;

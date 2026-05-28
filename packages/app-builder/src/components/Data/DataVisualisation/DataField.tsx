@@ -8,13 +8,7 @@ import {
   type SemanticTypeField,
 } from '@app-builder/models';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
-import {
-  formatAge,
-  formatCountryName,
-  formatNumber,
-  useFormatDateTime,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatAge, formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
@@ -23,7 +17,7 @@ import { type ComponentType, Fragment, lazy, Suspense, useMemo, useState } from 
 import { useTranslation } from 'react-i18next';
 import { isNonNullish } from 'remeda';
 import { match, P } from 'ts-pattern';
-import { cn, Switch } from 'ui-design-system';
+import { cn, formatCountryName, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
 import { DataFields } from './DataFields';

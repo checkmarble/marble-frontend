@@ -33,7 +33,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
   const listConfigQuery = useListConfigQuery('manual_search');
   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
   const [open, setOpen] = useState(false);
-  const tagRef = useRef<HTMLDivElement>(null);
+  const tagRef = useRef<HTMLButtonElement>(null);
 
   const handleOpenChange = (isOpen: boolean) => {
     if (disabled) return;
@@ -80,7 +80,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
     <div className="flex items-center gap-2 relative">
       <MenuCommand.Menu open={open} onOpenChange={handleOpenChange}>
         <MenuCommand.Trigger>
-          <div className="flex items-center gap-2 flex-wrap" ref={tagRef}>
+          <button type="button" disabled={disabled} className="flex items-center gap-2 flex-wrap" ref={tagRef}>
             {hasSelection ? (
               <>
                 {sectionTags.map(({ key, count, isEmpty }) => (
@@ -103,7 +103,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
                 <span>{t('screenings:freeform_search.filter_by_list')}</span>
               </span>
             )}
-          </div>
+          </button>
         </MenuCommand.Trigger>
         <MenuCommand.Content align="start" sideOffset={4} className="w-[280px]">
           <DatasetSelectionContent useCase="manual_search" onApply={handleApply} onCancel={handleCancel} />

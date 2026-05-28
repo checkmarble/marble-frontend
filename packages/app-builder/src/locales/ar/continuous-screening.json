@@ -70,7 +70,7 @@
   "edition.validate_button": "تأكيد",
   "edition.validation.datasetSelection.added.title": "القوائم/المواضيع المضافة",
   "edition.validation.datasetSelection.no_added": "لم تتم إضافة قوائم/مواضيع",
-  "edition.validation.datasetSelection.no_removed": "لم تتم إزالة قوائم",
+  "edition.validation.datasetSelection.no_removed": "لم تتم إزالة قوائم/مواضيع",
   "edition.validation.datasetSelection.removed.title": "القوائم/المواضيع المحذوفة",
   "edition.validation.datasetSelection.title": "القوائم/المواضيع",
   "edition.validation.generalInfo.title": "معلومات عامة",

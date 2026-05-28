@@ -36,3 +36,4 @@ export * from './TextArea/TextArea';
 export * from './ThresholdRange/ThresholdRange';
 export * from './Tooltip/Tooltip';
 export * from './utils';
+export * from './utils/formatCountryName';

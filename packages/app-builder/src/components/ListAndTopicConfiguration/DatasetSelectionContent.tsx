@@ -800,7 +800,6 @@ const FilterGroupTags = ({
   const tagItems = useMemo(
     () =>
       selectedItems.map((item) => {
-        console.log({ item });
         const label = formatItemName(item, t);
         return mode !== 'view' ? (
           <RemovableTag

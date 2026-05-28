@@ -1,12 +1,11 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
-import { formatCountryName } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
 import CountryFlag from 'country-flag-emojis';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
+import { Button, cn, formatCountryName, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { setAdditionalFields } from '../set-additional-fields';

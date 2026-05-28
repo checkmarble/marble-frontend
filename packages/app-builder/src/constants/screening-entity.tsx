@@ -264,7 +264,7 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
         return <time dateTime={value}>{intlDate.format(new Date(value))}</time>;
       case 'wikidataId':
         return (
-          <ExternalLink href={`https://wikidata.org/wiki/${value}`} className="normal-case break-al">
+          <ExternalLink href={`https://wikidata.org/wiki/${value}`} className="normal-case break-all">
             {value}
           </ExternalLink>
         );

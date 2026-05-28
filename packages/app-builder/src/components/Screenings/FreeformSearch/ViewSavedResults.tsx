@@ -93,12 +93,14 @@ export const ViewSavedResults = () => {
       <PanelRoot open={open} onOpenChange={setOpen}>
         <PanelContainer size="5xl">
           <div className="flex items-center gap-v2-sm pb-v2-md">
-            <Icon
-              icon="cross"
-              className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary"
-              onClick={() => setOpen(false)}
+            <button
+              type="button"
               aria-label={t('common:close')}
-            />
+              className="cursor-pointer text-grey-secondary hover:text-grey-primary"
+              onClick={() => setOpen(false)}
+            >
+              <Icon icon="cross" className="size-5" />
+            </button>
             <h2 className="text-l font-bold text-grey-primary">
               {t('screenings:freeform_search.saved_results.title')}
             </h2>

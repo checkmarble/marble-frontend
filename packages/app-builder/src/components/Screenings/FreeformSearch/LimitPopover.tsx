@@ -93,7 +93,7 @@ export const LimitPopover = ({
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
-        <div className="flex items-center gap-v2-sm cursor-pointer">
+        <button type="button" className="flex items-center gap-v2-sm cursor-pointer" disabled={disabled}>
           {includeDeceasedSelected && (
             <Tag color={disabled ? 'grey' : 'purple'}>
               <span className="font-medium">{t('screenings:freeform_search.global.liveness')}</span>
@@ -114,7 +114,7 @@ export const LimitPopover = ({
             <Icon icon="plus" className="size-4  " />
             {!hasCustomValue && <span>{t('screenings:freeform_search.advanced_filters')}</span>}
           </span>
-        </div>
+        </button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content

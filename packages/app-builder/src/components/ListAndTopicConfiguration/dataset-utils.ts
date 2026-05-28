@@ -109,7 +109,6 @@ export function formatDatasetTitle(title: string, t: TFunction): string {
       ? (title.split('.').at(-1) ?? title)
       : title;
 
-  console.log('last', last);
   const translation = hasTranslation(last);
   if (translation) return t(translation);
   return last.replace(/_/g, ' ');
