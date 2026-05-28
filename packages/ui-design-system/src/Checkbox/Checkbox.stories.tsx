@@ -7,9 +7,10 @@ import { Checkbox } from './Checkbox';
 const Story: Meta<typeof Checkbox> = {
   component: Checkbox,
   title: 'Checkbox',
-  args: { disabled: false },
+  args: { disabled: false, size: 'regular' },
   argTypes: {
     disabled: { control: 'boolean' },
+    size: { control: 'radio', options: ['regular', 'small'] },
   },
 };
 export default Story;

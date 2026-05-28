@@ -7,54 +7,56 @@ export type { CheckedState } from '@radix-ui/react-checkbox';
 
 const checkbox = cva(
   [
-    'flex shrink-0 items-center justify-center rounded-sm border outline-hidden',
-    // Light mode
-    'bg-grey-white hover:bg-purple-background-light group-hover/checkbox-parent:bg-purple-background-light',
-    'enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-primary enabled:radix-state-checked:hover:bg-purple-hover',
-    'disabled:border-transparent disabled:bg-grey-disabled disabled:radix-state-unchecked:bg-grey-background disabled:radix-state-unchecked:border-grey-border disabled:cursor-not-allowed',
-    // Dark mode
-    'dark:bg-grey-background dark:hover:bg-grey-background-light dark:group-hover/checkbox-parent:bg-grey-background-light',
-    'dark:enabled:radix-state-checked:bg-purple-primary dark:enabled:radix-state-checked:hover:bg-purple-hover',
-    'dark:disabled:bg-grey-background dark:disabled:border-purple-disabled dark:disabled:radix-state-checked:bg-purple-disabled',
+    'group flex shrink-0 items-center justify-center rounded-sm border outline-hidden transition-colors',
+    // Unchecked
+    'bg-grey-white border-purple-primary',
+    'hover:bg-purple-background',
+    'dark:bg-grey-background dark:hover:bg-grey-white',
+    // Checked
+    'enabled:radix-state-checked:bg-purple-primary enabled:radix-state-checked:border-transparent',
+    'enabled:radix-state-checked:hover:bg-purple-hover',
+    // Indeterminate (some selected)
+    'enabled:radix-state-indeterminate:bg-grey-white enabled:radix-state-indeterminate:border-purple-primary',
+    'enabled:radix-state-indeterminate:hover:bg-purple-background enabled:radix-state-indeterminate:hover:border-purple-hover',
+    'dark:enabled:radix-state-indeterminate:bg-grey-background',
+    'dark:enabled:radix-state-indeterminate:hover:bg-grey-background dark:enabled:radix-state-indeterminate:hover:border-purple-hover',
+    // Disabled — unchecked
+    'disabled:cursor-not-allowed',
+    'disabled:radix-state-unchecked:bg-grey-background disabled:radix-state-unchecked:border-grey-border disabled:radix-state-unchecked:border-[0.5px]',
+    'dark:disabled:radix-state-unchecked:bg-grey-background dark:disabled:radix-state-unchecked:border-purple-disabled',
+    // Disabled — checked / indeterminate
+    'disabled:radix-state-checked:bg-grey-disabled disabled:radix-state-checked:border-transparent',
+    'dark:disabled:radix-state-checked:bg-purple-disabled',
+    'disabled:radix-state-indeterminate:bg-grey-disabled disabled:radix-state-indeterminate:border-transparent',
+    'dark:disabled:radix-state-indeterminate:bg-purple-disabled',
   ],
   {
     variants: {
       size: {
+        regular: 'size-6',
         small: 'size-4',
-        default: 'size-6',
-      },
-      color: {
-        purple: 'border-purple-primary focus:border-purple-primary dark:border-purple-primary',
-        red: 'focus:border-red-hover border-red-primary',
-      },
-      circle: {
-        true: 'rounded-full',
-        false: null,
       },
     },
     defaultVariants: {
-      size: 'default',
+      size: 'regular',
     },
   },
 );
 
-export const Checkbox = forwardRef<
-  HTMLButtonElement,
-  Omit<CheckboxProps, 'asChild'> & {
-    color?: 'purple' | 'red';
-    circle?: boolean;
-    size?: 'small' | 'default';
-    stopPropagation?: boolean;
-  }
->(function Checkbox(
-  { className, color = 'purple', circle, checked, size = 'default', stopPropagation = false, onClick, ...props },
+export type CheckboxOwnProps = Omit<CheckboxProps, 'asChild'> & {
+  size?: 'regular' | 'small';
+  stopPropagation?: boolean;
+};
+
+export const Checkbox = forwardRef<HTMLButtonElement, CheckboxOwnProps>(function Checkbox(
+  { className, checked, size = 'regular', stopPropagation = false, onClick, ...props },
   ref,
 ) {
   return (
     <Root
       ref={ref}
       id={props.name}
-      className={checkbox({ color, circle, size, className: `group ${className}` })}
+      className={checkbox({ size, className })}
       checked={checked}
       {...props}
       onClick={(e) => {
@@ -63,16 +65,14 @@ export const Checkbox = forwardRef<
       }}
     >
       <Indicator asChild>
-        {checked === undefined ? (
-          <Icon icon="tick" className="text-grey-white dark:group-disabled:text-purple-primary" />
-        ) : checked === true ? (
-          <Icon icon="tick" className="text-grey-white dark:group-disabled:text-purple-primary" />
-        ) : checked === 'indeterminate' ? (
+        {checked === 'indeterminate' ? (
           <Icon
             icon="check-indeterminate-small"
-            className="text-purple-primary group-disabled:text-grey-white dark:group-disabled:text-purple-primary"
+            className="text-purple-primary group-hover:text-purple-hover group-disabled:text-grey-white"
           />
-        ) : null}
+        ) : (
+          <Icon icon="tick" className="text-grey-white" />
+        )}
       </Indicator>
     </Root>
   );
