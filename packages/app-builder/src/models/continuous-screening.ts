@@ -1,4 +1,7 @@
-import { getCanonicalSelectedKeys } from '@app-builder/components/ListAndTopicConfiguration/dataset-selection-provider-utils';
+import {
+  getCanonicalSelectedKeys,
+  sanitizeTruthyDatasets,
+} from '@app-builder/components/ListAndTopicConfiguration/dataset-selection-provider-utils';
 import {
   ContinuousScreeningConfigDto,
   ContinuousScreeningDto,
@@ -85,14 +88,15 @@ export type CreateContinuousScreeningConfig = {
 export function adaptCreateContinuousScreeningConfigDto(
   configuration: CreateContinuousScreeningConfig,
 ): CreateContinuousScreeningConfigDto {
-  const datasets = getCanonicalSelectedKeys(configuration.datasets);
+  const truthyDatasets = sanitizeTruthyDatasets(configuration.datasets);
+  const datasetKeys = getCanonicalSelectedKeys(truthyDatasets);
   return {
     name: configuration.name,
     description: configuration.description,
     object_types: configuration.mappingConfigs.map((mc) => mc.objectType),
     algorithm: configuration.algorithm,
     datasets: [],
-    filters: createScreeningFilters(datasets),
+    filters: createScreeningFilters(datasetKeys),
     inbox_id: configuration.inboxId,
     match_threshold: configuration.matchThreshold,
     match_limit: configuration.matchLimit,

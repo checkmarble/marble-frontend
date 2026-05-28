@@ -37,7 +37,7 @@ function groupBySection(
   }));
 }
 
-function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConfigFilters {
+export function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConfigFilters {
   function normalize(
     section: ScreeningAvailableFiltersSection | undefined,
     name: SectionKeys,
@@ -73,6 +73,7 @@ function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConf
     peps: normalize(config.sections.peps, 'peps'),
     'adverse-media': normalize(config.sections.adverse_media, 'adverse-media'),
     'third-parties': normalize(config.sections.other, 'third-parties'),
+    global: normalize(config.sections.global, 'global'),
   };
 }
 

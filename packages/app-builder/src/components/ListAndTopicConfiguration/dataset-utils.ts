@@ -1,7 +1,14 @@
+import type { ScreeningCategory } from '@app-builder/models/screening';
 import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
+import { capitalize } from 'radash';
+import { useTranslation } from 'react-i18next';
 
 export type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
 
+// All fields derived from listConfig.global.topics + conventions:
+// - keys[0]: always persisted when the global topic switch is active
+// - keys[1] / value: persisted when the switch is ON
+// - label: `screenings:freeform_search.global.${groupKey}`
 export type GlobalTopicConfig = {
   groupKey: string;
   keys: string[];
@@ -9,92 +16,152 @@ export type GlobalTopicConfig = {
   label: string;
 };
 
-// Topics that are displyed as a switch button with a label
-const SPECIAL_TOPICS: Record<string, TopicItem> = {
-  kind: { name: 'pep.kind.primary', title: 'continuousScreening:topics.kind.primary' },
-  status: { name: 'pep.status.active', title: 'continuousScreening:topics.status.exclude_inactive' },
-} as const;
+type SpecialTopicConfig = TopicItem & {
+  section: ScreeningCategory;
+  groupKey: string;
+};
 
-// Topics that exist in all sections and are displayed as a global switch button
-const GLOBAL_TOPICS: GlobalTopicConfig[] = [
+// Topics that are displayed as a switch button with a label.
+// Scoped to a specific (section, group) pair: the same group key (e.g. "kind")
+// can exist in multiple sections, so we match on both to avoid promoting
+// unrelated groups (e.g. adverse-media's "kind") to a switch.
+const SPECIAL_TOPICS: SpecialTopicConfig[] = [
   {
-    groupKey: 'person',
-    keys: ['is_alive', 'is_deceased'],
-    value: 'is_deceased',
-    label: 'screenings:freeform_search.include_deceased',
+    section: 'peps',
+    groupKey: 'kind',
+    name: 'pep.kind.primary',
+    title: 'continuousScreening:topics.kind.primary',
+  },
+  {
+    section: 'peps',
+    groupKey: 'status',
+    name: 'pep.status.active',
+    title: 'continuousScreening:topics.status.exclude_inactive',
   },
 ];
 
 type SectionData = NonNullable<ListConfigFilters[keyof ListConfigFilters]>;
 
-function getSpecialTopicConfig(groupKey: string) {
-  const byKey = SPECIAL_TOPICS[groupKey.toLowerCase()];
-  if (byKey) return byKey;
-  return Object.values(SPECIAL_TOPICS).find((t) => formatTopicLabel(t.name) === groupKey);
+function getSpecialTopicConfig(sectionKey: ScreeningCategory, groupKey: string) {
+  const normalized = groupKey.toLowerCase();
+  return SPECIAL_TOPICS.find((t) => t.section === sectionKey && t.groupKey === normalized);
 }
 
-export function isSpecialTopic(groupKey: string) {
-  return getSpecialTopicConfig(groupKey) !== undefined;
+export function isSpecialTopic(sectionKey: ScreeningCategory, groupKey: string) {
+  return getSpecialTopicConfig(sectionKey, groupKey) !== undefined;
 }
 
-export function getGlobalTopicConfigs(): GlobalTopicConfig[] {
-  return GLOBAL_TOPICS;
+function buildGlobalTopicConfig(groupKey: string, items: TopicItem[]): GlobalTopicConfig {
+  const keys = items.map((i) => i.name);
+  return {
+    groupKey,
+    keys,
+    value: keys[1] ?? '',
+    label: `screenings:freeform_search.global.${groupKey}`,
+  };
 }
 
-export function isGlobalTopic(groupKey: string) {
-  return GLOBAL_TOPICS.some((config) => config.groupKey === groupKey);
-}
-
-export function isGlobalTopicConfigAvailable(config: GlobalTopicConfig, listConfig: ListConfigFilters) {
-  return Object.values(listConfig).some((section) => section?.topics?.[config.groupKey] != null);
-}
-
-export function getAvailableGlobalTopicConfigs(listConfig: ListConfigFilters) {
-  return GLOBAL_TOPICS.filter((config) => isGlobalTopicConfigAvailable(config, listConfig));
+export function getAvailableGlobalTopicConfigs(listConfig: ListConfigFilters): GlobalTopicConfig[] {
+  const globalTopics = listConfig.global?.topics;
+  if (!globalTopics) return [];
+  return Object.entries(globalTopics)
+    .filter(([, items]) => items.length >= 2)
+    .map(([groupKey, items]) => buildGlobalTopicConfig(groupKey, items));
 }
 
 // sort topics to put the switch button topics at the top
-export function sortTopicGroupEntries<T>(entries: [string, T][]): [string, T][] {
+export function sortTopicGroupEntries<T>(sectionKey: ScreeningCategory, entries: [string, T][]): [string, T][] {
   return [...entries].sort(([keyA], [keyB]) => {
-    const aSpecial = isSpecialTopic(keyA);
-    const bSpecial = isSpecialTopic(keyB);
+    const aSpecial = isSpecialTopic(sectionKey, keyA);
+    const bSpecial = isSpecialTopic(sectionKey, keyB);
     if (aSpecial !== bSpecial) return aSpecial ? -1 : 1;
     return keyA.localeCompare(keyB, undefined, { sensitivity: 'base' });
   });
 }
 
-export function getSpecialTopicLabel(groupKey: string) {
-  return getSpecialTopicConfig(groupKey)?.title;
+export function getSpecialTopicLabel(sectionKey: ScreeningCategory, groupKey: string) {
+  return getSpecialTopicConfig(sectionKey, groupKey)?.title;
 }
 
-export function getSpecialTopicValue(groupKey: string) {
-  return getSpecialTopicConfig(groupKey)?.name ?? groupKey;
+export function getSpecialTopicValue(sectionKey: ScreeningCategory, groupKey: string) {
+  return getSpecialTopicConfig(sectionKey, groupKey)?.name ?? groupKey;
 }
 
-export function getSectionLeafNames(section: SectionData) {
-  const datasetNames = getDatasetNames(section);
-  const topicNames = Object.values(section.topics ?? {}).flatMap((items) => items.map((i) => i.name));
-  const conditionalTopicNames = Object.values(section.conditionalTopics ?? {}).flatMap((ct) =>
-    ct.items.map((i) => i.name),
+/** Returns the set of composite wire keys for every leaf item (dataset + topic + conditional topic) in a section. */
+export function getSectionLeafKeys(section: SectionData, sectionKey: ScreeningCategory): string[] {
+  const datasetKeys = (section.datasets ?? []).flatMap((g) => g.datasets.map((d) => `${sectionKey}:dataset:${d.name}`));
+  const topicKeys = Object.entries(section.topics ?? {}).flatMap(([group, items]) =>
+    items.map((i) => `${sectionKey}:topic:${group}:${i.name}`),
   );
-
-  // Note: `sectionKey` is intentionally not included: it's the section toggle, not a leaf item.
-  return [...new Set([...datasetNames, ...topicNames, ...conditionalTopicNames])];
+  const conditionalTopicKeys = Object.entries(section.conditionalTopics ?? {}).flatMap(([group, ct]) =>
+    ct.items.map((i) => `${sectionKey}:topic:${group}:${i.name}`),
+  );
+  return [...new Set([...datasetKeys, ...topicKeys, ...conditionalTopicKeys])];
 }
 
 export function getDatasetNames(section: SectionData) {
   return (section.datasets ?? []).flatMap((g) => g.datasets.map((d) => d.name));
 }
 
-export function formatDatasetTitle(title: string): string {
-  const last = title.includes(':')
-    ? (title.split(':').at(-1) ?? title)
-    : title.includes('.')
-      ? (title.split('.').at(-1) ?? title)
-      : title;
-  return last.replace(/_/g, ' ');
-}
+const FILTER_TRANSLATION_MAP = {
+  'filter.pep.category.govt_branch_member': 'continuousScreening:filter.pep.category.govt_branch_member',
+  'filter.pep.category.family_member': 'continuousScreening:filter.pep.category.family_member',
+  'filter.pep.category.manager_state_owned_enterprise':
+    'continuousScreening:filter.pep.category.manager_state_owned_enterprise',
+  'filter.pep.category.legislature': 'continuousScreening:filter.pep.category.legislature',
+  'filter.pep.category.state_owned_enterprise': 'continuousScreening:filter.pep.category.state_owned_enterprise',
+  'filter.pep.category.diplomat': 'continuousScreening:filter.pep.category.diplomat',
+  'filter.pep.category.judiciary': 'continuousScreening:filter.pep.category.judiciary',
+  'filter.pep.category.senior_party_member': 'continuousScreening:filter.pep.category.senior_party_member',
+  'filter.pep.category.associate': 'continuousScreening:filter.pep.category.associate',
+  'filter.pep.category.pep_controlled_business': 'continuousScreening:filter.pep.category.pep_controlled_business',
+  'filter.pep.category.intl_org_leadership': 'continuousScreening:filter.pep.category.intl_org_leadership',
+  'filter.pep.category.military': 'continuousScreening:filter.pep.category.military',
+  'filter.pep.category.law_enforce_authority': 'continuousScreening:filter.pep.category.law_enforce_authority',
+  'filter.pep.category.ngo_leadership': 'continuousScreening:filter.pep.category.ngo_leadership',
+  'filter.pep.category.chief_of_state': 'continuousScreening:filter.pep.category.chief_of_state',
+  'filter.pep.category.intelligence': 'continuousScreening:filter.pep.category.intelligence',
+  'filter.pep.category.manager_sovereign_wealth_fund':
+    'continuousScreening:filter.pep.category.manager_sovereign_wealth_fund',
+  'filter.pep.category.traditional_leadership': 'continuousScreening:filter.pep.category.traditional_leadership',
+  'filter.pep.category.union_leadership': 'continuousScreening:filter.pep.category.union_leadership',
+  'filter.pep.category.attorney': 'continuousScreening:filter.pep.category.attorney',
+  'filter.alive': 'continuousScreening:filter.alive',
+  'filter.deceased': 'continuousScreening:filter.deceased',
+} as const;
 
-export function formatTopicLabel(label: string) {
-  return label.split('.').at(-1) ?? label;
+export function useDatasetTitle() {
+  const { t } = useTranslation('continuousScreening');
+
+  function formatDatasetTitle(title: string) {
+    const last = title.includes(':')
+      ? (title.split(':').at(-1) ?? title)
+      : title.includes('.')
+        ? (title.split('.').at(-1) ?? title)
+        : title;
+
+    const translation = hasTranslation(last);
+    if (translation) return t(translation);
+    return last.replace(/_/g, ' ');
+  }
+
+  function formatTopicLabel(label: string) {
+    return label.split('.').at(-1) ?? label;
+  }
+
+  function hasTranslation(key: string) {
+    const hasKey = Object.keys(FILTER_TRANSLATION_MAP).includes(key);
+    return hasKey ? FILTER_TRANSLATION_MAP[key as keyof typeof FILTER_TRANSLATION_MAP] : undefined;
+  }
+
+  function formatItemName(item: { name: string; title?: string }): string {
+    const label = item.title ?? item.name;
+    const translation = hasTranslation(label);
+    if (translation) return t(translation);
+
+    const last = label.split('.').at(-1) ?? label;
+    return capitalize(last);
+  }
+
+  return { formatDatasetTitle, formatTopicLabel, hasTranslation, formatItemName, t };
 }

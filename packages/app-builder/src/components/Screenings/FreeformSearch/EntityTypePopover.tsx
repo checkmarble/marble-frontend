@@ -1,43 +1,37 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import * as Popover from '@radix-ui/react-popover';
-import clsx from 'clsx';
 import CountryFlag from 'country-flag-emojis';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, cn, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
+import { Button, cn, formatCountryName, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
+import { setAdditionalFields } from '../set-additional-fields';
+import { useEntitySearchForm, useEntitySearchFormStore } from './entity-search-form-context';
 
 export interface EntityTypePopoverProps {
   disabled: boolean;
-  entityType: SearchableSchema | undefined;
-  fields: Record<string, string | undefined>;
-  onEntityTypeChange: (entityType: SearchableSchema) => void;
-  onFieldChange: (fieldName: string, value: string) => void;
 }
 
-export function EntityTypePopover({
-  disabled,
-  entityType,
-  fields,
-  onEntityTypeChange,
-  onFieldChange,
-}: EntityTypePopoverProps) {
+export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
   const { t } = useTranslation(screeningsI18n);
   const [open, setOpen] = useState(false);
+  const form = useEntitySearchForm();
+  const value = useEntitySearchFormStore((state) => state.values.entityType);
   const [additionalFieldsOpenRequest, setAdditionalFieldsOpenRequest] = useState(0);
 
   const handleSelect = (schema: SearchableSchema) => {
-    onEntityTypeChange(schema);
+    form.setFieldValue('entityType', schema);
+    form.setFieldValue('fields', setAdditionalFields(SEARCH_ENTITIES[schema].fields, form.state.values.fields));
     setOpen(false);
     if (schema !== 'Thing') {
       setAdditionalFieldsOpenRequest((count) => count + 1);
     }
   };
 
-  const hasSelection = entityType && entityType !== 'Thing';
+  const hasSelection = value && value !== 'Thing';
   const schemas = R.keys(SEARCH_ENTITIES);
 
   return (
@@ -51,7 +45,7 @@ export function EntityTypePopover({
             >
               <span className="font-medium">
                 {hasSelection
-                  ? t(`screenings:refine_modal.schema.${entityType.toLowerCase()}`)
+                  ? t(`screenings:refine_modal.schema.${value.toLowerCase()}`)
                   : t('screenings:freeform_search.all_entities')}
               </span>
             </Tag>
@@ -66,16 +60,16 @@ export function EntityTypePopover({
             {/* Entity type list */}
             <div className="max-h-[300px] overflow-y-auto p-2">
               {schemas.map((schema) => {
-                const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
+                const schemaKey = schema.toLowerCase();
                 const fieldForSchema = SEARCH_ENTITIES[schema].fields;
-                const isSelected = entityType === schema;
+                const isSelected = value === schema;
 
                 return (
                   <button
                     key={schema}
                     type="button"
                     onClick={() => handleSelect(schema)}
-                    className={clsx(
+                    className={cn(
                       'text-s flex w-full items-center gap-2 rounded px-3 py-2 text-left',
                       isSelected ? 'bg-purple-background-light text-purple-primary' : 'hover:bg-grey-background-light',
                     )}
@@ -95,62 +89,77 @@ export function EntityTypePopover({
           </Popover.Content>
         </Popover.Portal>
       </Popover.Root>
-      {hasSelection && (
-        <AdditionalEntityTypePopover
-          disabled={disabled}
-          entityType={entityType}
-          fields={fields}
-          openRequest={additionalFieldsOpenRequest}
-          onFieldChange={onFieldChange}
-        />
-      )}
+      {hasSelection && <AdditionalEntityTypePopover disabled={disabled} openRequest={additionalFieldsOpenRequest} />}
     </div>
   );
-}
+};
 
-function getDraftFieldsFromCommitted(
-  entityTypeFields: string[],
-  committedFields: Record<string, string | undefined>,
-): Record<string, string> {
-  return Object.fromEntries(entityTypeFields.map((fieldName) => [fieldName, committedFields[fieldName] ?? '']));
-}
-
-function validateBirthDate(value: string): boolean {
-  if (!value) return true;
-  return /^\d{4}(-\d{2}-\d{2})?$/.test(value);
-}
-
-interface AdditionalEntityTypePopoverProps {
-  disabled: boolean;
-  entityType: SearchableSchema;
-  fields: Record<string, string | undefined>;
-  openRequest: number;
-  onFieldChange: (fieldName: string, value: string) => void;
-}
-
-function AdditionalEntityTypePopover({
-  disabled,
-  entityType,
-  fields: committedFields,
-  openRequest,
-  onFieldChange,
-}: AdditionalEntityTypePopoverProps) {
+function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: boolean; openRequest: number }) {
   const [open, setOpen] = useState(false);
-  const entityTypeFields = SEARCH_ENTITIES[entityType].fields.filter((f) => f !== 'name');
-  const { t } = useTranslation(screeningsI18n);
-
-  const [draftFields, setDraftFields] = useState<Record<string, string>>(() =>
-    getDraftFieldsFromCommitted(entityTypeFields, committedFields),
-  );
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const form = useEntitySearchForm();
+  const entityType = useEntitySearchFormStore((state) => state.values.entityType);
+  const entityTypeFields =
+    entityType && entityType in SEARCH_ENTITIES
+      ? SEARCH_ENTITIES[entityType].fields.filter((f: string) => f !== 'name')
+      : [];
+  const { t, i18n } = useTranslation(screeningsI18n);
+  const fields = useEntitySearchFormStore((state) => state.values.fields);
   const lastProcessedOpenRequest = useRef(0);
+  const [localFields, setLocalFields] = useState<Record<string, string>>({});
+  const [birthDateError, setBirthDateError] = useState<string | undefined>(undefined);
+
+  const syncLocalFromForm = () => {
+    const next: Record<string, string> = {};
+    for (const fieldName of entityTypeFields) {
+      next[fieldName] = fields[fieldName] ?? '';
+    }
+    setLocalFields(next);
+    setBirthDateError(undefined);
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (disabled) return;
+    if (isOpen) {
+      syncLocalFromForm();
+    } else {
+      setBirthDateError(undefined);
+    }
+    setOpen(isOpen);
+  };
+
+  useEffect(() => {
+    if (openRequest <= lastProcessedOpenRequest.current || disabled) return;
+    lastProcessedOpenRequest.current = openRequest;
+    syncLocalFromForm();
+    setOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openRequest, disabled]);
+
+  const handleApply = () => {
+    const birthDateValue = localFields['birthDate'] ?? '';
+    if (entityTypeFields.includes('birthDate') && birthDateValue) {
+      if (!/^\d{4}(-\d{2}-\d{2})?$/.test(birthDateValue)) {
+        setBirthDateError(t('screenings:freeform_search.birth_date_invalid'));
+        return;
+      }
+    }
+    setBirthDateError(undefined);
+    form.setFieldValue('fields', { ...form.state.values.fields, ...localFields });
+    setOpen(false);
+  };
+
+  const handleCancel = () => {
+    syncLocalFromForm();
+    setOpen(false);
+  };
+
   const hasSelection = entityType && entityType !== 'Thing';
 
   const filterTags = hasSelection
     ? SEARCH_ENTITIES[entityType].fields
-        .filter((f) => f !== 'name')
-        .map((fieldName) => {
-          const fieldValue = committedFields[fieldName];
+        .filter((f: string) => f !== 'name')
+        .map((fieldName: string) => {
+          const fieldValue = fields[fieldName];
           if (!fieldValue) return null;
           const label = getFilterTagLabel(fieldName, fieldValue, t);
           if (!label) return null;
@@ -166,57 +175,6 @@ function AdditionalEntityTypePopover({
         })
         .filter(Boolean)
     : null;
-
-  useEffect(() => {
-    if (openRequest <= lastProcessedOpenRequest.current || disabled) return;
-    lastProcessedOpenRequest.current = openRequest;
-    setDraftFields(getDraftFieldsFromCommitted(entityTypeFields, committedFields));
-    setFieldErrors({});
-    setOpen(true);
-  }, [openRequest, disabled]);
-
-  const handleOpenChange = useCallback(
-    (isOpen: boolean) => {
-      if (disabled) return;
-      if (isOpen) {
-        setDraftFields(getDraftFieldsFromCommitted(entityTypeFields, committedFields));
-        setFieldErrors({});
-      }
-      setOpen(isOpen);
-    },
-    [committedFields, disabled, entityTypeFields],
-  );
-
-  const updateDraftField = (fieldName: string, value: string) => {
-    setDraftFields((prev) => ({ ...prev, [fieldName]: value }));
-    setFieldErrors((prev) => {
-      if (!prev[fieldName]) return prev;
-      const next = { ...prev };
-      delete next[fieldName];
-      return next;
-    });
-  };
-
-  const handleApply = () => {
-    const errors: Record<string, string> = {};
-    for (const fieldName of entityTypeFields) {
-      if (fieldName === 'birthDate' && !validateBirthDate(draftFields[fieldName] ?? '')) {
-        errors[fieldName] = t('screenings:freeform_search.birth_date_invalid');
-      }
-    }
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-    for (const fieldName of entityTypeFields) {
-      onFieldChange(fieldName, draftFields[fieldName] ?? '');
-    }
-    setOpen(false);
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
-  };
 
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
@@ -238,23 +196,25 @@ function AdditionalEntityTypePopover({
       </Popover.Trigger>
       <Popover.Content
         className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
-        sideOffset={4}
+        sideOffset={8}
         align="start"
       >
         <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1 p-2">
           {entityTypeFields.map((fieldName, index) => {
             const isLastOdd = index === entityTypeFields.length - 1 && entityTypeFields.length % 2 === 1;
-            const value = draftFields[fieldName] ?? '';
+            const localValue = localFields[fieldName] ?? '';
 
             if (fieldName === 'country' || fieldName === 'nationality') {
               return (
                 <SelectCountry
                   key={fieldName}
-                  name={fieldName}
+                  name={`fields.${fieldName}`}
                   rootClassName={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
                   className="w-full"
-                  value={countryFormStringToValue(value)}
-                  onValueChange={(v) => updateDraftField(fieldName, countryValueToFormString(v))}
+                  value={countryFormStringToValue(localValue, i18n.language)}
+                  onValueChange={(v) =>
+                    setLocalFields((prev) => ({ ...prev, [fieldName]: countryValueToFormString(v) }))
+                  }
                   placeholder={t(`screenings:entity.property.${fieldName}`)}
                 />
               );
@@ -263,22 +223,22 @@ function AdditionalEntityTypePopover({
               return (
                 <div key={fieldName} className={cn('flex flex-col gap-1', isLastOdd && 'col-span-2 lg:col-span-1')}>
                   <Input
-                    name={fieldName}
-                    value={value}
-                    onChange={(e) => updateDraftField(fieldName, e.target.value)}
+                    name={`fields.${fieldName}`}
+                    value={localValue}
+                    onChange={(e) => setLocalFields((prev) => ({ ...prev, [fieldName]: e.target.value }))}
                     className="w-full"
                     placeholder={t('screenings:entity.property.birthDate.format')}
                   />
-                  {fieldErrors[fieldName] && <span className="text-red-primary text-xs">{fieldErrors[fieldName]}</span>}
+                  {birthDateError && <span className="text-red-primary text-xs">{birthDateError}</span>}
                 </div>
               );
             }
             return (
               <Input
                 key={fieldName}
-                name={fieldName}
-                value={value}
-                onChange={(e) => updateDraftField(fieldName, e.target.value)}
+                name={`fields.${fieldName}`}
+                value={localValue}
+                onChange={(e) => setLocalFields((prev) => ({ ...prev, [fieldName]: e.target.value }))}
                 className={cn('w-full', isLastOdd && 'col-span-2 lg:col-span-1')}
                 placeholder={t(`screenings:entity.property.${fieldName}`)}
               />
@@ -295,7 +255,6 @@ function AdditionalEntityTypePopover({
             >
               {t('screenings:freeform_search.apply')}
             </Button>
-
             <Button
               type="button"
               variant="secondary"
@@ -335,7 +294,7 @@ function getFilterTagLabel(
   }
 }
 
-function countryFormStringToValue(raw: string): SelectCountryValue | null {
+function countryFormStringToValue(raw: string, language: string): SelectCountryValue | null {
   const trimmed = raw.trim();
   if (trimmed === '') return null;
   const cc = trimmed.length <= 3 ? trimmed.toUpperCase() : trimmed;
@@ -345,7 +304,7 @@ function countryFormStringToValue(raw: string): SelectCountryValue | null {
     return {
       isoAlpha2: c.isoAlpha2,
       isoAlpha3: c.isoAlpha3,
-      name: c.nameEnglish,
+      name: formatCountryName(c.isoAlpha2, language) ?? c.nameEnglish,
       isManual: false,
     };
   }

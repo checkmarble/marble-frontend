@@ -1,3 +1,4 @@
+import { SearchableSchema } from '@app-builder/constants/screening-entity';
 import {
   type listScreeningAvailableFilters,
   ScreeningAvailableFilters,
@@ -339,7 +340,9 @@ export function isScreeningReviewCompleted(screening: Screening): screening is S
   return screening.status === 'no_hit' || screening.status === 'confirmed_hit';
 }
 
-export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
+export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media' | 'global';
+
+export type RiskTagCategory = Exclude<ScreeningCategory, 'global'>;
 
 export const SCREENING_CATEGORY_COLORS = {
   sanctions: 'red',
@@ -347,6 +350,7 @@ export const SCREENING_CATEGORY_COLORS = {
   'third-parties': 'grey',
   'adverse-media': 'yellow',
   other: 'grey',
+  global: 'green',
 } satisfies Record<ScreeningCategory | 'other', TagProps['color']>;
 
 const LEXIS_TOPIC_KEYS = [
@@ -645,9 +649,10 @@ export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> 
   peps: 'peps',
   'third-parties': 'third_parties',
   'adverse-media': 'adverse_media',
+  global: 'global',
 };
 
-export const SCREENING_CATEGORIES: ScreeningCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
+export const SCREENING_CATEGORIES: RiskTagCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
 
 /**
  * Convert topic filters from the API back to categories for UI display.
@@ -661,7 +666,7 @@ export function topicsToCategories(topicFilters: string[]): ScreeningCategory[] 
   const categories = new Set<ScreeningCategory>();
   for (const value of topicFilters) {
     // Check if it's already a category
-    if (SCREENING_CATEGORIES.includes(value as ScreeningCategory)) {
+    if (SCREENING_CATEGORIES.includes(value as RiskTagCategory)) {
       categories.add(value as ScreeningCategory);
     } else {
       // Legacy: look up individual topic in the map
@@ -680,6 +685,7 @@ const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = 
   peps: 3,
   'third-parties': 4,
   other: 5,
+  global: 6,
 };
 
 export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other' | undefined => {
@@ -690,3 +696,36 @@ export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other'
 export type ScreeningAvailableFiltersAdapted = ScreeningAvailableFilters & {
   conditional_filters?: { key: string; name: string; topics: { name: string; key?: string; title: string }[] }[];
 };
+
+export interface SavedScreeningSearchInputs {
+  entityType: SearchableSchema;
+  fields: Record<string, string>;
+  datasets: string[];
+  threshold?: number;
+  limit?: number;
+}
+
+export interface SavedScreeningSearch {
+  id: string;
+  name: string;
+  ownerId: string;
+  createdAt: string;
+  inputs: SavedScreeningSearchInputs;
+  results: ScreeningMatchPayload[];
+}
+
+export interface SavedScreeningSearchFilters {
+  fromDate?: string;
+  toDate?: string;
+  name?: string;
+  ownerId?: string;
+  limit?: number;
+  page?: number;
+}
+
+export interface SavedScreeningSearchPage {
+  items: SavedScreeningSearch[];
+  total: number;
+  page: number;
+  limit: number;
+}

@@ -1,7 +1,7 @@
 import {
   DatasetSelectionContent,
   getCanonicalSelectedKeys,
-  getSectionLeafNames,
+  getSectionLeafKeys,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
   syncSharpDatasets,
@@ -19,6 +19,7 @@ const SECTION_I18N_KEYS: Record<ScreeningCategory, string> = {
   peps: 'peps',
   'adverse-media': 'adverse_media',
   'third-parties': 'third_parties',
+  global: 'global',
 };
 
 export interface DatasetsPopoverProps {
@@ -32,7 +33,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
   const listConfigQuery = useListConfigQuery('manual_search');
   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
   const [open, setOpen] = useState(false);
-  const tagRef = useRef<HTMLDivElement>(null);
+  const tagRef = useRef<HTMLButtonElement>(null);
 
   const handleOpenChange = (isOpen: boolean) => {
     if (disabled) return;
@@ -56,28 +57,30 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
     setOpen(false);
   };
 
-  const hasSelection = selectedDatasets.length > 0;
+  const hasSelection = selectedDatasets.filter((d) => !d.startsWith('global')).length > 0;
 
   const selectionMap = useMemo(() => makeDatasetsMap(selectedDatasets), [selectedDatasets]);
 
   const sectionTags = useMemo(() => {
     const data = listConfigQuery.data;
     if (!data || !hasSelection) return [];
-    return Object.entries(data).flatMap(([key, section]) => {
-      if (!section) return [];
-      const sectionKey = key as ScreeningCategory;
-      const isSectionEnabled = !!selectionMap[sectionKey];
-      const count = getSectionLeafNames(section).filter((n) => selectionMap[n]).length;
-      if (!isSectionEnabled && count === 0) return [];
-      return [{ key: sectionKey, count, isEmpty: isSectionEnabled && count === 0 }];
-    });
+    return Object.entries(data)
+      .filter(([key]) => key !== 'global')
+      .flatMap(([key, section]) => {
+        if (!section) return [];
+        const sectionKey = key as ScreeningCategory;
+        const isSectionEnabled = !!selectionMap[sectionKey];
+        const count = getSectionLeafKeys(section, sectionKey).filter((k) => selectionMap[k]).length;
+        if (!isSectionEnabled && count === 0) return [];
+        return [{ key: sectionKey, count, isEmpty: isSectionEnabled && count === 0 }];
+      });
   }, [listConfigQuery.data, selectionMap, hasSelection]);
 
   return (
     <div className="flex items-center gap-2 relative">
       <MenuCommand.Menu open={open} onOpenChange={handleOpenChange}>
         <MenuCommand.Trigger>
-          <div className="flex items-center gap-2 flex-wrap" ref={tagRef}>
+          <button type="button" disabled={disabled} className="flex items-center gap-2 flex-wrap" ref={tagRef}>
             {hasSelection ? (
               <>
                 {sectionTags.map(({ key, count, isEmpty }) => (
@@ -100,7 +103,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
                 <span>{t('screenings:freeform_search.filter_by_list')}</span>
               </span>
             )}
-          </div>
+          </button>
         </MenuCommand.Trigger>
         <MenuCommand.Content align="start" sideOffset={4} className="w-[280px]">
           <DatasetSelectionContent useCase="manual_search" onApply={handleApply} onCancel={handleCancel} />

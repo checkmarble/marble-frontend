@@ -4,12 +4,13 @@ import { useSearchScreeningMatchesMutation } from '@app-builder/queries/screenin
 import { type RefineSearchInput, refineSearchSchema } from '@app-builder/server-fns/screenings';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { useForm, useStore } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { type z } from 'zod/v4';
 import { EntityTypePopover } from '../FreeformSearch/EntityTypePopover';
+import { EntitySearchFormProvider } from '../FreeformSearch/entity-search-form-context';
 import { screeningsI18n } from '../screenings-i18n';
 import { setAdditionalFields } from '../set-additional-fields';
 
@@ -27,10 +28,11 @@ function getScreeningSearchName(screening: Screening): string {
 type RefineSearchDefaultValues = z.infer<typeof refineSearchSchema>;
 
 function getRefineSearchDefaultValues(screening: Screening, searchName: string): RefineSearchDefaultValues {
-  const base = {
+  const base: RefineSearchDefaultValues = {
     screeningId: screening.id,
+    entityType: 'Thing',
     fields: { name: searchName },
-  } as RefineSearchDefaultValues;
+  };
 
   const request = screening.request;
   if (!request) return base;
@@ -92,9 +94,6 @@ export function InlineRefineSearch({
     },
   });
 
-  const entityType = useStore(form.store, (state) => state.values.entityType);
-  const fields = useStore(form.store, (state) => state.values.fields);
-
   return (
     <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-4 border-l border-grey-border pl-4">
       <span className="text-m font-medium">{t('screenings:panel.search_details')}</span>
@@ -111,24 +110,9 @@ export function InlineRefineSearch({
                   <span className="truncate text-s font-medium">{searchName}</span>
                 </div>
               ) : null}
-              <EntityTypePopover
-                disabled={searchMutation.isPending}
-                entityType={entityType}
-                fields={(fields ?? {}) as Record<string, string | undefined>}
-                onEntityTypeChange={(schema) => {
-                  form.setFieldValue('entityType', schema);
-                  form.setFieldValue(
-                    'fields',
-                    setAdditionalFields(SEARCH_ENTITIES[schema].fields, {
-                      ...((fields ?? {}) as Record<string, string | undefined>),
-                      name: searchName,
-                    }),
-                  );
-                }}
-                onFieldChange={(fieldName, value) => {
-                  form.setFieldValue(`fields.${fieldName}` as 'fields.name', value);
-                }}
-              />
+              <EntitySearchFormProvider form={form}>
+                <EntityTypePopover disabled={searchMutation.isPending} />
+              </EntitySearchFormProvider>
             </div>
           </div>
 

@@ -8,12 +8,12 @@ import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Tag } from 'ui-design-system';
+import { Button, ExpandableGroupTagLine, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
 import { makeDatasetsMap } from '../ListAndTopicConfiguration/dataset-selection-provider-utils';
-import { formatDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
+import { useDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
 import { PanelRoot } from '../Panel/Panel';
 import { Spinner } from '../Spinner';
@@ -22,16 +22,9 @@ import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
 
-const CellCapsule = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <Tag color="grey" className="max-w-50 truncate">
-      {children}
-    </Tag>
-  );
-};
-
 export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
   const { t } = useTranslation(['common', 'continuousScreening', 'navigation']);
+  const { formatDatasetTitle } = useDatasetTitle();
   const configurationsQuery = useContinuousScreeningConfigurationsQuery();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
   const navigate = useAgnosticNavigation();
@@ -135,15 +128,27 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                           <span className="text-xs">{item.stableId}</span>
                         </CopyToClipboardButton>
                       </GridTable.Cell>
-                      <GridTable.Cell>
-                        {item.datasets[0] ? <CellCapsule>{formatDatasetTitle(item.datasets[0])}</CellCapsule> : null}
-                        {item.datasets.length > 1 ? <CellCapsule>+{item.datasets.length - 1}</CellCapsule> : null}
+                      <GridTable.Cell className="min-w-0">
+                        <div className="flex min-w-0 w-full max-w-[20vw] overflow-hidden">
+                          <ExpandableGroupTagLine
+                            items={item.datasets.map((d) => (
+                              <Tag key={d} color="grey">
+                                {formatDatasetTitle(d)}
+                              </Tag>
+                            ))}
+                          />
+                        </div>
                       </GridTable.Cell>
-                      <GridTable.Cell className="overflow-x-auto">
-                        {item.objectTypes.slice(0, 3).map((ot) => (
-                          <CellCapsule key={ot}>{ot}</CellCapsule>
-                        ))}
-                        {item.objectTypes.length > 3 ? <CellCapsule>+{item.objectTypes.length - 3}</CellCapsule> : null}
+                      <GridTable.Cell className="min-w-0">
+                        <div className="flex min-w-0 w-full max-w-[20vw] overflow-hidden">
+                          <ExpandableGroupTagLine
+                            items={item.objectTypes.map((ot) => (
+                              <Tag key={ot} color="grey">
+                                {ot}
+                              </Tag>
+                            ))}
+                          />
+                        </div>
                       </GridTable.Cell>
                       <GridTable.Cell>{item.inbox?.name}</GridTable.Cell>
                     </GridTable.Row>

@@ -5,7 +5,7 @@ import {
 import { type ReactNode, useEffect, useMemo } from 'react';
 import { ContinuousScreeningConfigurationStepper } from './CreationStepper';
 
-/* 
+/*
   this component is used to bridge the ListAndTopicDatasetConfiguration context with the ContinuousScreeningConfigurationStepper context
   to ensure that the datasets map is updated when the wizard mode changes
 */

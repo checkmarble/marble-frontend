@@ -1,5 +1,4 @@
 import {
-  completeGlobalTopicSelections,
   type GlobalTopicConfig,
   getAvailableGlobalTopicConfigs,
   getCanonicalSelectedKeys,
@@ -51,9 +50,7 @@ export const LimitPopover = ({
   const availableGlobalTopicConfigs = listConfig ? getAvailableGlobalTopicConfigs(listConfig) : [];
   const includeDeceasedSelected =
     listConfig != null &&
-    availableGlobalTopicConfigs.some((config) =>
-      isGlobalTopicSwitchSelected(listSharp.value.datasets, config, listConfig),
-    );
+    availableGlobalTopicConfigs.some((config) => isGlobalTopicSwitchSelected(listSharp.value.datasets, config));
 
   const hasCustomValue =
     (committedLimit !== undefined && committedLimit !== DEFAULT_LIMIT) || !!includeDeceasedSelected;
@@ -84,9 +81,6 @@ export const LimitPopover = ({
     const nextLimit = value ?? DEFAULT_LIMIT;
 
     if (listConfig) {
-      listSharp.update((state) => {
-        completeGlobalTopicSelections(state.datasets, listConfig);
-      });
       onApplyDatasets(getCanonicalSelectedKeys(listSharp.value.datasets));
     }
 
@@ -99,22 +93,28 @@ export const LimitPopover = ({
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
-        {hasCustomValue ? (
-          <Tag
-            color={disabled ? 'grey' : 'purple'}
-            className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            ref={tagRef}
-          >
-            <span className="font-medium">
-              {t('screenings:freeform_search.limit_label', { limit: committedLimit })}
-            </span>
-          </Tag>
-        ) : (
-          <span className="flex items-center gap-1 text-grey-placeholder cursor-pointer">
+        <button type="button" className="flex items-center gap-v2-sm cursor-pointer" disabled={disabled}>
+          {includeDeceasedSelected && (
+            <Tag color={disabled ? 'grey' : 'purple'}>
+              <span className="font-medium">{t('screenings:freeform_search.global.liveness')}</span>
+            </Tag>
+          )}
+          {committedLimit !== DEFAULT_LIMIT && (
+            <Tag
+              color={disabled ? 'grey' : 'purple'}
+              className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              ref={tagRef}
+            >
+              <span className="font-medium">
+                {t('screenings:freeform_search.limit_label', { limit: committedLimit })}
+              </span>
+            </Tag>
+          )}
+          <span className="flex items-center gap-1 text-grey-placeholder">
             <Icon icon="plus" className="size-4  " />
-            <span>{t('screenings:freeform_search.advanced_filters')}</span>
+            {!hasCustomValue && <span>{t('screenings:freeform_search.advanced_filters')}</span>}
           </span>
-        )}
+        </button>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
@@ -123,10 +123,9 @@ export const LimitPopover = ({
           align="start"
         >
           <div className="flex flex-col gap-2 p-4">
-            {listConfig &&
-              availableGlobalTopicConfigs.map((config) => (
-                <GlobalTopicSwitch key={config.groupKey} config={config} listConfig={listConfig} />
-              ))}
+            {availableGlobalTopicConfigs.map((config) => (
+              <GlobalTopicSwitch key={config.groupKey} config={config} />
+            ))}
             <ThresholdRange
               defaultDescription={t('screenings:freeform_search.limit_description')}
               value={value}
@@ -166,18 +165,12 @@ export const LimitPopover = ({
   );
 };
 
-function GlobalTopicSwitch({
-  config,
-  listConfig,
-}: {
-  config: GlobalTopicConfig;
-  listConfig: NonNullable<ReturnType<typeof useListConfigQuery>['data']>;
-}) {
+function GlobalTopicSwitch({ config }: { config: GlobalTopicConfig }) {
   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
   const { t } = useTranslation(screeningsI18n);
   const switchId = `global-topic-${config.groupKey}`;
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
-    isGlobalTopicSwitchSelected(state.datasets, config, listConfig),
+    isGlobalTopicSwitchSelected(state.datasets, config),
   );
 
   return (
@@ -187,7 +180,7 @@ function GlobalTopicSwitch({
         checked={isSelected}
         onCheckedChange={(checked) => {
           listSharp.update((state) => {
-            setGlobalTopicSwitch(state.datasets, config, checked, listConfig);
+            setGlobalTopicSwitch(state.datasets, config, checked);
           });
         }}
       />

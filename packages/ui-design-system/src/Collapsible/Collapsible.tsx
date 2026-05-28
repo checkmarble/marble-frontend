@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import * as React from 'react';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
+import { cn } from '../utils';
 
 const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(function CollapsibleContainer(
   { className, ...props },
@@ -42,24 +43,41 @@ const collapsibleTitle = cva('group flex cursor-pointer items-center justify-bet
 
 export type CollapsibleTriggerProps = VariantProps<typeof collapsibleTitle> & RadixCollapsibleProps;
 
-const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps & { hideIcon?: boolean }>(
-  function CollapsibleTitle({ className, children, size, hideIcon = false, ...props }, ref) {
-    return (
-      <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
-        <div className="focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-primary">
-          {children}
-          {!hideIcon && (
+const CollapsibleTitle = forwardRef<
+  HTMLButtonElement,
+  CollapsibleTriggerProps & { iconPosition?: 'hidden' | 'left' | 'right' }
+>(function CollapsibleTitle({ className, children, size, iconPosition = 'right', ...props }, ref) {
+  return (
+    <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
+      <div
+        className={cn(
+          'focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-primary',
+          iconPosition === 'left' && 'grid grid-cols-[auto_1fr]',
+        )}
+      >
+        {iconPosition === 'left' ? (
+          <>
             <Icon
               icon="smallarrow-up"
               aria-hidden
-              className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
+              className=" group-radix-state-open:rotate-180 size-6 rounded-sm  transition-transform duration-200 self-start"
             />
-          )}
-        </div>
-      </Trigger>
-    );
-  },
-);
+            <div>{children}</div>
+          </>
+        ) : (
+          children
+        )}
+        {iconPosition === 'right' && (
+          <Icon
+            icon="smallarrow-up"
+            aria-hidden
+            className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
+          />
+        )}
+      </div>
+    </Trigger>
+  );
+});
 
 const content =
   'border-grey-border border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';

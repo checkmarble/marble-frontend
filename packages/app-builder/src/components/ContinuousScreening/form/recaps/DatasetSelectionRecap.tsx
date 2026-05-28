@@ -1,4 +1,4 @@
-import { getSectionLeafNames } from '@app-builder/components/ListAndTopicConfiguration';
+import { getSectionLeafKeys } from '@app-builder/components/ListAndTopicConfiguration';
 import { SCREENING_CATEGORY_I18N_KEY_MAP, type ScreeningCategory } from '@app-builder/models/screening';
 import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ export const DatasetSelectionRecap = () => {
     <RecapRow>
       <span>{t('continuousScreening:creation.datasetSelection.recap.title', { count: enabledSections.length })}</span>
       {enabledSections.map(([key, section]) => {
-        const leafCount = getSectionLeafNames(section).filter((n) => !!datasets[n]).length;
+        const leafCount = getSectionLeafKeys(section, key).filter((k) => !!datasets[k]).length;
         const sectionLabel = t(`scenarios:sanction.lists.${SCREENING_CATEGORY_I18N_KEY_MAP[key]}`);
         return (
           <RecapCapsule key={key}>

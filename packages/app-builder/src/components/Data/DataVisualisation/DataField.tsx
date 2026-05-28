@@ -17,7 +17,7 @@ import { type ComponentType, Fragment, lazy, Suspense, useMemo, useState } from 
 import { useTranslation } from 'react-i18next';
 import { isNonNullish } from 'remeda';
 import { match, P } from 'ts-pattern';
-import { cn, Switch } from 'ui-design-system';
+import { cn, formatCountryName, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
 import { DataFields } from './DataFields';
@@ -290,6 +290,7 @@ function StringCity() {
 
 function StringCountry() {
   const value = useStringValue();
+  const language = useFormatLanguage();
   if (!value) return <EmptyValue />;
   const result = tryCatch(() => CountryFlag.byCountryCode(value.toUpperCase()));
   if (!result.ok) return <span>{value}</span>;
@@ -297,7 +298,7 @@ function StringCountry() {
   return (
     <span className="inline-flex items-center gap-1">
       <span>{country.flag}</span>
-      <span>{country.nameEnglish}</span>
+      <span>{formatCountryName(country.isoAlpha2, language)}</span>
     </span>
   );
 }

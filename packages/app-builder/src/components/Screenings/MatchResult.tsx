@@ -1,7 +1,6 @@
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
 import { screeningsI18n } from './screenings-i18n';
 
@@ -20,17 +19,6 @@ export function MatchResult({ entity }: { entity: ScreeningMatchPayload }) {
             percent: Math.round(entity.score * 100),
           })}
         </Tag>
-      </div>
-      <div className="ml-auto flex p-2">
-        <a
-          href={`https://www.opensanctions.org/entities/${entity.id}`}
-          target="_blank"
-          className="border-grey-border bg-surface-card flex items-center gap-2 rounded-sm border p-1"
-          rel="noreferrer"
-        >
-          OpenSanctions
-          <Icon icon="openinnew" className="size-4" />
-        </a>
       </div>
     </div>
   );

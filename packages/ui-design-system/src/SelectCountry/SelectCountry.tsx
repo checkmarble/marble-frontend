@@ -2,10 +2,11 @@ import * as allCountryFlags from 'country-flag-emojis/flags';
 import type { CountryFlag } from 'country-flag-emojis/types';
 import { type ComponentProps, forwardRef, useMemo, useState } from 'react';
 import { Icon } from 'ui-icons';
-
+import { useI18n } from '../contexts/I18nContext';
 import { InternalMenuSharpFactory, MenuCommand } from '../MenuCommand/MenuCommand';
 import { type SelectTriggerProps, selectTrigger } from '../Select/Select';
 import { cn } from '../utils';
+import { formatCountryName } from '../utils/formatCountryName';
 
 export type SelectCountryValue = {
   isoAlpha2: string;
@@ -27,10 +28,19 @@ export type SelectCountryProps = {
 } & Pick<ComponentProps<typeof MenuCommand.SelectButton>, 'className' | 'disabled' | 'name' | 'onBlur' | 'id'> &
   Omit<ComponentProps<typeof MenuCommand.Menu>, MenuOmitted> & { menuContentClassName?: string };
 
-function buildCountryList(): { countries: readonly CountryFlag[]; byIso3: ReadonlyMap<string, CountryFlag> } {
-  const list = Object.values(allCountryFlags as Record<string, CountryFlag>).sort((a, b) =>
-    a.nameEnglish.localeCompare(b.nameEnglish),
-  );
+function getCountryName(country: CountryFlag, language: string) {
+  return formatCountryName(country.isoAlpha2, language) ?? country.nameEnglish;
+}
+
+function buildCountryList(language: string): {
+  countries: readonly CountryFlag[];
+  byIso3: ReadonlyMap<string, CountryFlag>;
+} {
+  const list = Object.values(allCountryFlags as Record<string, CountryFlag>).sort((a, b) => {
+    const countryA = getCountryName(a, language);
+    const countryB = getCountryName(b, language);
+    return countryA.localeCompare(countryB, language);
+  });
   const byIso3 = new Map<string, CountryFlag>();
   for (const c of list) {
     byIso3.set(c.isoAlpha3, c);
@@ -38,8 +48,8 @@ function buildCountryList(): { countries: readonly CountryFlag[]; byIso3: Readon
   return { countries: list, byIso3 };
 }
 
-function itemFilterValue(c: CountryFlag) {
-  return `${c.nameEnglish} ${c.isoAlpha2} ${c.isoAlpha3}`;
+function itemFilterValue(c: CountryFlag, language: string) {
+  return `${getCountryName(c, language)} ${c.isoAlpha2} ${c.isoAlpha3}`;
 }
 
 function FreeTextItem({ onSelect }: { onSelect: (name: string) => void }) {
@@ -88,7 +98,8 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
   },
   ref,
 ) {
-  const { countries, byIso3 } = useMemo(buildCountryList, []);
+  const { locale } = useI18n();
+  const { countries, byIso3 } = useMemo(() => buildCountryList(locale), [locale]);
   const [internalOpen, setInternalOpen] = useState(false);
 
   const open = openProp ?? internalOpen;
@@ -119,7 +130,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
           <span aria-hidden className="shrink-0">
             {selectedFromList.flag}
           </span>
-          <span className="truncate">{selectedFromList.nameEnglish}</span>
+          <span className="truncate">{getCountryName(selectedFromList, locale)}</span>
         </span>
       );
     }
@@ -135,7 +146,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
     onValueChange({
       isoAlpha2: c.isoAlpha2,
       isoAlpha3: c.isoAlpha3,
-      name: c.nameEnglish,
+      name: getCountryName(c, locale),
       isManual: false,
     });
   };
@@ -202,22 +213,12 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
             {countries.map((c) => (
               <MenuCommand.Item
                 key={c.isoAlpha3}
-                value={itemFilterValue(c)}
+                value={itemFilterValue(c, locale)}
                 className="cursor-pointer"
                 selected={c.isoAlpha3 === listIso3}
                 onSelect={() => handleListChange(c)}
               >
-                <span className="text-s text-grey-primary flex w-full min-w-0 items-center justify-between gap-2 font-medium">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <span aria-hidden className="shrink-0">
-                      {c.flag}
-                    </span>
-                    <span className="truncate">{c.nameEnglish}</span>
-                  </span>
-                  {c.isoAlpha3 === listIso3 ? (
-                    <Icon icon="tick" className="size-5 shrink-0 text-purple-primary" />
-                  ) : null}
-                </span>
+                <CountryFlagItem country={c} selected={c.isoAlpha3 === listIso3} />
               </MenuCommand.Item>
             ))}
             <MenuCommand.Empty>
@@ -229,3 +230,18 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
     </div>
   );
 });
+
+export function CountryFlagItem({ country, selected }: { country: CountryFlag; selected: boolean }) {
+  const { locale } = useI18n();
+  return (
+    <span className="text-s text-grey-primary flex w-full min-w-0 items-center justify-between gap-2 font-medium">
+      <span className="flex min-w-0 items-center gap-2">
+        <span aria-hidden className="shrink-0">
+          {country.flag}
+        </span>
+        <span className="truncate">{getCountryName(country, locale)}</span>
+      </span>
+      {selected ? <Icon icon="tick" className="size-5 shrink-0 text-purple-primary" /> : null}
+    </span>
+  );
+}

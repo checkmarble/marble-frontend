@@ -3,7 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
@@ -13,6 +13,7 @@ import {
   type CheckedState,
   Collapsible,
   cn,
+  ExpandableGroupTagLine,
   Input,
   MenuCommand,
   Popover,
@@ -23,33 +24,36 @@ import {
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import {
+  buildDatasetKey,
+  buildTopicKey,
   clearSectionSelections,
   isDatasetKeySelected,
+  isGlobalTopicSwitchSelected,
   isTopicKeySelected,
   setDatasetKey,
+  setGlobalTopicSwitch,
   setTopicKey,
 } from './dataset-selection-provider-utils';
 import {
-  formatDatasetTitle,
-  formatTopicLabel,
+  type GlobalTopicConfig,
+  getAvailableGlobalTopicConfigs,
   getDatasetNames,
-  getSectionLeafNames,
   getSpecialTopicLabel,
   getSpecialTopicValue,
-  isGlobalTopic,
   isSpecialTopic,
   sortTopicGroupEntries,
   type TopicItem,
+  useDatasetTitle,
 } from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
 
-function groupCheckState(names: string[], datasetsMap: Record<string, boolean>): CheckedState {
-  if (names.length === 0) return false;
-  const selected = names.filter((n) => datasetsMap[n]).length;
+function groupCheckState(keys: string[], datasetsMap: Record<string, boolean>): CheckedState {
+  if (keys.length === 0) return false;
+  const selected = keys.filter((k) => datasetsMap[k]).length;
   if (selected === 0) return false;
-  if (selected === names.length) return true;
+  if (selected === keys.length) return true;
   return 'indeterminate';
 }
 
@@ -66,16 +70,28 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
   const [activeSectionKey, setActiveSectionKey] = useState<ScreeningCategory | null>(null);
 
   const renderSections = (data: ListConfig) => {
-    const sections = Object.entries(data).filter(([, section]) => section?.datasets?.length || section?.topics);
+    const sections = Object.entries(data).filter(
+      ([key, section]) => key !== 'global' && (section?.datasets?.length || section?.topics),
+    );
 
     return match(variant)
-      .with('default', () => (
-        <div className="flex flex-col">
-          {sections.map(([key, section]) =>
-            section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
-          )}
-        </div>
-      ))
+      .with('default', () => {
+        const availableGlobalTopicConfigs = getAvailableGlobalTopicConfigs(data);
+        return (
+          <div className="flex flex-col">
+            {availableGlobalTopicConfigs.length > 0 && (
+              <div className="flex flex-col gap-v2-sm px-v2-md py-v2-sm">
+                {availableGlobalTopicConfigs.map((config) => (
+                  <GlobalTopicSwitch key={config.groupKey} config={config} />
+                ))}
+              </div>
+            )}
+            {sections.map(([key, section]) =>
+              section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+            )}
+          </div>
+        );
+      })
       .with('popover', () => {
         const activeSection = activeSectionKey ? data[activeSectionKey] : null;
         return (
@@ -179,13 +195,13 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const datasetNames = getDatasetNames(section);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const selectedCount = ListAndTopicDatasetConfiguration.select(
-    (state) => datasetNames.filter((n) => state.datasets[n]).length,
+    (state) => datasetNames.filter((n) => state.datasets[buildDatasetKey(sectionKey, n)]).length,
   );
 
   return match(variant)
     .with('default', () => (
       <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
-        <Collapsible.Title hideIcon asChild size="null">
+        <Collapsible.Title iconPosition="hidden" asChild size="null">
           <div className="flex items-center justify-between">
             <div className="flex gap-v2-md items-center">
               <span onClick={(e) => e.stopPropagation()} className="inline-flex">
@@ -200,7 +216,7 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                       if (nextValue) {
                         state.datasets[sectionKey] = true;
                       } else {
-                        clearSectionSelections(state.datasets, sectionKey, getSectionLeafNames(section));
+                        clearSectionSelections(state.datasets, sectionKey);
                       }
                     });
                   }}
@@ -266,6 +282,7 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
     .with('third-parties', () => t('scenarios:sanction.lists.third_parties'))
     .with('sanctions', () => t('scenarios:sanction.lists.sanctions'))
     .with('adverse-media', () => t('scenarios:sanction.lists.adverse_media'))
+    .with('global', () => t('scenarios:sanction.lists.global'))
     .otherwise(() => t('scenarios:sanction.lists.other'));
 
   return (
@@ -281,7 +298,7 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
                 if (checked) {
                   state.datasets[sectionKey] = true;
                 } else {
-                  clearSectionSelections(state.datasets, sectionKey, getSectionLeafNames(section));
+                  clearSectionSelections(state.datasets, sectionKey);
                 }
               });
             }}
@@ -308,28 +325,31 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
 };
 
 type SectionContentProps = { sectionKey: ScreeningCategory; section: SectionData };
+
 const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const { datasets, topics, conditionalTopics } = section;
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
-  const { t } = useTranslation(['continuousScreening']);
   const [searchTerm, setSearchTerm] = useState('');
+  const { formatDatasetTitle, t } = useDatasetTitle();
 
   if (!datasets?.length && !topics && !conditionalTopics) return null;
 
   function makeResetHandler(dependsOnKey: string): (() => void) | undefined {
     if (!conditionalTopics) return undefined;
-    const dependents = Object.values(conditionalTopics).filter((ct) => ct.dependsOn === dependsOnKey);
+    const dependents = Object.entries(conditionalTopics).filter(([, ct]) => ct.dependsOn === dependsOnKey);
     const dependsOnTopics = topics?.[dependsOnKey] ?? [];
     if (dependents.length === 0) return undefined;
     return () => {
-      const selectedPrefixes = dependsOnTopics.filter((t) => listConfig.value.datasets[t.name]).map((t) => t.name);
+      const selectedPrefixes = dependsOnTopics
+        .filter((t) => listConfig.value.datasets[buildTopicKey(sectionKey, dependsOnKey, t.name)])
+        .map((t) => t.name);
       if (selectedPrefixes.length === 0) return;
       listConfig.update((state) => {
-        for (const ct of dependents) {
+        for (const [conditionalGroup, ct] of dependents) {
           for (const item of ct.items) {
             const prefix = item.key.split('.')[0];
             if (!selectedPrefixes.some((sel) => sel === prefix)) {
-              state.datasets[item.name] = false;
+              state.datasets[buildTopicKey(sectionKey, conditionalGroup, item.name)] = false;
             }
           }
         }
@@ -385,7 +405,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
         ))
       )}
       {topics &&
-        sortTopicGroupEntries(Object.entries(topics)).map(([key, items]) => (
+        sortTopicGroupEntries(sectionKey, Object.entries(topics)).map(([key, items]) => (
           <FilterGroupRow
             key={key}
             sectionKey={sectionKey}
@@ -401,6 +421,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
             sectionKey={sectionKey}
             groupKey={name}
             allItems={items}
+            dependsOnGroup={dependsOn}
             dependsOnItems={section.topics?.[dependsOn]?.map((t) => t.name) ?? []}
           />
         ))}
@@ -419,20 +440,21 @@ const ItemGroup = ({
   sectionKey: ScreeningCategory;
   forceOpen?: boolean;
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatDatasetTitle, t } = useDatasetTitle();
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const names = items.map((i) => i.name);
+  const keys = names.map((n) => buildDatasetKey(sectionKey, n));
   const checkState = ListAndTopicDatasetConfiguration.select(
-    (state): CheckedState => groupCheckState(names, state.datasets),
+    (state): CheckedState => groupCheckState(keys, state.datasets),
   );
   const selectedCount = ListAndTopicDatasetConfiguration.select(
-    (state) => names.filter((n) => state.datasets[n]).length,
+    (state) => keys.filter((k) => state.datasets[k]).length,
   );
   const handleSelectAll = () => {
     const datasetsMap = listConfig.value.datasets;
-    const selected = names.filter((n) => datasetsMap[n]).length;
-    const nextValue = selected < names.length;
+    const selected = keys.filter((k) => datasetsMap[k]).length;
+    const nextValue = selected < keys.length;
     listConfig.update((state) => {
       for (const name of names) {
         setDatasetKey(state.datasets, sectionKey, name, nextValue);
@@ -449,34 +471,28 @@ const ItemGroup = ({
       className="border-none px-v2-md py-v2-sm h-fit"
       defaultOpen={forceOpen}
     >
-      <Collapsible.Title hideIcon asChild size="null">
+      <Collapsible.Title iconPosition="left" asChild size="null">
         <div className="flex items-center gap-v2-md justify-between w-full">
           <span className="flex items-center gap-v2-md">
-            <Icon
-              icon="caret-down"
-              className="size-4 shrink-0 transition-transform duration-200 group-radix-state-open:rotate-180"
-            />
             <span className="text-s font-semibold">{formatDatasetTitle(title)}</span>
             <span className="text-xs text-grey-secondary">
               {selectedCount} / {names.length}
             </span>
           </span>
-          <span className="flex items-center gap-v2-md font-normal">
-            <label htmlFor="select-all-checkbox" className="text-s text-grey-50">
+          <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-v2-md font-normal">
+            <label htmlFor={`select-all-checkbox-${title}`} className="text-s text-grey-50">
               {t(
                 `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
               )}
             </label>
-            <span onClick={(e) => e.stopPropagation()} className="inline-flex mr-6">
-              <Checkbox
-                id="select-all-checkbox"
-                size="small"
-                checked={checkState}
-                disabled={mode === 'view'}
-                onCheckedChange={handleSelectAll}
-                stopPropagation
-              />
-            </span>
+            <Checkbox
+              id={`select-all-checkbox-${title}`}
+              size="small"
+              checked={checkState}
+              disabled={mode === 'view'}
+              onCheckedChange={handleSelectAll}
+              stopPropagation
+            />
           </span>
         </div>
       </Collapsible.Title>
@@ -533,37 +549,36 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   );
 };
 
-const OVERFLOW_TAG_WIDTH_PX = 36;
-
-function formatItemName(name: string): string {
-  const last = name.split('.').at(-1) ?? name;
-  return capitalize(last);
-}
-
-const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
-  <Tag
-    color="purple"
-    size="small"
-    className="group cursor-pointer hover:bg-purple-primary/20 transition-colors"
-    onClick={onRemove}
-  >
-    <span className="flex items-center">
-      {/* Keep layout width stable (no flex-wrap flicker) while animating the visual centering. */}
-      <span className="max-w-[20ch] truncate text-center flex-1 translate-x-[9px] group-hover:translate-x-0 transition-transform duration-150">
-        {formatTopicLabel(label)}
+const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void }) => {
+  const { formatTopicLabel } = useDatasetTitle();
+  return (
+    <Tag
+      color="purple"
+      size="small"
+      className="group cursor-pointer hover:bg-purple-primary/20 transition-colors"
+      onClick={onRemove}
+    >
+      <span className="flex items-center">
+        {/* Keep layout width stable (no flex-wrap flicker) while animating the visual centering. */}
+        <span className="max-w-[20ch] truncate text-center flex-1 translate-x-[9px] group-hover:translate-x-0 transition-transform duration-150">
+          {formatTopicLabel(label)}
+        </span>
+        <span className="inline-flex items-center justify-center w-4 ml-1 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-150">
+          <Icon icon="cross" className="size-3" />
+        </span>
       </span>
-      <span className="inline-flex items-center justify-center w-4 ml-1 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-150">
-        <Icon icon="cross" className="size-3" />
-      </span>
-    </span>
-  </Tag>
-);
+    </Tag>
+  );
+};
 
-const ViewTag = ({ label }: { label: string }) => (
-  <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
-    <span className="truncate block">{formatTopicLabel(label)}</span>
-  </Tag>
-);
+const ViewTag = ({ label }: { label: string }) => {
+  const { formatTopicLabel } = useDatasetTitle();
+  return (
+    <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
+      <span className="truncate block">{formatTopicLabel(label)}</span>
+    </Tag>
+  );
+};
 
 type ConditionalTopicItem = NonNullable<SectionData['conditionalTopics']>[keyof NonNullable<
   SectionData['conditionalTopics']
@@ -573,15 +588,17 @@ const ConditionalFilterGroupRow = ({
   sectionKey,
   groupKey,
   allItems,
+  dependsOnGroup,
   dependsOnItems,
 }: {
   sectionKey: ScreeningCategory;
   groupKey: string;
   allItems: ConditionalTopicItem[];
+  dependsOnGroup: string;
   dependsOnItems: string[];
 }) => {
   const selectedPrefixes = ListAndTopicDatasetConfiguration.select((state) =>
-    dependsOnItems.filter((t) => state.datasets[t]).map((t) => t),
+    dependsOnItems.filter((t) => state.datasets[buildTopicKey(sectionKey, dependsOnGroup, t)]),
   );
 
   const filteredItems =
@@ -609,22 +626,22 @@ const FilterGroupRow = ({
   onAfterChange?: () => void;
 }) => {
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
-  const withGlobalTopics = ListAndTopicDatasetConfiguration.select((state) => state.withGlobalTopics);
   const label = capitalize(groupKey);
   const singleItem = items.length === 1 ? items[0] : undefined;
+  const { formatDatasetTitle } = useDatasetTitle();
 
-  if (isGlobalTopic(groupKey) && !withGlobalTopics) return null;
+  if (sectionKey === 'global') return null;
 
   return (
     <>
-      {isSpecialTopic(groupKey) ? (
+      {isSpecialTopic(sectionKey, groupKey) ? (
         <div className="px-v2-md py-v2-sm">
           <SpecialTopicSwitch sectionKey={sectionKey} topicGroup={groupKey} mode={mode} onAfterChange={onAfterChange} />
         </div>
       ) : (
         <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
           <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
-          <div className="flex items-center gap-v2-sm flex-1 min-w-0">
+          <div className="flex min-w-0 flex-1 items-center gap-v2-sm">
             {singleItem ? (
               <SingleItemToggle
                 item={singleItem}
@@ -660,15 +677,13 @@ const SpecialTopicSwitch = ({
   onAfterChange?: () => void;
 }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
-  const topicValue = getSpecialTopicValue(topicGroup);
-  const labelKey = getSpecialTopicLabel(topicGroup);
+  const topicValue = getSpecialTopicValue(sectionKey, topicGroup);
+  const labelKey = getSpecialTopicLabel(sectionKey, topicGroup);
   const switchId = `special-topic-${sectionKey}-${topicGroup}-${topicValue}`;
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
     isTopicKeySelected(state.datasets, sectionKey, topicGroup, topicValue),
   );
   const { t } = useTranslation(['continuousScreening']);
-
-  if (mode === 'view' && !isSelected) return null;
 
   return (
     <div className="flex items-center gap-v2-sm">
@@ -712,13 +727,13 @@ const SingleItemToggle = ({
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
     isTopicKeySelected(state.datasets, sectionKey, topicGroup, item.name),
   );
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatItemName, t } = useDatasetTitle();
 
   if (isSelected) {
     if (mode !== 'view') {
       return (
         <RemovableTag
-          label={item.title ?? formatItemName(item.name)}
+          label={formatItemName(item)}
           onRemove={() => {
             listConfig.update((state) => {
               setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
@@ -730,7 +745,7 @@ const SingleItemToggle = ({
     }
     return (
       <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
-        <span className="truncate block">{formatItemName(item.name)}</span>
+        <span className="truncate block">{formatItemName(item)}</span>
       </Tag>
     );
   }
@@ -755,8 +770,6 @@ const SingleItemToggle = ({
   );
 };
 
-const MENU_BUTTON_SIZE_PX = 24; // size-6 = 1.5rem = 24px
-
 const FilterGroupTags = ({
   items,
   sectionKey,
@@ -768,153 +781,77 @@ const FilterGroupTags = ({
   topicGroup: string;
   onAfterChange?: () => void;
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatItemName, t } = useDatasetTitle();
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const selectedItems = ListAndTopicDatasetConfiguration.select((state) =>
     items.filter((i) => isTopicKeySelected(state.datasets, sectionKey, topicGroup, i.name)),
   );
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const ghostRef = useRef<HTMLDivElement>(null);
-  const [maxVisible, setMaxVisible] = useState(selectedItems.length);
-
+  const useAnchoredMenu = mode !== 'view' && variant !== 'popover';
   const selectedKey = selectedItems.map((i) => i.name).join(',');
 
-  useLayoutEffect(() => {
-    if (isExpanded) return;
-    const container = containerRef.current;
-    const ghost = ghostRef.current;
-    if (!container || !ghost) return;
-
-    const recalculate = () => {
-      const gap = parseFloat(getComputedStyle(ghost).gap) || 4;
-      // subtract menu button + one gap when in edit mode
-      const menuReserved = mode !== 'view' ? MENU_BUTTON_SIZE_PX + gap : 0;
-      const availableWidth = container.offsetWidth - menuReserved;
-      const tagEls = Array.from(ghost.children) as HTMLElement[];
-
-      let used = 0;
-      let count = 0;
-      for (let i = 0; i < tagEls.length; i++) {
-        const tw = tagEls[i]!.offsetWidth;
-        const gapBefore = i > 0 ? gap : 0;
-        const isLast = i === tagEls.length - 1;
-        // reserve space for overflow tag on all but the last slot
-        const needed = used + gapBefore + tw + (isLast ? 0 : gap + OVERFLOW_TAG_WIDTH_PX);
-        if (needed <= availableWidth) {
-          used += gapBefore + tw;
-          count++;
-        } else {
-          break;
-        }
-      }
-      setMaxVisible(Math.max(count, 1));
-    };
-
-    const observer = new ResizeObserver(recalculate);
-    observer.observe(container);
-    recalculate();
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isExpanded, selectedKey, mode]);
+  const tagItems = useMemo(
+    () =>
+      selectedItems.map((item) => {
+        const label = formatItemName(item);
+        return mode !== 'view' ? (
+          <RemovableTag
+            key={item.name}
+            label={label}
+            onRemove={() => {
+              listConfig.update((state) => {
+                setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
+              });
+              onAfterChange?.();
+            }}
+          />
+        ) : (
+          <ViewTag key={item.name} label={label} />
+        );
+      }),
+    [selectedItems, selectedKey, mode, listConfig, sectionKey, topicGroup, onAfterChange],
+  );
 
   const isAllSelected = selectedItems.length === items.length && items.length > 1;
-  const overflow = isExpanded || isAllSelected ? 0 : Math.max(0, selectedItems.length - maxVisible);
-  const visible = overflow > 0 ? selectedItems.slice(0, maxVisible) : selectedItems;
-  const useAnchoredMenu = mode !== 'view' && variant !== 'popover';
+
+  const trailingTrigger =
+    mode !== 'view' &&
+    (variant === 'popover' ? (
+      <button
+        type="button"
+        className={cn(
+          'flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-grey-background-light',
+          isMenuOpen && 'bg-purple-background-light text-purple-primary',
+        )}
+        onClick={() => setIsMenuOpen((open) => !open)}
+        aria-expanded={isMenuOpen}
+      >
+        <Icon icon={isMenuOpen ? 'minus' : 'plus'} className="size-3" />
+      </button>
+    ) : (
+      <FilterGroupMenu
+        anchored
+        items={items}
+        sectionKey={sectionKey}
+        topicGroup={topicGroup}
+        onAfterChange={onAfterChange}
+      />
+    ));
 
   const tagsContent = (
-    <div
-      ref={containerRef}
-      className={cn('flex-1 min-w-0', variant === 'popover' && 'flex flex-col gap-v2-sm overflow-x-hidden')}
-    >
-      {/* Ghost: invisible clone of all selected tags used to measure their rendered widths */}
-      <div
-        ref={ghostRef}
-        className="flex items-center gap-v2-sm invisible absolute top-0 left-0 right-0 pointer-events-none"
-        aria-hidden="true"
-      >
-        {selectedItems.map((item) => {
-          const label = item.title ?? formatItemName(item.name);
-          return mode !== 'view' ? (
-            // Must match `RemovableTag` layout width, otherwise maxVisible/overflow calc is wrong.
-            <RemovableTag key={item.name} label={label} onRemove={() => undefined} />
-          ) : (
-            <Tag key={item.name} color="purple" size="small">
-              <span className="max-w-[20ch] truncate">{label}</span>
-            </Tag>
-          );
-        })}
-      </div>
-      <div className={cn('flex items-center gap-v2-sm', isExpanded && 'flex-wrap')}>
+    <div className={cn('flex min-w-0 w-full flex-1', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
+      <div className="flex min-w-0 w-full items-center gap-v2-xs flex-1">
         {isAllSelected ? (
-          <Tag color="purple" size="small">
-            {t('continuousScreening:creation.datasetSelection.filter.all')}
-          </Tag>
-        ) : (
           <>
-            {visible.map((item) =>
-              mode !== 'view' ? (
-                <RemovableTag
-                  key={item.name}
-                  label={item.title ?? formatItemName(item.name)}
-                  onRemove={() => {
-                    listConfig.update((state) => {
-                      setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
-                    });
-                    onAfterChange?.();
-                  }}
-                />
-              ) : (
-                <ViewTag key={item.name} label={item.title ?? formatItemName(item.name)} />
-              ),
-            )}
-            {overflow > 0 && (
-              <Tag
-                color="purple"
-                size="small"
-                className="cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors"
-                onClick={() => setIsExpanded(true)}
-              >
-                +{overflow}
-              </Tag>
-            )}
-            {isExpanded && (
-              <Tag
-                color="purple"
-                size="small"
-                className="cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors"
-                onClick={() => setIsExpanded(false)}
-              >
-                <Icon icon="minus" className="size-3" />
-              </Tag>
-            )}
+            <Tag color="purple" size="small">
+              {t('continuousScreening:creation.datasetSelection.filter.all')}
+            </Tag>
+            {trailingTrigger}
           </>
-        )}
-        {useAnchoredMenu && (
-          <FilterGroupMenu
-            anchored
-            items={items}
-            sectionKey={sectionKey}
-            topicGroup={topicGroup}
-            onAfterChange={onAfterChange}
-          />
-        )}
-        {mode !== 'view' && variant === 'popover' && (
-          <button
-            type="button"
-            className={cn(
-              'flex items-center justify-center size-6 rounded-full hover:bg-grey-background-light shrink-0',
-              isMenuOpen && 'bg-purple-background-light border-purple-primary text-purple-primary',
-            )}
-            onClick={() => setIsMenuOpen((open) => !open)}
-            aria-expanded={isMenuOpen}
-          >
-            <Icon icon={isMenuOpen ? 'minus' : 'plus'} className="size-3" />
-          </button>
+        ) : (
+          <ExpandableGroupTagLine items={tagItems} trailing={trailingTrigger} />
         )}
       </div>
       {mode !== 'view' && variant === 'popover' && isMenuOpen && (
@@ -947,7 +884,7 @@ const FilterGroupMenu = ({
   onAfterChange?: () => void;
   anchored?: boolean;
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatItemName, t } = useDatasetTitle();
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
@@ -994,8 +931,7 @@ const FilterGroupMenu = ({
           {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
         </button>
         {items.map((item) => {
-          const isSelected = !!datasets[item.name];
-          const itemName = item.title ?? formatItemName(item.name);
+          const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
           return (
             <label
               key={item.name}
@@ -1014,7 +950,7 @@ const FilterGroupMenu = ({
                 disabled={mode === 'view'}
                 stopPropagation
               />
-              {formatItemName(itemName)}
+              {formatItemName(item)}
             </label>
           );
         })}
@@ -1037,8 +973,7 @@ const FilterGroupMenu = ({
         {allSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
       </MenuCommand.Item>
       {items.map((item) => {
-        const isSelected = !!datasets[item.name];
-        const itemName = item.title ?? formatItemName(item.name);
+        const isSelected = isTopicKeySelected(datasets, sectionKey, topicGroup, item.name);
         return (
           <MenuCommand.Item
             key={item.name}
@@ -1047,7 +982,7 @@ const FilterGroupMenu = ({
             onSelect={() => handleClickItem(item)}
             disabled={mode === 'view'}
           >
-            <span>{formatTopicLabel(itemName)}</span>
+            <span>{formatItemName(item)}</span>
             {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
           </MenuCommand.Item>
         );
@@ -1076,4 +1011,32 @@ const FilterGroupMenu = ({
   }
 
   return <MenuCommand.Menu persistOnSelect>{menuTriggerAndContent}</MenuCommand.Menu>;
+};
+
+const GlobalTopicSwitch = ({ config }: { config: GlobalTopicConfig }) => {
+  const listSharp = ListAndTopicDatasetConfiguration.useSharp();
+  const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const { t } = useTranslation(['screenings']);
+  const switchId = `global-topic-${config.groupKey}`;
+  const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
+    isGlobalTopicSwitchSelected(state.datasets, config),
+  );
+
+  return (
+    <div className="flex items-center gap-v2-sm">
+      <Switch
+        id={switchId}
+        checked={isSelected}
+        disabled={mode === 'view'}
+        onCheckedChange={(checked) => {
+          listSharp.update((state) => {
+            setGlobalTopicSwitch(state.datasets, config, checked);
+          });
+        }}
+      />
+      <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
+        {t(config.label)}
+      </label>
+    </div>
+  );
 };

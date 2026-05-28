@@ -23,7 +23,7 @@ import {
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
-import { ScreeningCategory } from './screening';
+import { RiskTagCategory } from './screening';
 import {
   isSemanticSubTypeField,
   isSemanticTypeField,
@@ -690,7 +690,7 @@ export type CreateAnnotationBody = { caseId?: string } & (
   | {
       type: 'risk_tag';
       payload: {
-        tag: ScreeningCategory;
+        tag: RiskTagCategory;
       };
     }
 );

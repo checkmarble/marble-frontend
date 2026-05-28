@@ -1,4 +1,5 @@
 import { createContinuousScreeningConfigSchema } from '@app-builder/components/ContinuousScreening/context/CreationStepper';
+import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
@@ -50,7 +51,11 @@ export const createContinuousScreeningConfigurationFn = createServerFn({ method:
         inboxId = payload.inboxId;
       }
 
-      await context.authInfo.continuousScreening.createConfiguration({ ...payload, inboxId });
+      await context.authInfo.continuousScreening.createConfiguration({
+        ...payload,
+        inboxId,
+        datasets: sanitizeTruthyDatasets(payload.datasets),
+      });
 
       throw redirect({ to: '/continuous-screening/configurations' });
     } catch (error) {
@@ -109,5 +114,9 @@ export const updateContinuousScreeningConfigurationFn = createServerFn({ method:
       inboxId = payload.inboxId;
     }
 
-    await context.authInfo.continuousScreening.updateConfiguration(configStableId, { ...payload, inboxId });
+    await context.authInfo.continuousScreening.updateConfiguration(configStableId, {
+      ...payload,
+      inboxId,
+      datasets: sanitizeTruthyDatasets(payload.datasets),
+    });
   });

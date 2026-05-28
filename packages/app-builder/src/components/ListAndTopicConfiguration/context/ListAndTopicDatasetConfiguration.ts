@@ -7,7 +7,6 @@ type ListAndTopicDatasetConfigurationParams = {
   datasets: Record<string, boolean>;
   mode: ListAndTopicDatasetConfigurationMode;
   variant?: ListAndTopicDatasetConfigurationVariant;
-  withGlobalTopics?: boolean;
 };
 
 export const ListAndTopicDatasetConfiguration = createSharpFactory({
@@ -16,7 +15,6 @@ export const ListAndTopicDatasetConfiguration = createSharpFactory({
     datasets: params.datasets,
     mode: params.mode,
     variant: params.variant ?? 'default',
-    withGlobalTopics: params.withGlobalTopics ?? true,
   }),
 }).withActions({
   setMode(api, mode: ListAndTopicDatasetConfigurationMode) {

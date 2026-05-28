@@ -88,6 +88,7 @@ const ConvertSectionNameToDto: Record<ScreeningCategory, keyof ScreeningConfigBo
   peps: 'peps',
   'third-parties': 'other',
   'adverse-media': 'adverse_media',
+  global: 'global',
 };
 
 const DtoSectionToCategory: Record<keyof ScreeningConfigBodyFiltersDto, ScreeningCategory> = {
@@ -95,6 +96,7 @@ const DtoSectionToCategory: Record<keyof ScreeningConfigBodyFiltersDto, Screenin
   peps: 'peps',
   adverse_media: 'adverse-media',
   other: 'third-parties',
+  global: 'global',
 };
 
 export function createScreeningFilters(selection: string[]): ScreeningConfigBodyFiltersDto {
@@ -103,6 +105,7 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
     peps: { enabled: false },
     adverse_media: { enabled: false },
     other: { enabled: false },
+    global: { enabled: false },
   };
   for (const item of selection) {
     const chunks = item.split(':');
@@ -137,7 +140,8 @@ export function getDatasetFromFilters(filters: ScreeningConfigBodyFiltersDto): s
   return Object.entries(filters).flatMap(([dtoSection, data]) => {
     const section =
       DtoSectionToCategory[dtoSection as keyof ScreeningConfigBodyFiltersDto] ?? (dtoSection as ScreeningCategory);
-    const sections = data.enabled ? [section] : [];
+    // The bare 'global' section key is implicit on the wire (enabled when any global topic is present) and is not stored in the UI selection map.
+    const sections = data.enabled && section !== 'global' ? [section] : [];
     const datasets = data.datasets?.map((dataset) => `${section}:dataset:${dataset}`) ?? [];
     const topics = Object.entries(data.topics ?? {}).flatMap(([topic, values]) => {
       return values.map((value) => `${section}:topic:${topic}:${value}`);

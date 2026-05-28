@@ -1,4 +1,5 @@
-import { scenarioI18n } from '@app-builder/components';
+import { SearchableSchema } from '@app-builder/constants/screening-entity';
+import { useEntityName } from '@app-builder/hooks/useEntityName';
 import {
   isScreeningReviewCompleted,
   type Screening,
@@ -8,7 +9,6 @@ import {
 import { type RefineSearchInput } from '@app-builder/server-fns/screenings';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { match } from 'ts-pattern';
 import { Button, Tag } from 'ui-design-system';
 import { screeningsI18n } from '../screenings-i18n';
 import { InlineRefineSearch } from './InlineRefineSearch';
@@ -93,14 +93,8 @@ function SearchDetailRow({ label, children }: { label: string; children: React.R
 }
 
 function QueryProperties({ query }: { query: ScreeningQuery }) {
-  const { t } = useTranslation(scenarioI18n);
-
-  const entityTypeLabel = match(query.schema)
-    .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
-    .with('Person', () => t('scenarios:edit_sanction.entity_type.person'))
-    .with('Organization', () => t('scenarios:edit_sanction.entity_type.organization'))
-    .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
-    .otherwise(() => query.schema);
+  const { getEntityName, t } = useEntityName();
+  const entityTypeLabel = getEntityName(query.schema as SearchableSchema);
 
   return (
     <>

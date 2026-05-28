@@ -1,16 +1,15 @@
-import { scenarioI18n } from '@app-builder/components';
 import { FormatData } from '@app-builder/components/FormatData';
+import { SearchableSchema } from '@app-builder/constants/screening-entity';
+import { useEntityName } from '@app-builder/hooks/useEntityName';
 import { type Screening, type ScreeningQuery } from '@app-builder/models/screening';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { match } from 'ts-pattern';
 import { Tabs, tabClassName } from 'ui-design-system';
-
 import { screeningsI18n } from './screenings-i18n';
 
 const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
-  const { t } = useTranslation(scenarioI18n);
+  const { getEntityName } = useEntityName();
   const parsed = useMemo(
     () => Object.entries(query.properties).map(([k, v]) => [k, parseUnknownData(v)] as const),
     [query.properties],
@@ -19,14 +18,7 @@ const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
   return (
     <div className="text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4 mb-2">
       <span className="font-semibold">type</span>
-      <span>
-        {match(query.schema)
-          .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
-          .with('Person', () => t('scenarios:edit_sanction.entity_type.person'))
-          .with('Organization', () => t('scenarios:edit_sanction.entity_type.organization'))
-          .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
-          .otherwise(() => '')}
-      </span>
+      <span>{getEntityName(query.schema as SearchableSchema)}</span>
       {parsed.map(([property, data]) => (
         <Fragment key={property}>
           <span className="font-semibold">{property}</span>

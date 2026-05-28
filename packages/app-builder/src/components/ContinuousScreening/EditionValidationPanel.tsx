@@ -1,3 +1,4 @@
+import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   ContinuousScreeningConfig,
@@ -32,7 +33,10 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: 
 
   const handleValidateClick = () => {
     updateConfigurationMutation
-      .mutateAsync(updatedConfig)
+      .mutateAsync({
+        ...updatedConfig,
+        datasets: sanitizeTruthyDatasets(updatedConfig.datasets),
+      })
       .then(() => {
         toast.success(t('common:success.save'));
         panelSharp.actions.close();
