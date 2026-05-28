@@ -13,7 +13,7 @@ import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
 import { makeDatasetsMap } from '../ListAndTopicConfiguration/dataset-selection-provider-utils';
-import { formatDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
+import { useDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
 import { PanelRoot } from '../Panel/Panel';
 import { Spinner } from '../Spinner';
@@ -24,6 +24,7 @@ import { EditionValidationPanel } from './EditionValidationPanel';
 
 export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
   const { t } = useTranslation(['common', 'continuousScreening', 'navigation']);
+  const { formatDatasetTitle } = useDatasetTitle();
   const configurationsQuery = useContinuousScreeningConfigurationsQuery();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
   const navigate = useAgnosticNavigation();
@@ -132,7 +133,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                           <ExpandableGroupTagLine
                             items={item.datasets.map((d) => (
                               <Tag key={d} color="grey">
-                                {formatDatasetTitle(d, t)}
+                                {formatDatasetTitle(d)}
                               </Tag>
                             ))}
                           />

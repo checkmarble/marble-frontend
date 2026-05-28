@@ -1,7 +1,7 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { getEntityName } from '@app-builder/components/Scenario/Screening/FieldEntityType';
+import { useEntityName } from '@app-builder/hooks/useEntityName';
 import { useSaveFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
@@ -21,6 +21,7 @@ export const SaveSearch = ({ search }: { search: FreeformSearchState }) => {
   const { t } = useTranslation(['screenings', 'common']);
   const [open, setOpen] = useState(false);
   const saveSearchMutation = useSaveFreeformSearchMutation();
+  const { getEntityName } = useEntityName();
 
   const form = useForm({
     defaultValues: { name: '' },

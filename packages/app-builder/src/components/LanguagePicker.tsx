@@ -33,8 +33,8 @@ export function LanguagePicker() {
         setLanguageMutation
           .mutateAsync({ preferredLanguage: newPreferredLanguage })
           .then(() => {
-            revalidate();
             changeLanguage(newPreferredLanguage);
+            revalidate();
           })
           .catch(() => {
             toast.error(t('common:errors.unknown'));

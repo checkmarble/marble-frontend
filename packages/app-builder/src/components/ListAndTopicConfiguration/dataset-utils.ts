@@ -1,6 +1,7 @@
 import type { ScreeningCategory } from '@app-builder/models/screening';
 import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
-import { TFunction } from 'i18next';
+import { capitalize } from 'radash';
+import { useTranslation } from 'react-i18next';
 
 export type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
 
@@ -102,22 +103,6 @@ export function getDatasetNames(section: SectionData) {
   return (section.datasets ?? []).flatMap((g) => g.datasets.map((d) => d.name));
 }
 
-export function formatDatasetTitle(title: string, t: TFunction): string {
-  const last = title.includes(':')
-    ? (title.split(':').at(-1) ?? title)
-    : title.includes('.')
-      ? (title.split('.').at(-1) ?? title)
-      : title;
-
-  const translation = hasTranslation(last);
-  if (translation) return t(translation);
-  return last.replace(/_/g, ' ');
-}
-
-export function formatTopicLabel(label: string) {
-  return label.split('.').at(-1) ?? label;
-}
-
 const FILTER_TRANSLATION_MAP = {
   'filter.pep.category.govt_branch_member': 'continuousScreening:filter.pep.category.govt_branch_member',
   'filter.pep.category.family_member': 'continuousScreening:filter.pep.category.family_member',
@@ -145,7 +130,38 @@ const FILTER_TRANSLATION_MAP = {
   'filter.deceased': 'continuousScreening:filter.deceased',
 } as const;
 
-export function hasTranslation(key: string) {
-  const hasKey = Object.keys(FILTER_TRANSLATION_MAP).includes(key);
-  return hasKey ? FILTER_TRANSLATION_MAP[key as keyof typeof FILTER_TRANSLATION_MAP] : undefined;
+export function useDatasetTitle() {
+  const { t } = useTranslation('continuousScreening');
+
+  function formatDatasetTitle(title: string) {
+    const last = title.includes(':')
+      ? (title.split(':').at(-1) ?? title)
+      : title.includes('.')
+        ? (title.split('.').at(-1) ?? title)
+        : title;
+
+    const translation = hasTranslation(last);
+    if (translation) return t(translation);
+    return last.replace(/_/g, ' ');
+  }
+
+  function formatTopicLabel(label: string) {
+    return label.split('.').at(-1) ?? label;
+  }
+
+  function hasTranslation(key: string) {
+    const hasKey = Object.keys(FILTER_TRANSLATION_MAP).includes(key);
+    return hasKey ? FILTER_TRANSLATION_MAP[key as keyof typeof FILTER_TRANSLATION_MAP] : undefined;
+  }
+
+  function formatItemName(item: { name: string; title?: string }): string {
+    const label = item.title ?? item.name;
+    const translation = hasTranslation(label);
+    if (translation) return t(translation);
+
+    const last = label.split('.').at(-1) ?? label;
+    return capitalize(last);
+  }
+
+  return { formatDatasetTitle, formatTopicLabel, hasTranslation, formatItemName, t };
 }

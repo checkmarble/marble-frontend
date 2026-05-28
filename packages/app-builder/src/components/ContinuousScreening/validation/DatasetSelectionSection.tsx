@@ -1,16 +1,17 @@
+import { useDatasetTitle } from '@app-builder/components/ListAndTopicConfiguration/dataset-utils';
 import { ScreeningCategory } from '@app-builder/models/screening';
 import { useScreeningDatasetsQuery } from '@app-builder/queries/screening/datasets';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, Collapsible } from 'ui-design-system';
-import { formatDatasetTitle } from '../../ListAndTopicConfiguration/dataset-utils';
 import { DatasetTag } from '../../Screenings/DatasetTag';
 import { Spinner } from '../../Spinner';
 import { EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
 export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionValidationPanelBaseProps) => {
   const { t } = useTranslation(['common', 'continuousScreening']);
+  const { formatDatasetTitle } = useDatasetTitle();
   const datasetsQuery = useScreeningDatasetsQuery();
   const addedDatasets = Object.keys(updatedConfig.datasets).filter(
     (k) => !!updatedConfig.datasets[k] && !baseConfig.datasets.includes(k),
@@ -52,7 +53,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
                       const dataset = datasetsArray.find((d) => d.name === k);
                       return (
                         <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{formatDatasetTitle(dataset?.title ?? k, t)}</span>
+                          <span>{formatDatasetTitle(dataset?.title ?? k)}</span>
                           {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
                         </div>
                       );
@@ -71,7 +72,7 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
                       const dataset = datasetsArray.find((d) => d.name === k);
                       return (
                         <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{formatDatasetTitle(dataset?.title ?? k, t)}</span>
+                          <span>{formatDatasetTitle(dataset?.title ?? k)}</span>
                           {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
                         </div>
                       );

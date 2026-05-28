@@ -3,7 +3,6 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { UseQueryResult } from '@tanstack/react-query';
-import { TFunction } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
@@ -36,17 +35,15 @@ import {
   setTopicKey,
 } from './dataset-selection-provider-utils';
 import {
-  formatDatasetTitle,
-  formatTopicLabel,
   type GlobalTopicConfig,
   getAvailableGlobalTopicConfigs,
   getDatasetNames,
   getSpecialTopicLabel,
   getSpecialTopicValue,
-  hasTranslation,
   isSpecialTopic,
   sortTopicGroupEntries,
   type TopicItem,
+  useDatasetTitle,
 } from './dataset-utils';
 
 type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
@@ -328,11 +325,12 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
 };
 
 type SectionContentProps = { sectionKey: ScreeningCategory; section: SectionData };
+
 const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const { datasets, topics, conditionalTopics } = section;
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
-  const { t } = useTranslation(['continuousScreening']);
   const [searchTerm, setSearchTerm] = useState('');
+  const { formatDatasetTitle, t } = useDatasetTitle();
 
   if (!datasets?.length && !topics && !conditionalTopics) return null;
 
@@ -363,7 +361,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const hasSearch = normalizedSearch.length > 0;
   const itemMatches = (name: string, title?: string) =>
-    (title ? formatDatasetTitle(title, t) : name).toLowerCase().includes(normalizedSearch) ||
+    (title ? formatDatasetTitle(title) : name).toLowerCase().includes(normalizedSearch) ||
     name.toLowerCase().includes(normalizedSearch);
 
   const filteredDatasets = !hasSearch
@@ -442,7 +440,7 @@ const ItemGroup = ({
   sectionKey: ScreeningCategory;
   forceOpen?: boolean;
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatDatasetTitle, t } = useDatasetTitle();
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const names = items.map((i) => i.name);
@@ -476,7 +474,7 @@ const ItemGroup = ({
       <Collapsible.Title iconPosition="left" asChild size="null">
         <div className="flex items-center gap-v2-md justify-between w-full">
           <span className="flex items-center gap-v2-md">
-            <span className="text-s font-semibold">{formatDatasetTitle(title, t)}</span>
+            <span className="text-s font-semibold">{formatDatasetTitle(title)}</span>
             <span className="text-xs text-grey-secondary">
               {selectedCount} / {names.length}
             </span>
@@ -551,39 +549,36 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
   );
 };
 
-function formatItemName(item: { name: string; title?: string }, t: TFunction<'continuousScreening'>): string {
-  const label = item.title ?? item.name;
-  const translation = hasTranslation(label);
-  if (translation) return t(translation);
-
-  const last = label.split('.').at(-1) ?? label;
-  return capitalize(last);
-}
-
-const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
-  <Tag
-    color="purple"
-    size="small"
-    className="group cursor-pointer hover:bg-purple-primary/20 transition-colors"
-    onClick={onRemove}
-  >
-    <span className="flex items-center">
-      {/* Keep layout width stable (no flex-wrap flicker) while animating the visual centering. */}
-      <span className="max-w-[20ch] truncate text-center flex-1 translate-x-[9px] group-hover:translate-x-0 transition-transform duration-150">
-        {formatTopicLabel(label)}
+const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void }) => {
+  const { formatTopicLabel } = useDatasetTitle();
+  return (
+    <Tag
+      color="purple"
+      size="small"
+      className="group cursor-pointer hover:bg-purple-primary/20 transition-colors"
+      onClick={onRemove}
+    >
+      <span className="flex items-center">
+        {/* Keep layout width stable (no flex-wrap flicker) while animating the visual centering. */}
+        <span className="max-w-[20ch] truncate text-center flex-1 translate-x-[9px] group-hover:translate-x-0 transition-transform duration-150">
+          {formatTopicLabel(label)}
+        </span>
+        <span className="inline-flex items-center justify-center w-4 ml-1 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-150">
+          <Icon icon="cross" className="size-3" />
+        </span>
       </span>
-      <span className="inline-flex items-center justify-center w-4 ml-1 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-150">
-        <Icon icon="cross" className="size-3" />
-      </span>
-    </span>
-  </Tag>
-);
+    </Tag>
+  );
+};
 
-const ViewTag = ({ label }: { label: string }) => (
-  <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
-    <span className="truncate block">{formatTopicLabel(label)}</span>
-  </Tag>
-);
+const ViewTag = ({ label }: { label: string }) => {
+  const { formatTopicLabel } = useDatasetTitle();
+  return (
+    <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
+      <span className="truncate block">{formatTopicLabel(label)}</span>
+    </Tag>
+  );
+};
 
 type ConditionalTopicItem = NonNullable<SectionData['conditionalTopics']>[keyof NonNullable<
   SectionData['conditionalTopics']
@@ -633,7 +628,7 @@ const FilterGroupRow = ({
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const label = capitalize(groupKey);
   const singleItem = items.length === 1 ? items[0] : undefined;
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatDatasetTitle } = useDatasetTitle();
 
   if (sectionKey === 'global') return null;
 
@@ -645,7 +640,7 @@ const FilterGroupRow = ({
         </div>
       ) : (
         <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
-          <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label, t)}:</span>
+          <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
           <div className="flex min-w-0 flex-1 items-center gap-v2-sm">
             {singleItem ? (
               <SingleItemToggle
@@ -732,13 +727,13 @@ const SingleItemToggle = ({
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
     isTopicKeySelected(state.datasets, sectionKey, topicGroup, item.name),
   );
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatItemName, t } = useDatasetTitle();
 
   if (isSelected) {
     if (mode !== 'view') {
       return (
         <RemovableTag
-          label={formatItemName(item, t)}
+          label={formatItemName(item)}
           onRemove={() => {
             listConfig.update((state) => {
               setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
@@ -750,7 +745,7 @@ const SingleItemToggle = ({
     }
     return (
       <Tag color="purple" size="small" className="max-w-[150px] overflow-hidden">
-        <span className="truncate block">{formatItemName(item, t)}</span>
+        <span className="truncate block">{formatItemName(item)}</span>
       </Tag>
     );
   }
@@ -786,7 +781,7 @@ const FilterGroupTags = ({
   topicGroup: string;
   onAfterChange?: () => void;
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatItemName, t } = useDatasetTitle();
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
@@ -800,7 +795,7 @@ const FilterGroupTags = ({
   const tagItems = useMemo(
     () =>
       selectedItems.map((item) => {
-        const label = formatItemName(item, t);
+        const label = formatItemName(item);
         return mode !== 'view' ? (
           <RemovableTag
             key={item.name}
@@ -889,7 +884,7 @@ const FilterGroupMenu = ({
   onAfterChange?: () => void;
   anchored?: boolean;
 }) => {
-  const { t } = useTranslation(['continuousScreening']);
+  const { formatItemName, t } = useDatasetTitle();
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
@@ -955,7 +950,7 @@ const FilterGroupMenu = ({
                 disabled={mode === 'view'}
                 stopPropagation
               />
-              {formatItemName(item, t)}
+              {formatItemName(item)}
             </label>
           );
         })}
@@ -987,7 +982,7 @@ const FilterGroupMenu = ({
             onSelect={() => handleClickItem(item)}
             disabled={mode === 'view'}
           >
-            <span>{formatItemName(item, t)}</span>
+            <span>{formatItemName(item)}</span>
             {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
           </MenuCommand.Item>
         );

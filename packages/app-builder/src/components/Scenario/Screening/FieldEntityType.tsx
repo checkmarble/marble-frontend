@@ -1,12 +1,9 @@
 import { SearchableSchema } from '@app-builder/constants/screening-entity';
+import { useEntityName } from '@app-builder/hooks/useEntityName';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { match } from 'ts-pattern';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { scenarioI18n } from '../scenario-i18n';
 
 export const FieldEntityType = ({
   entityType,
@@ -16,7 +13,7 @@ export const FieldEntityType = ({
   onChange: (entityType: SearchableSchema) => void;
 }) => {
   const editor = useEditorMode();
-  const { t } = useTranslation(scenarioI18n);
+  const { getEntityName } = useEntityName();
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,31 +27,15 @@ export const FieldEntityType = ({
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth className="mt-2">
           <MenuCommand.List>
-            <MenuCommand.Item onSelect={() => onChange('Thing')}>
-              {t('scenarios:edit_sanction.entity_type.thing')}
-            </MenuCommand.Item>
-            <MenuCommand.Item onSelect={() => onChange('Person')}>
-              {t('scenarios:edit_sanction.entity_type.person')}
-            </MenuCommand.Item>
+            <MenuCommand.Item onSelect={() => onChange('Thing')}>{getEntityName('Thing')}</MenuCommand.Item>
+            <MenuCommand.Item onSelect={() => onChange('Person')}>{getEntityName('Person')}</MenuCommand.Item>
             <MenuCommand.Item onSelect={() => onChange('Organization')}>
-              {t('scenarios:edit_sanction.entity_type.organization')}
+              {getEntityName('Organization')}
             </MenuCommand.Item>
-            <MenuCommand.Item onSelect={() => onChange('Vehicle')}>
-              {t('scenarios:edit_sanction.entity_type.vehicle')}
-            </MenuCommand.Item>
+            <MenuCommand.Item onSelect={() => onChange('Vehicle')}>{getEntityName('Vehicle')}</MenuCommand.Item>
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
     </div>
   );
 };
-
-export function getEntityName(entityType?: SearchableSchema) {
-  const { t } = useTranslation(scenarioI18n);
-  return match(entityType)
-    .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
-    .with('Person', () => t('scenarios:edit_sanction.entity_type.person'))
-    .with('Organization', () => t('scenarios:edit_sanction.entity_type.organization'))
-    .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
-    .otherwise(() => entityType ?? 'Thing');
-}
