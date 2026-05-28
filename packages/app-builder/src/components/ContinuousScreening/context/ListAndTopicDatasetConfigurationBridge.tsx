@@ -6,6 +6,8 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningProviders } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type ReactNode, useEffect, useMemo } from 'react';
+import { Trans } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { ContinuousScreeningConfigurationStepper } from './CreationStepper';
 
 /*
@@ -25,19 +27,24 @@ export function ListAndTopicDatasetConfigurationBridge({
 }) {
   const listConfigQuery = useListConfigQuery(useCase);
 
-  if (!listConfigQuery.data) {
-    return (
+  return match(listConfigQuery)
+    .with({ isError: true }, () => (
+      <div className="flex h-50 flex-col items-center justify-center gap-2">
+        <span className="text-s text-text-secondary">
+          <Trans i18nKey="common:generic_fetch_data_error" />
+        </span>
+      </div>
+    ))
+    .with({ isPending: true }, () => (
       <div className="flex items-center justify-center h-50">
         <Spinner className="size-10" />
       </div>
-    );
-  }
-
-  return (
-    <ListAndTopicDatasetConfigurationBridgeInner provider={listConfigQuery.data.provider}>
-      {children}
-    </ListAndTopicDatasetConfigurationBridgeInner>
-  );
+    ))
+    .otherwise(({ data }) => (
+      <ListAndTopicDatasetConfigurationBridgeInner provider={data.provider}>
+        {children}
+      </ListAndTopicDatasetConfigurationBridgeInner>
+    ));
 }
 
 function ListAndTopicDatasetConfigurationBridgeInner({

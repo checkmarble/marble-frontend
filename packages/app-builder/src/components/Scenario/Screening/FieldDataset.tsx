@@ -11,6 +11,7 @@ import { useListConfigQuery } from '@app-builder/queries/screening/lists-config'
 import { useSignalEffect } from '@preact/signals-react';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 
 function getDatasetsKey(datasets: string[]): string {
   return [...datasets].sort().join(',');
@@ -33,18 +34,20 @@ export const FieldDataset = ({ value, onChange, readOnly = false }: FieldDataset
         <Callout variant="outlined">
           <p className="whitespace-pre-wrap">{t('scenarios:sanction.lists.callout')}</p>
         </Callout>
-        {listConfigQuery.data ? (
-          <FieldDatasetInner
-            provider={listConfigQuery.data.provider}
-            value={value}
-            onChange={onChange}
-            readOnly={readOnly}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-50">
-            <Spinner className="size-10" />
-          </div>
-        )}
+        {match(listConfigQuery)
+          .with({ isPending: true }, () => (
+            <div className="flex items-center justify-center h-50">
+              <Spinner className="size-10" />
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="flex flex-col gap-v2-md items-center justify-center h-50">
+              <div className="">{t('common:generic_fetch_data_error')}</div>
+            </div>
+          ))
+          .otherwise(({ data }) => (
+            <FieldDatasetInner provider={data.provider} value={value} onChange={onChange} readOnly={readOnly} />
+          ))}
       </div>
     </div>
   );
