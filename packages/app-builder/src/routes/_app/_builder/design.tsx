@@ -2,7 +2,7 @@ import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
-import { Checkbox, type CheckedState, cn, Radio } from 'ui-design-system';
+import { Checkbox, type CheckedState, cn, Radio, Switch } from 'ui-design-system';
 
 export const Route = createFileRoute('/_app/_builder/design')({
   staticData: {
@@ -34,6 +34,9 @@ function DesignPage() {
             </Section>
             <Section title="Checkbox" description="Figma node 2-472">
               <CheckboxMatrix />
+            </Section>
+            <Section title="Switch" description="Figma node 2-580">
+              <SwitchMatrix />
             </Section>
           </div>
         </Page.Content>
@@ -165,6 +168,43 @@ function CheckboxMatrix() {
         </MatrixRow>
       ))}
       <InteractiveCheckbox />
+    </div>
+  );
+}
+
+function SwitchMatrix() {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap gap-6">
+        <VariantCell label="off">
+          <Switch checked={false} />
+        </VariantCell>
+        <VariantCell label="on">
+          <Switch checked />
+        </VariantCell>
+        <VariantCell label="off disabled">
+          <Switch checked={false} disabled />
+        </VariantCell>
+        <VariantCell label="on disabled">
+          <Switch checked disabled />
+        </VariantCell>
+      </div>
+      <InteractiveSwitch />
+    </div>
+  );
+}
+
+function InteractiveSwitch() {
+  const [on, setOn] = useState(false);
+  return (
+    <div className="border-grey-border mt-2 flex flex-col gap-2 border-t pt-4">
+      <span className="text-s font-medium">Interactive</span>
+      <div className="flex items-center gap-3">
+        <Switch checked={on} onCheckedChange={setOn} id="design-switch" />
+        <label htmlFor="design-switch" className="text-s">
+          Click me — current: {String(on)}
+        </label>
+      </div>
     </div>
   );
 }
