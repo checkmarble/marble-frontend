@@ -8,7 +8,6 @@ export {
   applyAliveDeceasedDefaults,
   buildDatasetKey,
   buildTopicKey,
-  clearSectionSelections,
   getCanonicalSelectedKeys,
   isDatasetKeySelected,
   isGlobalTopicSwitchSelected,

@@ -25,7 +25,6 @@ import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetC
 import {
   buildDatasetKey,
   buildTopicKey,
-  clearSectionSelections,
   isDatasetKeySelected,
   // isGlobalTopicSwitchSelected,
   isTopicKeySelected,
@@ -226,15 +225,9 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                   onCheckedChange={() => {
                     listConfig.update((state) => {
                       const nextValue = !state.datasets[sectionKey];
-                      if (nextValue) {
-                        if (provider === 'opensanctions') {
-                          selectAllInSection(state.datasets, sectionKey, section, true);
-                        } else {
-                          state.datasets[sectionKey] = true;
-                        }
-                      } else {
-                        clearSectionSelections(state.datasets, sectionKey);
-                      }
+                      state.datasets[sectionKey] = nextValue;
+                      if (provider === 'opensanctions')
+                        selectAllInSection(state.datasets, sectionKey, section, nextValue);
                     });
                   }}
                 />
@@ -306,15 +299,8 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
             disabled={mode === 'view'}
             onCheckedChange={(checked) => {
               listConfig.update((state) => {
-                if (checked) {
-                  if (provider === 'opensanctions') {
-                    selectAllInSection(state.datasets, sectionKey, section, true);
-                  } else {
-                    state.datasets[sectionKey] = true;
-                  }
-                } else {
-                  clearSectionSelections(state.datasets, sectionKey);
-                }
+                state.datasets[sectionKey] = checked;
+                if (provider === 'opensanctions') selectAllInSection(state.datasets, sectionKey, section, checked);
               });
             }}
           />
