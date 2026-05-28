@@ -3,9 +3,12 @@ import { createContext, forwardRef, type InputHTMLAttributes, useContext, useId 
 
 import { cn } from '../utils';
 
+type RadioSize = 'regular' | 'small';
+
 type RadioContextValue = {
   name: string;
   value: string;
+  size: RadioSize;
   onChange: (value: string) => void;
 };
 
@@ -21,6 +24,59 @@ function useRadioContext() {
 
 const radioRoot = cva(['flex flex-col gap-2']);
 
+const radioIndicator = cva(
+  ['group/radio relative flex shrink-0 items-center justify-center rounded-full border transition-colors'],
+  {
+    variants: {
+      size: {
+        regular: 'size-6',
+        small: 'size-4',
+      },
+      state: {
+        unselected: [
+          'cursor-pointer border-purple-primary bg-grey-white',
+          'hover:bg-purple-background',
+          'dark:bg-grey-background dark:hover:bg-grey-white',
+        ],
+        selected: [
+          'cursor-pointer border-purple-primary bg-grey-white',
+          'hover:border-purple-hover',
+          'dark:bg-grey-background',
+        ],
+        disabled: [
+          'cursor-not-allowed border-grey-border bg-grey-background border-[0.5px]',
+          'dark:border-purple-disabled dark:bg-grey-background',
+        ],
+        'selected-disabled': [
+          'cursor-not-allowed border-grey-disabled bg-grey-white',
+          'dark:border-purple-disabled dark:bg-grey-background',
+        ],
+      },
+    },
+    compoundVariants: [
+      { size: 'regular', state: 'selected', class: 'border-[3.5px]' },
+      { size: 'regular', state: 'selected-disabled', class: 'border-[3.5px]' },
+      { size: 'small', state: 'selected', class: 'border-[2.5px]' },
+      { size: 'small', state: 'selected-disabled', class: 'border-[2.5px]' },
+    ],
+    defaultVariants: { size: 'regular', state: 'unselected' },
+  },
+);
+
+const radioInnerDot = cva(['rounded-full'], {
+  variants: {
+    size: {
+      regular: 'size-2.5',
+      small: 'size-1.5',
+    },
+    state: {
+      selected: 'bg-purple-primary transition-colors group-hover/radio:bg-purple-hover',
+      'selected-disabled': 'bg-grey-disabled dark:bg-purple-disabled',
+    },
+  },
+  defaultVariants: { size: 'regular', state: 'selected' },
+});
+
 /**
  * Props for Radio.Root component.
  */
@@ -31,38 +87,23 @@ export type RadioRootProps = VariantProps<typeof radioRoot> & {
   onValueChange: (value: string) => void;
   /** Radio items to render */
   children: React.ReactNode;
+  /** Size shared by all items in this group */
+  size?: RadioSize;
   /** Additional CSS classes */
   className?: string;
   /** HTML name attribute for the radio group (auto-generated if not provided) */
   name?: string;
 };
 
-/**
- * Root container for a radio group. Provides context to Radio.Item children.
- *
- * @example
- * ```tsx
- * <Radio.Root value={selected} onValueChange={setSelected}>
- *   <label className="flex items-center gap-2">
- *     <Radio.Item value="option1" />
- *     Option 1
- *   </label>
- *   <label className="flex items-center gap-2">
- *     <Radio.Item value="option2" />
- *     Option 2
- *   </label>
- * </Radio.Root>
- * ```
- */
 export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function RadioRoot(
-  { className, value, onValueChange, children, name, ...props },
+  { className, value, onValueChange, children, name, size = 'regular', ...props },
   ref,
 ) {
   const generatedName = useId();
   const radioName = name ?? generatedName;
 
   return (
-    <RadioContext.Provider value={{ name: radioName, value, onChange: onValueChange }}>
+    <RadioContext.Provider value={{ name: radioName, value, size, onChange: onValueChange }}>
       <div {...props} ref={ref} role="radiogroup" className={cn(radioRoot(), className)}>
         {children}
       </div>
@@ -73,34 +114,37 @@ export const RadioRoot = forwardRef<HTMLDivElement, RadioRootProps>(function Rad
 /**
  * Props for Radio.Item component.
  */
-export type RadioItemProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'name' | 'checked' | 'onChange'> & {
+export type RadioItemProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'type' | 'name' | 'checked' | 'onChange' | 'size'
+> & {
   /** The value of this radio option */
   value: string;
+  /** Disable this individual radio item */
+  disabled?: boolean;
   /** Additional CSS classes */
   className?: string;
 };
 
-/**
- * Individual radio button item. Must be used within Radio.Root.
- * Renders as a circular indicator with native input for accessibility.
- */
 export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function RadioItem(
-  { className, value, ...props },
+  { className, value, disabled = false, ...props },
   ref,
 ) {
-  const { name, value: selectedValue, onChange } = useRadioContext();
+  const { name, size, value: selectedValue, onChange } = useRadioContext();
   const isChecked = selectedValue === value;
 
+  const state = disabled ? (isChecked ? 'selected-disabled' : 'disabled') : isChecked ? 'selected' : 'unselected';
+
   return (
-    <span
-      className={cn(
-        'relative flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors',
-        'border-purple-primary bg-white dark:bg-transparent',
-        isChecked && 'border-[4px]',
-        className,
-      )}
-    >
-      {isChecked && <span className="size-3 rounded-full bg-purple-primary" />}
+    <span className={cn(radioIndicator({ size, state }), className)}>
+      {isChecked ? (
+        <span
+          className={radioInnerDot({
+            size,
+            state: disabled ? 'selected-disabled' : 'selected',
+          })}
+        />
+      ) : null}
       <input
         {...props}
         ref={ref}
@@ -108,8 +152,9 @@ export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function R
         name={name}
         value={value}
         checked={isChecked}
+        disabled={disabled}
         onChange={() => onChange(value)}
-        className="absolute inset-0 cursor-pointer opacity-0"
+        className={cn('absolute inset-0 opacity-0', disabled ? 'cursor-not-allowed' : 'cursor-pointer')}
       />
     </span>
   );
@@ -118,22 +163,18 @@ export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function R
 /**
  * A controlled radio group component using the compound component pattern.
  *
- * **When to use Radio vs RadioGroup:**
- * - Use `Radio` for standard form radio buttons with circular indicators
- * - Use `RadioGroup` for tab-like selection with filled background styling
- *
  * @example
  * ```tsx
  * const [selected, setSelected] = useState('option1');
  *
- * <Radio.Root value={selected} onValueChange={setSelected}>
+ * <Radio.Root value={selected} onValueChange={setSelected} size="regular">
  *   <label className="flex items-center gap-2">
  *     <Radio.Item value="option1" />
  *     Option 1
  *   </label>
  *   <label className="flex items-center gap-2">
- *     <Radio.Item value="option2" />
- *     Option 2
+ *     <Radio.Item value="option2" disabled />
+ *     Option 2 (disabled)
  *   </label>
  * </Radio.Root>
  * ```
