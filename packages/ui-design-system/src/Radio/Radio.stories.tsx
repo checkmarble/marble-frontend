@@ -3,67 +3,37 @@ import { useState } from 'react';
 
 import { Radio } from './Radio';
 
-const Story: Meta<typeof Radio.Root> = {
-  component: Radio.Root,
+type Args = {
+  size: 'regular' | 'small';
+  disabledItems: string[];
+};
+
+const OPTIONS = ['option1', 'option2', 'option3'] as const;
+
+const Story: Meta<Args> = {
   title: 'Radio',
+  component: Radio.Root,
+  args: {
+    size: 'regular',
+    disabledItems: [],
+  },
+  argTypes: {
+    size: { control: 'radio', options: ['regular', 'small'] },
+    disabledItems: { control: 'check', options: [...OPTIONS] },
+  },
 };
 export default Story;
 
-export const Primary: StoryFn<typeof Radio.Root> = () => {
-  const [selected, setSelected] = useState('option1');
-
+export const Default: StoryFn<Args> = (args) => {
+  const [selected, setSelected] = useState<string>('option1');
   return (
-    <Radio.Root value={selected} onValueChange={setSelected}>
-      <label className="text-s flex items-center gap-2">
-        <Radio.Item value="option1" />
-        Option 1
-      </label>
-      <label className="text-s flex items-center gap-2">
-        <Radio.Item value="option2" />
-        Option 2
-      </label>
-      <label className="text-s flex items-center gap-2">
-        <Radio.Item value="option3" />
-        Option 3
-      </label>
-    </Radio.Root>
-  );
-};
-
-export const Small: StoryFn<typeof Radio.Root> = () => {
-  const [selected, setSelected] = useState('option1');
-
-  return (
-    <Radio.Root value={selected} onValueChange={setSelected} size="small">
-      <label className="text-xs flex items-center gap-2">
-        <Radio.Item value="option1" />
-        Option 1
-      </label>
-      <label className="text-xs flex items-center gap-2">
-        <Radio.Item value="option2" />
-        Option 2
-      </label>
-    </Radio.Root>
-  );
-};
-
-export const WithDisabled: StoryFn<typeof Radio.Root> = () => {
-  const [selected, setSelected] = useState('option1');
-
-  return (
-    <Radio.Root value={selected} onValueChange={setSelected}>
-      <label className="text-s flex items-center gap-2">
-        <Radio.Item value="option1" />
-        Selected
-      </label>
-      <label className="text-s text-grey-disabled flex items-center gap-2">
-        <Radio.Item value="option2" disabled />
-        Disabled
-      </label>
-      <label className="text-s text-grey-disabled flex items-center gap-2">
-        <Radio.Item value="option3" disabled />
-        Selected disabled
-      </label>
+    <Radio.Root value={selected} onValueChange={setSelected} size={args.size}>
+      {OPTIONS.map((value) => (
+        <label key={value} className="text-s flex items-center gap-2">
+          <Radio.Item value={value} disabled={args.disabledItems?.includes(value)} />
+          {value}
+        </label>
+      ))}
     </Radio.Root>
   );
 };

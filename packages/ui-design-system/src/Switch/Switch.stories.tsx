@@ -4,16 +4,17 @@ import { type Meta, type StoryFn } from '@storybook/react';
 import { Switch } from './Switch';
 
 const Story: Meta<typeof Switch> = {
-  component: Switch,
   title: 'Switch',
-  args: { disabled: false },
+  component: Switch,
+  args: { disabled: false, checked: false },
   argTypes: {
     disabled: { control: 'boolean' },
+    checked: { control: 'boolean' },
   },
 };
 export default Story;
 
-export const WithoutLabel: StoryFn<typeof Switch> = (args) => <Switch {...args} />;
+export const Default: StoryFn<typeof Switch> = (args) => <Switch {...args} />;
 
 export const WithLabel: StoryFn<typeof Switch> = (args) => (
   <form>
@@ -22,25 +23,4 @@ export const WithLabel: StoryFn<typeof Switch> = (args) => (
       <Switch {...args} id="s1" />
     </div>
   </form>
-);
-
-export const Matrix: StoryFn<typeof Switch> = () => (
-  <div className="flex flex-col gap-3">
-    <div className="flex items-center gap-3">
-      <Switch checked={false} />
-      <span className="text-s">off</span>
-    </div>
-    <div className="flex items-center gap-3">
-      <Switch checked />
-      <span className="text-s">on</span>
-    </div>
-    <div className="flex items-center gap-3">
-      <Switch checked={false} disabled />
-      <span className="text-s">off disabled</span>
-    </div>
-    <div className="flex items-center gap-3">
-      <Switch checked disabled />
-      <span className="text-s">on disabled</span>
-    </div>
-  </div>
 );
