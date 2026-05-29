@@ -1,4 +1,3 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateDraftIterationMutation } from '@app-builder/queries/scenarios/create-draft-iteration';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useNavigate, useRouter } from '@tanstack/react-router';
@@ -26,11 +25,19 @@ export function CreateDraftIteration({
 const NewDraftButton = ({ iterationId, scenarioId }: { iterationId: string; scenarioId: string }) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const createDraftIterationMutation = useCreateDraftIterationMutation(scenarioId, iterationId);
-  const revalidate = useLoaderRevalidator();
+  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleNewDraft = () => {
-    createDraftIterationMutation.mutateAsync().then(() => {
-      revalidate();
+    createDraftIterationMutation.mutateAsync().then(async (newIteration) => {
+      await router.invalidate();
+      navigate({
+        to: '/detection/scenarios/$scenarioId/i/$iterationId/trigger',
+        params: {
+          scenarioId: fromUUIDtoSUUID(scenarioId),
+          iterationId: fromUUIDtoSUUID(newIteration.id),
+        },
+      });
     });
   };
 
