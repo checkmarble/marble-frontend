@@ -5,6 +5,7 @@ export {
 } from './context/ListAndTopicDatasetConfiguration';
 export { DatasetSelectionContent } from './DatasetSelectionContent';
 export {
+  applyAliveDeceasedDefaults,
   buildDatasetKey,
   buildTopicKey,
   clearSectionSelections,

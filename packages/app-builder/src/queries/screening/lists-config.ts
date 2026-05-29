@@ -30,11 +30,13 @@ function groupBySection(
   datasets: { section?: string; name: string; title: string }[],
   name: SectionKeys,
 ): GroupedDataset[] {
-  return Object.entries(R.groupBy(datasets, (d) => d.section ?? d.name)).map(([section, items]) => ({
-    name: buildDatasetKey(name, section),
-    title: section,
-    datasets: items.map(({ name, title }) => ({ name, title })),
-  }));
+  return Object.entries(R.groupBy(datasets, (d) => d.section ?? d.name))
+    .map(([section, items]) => ({
+      name: buildDatasetKey(name, section),
+      title: section,
+      datasets: items.map(({ name, title }) => ({ name, title })).sort((a, b) => a.title.localeCompare(b.title)),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConfigFilters {

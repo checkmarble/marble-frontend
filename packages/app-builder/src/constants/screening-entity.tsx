@@ -243,7 +243,11 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
           value
             .split('\n')
             .map((v, index) =>
-              v ? <HighlightText key={`chunk-${index}`} text={v} highlight={ctx.highlightText} asParagraph /> : <br />,
+              v ? (
+                <HighlightText key={`chunk-${index}`} text={v} highlight={ctx.highlightText} asParagraph />
+              ) : (
+                <br key={`chunk-${index}`} />
+              ),
             )
         ) : (
           <HighlightText text={value} highlight={ctx.highlightText} />

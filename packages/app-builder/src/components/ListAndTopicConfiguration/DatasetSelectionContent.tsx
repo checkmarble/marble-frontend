@@ -3,7 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
@@ -24,6 +24,7 @@ import {
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import {
+  applyAliveDeceasedDefaults,
   buildDatasetKey,
   buildTopicKey,
   clearSectionSelections,
@@ -65,9 +66,18 @@ type DatasetSelectionContentProps = {
 
 export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetSelectionContentProps) {
   const listConfigQuery = useListConfigQuery(useCase);
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const { t } = useTranslation(['common', 'continuousScreening', 'screenings']);
   const [activeSectionKey, setActiveSectionKey] = useState<ScreeningCategory | null>(null);
+
+  useEffect(() => {
+    const data = listConfigQuery.data;
+    if (!data) return;
+    listConfig.update((state) => {
+      applyAliveDeceasedDefaults(state.datasets, data, useCase);
+    });
+  }, [listConfigQuery.data, useCase, listConfig]);
 
   const renderSections = (data: ListConfig) => {
     const sections = Object.entries(data).filter(

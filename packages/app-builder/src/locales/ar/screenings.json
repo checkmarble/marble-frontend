@@ -181,6 +181,7 @@
   "match.ai_suggestion.inconclusive": "غير حاسم",
   "match.ai_suggestion.investigate": "يتطلب تحقيق",
   "match.ai_suggestion.probable_false_positive": "إيجابي كاذب محتمل",
+  "match.associations.more": "و {{count}} أكثر",
   "match.associations.title": "الارتباطات",
   "match.datasets.title": "تظهر في",
   "match.enriched_data_error": "تعذّر تحميل البيانات المُعزَّزة لهذا الكيان.",

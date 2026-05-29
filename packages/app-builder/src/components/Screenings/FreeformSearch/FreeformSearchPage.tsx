@@ -1,5 +1,6 @@
 import { type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { type ListConfigFilters } from '@app-builder/queries/screening/lists-config';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import { type FunctionComponent, useCallback, useState } from 'react';
 
@@ -19,9 +20,10 @@ export interface FreeformSearchState {
 
 interface FreeformSearchPageProps {
   onSearchComplete?: (state: FreeformSearchState) => void;
+  listConfig: ListConfigFilters;
 }
 
-export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({ onSearchComplete }) => {
+export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({ onSearchComplete, listConfig }) => {
   const [results, setResults] = useState<ScreeningMatchPayload[] | null>(null);
   const [currentLimit, setCurrentLimit] = useState<number | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
@@ -50,7 +52,7 @@ export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({
     <div className="flex h-full flex-col gap-6 lg:flex-row">
       {/* Left sidebar - filters */}
       <div className="w-full shrink-0 overflow-y-auto lg:w-1/4">
-        <FreeformSearchForm onSearchComplete={handleSearchComplete} />
+        <FreeformSearchForm onSearchComplete={handleSearchComplete} listConfig={listConfig} />
       </div>
 
       {/* Right content - results */}

@@ -1,4 +1,5 @@
-import type { ScreeningCategory } from '@app-builder/models/screening';
+import type { AvailableFeatures, ScreeningCategory } from '@app-builder/models/screening';
+import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
 import { type GlobalTopicConfig } from './dataset-utils';
 
 export function buildDatasetKey(section: ScreeningCategory, datasetName: string): string {
@@ -113,4 +114,35 @@ export function setGlobalTopicSwitch(
 /** Strips falsy entries from the datasets map before persistence. */
 export function sanitizeTruthyDatasets(datasets: Record<string, boolean>): Record<string, boolean> {
   return Object.fromEntries(Object.entries(datasets).filter(([, selected]) => selected));
+}
+
+const ALIVE_ITEM_NAME = 'filter.alive';
+const DECEASED_ITEM_NAME = 'filter.deceased';
+
+/**
+ * Default `filter.alive` to true whenever a global topic group exposes it, and additionally
+ * default `filter.deceased` to true for manual search. Skipped once the group has been
+ * engaged (the alive key is in the map) so the user's prior choice — including a
+ * deliberate deceased=false that drops out of the truthy-only wire format — is preserved.
+ */
+export function applyAliveDeceasedDefaults(
+  datasets: Record<string, boolean>,
+  listConfig: ListConfigFilters,
+  useCase: AvailableFeatures,
+): void {
+  const globalTopics = listConfig.global?.topics;
+  if (!globalTopics) return;
+
+  for (const [groupKey, items] of Object.entries(globalTopics)) {
+    if (!items.some((i) => i.name === ALIVE_ITEM_NAME)) continue;
+
+    const aliveKey = buildTopicKey('global', groupKey, ALIVE_ITEM_NAME);
+    if (aliveKey in datasets) continue;
+
+    datasets[aliveKey] = true;
+
+    if (useCase === 'manual_search' && items.some((i) => i.name === DECEASED_ITEM_NAME)) {
+      datasets[buildTopicKey('global', groupKey, DECEASED_ITEM_NAME)] = true;
+    }
+  }
 }
