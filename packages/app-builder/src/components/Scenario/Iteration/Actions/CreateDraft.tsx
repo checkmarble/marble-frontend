@@ -1,6 +1,7 @@
 import { useCreateDraftIterationMutation } from '@app-builder/queries/scenarios/create-draft-iteration';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useNavigate, useRouter } from '@tanstack/react-router';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -28,8 +29,9 @@ const NewDraftButton = ({ iterationId, scenarioId }: { iterationId: string; scen
   const router = useRouter();
   const navigate = useNavigate();
 
-  const handleNewDraft = () => {
-    createDraftIterationMutation.mutateAsync().then(async (newIteration) => {
+  const handleNewDraft = async () => {
+    try {
+      const newIteration = await createDraftIterationMutation.mutateAsync();
       await router.invalidate();
       navigate({
         to: '/detection/scenarios/$scenarioId/i/$iterationId/trigger',
@@ -38,7 +40,10 @@ const NewDraftButton = ({ iterationId, scenarioId }: { iterationId: string; scen
           iterationId: fromUUIDtoSUUID(newIteration.id),
         },
       });
-    });
+    } catch (error) {
+      console.error('Failed to create draft iteration:', error);
+      toast.error(t('common:errors.unknown'));
+    }
   };
 
   return (
@@ -63,8 +68,9 @@ const ExistingDraftModal = ({
   const router = useRouter();
   const navigate = useNavigate();
 
-  const handleOverrideDraft = () => {
-    createDraftIterationMutation.mutateAsync().then(async (newIteration) => {
+  const handleOverrideDraft = async () => {
+    try {
+      const newIteration = await createDraftIterationMutation.mutateAsync();
       await router.invalidate();
       navigate({
         to: '/detection/scenarios/$scenarioId/i/$iterationId/trigger',
@@ -73,7 +79,10 @@ const ExistingDraftModal = ({
           iterationId: fromUUIDtoSUUID(newIteration.id),
         },
       });
-    });
+    } catch (error) {
+      console.error('Failed to override draft iteration:', error);
+      toast.error(t('common:errors.unknown'));
+    }
   };
 
   return (
