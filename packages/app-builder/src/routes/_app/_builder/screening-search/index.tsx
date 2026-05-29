@@ -12,6 +12,7 @@ import {
 // import { SaveSearch } from '@app-builder/components/Screenings/FreeformSearch/SaveSearch';
 // import { ViewSavedResults } from '@app-builder/components/Screenings/FreeformSearch/ViewSavedResults';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { normalizeListConfig } from '@app-builder/queries/screening/lists-config';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import * as Sentry from '@sentry/react';
 import { createFileRoute } from '@tanstack/react-router';
@@ -24,8 +25,9 @@ import { Icon } from 'ui-icons';
 
 const screeningSearchLoader = createServerFn()
   .middleware([authMiddleware])
-  .handler(async function screeningSearchLoader() {
-    return null;
+  .handler(async function screeningSearchLoader({ context }) {
+    const rawListConfig = await context.authInfo.screening.getAvailableFilters({ feature: 'manual_search' });
+    return { listConfig: normalizeListConfig(rawListConfig) };
   });
 
 export const Route = createFileRoute('/_app/_builder/screening-search/')({
@@ -43,6 +45,7 @@ export const Route = createFileRoute('/_app/_builder/screening-search/')({
 function ScreeningSearchIndexPage() {
   const { t } = useTranslation(['screenings']);
   const { currentUser } = useOrganizationDetails();
+  const { listConfig } = Route.useLoaderData();
   const [searchState, setSearchState] = useState<FreeformSearchState | null>(null);
 
   const userName = [currentUser.actorIdentity.firstName, currentUser.actorIdentity.lastName].filter(Boolean).join(' ');
@@ -81,7 +84,7 @@ function ScreeningSearchIndexPage() {
               {/* <ViewSavedResults /> */}
             </div>
           </div>
-          <FreeformSearchPage onSearchComplete={handleSearchComplete} />
+          <FreeformSearchPage onSearchComplete={handleSearchComplete} listConfig={listConfig} />
         </Page.ContentV2>
       </Page.Container>
     </Page.Main>

@@ -23,7 +23,15 @@ export const useFreeformSearchMutation = () => {
   return useMutation({
     mutationKey: ['screening', 'freeform-search'],
     mutationFn: async (input: FreeformSearchInput): Promise<FreeformSearchResponse> => {
-      return freeformSearch({ data: input }) as Promise<FreeformSearchResponse>;
+      // TODO: remove this filter when reindexation is done
+      const datasets =
+        input.entityType !== 'Person'
+          ? input.datasets?.filter(
+              (dataset) =>
+                dataset !== 'global:topic:liveness:filter.alive' && dataset !== 'global:topic:liveness:filter.deceased',
+            )
+          : input.datasets;
+      return freeformSearch({ data: { ...input, datasets } }) as Promise<FreeformSearchResponse>;
     },
   });
 };

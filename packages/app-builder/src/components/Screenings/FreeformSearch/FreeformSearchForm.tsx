@@ -1,4 +1,5 @@
 import {
+  applyAliveDeceasedDefaults,
   getCanonicalSelectedKeys,
   ListAndTopicDatasetConfiguration,
   makeDatasetsMap,
@@ -8,6 +9,7 @@ import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
+import { type ListConfigFilters } from '@app-builder/queries/screening/lists-config';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useForm, useStore } from '@tanstack/react-form';
@@ -25,6 +27,7 @@ import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
 
 interface FreeformSearchFormProps {
   onSearchComplete: (results: ScreeningMatchPayload[], searchInputs: FreeformSearchInput) => void;
+  listConfig: ListConfigFilters;
 }
 
 function useManualSearchForm({ onSubmit }: { onSubmit: (value: FreeformSearchInput) => void | Promise<void> }) {
@@ -50,10 +53,14 @@ export function useFormManuallSearch() {
   return form;
 }
 
-export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete }) => {
+export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete, listConfig }) => {
   const { t } = useTranslation(screeningsI18n);
   const searchMutation = useFreeformSearchMutation();
-  const [selectedDatasets, setSelectedDatasets] = useState<string[]>([]);
+  const [selectedDatasets, setSelectedDatasets] = useState<string[]>(() => {
+    const initial: Record<string, boolean> = {};
+    applyAliveDeceasedDefaults(initial, listConfig, 'manual_search');
+    return getCanonicalSelectedKeys(initial);
+  });
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({

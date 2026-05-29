@@ -181,6 +181,7 @@
   "match.ai_suggestion.inconclusive": "Non concluant",
   "match.ai_suggestion.investigate": "À investiguer",
   "match.ai_suggestion.probable_false_positive": "Faux-positif probable",
+  "match.associations.more": "et {{count}} autres",
   "match.associations.title": "Associations",
   "match.datasets.title": "Sources",
   "match.enriched_data_error": "Impossible de charger les données enrichies pour cette entité.",

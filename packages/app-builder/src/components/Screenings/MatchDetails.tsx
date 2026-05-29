@@ -91,9 +91,7 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
         <MemberShip membershipMember={entity.properties['membershipMember']} />
       ) : null}
 
-      {entity.schema === 'Person' && entity.properties?.['associations']?.length ? (
-        <Associations associations={entity.properties['associations']} />
-      ) : null}
+      <Associations associations={entity.properties['associations']} />
 
       {entity.schema === 'Person' && entity.properties?.['familyPerson']?.length ? (
         <FamilyDetail relation="familyPerson" familyMembers={entity.properties['familyPerson']} />

@@ -3,7 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
 import { match } from 'ts-pattern';
@@ -24,19 +24,20 @@ import {
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import {
+  applyAliveDeceasedDefaults,
   buildDatasetKey,
   buildTopicKey,
   clearSectionSelections,
   isDatasetKeySelected,
-  isGlobalTopicSwitchSelected,
+  // isGlobalTopicSwitchSelected,
   isTopicKeySelected,
   setDatasetKey,
-  setGlobalTopicSwitch,
+  // setGlobalTopicSwitch,
   setTopicKey,
 } from './dataset-selection-provider-utils';
 import {
-  type GlobalTopicConfig,
-  getAvailableGlobalTopicConfigs,
+  // type GlobalTopicConfig,
+  // getAvailableGlobalTopicConfigs,
   getDatasetNames,
   getSpecialTopicLabel,
   getSpecialTopicValue,
@@ -65,9 +66,18 @@ type DatasetSelectionContentProps = {
 
 export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetSelectionContentProps) {
   const listConfigQuery = useListConfigQuery(useCase);
+  const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const { t } = useTranslation(['common', 'continuousScreening', 'screenings']);
   const [activeSectionKey, setActiveSectionKey] = useState<ScreeningCategory | null>(null);
+
+  useEffect(() => {
+    const data = listConfigQuery.data;
+    if (!data) return;
+    listConfig.update((state) => {
+      applyAliveDeceasedDefaults(state.datasets, data, useCase);
+    });
+  }, [listConfigQuery.data, useCase, listConfig]);
 
   const renderSections = (data: ListConfig) => {
     const sections = Object.entries(data).filter(
@@ -76,16 +86,18 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
 
     return match(variant)
       .with('default', () => {
-        const availableGlobalTopicConfigs = getAvailableGlobalTopicConfigs(data);
+        // const availableGlobalTopicConfigs = getAvailableGlobalTopicConfigs(data);
         return (
           <div className="flex flex-col">
-            {availableGlobalTopicConfigs.length > 0 && (
+            {/*
+            TODO: uncomment when indexation is done
+            availableGlobalTopicConfigs.length > 0 && (
               <div className="flex flex-col gap-v2-sm px-v2-md py-v2-sm">
                 {availableGlobalTopicConfigs.map((config) => (
                   <GlobalTopicSwitch key={config.groupKey} config={config} />
                 ))}
               </div>
-            )}
+            )*/}
             {sections.map(([key, section]) =>
               section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
             )}
@@ -1013,30 +1025,30 @@ const FilterGroupMenu = ({
   return <MenuCommand.Menu persistOnSelect>{menuTriggerAndContent}</MenuCommand.Menu>;
 };
 
-const GlobalTopicSwitch = ({ config }: { config: GlobalTopicConfig }) => {
-  const listSharp = ListAndTopicDatasetConfiguration.useSharp();
-  const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
-  const { t } = useTranslation(['screenings']);
-  const switchId = `global-topic-${config.groupKey}`;
-  const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
-    isGlobalTopicSwitchSelected(state.datasets, config),
-  );
+// const GlobalTopicSwitch = ({ config }: { config: GlobalTopicConfig }) => {
+//   const listSharp = ListAndTopicDatasetConfiguration.useSharp();
+//   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+//   const { t } = useTranslation(['screenings']);
+//   const switchId = `global-topic-${config.groupKey}`;
+//   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
+//     isGlobalTopicSwitchSelected(state.datasets, config),
+//   );
 
-  return (
-    <div className="flex items-center gap-v2-sm">
-      <Switch
-        id={switchId}
-        checked={isSelected}
-        disabled={mode === 'view'}
-        onCheckedChange={(checked) => {
-          listSharp.update((state) => {
-            setGlobalTopicSwitch(state.datasets, config, checked);
-          });
-        }}
-      />
-      <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
-        {t(config.label)}
-      </label>
-    </div>
-  );
-};
+//   return (
+//     <div className="flex items-center gap-v2-sm">
+//       <Switch
+//         id={switchId}
+//         checked={isSelected}
+//         disabled={mode === 'view'}
+//         onCheckedChange={(checked) => {
+//           listSharp.update((state) => {
+//             setGlobalTopicSwitch(state.datasets, config, checked);
+//           });
+//         }}
+//       />
+//       <label htmlFor={switchId} className="text-s text-grey-primary cursor-pointer">
+//         {t(config.label)}
+//       </label>
+//     </div>
+//   );
+// };
