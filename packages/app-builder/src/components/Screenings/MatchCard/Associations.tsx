@@ -29,7 +29,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
           const isFirstElement = associationIndex === 0 && idx === 0;
 
           return (
-            <div key={`person-${id}-${idx}`} className="contents">
+            <div key={`person-${associationIndex}-${id}-${idx}`} className="contents">
               <div className="font-semibold">
                 {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.associations.title')}</div>}
               </div>
