@@ -68,26 +68,37 @@ export const CtaV2ClassName = cva(
       },
     },
     compoundVariants: [
-      // Size + Mode
+      // Size + Mode — heights match Figma (medium = 32px, small = 24px)
       {
         size: 'small',
         mode: 'normal',
-        class: 'px-v2-sm h-6',
+        class: 'h-6 px-v2-sm',
       },
       {
         size: 'small',
         mode: 'icon',
         class: 'justify-center size-6',
+        class: 'size-6 p-v2-xs',
       },
       {
         size: 'default',
         mode: 'normal',
         class: 'p-v2-sm h-8',
+        class: 'h-8 px-v2-sm',
       },
       {
         size: 'default',
         mode: 'icon',
-        class: 'p-v2-sm size-8',
+        class: 'size-8 p-v2-sm',
+      },
+      // Subtle elevation on filled + stroked (Figma "Shadow/light"); not on link
+      {
+        appearance: 'filled',
+        class: 'shadow-[0px_4px_10px_0px_rgba(0,0,0,0.05)]',
+      },
+      {
+        appearance: 'stroked',
+        class: 'shadow-[0px_4px_10px_0px_rgba(0,0,0,0.05)]',
       },
       // Primary + Filled
       {

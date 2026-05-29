@@ -4,60 +4,44 @@ import { Icon } from 'ui-icons';
 import { Button, type ButtonV2Props } from './Button';
 
 const Story: Meta<ButtonV2Props> = {
-  component: Button,
   title: 'Button',
+  component: Button,
   args: {
     disabled: false,
+    variant: 'primary',
+    appearance: 'filled',
+    size: 'small',
+    mode: 'normal',
     children: 'Button label',
   },
   argTypes: {
     disabled: { control: 'boolean' },
     variant: {
-      control: { type: 'select' },
+      control: 'select',
       options: ['primary', 'secondary', 'destructive'],
-      name: 'Variant',
     },
     appearance: {
-      control: { type: 'select' },
+      control: 'select',
       options: ['filled', 'stroked', 'link'],
-      name: 'Appearance',
     },
     size: {
-      control: { type: 'select' },
+      control: 'radio',
       options: ['small', 'default'],
-      name: 'Size',
     },
-    children: {
-      type: 'string',
+    mode: {
+      control: 'radio',
+      options: ['normal', 'icon'],
     },
+    children: { control: 'text' },
   },
 };
 export default Story;
 
-const Template: StoryFn<ButtonV2Props> = (args) => {
-  return <Button {...args} />;
-};
+export const Default: StoryFn<ButtonV2Props> = (args) => <Button {...args} />;
 
-const TemplateWithIcon: StoryFn<ButtonV2Props> = ({ children, ...args }) => {
-  return (
-    <Button {...args}>
-      <Icon icon="plus" className="size-5" />
-      {children}
-    </Button>
-  );
-};
-
-export const Primary = Template.bind({});
-Primary.args = { variant: 'primary' };
-
-export const PrimaryWithIcon = TemplateWithIcon.bind({});
-PrimaryWithIcon.args = { variant: 'primary' };
-
-export const Secondary = Template.bind({});
-Secondary.args = { variant: 'secondary' };
-
-export const SecondaryWithIcon = TemplateWithIcon.bind({});
-SecondaryWithIcon.args = { variant: 'secondary' };
-
-export const Destructive = Template.bind({});
-Destructive.args = { variant: 'destructive' };
+export const WithIcon: StoryFn<ButtonV2Props> = ({ children, ...args }) => (
+  <Button {...args}>
+    <Icon icon="plus" className="size-4" />
+    {children}
+  </Button>
+);

@@ -2,7 +2,8 @@ import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
-import { Checkbox, type CheckedState, cn, Radio, Switch } from 'ui-design-system';
+import { Button, Checkbox, type CheckedState, cn, Radio, Switch } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export const Route = createFileRoute('/_app/_builder/design')({
   staticData: {
@@ -37,6 +38,9 @@ function DesignPage() {
             </Section>
             <Section title="Switch" description="Figma node 2-580">
               <SwitchMatrix />
+            </Section>
+            <Section title="Button" description="Figma node 881-9199">
+              <ButtonMatrix />
             </Section>
           </div>
         </Page.Content>
@@ -204,6 +208,78 @@ function InteractiveSwitch() {
         <label htmlFor="design-switch" className="text-s">
           Click me — current: {String(on)}
         </label>
+      </div>
+    </div>
+  );
+}
+
+const BUTTON_APPEARANCES = ['filled', 'stroked', 'link'] as const;
+const BUTTON_VARIANTS = ['primary', 'secondary', 'destructive'] as const;
+
+function ButtonMatrix() {
+  return (
+    <div className="flex flex-col gap-8">
+      {/* variant × appearance, medium (size="default") */}
+      {BUTTON_APPEARANCES.map((appearance) => (
+        <MatrixRow key={appearance} label={appearance}>
+          {BUTTON_VARIANTS.map((variant) => (
+            <VariantCell key={variant} label={variant}>
+              <Button variant={variant} appearance={appearance} size="default">
+                Button
+              </Button>
+            </VariantCell>
+          ))}
+          <VariantCell label="disabled">
+            <Button variant="primary" appearance={appearance} size="default" disabled>
+              Button
+            </Button>
+          </VariantCell>
+        </MatrixRow>
+      ))}
+
+      {/* sizes — medium (default) vs small */}
+      <div className="border-grey-border flex flex-col gap-3 border-t pt-4">
+        <span className="text-s font-medium">Sizes</span>
+        <div className="flex flex-wrap items-center gap-4">
+          <VariantCell label="medium (default)">
+            <Button variant="primary" size="default">
+              Button
+            </Button>
+          </VariantCell>
+          <VariantCell label="small">
+            <Button variant="primary" size="small">
+              Button
+            </Button>
+          </VariantCell>
+        </div>
+      </div>
+
+      {/* icon mode + leading-icon */}
+      <div className="border-grey-border flex flex-col gap-3 border-t pt-4">
+        <span className="text-s font-medium">Icon</span>
+        <div className="flex flex-wrap items-center gap-4">
+          <VariantCell label="icon medium">
+            <Button variant="primary" mode="icon" size="default" aria-label="add">
+              <Icon icon="plus" className="size-4" />
+            </Button>
+          </VariantCell>
+          <VariantCell label="icon small">
+            <Button variant="primary" mode="icon" size="small" aria-label="add">
+              <Icon icon="plus" className="size-4" />
+            </Button>
+          </VariantCell>
+          <VariantCell label="leading icon">
+            <Button variant="primary" size="default">
+              <Icon icon="plus" className="size-4" />
+              Button
+            </Button>
+          </VariantCell>
+          <VariantCell label="stroked icon">
+            <Button variant="secondary" appearance="stroked" mode="icon" size="default" aria-label="edit">
+              <Icon icon="edit-square" className="size-4" />
+            </Button>
+          </VariantCell>
+        </div>
       </div>
     </div>
   );
