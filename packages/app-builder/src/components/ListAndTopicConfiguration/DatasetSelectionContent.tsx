@@ -23,6 +23,7 @@ import {
 import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import {
+  applyAliveDeceasedDefaults,
   buildDatasetKey,
   buildTopicKey,
   isDatasetKeySelected,
@@ -74,7 +75,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
     const data = listConfigQuery.data;
     if (!data) return;
     listConfig.update((state) => {
-      // applyAliveDeceasedDefaults(state.datasets, data, useCase);
+      applyAliveDeceasedDefaults(state.datasets, listConfig.value.datasets, useCase);
     });
   }, [listConfigQuery.data, useCase, listConfig]);
 
