@@ -6,16 +6,18 @@ import {
   syncSharpDatasets,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
+import { Spinner } from '@app-builder/components/Spinner';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
-import { type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { type ScreeningMatchPayload, ScreeningProviders } from '@app-builder/models/screening';
 import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
-import { type ListConfigFilters } from '@app-builder/queries/screening/lists-config';
+import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useForm, useStore } from '@tanstack/react-form';
 import { createContext, type FunctionComponent, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
@@ -53,7 +55,31 @@ export function useFormManuallSearch() {
   return form;
 }
 
-export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete, listConfig }) => {
+export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({ onSearchComplete }) => {
+  const listConfigQuery = useListConfigQuery('manual_search');
+  const { t } = useTranslation('common');
+
+  return match(listConfigQuery)
+    .with({ isPending: true }, () => (
+      <div className="flex items-center justify-center h-50">
+        <Spinner className="size-10" />
+      </div>
+    ))
+    .with({ isError: true }, () => (
+      <div className="flex flex-col gap-v2-md items-center justify-center h-50">
+        <div className="">{t('common:generic_fetch_data_error')}</div>
+      </div>
+    ))
+    .otherwise(({ data }) => (
+      <FreeformSearchFormInner provider={data.provider} listConfig={data.filters} onSearchComplete={onSearchComplete} />
+    ));
+};
+
+const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders } & FreeformSearchFormProps> = ({
+  provider,
+  onSearchComplete,
+  listConfig,
+}) => {
   const { t } = useTranslation(screeningsI18n);
   const searchMutation = useFreeformSearchMutation();
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>(() => {
@@ -67,6 +93,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
     datasets: makeDatasetsMap(selectedDatasets),
     mode: 'edit',
     variant: 'popover',
+    provider,
   });
 
   useEffect(() => {

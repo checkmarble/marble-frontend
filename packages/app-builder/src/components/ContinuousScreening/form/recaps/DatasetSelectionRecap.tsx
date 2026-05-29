@@ -12,7 +12,7 @@ export const DatasetSelectionRecap = () => {
   const listConfigQuery = useListConfigQuery('continuous_monitoring');
   const datasets = ContinuousScreeningConfigurationStepper.select((state) => state.data.datasets);
 
-  const enabledSections = Object.entries(listConfigQuery.data ?? {}).filter(
+  const enabledSections = Object.entries(listConfigQuery.data?.filters ?? {}).filter(
     ([key, section]) => !!datasets[key] && section != null,
   ) as [ScreeningCategory, SectionData][];
 

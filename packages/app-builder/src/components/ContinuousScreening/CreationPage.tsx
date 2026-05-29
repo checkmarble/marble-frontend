@@ -43,7 +43,7 @@ export const CreationPage = ({ name, description }: { name: string; description:
 
   return (
     <ContinuousScreeningConfigurationStepper.Provider value={creationStepper}>
-      <ListAndTopicDatasetConfigurationBridge>
+      <ListAndTopicDatasetConfigurationBridge useCase="continuous_monitoring">
         <Page.Main>
           <Page.Header className="justify-between">
             <BreadCrumbs />

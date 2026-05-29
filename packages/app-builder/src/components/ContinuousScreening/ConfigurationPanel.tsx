@@ -54,7 +54,7 @@ export const ConfigurationPanel = ({
   return (
     <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col isolate">
       <ContinuousScreeningConfigurationStepper.Provider value={configurationStepper}>
-        <ListAndTopicDatasetConfigurationBridge>
+        <ListAndTopicDatasetConfigurationBridge useCase="continuous_monitoring">
           <ConfigurationPanelHeader />
           <div className="p-v2-lg grow">
             {match(configurationStepper.value.__internals.currentStep)

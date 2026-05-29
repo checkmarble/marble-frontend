@@ -697,6 +697,8 @@ export type ScreeningAvailableFiltersAdapted = ScreeningAvailableFilters & {
   conditional_filters?: { key: string; name: string; topics: { name: string; key?: string; title: string }[] }[];
 };
 
+export type ScreeningProviders = ScreeningAvailableFilters['provider'];
+
 export interface SavedScreeningSearchInputs {
   entityType: SearchableSchema;
   fields: Record<string, string>;

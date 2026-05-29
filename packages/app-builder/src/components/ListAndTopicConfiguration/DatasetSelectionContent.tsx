@@ -1,8 +1,7 @@
-import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
+import { DatasetTag, useDatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type AvailableFeatures, type ScreeningCategory } from '@app-builder/models/screening';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import { UseQueryResult } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { capitalize } from 'remeda';
@@ -27,13 +26,14 @@ import {
   applyAliveDeceasedDefaults,
   buildDatasetKey,
   buildTopicKey,
-  clearSectionSelections,
   isDatasetKeySelected,
   // isGlobalTopicSwitchSelected,
   isTopicKeySelected,
+  selectAllInSection,
   setDatasetKey,
   // setGlobalTopicSwitch,
   setTopicKey,
+  syncSectionEnabledFromLeaves,
 } from './dataset-selection-provider-utils';
 import {
   // type GlobalTopicConfig,
@@ -47,7 +47,7 @@ import {
   useDatasetTitle,
 } from './dataset-utils';
 
-type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>;
+type ListConfig = NonNullable<Awaited<ReturnType<typeof useListConfigQuery>>['data']>['filters'];
 type SectionData = NonNullable<ListConfig[keyof ListConfig]>;
 
 function groupCheckState(keys: string[], datasetsMap: Record<string, boolean>): CheckedState {
@@ -75,7 +75,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
     const data = listConfigQuery.data;
     if (!data) return;
     listConfig.update((state) => {
-      applyAliveDeceasedDefaults(state.datasets, data, useCase);
+      applyAliveDeceasedDefaults(state.datasets, listConfig.value.datasets, useCase);
     });
   }, [listConfigQuery.data, useCase, listConfig]);
 
@@ -177,17 +177,17 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
               </Button>
             </div>
           ))
-          .with({ isSuccess: true }, ({ data }) => (data ? renderSections(data) : null))
+          .with({ isSuccess: true }, ({ data }) => (data ? renderSections(data.filters) : null))
           .exhaustive()}
       </ScrollAreaV2>
     </>
   );
 }
 
-const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: UseQueryResult<ListConfig, Error> }) => {
+const SelectedListsCount = ({ listConfigQuery }: { listConfigQuery: ReturnType<typeof useListConfigQuery> }) => {
   const { t } = useTranslation(['continuousScreening']);
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
-  const sectionCount = Object.keys(listConfigQuery.data ?? {}).filter((k) => !!datasets[k]).length;
+  const sectionCount = Object.keys(listConfigQuery.data?.filters ?? {}).filter((k) => !!datasets[k]).length;
   return <span>{t('continuousScreening:creation.datasetSelection.list.count', { count: sectionCount })}</span>;
 };
 
@@ -202,6 +202,8 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
+
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
 
   const datasetNames = getDatasetNames(section);
@@ -225,11 +227,9 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                   onCheckedChange={() => {
                     listConfig.update((state) => {
                       const nextValue = !state.datasets[sectionKey];
-                      if (nextValue) {
-                        state.datasets[sectionKey] = true;
-                      } else {
-                        clearSectionSelections(state.datasets, sectionKey);
-                      }
+                      state.datasets[sectionKey] = nextValue;
+                      if (provider === 'opensanctions')
+                        selectAllInSection(state.datasets, sectionKey, section, nextValue);
                     });
                   }}
                 />
@@ -286,16 +286,10 @@ type SectionPanelProps = {
 const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
-
-  const categoryLabel = match(sectionKey)
-    .with('peps', () => t('scenarios:sanction.lists.peps'))
-    .with('third-parties', () => t('scenarios:sanction.lists.third_parties'))
-    .with('sanctions', () => t('scenarios:sanction.lists.sanctions'))
-    .with('adverse-media', () => t('scenarios:sanction.lists.adverse_media'))
-    .with('global', () => t('scenarios:sanction.lists.global'))
-    .otherwise(() => t('scenarios:sanction.lists.other'));
+  const { getLaTagLabel } = useDatasetTag();
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
@@ -307,11 +301,8 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
             disabled={mode === 'view'}
             onCheckedChange={(checked) => {
               listConfig.update((state) => {
-                if (checked) {
-                  state.datasets[sectionKey] = true;
-                } else {
-                  clearSectionSelections(state.datasets, sectionKey);
-                }
+                state.datasets[sectionKey] = checked;
+                if (provider === 'opensanctions') selectAllInSection(state.datasets, sectionKey, section, checked);
               });
             }}
           />
@@ -319,7 +310,9 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
             htmlFor={`section-switch-${sectionKey}`}
             className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}
           >
-            {t('continuousScreening:creation.datasetSelection.section.activate', { category: categoryLabel })}
+            {t('continuousScreening:creation.datasetSelection.section.activate', {
+              category: getLaTagLabel(sectionKey),
+            })}
           </label>
         </div>
         {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
@@ -341,6 +334,7 @@ type SectionContentProps = { sectionKey: ScreeningCategory; section: SectionData
 const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   const { datasets, topics, conditionalTopics } = section;
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const [searchTerm, setSearchTerm] = useState('');
   const { formatDatasetTitle, t } = useDatasetTitle();
 
@@ -365,6 +359,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
             }
           }
         }
+        if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
       });
     };
   }
@@ -412,6 +407,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
             title={group.title}
             items={group.datasets}
             sectionKey={sectionKey}
+            section={section}
             forceOpen={hasSearch}
           />
         ))
@@ -421,6 +417,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
           <FilterGroupRow
             key={key}
             sectionKey={sectionKey}
+            section={section}
             groupKey={key}
             items={items}
             onAfterChange={makeResetHandler(key)}
@@ -431,6 +428,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
           <ConditionalFilterGroupRow
             key={name}
             sectionKey={sectionKey}
+            section={section}
             groupKey={name}
             allItems={items}
             dependsOnGroup={dependsOn}
@@ -445,16 +443,19 @@ const ItemGroup = ({
   title,
   items,
   sectionKey,
+  section,
   forceOpen = false,
 }: {
   title: string;
   items: { name: string; title?: string }[];
   sectionKey: ScreeningCategory;
+  section: SectionData;
   forceOpen?: boolean;
 }) => {
   const { formatDatasetTitle, t } = useDatasetTitle();
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const names = items.map((i) => i.name);
   const keys = names.map((n) => buildDatasetKey(sectionKey, n));
   const checkState = ListAndTopicDatasetConfiguration.select(
@@ -463,6 +464,7 @@ const ItemGroup = ({
   const selectedCount = ListAndTopicDatasetConfiguration.select(
     (state) => keys.filter((k) => state.datasets[k]).length,
   );
+
   const handleSelectAll = () => {
     const datasetsMap = listConfig.value.datasets;
     const selected = keys.filter((k) => datasetsMap[k]).length;
@@ -471,9 +473,7 @@ const ItemGroup = ({
       for (const name of names) {
         setDatasetKey(state.datasets, sectionKey, name, nextValue);
       }
-      if (nextValue) {
-        state.datasets[sectionKey] = true;
-      }
+      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
   };
 
@@ -512,7 +512,13 @@ const ItemGroup = ({
         <div className="flex flex-col gap-v2-sm">
           <div className="flex flex-col overflow-hidden border border-grey-border rounded-v2-md ">
             {items.map((item) => (
-              <ItemRow key={item.name} name={item.name} label={item.title ?? item.name} sectionKey={sectionKey} />
+              <ItemRow
+                key={item.name}
+                name={item.name}
+                label={item.title ?? item.name}
+                sectionKey={sectionKey}
+                section={section}
+              />
             ))}
           </div>
         </div>
@@ -521,9 +527,20 @@ const ItemGroup = ({
   );
 };
 
-const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sectionKey: ScreeningCategory }) => {
+const ItemRow = ({
+  name,
+  label,
+  sectionKey,
+  section,
+}: {
+  name: string;
+  label: string;
+  sectionKey: ScreeningCategory;
+  section: SectionData;
+}) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
     isDatasetKeySelected(state.datasets, sectionKey, name),
   );
@@ -533,9 +550,7 @@ const ItemRow = ({ name, label, sectionKey }: { name: string; label: string; sec
     listConfig.update((state) => {
       const nextValue = !isDatasetKeySelected(state.datasets, sectionKey, name);
       setDatasetKey(state.datasets, sectionKey, name, nextValue);
-      if (nextValue) {
-        state.datasets[sectionKey] = true;
-      }
+      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
   };
 
@@ -598,12 +613,14 @@ type ConditionalTopicItem = NonNullable<SectionData['conditionalTopics']>[keyof 
 
 const ConditionalFilterGroupRow = ({
   sectionKey,
+  section,
   groupKey,
   allItems,
   dependsOnGroup,
   dependsOnItems,
 }: {
   sectionKey: ScreeningCategory;
+  section: SectionData;
   groupKey: string;
   allItems: ConditionalTopicItem[];
   dependsOnGroup: string;
@@ -623,16 +640,18 @@ const ConditionalFilterGroupRow = ({
 
   if (filteredItems.length === 0) return null;
 
-  return <FilterGroupRow sectionKey={sectionKey} groupKey={groupKey} items={filteredItems} />;
+  return <FilterGroupRow sectionKey={sectionKey} section={section} groupKey={groupKey} items={filteredItems} />;
 };
 
 const FilterGroupRow = ({
   sectionKey,
+  section,
   groupKey,
   items,
   onAfterChange,
 }: {
   sectionKey: ScreeningCategory;
+  section: SectionData;
   groupKey: string;
   items: TopicItem[];
   onAfterChange?: () => void;
@@ -648,7 +667,13 @@ const FilterGroupRow = ({
     <>
       {isSpecialTopic(sectionKey, groupKey) ? (
         <div className="px-v2-md py-v2-sm">
-          <SpecialTopicSwitch sectionKey={sectionKey} topicGroup={groupKey} mode={mode} onAfterChange={onAfterChange} />
+          <SpecialTopicSwitch
+            sectionKey={sectionKey}
+            section={section}
+            topicGroup={groupKey}
+            mode={mode}
+            onAfterChange={onAfterChange}
+          />
         </div>
       ) : (
         <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
@@ -658,6 +683,7 @@ const FilterGroupRow = ({
               <SingleItemToggle
                 item={singleItem}
                 sectionKey={sectionKey}
+                section={section}
                 topicGroup={groupKey}
                 mode={mode}
                 onAfterChange={onAfterChange}
@@ -666,6 +692,7 @@ const FilterGroupRow = ({
               <FilterGroupTags
                 items={items}
                 sectionKey={sectionKey}
+                section={section}
                 topicGroup={groupKey}
                 onAfterChange={onAfterChange}
               />
@@ -679,16 +706,19 @@ const FilterGroupRow = ({
 
 const SpecialTopicSwitch = ({
   sectionKey,
+  section,
   topicGroup,
   mode,
   onAfterChange,
 }: {
   sectionKey: ScreeningCategory;
+  section: SectionData;
   topicGroup: string;
   mode: string;
   onAfterChange?: () => void;
 }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const topicValue = getSpecialTopicValue(sectionKey, topicGroup);
   const labelKey = getSpecialTopicLabel(sectionKey, topicGroup);
   const switchId = `special-topic-${sectionKey}-${topicGroup}-${topicValue}`;
@@ -706,9 +736,7 @@ const SpecialTopicSwitch = ({
         onCheckedChange={(checked) => {
           listConfig.update((state) => {
             setTopicKey(state.datasets, sectionKey, topicGroup, topicValue, checked);
-            if (checked) {
-              state.datasets[sectionKey] = true;
-            }
+            if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
           });
           onAfterChange?.();
         }}
@@ -725,17 +753,20 @@ const SpecialTopicSwitch = ({
 const SingleItemToggle = ({
   item,
   sectionKey,
+  section,
   topicGroup,
   mode,
   onAfterChange,
 }: {
   item: TopicItem;
   sectionKey: ScreeningCategory;
+  section: SectionData;
   topicGroup: string;
   mode: string;
   onAfterChange?: () => void;
 }) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const isSelected = ListAndTopicDatasetConfiguration.select((state) =>
     isTopicKeySelected(state.datasets, sectionKey, topicGroup, item.name),
   );
@@ -749,6 +780,7 @@ const SingleItemToggle = ({
           onRemove={() => {
             listConfig.update((state) => {
               setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
+              if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
             });
             onAfterChange?.();
           }}
@@ -771,7 +803,7 @@ const SingleItemToggle = ({
       onClick={() => {
         listConfig.update((state) => {
           setTopicKey(state.datasets, sectionKey, topicGroup, item.name, true);
-          state.datasets[sectionKey] = true;
+          if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
         });
         onAfterChange?.();
       }}
@@ -785,17 +817,20 @@ const SingleItemToggle = ({
 const FilterGroupTags = ({
   items,
   sectionKey,
+  section,
   topicGroup,
   onAfterChange,
 }: {
   items: TopicItem[];
   sectionKey: ScreeningCategory;
+  section: SectionData;
   topicGroup: string;
   onAfterChange?: () => void;
 }) => {
   const { formatItemName, t } = useDatasetTitle();
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const selectedItems = ListAndTopicDatasetConfiguration.select((state) =>
     items.filter((i) => isTopicKeySelected(state.datasets, sectionKey, topicGroup, i.name)),
@@ -815,6 +850,7 @@ const FilterGroupTags = ({
             onRemove={() => {
               listConfig.update((state) => {
                 setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
+                if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
               });
               onAfterChange?.();
             }}
@@ -847,6 +883,7 @@ const FilterGroupTags = ({
         anchored
         items={items}
         sectionKey={sectionKey}
+        section={section}
         topicGroup={topicGroup}
         onAfterChange={onAfterChange}
       />
@@ -867,7 +904,13 @@ const FilterGroupTags = ({
         )}
       </div>
       {mode !== 'view' && variant === 'popover' && isMenuOpen && (
-        <FilterGroupMenu items={items} sectionKey={sectionKey} topicGroup={topicGroup} onAfterChange={onAfterChange} />
+        <FilterGroupMenu
+          items={items}
+          sectionKey={sectionKey}
+          section={section}
+          topicGroup={topicGroup}
+          onAfterChange={onAfterChange}
+        />
       )}
     </div>
   );
@@ -886,12 +929,14 @@ const FilterGroupTags = ({
 const FilterGroupMenu = ({
   items,
   sectionKey,
+  section,
   topicGroup,
   onAfterChange,
   anchored = false,
 }: {
   items: TopicItem[];
   sectionKey: ScreeningCategory;
+  section: SectionData;
   topicGroup: string;
   onAfterChange?: () => void;
   anchored?: boolean;
@@ -899,6 +944,7 @@ const FilterGroupMenu = ({
   const { formatItemName, t } = useDatasetTitle();
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
+  const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
   const datasets = ListAndTopicDatasetConfiguration.select((state) => state.datasets);
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const allSelected =
@@ -909,9 +955,7 @@ const FilterGroupMenu = ({
     listConfig.update((state) => {
       const nextValue = !isTopicKeySelected(state.datasets, sectionKey, topicGroup, item.name);
       setTopicKey(state.datasets, sectionKey, topicGroup, item.name, nextValue);
-      if (nextValue) {
-        state.datasets[sectionKey] = true;
-      }
+      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
     onAfterChange?.();
   }
@@ -922,9 +966,7 @@ const FilterGroupMenu = ({
       for (const item of items) {
         setTopicKey(state.datasets, sectionKey, topicGroup, item.name, nextValue);
       }
-      if (nextValue) {
-        state.datasets[sectionKey] = true;
-      }
+      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
     onAfterChange?.();
   };

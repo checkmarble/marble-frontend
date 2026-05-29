@@ -84,7 +84,7 @@ function ScreeningSearchIndexPage() {
               {/* <ViewSavedResults /> */}
             </div>
           </div>
-          <FreeformSearchPage onSearchComplete={handleSearchComplete} listConfig={listConfig} />
+          <FreeformSearchPage onSearchComplete={handleSearchComplete} listConfig={listConfig.filters} />
         </Page.ContentV2>
       </Page.Container>
     </Page.Main>

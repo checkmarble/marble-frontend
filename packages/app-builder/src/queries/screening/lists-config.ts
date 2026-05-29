@@ -1,5 +1,10 @@
 import { buildDatasetKey } from '@app-builder/components/ListAndTopicConfiguration';
-import { AvailableFeatures, ScreeningAvailableFiltersAdapted, ScreeningCategory } from '@app-builder/models/screening';
+import {
+  AvailableFeatures,
+  ScreeningAvailableFiltersAdapted,
+  ScreeningCategory,
+  ScreeningProviders,
+} from '@app-builder/models/screening';
 import { getListConfigFn } from '@app-builder/server-fns/screenings';
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
@@ -26,6 +31,11 @@ type NormalizedSection = {
 export type ListConfigFilters = Partial<Record<ScreeningCategory, NormalizedSection>>;
 type SectionKeys = keyof ListConfigFilters;
 
+export type NormalizedListConfig = {
+  filters: ListConfigFilters;
+  provider: ScreeningProviders;
+};
+
 function groupBySection(
   datasets: { section?: string; name: string; title: string }[],
   name: SectionKeys,
@@ -39,7 +49,7 @@ function groupBySection(
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): ListConfigFilters {
+export function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): NormalizedListConfig {
   function normalize(
     section: ScreeningAvailableFiltersSection | undefined,
     name: SectionKeys,
@@ -68,14 +78,17 @@ export function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): L
 
     return adaptedSection;
   }
-  if (!config) return {};
+  if (!config) return { filters: {}, provider: 'opensanctions' };
 
   return {
-    sanctions: normalize(config.sections.sanctions, 'sanctions'),
-    peps: normalize(config.sections.peps, 'peps'),
-    'adverse-media': normalize(config.sections.adverse_media, 'adverse-media'),
-    'third-parties': normalize(config.sections.other, 'third-parties'),
-    global: normalize(config.sections.global, 'global'),
+    filters: {
+      sanctions: normalize(config.sections.sanctions, 'sanctions'),
+      peps: normalize(config.sections.peps, 'peps'),
+      'adverse-media': normalize(config.sections.adverse_media, 'adverse-media'),
+      'third-parties': normalize(config.sections.other, 'third-parties'),
+      global: normalize(config.sections.global, 'global'),
+    },
+    provider: config.provider,
   };
 }
 

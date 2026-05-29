@@ -67,11 +67,40 @@ export function setTopicKey(
   datasets[buildTopicKey(sectionKey, topicGroup, value)] = selected;
 }
 
-export function clearSectionSelections(datasets: Record<string, boolean>, sectionKey: ScreeningCategory): void {
-  datasets[sectionKey] = false;
-  for (const key of Object.keys(datasets)) {
-    if (key.startsWith(`${sectionKey}:`)) {
-      datasets[key] = false;
+type SelectableSection = {
+  datasets?: { datasets: { name: string }[] }[];
+  topics?: Record<string, { name: string }[]>;
+  conditionalTopics?: Record<string, { items: { name: string }[] }>;
+};
+
+/**
+ * Marks the section flag and every dataset / topic / conditional-topic available
+ * in `section` as `selected`. Unlike `setSectionSelections`, this enumerates the
+ * section's full catalogue rather than only flipping keys already in the map.
+ */
+export function selectAllInSection(
+  datasets: Record<string, boolean>,
+  sectionKey: ScreeningCategory,
+  section: SelectableSection,
+  selected: boolean,
+): void {
+  datasets[sectionKey] = selected;
+
+  for (const group of section.datasets ?? []) {
+    for (const item of group.datasets) {
+      datasets[buildDatasetKey(sectionKey, item.name)] = selected;
+    }
+  }
+
+  for (const [topicGroup, items] of Object.entries(section.topics ?? {})) {
+    for (const item of items) {
+      datasets[buildTopicKey(sectionKey, topicGroup, item.name)] = selected;
+    }
+  }
+
+  for (const [topicGroup, { items }] of Object.entries(section.conditionalTopics ?? {})) {
+    for (const item of items) {
+      datasets[buildTopicKey(sectionKey, topicGroup, item.name)] = selected;
     }
   }
 }
@@ -151,4 +180,37 @@ export function applyAliveDeceasedDefaults(
       datasets[buildTopicKey('global', groupKey, DECEASED_ITEM_NAME)] = true;
     }
   }
+}
+
+/** Keeps the bare section flag aligned with whether any leaf item in the section is selected. */
+export function syncSectionEnabledFromLeaves(
+  datasets: Record<string, boolean>,
+  sectionKey: ScreeningCategory,
+  section: SelectableSection,
+): void {
+  datasets[sectionKey] = getSelectableSectionLeafKeys(sectionKey, section).some((key) => datasets[key]);
+}
+
+function getSelectableSectionLeafKeys(sectionKey: ScreeningCategory, section: SelectableSection): string[] {
+  const keys: string[] = [];
+
+  for (const group of section.datasets ?? []) {
+    for (const item of group.datasets) {
+      keys.push(buildDatasetKey(sectionKey, item.name));
+    }
+  }
+
+  for (const [topicGroup, items] of Object.entries(section.topics ?? {})) {
+    for (const item of items) {
+      keys.push(buildTopicKey(sectionKey, topicGroup, item.name));
+    }
+  }
+
+  for (const [topicGroup, { items }] of Object.entries(section.conditionalTopics ?? {})) {
+    for (const item of items) {
+      keys.push(buildTopicKey(sectionKey, topicGroup, item.name));
+    }
+  }
+
+  return keys;
 }
