@@ -128,6 +128,13 @@ const FILTER_TRANSLATION_MAP = {
   'filter.pep.category.attorney': 'continuousScreening:filter.pep.category.attorney',
   'filter.alive': 'continuousScreening:filter.alive',
   'filter.deceased': 'continuousScreening:filter.deceased',
+  eu: 'continuousScreening:dataset.eu',
+  as: 'continuousScreening:dataset.as',
+  oc: 'continuousScreening:dataset.oc',
+  af: 'continuousScreening:dataset.af',
+  na: 'continuousScreening:dataset.na',
+  sa: 'continuousScreening:dataset.sa',
+  un: 'continuousScreening:dataset.un',
 } as const;
 
 export function useDatasetTitle() {
@@ -142,7 +149,7 @@ export function useDatasetTitle() {
 
     const translation = hasTranslation(last);
     if (translation) return t(translation);
-    return last.replace(/_/g, ' ');
+    return capitalize(last.replace(/_/g, ' '));
   }
 
   function formatTopicLabel(label: string) {

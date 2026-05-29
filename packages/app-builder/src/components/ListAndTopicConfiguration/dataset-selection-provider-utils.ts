@@ -113,7 +113,13 @@ export function setGlobalTopicSwitch(
 
 /** Strips falsy entries from the datasets map before persistence. */
 export function sanitizeTruthyDatasets(datasets: Record<string, boolean>): Record<string, boolean> {
-  return Object.fromEntries(Object.entries(datasets).filter(([, selected]) => selected));
+  // TODO: remove the liveness filter when reindexation is done
+  // global:topic:liveness:filter.alive
+  // global:topic:liveness:filter.deceased
+  const strippedDatasets = Object.fromEntries(
+    Object.entries(datasets).filter(([key, selected]) => !key.startsWith('global:topic:liveness:filter.') && selected),
+  );
+  return strippedDatasets;
 }
 
 const ALIVE_ITEM_NAME = 'filter.alive';
