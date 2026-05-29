@@ -137,7 +137,7 @@ function ScenarioHome() {
                   scenarioId: fromUUIDtoSUUID(scenarioToWatch.scenarioId),
                   iterationId: fromUUIDtoSUUID(scenarioToWatch.id),
                 }}
-                className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked', size: 'default' })}
+                className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked', size: 'medium' })}
               >
                 <Icon icon="eye" className="size-4" />
                 {liveScenarioIteration ? t('scenarios:home.live_version') : t('scenarios:home.last_version')}
@@ -150,7 +150,7 @@ function ScenarioHome() {
                   scenarioId: fromUUIDtoSUUID(draftScenario.scenarioId),
                   iterationId: fromUUIDtoSUUID(draftScenario.id),
                 }}
-                className={CtaV2ClassName({ variant: 'primary', appearance: 'filled', size: 'default' })}
+                className={CtaV2ClassName({ variant: 'primary', appearance: 'filled', size: 'medium' })}
               >
                 <Icon icon="edit" className="size-4" />
                 {t('scenarios:update_scenario.title')}

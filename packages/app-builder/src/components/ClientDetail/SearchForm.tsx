@@ -78,7 +78,7 @@ export const SearchForm = ({ table }: SearchFormProps) => {
             <Button
               disabled={!table.ready || !canSubmit}
               variant="primary"
-              size="default"
+              size="medium"
               className="shrink-0"
               type="submit"
             >

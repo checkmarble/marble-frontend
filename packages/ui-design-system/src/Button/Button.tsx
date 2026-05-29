@@ -58,17 +58,27 @@ export const CtaV2ClassName = cva(
         stroked: '',
         link: '',
       },
+      // Hue for filled buttons. Mainly meaningful with variant="primary"
+      // (Figma "Color" axis: Primary / Grey / Red). Defaults to primary.
+      color: {
+        primary: '',
+        grey: '',
+        red: '',
+      },
       mode: {
         normal: '',
         icon: 'aspect-square justify-center',
       },
+      // Heights match Figma: small = 24px, medium = 32px, large = 40px.
       size: {
         small: 'text-small',
-        default: '',
+        medium: '',
+        large: '',
       },
     },
     compoundVariants: [
-      // Size + Mode — heights match Figma (medium = 32px, small = 24px)
+      // Size + Mode — heights match Figma (small 24px / medium 32px / large 40px).
+      // Icon mode is a square that scales with size (icon glyph: 16 / 20 / 24px).
       {
         size: 'small',
         mode: 'normal',
@@ -81,15 +91,25 @@ export const CtaV2ClassName = cva(
         class: 'size-6 p-v2-xs',
       },
       {
-        size: 'default',
+        size: 'medium',
         mode: 'normal',
         class: 'p-v2-sm h-8',
         class: 'h-8 px-v2-sm',
       },
       {
-        size: 'default',
+        size: 'medium',
         mode: 'icon',
         class: 'size-8 p-v2-sm',
+      },
+      {
+        size: 'large',
+        mode: 'normal',
+        class: 'h-10 px-v2-sm',
+      },
+      {
+        size: 'large',
+        mode: 'icon',
+        class: 'size-10 p-v2-sm',
       },
       // Subtle elevation on filled + stroked (Figma "Shadow/light"); not on link
       {
@@ -100,12 +120,29 @@ export const CtaV2ClassName = cva(
         appearance: 'stroked',
         class: 'shadow-[0px_4px_10px_0px_rgba(0,0,0,0.05)]',
       },
-      // Primary + Filled
+      // Primary + Filled + Primary color (default purple)
       {
         variant: 'primary',
         appearance: 'filled',
+        color: 'primary',
         class:
           'bg-purple-primary border-purple-primary text-white enabled:hover:bg-purple-hover enabled:hover:border-purple-hover disabled:bg-purple-disabled disabled:border-purple-disabled dark:text-grey-primary dark:enabled:hover:bg-purple-hover dark:enabled:hover:border-purple-hover dark:disabled:text-grey-secondary focus-visible:outline-purple-primary',
+      },
+      // Primary + Filled + Grey color (Figma Color=Grey)
+      {
+        variant: 'primary',
+        appearance: 'filled',
+        color: 'grey',
+        class:
+          'bg-grey-secondary border-grey-secondary text-grey-white enabled:hover:bg-[#2b2b2c] enabled:hover:border-[#2b2b2c] disabled:bg-grey-disabled disabled:border-grey-disabled focus-visible:outline-grey-secondary dark:bg-[#838292] dark:border-[#838292] dark:text-grey-background dark:enabled:hover:bg-grey-secondary dark:enabled:hover:border-grey-secondary dark:disabled:bg-grey-disabled dark:disabled:border-grey-disabled',
+      },
+      // Primary + Filled + Red color (Figma Color=Red) — red tokens auto-swap in dark
+      {
+        variant: 'primary',
+        appearance: 'filled',
+        color: 'red',
+        class:
+          'bg-red-primary border-red-primary text-white enabled:hover:bg-red-hover enabled:hover:border-red-hover disabled:bg-red-disabled disabled:border-red-disabled focus-visible:outline-red-primary dark:text-grey-primary',
       },
       // Primary + Stroked
       {
@@ -169,6 +206,7 @@ export const CtaV2ClassName = cva(
       mode: 'normal',
       size: 'small',
       appearance: 'filled',
+      color: 'primary',
     },
   },
 );
@@ -177,14 +215,14 @@ export type ButtonV2Props = VariantProps<typeof CtaV2ClassName> &
   React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonV2Props>(function Button(
-  { variant = 'primary', mode = 'normal', size = 'small', appearance, className, ...props },
+  { variant = 'primary', mode = 'normal', size = 'small', appearance, color = 'primary', className, ...props },
   ref,
 ) {
   return (
     <button
       ref={ref}
       type="button"
-      className={cn(CtaV2ClassName({ variant, mode, size, appearance }), className)}
+      className={cn(CtaV2ClassName({ variant, mode, size, appearance, color }), className)}
       {...props}
     />
   );

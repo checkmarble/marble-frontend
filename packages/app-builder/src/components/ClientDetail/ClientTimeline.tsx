@@ -36,7 +36,7 @@ export const ClientTimeline = () => {
     <div className="flex gap-v2-sm">
       <Button
         variant="secondary"
-        size="default"
+        size="medium"
         mode="icon"
         disabled={!canGoPrev}
         onClick={() => emblaApi?.scrollPrev()}
@@ -52,7 +52,7 @@ export const ClientTimeline = () => {
       </div>
       <Button
         variant="secondary"
-        size="default"
+        size="medium"
         mode="icon"
         disabled={!canGoNext}
         onClick={() => emblaApi?.scrollNext()}

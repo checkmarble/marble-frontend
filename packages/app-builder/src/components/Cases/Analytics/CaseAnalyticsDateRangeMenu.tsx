@@ -54,7 +54,7 @@ export function CaseAnalyticsDateRangeMenu({ value, onChange }: CaseAnalyticsDat
               }
             }}
           >
-            <Button disabled={!draft} size="default">
+            <Button disabled={!draft} size="medium">
               {t('common:save')}
             </Button>
           </MenuCommand.HeadlessItem>

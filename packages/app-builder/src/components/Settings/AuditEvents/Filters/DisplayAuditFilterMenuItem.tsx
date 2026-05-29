@@ -112,7 +112,7 @@ const TextInputFilterMenu = ({ placeholder, onSelect }: TextInputFilterMenuProps
           }
         }}
       >
-        <Button disabled={!value.trim()} size="default" className="w-full">
+        <Button disabled={!value.trim()} size="medium" className="w-full">
           {t('common:save')}
         </Button>
       </MenuCommand.HeadlessItem>

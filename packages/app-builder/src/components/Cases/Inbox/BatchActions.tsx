@@ -31,7 +31,7 @@ export const BatchActions = ({ onMassUpdateCases, assignableUsers, inboxes, sele
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button size="default" variant="secondary" appearance="stroked">
+        <Button size="medium" variant="secondary" appearance="stroked">
           <Icon icon="checked" className="size-4" />
           {t('common:actions')}
           <Icon icon="arrow-right" className="size-4" />

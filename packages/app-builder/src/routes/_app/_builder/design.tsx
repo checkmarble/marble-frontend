@@ -215,71 +215,82 @@ function InteractiveSwitch() {
 
 const BUTTON_APPEARANCES = ['filled', 'stroked', 'link'] as const;
 const BUTTON_VARIANTS = ['primary', 'secondary', 'destructive'] as const;
+const BUTTON_SIZES = ['small', 'medium', 'large'] as const;
+const BUTTON_ICON_COLORS = ['primary', 'grey', 'red'] as const;
+// Icon glyph scales with button size (Figma: small 16 / medium 20 / large 24).
+const BUTTON_ICON_GLYPH = { small: 'size-4', medium: 'size-5', large: 'size-6' } as const;
 
 function ButtonMatrix() {
   return (
     <div className="flex flex-col gap-8">
-      {/* variant × appearance, medium (size="default") */}
+      {/* variant × appearance, medium (size="medium") */}
       {BUTTON_APPEARANCES.map((appearance) => (
         <MatrixRow key={appearance} label={appearance}>
           {BUTTON_VARIANTS.map((variant) => (
             <VariantCell key={variant} label={variant}>
-              <Button variant={variant} appearance={appearance} size="default">
+              <Button variant={variant} appearance={appearance} size="medium">
                 Button
               </Button>
             </VariantCell>
           ))}
           <VariantCell label="disabled">
-            <Button variant="primary" appearance={appearance} size="default" disabled>
+            <Button variant="primary" appearance={appearance} size="medium" disabled>
               Button
             </Button>
           </VariantCell>
         </MatrixRow>
       ))}
 
-      {/* sizes — medium (default) vs small */}
+      {/* sizes — small / medium / large */}
       <div className="border-grey-border flex flex-col gap-3 border-t pt-4">
         <span className="text-s font-medium">Sizes</span>
         <div className="flex flex-wrap items-center gap-4">
-          <VariantCell label="medium (default)">
-            <Button variant="primary" size="default">
-              Button
-            </Button>
-          </VariantCell>
-          <VariantCell label="small">
-            <Button variant="primary" size="small">
-              Button
-            </Button>
-          </VariantCell>
+          {BUTTON_SIZES.map((size) => (
+            <VariantCell key={size} label={size}>
+              <Button variant="primary" size={size}>
+                <Icon icon="plus" className={BUTTON_ICON_GLYPH[size]} />
+                Button
+              </Button>
+            </VariantCell>
+          ))}
         </div>
       </div>
 
-      {/* icon mode + leading-icon */}
-      <div className="border-grey-border flex flex-col gap-3 border-t pt-4">
-        <span className="text-s font-medium">Icon</span>
-        <div className="flex flex-wrap items-center gap-4">
-          <VariantCell label="icon medium">
-            <Button variant="primary" mode="icon" size="default" aria-label="add">
-              <Icon icon="plus" className="size-4" />
+      {/* Icon button (mode="icon") — Figma node 4-554 */}
+      <div className="border-grey-border flex flex-col gap-4 border-t pt-4">
+        <span className="text-s font-medium">Icon button (Figma 4-554)</span>
+        {/* filled, color axis × sizes */}
+        {BUTTON_ICON_COLORS.map((color) => (
+          <MatrixRow key={color} label={`filled ${color}`}>
+            {BUTTON_SIZES.map((size) => (
+              <VariantCell key={size} label={size}>
+                <Button variant="primary" color={color} mode="icon" size={size} aria-label="add">
+                  <Icon icon="plus" className={BUTTON_ICON_GLYPH[size]} />
+                </Button>
+              </VariantCell>
+            ))}
+            <VariantCell label="disabled">
+              <Button variant="primary" color={color} mode="icon" size="medium" disabled aria-label="add">
+                <Icon icon="plus" className="size-5" />
+              </Button>
+            </VariantCell>
+          </MatrixRow>
+        ))}
+        {/* bordered (stroked) icon buttons */}
+        <MatrixRow label="stroked">
+          {BUTTON_SIZES.map((size) => (
+            <VariantCell key={size} label={size}>
+              <Button variant="primary" appearance="stroked" mode="icon" size={size} aria-label="edit">
+                <Icon icon="edit-square" className={BUTTON_ICON_GLYPH[size]} />
+              </Button>
+            </VariantCell>
+          ))}
+          <VariantCell label="secondary">
+            <Button variant="secondary" mode="icon" size="medium" aria-label="edit">
+              <Icon icon="edit-square" className="size-5" />
             </Button>
           </VariantCell>
-          <VariantCell label="icon small">
-            <Button variant="primary" mode="icon" size="small" aria-label="add">
-              <Icon icon="plus" className="size-4" />
-            </Button>
-          </VariantCell>
-          <VariantCell label="leading icon">
-            <Button variant="primary" size="default">
-              <Icon icon="plus" className="size-4" />
-              Button
-            </Button>
-          </VariantCell>
-          <VariantCell label="stroked icon">
-            <Button variant="secondary" appearance="stroked" mode="icon" size="default" aria-label="edit">
-              <Icon icon="edit-square" className="size-4" />
-            </Button>
-          </VariantCell>
-        </div>
+        </MatrixRow>
       </div>
     </div>
   );

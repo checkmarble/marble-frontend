@@ -30,7 +30,7 @@ export const FavoriteInboxButton: FunctionComponent<FavoriteInboxButtonProps> = 
     <Button
       variant={isFavorite ? 'primary' : 'secondary'}
       appearance="stroked"
-      size="default"
+      size="medium"
       onClick={handleClick}
       title={isFavorite ? t('cases:inbox.remove_favorite') : t('cases:inbox.set_as_favorite')}
       className="group"

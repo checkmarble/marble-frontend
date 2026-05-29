@@ -48,7 +48,7 @@ export const AuditEventsFiltersBar = ({
       {remainingFilters.length > 0 && (
         <MenuCommand.Menu open={open} onOpenChange={setOpen}>
           <MenuCommand.Trigger>
-            <Button variant="secondary" size="default">
+            <Button variant="secondary" size="medium">
               <Icon icon="plus" className="size-4" />
               <span>{t('filters:ds.addNewFilter.label')}</span>
             </Button>

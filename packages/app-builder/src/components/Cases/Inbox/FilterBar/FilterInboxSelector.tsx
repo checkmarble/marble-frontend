@@ -17,7 +17,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="primary" size="default">
+        <Button variant="primary" size="medium">
           <span>
             {t('cases:case.inbox')}: {selectedInbox.name}
           </span>

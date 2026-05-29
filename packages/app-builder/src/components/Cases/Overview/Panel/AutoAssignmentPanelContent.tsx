@@ -143,7 +143,7 @@ export const AutoAssignmentPanelContent = ({
       {canSave ? (
         <PanelFooter>
           <Button
-            size="default"
+            size="medium"
             className="w-full justify-center"
             onClick={handleSave}
             disabled={updateAutoAssignMutation.isPending || !hasChanges}

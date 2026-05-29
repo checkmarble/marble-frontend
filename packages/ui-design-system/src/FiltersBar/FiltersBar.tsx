@@ -268,7 +268,7 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
                 <Button
                   className="min-w-[110px] justify-center"
                   variant="primary"
-                  size="default"
+                  size="medium"
                   onClick={() => contextValue.emitUpdate()}
                   disabled={!hasChanges}
                 >
@@ -332,7 +332,7 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
               {priorityIndex === 1 && dynamicDescriptors.length ? (
                 <Button
                   variant="secondary"
-                  size="default"
+                  size="medium"
                   onClick={clearDynamicFilters}
                   disabled={!hasAnyDynamicSelected}
                 >
