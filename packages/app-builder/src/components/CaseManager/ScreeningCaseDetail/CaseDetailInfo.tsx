@@ -60,7 +60,7 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
       <div className="grid grid-cols-[1fr_auto] gap-v2-lg items-start">
         <div className="flex flex-col">
           <div className="flex gap-v2-xs items-center">
-            {screening ? <ReviewStatusBadge status={screening.status} /> : null}
+            {screening ? <ReviewStatusBadge status={screening.status} hitsCount={screening.matches.length} /> : null}
             <EditCaseName name={caseDetail.name} id={caseDetail.id} />
           </div>
           {screening ? <ScreeningCaseSubtitle screening={screening} /> : null}
