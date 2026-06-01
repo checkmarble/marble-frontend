@@ -48,17 +48,22 @@ export function FieldNodeConcat({
   };
 
   useEffect(() => {
-    if (value?.children?.length) {
-      setNodes(value.children);
-      return;
-    }
-
     setNodes((prev) => {
-      const hasFilledNode = prev.some((node) => !isUndefinedAstNode(node));
-      if (!hasFilledNode) {
-        return prev;
+      const filled = prev.filter((node) => !isUndefinedAstNode(node));
+
+      if (value?.children?.length) {
+        // `concatFromNodes` strips placeholders before emitting, so the parent echoes
+        // back only the filled nodes. When that echo matches what we already hold
+        // (same filled nodes, by id), keep local placeholders intact instead of
+        // collapsing them. Only reconcile when the parent truly changed the data.
+        const isOwnEcho =
+          value.children.length === filled.length &&
+          value.children.every((child, index) => child.id === filled[index]?.id);
+        return isOwnEcho ? prev : value.children;
       }
-      return [NewUndefinedAstNode()];
+
+      // Parent cleared the value: reset to a single placeholder only if we held content.
+      return filled.length === 0 ? prev : [NewUndefinedAstNode()];
     });
   }, [value]);
 

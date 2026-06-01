@@ -281,7 +281,18 @@ function ScreeningDetail() {
             submitValidationOptions,
           )
         : [];
-      const allIssues = mergeScreeningValidationIssues(formIssues, serverIssues);
+      // Server trigger/counterparty validation reflects persisted state, not the current draft.
+      // Both fields are edited locally (and aren't validated by the zod schema), so stale server
+      // errors must not block submit — saving triggers server re-validation. They remain in the
+      // display memos for the summary/highlight.
+      const blockingServerIssues = serverIssues.filter(
+        (issue) =>
+          !(
+            issue.source.type === 'section' &&
+            (issue.source.section === 'trigger' || issue.source.section === 'counterparty')
+          ),
+      );
+      const allIssues = mergeScreeningValidationIssues(formIssues, blockingServerIssues);
 
       if (allIssues.length > 0) {
         setShowValidationSummary(true);

@@ -100,7 +100,10 @@ export const FieldAstFormula = ({
           />
         </AstBuilder.Provider>
       )}
-      <EvaluationErrorsWrapper errors={validationErrors} evaluation={validationEvaluation} />
+      <EvaluationErrorsWrapper
+        errors={isAstNull ? [] : validationErrors}
+        evaluation={isAstNull ? [] : validationEvaluation}
+      />
       {type === 'screening' && editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (
