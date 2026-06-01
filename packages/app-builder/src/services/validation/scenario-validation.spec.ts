@@ -3,6 +3,7 @@ import { NewNodeEvaluation } from '@app-builder/models/node-evaluation';
 import type { ScenarioValidationErrorCodeDto } from 'marble-api';
 import { describe, expect, it } from 'vitest';
 import {
+  collectScreeningValidationIssues,
   collectScreeningValidationMessages,
   hasScreeningErrors,
   type ScreeningValidationSectionLabels,
@@ -39,6 +40,7 @@ function screeningWithAggregateRequired(): ScreeningConfigValidation {
 describe('screening edit page validation options', () => {
   const editPageOptions = {
     ignoreLegacyAggregateQuery: true,
+    entityType: 'Person' as const,
     formQuery: {
       name: { id: '1', name: 'FieldAccess', children: [] },
     },
@@ -53,11 +55,57 @@ describe('screening edit page validation options', () => {
     expect(hasScreeningErrors(screening, editPageOptions)).toBe(false);
   });
 
+  it('attaches query field source for per-field server errors', () => {
+    const screening = {
+      ...baseScreening(),
+      queryFields: {
+        name: {
+          errors: ['RULE_FORMULA_REQUIRED' as ScenarioValidationErrorCodeDto],
+          queryEvaluation: NewNodeEvaluation(),
+        },
+      },
+    };
+
+    const issues = collectScreeningValidationIssues(screening, getScenarioErrorMessage, labels, {
+      ignoreLegacyAggregateQuery: true,
+      entityType: 'Person',
+      formQuery: {},
+    });
+
+    expect(issues).toEqual([
+      {
+        message: 'name: At least one condition is required',
+        source: { type: 'field', field: 'query.name' },
+      },
+    ]);
+  });
+
   it('suppresses stale per-field RULE_FORMULA_REQUIRED when form field is filled', () => {
     const screening = {
       ...baseScreening(),
       queryFields: {
         name: {
+          errors: ['RULE_FORMULA_REQUIRED' as ScenarioValidationErrorCodeDto],
+          queryEvaluation: NewNodeEvaluation(),
+        },
+      },
+    };
+
+    const messages = collectScreeningValidationMessages(screening, getScenarioErrorMessage, labels, editPageOptions);
+
+    expect(messages).toEqual([]);
+    expect(hasScreeningErrors(screening, editPageOptions)).toBe(false);
+  });
+
+  it('skips all query field errors when required criteria are met on another field', () => {
+    const screening = {
+      ...baseScreening(),
+      queryFields: {
+        name: {
+          errors: ['RULE_FORMULA_REQUIRED' as ScenarioValidationErrorCodeDto],
+          queryEvaluation: NewNodeEvaluation(),
+        },
+        birthDate: {
           errors: ['RULE_FORMULA_REQUIRED' as ScenarioValidationErrorCodeDto],
           queryEvaluation: NewNodeEvaluation(),
         },

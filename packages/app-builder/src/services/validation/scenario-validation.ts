@@ -1,6 +1,13 @@
 import { type ScenarioValidation, type ScreeningConfigValidation } from '@app-builder/models';
 import { type EvaluationError, NewNodeEvaluation, type NodeEvaluation } from '@app-builder/models/node-evaluation';
-import { isQueryFieldFilled } from '@app-builder/utils/screening-form-validation';
+import {
+  hasAnyFilledQueryField,
+  hasRequiredScreeningCriteria,
+  isQueryFieldFilled,
+  type ScreeningValidationIssue,
+  type ScreeningValidationSectionId,
+  type ScreeningValidationSource,
+} from '@app-builder/utils/screening-form-validation';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import invariant from 'tiny-invariant';
 
@@ -79,7 +86,19 @@ export type ScreeningValidationOptions = {
   ignoreLegacyAggregateQuery?: boolean;
   /** Current form query values; used to ignore stale per-field required-formula errors. */
   formQuery?: Record<string, unknown>;
+  /** Entity type for the screening; used with formQuery to detect satisfied match criteria. */
+  entityType?: 'Person' | 'Organization' | 'Vehicle' | 'Thing';
 };
+
+/** Skip stale server `query_fields` validation when the form already has valid match criteria. */
+function shouldSkipServerQueryFieldValidation(options?: ScreeningValidationOptions): boolean {
+  if (!options?.ignoreLegacyAggregateQuery || !options.formQuery) {
+    return false;
+  }
+  return (
+    hasRequiredScreeningCriteria(options.entityType, options.formQuery) || hasAnyFilledQueryField(options.formQuery)
+  );
+}
 
 function shouldSuppressQueryFieldError(
   fieldKey: string,
@@ -108,12 +127,14 @@ export function hasScreeningErrors(
     if (countNodeEvaluationErrors(screening.query.queryEvaluation) > 0) return true;
   }
 
-  for (const [fieldKey, field] of Object.entries(screening.queryFields)) {
-    if (shouldSuppressQueryFieldError(fieldKey, field, options)) {
-      continue;
+  if (!shouldSkipServerQueryFieldValidation(options)) {
+    for (const [fieldKey, field] of Object.entries(screening.queryFields)) {
+      if (shouldSuppressQueryFieldError(fieldKey, field, options)) {
+        continue;
+      }
+      if (field.errors.length > 0) return true;
+      if (countNodeEvaluationErrors(field.queryEvaluation) > 0) return true;
     }
-    if (field.errors.length > 0) return true;
-    if (countNodeEvaluationErrors(field.queryEvaluation) > 0) return true;
   }
 
   // Check counterparty ID expression errors
@@ -146,6 +167,14 @@ function prefixValidationMessage(section: string, message: string): string {
   return `${section}: ${message}`;
 }
 
+function screeningSourceForSection(section: ScreeningValidationSectionId): ScreeningValidationSource {
+  return { type: 'section', section };
+}
+
+function screeningSourceForQueryField(fieldKey: string): ScreeningValidationSource {
+  return { type: 'field', field: `query.${fieldKey}` };
+}
+
 function addSectionMessages(
   messages: Set<string>,
   section: string,
@@ -161,16 +190,39 @@ function addSectionMessages(
   }
 }
 
-export function collectScreeningValidationMessages(
+function addSectionIssues(
+  issues: ScreeningValidationIssue[],
+  source: ScreeningValidationSource,
+  sectionLabel: string,
+  codes: ScenarioValidationErrorCodeDto[],
+  evaluation: NodeEvaluation,
+  getScenarioErrorMessage: (code: ScenarioValidationErrorCodeDto) => string,
+) {
+  for (const code of codes) {
+    issues.push({
+      message: prefixValidationMessage(sectionLabel, getScenarioErrorMessage(code)),
+      source,
+    });
+  }
+  for (const message of collectEvaluationErrorMessages(evaluation)) {
+    issues.push({
+      message: prefixValidationMessage(sectionLabel, message),
+      source,
+    });
+  }
+}
+
+export function collectScreeningValidationIssues(
   screening: ScreeningConfigValidation,
   getScenarioErrorMessage: (code: ScenarioValidationErrorCodeDto) => string,
   labels: ScreeningValidationSectionLabels,
   options?: ScreeningValidationOptions,
-): string[] {
-  const messages = new Set<string>();
+): ScreeningValidationIssue[] {
+  const issues: ScreeningValidationIssue[] = [];
 
-  addSectionMessages(
-    messages,
+  addSectionIssues(
+    issues,
+    screeningSourceForSection('trigger'),
     labels.trigger,
     screening.trigger.errors,
     screening.trigger.triggerEvaluation,
@@ -178,8 +230,9 @@ export function collectScreeningValidationMessages(
   );
 
   if (!options?.ignoreLegacyAggregateQuery) {
-    addSectionMessages(
-      messages,
+    addSectionIssues(
+      issues,
+      screeningSourceForSection('matchSettings'),
       labels.matchCriteria,
       screening.query.errors,
       screening.query.queryEvaluation,
@@ -187,28 +240,43 @@ export function collectScreeningValidationMessages(
     );
   }
 
-  for (const [fieldKey, field] of Object.entries(screening.queryFields)) {
-    if (shouldSuppressQueryFieldError(fieldKey, field, options)) {
-      continue;
+  if (!shouldSkipServerQueryFieldValidation(options)) {
+    for (const [fieldKey, field] of Object.entries(screening.queryFields)) {
+      if (shouldSuppressQueryFieldError(fieldKey, field, options)) {
+        continue;
+      }
+      addSectionIssues(
+        issues,
+        screeningSourceForQueryField(fieldKey),
+        labels.queryField(fieldKey),
+        field.errors,
+        field.queryEvaluation,
+        getScenarioErrorMessage,
+      );
     }
-    addSectionMessages(
-      messages,
-      labels.queryField(fieldKey),
-      field.errors,
-      field.queryEvaluation,
-      getScenarioErrorMessage,
-    );
   }
 
-  addSectionMessages(
-    messages,
+  addSectionIssues(
+    issues,
+    screeningSourceForSection('counterparty'),
     labels.counterparty,
     screening.counterpartyIdExpression.errors,
     screening.counterpartyIdExpression.counterpartyIdEvaluation,
     getScenarioErrorMessage,
   );
 
-  return [...messages];
+  return issues;
+}
+
+export function collectScreeningValidationMessages(
+  screening: ScreeningConfigValidation,
+  getScenarioErrorMessage: (code: ScenarioValidationErrorCodeDto) => string,
+  labels: ScreeningValidationSectionLabels,
+  options?: ScreeningValidationOptions,
+): string[] {
+  return collectScreeningValidationIssues(screening, getScenarioErrorMessage, labels, options).map(
+    (issue) => issue.message,
+  );
 }
 
 export function collectRuleValidationMessages(

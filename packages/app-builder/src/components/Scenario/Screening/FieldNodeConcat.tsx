@@ -35,6 +35,12 @@ export function FieldNodeConcat({
   }, []);
 
   useEffect(() => {
+    if (value?.children?.length) {
+      setNodes(value.children);
+    }
+  }, [value]);
+
+  useEffect(() => {
     const finalNodes = nodes.filter((n) => !isUndefinedAstNode(n));
 
     const result = finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;

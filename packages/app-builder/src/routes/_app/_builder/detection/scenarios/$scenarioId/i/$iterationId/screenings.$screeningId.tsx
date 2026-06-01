@@ -34,16 +34,20 @@ import { isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import {
-  collectScreeningValidationMessages,
+  collectScreeningValidationIssues,
   findScreeningValidation,
   hasScreeningErrors,
 } from '@app-builder/services/validation/scenario-validation';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import {
-  collectFormValidationMessages,
+  collectFormValidationIssues,
   getScreeningQueryFieldLabel,
   hasRequiredScreeningCriteria,
+  issueDedupeKey,
+  mergeScreeningValidationIssues,
+  screeningFieldHasError,
+  screeningSectionHasError,
 } from '@app-builder/utils/screening-form-validation';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { useForm, useStore } from '@tanstack/react-form';
@@ -266,19 +270,20 @@ function ScreeningDetail() {
       const submitValidationOptions = {
         ignoreLegacyAggregateQuery: true,
         formQuery: value.query ?? {},
+        entityType: value.entityType,
       };
-      const formMessages = collectFormValidationMessages(value, editScreeningFormSchema, t);
-      const serverMessages = hasScreeningErrors(screeningValidation, submitValidationOptions)
-        ? collectScreeningValidationMessages(
+      const formIssues = collectFormValidationIssues(value, editScreeningFormSchema, t);
+      const serverIssues = hasScreeningErrors(screeningValidation, submitValidationOptions)
+        ? collectScreeningValidationIssues(
             screeningValidation,
             getScenarioErrorMessage,
             screeningValidationLabels,
             submitValidationOptions,
           )
         : [];
-      const allMessages = [...new Set([...formMessages, ...serverMessages])];
+      const allIssues = mergeScreeningValidationIssues(formIssues, serverIssues);
 
-      if (allMessages.length > 0) {
+      if (allIssues.length > 0) {
         setShowValidationSummary(true);
         return;
       }
@@ -325,8 +330,9 @@ function ScreeningDetail() {
     () => ({
       ignoreLegacyAggregateQuery: true,
       formQuery: query ?? {},
+      entityType,
     }),
-    [query],
+    [query, entityType],
   );
 
   const screeningValidationLabels = useMemo(
@@ -339,46 +345,65 @@ function ScreeningDetail() {
     [t],
   );
 
-  const serverValidationMessages = useMemo(() => {
+  const serverValidationIssues = useMemo(() => {
     if (!showValidationSummary) {
       return [];
     }
     if (!hasScreeningErrors(screeningValidation, screeningValidationOptions)) {
       return [];
     }
-    const messages = collectScreeningValidationMessages(
+    return collectScreeningValidationIssues(
       screeningValidation,
       getScenarioErrorMessage,
       screeningValidationLabels,
       screeningValidationOptions,
     );
-    return messages;
   }, [
     showValidationSummary,
     screeningValidation,
     getScenarioErrorMessage,
     screeningValidationLabels,
     screeningValidationOptions,
-    entityType,
   ]);
 
-  const formValidationMessages = useMemo(() => {
+  const formValidationIssues = useMemo(() => {
     if (!showValidationSummary) {
       return [];
     }
-    return collectFormValidationMessages(formValues, editScreeningFormSchema, t);
+    return collectFormValidationIssues(formValues, editScreeningFormSchema, t);
   }, [showValidationSummary, formValues, t]);
 
-  const validationMessages = useMemo(
-    () => [...new Set([...formValidationMessages, ...serverValidationMessages])],
-    [formValidationMessages, serverValidationMessages],
+  const validationIssues = useMemo(
+    () => mergeScreeningValidationIssues(formValidationIssues, serverValidationIssues),
+    [formValidationIssues, serverValidationIssues],
   );
 
+  const highlight = useMemo(
+    () => ({
+      name: screeningFieldHasError(validationIssues, 'name'),
+      trigger: screeningSectionHasError(validationIssues, 'trigger'),
+      counterparty: screeningSectionHasError(validationIssues, 'counterparty'),
+      matchSettings: screeningSectionHasError(validationIssues, 'matchSettings'),
+      queryField: (fieldKey: string) => screeningFieldHasError(validationIssues, `query.${fieldKey}`),
+    }),
+    [validationIssues],
+  );
+
+  const screeningCardClassName = (hasError: boolean, className?: string) =>
+    cn(
+      'bg-surface-card border-grey-border flex flex-col gap-4 rounded-md border p-4',
+      hasError && 'border-red-primary',
+      className,
+    );
+
+  const queryFieldHighlightClassName = (fieldKey: string) =>
+    cn(highlight.queryField(fieldKey) && 'rounded-sm border border-red-primary p-1');
+
   useEffect(() => {
-    if (showValidationSummary && formValidationMessages.length === 0 && serverValidationMessages.length === 0) {
+    if (showValidationSummary && formValidationIssues.length === 0 && serverValidationIssues.length === 0) {
       setShowValidationSummary(false);
     }
-  }, [showValidationSummary, formValidationMessages.length, serverValidationMessages.length]);
+  }, [showValidationSummary, formValidationIssues.length, serverValidationIssues.length]);
 
   return (
     <Page.Main>
@@ -388,69 +413,78 @@ function ScreeningDetail() {
       <Page.Container ref={containerRef}>
         <Page.Content className="pt-0 lg:pt-0">
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
-            <div
-              className={cn('bg-surface-page sticky top-0 z-40 flex h-[88px] items-center justify-between gap-4', {
-                'border-b-grey-border border-b': !intersection?.isIntersecting,
-              })}
-            >
-              <form.Field
-                name="name"
-                validators={{
-                  onChange: editScreeningFormSchema.shape.name,
-                  onBlur: editScreeningFormSchema.shape.name,
-                }}
+            <div className="sticky top-0 z-40 flex flex-col gap-4 bg-surface-page py-4">
+              <div
+                className={cn('flex h-fit items-center justify-between gap-4', {
+                  'border-b-grey-border border-b': !intersection?.isIntersecting,
+                })}
               >
-                {(field) => (
-                  <div className="flex w-full flex-col gap-1">
-                    <input
-                      ref={nameInputRef}
-                      type="text"
-                      name={field.name}
-                      disabled={editor === 'view'}
-                      defaultValue={field.state.value}
-                      onChange={(e) => field.handleChange(e.currentTarget.value)}
-                      onBlur={field.handleBlur}
-                      className={cn(
-                        'text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden',
-                        field.state.meta.errors.length > 0 && 'border-b border-red-primary',
-                      )}
-                      placeholder={t('scenarios:sanction_name_placeholder')}
-                    />
-                    {field.state.meta.errors.length > 0 ? (
-                      <span className="text-xs text-red-primary">{t('scenarios:edit_screening.name_required')}</span>
-                    ) : null}
-                  </div>
-                )}
-              </form.Field>
-              {editor === 'edit' ? (
-                <div className="flex items-center gap-2">
-                  <DeleteScreeningRule iterationId={iterationId} scenarioId={scenario.id} screeningId={screeningId}>
-                    <Button variant="destructive" className="w-fit" size="small">
-                      <Icon icon="delete" className="size-4" aria-hidden />
-                      {t('common:delete')}
-                    </Button>
-                  </DeleteScreeningRule>
+                <form.Field
+                  name="name"
+                  validators={{
+                    onChange: editScreeningFormSchema.shape.name,
+                    onBlur: editScreeningFormSchema.shape.name,
+                  }}
+                >
+                  {(field) => (
+                    <div className="flex w-full flex-col gap-1">
+                      <input
+                        ref={nameInputRef}
+                        type="text"
+                        name={field.name}
+                        disabled={editor === 'view'}
+                        defaultValue={field.state.value}
+                        onChange={(e) => field.handleChange(e.currentTarget.value)}
+                        onBlur={field.handleBlur}
+                        className={cn(
+                          'text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden',
+                          (field.state.meta.errors.length > 0 || highlight.name) && 'border-b border-red-primary',
+                        )}
+                        placeholder={t('scenarios:sanction_name_placeholder')}
+                      />
+                      {field.state.meta.errors.length > 0 || highlight.name ? (
+                        <span className="text-xs text-red-primary">{t('scenarios:edit_screening.name_required')}</span>
+                      ) : null}
+                    </div>
+                  )}
+                </form.Field>
+                {editor === 'edit' ? (
+                  <div className="flex items-center gap-2">
+                    <DeleteScreeningRule iterationId={iterationId} scenarioId={scenario.id} screeningId={screeningId}>
+                      <Button variant="destructive" className="w-fit" size="small">
+                        <Icon icon="delete" className="size-4" aria-hidden />
+                        {t('common:delete')}
+                      </Button>
+                    </DeleteScreeningRule>
 
-                  <Button variant="primary" type="submit" className="flex-1" size="small" disabled={mutation.isPending}>
-                    {mutation.isPending ? (
-                      <Icon icon="spinner" className="size-4 animate-spin" />
-                    ) : (
-                      <Icon icon="save" className="size-4" aria-hidden />
-                    )}
-                    {t('common:save')}
-                  </Button>
-                </div>
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      className="flex-1"
+                      size="small"
+                      disabled={mutation.isPending}
+                    >
+                      {mutation.isPending ? (
+                        <Icon icon="spinner" className="size-4 animate-spin" />
+                      ) : (
+                        <Icon icon="save" className="size-4" aria-hidden />
+                      )}
+                      {t('common:save')}
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+
+              {validationIssues.length > 0 ? (
+                <Callout color="red" icon="lightbulb" iconColor="red">
+                  <ul className="flex flex-col gap-v2-xs pl-3">
+                    {validationIssues.map((issue) => (
+                      <li key={issueDedupeKey(issue)}>{issue.message}</li>
+                    ))}
+                  </ul>
+                </Callout>
               ) : null}
             </div>
-            {validationMessages.length > 0 ? (
-              <Callout color="red" icon="lightbulb" iconColor="red">
-                <ul className="flex flex-col gap-v2-xs pl-3">
-                  {validationMessages.map((message) => (
-                    <li key={message}>{message}</li>
-                  ))}
-                </ul>
-              </Callout>
-            ) : null}
 
             <div className="flex flex-col gap-8">
               <div className="border-grey-border flex flex-col items-start gap-6 border-b pb-6">
@@ -500,7 +534,7 @@ function ScreeningDetail() {
 
               <div className="flex flex-col gap-2">
                 <span className="text-s font-semibold">{t('scenarios:edit_sanction.global_settings')}</span>
-                <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-md border p-4">
+                <div className={screeningCardClassName(highlight.trigger)}>
                   <Callout variant="outlined">
                     <span>
                       <Trans
@@ -583,7 +617,7 @@ function ScreeningDetail() {
                 </span>
                 <form.Field name="counterPartyId">
                   {(field) => (
-                    <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
+                    <div className={screeningCardClassName(highlight.counterparty, 'rounded-sm')}>
                       <AstBuilder.Provider scenarioId={scenario.id} initialData={builderOptions} mode={editor}>
                         <FieldNode
                           value={field.state.value}
@@ -601,7 +635,7 @@ function ScreeningDetail() {
               <AstBuilder.Provider scenarioId={scenario.id} initialData={builderOptions} mode={editor}>
                 <div className="flex flex-col gap-2">
                   <span className="text-s font-semibold">{t('scenarios:sanction.match_settings.title')}</span>
-                  <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
+                  <div className={screeningCardClassName(highlight.matchSettings, 'rounded-sm')}>
                     <Callout variant="outlined">
                       <p className="whitespace-pre-wrap">{t('scenarios:sanction.match_settings.callout')}</p>
                     </Callout>
@@ -620,7 +654,7 @@ function ScreeningDetail() {
                           {(field) => {
                             const value = field.state.value;
                             return (
-                              <div className="flex flex-col gap-1">
+                              <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('name'))}>
                                 <div className="flex flex-col gap-1">
                                   <span className="text-s inline-flex items-center gap-1">
                                     {t('scenarios:screening.filter.name')}
@@ -730,7 +764,7 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className="flex flex-col gap-1">
+                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('birthDate'))}>
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
                                         {t('scenarios:edit_sanction.birthdate')}
@@ -753,7 +787,9 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className="flex flex-col gap-1">
+                                  <div
+                                    className={cn('flex flex-col gap-1', queryFieldHighlightClassName('nationality'))}
+                                  >
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
                                         {t('scenarios:edit_sanction.nationality')}
@@ -776,7 +812,12 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className="flex flex-col gap-1">
+                                  <div
+                                    className={cn(
+                                      'flex flex-col gap-1',
+                                      queryFieldHighlightClassName('passportNumber'),
+                                    )}
+                                  >
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
                                         {t('scenarios:edit_sanction.passport_number')}
@@ -799,7 +840,7 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className="flex flex-col gap-1">
+                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('address'))}>
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
                                         {t('scenarios:edit_sanction.address')}
@@ -826,7 +867,7 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className="flex flex-col gap-1">
+                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('country'))}>
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
                                         {t('scenarios:edit_sanction.country')}
@@ -849,7 +890,12 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className="flex flex-col gap-1">
+                                  <div
+                                    className={cn(
+                                      'flex flex-col gap-1',
+                                      queryFieldHighlightClassName('registrationNumber'),
+                                    )}
+                                  >
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
                                         {t('scenarios:edit_sanction.registrationnumber')}
@@ -872,7 +918,7 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className="flex flex-col gap-1">
+                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('address'))}>
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
                                         {t('scenarios:edit_sanction.address')}
@@ -898,7 +944,12 @@ function ScreeningDetail() {
                             {(field) => {
                               const value = field.state.value;
                               return (
-                                <div className="flex flex-col gap-1">
+                                <div
+                                  className={cn(
+                                    'flex flex-col gap-1',
+                                    queryFieldHighlightClassName('registrationNumber'),
+                                  )}
+                                >
                                   <div className="flex flex-col gap-1">
                                     <span className="text-s inline-flex items-center gap-1">
                                       {t('scenarios:edit_sanction.registrationnumber')}
