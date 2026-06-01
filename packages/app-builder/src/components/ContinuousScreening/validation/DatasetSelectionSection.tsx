@@ -1,18 +1,56 @@
-import { useDatasetTitle } from '@app-builder/components/ListAndTopicConfiguration/dataset-utils';
-import { ScreeningCategory } from '@app-builder/models/screening';
-import { useScreeningDatasetsQuery } from '@app-builder/queries/screening/datasets';
+import {
+  findDatasetOrTopicByKey,
+  useDatasetTitle,
+} from '@app-builder/components/ListAndTopicConfiguration/dataset-utils';
+import type { ScreeningAvailableFiltersAdapted, ScreeningCategory } from '@app-builder/models/screening';
+import { SCREENING_CATEGORY_TO_DTO_SECTION } from '@app-builder/models/screening-config';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
-import { match } from 'ts-pattern';
-import { Button, Collapsible } from 'ui-design-system';
+import { Collapsible } from 'ui-design-system';
 import { DatasetTag } from '../../Screenings/DatasetTag';
-import { Spinner } from '../../Spinner';
 import { EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
-export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionValidationPanelBaseProps) => {
+function getSectionFromKey(key: string): ScreeningCategory | undefined {
+  const section = key.split(':')[0];
+  if (!section || !(section in SCREENING_CATEGORY_TO_DTO_SECTION)) return undefined;
+  return section as ScreeningCategory;
+}
+
+function DatasetChangeList({
+  keys,
+  catalog,
+  emptyLabel,
+}: {
+  keys: string[];
+  catalog: ScreeningAvailableFiltersAdapted;
+  emptyLabel: string;
+}) {
+  const { formatItemName } = useDatasetTitle();
+  const rows = keys.flatMap((key) => {
+    const item = findDatasetOrTopicByKey(catalog, key);
+    if (!item) return [];
+
+    const category = getSectionFromKey(key);
+    return (
+      <div key={key} className="flex items-center justify-between gap-v2-sm">
+        <span className="truncate">{formatItemName(item)}</span>
+        {category ? <DatasetTag category={category} /> : null}
+      </div>
+    );
+  });
+
+  if (rows.length === 0) {
+    return <span className="text-grey-secondary text-center">{emptyLabel}</span>;
+  }
+
+  return rows;
+}
+
+type DatasetSelectionSectionProps = EditionValidationPanelBaseProps & {
+  datasets: ScreeningAvailableFiltersAdapted;
+};
+
+export const DatasetSelectionSection = ({ updatedConfig, baseConfig, datasets }: DatasetSelectionSectionProps) => {
   const { t } = useTranslation(['common', 'continuousScreening']);
-  const { formatDatasetTitle } = useDatasetTitle();
-  const datasetsQuery = useScreeningDatasetsQuery();
   const addedDatasets = Object.keys(updatedConfig.datasets).filter(
     (k) => !!updatedConfig.datasets[k] && !baseConfig.datasets.includes(k),
   );
@@ -22,72 +60,28 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig }: EditionVa
     <Collapsible.Container>
       <Collapsible.Title>{t('continuousScreening:edition.validation.datasetSelection.title')}</Collapsible.Title>
       <Collapsible.Content>
-        {match(datasetsQuery)
-          .with({ isPending: true }, () => (
-            <div className="flex items-center justify-center h-50">
-              <Spinner className="size-10" />
+        <div className="grid grid-cols-2 gap-v2-md">
+          <div className="flex flex-col gap-v2-sm">
+            <span>{t('continuousScreening:edition.validation.datasetSelection.added.title')}</span>
+            <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md max-h-50 overflow-y-auto">
+              <DatasetChangeList
+                keys={addedDatasets}
+                catalog={datasets}
+                emptyLabel={t('continuousScreening:edition.validation.datasetSelection.no_added')}
+              />
             </div>
-          ))
-          .with({ isError: true }, () => (
-            <div className="flex flex-col gap-v2-md items-center justify-center h-50">
-              <div className="">{t('common:generic_fetch_data_error')}</div>
-              <Button variant="secondary" onClick={() => datasetsQuery.refetch()}>
-                {t('common:retry')}
-              </Button>
+          </div>
+          <div className="flex flex-col gap-v2-sm">
+            <span>{t('continuousScreening:edition.validation.datasetSelection.removed.title')}</span>
+            <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md max-h-50 overflow-y-auto">
+              <DatasetChangeList
+                keys={removedDatasets}
+                catalog={datasets}
+                emptyLabel={t('continuousScreening:edition.validation.datasetSelection.no_removed')}
+              />
             </div>
-          ))
-          .with({ isSuccess: true }, ({ data: { datasets } }) => {
-            if (!datasets?.sections) return null;
-            const datasetsArray = R.pipe(
-              datasets.sections,
-              R.flatMap(R.prop('datasets')),
-              R.map((d) => ({ name: d.name, tag: d.tag, title: d.title })),
-            );
-
-            return (
-              <div className="grid grid-cols-2 gap-v2-md">
-                <div className="flex flex-col gap-v2-sm">
-                  <span>{t('continuousScreening:edition.validation.datasetSelection.added.title')}</span>
-                  <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md max-h-50 overflow-y-auto">
-                    {addedDatasets.map((k) => {
-                      const dataset = datasetsArray.find((d) => d.name === k);
-                      return (
-                        <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{formatDatasetTitle(dataset?.title ?? k)}</span>
-                          {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
-                        </div>
-                      );
-                    })}
-                    {addedDatasets.length === 0 && (
-                      <span className="text-grey-secondary text-center">
-                        {t('continuousScreening:edition.validation.datasetSelection.no_added')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-col gap-v2-sm">
-                  <span>{t('continuousScreening:edition.validation.datasetSelection.removed.title')}</span>
-                  <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md max-h-50 overflow-y-auto">
-                    {removedDatasets.map((k) => {
-                      const dataset = datasetsArray.find((d) => d.name === k);
-                      return (
-                        <div key={k} className="flex items-center justify-between gap-v2-sm">
-                          <span>{formatDatasetTitle(dataset?.title ?? k)}</span>
-                          {dataset ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
-                        </div>
-                      );
-                    })}
-                    {removedDatasets.length === 0 && (
-                      <span className="text-grey-secondary text-center">
-                        {t('continuousScreening:edition.validation.datasetSelection.no_removed')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })
-          .exhaustive()}
+          </div>
+        </div>
       </Collapsible.Content>
     </Collapsible.Container>
   );

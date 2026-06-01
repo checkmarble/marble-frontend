@@ -1,6 +1,6 @@
 {
   "configurations.add_configuration": "Créer un monitoring permanent",
-  "configurations.list.column.datasets": "Listes",
+  "configurations.list.column.datasets": "Listes et sujets",
   "configurations.list.column.name": "Nom de la configuration",
   "configurations.list.column.object_types": "Types d’entités",
   "configurations.list.column.status": "Statut",

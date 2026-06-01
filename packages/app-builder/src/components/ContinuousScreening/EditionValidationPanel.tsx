@@ -4,6 +4,7 @@ import {
   ContinuousScreeningConfig,
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
+import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening';
 import { useUpdateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/update-configuration';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -23,9 +24,15 @@ export type EditionValidationPanelBaseProps = {
 
 export type EditionValidationPanelProps = EditionValidationPanelBaseProps & {
   onCancel: (draft: PrevalidationCreateContinuousScreeningConfig) => void;
+  datasets: ScreeningAvailableFiltersAdapted;
 };
 
-export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: EditionValidationPanelProps) => {
+export const EditionValidationPanel = ({
+  baseConfig,
+  updatedConfig,
+  onCancel,
+  datasets,
+}: EditionValidationPanelProps) => {
   const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening', 'common']);
   const updateConfigurationMutation = useUpdateContinuousScreeningConfigurationMutation(baseConfig.stableId);
@@ -60,7 +67,7 @@ export const EditionValidationPanel = ({ baseConfig, updatedConfig, onCancel }: 
           {t('continuousScreening:edition.validation.validation_callout')}
         </Callout>
         <GeneralInfoSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
-        <DatasetSelectionSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
+        <DatasetSelectionSection updatedConfig={updatedConfig} baseConfig={baseConfig} datasets={datasets} />
         <ScoringConfigurationSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
         <ObjectMappingSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
       </div>

@@ -1,20 +1,15 @@
-import type { ScreeningCategory } from '@app-builder/models/screening';
+import type { ScreeningAvailableFiltersAdapted, ScreeningCategory } from '@app-builder/models/screening';
+import { SCREENING_CATEGORY_TO_DTO_SECTION } from '@app-builder/models/screening-config';
 import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
+import type { ScreeningAvailableFiltersSection } from 'marble-api';
 import { capitalize } from 'radash';
 import { useTranslation } from 'react-i18next';
 
-export type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
+export type DatasetTopicSearchResult = { name: string; title: string };
 
-// All fields derived from listConfig.global.topics + conventions:
-// - keys[0]: always persisted when the global topic switch is active
-// - keys[1] / value: persisted when the switch is ON
-// - label: `screenings:freeform_search.global.${groupKey}`
-export type GlobalTopicConfig = {
-  groupKey: string;
-  keys: string[];
-  value: string;
-  label: string;
-};
+type SectionData = NonNullable<ListConfigFilters[keyof ListConfigFilters]>;
+
+export type TopicItem = NonNullable<SectionData['topics']>[keyof NonNullable<SectionData['topics']>][number];
 
 type SpecialTopicConfig = TopicItem & {
   section: ScreeningCategory;
@@ -40,7 +35,85 @@ const SPECIAL_TOPICS: SpecialTopicConfig[] = [
   },
 ];
 
-type SectionData = NonNullable<ListConfigFilters[keyof ListConfigFilters]>;
+function findInSection(
+  section: ScreeningAvailableFiltersSection,
+  kind: 'dataset' | 'topic',
+  itemName: string,
+): DatasetTopicSearchResult | undefined {
+  if (kind === 'dataset') {
+    for (const dataset of section.datasets ?? []) {
+      if (dataset.name === itemName) {
+        return { name: dataset.name, title: dataset.title ?? dataset.name };
+      }
+    }
+    return undefined;
+  }
+
+  for (const topicGroup of Object.values(section.topics ?? {})) {
+    for (const topic of topicGroup ?? []) {
+      if (topic.name === itemName) {
+        return { name: topic.name, title: topic.title ?? topic.name };
+      }
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Finds the dataset or topic referenced by a composite leaf key in the provided
+ * catalog and returns its `{ name, title }` (compatible with `formatItemName`).
+ *
+ * The key matches the format produced by `getSectionLeafKeys`:
+ * - dataset: `${section}:dataset:${name}` (e.g. `sanctions:dataset:us-plc`)
+ * - topic:   `${section}:topic:${group}:${name}` (e.g. `peps:topic:category:filter.pep.category.state_owned_enterprise`)
+ *
+ * Returns `undefined` when the key is malformed or the item is not in the catalog.
+ */
+export function findDatasetOrTopicByKey(
+  filters: ScreeningAvailableFiltersAdapted | null | undefined,
+  key: string,
+): DatasetTopicSearchResult | undefined {
+  const normalizedKey = key?.trim() ?? '';
+  if (normalizedKey === '' || !filters) return undefined;
+
+  const [sectionKey, kind, ...rest] = normalizedKey.split(':');
+  if (kind !== 'dataset' && kind !== 'topic') return undefined;
+
+  const itemName = kind === 'dataset' ? rest.join(':') : rest.slice(1).join(':');
+  if (itemName === '') return undefined;
+
+  const dtoSection = SCREENING_CATEGORY_TO_DTO_SECTION[sectionKey as ScreeningCategory];
+  const targetSection = filters.sections?.[dtoSection];
+
+  if (targetSection) {
+    const match = findInSection(targetSection, kind, itemName);
+    if (match) return match;
+  }
+
+  if (kind === 'topic') {
+    for (const conditionalFilter of filters.conditional_filters ?? []) {
+      for (const topic of conditionalFilter.topics ?? []) {
+        if (topic.name === itemName) {
+          return { name: topic.name, title: topic.title ?? topic.name };
+        }
+      }
+    }
+  }
+
+  return undefined;
+}
+
+// All fields derived from listConfig.global.topics + conventions:
+// - keys[0]: always persisted when the global topic switch is active
+// - keys[1] / value: persisted when the switch is ON
+// - label: `screenings:freeform_search.global.${groupKey}`
+export type GlobalTopicConfig = {
+  groupKey: string;
+  keys: string[];
+  value: string;
+  label: string;
+};
 
 function getSpecialTopicConfig(sectionKey: ScreeningCategory, groupKey: string) {
   const normalized = groupKey.toLowerCase();
@@ -163,6 +236,10 @@ export function useDatasetTitle() {
 
   function formatItemName(item: { name: string; title?: string }): string {
     const label = item.title ?? item.name;
+    if (label.startsWith('continuousScreening:')) {
+      return t(label.slice('continuousScreening:'.length));
+    }
+
     const translation = hasTranslation(label);
     if (translation) return t(translation);
 
