@@ -1,5 +1,6 @@
-import { type ScenarioValidation, type ScreeningConfigValidation } from '@app-builder/models';
+import { type AstNode, type ScenarioValidation, type ScreeningConfigValidation } from '@app-builder/models';
 import { type EvaluationError, NewNodeEvaluation, type NodeEvaluation } from '@app-builder/models/node-evaluation';
+import { hasFilledRuleFormula } from '@app-builder/utils/rule-form-validation';
 import {
   hasAnyFilledQueryField,
   hasRequiredScreeningCriteria,
@@ -9,7 +10,6 @@ import {
   type ScreeningValidationSource,
 } from '@app-builder/utils/screening-form-validation';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
-import invariant from 'tiny-invariant';
 
 // return just an array of error from a recursive evaluation
 export function flattenNodeEvaluationErrors(evaluation: NodeEvaluation): EvaluationError[] {
@@ -23,7 +23,12 @@ export function flattenNodeEvaluationErrors(evaluation: NodeEvaluation): Evaluat
 export function findRuleValidation(validation: ScenarioValidation, ruleId: string) {
   const ruleValidation = validation.rules.ruleItems[ruleId];
 
-  invariant(ruleValidation !== undefined, `Rule ${ruleId} not found in validation`);
+  if (ruleValidation === undefined) {
+    return {
+      errors: [],
+      ruleEvaluation: NewNodeEvaluation(),
+    };
+  }
 
   return ruleValidation;
 }
@@ -56,8 +61,33 @@ export function hasDecisionErrors(validation: ScenarioValidation): boolean {
   return false;
 }
 
-export function hasRuleErrors(ruleValidation: ScenarioValidation['rules']['ruleItems'][number]): boolean {
-  return ruleValidation.errors.length > 0 || countNodeEvaluationErrors(ruleValidation.ruleEvaluation) > 0;
+const RULE_FORMULA_REQUIRED_ERROR: ScenarioValidationErrorCodeDto = 'RULE_FORMULA_REQUIRED';
+
+export type RuleValidationOptions = {
+  /** Current form formula; used to ignore stale server RULE_FORMULA_REQUIRED after the user adds a condition. */
+  formFormula?: AstNode | null;
+};
+
+function applyRuleValidationOptions(
+  ruleValidation: ScenarioValidation['rules']['ruleItems'][number],
+  options?: RuleValidationOptions,
+): ScenarioValidation['rules']['ruleItems'][number] {
+  if (!options?.formFormula || !hasFilledRuleFormula(options.formFormula)) {
+    return ruleValidation;
+  }
+
+  return {
+    ...ruleValidation,
+    errors: ruleValidation.errors.filter((error) => error !== RULE_FORMULA_REQUIRED_ERROR),
+  };
+}
+
+export function hasRuleErrors(
+  ruleValidation: ScenarioValidation['rules']['ruleItems'][number],
+  options?: RuleValidationOptions,
+): boolean {
+  const effectiveValidation = applyRuleValidationOptions(ruleValidation, options);
+  return effectiveValidation.errors.length > 0 || countNodeEvaluationErrors(effectiveValidation.ruleEvaluation) > 0;
 }
 
 export function findScreeningValidation(validation: ScenarioValidation, screeningId: string) {
@@ -79,7 +109,7 @@ export function findScreeningValidation(validation: ScenarioValidation, screenin
 }
 
 /** Backend validates a legacy aggregate `query` AST separate from per-field `query_fields` the UI edits. */
-const AGGREGATE_QUERY_REQUIRED_ERROR: ScenarioValidationErrorCodeDto = 'RULE_FORMULA_REQUIRED';
+const AGGREGATE_QUERY_REQUIRED_ERROR = RULE_FORMULA_REQUIRED_ERROR;
 
 export type ScreeningValidationOptions = {
   /** Screening edit UI only edits per-field query AST; hide legacy aggregate `query` validation. */
@@ -283,14 +313,16 @@ export function collectRuleValidationMessages(
   ruleValidation: ScenarioValidation['rules']['ruleItems'][number],
   getScenarioErrorMessage: (code: ScenarioValidationErrorCodeDto) => string,
   formulaSectionLabel: string,
+  options?: RuleValidationOptions,
 ): string[] {
+  const effectiveValidation = applyRuleValidationOptions(ruleValidation, options);
   const messages = new Set<string>();
 
   addSectionMessages(
     messages,
     formulaSectionLabel,
-    ruleValidation.errors,
-    ruleValidation.ruleEvaluation,
+    effectiveValidation.errors,
+    effectiveValidation.ruleEvaluation,
     getScenarioErrorMessage,
   );
 

@@ -30,7 +30,7 @@ import {
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -169,14 +169,13 @@ function RuleDetail() {
   const editor = useEditorMode();
   const ruleGroups = useDerivedIterationRuleGroupsData();
 
-  const ruleValidation = useMemo(() => findRuleValidation(scenarioValidation, rule.id), [scenarioValidation, rule.id]);
-
-  const serverValidationMessages = useMemo(() => {
-    if (!hasRuleErrors(ruleValidation)) {
-      return [];
+  useEffect(() => {
+    if (scenarioValidation.rules.ruleItems[rule.id] === undefined) {
+      void router.invalidate();
     }
-    return collectRuleValidationMessages(ruleValidation, getScenarioErrorMessage, t('scenarios:edit_rule.formula'));
-  }, [ruleValidation, getScenarioErrorMessage, t]);
+  }, [rule.id, scenarioValidation, router]);
+
+  const ruleValidation = useMemo(() => findRuleValidation(scenarioValidation, rule.id), [scenarioValidation, rule.id]);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef(null);
@@ -206,6 +205,19 @@ function RuleDetail() {
     },
     defaultValues: rule as EditRuleForm,
   });
+
+  const formFormula = useStore(form.store, (state) => state.values.formula);
+
+  const serverValidationMessages = useMemo(() => {
+    if (!hasRuleErrors(ruleValidation, { formFormula })) {
+      return [];
+    }
+    return collectRuleValidationMessages(ruleValidation, getScenarioErrorMessage, t('scenarios:edit_rule.formula'), {
+      formFormula,
+    });
+  }, [ruleValidation, formFormula, getScenarioErrorMessage, t]);
+
+  const hasFormulaValidationError = serverValidationMessages.length > 0;
 
   const [formulaKey, setFormulaKey] = useState(0);
 
@@ -365,7 +377,12 @@ function RuleDetail() {
               <div className="flex flex-col gap-2">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-v2-lg">
-                  <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
+                  <div
+                    className={cn(
+                      'bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl',
+                      hasFormulaValidationError && 'border-red-primary',
+                    )}
+                  >
                     <form.Field
                       name="formula"
                       validators={{
