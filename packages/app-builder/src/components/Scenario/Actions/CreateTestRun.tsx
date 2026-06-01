@@ -13,7 +13,7 @@ import { useForm } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal, Select, Tooltip } from 'ui-design-system';
+import { Button, MenuCommand, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateTestRun({
@@ -82,6 +82,8 @@ function CreateTestRunToContent({
   const refIterationsOptions = useMemo(() => refIterations.map(({ id }) => id), [refIterations]);
   const testIterationsOptions = useMemo(() => testIterations.map(({ id }) => id), [testIterations]);
 
+  const [testIterationMenuOpen, setTestIterationMenuOpen] = useState(false);
+
   const form = useForm({
     defaultValues: {
       refIterationId: refIterationsOptions[0] as string,
@@ -143,22 +145,20 @@ function CreateTestRunToContent({
                 onChange: createTestRunPayloadSchema.shape.refIterationId,
               }}
             >
-              {(field) => (
-                <div className="group flex w-full flex-col gap-2">
-                  <FormLabel name={field.name}>{t('scenarios:create_testrun.ref')}</FormLabel>
-                  <Select.Default name={field.name} defaultValue={field.state.value} disabled>
-                    {refIterations.map(({ id }) => {
-                      const iteration = refIterations.find(({ id: iterationId }) => iterationId === id);
-                      return (
-                        <Select.DefaultItem key={id} value={id}>
-                          {`V${iteration?.version} ${iteration?.type === 'live version' ? t('scenarios:live') : ''}`}
-                        </Select.DefaultItem>
-                      );
-                    })}
-                  </Select.Default>
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                </div>
-              )}
+              {(field) => {
+                const selectedRefIteration = refIterations.find(({ id }) => id === field.state.value);
+                return (
+                  <div className="group flex w-full flex-col gap-2">
+                    <FormLabel name={field.name}>{t('scenarios:create_testrun.ref')}</FormLabel>
+                    <MenuCommand.SelectButton name={field.name} disabled>
+                      {selectedRefIteration
+                        ? `V${selectedRefIteration.version} ${selectedRefIteration.type === 'live version' ? t('scenarios:live') : ''}`
+                        : null}
+                    </MenuCommand.SelectButton>
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                );
+              }}
             </form.Field>
             <form.Field
               name="testIterationId"
@@ -167,23 +167,41 @@ function CreateTestRunToContent({
                 onChange: createTestRunPayloadSchema.shape.testIterationId,
               }}
             >
-              {(field) => (
-                <div className="group flex w-full flex-col gap-2">
-                  <FormLabel name={field.name}>{t('scenarios:create_testrun.phantom')}</FormLabel>
-                  <Select.Default
-                    placeholder={t('scenarios:create_testrun.phantom_placeholder')}
-                    defaultValue={field.state.value}
-                    onValueChange={field.handleChange}
-                  >
-                    {testIterations.map(({ id }) => (
-                      <Select.DefaultItem key={id} value={id}>
-                        {`V${testIterations.find(({ id: iterationId }) => iterationId === id)?.version}`}
-                      </Select.DefaultItem>
-                    ))}
-                  </Select.Default>
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                </div>
-              )}
+              {(field) => {
+                const selectedTestIteration = testIterations.find(({ id }) => id === field.state.value);
+                return (
+                  <div className="group flex w-full flex-col gap-2">
+                    <FormLabel name={field.name}>{t('scenarios:create_testrun.phantom')}</FormLabel>
+                    <MenuCommand.Menu open={testIterationMenuOpen} onOpenChange={setTestIterationMenuOpen}>
+                      <MenuCommand.Trigger>
+                        <MenuCommand.SelectButton name={field.name}>
+                          {selectedTestIteration
+                            ? `V${selectedTestIteration.version}`
+                            : t('scenarios:create_testrun.phantom_placeholder')}
+                        </MenuCommand.SelectButton>
+                      </MenuCommand.Trigger>
+                      <MenuCommand.Content sameWidth>
+                        <MenuCommand.List>
+                          {testIterations.map(({ id, version }) => (
+                            <MenuCommand.Item
+                              key={id}
+                              value={id}
+                              selected={id === field.state.value}
+                              onSelect={() => {
+                                field.handleChange(id);
+                                setTestIterationMenuOpen(false);
+                              }}
+                            >
+                              {`V${version}`}
+                            </MenuCommand.Item>
+                          ))}
+                        </MenuCommand.List>
+                      </MenuCommand.Content>
+                    </MenuCommand.Menu>
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                );
+              }}
             </form.Field>
           </div>
           <form.Field
