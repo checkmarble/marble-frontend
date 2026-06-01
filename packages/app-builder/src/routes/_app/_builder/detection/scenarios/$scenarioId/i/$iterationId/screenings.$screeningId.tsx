@@ -645,7 +645,7 @@ function ScreeningDetail() {
                         <FieldToolTip>{t('scenarios:edit_sanction.entity_type.tooltip')}</FieldToolTip>
                       </span>
                       <form.Field name="entityType">
-                        {(field) => <FieldEntityType entityType={entityType} onChange={field.handleChange} />}
+                        {(field) => <FieldEntityType entityType={field.state.value} onChange={field.handleChange} />}
                       </form.Field>
                     </div>
                     <div className="flex flex-col gap-2">
