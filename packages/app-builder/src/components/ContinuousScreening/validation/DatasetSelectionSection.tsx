@@ -32,7 +32,7 @@ function DatasetChangeList({
     const category = getSectionFromKey(key);
     return (
       <div key={key} className="flex items-center justify-between gap-v2-sm">
-        <span className="truncate">{formatItemName(item)}</span>
+        <span className="truncate min-w-0">{formatItemName(item)}</span>
         {category ? <DatasetTag category={category} /> : null}
       </div>
     );
