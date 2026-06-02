@@ -32,7 +32,6 @@ export function ScreeningStatusTag({
 
   return (
     <Tag color={screeningStatus.color} className={className}>
-      {/* <Trans t={t} i18nKey={screeningStatus.tKey} values={{ count: pendingHitCount ?? 0 }} /> */}
       {t(screeningStatus.tKey, { count: pendingHitCount ?? 0 })}
     </Tag>
   );

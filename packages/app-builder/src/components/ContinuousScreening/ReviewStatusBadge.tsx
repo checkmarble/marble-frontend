@@ -8,7 +8,17 @@ const CONTINUOUS_SCREENING_STATUS_COLOR_MAP: Record<ContinuousScreeningBase['sta
   no_hit: 'green',
 };
 
-export function ReviewStatusBadge({ status }: { status: ContinuousScreeningBase['status'] }) {
+export function ReviewStatusBadge({
+  status,
+  hitsCount,
+}: {
+  status: ContinuousScreeningBase['status'];
+  hitsCount: number;
+}) {
   const { t } = useTranslation(['screenings']);
-  return <Tag color={CONTINUOUS_SCREENING_STATUS_COLOR_MAP[status]}>{t(`screenings:status.${status}`)}</Tag>;
+  return (
+    <Tag color={CONTINUOUS_SCREENING_STATUS_COLOR_MAP[status]}>
+      {t(`screenings:status.${status}`, { count: hitsCount })}
+    </Tag>
+  );
 }
