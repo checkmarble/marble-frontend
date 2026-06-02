@@ -71,7 +71,7 @@ export function TopicsDisplay({ entity, containerClassName }: TopicsDisplayProps
   if (filteredTopics.length === 0) return null;
 
   return (
-    <div className={containerClassName ?? 'flex flex-wrap gap-1'}>
+    <div className={containerClassName ?? 'flex flex-wrap gap-1 font-normal'}>
       {filteredTopics.map((topic) => (
         <TopicTag key={`${entity.id}-${topic}`} topic={topic} />
       ))}
