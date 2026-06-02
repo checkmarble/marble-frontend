@@ -2,7 +2,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useGetEnrichedDataQuery } from '@app-builder/queries/screening/get-enriched-data';
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
-import { type FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -16,7 +16,7 @@ interface FreeformMatchCardProps {
   searchTerm?: string;
 }
 
-export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ entity, defaultOpen, searchTerm }) => {
+export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformMatchCardProps) {
   const { t } = useTranslation(screeningsI18n);
   const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
 
@@ -72,7 +72,7 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
       </CollapsiblePrimitive.Content>
     </CollapsiblePrimitive.Root>
   );
-};
+}
 
 export default FreeformMatchCard;
 

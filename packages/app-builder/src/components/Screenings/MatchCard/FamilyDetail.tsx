@@ -34,7 +34,7 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
               const entities = member.properties[relation === 'familyPerson' ? 'relative' : 'person'] as PersonEntity[];
 
               return entities?.map(({ id, properties }, idx) => {
-                if (!properties.name?.[0]) return null;
+                if (!properties?.name?.[0]) return null;
                 const rel =
                   member.properties.relationship
                     ?.map((relation) =>

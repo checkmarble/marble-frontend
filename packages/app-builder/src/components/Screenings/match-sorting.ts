@@ -1,10 +1,10 @@
-import { type ScreeningMatch, type ScreeningMatchPayload } from '@app-builder/models/screening';
-
-const topicCategoryPriority: Record<string, number> = {
-  sanctions: 0,
-  pep: 1,
-  adverse_media: 2,
-};
+import {
+  getCategoryForTopic,
+  isOpenSanctionTopic,
+  type ScreeningMatch,
+  type ScreeningMatchPayload,
+} from '@app-builder/models/screening';
+import { TOPIC_ORDER, topicCategoryPriority } from './TopicsDisplay';
 
 function getDisplayedTopics(topics: string[]): string[] {
   const hasPepPrimary = topics.includes('pep.kind.primary');
@@ -48,4 +48,30 @@ export function sortScreeningMatchesByTopics(a: ScreeningMatch, b: ScreeningMatc
   }
 
   return b.payload.score - a.payload.score;
+}
+
+function withEnrichedOpenSanctionTopics(payload: ScreeningMatchPayload): ScreeningMatchPayload {
+  const topics = payload.properties?.['topics'];
+  if (!topics) return payload;
+
+  return {
+    ...payload,
+    properties: {
+      ...payload.properties,
+      topics: topics.map((topic) => `${TOPIC_ORDER[getCategoryForTopic(topic) ?? 'third-parties']}.${topic}`),
+    },
+  } as unknown as ScreeningMatchPayload;
+}
+
+export function getSortedPayloadByTopics(payloads: ScreeningMatchPayload[]): ScreeningMatchPayload[] {
+  const allTopics = new Set(payloads.flatMap((payload) => payload.properties?.['topics'] ?? []));
+  const isOpenSanctions = Array.from(allTopics).every(isOpenSanctionTopic);
+
+  if (!isOpenSanctions) {
+    return payloads.toSorted(sortPayloadsByTopics);
+  }
+
+  return payloads.toSorted((a, b) =>
+    sortPayloadsByTopics(withEnrichedOpenSanctionTopics(a), withEnrichedOpenSanctionTopics(b)),
+  );
 }
