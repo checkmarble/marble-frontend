@@ -52,19 +52,15 @@ function DesignPage() {
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   const [dark, setDark] = useState(false);
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 max-w-5xl">
       <header className="flex items-center justify-between">
         <div>
           <h2 className="text-l font-semibold">{title}</h2>
           {description ? <p className="text-s text-grey-secondary">{description}</p> : null}
         </div>
-        <button
-          type="button"
-          onClick={() => setDark((v) => !v)}
-          className="border-grey-border hover:bg-grey-background-light rounded-md border px-3 py-1.5 text-xs"
-        >
+        <Button type="button" onClick={() => setDark((v) => !v)} variant="secondary" appearance="stroked" size="medium">
           {dark ? 'Light preview' : 'Dark preview'}
-        </button>
+        </Button>
       </header>
       <div className={cn('border-grey-border bg-grey-white rounded-lg border p-6', dark && 'dark bg-grey-background')}>
         <div className={dark ? 'text-grey-white' : undefined}>{children}</div>
@@ -118,17 +114,20 @@ function RadioMatrix() {
           </VariantCell>
         </MatrixRow>
       ))}
-      <InteractiveRadio />
+      <div className="grid grid-cols-2 gap-4">
+        <InteractiveRadio size="regular" />
+        <InteractiveRadio size="small" />
+      </div>
     </div>
   );
 }
 
-function InteractiveRadio() {
+function InteractiveRadio({ size }: { size: Size }) {
   const [value, setValue] = useState('option1');
   return (
     <div className="border-grey-border mt-2 flex flex-col gap-2 border-t pt-4">
-      <span className="text-s font-medium">Interactive</span>
-      <Radio.Root value={value} onValueChange={setValue}>
+      <span className="text-s font-medium">Interactive {size}</span>
+      <Radio.Root value={value} onValueChange={setValue} size={size}>
         <label className="text-s flex items-center gap-2">
           <Radio.Item value="option1" />
           Option 1
@@ -171,7 +170,10 @@ function CheckboxMatrix() {
           </VariantCell>
         </MatrixRow>
       ))}
-      <InteractiveCheckbox />
+      <div className="grid grid-cols-2 gap-4">
+        <InteractiveCheckbox size="regular" />
+        <InteractiveCheckbox size="small" />
+      </div>
     </div>
   );
 }
@@ -296,13 +298,13 @@ function ButtonMatrix() {
   );
 }
 
-function InteractiveCheckbox() {
+function InteractiveCheckbox({ size }: { size: Size }) {
   const [checked, setChecked] = useState<CheckedState>(false);
   return (
     <div className="border-grey-border mt-2 flex flex-col gap-2 border-t pt-4">
-      <span className="text-s font-medium">Interactive</span>
+      <span className="text-s font-medium">Interactive {size}</span>
       <div className="flex items-center gap-2">
-        <Checkbox id="design-cb" checked={checked} onCheckedChange={setChecked} />
+        <Checkbox id="design-cb" checked={checked} onCheckedChange={setChecked} size={size} />
         <label htmlFor="design-cb" className="text-s">
           Click me — current: {String(checked)}
         </label>
