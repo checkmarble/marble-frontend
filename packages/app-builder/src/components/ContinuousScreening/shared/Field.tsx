@@ -3,7 +3,7 @@ import { cn } from 'ui-design-system';
 
 type FieldProps = {
   title: string;
-  description: string;
+  description?: string;
   children: React.ReactNode;
   callout?: string;
   titleClassName?: string;
@@ -17,7 +17,7 @@ export const Field = ({ title, description, children, callout, titleClassName, r
         <span className={cn('text-h2 font-semibold', titleClassName)}>{title}</span>
         {required ? <span className="text-red-primary text-s">*</span> : null}
       </div>
-      <div className="text-grey-secondary">{description}</div>
+      {description ? <div className="text-grey-secondary">{description}</div> : null}
       <div className="flex gap-v2-md items-center">{children}</div>
       {callout ? <Callout bordered>{callout}</Callout> : null}
     </div>

@@ -1,4 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
+import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useState } from 'react';
@@ -21,29 +22,14 @@ export const ScoringConfiguration = () => {
       <Callout bordered className="bg-surface-card mx-v2-md">
         {t(`continuousScreening:${tKey}.scoringConfiguration.callout`)}
       </Callout>
-      <Field
-        title={t('continuousScreening:creation.scoringConfiguration.matchThreshold.title')}
-        description={t(`continuousScreening:creation.scoringConfiguration.matchThreshold.subtitle`)}
-        callout={t('continuousScreening:creation.scoringConfiguration.matchThreshold.callout')}
-      >
-        <Input
-          type="number"
-          min={0}
-          max={100}
-          step={0.1}
-          value={matchThreshold.value}
-          readOnly={mode === 'view'}
-          onChange={(e) => (matchThreshold.value = e.target.valueAsNumber)}
-          onBlur={(e) => {
-            if (e.target.valueAsNumber < 0) {
-              matchThreshold.value = 0;
-            }
-            if (e.target.valueAsNumber > 100) {
-              matchThreshold.value = 100;
-            }
-          }}
+      <Field title={t('continuousScreening:creation.scoringConfiguration.matchThreshold.title')}>
+        <ScreeningThreshold
+          threshold={matchThreshold.value}
+          onChange={(value) => (matchThreshold.value = value)}
+          title={t(`continuousScreening:creation.scoringConfiguration.matchThreshold.subtitle`)}
+          className="flex-1 w-full"
+          disabled={mode === 'view'}
         />
-        <span>%</span>
       </Field>
       <Field
         title={t('continuousScreening:creation.scoringConfiguration.matchLimit.title')}
