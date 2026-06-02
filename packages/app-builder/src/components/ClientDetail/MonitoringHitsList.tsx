@@ -88,7 +88,7 @@ function AsyncMonitoringReviewState({ caseId }: { caseId: string }) {
       const screening = caseDetail.continuousScreenings[0];
       if (!screening) return null;
 
-      return <ReviewStatusBadge status={screening.status} />;
+      return <ReviewStatusBadge status={screening.status} hitsCount={screening.matches.length} />;
     })
     .exhaustive();
 }

@@ -3,29 +3,34 @@ import {
   ContinuousScreeningConfig,
   PrevalidationCreateContinuousScreeningConfig,
 } from '@app-builder/models/continuous-screening';
-import { useContinuousScreeningConfigurationsQuery } from '@app-builder/queries/continuous-screening/configurations';
+import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening';
+import { ContinuousScreeningConfiguration } from '@app-builder/queries/continuous-screening/configurations';
 import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { Button, ExpandableGroupTagLine, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
 import { makeDatasetsMap } from '../ListAndTopicConfiguration/dataset-selection-provider-utils';
-import { useDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
+import { findDatasetOrTopicByKey, useDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
 import { PanelRoot } from '../Panel/Panel';
-import { Spinner } from '../Spinner';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
 
-export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
+type ConfigurationsPageProps = {
+  canEdit: boolean;
+  configurations: ContinuousScreeningConfiguration[];
+  datasets: ScreeningAvailableFiltersAdapted;
+};
+
+export const ConfigurationsPage = ({ canEdit, configurations, datasets }: ConfigurationsPageProps) => {
   const { t } = useTranslation(['common', 'continuousScreening', 'navigation']);
-  const { formatDatasetTitle } = useDatasetTitle();
-  const configurationsQuery = useContinuousScreeningConfigurationsQuery();
+  const { formatItemName } = useDatasetTitle();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
   const navigate = useAgnosticNavigation();
 
@@ -76,39 +81,21 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
               </Button>
             ) : null}
           </div>
-          {match(configurationsQuery)
-            .with({ isPending: true }, () => (
-              <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
-                <Spinner className="size-10 text-purple-primary" />
-                <span>{t('continuousScreening:configurations.list.loading')}</span>
-              </div>
-            ))
-            .with({ isError: true }, () => (
-              <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
-                <div className="">{t('common:generic_fetch_data_error')}</div>
-                <Button variant="secondary" onClick={() => configurationsQuery.refetch()}>
-                  {t('common:retry')}
-                </Button>
-              </div>
-            ))
-            .with({ isSuccess: true }, ({ data: configurations }) => {
-              if (!configurations) return null;
-              if (configurations.length === 0) {
-                return (
-                  <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
-                    <Icon icon="scan-eye" className="size-10 text-purple-primary" />
-                    <span>{t('continuousScreening:configurations.list.empty')}</span>
-                    {canEdit ? (
-                      <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
-                        <Icon icon="plus" className="size-4" />
-                        {t('continuousScreening:configurations.add_configuration')}
-                      </Button>
-                    ) : null}
-                  </div>
-                );
-              }
-
-              return (
+          {match(configurations)
+            .with(P.nullish, () => null)
+            .with(P.array(), (configurations) =>
+              configurations.length === 0 ? (
+                <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
+                  <Icon icon="scan-eye" className="size-10 text-purple-primary" />
+                  <span>{t('continuousScreening:configurations.list.empty')}</span>
+                  {canEdit ? (
+                    <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
+                      <Icon icon="plus" className="size-4" />
+                      {t('continuousScreening:configurations.add_configuration')}
+                    </Button>
+                  ) : null}
+                </div>
+              ) : (
                 <GridTable.Table className="grid-cols-[minmax(0,_33.33%)_repeat(3,_1fr)]">
                   <GridTable.Row className="font-semibold border-b border-grey-border">
                     <GridTable.Cell>{t('continuousScreening:configurations.list.column.name')}</GridTable.Cell>
@@ -131,11 +118,17 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                       <GridTable.Cell className="min-w-0">
                         <div className="flex min-w-0 w-full max-w-[20vw] overflow-hidden">
                           <ExpandableGroupTagLine
-                            items={item.datasets.map((d) => (
-                              <Tag key={d} color="grey">
-                                {formatDatasetTitle(d)}
-                              </Tag>
-                            ))}
+                            items={item.datasets.map((d) => {
+                              const resolvedItem = findDatasetOrTopicByKey(datasets, d);
+                              const itemName = resolvedItem ? formatItemName(resolvedItem) : d;
+                              return (
+                                <Tag key={d} color="grey">
+                                  <span className="max-w-[15ch] truncate" title={itemName}>
+                                    {itemName}
+                                  </span>
+                                </Tag>
+                              );
+                            })}
                           />
                         </div>
                       </GridTable.Cell>
@@ -154,9 +147,10 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                     </GridTable.Row>
                   ))}
                 </GridTable.Table>
-              );
-            })
+              ),
+            )
             .exhaustive()}
+
           <CreationModal open={creationModalOpen} onOpenChange={setCreationModalOpen} onSubmit={handleCreationSubmit} />
           {editingConfig && draft ? (
             <PanelRoot open onOpenChange={handlePanelOpenChange}>
@@ -171,6 +165,7 @@ export const ConfigurationsPage = ({ canEdit }: { canEdit: boolean }) => {
                 <EditionValidationPanel
                   baseConfig={editingConfig}
                   updatedConfig={updatedConfig}
+                  datasets={datasets}
                   onCancel={() => setUpdatedConfig(null)}
                 />
               ) : null}
