@@ -39,5 +39,8 @@
   "type": "module",
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "react-i18next": "17.0.7"
+  }
 }
