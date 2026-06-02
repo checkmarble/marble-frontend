@@ -56,7 +56,14 @@ export function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): N
   ): NormalizedSection | undefined {
     if (!section) return undefined;
     const adaptedSection: NormalizedSection = {
-      ...section,
+      topics: section.topics
+        ? Object.fromEntries(
+            Object.entries(section.topics).map(([key, value]) => [
+              key,
+              value.map((t) => ({ name: t.name, title: t.title })).sort((a, b) => a.title.localeCompare(b.title)),
+            ]),
+          )
+        : undefined,
       datasets: Array.isArray(section?.datasets) ? groupBySection(section.datasets, name) : undefined,
     };
 

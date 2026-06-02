@@ -1,6 +1,6 @@
 {
   "configurations.add_configuration": "إنشاء فحص مستمر",
-  "configurations.list.column.datasets": "القوائم",
+  "configurations.list.column.datasets": "القوائم والمواضيع",
   "configurations.list.column.name": "اسم الإعداد",
   "configurations.list.column.object_types": "أنواع الكيانات",
   "configurations.list.column.status": "الحالة",

@@ -1,6 +1,6 @@
 {
   "configurations.add_configuration": "Add a configuration",
-  "configurations.list.column.datasets": "Datasets",
+  "configurations.list.column.datasets": "Datasets and topics",
   "configurations.list.column.name": "Name of configuration",
   "configurations.list.column.object_types": "Object types",
   "configurations.list.column.status": "Status",
