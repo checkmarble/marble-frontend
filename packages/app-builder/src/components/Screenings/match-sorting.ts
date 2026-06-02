@@ -1,10 +1,5 @@
-import {
-  getCategoryForTopic,
-  isOpenSanctionTopic,
-  type ScreeningMatch,
-  type ScreeningMatchPayload,
-} from '@app-builder/models/screening';
-import { TOPIC_ORDER, topicCategoryPriority } from './TopicsDisplay';
+import { isOpenSanctionTopic, type ScreeningMatch, type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { toOrderedTopic, topicCategoryPriority } from './TopicsDisplay';
 
 function getDisplayedTopics(topics: string[]): string[] {
   const hasPepPrimary = topics.includes('pep.kind.primary');
@@ -58,8 +53,10 @@ function withEnrichedOpenSanctionTopics(payload: ScreeningMatchPayload): Screeni
     ...payload,
     properties: {
       ...payload.properties,
-      topics: topics.map((topic) => `${TOPIC_ORDER[getCategoryForTopic(topic) ?? 'third-parties']}.${topic}`),
+      topics: topics.map(toOrderedTopic),
     },
+    // Cast required: ScreeningMatchPayload['properties'] intersects entity arrays
+    // with Record<string, string[]>, an internally contradictory type.
   } as unknown as ScreeningMatchPayload;
 }
 

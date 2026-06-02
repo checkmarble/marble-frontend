@@ -36,9 +36,7 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformM
               percent: Math.round(entity.score * 100),
             })}
           </Tag>
-          <div className="col-span-full flex w-full flex-wrap gap-1">
-            <TopicsDisplay entity={entity} />
-          </div>
+          <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-1 font-normal" />
         </div>
       </Collapsible.Title>
 

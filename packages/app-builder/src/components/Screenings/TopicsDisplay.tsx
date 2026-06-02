@@ -49,11 +49,13 @@ export const TOPIC_ORDER: Record<ScreeningCategory, keyof typeof topicCategoryPr
   global: '',
 };
 
+export function toOrderedTopic(topic: string): string {
+  return `${TOPIC_ORDER[getCategoryForTopic(topic) ?? 'third-parties']}.${topic}`;
+}
+
 export function getFilteredAndSortedTopics(topics: string[]): string[] {
   if (topics.every(isOpenSanctionTopic)) {
-    const topicsWithCategory = new Set(
-      topics.map((topic) => `${TOPIC_ORDER[getCategoryForTopic(topic) ?? 'third-parties']}.${topic}`),
-    );
+    const topicsWithCategory = new Set(topics.map(toOrderedTopic));
     const sorted = Array.from(topicsWithCategory).toSorted(sortTopics);
     return sorted.map((sortedTopic) => {
       const dot = sortedTopic.indexOf('.');
