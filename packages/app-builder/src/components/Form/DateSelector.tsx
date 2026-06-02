@@ -1,8 +1,6 @@
 import { useFormatDateTime } from '@app-builder/utils/format';
-import { Popover, PopoverDisclosure, PopoverProvider } from '@ariakit/react';
-import clsx from 'clsx';
 import { type ElementRef, forwardRef, useState } from 'react';
-import { Button, Calendar, type Input } from 'ui-design-system';
+import { Button, Calendar, cn, type Input, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface DateSelectorProps {
@@ -23,25 +21,24 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
 
   return (
     <div ref={ref} className="flex flex-row items-center gap-2">
-      <PopoverProvider open={open} setOpen={setOpen}>
-        <PopoverDisclosure render={<Button variant="secondary" />}>
-          <Icon
-            icon="calendar-month"
-            className={clsx('size-5', {
-              'text-grey-primary': selectedDate,
-              'text-grey-secondary': !selectedDate,
-            })}
-          />
-          <span
-            className={clsx('font-normal', {
-              'text-grey-primary': selectedDate,
-              'text-grey-secondary': !selectedDate,
-            })}
-          >
-            {selectedDate ? formatDateTime(selectedDate, { dateStyle: 'short' }) : props.placeholder}
-          </span>
-        </PopoverDisclosure>
-        <Popover className="bg-surface-card border-grey-border isolate rounded-md border p-4" gutter={8}>
+      <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Trigger asChild>
+          <Button variant="secondary" size="default">
+            <Icon
+              icon="calendar-month"
+              className={cn('size-5', selectedDate ? 'text-grey-primary' : 'text-grey-secondary')}
+            />
+            <span className={cn('font-normal', selectedDate ? 'text-grey-primary' : 'text-grey-secondary')}>
+              {selectedDate ? formatDateTime(selectedDate, { dateStyle: 'short' }) : props.placeholder}
+            </span>
+          </Button>
+        </Popover.Trigger>
+        <Popover.Content
+          className="bg-surface-card border-grey-border isolate rounded-md border p-4"
+          align="start"
+          sideOffset={2}
+          side="bottom"
+        >
           <Calendar
             mode="single"
             hidden={{ before: new Date() }}
@@ -54,8 +51,8 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
               }
             }}
           />
-        </Popover>
-      </PopoverProvider>
+        </Popover.Content>
+      </Popover.Root>
     </div>
   );
 });
