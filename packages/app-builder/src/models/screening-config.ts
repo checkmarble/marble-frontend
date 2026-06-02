@@ -83,7 +83,7 @@ export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfi
   return configDto;
 }
 
-const ConvertSectionNameToDto: Record<ScreeningCategory, keyof ScreeningConfigBodyFiltersDto> = {
+export const SCREENING_CATEGORY_TO_DTO_SECTION: Record<ScreeningCategory, keyof ScreeningConfigBodyFiltersDto> = {
   sanctions: 'sanctions',
   peps: 'peps',
   'third-parties': 'other',
@@ -110,7 +110,7 @@ export function createScreeningFilters(selection: string[]): ScreeningConfigBody
   for (const item of selection) {
     const chunks = item.split(':');
     const sectionChuk = chunks[0] as ScreeningCategory;
-    const section = ConvertSectionNameToDto[sectionChuk];
+    const section = SCREENING_CATEGORY_TO_DTO_SECTION[sectionChuk];
     if (!filters[section]) continue;
     if (chunks.length === 1) filters[section].enabled = true;
     if (chunks.length < 3) continue;

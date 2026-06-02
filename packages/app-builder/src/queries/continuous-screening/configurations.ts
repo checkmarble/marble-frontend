@@ -4,7 +4,7 @@ import { listContinuousScreeningConfigurationsFn } from '@app-builder/server-fns
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-type ContinuousScreeningConfiguration = ContinuousScreeningConfig & {
+export type ContinuousScreeningConfiguration = ContinuousScreeningConfig & {
   inbox: Inbox | undefined;
 };
 
