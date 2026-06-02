@@ -146,6 +146,10 @@ function RuleDetail() {
     onSuccess: async () => {
       await router.invalidate();
       toast.success(t('common:success.save'));
+      router.navigate({
+        to: '/detection/scenarios/$scenarioId/i/$iterationId/rules',
+        params: { scenarioId: fromUUIDtoSUUID(scenarioId), iterationId: fromUUIDtoSUUID(iterationId) },
+      });
     },
     onError: () => {
       toast.error(t('common:errors.unknown'));

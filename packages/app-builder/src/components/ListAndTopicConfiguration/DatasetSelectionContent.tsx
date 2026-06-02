@@ -99,7 +99,14 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
               </div>
             )*/}
             {sections.map(([key, section]) =>
-              section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+              section ? (
+                <Section
+                  key={key}
+                  sectionKey={key as ScreeningCategory}
+                  section={section}
+                  sectionCount={sections.length}
+                />
+              ) : null,
             )}
           </div>
         );
@@ -123,6 +130,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                       section={section}
                       isActive={activeSectionKey === key}
                       onSelect={() => setActiveSectionKey(key as ScreeningCategory)}
+                      sectionCount={sections.length}
                     />
                   ) : null,
                 )}
@@ -196,9 +204,10 @@ type SectionProps = {
   section: SectionData;
   isActive?: boolean;
   onSelect?: () => void;
+  sectionCount: number;
 };
 
-const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
+const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
@@ -211,6 +220,7 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const selectedCount = ListAndTopicDatasetConfiguration.select(
     (state) => datasetNames.filter((n) => state.datasets[buildDatasetKey(sectionKey, n)]).length,
   );
+  const isUniqueListForLN = provider === 'lexisnexis' && sectionCount === 1;
 
   return match(variant)
     .with('default', () => (
@@ -222,8 +232,8 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                 <Checkbox
                   stopPropagation
                   size="small"
-                  checked={isEnabled}
-                  disabled={mode === 'view'}
+                  checked={isEnabled || isUniqueListForLN}
+                  disabled={mode === 'view' || isUniqueListForLN}
                   onCheckedChange={() => {
                     listConfig.update((state) => {
                       const nextValue = !state.datasets[sectionKey];
