@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
 
 import { Callout } from '../../Callout';
-import { sortPayloadsByTopics } from '../match-sorting';
+import { getSortedPayloadByTopics } from '../match-sorting';
 import { screeningsI18n } from '../screenings-i18n';
 import { FreeformMatchCard } from './FreeformMatchCard';
 import { DEFAULT_LIMIT } from './LimitPopover';
@@ -55,7 +55,7 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
           )}
         </div>
 
-        {[...data].sort(sortPayloadsByTopics).map((entity) => (
+        {getSortedPayloadByTopics(data).map((entity) => (
           <FreeformMatchCard key={entity.id} entity={entity} defaultOpen={data.length === 1} searchTerm={searchTerm} />
         ))}
       </div>
