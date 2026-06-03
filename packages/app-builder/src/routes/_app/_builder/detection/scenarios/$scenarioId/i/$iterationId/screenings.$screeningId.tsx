@@ -251,6 +251,11 @@ function ScreeningDetail() {
             setHasBeenSaved(true);
             toast.success(t('common:success.save'));
             revalidate();
+            // TODO: wait for second thought, we might not need to navigate back to the rules list
+            // router.navigate({
+            //   to: '/detection/scenarios/$scenarioId/i/$iterationId/rules',
+            //   params: { scenarioId: fromUUIDtoSUUID(scenario.id), iterationId: fromUUIDtoSUUID(iterationId) },
+            // });
           })
           .catch(() => {
             toast.error(t('common:errors.unknown'));

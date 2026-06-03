@@ -24,11 +24,14 @@ import { Icon } from 'ui-icons';
 import { ListAndTopicDatasetConfiguration } from './context/ListAndTopicDatasetConfiguration';
 import {
   applyAliveDeceasedDefaults,
+  applyUniqueLexisNexisSectionDefault,
   buildDatasetKey,
   buildTopicKey,
   isDatasetKeySelected,
+  isSectionEnabled,
   // isGlobalTopicSwitchSelected,
   isTopicKeySelected,
+  isUniqueLexisNexisList,
   selectAllInSection,
   setDatasetKey,
   // setGlobalTopicSwitch,
@@ -75,7 +78,8 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
     const data = listConfigQuery.data;
     if (!data) return;
     listConfig.update((state) => {
-      applyAliveDeceasedDefaults(state.datasets, listConfig.value.datasets, useCase);
+      applyAliveDeceasedDefaults(state.datasets, data.filters, useCase);
+      applyUniqueLexisNexisSectionDefault(state.datasets, data.filters, state.provider);
     });
   }, [listConfigQuery.data, useCase, listConfig]);
 
@@ -99,7 +103,14 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
               </div>
             )*/}
             {sections.map(([key, section]) =>
-              section ? <Section key={key} sectionKey={key as ScreeningCategory} section={section} /> : null,
+              section ? (
+                <Section
+                  key={key}
+                  sectionKey={key as ScreeningCategory}
+                  section={section}
+                  sectionCount={sections.length}
+                />
+              ) : null,
             )}
           </div>
         );
@@ -123,6 +134,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                       section={section}
                       isActive={activeSectionKey === key}
                       onSelect={() => setActiveSectionKey(key as ScreeningCategory)}
+                      sectionCount={sections.length}
                     />
                   ) : null,
                 )}
@@ -140,6 +152,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                 <SectionPanel
                   sectionKey={activeSectionKey}
                   section={activeSection}
+                  sectionCount={sections.length}
                   onApply={onApply}
                   onCancel={() => {
                     setActiveSectionKey(null);
@@ -196,9 +209,10 @@ type SectionProps = {
   section: SectionData;
   isActive?: boolean;
   onSelect?: () => void;
+  sectionCount: number;
 };
 
-const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
+const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: SectionProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const variant = ListAndTopicDatasetConfiguration.select((state) => state.variant);
@@ -207,10 +221,13 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
 
   const datasetNames = getDatasetNames(section);
-  const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
+  const isEnabled = ListAndTopicDatasetConfiguration.select((state) =>
+    isSectionEnabled(state.datasets, sectionKey, state.provider, sectionCount),
+  );
   const selectedCount = ListAndTopicDatasetConfiguration.select(
     (state) => datasetNames.filter((n) => state.datasets[buildDatasetKey(sectionKey, n)]).length,
   );
+  const isUniqueListForLN = isUniqueLexisNexisList(provider, sectionCount);
 
   return match(variant)
     .with('default', () => (
@@ -223,7 +240,7 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
                   stopPropagation
                   size="small"
                   checked={isEnabled}
-                  disabled={mode === 'view'}
+                  disabled={mode === 'view' || isUniqueListForLN}
                   onCheckedChange={() => {
                     listConfig.update((state) => {
                       const nextValue = !state.datasets[sectionKey];
@@ -279,15 +296,19 @@ const Section = ({ sectionKey, section, isActive, onSelect }: SectionProps) => {
 type SectionPanelProps = {
   sectionKey: ScreeningCategory;
   section: SectionData;
+  sectionCount: number;
   onApply?: () => void;
   onCancel?: () => void;
 };
 
-const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelProps) => {
+const SectionPanel = ({ sectionKey, section, sectionCount, onApply, onCancel }: SectionPanelProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
-  const isEnabled = ListAndTopicDatasetConfiguration.select((state) => !!state.datasets[sectionKey]);
+  const isEnabled = ListAndTopicDatasetConfiguration.select((state) =>
+    isSectionEnabled(state.datasets, sectionKey, state.provider, sectionCount),
+  );
+  const isUniqueListForLN = isUniqueLexisNexisList(provider, sectionCount);
   const { t } = useTranslation(['common', 'continuousScreening', 'scenarios', 'screenings']);
   const { getLaTagLabel } = useDatasetTag();
 
@@ -298,7 +319,7 @@ const SectionPanel = ({ sectionKey, section, onApply, onCancel }: SectionPanelPr
           <Switch
             id={`section-switch-${sectionKey}`}
             checked={isEnabled}
-            disabled={mode === 'view'}
+            disabled={mode === 'view' || isUniqueListForLN}
             onCheckedChange={(checked) => {
               listConfig.update((state) => {
                 state.datasets[sectionKey] = checked;

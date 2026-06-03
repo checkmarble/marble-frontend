@@ -1,4 +1,4 @@
-import type { AvailableFeatures, ScreeningCategory } from '@app-builder/models/screening';
+import type { AvailableFeatures, ScreeningCategory, ScreeningProviders } from '@app-builder/models/screening';
 import type { ListConfigFilters } from '@app-builder/queries/screening/lists-config';
 import { type GlobalTopicConfig } from './dataset-utils';
 
@@ -138,6 +138,39 @@ export function setGlobalTopicSwitch(
 
   datasets[buildTopicKey('global', config.groupKey, defaultKey)] = true;
   datasets[buildTopicKey('global', config.groupKey, switchKey)] = checked;
+}
+
+function getAvailableSectionKeys(filters: ListConfigFilters): ScreeningCategory[] {
+  return Object.entries(filters)
+    .filter(([key, section]) => key !== 'global' && (section?.datasets?.length || section?.topics))
+    .map(([key]) => key as ScreeningCategory);
+}
+
+/** LexisNexis configs expose a single list section that cannot be turned off. */
+export function isUniqueLexisNexisList(provider: ScreeningProviders, availableSectionCount: number): boolean {
+  return provider === 'lexisnexis' && availableSectionCount === 1;
+}
+
+export function isSectionEnabled(
+  datasets: Record<string, boolean>,
+  sectionKey: ScreeningCategory,
+  provider: ScreeningProviders,
+  availableSectionCount: number,
+): boolean {
+  return !!datasets[sectionKey] || isUniqueLexisNexisList(provider, availableSectionCount);
+}
+
+/** Persists the mandatory LexisNexis section flag so UI state and wire payload stay aligned. */
+export function applyUniqueLexisNexisSectionDefault(
+  datasets: Record<string, boolean>,
+  filters: ListConfigFilters,
+  provider: ScreeningProviders,
+): void {
+  if (provider !== 'lexisnexis') return;
+  const sectionKeys = getAvailableSectionKeys(filters);
+  const sectionKey = sectionKeys[0];
+  if (sectionKeys.length !== 1 || !sectionKey) return;
+  datasets[sectionKey] = true;
 }
 
 /** Strips falsy entries from the datasets map before persistence. */
