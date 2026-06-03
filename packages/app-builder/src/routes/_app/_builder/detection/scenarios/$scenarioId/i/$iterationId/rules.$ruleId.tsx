@@ -146,6 +146,11 @@ function RuleDetail() {
     onSuccess: async () => {
       await router.invalidate();
       toast.success(t('common:success.save'));
+      // TODO: wait for second thought, we might not need to navigate back to the rules list
+      // router.navigate({
+      //   to: '/detection/scenarios/$scenarioId/i/$iterationId/rules',
+      //   params: { scenarioId: fromUUIDtoSUUID(scenarioId), iterationId: fromUUIDtoSUUID(iterationId) },
+      // });
     },
     onError: () => {
       toast.error(t('common:errors.unknown'));
