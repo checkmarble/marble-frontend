@@ -4,10 +4,11 @@ import { ThresholdRange } from 'ui-design-system';
 type ScreeningThresholdProps = {
   threshold: number | undefined;
   onChange: (value: number) => void;
-  title: string;
+  title?: string;
   disabled?: boolean;
+  className?: string;
 };
-export const ScreeningThreshold = ({ threshold, onChange, title, disabled }: ScreeningThresholdProps) => {
+export const ScreeningThreshold = ({ threshold, onChange, title, disabled, className }: ScreeningThresholdProps) => {
   const { t } = useTranslation(['common', 'scenarios']);
 
   const values = [
@@ -41,6 +42,7 @@ export const ScreeningThreshold = ({ threshold, onChange, title, disabled }: Scr
       initialColor="var(--color-red-hover)"
       disabled={disabled}
       learnMoreUrl="https://docs.checkmarble.com/docs/search-scoring-algorithm"
+      className={className}
     />
   );
 };
