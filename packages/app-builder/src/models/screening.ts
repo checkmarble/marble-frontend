@@ -340,7 +340,7 @@ export function isScreeningReviewCompleted(screening: Screening): screening is S
   return screening.status === 'no_hit' || screening.status === 'confirmed_hit';
 }
 
-export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media' | 'global';
+export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media' | 'custom' | 'global';
 
 export type RiskTagCategory = Exclude<ScreeningCategory, 'global'>;
 
@@ -350,6 +350,7 @@ export const SCREENING_CATEGORY_COLORS = {
   'third-parties': 'grey',
   'adverse-media': 'yellow',
   other: 'grey',
+  custom: 'grey',
   global: 'green',
 } satisfies Record<ScreeningCategory | 'other', TagProps['color']>;
 
@@ -649,10 +650,17 @@ export const SCREENING_CATEGORY_I18N_KEY_MAP: Record<ScreeningCategory, string> 
   peps: 'peps',
   'third-parties': 'third_parties',
   'adverse-media': 'adverse_media',
+  custom: 'custom',
   global: 'global',
 };
 
-export const SCREENING_CATEGORIES: RiskTagCategory[] = ['sanctions', 'peps', 'third-parties', 'adverse-media'];
+export const SCREENING_CATEGORIES: RiskTagCategory[] = [
+  'sanctions',
+  'peps',
+  'third-parties',
+  'adverse-media',
+  'custom',
+];
 
 /**
  * Convert topic filters from the API back to categories for UI display.
@@ -685,7 +693,8 @@ const SCREENING_CATEGORY_RANKING: Record<ScreeningCategory | 'other', number> = 
   peps: 3,
   'third-parties': 4,
   other: 5,
-  global: 6,
+  custom: 6,
+  global: 7,
 };
 
 export const getHigherCategory = (topics: string[]): ScreeningCategory | 'other' | undefined => {

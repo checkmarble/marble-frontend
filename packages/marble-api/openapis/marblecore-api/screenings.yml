@@ -418,6 +418,8 @@ components:
               $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
             other:
               $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
+            custom:
+              $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
             global:
               $ref: '#/components/schemas/ScreeningAvailableFiltersSection'
     ScreeningAvailableFiltersSection:
@@ -444,7 +446,7 @@ components:
             items:
               type: object
               required: [name, title]
-              properties: 
+              properties:
                 name:
                   type: string
                 title:
@@ -476,6 +478,8 @@ components:
         adverse_media:
           $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
         other:
+          $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
+        custom:
           $ref: '#/components/schemas/ScreeningConfigBodySectionDto'
         global:
           $ref: '#/components/schemas/ScreeningConfigBodySectionDto'

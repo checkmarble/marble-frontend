@@ -93,6 +93,7 @@ export function normalizeListConfig(config: ScreeningAvailableFiltersAdapted): N
       peps: normalize(config.sections.peps, 'peps'),
       'adverse-media': normalize(config.sections.adverse_media, 'adverse-media'),
       'third-parties': normalize(config.sections.other, 'third-parties'),
+      custom: normalize(config.sections.custom, 'custom'),
       global: normalize(config.sections.global, 'global'),
     },
     provider: config.provider,

@@ -439,6 +439,7 @@
   "sanction_transaction_label_placeholder": "حدد علامة المعاملة",
   "sanction.lists.adverse_media": "وسائل الإعلام السلبية",
   "sanction.lists.callout": "حدد القوائم ذات الصلة بعملك",
+  "sanction.lists.custom": "مخصص",
   "sanction.lists.global": "عام",
   "sanction.lists.nb_selected_one": "تم اختيار {{count}}",
   "sanction.lists.nb_selected_other": "تم اختيار {{count}}",

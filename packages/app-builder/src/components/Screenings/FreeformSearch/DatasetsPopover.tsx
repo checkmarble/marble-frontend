@@ -19,6 +19,7 @@ const SECTION_I18N_KEYS: Record<ScreeningCategory, string> = {
   peps: 'peps',
   'adverse-media': 'adverse_media',
   'third-parties': 'third_parties',
+  custom: 'custom',
   global: 'global',
 };
 
@@ -70,6 +71,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
         if (!section) return [];
         const sectionKey = key as ScreeningCategory;
         const isSectionEnabled = !!selectionMap[sectionKey];
+        console.log(sectionKey, isSectionEnabled);
         const count = getSectionLeafKeys(section, sectionKey).filter((k) => selectionMap[k]).length;
         if (!isSectionEnabled && count === 0) return [];
         return [{ key: sectionKey, count, isEmpty: isSectionEnabled && count === 0 }];

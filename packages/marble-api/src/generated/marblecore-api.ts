@@ -882,6 +882,7 @@ export type ScreeningConfigBodyFiltersDto = {
     peps?: ScreeningConfigBodySectionDto;
     adverse_media?: ScreeningConfigBodySectionDto;
     other?: ScreeningConfigBodySectionDto;
+    custom?: ScreeningConfigBodySectionDto;
     "global"?: ScreeningConfigBodySectionDto;
 };
 export type ScreeningConfigDto = {
@@ -1116,6 +1117,7 @@ export type ScreeningAvailableFilters = {
         peps?: ScreeningAvailableFiltersSection;
         adverse_media?: ScreeningAvailableFiltersSection;
         other?: ScreeningAvailableFiltersSection;
+        custom?: ScreeningAvailableFiltersSection;
         "global"?: ScreeningAvailableFiltersSection;
     };
 };

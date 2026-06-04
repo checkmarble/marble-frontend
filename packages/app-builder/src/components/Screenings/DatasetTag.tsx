@@ -17,6 +17,7 @@ export function useDatasetTag() {
       .with('third-parties', () => t(`scenarios:sanction.lists.third_parties`))
       .with('sanctions', () => t(`scenarios:sanction.lists.sanctions`))
       .with('adverse-media', () => t(`scenarios:sanction.lists.adverse_media`))
+      .with('custom', () => t(`scenarios:sanction.lists.custom`))
       .with('global', () => t(`scenarios:sanction.lists.global`))
       .otherwise(() => t(`scenarios:sanction.lists.other`));
   }

@@ -245,7 +245,7 @@ const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: Sect
                     listConfig.update((state) => {
                       const nextValue = !state.datasets[sectionKey];
                       state.datasets[sectionKey] = nextValue;
-                      if (provider === 'opensanctions')
+                      if (provider === 'opensanctions' || sectionKey === 'custom')
                         selectAllInSection(state.datasets, sectionKey, section, nextValue);
                     });
                   }}
@@ -323,7 +323,8 @@ const SectionPanel = ({ sectionKey, section, sectionCount, onApply, onCancel }: 
             onCheckedChange={(checked) => {
               listConfig.update((state) => {
                 state.datasets[sectionKey] = checked;
-                if (provider === 'opensanctions') selectAllInSection(state.datasets, sectionKey, section, checked);
+                if (provider === 'opensanctions' || sectionKey === 'custom')
+                  selectAllInSection(state.datasets, sectionKey, section, checked);
               });
             }}
           />
@@ -380,7 +381,8 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
             }
           }
         }
-        if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+        if (provider === 'opensanctions' || sectionKey === 'custom')
+          syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
       });
     };
   }
@@ -494,7 +496,8 @@ const ItemGroup = ({
       for (const name of names) {
         setDatasetKey(state.datasets, sectionKey, name, nextValue);
       }
-      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+      if (provider === 'opensanctions' || sectionKey === 'custom')
+        syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
   };
 
@@ -571,7 +574,8 @@ const ItemRow = ({
     listConfig.update((state) => {
       const nextValue = !isDatasetKeySelected(state.datasets, sectionKey, name);
       setDatasetKey(state.datasets, sectionKey, name, nextValue);
-      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+      if (provider === 'opensanctions' || sectionKey === 'custom')
+        syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
   };
 
@@ -757,7 +761,8 @@ const SpecialTopicSwitch = ({
         onCheckedChange={(checked) => {
           listConfig.update((state) => {
             setTopicKey(state.datasets, sectionKey, topicGroup, topicValue, checked);
-            if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+            if (provider === 'opensanctions' || sectionKey === 'custom')
+              syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
           });
           onAfterChange?.();
         }}
@@ -801,7 +806,8 @@ const SingleItemToggle = ({
           onRemove={() => {
             listConfig.update((state) => {
               setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
-              if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+              if (provider === 'opensanctions' || sectionKey === 'custom')
+                syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
             });
             onAfterChange?.();
           }}
@@ -824,7 +830,8 @@ const SingleItemToggle = ({
       onClick={() => {
         listConfig.update((state) => {
           setTopicKey(state.datasets, sectionKey, topicGroup, item.name, true);
-          if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+          if (provider === 'opensanctions' || sectionKey === 'custom')
+            syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
         });
         onAfterChange?.();
       }}
@@ -871,7 +878,8 @@ const FilterGroupTags = ({
             onRemove={() => {
               listConfig.update((state) => {
                 setTopicKey(state.datasets, sectionKey, topicGroup, item.name, false);
-                if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+                if (provider === 'opensanctions' || sectionKey === 'custom')
+                  syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
               });
               onAfterChange?.();
             }}
@@ -976,7 +984,8 @@ const FilterGroupMenu = ({
     listConfig.update((state) => {
       const nextValue = !isTopicKeySelected(state.datasets, sectionKey, topicGroup, item.name);
       setTopicKey(state.datasets, sectionKey, topicGroup, item.name, nextValue);
-      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+      if (provider === 'opensanctions' || sectionKey === 'custom')
+        syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
     onAfterChange?.();
   }
@@ -987,7 +996,8 @@ const FilterGroupMenu = ({
       for (const item of items) {
         setTopicKey(state.datasets, sectionKey, topicGroup, item.name, nextValue);
       }
-      if (provider === 'opensanctions') syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
+      if (provider === 'opensanctions' || sectionKey === 'custom')
+        syncSectionEnabledFromLeaves(state.datasets, sectionKey, section);
     });
     onAfterChange?.();
   };

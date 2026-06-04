@@ -439,6 +439,7 @@
   "sanction_transaction_label_placeholder": "Sélectionnez l'étiquette de transaction",
   "sanction.lists.adverse_media": "médias défavorables",
   "sanction.lists.callout": "Sélectionnez des listes pertinentes pour ce scénario.",
+  "sanction.lists.custom": "personnalisées",
   "sanction.lists.global": "global",
   "sanction.lists.nb_selected_one": "({{count}} sélectionnée)",
   "sanction.lists.nb_selected_other": "({{count}} sélectionnées)",
