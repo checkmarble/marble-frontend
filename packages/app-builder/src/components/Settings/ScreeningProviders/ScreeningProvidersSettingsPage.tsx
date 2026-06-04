@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components/Callout';
 import { Page } from '@app-builder/components/Page';
 import { CollapsiblePaper } from '@app-builder/components/Paper';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
@@ -8,6 +9,7 @@ import {
 } from '@app-builder/queries/settings/organization/update-screening-providers';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, type SelectOption, SelectV2 } from 'ui-design-system';
@@ -30,6 +32,7 @@ export const ScreeningProvidersSettingsPage = ({
   const { t } = useTranslation(['common', 'settings']);
   const updateScreeningProvidersMutation = useUpdateScreeningProviders(organizationId);
   const revalidate = useLoaderRevalidator();
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const providerLabels: Record<ScreeningProvider, string> = {
     opensanctions: t('settings:screening_providers.provider.opensanctions'),
@@ -47,14 +50,22 @@ export const ScreeningProvidersSettingsPage = ({
       continuousMonitoring: providers?.continuousMonitoring ?? 'opensanctions',
     } satisfies Record<string, ScreeningProvider>,
     onSubmit: ({ value }) => {
+      setSubmitError(null);
       updateScreeningProvidersMutation
         .mutateAsync(value)
-        .then(() => {
+        .then((res) => {
+          if (res && 'error' in res) {
+            setSubmitError(res.error);
+            return;
+          }
+
           toast.success(t('common:success.save'));
           revalidate();
         })
-        .catch(() => {
-          toast.error(t('common:errors.unknown'));
+        .catch((error) => {
+          const message = error instanceof Error ? error.message : t('common:errors.unknown');
+          setSubmitError(message);
+          toast.error(message);
         });
     },
     validators: {
@@ -73,6 +84,7 @@ export const ScreeningProvidersSettingsPage = ({
               appearance="stroked"
               onClick={(e) => {
                 e.stopPropagation();
+                setSubmitError(null);
                 form.reset();
               }}
             >
@@ -88,6 +100,9 @@ export const ScreeningProvidersSettingsPage = ({
             </Button>
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
+            <Callout color="red" icon="error" iconColor="red" className="mb-v2-md">
+              {submitError}
+            </Callout>
             <form
               onSubmit={handleSubmit(form)}
               className="grid grid-cols-[300px_1fr] gap-v2-sm items-center"

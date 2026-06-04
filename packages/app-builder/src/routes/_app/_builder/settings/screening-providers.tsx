@@ -18,10 +18,8 @@ const screeningProvidersLoader = createServerFn()
 
     const organization = await orgRepo.getCurrentOrganization();
 
-    const availableProviders: ScreeningProvider[] = [
-      'opensanctions',
-      ...(isLexisNexisAvailable(entitlements) ? (['lexisnexis'] as const) : []),
-    ];
+    const availableProviders: ScreeningProvider[] = ['opensanctions'];
+    if (isLexisNexisAvailable(entitlements)) availableProviders.push('lexisnexis');
 
     return {
       providers: organization.screeningProviders,
