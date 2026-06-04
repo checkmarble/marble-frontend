@@ -1,11 +1,9 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useGetEnrichedDataQuery } from '@app-builder/queries/screening/get-enriched-data';
-import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';
-import { type FunctionComponent, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Collapsible, Tag } from 'ui-design-system';
 import { MatchDetails } from '../MatchDetails';
 import { screeningsI18n } from '../screenings-i18n';
 import { TopicsDisplay } from '../TopicsDisplay';
@@ -16,42 +14,33 @@ interface FreeformMatchCardProps {
   searchTerm?: string;
 }
 
-export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ entity, defaultOpen, searchTerm }) => {
+export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformMatchCardProps) {
   const { t } = useTranslation(screeningsI18n);
   const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
 
   const entitySchema = entity.schema.toLowerCase();
 
   return (
-    <CollapsiblePrimitive.Root defaultOpen={defaultOpen} onOpenChange={setIsOpen}>
-      <div className="bg-surface-page border border-grey-border rounded-md">
-        <CollapsiblePrimitive.Trigger className="focus-visible:text-purple-primary group flex grow items-center gap-2 rounded-sm outline-hidden transition-colors px-4 py-3">
-          <Icon
-            icon="smallarrow-up"
-            aria-hidden
-            className="size-5 rotate-90 transition-transform duration-200 group-data-[state=open]:rotate-180 rtl:-rotate-90 group-data-[state=open]:rtl:-rotate-180"
-          />
-          <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="font-semibold">{entity.caption}</span>
+    <Collapsible.Container defaultOpen={defaultOpen} onOpenChange={setIsOpen}>
+      <Collapsible.Title iconPosition="left">
+        <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1 flex-1">
+          <span className="font-semibold">{entity.caption}</span>
 
-            <span>
-              {t(`screenings:entity.schema.${entitySchema}`, {
-                defaultValue: entitySchema,
-              })}
-            </span>
-            <Tag color="grey">
-              {t('screenings:match.similarity', {
-                percent: Math.round(entity.score * 100),
-              })}
-            </Tag>
-            <div className="col-span-full flex w-full flex-wrap gap-1">
-              <TopicsDisplay entity={entity} />
-            </div>
-          </div>
-        </CollapsiblePrimitive.Trigger>
-      </div>
+          <span>
+            {t(`screenings:entity.schema.${entitySchema}`, {
+              defaultValue: entitySchema,
+            })}
+          </span>
+          <Tag color="grey">
+            {t('screenings:match.similarity', {
+              percent: Math.round(entity.score * 100),
+            })}
+          </Tag>
+          <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-1 font-normal" />
+        </div>
+      </Collapsible.Title>
 
-      <CollapsiblePrimitive.Content className="data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up overflow-hidden">
+      <Collapsible.Content>
         <div className="text-s flex flex-col gap-6 p-4">
           {entitySchema === 'person' && entity.datasets?.length ? (
             <div className="grid grid-cols-[168px_1fr] gap-2">
@@ -69,10 +58,10 @@ export const FreeformMatchCard: FunctionComponent<FreeformMatchCardProps> = ({ e
           ) : null}
           <DataContent entityId={entity.id} searchTerm={searchTerm} isOpen={isOpen} />
         </div>
-      </CollapsiblePrimitive.Content>
-    </CollapsiblePrimitive.Root>
+      </Collapsible.Content>
+    </Collapsible.Container>
   );
-};
+}
 
 export default FreeformMatchCard;
 

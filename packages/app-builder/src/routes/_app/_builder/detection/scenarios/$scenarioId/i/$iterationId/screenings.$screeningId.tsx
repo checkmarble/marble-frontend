@@ -297,6 +297,24 @@ function ScreeningDetail() {
       if (allIssues.length > 0) {
         setShowValidationSummary(true);
         return;
+    onSubmit: async ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        mutation
+          // leave threshold undefined if it is the same as the organization threshold
+          .mutateAsync({ ...value, threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold })
+          .then(() => {
+            setHasBeenSaved(true);
+            toast.success(t('common:success.save'));
+            revalidate();
+            // TODO: wait for second thought, we might not need to navigate back to the rules list
+            // router.navigate({
+            //   to: '/detection/scenarios/$scenarioId/i/$iterationId/rules',
+            //   params: { scenarioId: fromUUIDtoSUUID(scenario.id), iterationId: fromUUIDtoSUUID(iterationId) },
+            // });
+          })
+          .catch(() => {
+            toast.error(t('common:errors.unknown'));
+          });
       }
 
       setShowValidationSummary(false);

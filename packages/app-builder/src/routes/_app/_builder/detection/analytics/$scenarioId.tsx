@@ -19,13 +19,12 @@ import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiltersBar, FormattingProvider } from 'ui-design-system';
 import type { FilterChange, FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
-import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 interface LoaderData {
@@ -317,16 +316,16 @@ function Analytics() {
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
           <DetectionNavigationTabs
-            actions={
-              <Link
-                to="/analytics-legacy"
-                target="_blank"
-                className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
-              >
-                <Icon icon="openinnew" className="size-4" />
-                <span>{t('analytics:legacy-analytics-link')}</span>
-              </Link>
-            }
+          // actions={
+          //   <Link
+          //     to="/analytics-legacy"
+          //     target="_blank"
+          //     className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
+          //   >
+          //     <Icon icon="openinnew" className="size-4" />
+          //     <span>{t('analytics:legacy-analytics-link')}</span>
+          //   </Link>
+          // }
           />
           <FormattingProvider
             value={{
