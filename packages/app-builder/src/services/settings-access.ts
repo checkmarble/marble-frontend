@@ -26,6 +26,7 @@ export type Sections = {
   case_manager: Section;
   audit: Section;
   ip_whitelisting: Section;
+  screening_providers: Section;
 };
 
 export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inboxes: Inbox[]): Sections {
@@ -68,6 +69,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
           ? [{ title: 'ip_whitelisting', to: '/settings/ip-whitelisting' }]
           : []),
       ],
+    },
+    screening_providers: {
+      icon: 'search',
+      settings: [...(isAdmin(user) ? [{ title: 'screening_providers', to: '/settings/screening-providers' }] : [])],
     },
   };
 

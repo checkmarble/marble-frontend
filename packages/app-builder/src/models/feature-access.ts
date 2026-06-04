@@ -15,6 +15,7 @@ export interface FeatureAccesses {
   continuousScreening: FeatureAccessLevelDto;
   aiRuleBuilding: FeatureAccessLevelDto;
   userScoring: FeatureAccessLevelDto;
+  lexisnexis: FeatureAccessLevelDto;
 }
 
 export function emptyFeatureAccesses(): FeatureAccesses {
@@ -33,6 +34,7 @@ export function emptyFeatureAccesses(): FeatureAccesses {
     continuousScreening: 'restricted',
     aiRuleBuilding: 'restricted',
     userScoring: 'restricted',
+    lexisnexis: 'restricted',
   };
 }
 
@@ -52,5 +54,8 @@ export function adaptFeatureAccesses(dto: FeatureAccessDto): FeatureAccesses {
     continuousScreening: dto.continuous_screening,
     aiRuleBuilding: dto.ai_rule_building,
     userScoring: dto.user_scoring,
+    // Default to restricted while the backend rolls out the entitlement; OpenSanctions
+    // stays available regardless since it is Marble's built-in provider.
+    lexisnexis: dto.lexisnexis ?? 'restricted',
   };
 }

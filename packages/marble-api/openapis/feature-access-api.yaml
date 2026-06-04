@@ -67,6 +67,9 @@ components:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
         user_scoring:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
+        lexisnexis:
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
+          description: "Entitlement for the LexisNexis screening provider. OpenSanctions is always available."
       required:
         - workflows
         - analytics

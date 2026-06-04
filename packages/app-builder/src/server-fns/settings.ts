@@ -32,6 +32,7 @@ import {
   updateInboxUserPayloadSchema,
   updateOrganizationPayloadSchema,
   updateOrganizationScenariosPayloadSchema,
+  updateScreeningProvidersPayloadSchema,
   updateTagPayloadSchema,
   updateUserPayloadSchema,
   updateWebhookPayloadSchema,
@@ -330,6 +331,22 @@ export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
         defaultScenarioTimezone: data.defaultScenarioTimezone,
         sanctionThreshold: data.sanctionThreshold,
         sanctionLimit: data.sanctionLimit,
+      },
+    });
+  });
+
+export const updateScreeningProvidersFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(updateScreeningProvidersPayloadSchema)
+  .handler(async ({ context, data }) => {
+    await context.authInfo.organization.updateOrganization({
+      organizationId: data.organizationId,
+      changes: {
+        screeningProviders: {
+          manualSearch: data.manualSearch,
+          transactionMonitoring: data.transactionMonitoring,
+          continuousMonitoring: data.continuousMonitoring,
+        },
       },
     });
   });
