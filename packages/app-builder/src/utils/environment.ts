@@ -113,8 +113,6 @@ interface ClientEnvVars {
   SENTRY_ENVIRONMENT?: string;
   METABASE_URL?: string;
   CUSTOM_LOGO_URL?: string;
-
-  CASE_MANAGER_V2_ENABLED?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -123,7 +121,6 @@ export function getClientEnvVars(): ClientEnvVars {
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
     METABASE_URL: getServerEnv('METABASE_URL'),
     CUSTOM_LOGO_URL: getServerEnv('CUSTOM_LOGO_URL'),
-    CASE_MANAGER_V2_ENABLED: getServerEnv('CASE_MANAGER_V2_ENABLED'),
   };
 }
 

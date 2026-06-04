@@ -77,13 +77,7 @@ export function CaseManagerPageLayout({
               <Link className={tabClassName} from="/cases/s/$caseId" to="./principal">
                 {t('cases:case_detail.tab.principal')}
               </Link>
-              <Link
-                disabled={!pivotObjects.length}
-                className={tabClassName}
-                from="/cases/s/$caseId"
-                to="./clients/$pivotValue"
-                params={{ pivotValue: pivotObjects[0]?.pivotValue ?? '' }}
-              >
+              <Link disabled={!pivotObjects.length} className={tabClassName} from="/cases/s/$caseId" to="./clients">
                 {t('cases:manager.tab.clients_concerned')}
               </Link>
             </Tabs>

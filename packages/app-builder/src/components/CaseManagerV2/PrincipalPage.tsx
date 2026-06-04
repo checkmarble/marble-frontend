@@ -4,8 +4,10 @@ import { UserScoreBadge } from '@app-builder/components/CaseManagerV2/UserScore/
 import { CaseAlerts } from '@app-builder/components/Cases/CaseAlerts';
 import { DataModel, DataModelObject } from '@app-builder/models';
 import { CaseDetail, PivotObject } from '@app-builder/models/cases';
+import { FeatureAccesses } from '@app-builder/models/feature-access';
 import { Inbox } from '@app-builder/models/inbox';
 import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries/cases/edit-tags';
+import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -22,9 +24,11 @@ import { CaseInvestigation } from '../CaseManager/shared/CaseInvestigation/CaseI
 import { CaseStatusBadgeV2 } from '../Cases';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
-import { DataModelExplorer } from '../DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { PanelContainer, PanelContent, PanelRoot } from '../Panel';
+import { DataExplorerPanel } from './DataExplorerPanel';
+import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
+import { getClientDisplayInfo } from './utils/client';
 
 export type CaseManagerPrincipalPageProps = {
   caseDetail: CaseDetail;
@@ -33,6 +37,7 @@ export type CaseManagerPrincipalPageProps = {
   inboxes: Inbox[];
   client360Tables: Client360Table[];
   userScoringAccess: FeatureAccessLevelDto;
+  entitlements: FeatureAccesses;
 };
 
 export function CaseManagerPrincipalPage({
@@ -42,6 +47,7 @@ export function CaseManagerPrincipalPage({
   inboxes,
   client360Tables,
   userScoringAccess,
+  entitlements,
 }: CaseManagerPrincipalPageProps) {
   const { t } = useTranslation(['common', 'cases']);
   const { orgTags } = useOrganizationTags();
@@ -49,6 +55,10 @@ export function CaseManagerPrincipalPage({
   const { currentUser } = useOrganizationDetails();
   const caseInbox = inboxes.find((inbox) => inbox.id === caseDetail.inboxId) ?? null;
   const mainPivotObject = pivotObjects?.[0] ?? null;
+  const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
+  const hasRuleHits = caseDecisionsQuery.data?.pages.some((page) =>
+    page.decisions.some((d) => d.rules.some((r) => r.outcome === 'hit')),
+  );
 
   const assignedUser = orgUsers.find((user) => user.userId === caseDetail.assignedTo);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -68,92 +78,110 @@ export function CaseManagerPrincipalPage({
     },
   });
 
-  return (
-    <div className="flex flex-col gap-v2-lg">
-      <div className="flex flex-col gap-v2-sm">
-        <div className="text-default font-medium">{t('cases:case_detail.pivot_panel.informations')}</div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-v2-lg">
-          <Card className="flex flex-col gap-v2-sm text-small">
-            <div className="flex items-center gap-v2-xs">
-              <CaseStatusBadgeV2 status={caseDetail.status} variant="semi-full" />
-              <tagsForm.Field name="tagIds">
-                {(field) => (
-                  <TagList
-                    editable
-                    placeholder={t('cases:manager.principal.add_tag_placeholder')}
-                    tags={orgTags}
-                    value={field.state.value}
-                    onChange={(tags) => {
-                      tagsForm.setFieldValue('tagIds', tags);
-                      tagsForm.handleSubmit();
-                    }}
-                  />
-                )}
-              </tagsForm.Field>
-              <TooltipV2.Tooltip delayDuration={0}>
-                <TooltipV2.TooltipTrigger asChild>
-                  <Button variant="secondary" size="small" mode="icon" className="ml-auto">
-                    <Icon icon="arrow-up" className="size-4" />
-                  </Button>
-                </TooltipV2.TooltipTrigger>
-                <TooltipV2.TooltipContent className="capitalize">{t('cases:escalate')}</TooltipV2.TooltipContent>
-              </TooltipV2.Tooltip>
-            </div>
-            <div className="grid grid-cols-2 gap-v2-sm">
-              <div className="flex flex-col gap-v2-sm">
-                <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
-                <div className="flex items-center gap-v2-xs">
-                  {/* Make it a select */}
-                  <Avatar
-                    color="transparent"
-                    firstName={assignedUser?.firstName}
-                    lastName={assignedUser?.lastName}
-                    size="xs"
-                  />
-                  {assignedUser?.firstName + (assignedUser?.lastName ? ' ' + assignedUser.lastName : '')}
-                  {assignedUser?.userId === currentUser.actorIdentity.userId
-                    ? t('cases:manager.principal.you_marker')
-                    : ''}
-                </div>
-                <div>{caseInbox?.name}</div>
-              </div>
-            </div>
-          </Card>
-          {mainPivotObject ? (
-            <ClientCard
-              caseId={caseDetail.id}
-              pivotObject={mainPivotObject}
-              dataModel={dataModel}
-              client360Tables={client360Tables}
-              userScoringAccess={userScoringAccess}
-            />
-          ) : (
-            <Card />
-          )}
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_minmax(500px,_1fr)] gap-v2-lg">
-        <div className="flex flex-col gap-v2-md">
-          <AiReviewCard caseId={caseDetail.id} canManuallyReview={caseInbox?.caseReviewManual ?? false} />
+  const [snoozePanelOpen, setSnoozePanelOpen] = useState(false);
+  const handleDisplaySnoozePanel = () => setSnoozePanelOpen(true);
 
-          <div className="flex flex-col justify-start gap-1.5">
-            <div className="text-default text-grey-primary flex items-center justify-between px-1 font-medium">
-              <span>{t('cases:alerts')}</span>
-              {/*{hasRuleHits ? (
-                  <Button variant="secondary" onClick={() => {}}>
+  return (
+    <>
+      <div className="flex flex-col gap-v2-lg">
+        <div className="flex flex-col gap-v2-sm">
+          <div className="text-default font-medium">{t('cases:case_detail.pivot_panel.informations')}</div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-v2-lg">
+            <Card className="flex flex-col gap-v2-sm text-small">
+              <div className="flex items-center gap-v2-xs">
+                <CaseStatusBadgeV2 status={caseDetail.status} variant="semi-full" />
+                <tagsForm.Field name="tagIds">
+                  {(field) => (
+                    <TagList
+                      editable
+                      placeholder={t('cases:manager.principal.add_tag_placeholder')}
+                      tags={orgTags}
+                      value={field.state.value}
+                      onChange={(tags) => {
+                        tagsForm.setFieldValue('tagIds', tags);
+                        tagsForm.handleSubmit();
+                      }}
+                    />
+                  )}
+                </tagsForm.Field>
+                <TooltipV2.Tooltip delayDuration={0}>
+                  <TooltipV2.TooltipTrigger asChild>
+                    <Button variant="secondary" size="small" mode="icon" className="ml-auto">
+                      <Icon icon="arrow-up" className="size-4" />
+                    </Button>
+                  </TooltipV2.TooltipTrigger>
+                  <TooltipV2.TooltipContent className="capitalize">{t('cases:escalate')}</TooltipV2.TooltipContent>
+                </TooltipV2.Tooltip>
+              </div>
+              <div className="grid grid-cols-2 gap-v2-sm">
+                <div className="flex flex-col gap-v2-sm">
+                  <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
+                  <div className="flex items-center gap-v2-xs">
+                    {/* Make it a select */}
+                    <Avatar
+                      color="transparent"
+                      firstName={assignedUser?.firstName}
+                      lastName={assignedUser?.lastName}
+                      size="xs"
+                    />
+                    {assignedUser?.firstName + (assignedUser?.lastName ? ' ' + assignedUser.lastName : '')}
+                    {assignedUser?.userId === currentUser.actorIdentity.userId
+                      ? t('cases:manager.principal.you_marker')
+                      : ''}
+                  </div>
+                  <div>{caseInbox?.name}</div>
+                </div>
+              </div>
+            </Card>
+            {mainPivotObject ? (
+              <ClientCard
+                caseId={caseDetail.id}
+                pivotObject={mainPivotObject}
+                dataModel={dataModel}
+                client360Tables={client360Tables}
+                userScoringAccess={userScoringAccess}
+              />
+            ) : (
+              <Card />
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_minmax(500px,_1fr)] gap-v2-lg">
+          <div className="flex flex-col gap-v2-md">
+            <AiReviewCard caseId={caseDetail.id} canManuallyReview={caseInbox?.caseReviewManual ?? false} />
+
+            <div className="flex flex-col justify-start gap-1.5">
+              <div className="text-default text-grey-primary flex items-center justify-between px-1 font-medium">
+                <span>{t('cases:alerts')}</span>
+                {hasRuleHits ? (
+                  <Button variant="secondary" onClick={() => handleDisplaySnoozePanel()}>
                     <Icon icon="snooze" className="size-3.5" />
                     {t('cases:decisions.snooze_rules')}
                   </Button>
-                ) : null}*/}
+                ) : null}
+              </div>
+              <CaseAlerts caseDecisionsQuery={caseDecisionsQuery} dataModel={dataModel} />
             </div>
-            <CaseAlerts caseDetail={caseDetail} dataModel={dataModel} />
+          </div>
+          <div className="flex flex-col gap-v2-md">
+            <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
           </div>
         </div>
-        <div className="flex flex-col gap-v2-md">
-          <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
-        </div>
       </div>
-    </div>
+      <PanelRoot open={snoozePanelOpen} onOpenChange={setSnoozePanelOpen}>
+        <PanelContainer size="max">
+          <PanelContent>
+            <CaseSnoozePanel
+              onClose={() => setSnoozePanelOpen(false)}
+              caseDetail={caseDetail}
+              dataModel={dataModel}
+              pivotObjects={pivotObjects ?? []}
+              entitlements={entitlements}
+            />
+          </PanelContent>
+        </PanelContainer>
+      </PanelRoot>
+    </>
   );
 }
 
@@ -169,9 +197,7 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
   const { t } = useTranslation(['common']);
   const { currentUser } = useOrganizationDetails();
   const currentTable = dataModel.find((t) => t.name === pivotObject.pivotObjectName);
-  const metadata = client360Tables.find((t) => t.name === pivotObject.pivotObjectName);
-  const entityName = metadata?.alias || metadata?.name || pivotObject.pivotObjectName;
-  const clientName = metadata ? (pivotObject.pivotObjectData.data[metadata.caption_field] as string) : '';
+  const { metadata, entityName, clientName } = getClientDisplayInfo(pivotObject, client360Tables);
   const [explorationOpen, setExplorationOpen] = useState(false);
 
   return (
@@ -226,13 +252,7 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
               onExplore={() => setExplorationOpen(true)}
               options={{ layout: '2-columns' }}
             />
-            <PanelRoot open={explorationOpen} onOpenChange={setExplorationOpen}>
-              <PanelContainer size="max" className="max-w-[80vw]!">
-                <PanelContent>
-                  <DataModelExplorer dataModel={dataModel} />
-                </PanelContent>
-              </PanelContainer>
-            </PanelRoot>
+            <DataExplorerPanel dataModel={dataModel} open={explorationOpen} onOpenChange={setExplorationOpen} />
           </DataModelExplorerProvider>
         ) : null}
       </div>

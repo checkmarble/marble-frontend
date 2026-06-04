@@ -178,6 +178,7 @@
   "case_detail.trigger_object": "Trigger object",
   "case_detail.unknown_tag": "unknown tag",
   "case_detail.unknown_user": "unknown user",
+  "case_manager.client_panel.label": "Client {{index}}",
   "case.ai_assist.review": "Review",
   "case.ai_assist.review_in_progress": "The review is in progress... This may take about 30 seconds.",
   "case.ai_assist.sanity_check": "Sanity check",

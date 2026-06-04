@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/_new/clients')({
   component: RouteComponent,
@@ -6,6 +7,7 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/_ne
 
 function RouteComponent() {
   const { pivotObjects } = Route.useRouteContext();
+  const { t } = useTranslation(['cases']);
 
   return (
     <>
@@ -19,7 +21,7 @@ function RouteComponent() {
               to="./clients/$pivotValue"
               params={{ pivotValue: p.pivotValue }}
             >
-              Client {i + 1}
+              {t('cases:case_manager.client_panel.label', { index: i + 1 })}
             </Link>
           ))}
         </div>

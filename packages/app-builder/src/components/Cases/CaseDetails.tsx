@@ -242,7 +242,7 @@ export const CaseDetails = ({
                   </Button>
                 ) : null}
               </div>
-              <CaseAlerts caseDetail={caseDetail} dataModel={dataModel} />
+              <CaseAlerts caseDecisionsQuery={caseDecisionsQuery} dataModel={dataModel} />
             </div>
             {/* Documents */}
             {caseDetail.files.length > 0 ? (

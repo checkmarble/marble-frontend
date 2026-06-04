@@ -15,11 +15,10 @@ import { ClientObjectTagList } from '../Annotations/ClientObjectTagList';
 import { PivotNavigationOptions } from '../CaseManager/PivotsPanel/PivotNavigationOptions';
 import { DocumentsList } from '../ClientDetail/DocumentsList';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
-import { DataModelExplorer } from '../DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
-import { PanelContainer, PanelContent, PanelRoot } from '../Panel';
 import { ClientCommentsListCard } from './ClientComments';
 import { ClientRelatedAlertCasesCard } from './ClientRelatedAlertCasesCard';
+import { DataExplorerPanel } from './DataExplorerPanel';
 import { CommentContext } from './hooks/comment-context';
 import { UserScoreBadge } from './UserScore/UserScoreBadge';
 
@@ -99,13 +98,7 @@ export function CaseManagerClientsPage({
                   dataModel={dataModel}
                   onExplore={() => setExplorationOpen(true)}
                 />
-                <PanelRoot open={explorationOpen} onOpenChange={setExplorationOpen}>
-                  <PanelContainer size="max" className="max-w-[80vw]!">
-                    <PanelContent>
-                      <DataModelExplorer dataModel={dataModel} />
-                    </PanelContent>
-                  </PanelContainer>
-                </PanelRoot>
+                <DataExplorerPanel dataModel={dataModel} open={explorationOpen} onOpenChange={setExplorationOpen} />
               </DataModelExplorerProvider>
             ) : null}
           </div>

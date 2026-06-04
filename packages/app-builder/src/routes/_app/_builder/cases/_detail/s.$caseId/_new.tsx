@@ -32,6 +32,7 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
       pivotObjects: pivotObjects ?? [],
       client360Tables,
       userScoringAccess,
+      entitlements: context.authInfo.entitlements,
     };
   });
 

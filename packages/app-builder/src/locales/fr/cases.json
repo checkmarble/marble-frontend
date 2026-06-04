@@ -178,6 +178,7 @@
   "case_detail.trigger_object": "Objet déclencheur",
   "case_detail.unknown_tag": "tag inconnu",
   "case_detail.unknown_user": "utilisateur inconnu",
+  "case_manager.client_panel.label": "Client {{index}}",
   "case.ai_assist.review": "Analyse",
   "case.ai_assist.review_in_progress": "L'analyse est en cours... Cela peut prendre environ 30 secondes.",
   "case.ai_assist.sanity_check": "Vérification de cohérence",

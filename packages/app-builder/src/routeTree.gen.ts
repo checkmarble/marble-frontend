@@ -109,6 +109,7 @@ import { Route as AppBuilderCasesDetailSCaseIdNewPrincipalRouteImport } from './
 import { Route as AppBuilderCasesDetailSCaseIdNewClientsRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/_new/clients'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/index'
+import { Route as AppBuilderCasesDetailSCaseIdNewClientsIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/_new/clients/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/index'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings.$screeningId'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules.$ruleId'
@@ -687,6 +688,12 @@ const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute =
         AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute,
     } as any,
   )
+const AppBuilderCasesDetailSCaseIdNewClientsIndexRoute =
+  AppBuilderCasesDetailSCaseIdNewClientsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppBuilderCasesDetailSCaseIdNewClientsRoute,
+  } as any)
 const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute =
   AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport.update({
     id: '/',
@@ -864,6 +871,7 @@ export interface FileRoutesByFullPath {
   '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId/': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute
+  '/cases/s/$caseId/clients/': typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
 }
 export interface FileRoutesByTo {
@@ -939,7 +947,6 @@ export interface FileRoutesByTo {
   '/cases/s/$caseId/old': typeof AppBuilderCasesDetailSCaseIdOldRoute
   '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
   '/detection/scenarios/$scenarioId/test-run': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
-  '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdNewClientsRouteWithChildren
   '/cases/s/$caseId/principal': typeof AppBuilderCasesDetailSCaseIdNewPrincipalRoute
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdNewIndexRoute
   '/detection/scenarios/$scenarioId/test-run/$testRunId': typeof AppBuilderDetectionScenariosScenarioIdTestRunTestRunIdIndexRoute
@@ -952,6 +959,7 @@ export interface FileRoutesByTo {
   '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute
+  '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1063,6 +1071,7 @@ export interface FileRoutesById {
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute
+  '/_app/_builder/cases/_detail/s/$caseId/_new/clients/': typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
 }
 export interface FileRouteTypes {
@@ -1171,6 +1180,7 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
     | '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId/'
+    | '/cases/s/$caseId/clients/'
     | '/detection/scenarios/$scenarioId/i/$iterationId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1246,7 +1256,6 @@ export interface FileRouteTypes {
     | '/cases/s/$caseId/old'
     | '/detection/scenarios/$scenarioId/i/$iterationId'
     | '/detection/scenarios/$scenarioId/test-run'
-    | '/cases/s/$caseId/clients'
     | '/cases/s/$caseId/principal'
     | '/cases/s/$caseId'
     | '/detection/scenarios/$scenarioId/test-run/$testRunId'
@@ -1259,6 +1268,7 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
     | '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId'
+    | '/cases/s/$caseId/clients'
   id:
     | '__root__'
     | '/'
@@ -1369,6 +1379,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/'
+    | '/_app/_builder/cases/_detail/s/$caseId/_new/clients/'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/'
   fileRoutesById: FileRoutesById
 }
@@ -2093,6 +2104,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport
       parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute
     }
+    '/_app/_builder/cases/_detail/s/$caseId/_new/clients/': {
+      id: '/_app/_builder/cases/_detail/s/$caseId/_new/clients/'
+      path: '/'
+      fullPath: '/cases/s/$caseId/clients/'
+      preLoaderRoute: typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRouteImport
+      parentRoute: typeof AppBuilderCasesDetailSCaseIdNewClientsRoute
+    }
     '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/': {
       id: '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/'
       path: '/'
@@ -2261,12 +2279,15 @@ const AppBuilderCasesCaseIdRouteWithChildren =
 
 interface AppBuilderCasesDetailSCaseIdNewClientsRouteChildren {
   AppBuilderCasesDetailSCaseIdNewClientsPivotValueRoute: typeof AppBuilderCasesDetailSCaseIdNewClientsPivotValueRoute
+  AppBuilderCasesDetailSCaseIdNewClientsIndexRoute: typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRoute
 }
 
 const AppBuilderCasesDetailSCaseIdNewClientsRouteChildren: AppBuilderCasesDetailSCaseIdNewClientsRouteChildren =
   {
     AppBuilderCasesDetailSCaseIdNewClientsPivotValueRoute:
       AppBuilderCasesDetailSCaseIdNewClientsPivotValueRoute,
+    AppBuilderCasesDetailSCaseIdNewClientsIndexRoute:
+      AppBuilderCasesDetailSCaseIdNewClientsIndexRoute,
   }
 
 const AppBuilderCasesDetailSCaseIdNewClientsRouteWithChildren =

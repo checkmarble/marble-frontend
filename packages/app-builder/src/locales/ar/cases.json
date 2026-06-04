@@ -178,6 +178,7 @@
   "case_detail.trigger_object": "الكائن المُشغِّل",
   "case_detail.unknown_tag": "وسم غير معروف",
   "case_detail.unknown_user": "مستخدم غير معروف",
+  "case_manager.client_panel.label": "العميل {{index}}",
   "case.ai_assist.review": "مراجعة",
   "case.ai_assist.review_in_progress": "يتم المراجعة... قد يستغرق ذلك حوالي 30 ثانية.",
   "case.ai_assist.sanity_check": "مراجعة التوازن",

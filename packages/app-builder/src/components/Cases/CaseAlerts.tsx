@@ -1,12 +1,12 @@
-import { CaseDetail, type DetailedCaseDecision } from '@app-builder/models/cases';
+import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { DataModel, getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { type ScreeningStatus } from '@app-builder/models/screening';
-import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useScreeningDetailQuery } from '@app-builder/queries/screening/get-screening-detail';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
+import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
@@ -23,9 +23,25 @@ import { casesI18n } from './cases-i18n';
 
 const MAX_RULES_DISPLAYED = 3;
 
-export const CaseAlerts = ({ caseDetail, dataModel }: { caseDetail: CaseDetail; dataModel: DataModel }) => {
+type CaseAlertsProps = {
+  caseDecisionsQuery: UseInfiniteQueryResult<
+    InfiniteData<
+      {
+        decisions: DetailedCaseDecision[];
+        pagination: {
+          hasMore: boolean;
+          cursorId: string | null;
+        };
+      },
+      unknown
+    >,
+    Error
+  >;
+  dataModel: DataModel;
+};
+
+export const CaseAlerts = ({ caseDecisionsQuery, dataModel }: CaseAlertsProps) => {
   const { t } = useTranslation(casesI18n);
-  const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
 
   return match(caseDecisionsQuery)
     .with({ isPending: true }, () => (
