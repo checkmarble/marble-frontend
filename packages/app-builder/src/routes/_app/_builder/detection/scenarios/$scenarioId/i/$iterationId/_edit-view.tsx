@@ -1,4 +1,4 @@
-import { navigationI18n, Page } from '@app-builder/components';
+import { Callout, navigationI18n, Page } from '@app-builder/components';
 import { CornerPing } from '@app-builder/components/Ping';
 import { ActivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/ActivateScenarioVersion';
 import { CommitIterationDraft } from '@app-builder/components/Scenario/Iteration/Actions/CommitIterationDraft';
@@ -27,6 +27,7 @@ import { createServerFn } from '@tanstack/react-start';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
+import { match } from 'ts-pattern';
 import { cn, Tabs, Tag, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { VersionSelect } from '../$iterationId';
@@ -94,10 +95,9 @@ function ScenarioEditLayout() {
       </Page.Header>
       <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
         {scenarioIteration.archived ? (
-          <aside className="bg-grey-background text-s text-grey-primary flex flex-row items-center gap-2 p-4 font-normal lg:px-8 lg:py-4">
-            <Icon icon="tip" className="size-5 shrink-0" />
+          <Callout color="red" icon="warning" className="mb-4">
             {t('scenarios:iteration.archived_message')}
-          </aside>
+          </Callout>
         ) : (
           <section className="flex flex-row gap-6 items-center">
             {currentScenario.description ? (
@@ -221,10 +221,9 @@ function DeploymentActions({
 }) {
   const { rulesMetadata } = useDetectionScenarioIterationData();
 
-  switch (iteration.type) {
-    case 'draft':
-      return <CommitIterationDraft scenarioId={scenario.id} iteration={iteration} />;
-    case 'version':
+  return match(iteration.type)
+    .with('draft', () => <CommitIterationDraft scenarioId={scenario.id} iteration={iteration} />)
+    .with('version', () => {
       if (iteration.status === 'ready_to_activate') {
         return <ActivateScenarioVersion scenario={scenario} iteration={iteration} rulesMetadata={rulesMetadata} />;
       }
@@ -235,9 +234,7 @@ function DeploymentActions({
           isPreparationServiceOccupied={isPreparationServiceOccupied}
         />
       );
-    case 'live version':
-      return <DeactivateScenarioVersion scenarioId={scenario.id} iterationId={iteration.id} />;
-    default:
-      return null;
-  }
+    })
+    .with('live version', () => <DeactivateScenarioVersion scenarioId={scenario.id} iterationId={iteration.id} />)
+    .exhaustive();
 }
