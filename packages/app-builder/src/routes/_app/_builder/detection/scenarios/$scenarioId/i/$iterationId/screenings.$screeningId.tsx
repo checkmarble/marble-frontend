@@ -4,6 +4,7 @@ import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { DeleteScreeningRule } from '@app-builder/components/Scenario/Screening/Actions/DeleteScreeningRule';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldDataset } from '@app-builder/components/Scenario/Screening/FieldDataset';
@@ -246,6 +247,10 @@ function ScreeningDetail() {
     threshold: 1,
   });
   const revalidate = useLoaderRevalidator();
+  // Initialize hasBeenSaved based on whether this is a newly created screening
+  // New screenings (isNew query param) start with hasBeenSaved=false
+  // Existing screenings start with hasBeenSaved=true
+  const [hasBeenSaved, setHasBeenSaved] = useState(!isNew);
 
   const [showValidationSummary, setShowValidationSummary] = useState(false);
 
@@ -297,8 +302,8 @@ function ScreeningDetail() {
       if (allIssues.length > 0) {
         setShowValidationSummary(true);
         return;
-    onSubmit: async ({ value, formApi }) => {
-      if (formApi.state.isValid) {
+      }
+      if (form.state.isValid) {
         mutation
           // leave threshold undefined if it is the same as the organization threshold
           .mutateAsync({ ...value, threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold })
@@ -316,18 +321,6 @@ function ScreeningDetail() {
             toast.error(t('common:errors.unknown'));
           });
       }
-
-      setShowValidationSummary(false);
-      mutation
-        // leave threshold undefined if it is the same as the organization threshold
-        .mutateAsync({ ...value, threshold: value.threshold === org.sanctionThreshold ? undefined : value.threshold })
-        .then(() => {
-          toast.success(t('common:success.save'));
-          revalidate();
-        })
-        .catch(() => {
-          toast.error(t('common:errors.unknown'));
-        });
     },
     validators: {
       onSubmit: editScreeningFormSchema,
@@ -1005,6 +998,9 @@ function ScreeningDetail() {
                       <Callout icon="warning" color="yellow">
                         {t('scenarios:edit_sanction.required_fields_disclaimer')}
                       </Callout>
+                    )}
+                    {!hasRequiredFields && hasBeenSaved && (
+                      <EvaluationErrors errors={[t('scenarios:edit_sanction.required_fields_error')]} />
                     )}
                   </div>
                 </div>
