@@ -1,10 +1,8 @@
 import { Callout, navigationI18n, Page } from '@app-builder/components';
 import { CornerPing } from '@app-builder/components/Ping';
-import { ActivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/ActivateScenarioVersion';
-import { CommitIterationDraft } from '@app-builder/components/Scenario/Iteration/Actions/CommitIterationDraft';
 import { CreateDraftIteration } from '@app-builder/components/Scenario/Iteration/Actions/CreateDraft';
 import { DeactivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/DeactivateScenarioVersion';
-import { PrepareScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/PrepareScenarioVersion';
+import { ScenarioDeploymentModal } from '@app-builder/components/Scenario/Iteration/Actions/ScenarioDeploymentModal';
 import { ArchivedIterationView } from '@app-builder/components/Scenario/Iteration/ArchivedIterationView';
 import { ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
 import { useDetectionScenarioData, useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
@@ -27,7 +25,6 @@ import { createServerFn } from '@tanstack/react-start';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
-import { match } from 'ts-pattern';
 import { cn, Tabs, Tag, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { VersionSelect } from '../$iterationId';
@@ -221,20 +218,15 @@ function DeploymentActions({
 }) {
   const { rulesMetadata } = useDetectionScenarioIterationData();
 
-  return match(iteration.type)
-    .with('draft', () => <CommitIterationDraft scenarioId={scenario.id} iteration={iteration} />)
-    .with('version', () => {
-      if (iteration.status === 'ready_to_activate') {
-        return <ActivateScenarioVersion scenario={scenario} iteration={iteration} rulesMetadata={rulesMetadata} />;
-      }
-      return (
-        <PrepareScenarioVersion
-          scenarioId={scenario.id}
-          iteration={iteration}
-          isPreparationServiceOccupied={isPreparationServiceOccupied}
-        />
-      );
-    })
-    .with('live version', () => <DeactivateScenarioVersion scenarioId={scenario.id} iterationId={iteration.id} />)
-    .exhaustive();
+  if (iteration.type === 'live version')
+    return <DeactivateScenarioVersion scenarioId={scenario.id} iterationId={iteration.id} />;
+
+  return (
+    <ScenarioDeploymentModal
+      scenario={scenario}
+      iteration={iteration}
+      isPreparationServiceOccupied={isPreparationServiceOccupied}
+      rulesMetadata={rulesMetadata}
+    />
+  );
 }
