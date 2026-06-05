@@ -378,6 +378,26 @@
           type: string
           enum:
             - created_at
+      - name: user_id
+        description: filter searches by user ID
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: api_key_id
+        description: filter searches by API key ID
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: is_saved
+        description: show only searches that have been manually saved
+        in: query
+        required: false
+        schema:
+          type: boolean
     responses:
       '200':
         description: The list of past freeform searches
