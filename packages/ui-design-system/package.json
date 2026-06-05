@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
-    "unit-tests": "vitest",
+    "unit-tests": "vitest run",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -30,9 +30,9 @@
     "@types/react-dom": "^18.3.5",
     "jsdom": "26.0.0",
     "jsdom-testing-mocks": "^1.13.1",
-    "i18next": "^23.16.8",
+    "i18next": "^26.3.0",
     "postcss": "^8.5.10",
-    "react-i18next": "^15.4.1",
+    "react-i18next": "^17.0.7",
     "storybook": "^8.6.7",
     "tailwindcss": "4.1.13",
     "vite": "^6.2.7",
@@ -75,9 +75,9 @@
     "ui-icons": "workspace:*"
   },
   "peerDependencies": {
-    "i18next": "^23.0.0",
+    "i18next": ">=26.0.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-i18next": "^15.0.0"
+    "react-i18next": "^17.0.0"
   }
 }

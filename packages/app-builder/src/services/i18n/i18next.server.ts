@@ -35,7 +35,7 @@ export async function getLocale(request: Request): Promise<string> {
 
 /**
  * Create a fresh i18next instance for SSR with all bundled namespaces.
- * Uses initImmediate: false for synchronous initialization (resources are in memory).
+ * Uses initAsync: false for synchronous initialization (resources are in memory).
  */
 export function makeI18nextServerInstance(locale: string): i18n {
   const instance = createInstance();
@@ -44,7 +44,7 @@ export function makeI18nextServerInstance(locale: string): i18n {
     resources,
     lng: locale,
     ns: ALL_NAMESPACES,
-    initImmediate: false,
+    initAsync: false,
   });
   return instance;
 }
