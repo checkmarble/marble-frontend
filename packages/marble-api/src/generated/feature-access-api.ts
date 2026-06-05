@@ -32,7 +32,7 @@ export type FeatureAccessDto = {
     ai_rule_building: FeatureAccessLevelDto;
     user_scoring: FeatureAccessLevelDto;
     /** Entitlement for the LexisNexis screening provider. OpenSanctions is always available. */
-    lexisnexis?: FeatureAccessLevelDto;
+    lexisnexis: FeatureAccessLevelDto;
 };
 /**
  * Get the entitlements of an organization

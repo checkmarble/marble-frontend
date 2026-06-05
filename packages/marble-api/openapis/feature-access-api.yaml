@@ -85,6 +85,7 @@ components:
         - continuous_screening
         - ai_rule_building
         - user_scoring
+        - lexisnexis
   responses:
     "401":
       description: Unauthorized

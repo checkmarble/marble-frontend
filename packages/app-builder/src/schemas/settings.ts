@@ -91,7 +91,7 @@ export type UpdateOrganizationPayload = z.infer<typeof updateOrganizationPayload
 export const screeningProviderSchema = z.enum(['opensanctions', 'lexisnexis']);
 
 export const updateScreeningProvidersPayloadSchema = z.object({
-  organizationId: z.string().min(1),
+  organizationId: z.uuid(),
   manualSearch: screeningProviderSchema,
   transactionMonitoring: screeningProviderSchema,
   continuousMonitoring: screeningProviderSchema,
