@@ -209,6 +209,13 @@ export const editSuspicionFn = createServerFn({ method: 'POST' })
     }
   });
 
+export const listSuspicionActivityReportsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ caseId: z.string() }))
+  .handler(async ({ context, data }) => {
+    return await context.authInfo.cases.listSuspiciousActivityReports({ caseId: data.caseId });
+  });
+
 export const massUpdateCasesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .inputValidator(massUpdateCasesPayloadSchema)
@@ -636,6 +643,7 @@ export const enrichKycFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       const kycCaseEnrichments = await context.authInfo.cases.enrichPivotObjectOfCaseWithKyc({ caseId: data.caseId });
+      console.log('KYC Enrichment');
       if (!kycCaseEnrichments) throw new Error('KYC enrichment not found');
       return { success: true as const, kycCaseEnrichments: enrichAnalysisWithLinks(kycCaseEnrichments) };
     } catch (error) {

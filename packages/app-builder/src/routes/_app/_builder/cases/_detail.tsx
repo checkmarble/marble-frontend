@@ -5,6 +5,14 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
+const beforeLoadFn = createServerFn()
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return {
+      inboxes: await context.authInfo.inbox.listInboxes(),
+    };
+  });
+
 const caseDetailLayoutLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
   .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
@@ -39,6 +47,7 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail')({
       },
     ],
   },
+  beforeLoad: () => beforeLoadFn(),
   loader: ({ params }) => caseDetailLayoutLoader({ data: { params } }),
   component: () => <Outlet />,
 });

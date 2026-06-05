@@ -88,6 +88,16 @@ export const updateOrganizationPayloadSchema = z.object({
 });
 export type UpdateOrganizationPayload = z.infer<typeof updateOrganizationPayloadSchema>;
 
+export const screeningProviderSchema = z.enum(['opensanctions', 'lexisnexis']);
+
+export const updateScreeningProvidersPayloadSchema = z.object({
+  organizationId: z.uuid(),
+  manualSearch: screeningProviderSchema,
+  transactionMonitoring: screeningProviderSchema,
+  continuousMonitoring: screeningProviderSchema,
+});
+export type UpdateScreeningProvidersPayload = z.infer<typeof updateScreeningProvidersPayloadSchema>;
+
 export const updateOrganizationScenariosPayloadSchema = z.object({
   organizationId: z.string().min(1),
   defaultScenarioTimezone: z.string(),

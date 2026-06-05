@@ -115,9 +115,9 @@ export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObj
         <span className={cn('text-grey-secondary text-small')}>
           {t('cases:investigation.more_recent', { number: newerEvents })}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-v2-xs">
           <CaseEventFilters filters={filters} setFilters={setFilters} />
-          <Button variant="secondary" onClick={() => setShowAll(!showAll)}>
+          <Button variant="secondary" appearance="link" onClick={() => setShowAll(!showAll)}>
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
             {showAll ? t('cases:investigation.collapse') : t('cases:investigation.expand')}
           </Button>

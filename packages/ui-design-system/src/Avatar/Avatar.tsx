@@ -6,10 +6,11 @@ const avatar = cva('inline-flex select-none items-center justify-center overflow
     color: {
       default: 'bg-purple-background border-2 border-purple-primary dark:bg-grey-background dark:text-purple-primary',
       grey: 'bg-grey-border',
+      transparent: 'bg-transparent border border-grey-border',
     },
     size: {
       xxs: 'size-6 text-2xs',
-      xs: 'size-6 text-xs',
+      xs: 'size-6 text-small',
       s: 'size-8 text-s',
       m: 'size-10 text-m',
       l: 'size-14 text-l',

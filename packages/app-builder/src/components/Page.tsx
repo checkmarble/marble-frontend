@@ -24,16 +24,23 @@ export const headerHeight = cva(undefined, {
   },
 });
 
-function PageHeader({ className, children, ...props }: React.ComponentProps<'div'>) {
+export const headerClassname = cva('text-l relative flex shrink-0 flex-row items-center font-bold px-v2-md', {
+  variants: {
+    color: {
+      white: 'border-b border-b-grey-border bg-surface-card',
+      page: 'bg-surface-page',
+    },
+  },
+  defaultVariants: {
+    color: 'white',
+  },
+});
+
+type PageHeaderProps = React.ComponentProps<'div'> & VariantProps<typeof headerClassname>;
+
+function PageHeader({ className, children, color, ...props }: PageHeaderProps) {
   return (
-    <div
-      className={cn(
-        'border-b-grey-border bg-surface-card text-l relative flex shrink-0 flex-row items-center border-b font-bold px-v2-md dark:border-b-grey-border',
-        headerHeight({ type: 'height' }),
-        className,
-      )}
-      {...props}
-    >
+    <div className={cn(headerClassname({ color }), headerHeight({ type: 'height' }), className)} {...props}>
       {children}
     </div>
   );

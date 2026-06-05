@@ -1,42 +1,47 @@
-import { CaseDetail, type DetailedCaseDecision } from '@app-builder/models/cases';
+import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { DataModel, getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { type ScreeningStatus } from '@app-builder/models/screening';
-import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useScreeningDetailQuery } from '@app-builder/queries/screening/get-screening-detail';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
+import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { ReviewDecisionModal } from '../Decisions/ReviewDecisionModal';
+import { DecisionPanel } from '../CaseManager/DecisionPanel/DecisionPanel';
+import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
 import { FormatData } from '../FormatData';
+import { PanelContainer, PanelRoot } from '../Panel';
 import { ScreeningHitsPanel } from '../Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
 
 const MAX_RULES_DISPLAYED = 3;
 
-export const CaseAlerts = ({
-  selectDecision,
-  setDrawerContentMode,
-  drawerContentMode,
-  caseDetail,
-  dataModel,
-}: {
-  selectDecision: (decision: DetailedCaseDecision) => void;
-  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
-  drawerContentMode: 'pivot' | 'decision' | 'snooze';
-  caseDetail: CaseDetail;
+type CaseAlertsProps = {
+  caseDecisionsQuery: UseInfiniteQueryResult<
+    InfiniteData<
+      {
+        decisions: DetailedCaseDecision[];
+        pagination: {
+          hasMore: boolean;
+          cursorId: string | null;
+        };
+      },
+      unknown
+    >,
+    Error
+  >;
   dataModel: DataModel;
-}) => {
+};
+
+export const CaseAlerts = ({ caseDecisionsQuery, dataModel }: CaseAlertsProps) => {
   const { t } = useTranslation(casesI18n);
-  const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
-  const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
 
   return match(caseDecisionsQuery)
     .with({ isPending: true }, () => (
@@ -55,19 +60,13 @@ export const CaseAlerts = ({
           <div className="flex flex-col gap-2">
             {decisions.map((decision) => {
               const triggerObjectFields = getTriggerObjectFields(dataModel, decision.triggerObjectType);
-              const isActive = selectedDecision === decision.id && drawerContentMode === 'decision';
 
               return (
                 <AlertCard
                   key={decision.id}
+                  dataModel={dataModel}
                   decision={decision}
                   triggerObjectFields={triggerObjectFields}
-                  isActive={isActive}
-                  onSelect={() => {
-                    selectDecision(decision);
-                    setSelectedDecision(decision.id);
-                    setDrawerContentMode('decision');
-                  }}
                 />
               );
             })}
@@ -83,44 +82,41 @@ export const CaseAlerts = ({
 };
 
 export const AlertCard = ({
+  dataModel,
   decision,
   triggerObjectFields,
-  isActive,
-  onSelect,
 }: {
+  dataModel: DataModel;
   decision: DetailedCaseDecision;
   triggerObjectFields: { id: string; name: string }[];
-  isActive: boolean;
-  onSelect: () => void;
 }) => {
   const { t } = useTranslation(casesI18n);
   const formatDateTime = useFormatDateTime();
   const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
+  const [openDetails, setOpenDetails] = useState(false);
 
   // Defensive default: legacy cached decisions (pre-adapter) can be served by
   // TanStack Query with `screenings` missing, which would crash every .find()/
   // .map()/.length read below.
   const screenings = decision.screenings ?? [];
   const hitRules = decision.rules.filter((r) => r.outcome === 'hit');
-  const isPendingReview = decision.outcome === 'block_and_review' && decision.reviewStatus === 'pending';
 
   const openScreening = screenings.find((s) => s.id === panelScreeningId);
+  const onSelect = () => {
+    setOpenDetails(true);
+  };
 
   return (
     <>
       <div
-        role="button"
         tabIndex={0}
+        role="button"
         className={cn(
-          'border-grey-border bg-surface-card grid cursor-pointer grid-cols-[80px_1fr] gap-2 rounded-lg border p-4 transition-colors',
-          { 'bg-purple-background-light': isActive },
+          'border-grey-border bg-surface-card grid grid-cols-[80px_1fr] gap-2 rounded-lg border p-4 transition-colors cursor-pointer hover:bg-purple-background-light',
+          { 'bg-purple-background-light': openDetails },
         )}
-        onClick={onSelect}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            onSelect();
-          }
+        onClick={() => {
+          onSelect();
         }}
       >
         {/* Left column: Date */}
@@ -144,13 +140,12 @@ export const AlertCard = ({
                 </span>
               ) : null}
             </div>
-            {isPendingReview ? (
-              <ReviewDecisionModal decisionId={decision.id} screening={screenings[0]}>
-                <Button variant="primary" size="small" onClick={(e) => e.stopPropagation()}>
-                  {t('cases:decisions.approve_or_decline')}
-                </Button>
-              </ReviewDecisionModal>
-            ) : null}
+            <div className="flex gap-v2-sm">
+              {decision.reviewStatus === 'approve' ? <ReviewStatusTag reviewStatus={decision.reviewStatus} /> : null}
+              <Button variant="secondary" size="small" appearance="stroked" mode="icon" onClick={onSelect}>
+                <Icon icon="eye" className="size-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Row 2: Trigger objects */}
@@ -222,6 +217,18 @@ export const AlertCard = ({
           ) : null}
         </div>
       </div>
+      {openDetails ? (
+        <PanelRoot open onOpenChange={(isOpen) => setOpenDetails(isOpen)}>
+          <PanelContainer size="xxl">
+            <DecisionPanel
+              dataModel={dataModel}
+              decision={decision}
+              onClose={() => setOpenDetails(false)}
+              onScreeningSelect={setPanelScreeningId}
+            />
+          </PanelContainer>
+        </PanelRoot>
+      ) : null}
       {openScreening ? (
         <ScreeningHitsPanel
           open
