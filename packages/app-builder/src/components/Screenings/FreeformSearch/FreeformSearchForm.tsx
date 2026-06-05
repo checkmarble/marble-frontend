@@ -28,7 +28,10 @@ import { EntitySearchFormProvider } from './entity-search-form-context';
 import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
 
 interface FreeformSearchFormProps {
-  onSearchComplete: (results: ScreeningMatchPayload[], searchInputs: FreeformSearchInput) => void;
+  onSearchComplete: (
+    result: { id: string; matches: ScreeningMatchPayload[] },
+    searchInputs: FreeformSearchInput,
+  ) => void;
   listConfig: ListConfigFilters;
 }
 

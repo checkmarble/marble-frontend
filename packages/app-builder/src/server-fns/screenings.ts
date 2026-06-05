@@ -192,8 +192,8 @@ export const freeformSearchFn = createServerFn({ method: 'POST' })
   .inputValidator(freeformSearchSchema)
   .handler(async ({ context, data }) => {
     try {
-      const results = await context.authInfo.screening.freeformSearch(data);
-      return { success: true as const, data: results as ScreeningMatchPayload[] };
+      const result = await context.authInfo.screening.freeformSearch(data);
+      return { success: true as const, data: result };
     } catch {
       return { success: false as const, error: 'Freeform search failed' };
     }
