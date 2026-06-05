@@ -32,13 +32,14 @@ import {
   updateInboxUserPayloadSchema,
   updateOrganizationPayloadSchema,
   updateOrganizationScenariosPayloadSchema,
+  updateScreeningProvidersPayloadSchema,
   updateTagPayloadSchema,
   updateUserPayloadSchema,
   updateWebhookPayloadSchema,
 } from '@app-builder/schemas/settings';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
 
-import { UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
+import { FORBIDDEN, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -333,6 +334,43 @@ export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
       },
     });
   });
+
+export const updateScreeningProvidersFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(updateScreeningProvidersPayloadSchema)
+  .handler(async ({ context, data }) => {
+    try {
+      await context.authInfo.organization.updateOrganization({
+        organizationId: data.organizationId,
+        changes: {
+          screeningProviders: {
+            manualSearch: data.manualSearch,
+            transactionMonitoring: data.transactionMonitoring,
+            continuousMonitoring: data.continuousMonitoring,
+          },
+        },
+      });
+    } catch (error) {
+      if (isHttpError(error) && (error.status === FORBIDDEN || error.status === UNPROCESSABLE_ENTITY)) {
+        return { error: getHttpErrorMessage(error) ?? 'Failed to update screening providers' };
+      }
+
+      throw new Error('Failed to update screening providers');
+    }
+  });
+
+function getHttpErrorMessage(error: Parameters<typeof isMarbleError>[0]) {
+  if (isMarbleError(error)) return error.data.message;
+  if (typeof error.data === 'string') return error.data;
+  if (
+    error.data &&
+    typeof error.data === 'object' &&
+    'message' in error.data &&
+    typeof error.data.message === 'string'
+  ) {
+    return error.data.message;
+  }
+}
 
 // ---- Personal Settings ----
 

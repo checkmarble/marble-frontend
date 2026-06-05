@@ -51,6 +51,7 @@ import { Route as AppBuilderUploadObjectTypeRouteImport } from './routes/_app/_b
 import { Route as AppBuilderSettingsWebhooksRouteImport } from './routes/_app/_builder/settings/webhooks'
 import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_builder/settings/users'
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
+import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './routes/_app/_builder/settings/screening-providers'
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
 import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
 import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_builder/settings/inboxes'
@@ -342,6 +343,12 @@ const AppBuilderSettingsTagsRoute = AppBuilderSettingsTagsRouteImport.update({
   path: '/tags',
   getParentRoute: () => AppBuilderSettingsRoute,
 } as any)
+const AppBuilderSettingsScreeningProvidersRoute =
+  AppBuilderSettingsScreeningProvidersRouteImport.update({
+    id: '/screening-providers',
+    path: '/screening-providers',
+    getParentRoute: () => AppBuilderSettingsRoute,
+  } as any)
 const AppBuilderSettingsScenariosRoute =
   AppBuilderSettingsScenariosRouteImport.update({
     id: '/scenarios',
@@ -807,6 +814,7 @@ export interface FileRoutesByFullPath {
   '/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
+  '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
@@ -901,6 +909,7 @@ export interface FileRoutesByTo {
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
+  '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/settings/users': typeof AppBuilderSettingsUsersRoute
   '/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
@@ -1006,6 +1015,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/_app/_builder/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
+  '/_app/_builder/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/_app/_builder/settings/tags': typeof AppBuilderSettingsTagsRoute
   '/_app/_builder/settings/users': typeof AppBuilderSettingsUsersRoute
   '/_app/_builder/settings/webhooks': typeof AppBuilderSettingsWebhooksRoute
@@ -1116,6 +1126,7 @@ export interface FileRouteTypes {
     | '/settings/inboxes'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
+    | '/settings/screening-providers'
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
@@ -1210,6 +1221,7 @@ export interface FileRouteTypes {
     | '/settings/audit-logs'
     | '/settings/ip-whitelisting'
     | '/settings/scenarios'
+    | '/settings/screening-providers'
     | '/settings/tags'
     | '/settings/users'
     | '/settings/webhooks'
@@ -1314,6 +1326,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/inboxes'
     | '/_app/_builder/settings/ip-whitelisting'
     | '/_app/_builder/settings/scenarios'
+    | '/_app/_builder/settings/screening-providers'
     | '/_app/_builder/settings/tags'
     | '/_app/_builder/settings/users'
     | '/_app/_builder/settings/webhooks'
@@ -1696,6 +1709,13 @@ declare module '@tanstack/react-router' {
       path: '/tags'
       fullPath: '/settings/tags'
       preLoaderRoute: typeof AppBuilderSettingsTagsRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/screening-providers': {
+      id: '/_app/_builder/settings/screening-providers'
+      path: '/screening-providers'
+      fullPath: '/settings/screening-providers'
+      preLoaderRoute: typeof AppBuilderSettingsScreeningProvidersRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
     '/_app/_builder/settings/scenarios': {
@@ -2645,6 +2665,7 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsInboxesRoute: typeof AppBuilderSettingsInboxesRouteWithChildren
   AppBuilderSettingsIpWhitelistingRoute: typeof AppBuilderSettingsIpWhitelistingRoute
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
+  AppBuilderSettingsScreeningProvidersRoute: typeof AppBuilderSettingsScreeningProvidersRoute
   AppBuilderSettingsTagsRoute: typeof AppBuilderSettingsTagsRoute
   AppBuilderSettingsUsersRoute: typeof AppBuilderSettingsUsersRoute
   AppBuilderSettingsWebhooksRoute: typeof AppBuilderSettingsWebhooksRoute
@@ -2660,6 +2681,8 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
   AppBuilderSettingsInboxesRoute: AppBuilderSettingsInboxesRouteWithChildren,
   AppBuilderSettingsIpWhitelistingRoute: AppBuilderSettingsIpWhitelistingRoute,
   AppBuilderSettingsScenariosRoute: AppBuilderSettingsScenariosRoute,
+  AppBuilderSettingsScreeningProvidersRoute:
+    AppBuilderSettingsScreeningProvidersRoute,
   AppBuilderSettingsTagsRoute: AppBuilderSettingsTagsRoute,
   AppBuilderSettingsUsersRoute: AppBuilderSettingsUsersRoute,
   AppBuilderSettingsWebhooksRoute: AppBuilderSettingsWebhooksRoute,

@@ -1,5 +1,6 @@
 import { type OrganizationDto } from 'marble-api';
 
+export type ScreeningProvider = 'opensanctions' | 'lexisnexis';
 export interface Organization {
   id: string;
   name: string;
@@ -9,6 +10,11 @@ export interface Organization {
   autoAssignQueueLimit?: number;
   allowedNetworks: string[];
   sentryReplayEnabled: boolean;
+  screeningProviders?: {
+    transactionMonitoring?: ScreeningProvider;
+    continuousMonitoring?: ScreeningProvider;
+    manualSearch?: ScreeningProvider;
+  };
 }
 
 export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organization => ({
@@ -20,6 +26,11 @@ export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organiza
   autoAssignQueueLimit: organizationDto.auto_assign_queue_limit,
   allowedNetworks: organizationDto.allowed_networks,
   sentryReplayEnabled: organizationDto.sentry_replay_enabled ?? false,
+  screeningProviders: {
+    continuousMonitoring: organizationDto.screening_providers?.continuous_monitoring,
+    transactionMonitoring: organizationDto.screening_providers?.transaction_monitoring,
+    manualSearch: organizationDto.screening_providers?.manual_search,
+  },
 });
 
 export interface OrganizationUpdateInput {
@@ -27,4 +38,5 @@ export interface OrganizationUpdateInput {
   sanctionThreshold?: number;
   sanctionLimit?: number;
   autoAssignQueueLimit?: number;
+  screeningProviders?: Organization['screeningProviders'];
 }
