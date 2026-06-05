@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
-    "unit-tests": "vitest",
+    "unit-tests": "vitest run",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -75,7 +75,7 @@
     "ui-icons": "workspace:*"
   },
   "peerDependencies": {
-    "i18next": "^23.0.0",
+    "i18next": ">=26.0.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^17.0.0"
