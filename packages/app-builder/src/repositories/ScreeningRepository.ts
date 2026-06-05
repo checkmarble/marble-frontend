@@ -52,7 +52,7 @@ export interface ScreeningRepository {
     datasets?: string[];
     threshold?: number;
     limit?: number;
-  }): Promise<ScreeningMatchPayload[]>;
+  }): Promise<{ id: string; matches: ScreeningMatchPayload[] }>;
   getAiSuggestions(args: { screeningId: string }): Promise<ScreeningAiSuggestion[]>;
   enrichedData(args: { entityId: string }): Promise<ScreeningMatchPayload>;
   getAvailableFilters(args: { feature: AvailableFeatures }): Promise<ScreeningAvailableFiltersAdapted>;
@@ -152,8 +152,11 @@ export function makeGetScreeningRepository() {
         filters: createScreeningFilters(datasets ?? []),
         threshold,
       };
-      const results = await marbleCoreApiClient.freeformSearch(dto, { limit });
-      return R.map(results, (result) => adaptScreeningMatchPayload(result.payload));
+      const { id, matches } = await marbleCoreApiClient.freeformSearch(dto, { limit });
+      return {
+        id,
+        matches: R.map(matches, (match) => adaptScreeningMatchPayload(match.payload)),
+      };
     },
     getAiSuggestions: async ({ screeningId }) => {
       return R.map(await marbleCoreApiClient.getScreeningAiSuggestions(screeningId), adaptScreeningAiSuggestion);
