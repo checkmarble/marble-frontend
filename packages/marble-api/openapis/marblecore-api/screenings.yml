@@ -361,6 +361,44 @@
               type: array
               items:
                 $ref: '#/components/schemas/ScreeningMatchDto'
+  get:
+    tags:
+      - Screening
+    summary: List past freeform searches
+    operationId: listFreeformSearches
+    parameters:
+      - $ref: 'components.yml#/parameters/limit'
+      - $ref: 'components.yml#/parameters/offset_id'
+      - $ref: 'components.yml#/parameters/order'
+      - name: sorting
+        description: the field used to sort the items
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - created_at
+    responses:
+      '200':
+        description: The list of past freeform searches
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - has_next_page
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ScreeningFreeformSearchDto'
+                has_next_page:
+                  type: boolean
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
 
 components:
   schemas:
@@ -931,6 +969,63 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+    ScreeningFreeformSearchDto:
+      type: object
+      required:
+        - id
+        - created_at
+        - search_input
+        - search_config
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        api_key_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        search_input:
+          $ref: '#/components/schemas/ScreeningFreeformSearchInputDto'
+        search_config:
+          $ref: '#/components/schemas/ScreeningFreeformSearchConfigDto'
+    ScreeningFreeformSearchInputDto:
+      type: object
+      required:
+        - type
+        - query
+      properties:
+        type:
+          type: string
+          enum: ['Thing', 'Person', 'Organization', 'Vehicle']
+        query:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    ScreeningFreeformSearchConfigDto:
+      type: object
+      required:
+        - provider
+        - filters
+        - limit
+      properties:
+        provider:
+          type: string
+        filters:
+          $ref: '#/components/schemas/ScreeningConfigBodyFiltersDto'
+        threshold:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 100
+        limit:
+          type: integer
     RefineQueryDto:
       type: object
       description: One of Thing, Person, Organization, or Vehicle must be provided
