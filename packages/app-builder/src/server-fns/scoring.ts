@@ -1,4 +1,5 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } from '@app-builder/models';
 import {
   updateScoringRulesetPayloadSchema,
   updateScoringSettingsPayloadSchema,
@@ -110,4 +111,26 @@ export const getScoreDistributionFn = createServerFn({ method: 'GET' })
   .handler(async ({ context, data }) => {
     const distribution = await context.authInfo.userScoring.getScoreDistribution(data.recordType);
     return { distribution };
+  });
+
+export const getScoringSettingsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const settings = await context.authInfo.userScoring.getSettings();
+    return { settings: settings ?? null };
+  });
+
+export const getScoreLatestFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ objectType: z.string(), objectId: z.string() }))
+  .handler(async ({ context, data }) => {
+    try {
+      const score = await context.authInfo.userScoring.getScoreLatest(data.objectType, data.objectId);
+      return { score: score ?? null };
+    } catch (error) {
+      if (isNotFoundHttpError(error) || isUnauthorizedHttpError(error) || isForbiddenHttpError(error)) {
+        return { score: null };
+      }
+      throw error;
+    }
   });
