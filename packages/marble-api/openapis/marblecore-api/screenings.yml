@@ -956,9 +956,6 @@ components:
       required:
         - query
       properties:
-        screening_id:
-          type: string
-          format: uuid
         query:
           $ref: '#/components/schemas/RefineQueryDto'
         datasets:
