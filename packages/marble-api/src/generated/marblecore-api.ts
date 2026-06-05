@@ -146,7 +146,7 @@ export type FileEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAll
 export type RiskTagEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAllOf0 & {
     "type": "risk_tag";
     payload: {
-        tag: "sanctions" | "peps" | "third-parties" | "adverse-media";
+        tag: "sanctions" | "peps" | "third-parties" | "adverse-media" | "custom";
         continuous_screening_id?: string;
         opensanction_entity_id?: string;
     };
@@ -173,7 +173,7 @@ export type ComponentsSchemasCommentEntityAnnotationDtoAllOf1 = {
 export type ComponentsSchemasRiskTagEntityAnnotationDtoAllOf1 = {
     "type": "risk_tag";
     payload: {
-        tag: "sanctions" | "peps" | "third-parties" | "adverse-media";
+        tag: "sanctions" | "peps" | "third-parties" | "adverse-media" | "custom";
         continuous_screening_id?: string;
         opensanction_entity_id?: string;
     };

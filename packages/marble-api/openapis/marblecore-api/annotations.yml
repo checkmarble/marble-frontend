@@ -249,7 +249,7 @@ components:
       properties:
         tag:
           type: string
-          enum: ['sanctions', 'peps', 'third-parties', 'adverse-media']
+          enum: ['sanctions', 'peps', 'third-parties', 'adverse-media', 'custom']
         continuous_screening_id:
           type: string
         opensanction_entity_id:
