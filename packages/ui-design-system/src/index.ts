@@ -27,6 +27,7 @@ export * from './Select/Select';
 export * from './SelectCountry/SelectCountry';
 export * from './SelectWithCombobox/SelectWithCombobox';
 export * from './Separator/Separator';
+export * from './StepProgressBar/StepProgressBar';
 export * from './Stepper/Stepper';
 export * from './Switch/Switch';
 export * from './Table/Table';

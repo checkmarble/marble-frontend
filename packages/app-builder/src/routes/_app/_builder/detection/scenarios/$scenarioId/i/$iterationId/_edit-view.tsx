@@ -1,10 +1,8 @@
-import { navigationI18n, Page } from '@app-builder/components';
+import { Callout, navigationI18n, Page } from '@app-builder/components';
 import { CornerPing } from '@app-builder/components/Ping';
-import { ActivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/ActivateScenarioVersion';
-import { CommitIterationDraft } from '@app-builder/components/Scenario/Iteration/Actions/CommitIterationDraft';
 import { CreateDraftIteration } from '@app-builder/components/Scenario/Iteration/Actions/CreateDraft';
 import { DeactivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/DeactivateScenarioVersion';
-import { PrepareScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/PrepareScenarioVersion';
+import { ScenarioDeploymentModal } from '@app-builder/components/Scenario/Iteration/Actions/ScenarioDeploymentModal';
 import { ArchivedIterationView } from '@app-builder/components/Scenario/Iteration/ArchivedIterationView';
 import { ScenarioHeader } from '@app-builder/components/Scenario/ScenarioHeader';
 import { useDetectionScenarioData, useDetectionScenarioIterationData } from '@app-builder/hooks/routes-layout-data';
@@ -94,10 +92,9 @@ function ScenarioEditLayout() {
       </Page.Header>
       <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
         {scenarioIteration.archived ? (
-          <aside className="bg-grey-background text-s text-grey-primary flex flex-row items-center gap-2 p-4 font-normal lg:px-8 lg:py-4">
-            <Icon icon="tip" className="size-5 shrink-0" />
+          <Callout color="red" icon="warning" className="mb-4">
             {t('scenarios:iteration.archived_message')}
-          </aside>
+          </Callout>
         ) : (
           <section className="flex flex-row gap-6 items-center">
             {currentScenario.description ? (
@@ -221,23 +218,15 @@ function DeploymentActions({
 }) {
   const { rulesMetadata } = useDetectionScenarioIterationData();
 
-  switch (iteration.type) {
-    case 'draft':
-      return <CommitIterationDraft scenarioId={scenario.id} iteration={iteration} />;
-    case 'version':
-      if (iteration.status === 'ready_to_activate') {
-        return <ActivateScenarioVersion scenario={scenario} iteration={iteration} rulesMetadata={rulesMetadata} />;
-      }
-      return (
-        <PrepareScenarioVersion
-          scenarioId={scenario.id}
-          iteration={iteration}
-          isPreparationServiceOccupied={isPreparationServiceOccupied}
-        />
-      );
-    case 'live version':
-      return <DeactivateScenarioVersion scenarioId={scenario.id} iterationId={iteration.id} />;
-    default:
-      return null;
-  }
+  if (iteration.type === 'live version')
+    return <DeactivateScenarioVersion scenarioId={scenario.id} iterationId={iteration.id} />;
+
+  return (
+    <ScenarioDeploymentModal
+      scenario={scenario}
+      iteration={iteration}
+      isPreparationServiceOccupied={isPreparationServiceOccupied}
+      rulesMetadata={rulesMetadata}
+    />
+  );
 }

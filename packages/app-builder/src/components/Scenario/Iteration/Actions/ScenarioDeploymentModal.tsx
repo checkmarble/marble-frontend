@@ -1,0 +1,278 @@
+import { Spinner } from '@app-builder/components/Spinner';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
+import { useActivateIterationMutation } from '@app-builder/queries/scenarios/activate-iteration';
+import { useCommitIterationMutation } from '@app-builder/queries/scenarios/commit-iteration';
+import { usePrepareIterationMutation } from '@app-builder/queries/scenarios/prepare-iteration';
+import { useRuleSnoozesQuery } from '@app-builder/queries/scenarios/rule-snoozes';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Modal, StepProgressBar, Tooltip } from 'ui-design-system';
+import { Icon, type IconName } from 'ui-icons';
+import { RuleSnoozeDetail } from './RuleSnoozeDetail';
+
+type DeploymentStep = 'draft' | 'commit' | 'prepare' | 'activate';
+
+type DeploymentIteration = {
+  id: string;
+  type: 'draft' | 'version' | 'live version';
+  isValid: boolean;
+  status: 'required' | 'ready_to_activate';
+};
+
+type ScenarioDeploymentModalProps = {
+  scenario: { id: string; isLive: boolean };
+  iteration: DeploymentIteration;
+  isPreparationServiceOccupied: boolean;
+  rulesMetadata: ScenarioIterationRuleMetadata[];
+};
+
+type Bullet = { text: string; tooltip?: string };
+
+// The current step is always derived from the live loader state, never an
+// internal cursor: reopening mid-flow resumes at the actual current step.
+function getCurrentStep(iteration: DeploymentIteration): DeploymentStep {
+  if (iteration.type === 'draft') return 'commit';
+  if (iteration.status === 'required') return 'prepare';
+  return 'activate';
+}
+
+export function ScenarioDeploymentModal({
+  scenario,
+  iteration,
+  isPreparationServiceOccupied,
+  rulesMetadata,
+}: ScenarioDeploymentModalProps) {
+  const { t } = useTranslation(['common', 'scenarios']);
+  const [open, setOpen] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const revalidate = useLoaderRevalidator();
+
+  const commitMutation = useCommitIterationMutation(scenario.id, iteration.id);
+  const prepareMutation = usePrepareIterationMutation(scenario.id, iteration.id);
+  const activateMutation = useActivateIterationMutation(scenario.id, iteration.id);
+  const ruleSnoozesQuery = useRuleSnoozesQuery(scenario.id, iteration.id);
+
+  const currentStep = getCurrentStep(iteration);
+
+  // Reset the error whenever the flow advances to a new step.
+  React.useEffect(() => {
+    setErrorMessage(null);
+  }, [currentStep]);
+
+  const activeMutation =
+    currentStep === 'commit' ? commitMutation : currentStep === 'prepare' ? prepareMutation : activateMutation;
+  const isPending = activeMutation.isPending || (currentStep === 'activate' && ruleSnoozesQuery.isPending);
+
+  const steps: { key: DeploymentStep; label: string }[] = [
+    { key: 'draft', label: t('scenarios:deployment_modal.steps.draft') },
+    { key: 'commit', label: t('scenarios:deployment_modal.steps.commit') },
+    ...(iteration.status === 'required'
+      ? [{ key: 'prepare' as const, label: t('scenarios:deployment_modal.steps.prepare') }]
+      : []),
+    { key: 'activate', label: t('scenarios:deployment_modal.steps.activate') },
+  ];
+
+  const action: { label: string; icon: IconName } =
+    currentStep === 'commit'
+      ? { label: t('scenarios:deployment_modal.commit.button'), icon: 'commit' }
+      : currentStep === 'prepare'
+        ? { label: t('scenarios:deployment_modal.prepare.button'), icon: 'queue-list' }
+        : { label: t('scenarios:deployment_modal.activate.button'), icon: 'pushtolive' };
+
+  const title = t(`scenarios:deployment_modal.${currentStep}.title`);
+  const confirm = t(`scenarios:deployment_modal.${currentStep}.confirm`);
+
+  const bullets: Bullet[] =
+    currentStep === 'commit'
+      ? [
+          {
+            text: t('scenarios:deployment_modal.commit.draft_is_readonly'),
+            tooltip: t('scenarios:deployment_modal.commit.draft_is_readonly.tooltip'),
+          },
+          {
+            text: t('scenarios:deployment_modal.commit.activate_to_go_in_prod'),
+            tooltip: t('scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip'),
+          },
+          { text: t('scenarios:deployment_modal.commit.change_is_immediate') },
+        ]
+      : currentStep === 'prepare'
+        ? [
+            {
+              text: t('scenarios:deployment_modal.prepare.activate_to_go_in_prod'),
+              tooltip: t('scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip'),
+            },
+            { text: t('scenarios:deployment_modal.prepare.preparation_is_async') },
+          ]
+        : [
+            {
+              text: scenario.isLive
+                ? t('scenarios:deployment_modal.activate.replace_current_live_version')
+                : t('scenarios:deployment_modal.activate.will_be_live'),
+              tooltip: t('scenarios:deployment_modal.activate.live_version.tooltip'),
+            },
+            { text: t('scenarios:deployment_modal.activate.change_is_immediate') },
+          ];
+
+  // Trigger gating mirrors the previous per-step buttons.
+  const gating: { disabled: boolean; tooltip: string | null; variant: 'primary' | 'destructive' } = !iteration.isValid
+    ? {
+        disabled: true,
+        tooltip: t(`scenarios:deployment_modal.${currentStep}.validation_error`),
+        variant: currentStep === 'prepare' ? 'destructive' : 'primary',
+      }
+    : currentStep === 'prepare' && isPreparationServiceOccupied
+      ? {
+          disabled: true,
+          tooltip: t('scenarios:deployment_modal.prepare.preparation_service_occupied'),
+          variant: 'primary',
+        }
+      : { disabled: false, tooltip: null, variant: 'primary' };
+
+  const handleAction = async () => {
+    setErrorMessage(null);
+    try {
+      if (currentStep === 'commit') {
+        const res = await commitMutation.mutateAsync({
+          draftIsReadOnly: true,
+          activateToGoInProd: true,
+          changeIsImmediate: true,
+        });
+        if (res?.error) {
+          setErrorMessage(
+            res.error === 'validation_error'
+              ? t('scenarios:deployment_modal.commit.validation_error')
+              : t('common:errors.unknown'),
+          );
+          return;
+        }
+      } else if (currentStep === 'prepare') {
+        const res = await prepareMutation.mutateAsync({ activateToGoInProd: true, preparationIsAsync: true });
+        if (res?.error) {
+          setErrorMessage(
+            res.error === 'preparation_service_occupied'
+              ? t('scenarios:deployment_modal.prepare.preparation_service_occupied')
+              : t('common:errors.unknown'),
+          );
+          return;
+        }
+      } else {
+        const res = await activateMutation.mutateAsync({ willBeLive: true, changeIsImmediate: true });
+        if (res?.error) {
+          setErrorMessage(getActivateErrorMessage(res.error, t));
+          return;
+        }
+      }
+      revalidate();
+    } catch {
+      setErrorMessage(t('common:errors.unknown'));
+    }
+  };
+
+  const triggerButton = (
+    <Button
+      className="flex-1"
+      variant={gating.variant}
+      size="default"
+      disabled={gating.disabled}
+      onClick={() => setOpen(true)}
+    >
+      <Icon icon={action.icon} className="size-5" />
+      {action.label}
+    </Button>
+  );
+
+  return (
+    <>
+      {gating.tooltip ? (
+        <Tooltip.Default className="text-xs" content={gating.tooltip}>
+          {triggerButton}
+        </Tooltip.Default>
+      ) : (
+        triggerButton
+      )}
+      <Modal.Root
+        open={open}
+        onOpenChange={(nextOpen) => {
+          if (!isPending) setOpen(nextOpen);
+        }}
+      >
+        <Modal.Content
+          onInteractOutside={(event) => {
+            if (isPending) event.preventDefault();
+          }}
+          onEscapeKeyDown={(event) => {
+            if (isPending) event.preventDefault();
+          }}
+        >
+          <Modal.Title>{title}</Modal.Title>
+          <div className="flex flex-col gap-6 p-6">
+            <StepProgressBar steps={steps} value={currentStep} isPending={isPending} />
+            <div className="text-s flex flex-col gap-4 font-medium">
+              <p className="font-semibold">{confirm}</p>
+              <ul className="flex list-disc flex-col gap-4 ps-5">
+                {bullets.map((bullet) => (
+                  <li key={bullet.text}>
+                    <span className="inline-flex items-center gap-2">
+                      {bullet.text}
+                      {bullet.tooltip ? (
+                        <Tooltip.Default content={<p className="max-w-60">{bullet.tooltip}</p>}>
+                          <Icon icon="tip" className="hover:text-purple-primary text-purple-disabled size-5" />
+                        </Tooltip.Default>
+                      ) : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {currentStep === 'activate' ? (
+                <div className="min-h-6 w-full">
+                  <RuleSnoozeDetail scenarioId={scenario.id} iterationId={iteration.id} rulesMetadata={rulesMetadata} />
+                </div>
+              ) : null}
+              {errorMessage ? <p className="text-s text-red-primary font-medium">{errorMessage}</p> : null}
+            </div>
+          </div>
+          <Modal.Footer>
+            <Button
+              className="flex-1"
+              variant="secondary"
+              appearance="stroked"
+              name="cancel"
+              disabled={isPending}
+              onClick={() => setOpen(false)}
+            >
+              {t('common:cancel')}
+            </Button>
+            <Button
+              className="flex-1"
+              variant="primary"
+              disabled={isPending || !iteration.isValid}
+              onClick={handleAction}
+            >
+              {isPending ? <Spinner className="size-5" /> : <Icon icon={action.icon} className="size-5" />}
+              {action.label}
+            </Button>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
+    </>
+  );
+}
+
+function getActivateErrorMessage(
+  error: 'validation_error' | 'preparation_is_required' | 'preparation_service_occupied' | 'is_draft' | 'unknown',
+  t: ReturnType<typeof useTranslation>['t'],
+): string {
+  switch (error) {
+    case 'validation_error':
+      return t('scenarios:deployment_modal.activate.validation_error');
+    case 'preparation_is_required':
+      return t('scenarios:deployment_modal.activate.preparation_is_required_error');
+    case 'preparation_service_occupied':
+      return t('scenarios:deployment_modal.activate.preparation_service_occupied_error');
+    case 'is_draft':
+      return t('scenarios:deployment_modal.activate.is_draft_error');
+    default:
+      return t('common:errors.unknown');
+  }
+}
