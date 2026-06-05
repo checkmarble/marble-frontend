@@ -1,6 +1,5 @@
 import { casesI18n, ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
-import { DecisionPanel } from '@app-builder/components/CaseManager/DecisionPanel/DecisionPanel';
 import { CaseManagerDrawer } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/PivotsPanel';
 import { SnoozePanel } from '@app-builder/components/CaseManager/SnoozePanel/SnoozePanel';
@@ -13,7 +12,7 @@ import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationC
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { caseDetailMiddleware } from '@app-builder/middlewares/case-detail-middleware';
 import { isNotFoundHttpError } from '@app-builder/models';
-import { type CaseReview, DetailedCaseDecision } from '@app-builder/models/cases';
+import { type CaseReview } from '@app-builder/models/cases';
 import { type DataModelObject } from '@app-builder/models/data-model';
 import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
@@ -91,7 +90,7 @@ const scenarioCaseDetailLoader = createServerFn()
     };
   });
 
-export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId')({
+export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/old')({
   validateSearch: z.object({ fromInbox: z.string().optional() }),
   loaderDeps: ({ search: { fromInbox } }) => ({ fromInbox }),
   loader: ({ params }) => scenarioCaseDetailLoader({ data: { params } }),
@@ -136,8 +135,7 @@ function CaseManagerIndexPage() {
   const { t } = useTranslation(casesI18n);
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
-  const [selectedDecision, selectDecision] = useState<DetailedCaseDecision | null>(null);
-  const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>('pivot');
+  const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'snooze'>('pivot');
 
   useEffect(() => {
     if (isMenuExpanded) {
@@ -179,8 +177,6 @@ function CaseManagerIndexPage() {
           key={details.id}
           caseDetail={details}
           currentUser={currentUser}
-          selectDecision={selectDecision}
-          drawerContentMode={drawerContentMode}
           setDrawerContentMode={setDrawerContentMode}
           caseReview={mostRecentReview}
           dataModel={dataModel}
@@ -204,16 +200,6 @@ function CaseManagerIndexPage() {
                   />
                 );
               })
-              .with('decision', () =>
-                !selectedDecision ? null : (
-                  <DecisionPanel
-                    key={details.id}
-                    decision={selectedDecision}
-                    setDrawerContentMode={setDrawerContentMode}
-                    dataModel={dataModel}
-                  />
-                ),
-              )
               .with('snooze', () => (
                 <SnoozePanel
                   key={details.id}

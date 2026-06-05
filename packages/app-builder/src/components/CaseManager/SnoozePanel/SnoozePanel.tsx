@@ -24,7 +24,7 @@ const findDataFromPivotValue = (pivots: PivotObject[], pivotValue: string) => {
 };
 
 type SnoozePanelProps = {
-  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
+  setDrawerContentMode: (mode: 'pivot' | 'snooze') => void;
   caseDetail: CaseDetail;
   dataModel: DataModel;
   pivotObjects: PivotObject[];

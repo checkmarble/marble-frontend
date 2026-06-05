@@ -16,7 +16,7 @@ export function makeI18nInstance(locale: string) {
     resources,
     lng: locale,
     ns: ALL_NAMESPACES,
-    initImmediate: false,
+    initAsync: false,
   });
   return instance;
 }

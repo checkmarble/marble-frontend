@@ -1,4 +1,3 @@
-import { DrawerContext } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { casesI18n } from '@app-builder/components/Cases';
 import { AlertOutcomeIcon, ScreeningStatusBadge } from '@app-builder/components/Cases/CaseAlerts';
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
@@ -14,7 +13,6 @@ import {
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
-import { ScreeningHitsPanel } from '@app-builder/components/Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { DataModel } from '@app-builder/models';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
@@ -27,21 +25,19 @@ import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type DecisionPanelProps = {
-  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   decision: DetailedCaseDecision;
   dataModel: DataModel;
+  onClose: () => void;
+  onScreeningSelect: (screeningId: string) => void;
 };
 
-export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: DecisionPanelProps) {
+export function DecisionPanel({ decision, dataModel, onClose, onScreeningSelect }: DecisionPanelProps) {
   const { t } = useTranslation(casesI18n);
-  const { setExpanded } = DrawerContext.useValue();
   const detailDecisionQuery = useDetailDecisionQuery(decision.id);
 
   const [showHitOnly, setShowHitOnly] = useState(true);
-  const [panelScreeningId, setPanelScreeningId] = useState<string | null>(null);
   // Defensive default — see CaseAlerts.tsx for rationale.
   const screenings = decision.screenings ?? [];
-  const panelScreening = screenings.find((s) => s.id === panelScreeningId) ?? null;
   const [objectLink, setObjectLink] = useState<{
     tableName: string;
     objectId: string;
@@ -66,15 +62,7 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="secondary"
-          mode="icon"
-          size="small"
-          onClick={() => {
-            setExpanded(false);
-            setDrawerContentMode('pivot');
-          }}
-        >
+        <Button variant="secondary" mode="icon" size="small" onClick={() => onClose()}>
           <Icon icon="cross" className="size-5" />
         </Button>
         <div className="flex flex-1 flex-col gap-1">
@@ -117,12 +105,12 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
                   tabIndex={0}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setPanelScreeningId(screening.id);
+                    onScreeningSelect(screening.id);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.stopPropagation();
-                      setPanelScreeningId(screening.id);
+                      onScreeningSelect(screening.id);
                     }
                   }}
                 >
@@ -208,20 +196,6 @@ export function DecisionPanel({ setDrawerContentMode, decision, dataModel }: Dec
             />
           ) : null}
         </div>
-      ) : null}
-
-      {/* Screening Hits Panel */}
-      {panelScreening ? (
-        <ScreeningHitsPanel
-          open
-          onOpenChange={(isOpen) => {
-            if (!isOpen) setPanelScreeningId(null);
-          }}
-          decisionId={decision.id}
-          screeningId={panelScreening.id}
-          screeningName={panelScreening.name}
-          screeningStatus={panelScreening.status}
-        />
       ) : null}
     </div>
   );

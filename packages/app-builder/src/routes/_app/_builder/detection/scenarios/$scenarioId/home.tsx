@@ -116,7 +116,7 @@ function ScenarioHome() {
       </Page.Header>
       <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
         {currentScenario.archived ? (
-          <Callout color="red" icon="warning">
+          <Callout color="red" icon="warning" className="mb-4">
             {t('scenarios:archived_scenario_banner')}
           </Callout>
         ) : null}

@@ -105,9 +105,9 @@ export function DataFields({ table, object, preset, customFields, className, opt
       <div
         className={cn(
           'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
-          options?.layout === '2-columns' && 'grid-cols-[repeat(2,min(1fr,max-content)_1fr)]',
-          options?.layout === '3-columns' && 'grid-cols-[repeat(3,min(1fr,max-content)_1fr)]',
-          (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[min(1fr,max-content)_1fr]',
+          options?.layout === '2-columns' && 'grid-cols-[repeat(2,max-content_minmax(0,1fr))]',
+          options?.layout === '3-columns' && 'grid-cols-[repeat(3,max-content_minmax(0,1fr))]',
+          (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_minmax(0,1fr)]',
           className,
         )}
       >

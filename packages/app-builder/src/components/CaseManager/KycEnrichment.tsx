@@ -79,10 +79,6 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
     </div>
   );
 
-  if (!kycCaseEnrichment) {
-    return null;
-  }
-
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
@@ -103,7 +99,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
             </div>
           )}
           {error && <Callout variant="outlined">{error.message}</Callout>}
-          {isSuccess && data.success ? (
+          {isSuccess && data.success && kycCaseEnrichment ? (
             <div className="flex flex-col gap-4 flex-1 min-h-0">
               <Callout variant="outlined">
                 {t('cases:kyc_enrichment.for')} <strong>{kycCaseEnrichment.entityName}</strong>
