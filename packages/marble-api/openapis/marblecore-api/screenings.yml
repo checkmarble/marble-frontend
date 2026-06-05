@@ -354,13 +354,11 @@
             $ref: '#/components/schemas/ScreeningFreeformDto'
     responses:
       '200':
-        description: The list of matches
+        description: The freeform search id and its matches
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ScreeningMatchDto'
+              $ref: '#/components/schemas/ScreeningFreeformSearchResultDto'
   get:
     tags:
       - Screening
@@ -986,6 +984,19 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+    ScreeningFreeformSearchResultDto:
+      type: object
+      required:
+        - id
+        - matches
+      properties:
+        id:
+          type: string
+          format: uuid
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreeningMatchDto'
     ScreeningFreeformSearchDto:
       type: object
       required:

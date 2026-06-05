@@ -4146,7 +4146,10 @@ export function freeformSearch(body?: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScreeningMatchDto[];
+        data: {
+            id: string;
+            matches: ScreeningMatchDto[];
+        };
     }>(`/screenings/freeform-search${QS.query(QS.explode({
         limit
     }))}`, oazapfts.json({
