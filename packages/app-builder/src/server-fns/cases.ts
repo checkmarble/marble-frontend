@@ -643,7 +643,6 @@ export const enrichKycFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       const kycCaseEnrichments = await context.authInfo.cases.enrichPivotObjectOfCaseWithKyc({ caseId: data.caseId });
-      console.log('KYC Enrichment');
       if (!kycCaseEnrichments) throw new Error('KYC enrichment not found');
       return { success: true as const, kycCaseEnrichments: enrichAnalysisWithLinks(kycCaseEnrichments) };
     } catch (error) {
