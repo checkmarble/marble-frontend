@@ -1,7 +1,6 @@
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import { type Components } from 'react-markdown';
 import { Icon } from 'ui-icons';
-import { Markdown } from './Markdown';
+import { type Components, Markdown } from './Markdown';
 
 // GitHub callout to emoji mapping
 const GITHUB_CALLOUT_EMOJI: Record<string, string> = {
