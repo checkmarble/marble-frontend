@@ -35,12 +35,12 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
 
   return match(annotationsQuery)
     .with({ isPending: true }, () => (
-      <div className="h-20 flex items-center justify-center col-span-full">
+      <div className="flex items-center justify-center col-span-full">
         <Spinner className="size-6" />
       </div>
     ))
     .with({ isError: true }, () => (
-      <div className="h-20 flex items-center justify-center col-span-full">
+      <div className="flex items-center justify-center col-span-full">
         <span className="text-center">{t('common:generic_fetch_data_error')}</span>
         <Button variant="secondary" onClick={() => annotationsQuery.refetch()}>
           {t('common:retry')}
@@ -114,7 +114,6 @@ const FileItem = ({
     annotation: FileEntityAnnotationDto,
     file: FileEntityAnnotationDto['payload']['files'][number],
   ) => {
-    const router = useRouter();
     const fileEndpoint = router.buildLocation({
       to: '/ressources/annotations/download-file/$annotationId/$fileId',
       params: {

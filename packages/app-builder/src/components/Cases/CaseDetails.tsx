@@ -4,7 +4,7 @@ import { OpenCase } from '@app-builder/components/Cases/OpenCase';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser, DataModel, isAdmin } from '@app-builder/models';
-import { CaseDetail, CaseReview, DetailedCaseDecision, SuspiciousActivityReport } from '@app-builder/models/cases';
+import { CaseDetail, CaseReview, SuspiciousActivityReport } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
@@ -29,8 +29,6 @@ import { SnoozeCase } from './SnoozeCase';
 
 export const CaseDetails = ({
   currentUser,
-  selectDecision,
-  drawerContentMode,
   setDrawerContentMode,
   caseReview,
   caseDetail,
@@ -38,9 +36,7 @@ export const CaseDetails = ({
   reports,
 }: {
   currentUser: CurrentUser;
-  selectDecision: (decision: DetailedCaseDecision) => void;
-  drawerContentMode: 'pivot' | 'decision' | 'snooze';
-  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
+  setDrawerContentMode: (mode: 'pivot' | 'snooze') => void;
   caseReview: CaseReview | null;
   caseDetail: CaseDetail;
   dataModel: DataModel;
@@ -246,13 +242,7 @@ export const CaseDetails = ({
                   </Button>
                 ) : null}
               </div>
-              <CaseAlerts
-                selectDecision={selectDecision}
-                setDrawerContentMode={setDrawerContentMode}
-                drawerContentMode={drawerContentMode}
-                caseDetail={caseDetail}
-                dataModel={dataModel}
-              />
+              <CaseAlerts caseDecisionsQuery={caseDecisionsQuery} dataModel={dataModel} />
             </div>
             {/* Documents */}
             {caseDetail.files.length > 0 ? (

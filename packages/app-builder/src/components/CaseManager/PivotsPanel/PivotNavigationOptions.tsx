@@ -5,7 +5,7 @@ import { type PivotObject } from '@app-builder/models/cases';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type PivotNavigationOptionsProps = {
@@ -14,6 +14,10 @@ export type PivotNavigationOptionsProps = {
   table: TableModel;
   dataModel: DataModel;
   onExplore: () => void;
+  className?: string;
+  options?: {
+    layout?: '1-column' | '2-columns' | '3-columns';
+  };
 };
 
 export function PivotNavigationOptions({
@@ -22,6 +26,8 @@ export function PivotNavigationOptions({
   table,
   dataModel,
   onExplore,
+  options,
+  className,
 }: PivotNavigationOptionsProps) {
   const { t } = useTranslation(['cases']);
   const linksToTable = useMemo(() => {
@@ -37,7 +43,15 @@ export function PivotNavigationOptions({
   return (
     <>
       {linksToTable.length > 0 ? (
-        <div className="grid grid-cols-[116px_1fr] gap-3 items-center">
+        <div
+          className={cn(
+            'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
+            options?.layout === '2-columns' && 'grid-cols-[repeat(2,minmax(max-content,1fr)_1fr)]',
+            options?.layout === '3-columns' && 'grid-cols-[repeat(3,minmax(max-content,1fr)_1fr)]',
+            (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[minmax(max-content,1fr)_1fr]',
+            className,
+          )}
+        >
           {linksToTable.map((linkToTable) => {
             const navigationOptions =
               table.navigationOptions?.filter(
