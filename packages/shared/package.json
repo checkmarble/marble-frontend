@@ -21,7 +21,7 @@
     "jsdom": "26.0.0",
     "jsdom-testing-mocks": "^1.13.1",
     "vite": "^6.2.7",
-    "vitest": "3.0.9"
+    "vitest": "4.1.7"
   },
   "dependencies": {
     "@preact/signals-react": "^3.0.1",
