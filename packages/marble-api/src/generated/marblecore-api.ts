@@ -4137,7 +4137,6 @@ export function refineScreening(screeningRefineDto?: ScreeningRefineDto, opts?: 
  * Freeform search for sanctions matches
  */
 export function freeformSearch(body?: {
-    screening_id?: string;
     /** One of Thing, Person, Organization, or Vehicle must be provided */
     query: {
         Thing?: {
