@@ -5,8 +5,10 @@ import {
   HoverCardPortal,
   HoverCardTrigger,
 } from '@radix-ui/react-hover-card';
-import ReactMarkdown, { type Components } from 'react-markdown';
+import ReactMarkdown, { MarkdownToJSX } from 'markdown-to-jsx';
 import { Code } from '../Code/Code';
+
+export type Components = MarkdownToJSX.Overrides;
 
 export const defaultMarkdownComponents: Components = {
   a: ({ children, href, title }) => (
@@ -44,7 +46,7 @@ export const defaultMarkdownComponents: Components = {
   ul: ({ children }) => <ul className="mb-2 list-disc pl-4">{children}</ul>,
   ol: ({ children }) => <ul className="mb-2 list-decimal pl-4">{children}</ul>,
   code: ({ children }) => <Code className="font-mono">{children}</Code>,
-  hr: () => <hr className="mb-2 bg-grey-border" />,
+  hr: () => <hr className="mb-2 bg-grey-border h-px border-0" />,
 };
 
 interface MarkdownProps {
@@ -53,5 +55,9 @@ interface MarkdownProps {
 }
 
 export function Markdown({ children, components }: MarkdownProps) {
-  return <ReactMarkdown components={components ?? defaultMarkdownComponents}>{children}</ReactMarkdown>;
+  return (
+    <ReactMarkdown options={{ disableParsingRawHTML: true, overrides: components ?? defaultMarkdownComponents }}>
+      {children}
+    </ReactMarkdown>
+  );
 }
