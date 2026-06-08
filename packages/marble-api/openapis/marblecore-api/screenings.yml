@@ -354,13 +354,69 @@
             $ref: '#/components/schemas/ScreeningFreeformDto'
     responses:
       '200':
-        description: The list of matches
+        description: The freeform search id and its matches
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ScreeningMatchDto'
+              $ref: '#/components/schemas/ScreeningFreeformSearchResultDto'
+  get:
+    tags:
+      - Screening
+    summary: List past freeform searches
+    operationId: listFreeformSearches
+    parameters:
+      - $ref: 'components.yml#/parameters/limit'
+      - $ref: 'components.yml#/parameters/offset_id'
+      - $ref: 'components.yml#/parameters/order'
+      - name: sorting
+        description: the field used to sort the items
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - created_at
+      - name: user_id
+        description: filter searches by user ID
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: api_key_id
+        description: filter searches by API key ID
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: is_saved
+        description: show only searches that have been manually saved
+        in: query
+        required: false
+        schema:
+          type: boolean
+    responses:
+      '200':
+        description: The list of past freeform searches
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - has_next_page
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ScreeningFreeformSearchDto'
+                has_next_page:
+                  type: boolean
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
 
 components:
   schemas:
@@ -922,9 +978,6 @@ components:
       required:
         - query
       properties:
-        screening_id:
-          type: string
-          format: uuid
         query:
           $ref: '#/components/schemas/RefineQueryDto'
         datasets:
@@ -935,6 +988,76 @@ components:
           type: integer
           minimum: 0
           maximum: 100
+    ScreeningFreeformSearchResultDto:
+      type: object
+      required:
+        - id
+        - matches
+      properties:
+        id:
+          type: string
+          format: uuid
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreeningMatchDto'
+    ScreeningFreeformSearchDto:
+      type: object
+      required:
+        - id
+        - created_at
+        - search_input
+        - search_config
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        api_key_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        search_input:
+          $ref: '#/components/schemas/ScreeningFreeformSearchInputDto'
+        search_config:
+          $ref: '#/components/schemas/ScreeningFreeformSearchConfigDto'
+    ScreeningFreeformSearchInputDto:
+      type: object
+      required:
+        - type
+        - query
+      properties:
+        type:
+          type: string
+          enum: ['Thing', 'Person', 'Organization', 'Vehicle']
+        query:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    ScreeningFreeformSearchConfigDto:
+      type: object
+      required:
+        - provider
+        - filters
+        - limit
+      properties:
+        provider:
+          type: string
+        filters:
+          $ref: '#/components/schemas/ScreeningConfigBodyFiltersDto'
+        threshold:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 100
+        limit:
+          type: integer
     RefineQueryDto:
       type: object
       description: One of Thing, Person, Organization, or Vehicle must be provided
