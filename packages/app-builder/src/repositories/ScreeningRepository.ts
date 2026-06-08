@@ -7,10 +7,8 @@ import {
   adaptScreeningMatch,
   adaptScreeningMatchPayload,
   type OpenSanctionEntitySchema,
-  type SavedScreeningSearch,
   type SavedScreeningSearchFilters,
-  type SavedScreeningSearchInputs,
-  type SavedScreeningSearchPage,
+  SavedScreeningSearchPage,
   type Screening,
   ScreeningAvailableFiltersAdapted,
   type ScreeningFile,
@@ -58,18 +56,8 @@ export interface ScreeningRepository {
   getAiSuggestions(args: { screeningId: string }): Promise<ScreeningAiSuggestion[]>;
   enrichedData(args: { entityId: string }): Promise<ScreeningMatchPayload>;
   getAvailableFilters(args: { feature: AvailableFeatures }): Promise<ScreeningAvailableFiltersAdapted>;
-  saveScreeningSearch(args: {
-    name: string;
-    inputs: SavedScreeningSearchInputs;
-    results: ScreeningMatchPayload[];
-  }): Promise<SavedScreeningSearch>;
   listSavedScreeningSearches(filters: SavedScreeningSearchFilters): Promise<SavedScreeningSearchPage>;
-  deleteSavedScreeningSearch(args: { id: string }): Promise<void>;
 }
-
-// In-memory mock store for saved freeform searches. Replace once a marblecore-api endpoint exists.
-const savedScreeningSearches = new Map<string, SavedScreeningSearch>();
-const MOCK_SAVED_SEARCH_OWNER_ID = 'mock-owner';
 
 export function makeGetScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScreeningRepository => ({
@@ -170,42 +158,8 @@ export function makeGetScreeningRepository() {
     getAiSuggestions: async ({ screeningId }) => {
       return R.map(await marbleCoreApiClient.getScreeningAiSuggestions(screeningId), adaptScreeningAiSuggestion);
     },
-    saveScreeningSearch: async ({ name, inputs, results }) => {
-      const record: SavedScreeningSearch = {
-        id: crypto.randomUUID(),
-        name,
-        ownerId: MOCK_SAVED_SEARCH_OWNER_ID,
-        createdAt: new Date().toISOString(),
-        inputs,
-        results,
-      };
-      savedScreeningSearches.set(record.id, record);
-      return record;
-    },
     listSavedScreeningSearches: async (filters) => {
-      const all = Array.from(savedScreeningSearches.values());
-
-      const filtered = R.pipe(
-        all,
-        R.filter((s) => {
-          if (filters.name && !s.name.toLowerCase().includes(filters.name.toLowerCase())) return false;
-          if (filters.ownerId && s.ownerId !== filters.ownerId) return false;
-          if (filters.fromDate && s.createdAt < filters.fromDate) return false;
-          if (filters.toDate && s.createdAt > filters.toDate) return false;
-          return true;
-        }),
-        R.sortBy([(s) => s.createdAt, 'desc']),
-      );
-
-      const limit = filters.limit ?? 20;
-      const page = filters.page ?? 1;
-      const start = (page - 1) * limit;
-      const items = filtered.slice(start, start + limit);
-
-      return { items, total: filtered.length, page, limit };
-    },
-    deleteSavedScreeningSearch: async ({ id }) => {
-      savedScreeningSearches.delete(id);
+      return await marbleCoreApiClient.listFreeformSearches(filters);
     },
   });
 }

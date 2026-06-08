@@ -1146,6 +1146,25 @@ export type UpdateScreeningMatchDto = {
     whitelist?: boolean;
 };
 export type ScreeningRefineDto = object;
+export type ScreeningFreeformSearchConfigDto = {
+    provider: string;
+    filters: ScreeningConfigBodyFiltersDto;
+    threshold?: number | null;
+    limit: number;
+};
+export type ScreeningFreeformSearchDto = {
+    id: string;
+    user_id?: string;
+    api_key_id?: string;
+    created_at: string;
+    search_input: {
+        "type": "Thing" | "Person" | "Organization" | "Vehicle";
+        query: {
+            [key: string]: string[];
+        };
+    };
+    search_config: ScreeningFreeformSearchConfigDto;
+};
 export type OpenSanctionsUpstreamDatasetFreshnessDto = {
     version: string;
     name: string;
@@ -4157,6 +4176,42 @@ export function freeformSearch(body?: {
         method: "POST",
         body
     })));
+}
+/**
+ * List past freeform searches
+ */
+export function listFreeformSearches({ limit, offsetId, order, sorting, userId, apiKeyId, isSaved }: {
+    limit?: number;
+    offsetId?: string;
+    order?: "ASC" | "DESC";
+    sorting?: "created_at";
+    userId?: string;
+    apiKeyId?: string;
+    isSaved?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data: ScreeningFreeformSearchDto[];
+            has_next_page: boolean;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/screenings/freeform-search${QS.query(QS.explode({
+        limit,
+        offset_id: offsetId,
+        order,
+        sorting,
+        user_id: userId,
+        api_key_id: apiKeyId,
+        is_saved: isSaved
+    }))}`, {
+        ...opts
+    }));
 }
 /**
  * Retrieve the freshness of sanction datasets

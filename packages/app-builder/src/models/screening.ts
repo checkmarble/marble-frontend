@@ -6,6 +6,7 @@ import {
   type ScreeningEntityDto,
   type ScreeningErrorDto,
   type ScreeningFileDto,
+  ScreeningFreeformSearchDto,
   type ScreeningMatchDto,
   type ScreeningMatchPayloadDto,
   type ScreeningRequestDto,
@@ -716,27 +717,19 @@ export interface SavedScreeningSearchInputs {
   limit?: number;
 }
 
-export interface SavedScreeningSearch {
-  id: string;
-  name: string;
-  ownerId: string;
-  createdAt: string;
-  inputs: SavedScreeningSearchInputs;
-  results: ScreeningMatchPayload[];
-}
+export type SavedScreeningSearch = ScreeningFreeformSearchDto;
 
 export interface SavedScreeningSearchFilters {
-  fromDate?: string;
-  toDate?: string;
-  name?: string;
-  ownerId?: string;
   limit?: number;
-  page?: number;
+  offsetId?: string;
+  order?: 'ASC' | 'DESC';
+  sorting?: 'created_at';
+  userId?: string;
+  apiKeyId?: string;
+  isSaved?: boolean;
 }
 
 export interface SavedScreeningSearchPage {
-  items: SavedScreeningSearch[];
-  total: number;
-  page: number;
-  limit: number;
+  data: ScreeningFreeformSearchDto[];
+  has_next_page: boolean;
 }

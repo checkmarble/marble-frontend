@@ -323,6 +323,10 @@ updateScreeningMatchDto:
   $ref: screenings.yml#/components/schemas/updateScreeningMatchDto
 ScreeningAiSuggestionDto:
   $ref: screenings.yml#/components/schemas/ScreeningAiSuggestionDto
+ScreeningFreeformSearchDto:
+  $ref: screenings.yml#/components/schemas/ScreeningFreeformSearchDto
+ScreeningFreeformSearchConfigDto:
+  $ref: screenings.yml#/components/schemas/ScreeningFreeformSearchConfigDto
 
 # SCENARIO PUBLICATIONS
 
