@@ -1,6 +1,6 @@
 import { type PropertyForSchema } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatch, type ScreeningSanctionEntity } from '@app-builder/models/screening';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -37,6 +37,23 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
   const [selectedSanction, setSelectedSanction] = useState<ScreeningSanctionEntity | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const deduplicatedEntity = useMemo(() => {
+    if (entity.schema !== 'Person') return entity;
+
+    const familyPersonIds = new Set(entity.properties?.familyPerson?.flatMap(({ properties }) => properties?.person));
+    if (!familyPersonIds.size) return entity;
+
+    return {
+      ...entity,
+      properties: {
+        ...entity.properties,
+        familyRelative: entity.properties.familyRelative?.filter(
+          ({ properties }) => !properties.relative?.some((relativeId) => familyPersonIds.has(relativeId)),
+        ),
+      },
+    };
+  }, [entity]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -93,12 +110,12 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
 
       <Associations associations={entity.properties['associations']} />
 
-      {entity.schema === 'Person' && entity.properties?.['familyPerson']?.length ? (
-        <FamilyDetail relation="familyPerson" familyMembers={entity.properties['familyPerson']} />
+      {entity.schema === 'Person' && deduplicatedEntity.properties?.['familyPerson']?.length ? (
+        <FamilyDetail relation="familyPerson" familyMembers={deduplicatedEntity.properties['familyPerson']} />
       ) : null}
 
-      {entity.schema === 'Person' && entity.properties?.['familyRelative']?.length ? (
-        <FamilyDetail relation="familyRelative" familyMembers={entity.properties['familyRelative']} />
+      {entity.schema === 'Person' && deduplicatedEntity.properties?.['familyRelative']?.length ? (
+        <FamilyDetail relation="familyRelative" familyMembers={deduplicatedEntity.properties['familyRelative']} />
       ) : null}
     </div>
   );
