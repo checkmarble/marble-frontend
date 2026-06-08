@@ -11,6 +11,7 @@ const sectionTKeys: Record<keyof Sections, ParseKeys<['settings']>> = {
   case_manager: 'settings:case_manager',
   audit: 'settings:audit',
   ip_whitelisting: 'settings:ip_whitelisting',
+  screening_providers: 'settings:screening_providers',
 };
 
 export function SettingsNavigationTabs({ sections }: { sections: Sections }) {

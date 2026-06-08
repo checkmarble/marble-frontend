@@ -135,6 +135,8 @@ export const isContinuousScreeningAvailable = (entitlements: FeatureAccesses) =>
 export const isScreeningSearchAvailable = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.sanctions) || isContinuousScreeningAvailable(entitlements);
 
+export const isLexisNexisAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.lexisnexis);
+
 export const isAiRuleBuildingAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.aiRuleBuilding);
 
 export const isUserScoringAvailable = (entitlements: FeatureAccesses) => isAccessible(entitlements.userScoring);

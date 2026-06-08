@@ -57,6 +57,13 @@ export function makeGetOrganizationRepository() {
         ...(args.changes.autoAssignQueueLimit && {
           auto_assign_queue_limit: args.changes.autoAssignQueueLimit,
         }),
+        ...(args.changes.screeningProviders && {
+          screening_providers: {
+            manual_search: args.changes.screeningProviders.manualSearch,
+            transaction_monitoring: args.changes.screeningProviders.transactionMonitoring,
+            continuous_monitoring: args.changes.screeningProviders.continuousMonitoring,
+          },
+        }),
       });
 
       return adaptOrganizationDto(organization);
