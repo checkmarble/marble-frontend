@@ -90,7 +90,7 @@ type EntityTypeRequiringLink = (typeof entityTypesRequiringLink)[number];
 
 const tableEntityStepCommonShape = {
   name: z.string().min(1).regex(dataModelNameRegex, {
-    error: 'Only lower case alphanumeric and _, must start with a letter',
+    error: 'Table/name: Only lower case alphanumeric and _, must start with a letter',
   }),
   alias: z.string(),
   belongsToTableId: z.string(),

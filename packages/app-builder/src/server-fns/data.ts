@@ -451,10 +451,10 @@ export const importOrgFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.organization.importOrganization(data.body);
-      return { success: true };
-    } catch (error) {
+      return { success: true, message: 'Import successful' };
+    } catch (error: any) {
       console.error('[import-org] Import failed:', error);
-      return { success: false };
+      return { success: false, message: (error?.data?.message ?? error?.message ?? 'Import failed') as string };
     }
   });
 
@@ -467,15 +467,15 @@ export const importOrgFileFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     const file = data.get('file');
     if (!(file instanceof Blob)) {
-      return { success: false };
+      return { success: false, message: 'Cannot read file' };
     }
 
     try {
       await context.authInfo.organization.importOrganizationFromFile(file);
-      return { success: true };
-    } catch (error) {
+      return { success: true, message: 'Import successful' };
+    } catch (error: any) {
       console.error('[import-org-file] Import failed:', error);
-      return { success: false };
+      return { success: false, message: (error?.data?.message ?? error?.message ?? 'Import failed') as string };
     }
   });
 

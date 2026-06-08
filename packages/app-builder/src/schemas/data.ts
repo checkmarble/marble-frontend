@@ -11,7 +11,7 @@ export type ApplyArchetypePayload = z.infer<typeof applyArchetypePayloadSchema>;
 
 export const createFieldValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
-    error: 'Only lower case alphanumeric and _, must start with a letter',
+    error: 'Field/name: Only lower case alphanumeric and _, must start with a letter',
   }),
   description: z.string().optional(),
   type: z.enum(primitiveTypes),
@@ -25,10 +25,10 @@ export const createFieldValuesSchema = z.object({
 });
 export const createLinksValuesSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
-    error: 'Only lower case alphanumeric and _, must start with a letter',
+    error: 'Link/name: Only lower case alphanumeric and _, must start with a letter',
   }),
   child_field_name: z.string().min(1).regex(dataModelNameRegex, {
-    error: 'Only lower case alphanumeric and _, must start with a letter',
+    error: 'Link/Child field name: Only lower case alphanumeric and _, must start with a letter',
   }),
   parent_table_id: z.uuid(),
   parent_field_id: z.uuid().optional(),
@@ -37,7 +37,7 @@ export const createLinksValuesSchema = z.object({
 
 export const createTableValueSchema = z.object({
   name: z.string().min(1).regex(dataModelNameRegex, {
-    error: 'Only lower case alphanumeric and _, must start with a letter',
+    error: 'Table/name: Only lower case alphanumeric and _, must start with a letter',
   }),
   description: z.string().optional(),
   alias: z.string().optional(),
@@ -115,14 +115,14 @@ const linkOperationSchema = z.union([
         .string()
         .min(1)
         .regex(dataModelNameRegex, {
-          error: 'Only lower case alphanumeric and _, must start with a letter',
+          error: 'Link/name: Only lower case alphanumeric and _, must start with a letter',
         })
         .optional(),
       child_field_name: z
         .string()
         .min(1)
         .regex(dataModelNameRegex, {
-          error: 'Only lower case alphanumeric and _, must start with a letter',
+          error: 'Link/Child field name: Only lower case alphanumeric and _, must start with a letter',
         })
         .optional(),
       parent_table_id: z.uuid().optional(),
