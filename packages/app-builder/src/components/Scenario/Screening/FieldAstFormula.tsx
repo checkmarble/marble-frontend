@@ -26,10 +26,8 @@ const EvaluationErrorsWrapper = ({
     : false;
 
   // Filter out errors that should not be shown:
-  // - RULE_FORMULA_REQUIRED: always filter out
   // - FORMULA_MUST_RETURN_BOOLEAN and FORMULA_INCORRECT_RETURN_TYPE: filter out if there are more meaningful errors
   const filteredErrors = errors.filter((error) => {
-    if (error === 'RULE_FORMULA_REQUIRED') return false;
     if (error === 'FORMULA_MUST_RETURN_BOOLEAN' || error.startsWith('FORMULA_INCORRECT_RETURN_TYPE')) {
       // Hide return type errors if there are more meaningful nested errors
       return !hasMeaningfulErrors;
@@ -102,9 +100,11 @@ export const FieldAstFormula = ({
           />
         </AstBuilder.Provider>
       )}
-      {type === 'rule' ? (
-        <EvaluationErrorsWrapper errors={validationErrors} evaluation={validationEvaluation} />
-      ) : editor === 'edit' ? (
+      <EvaluationErrorsWrapper
+        errors={isAstNull ? [] : validationErrors}
+        evaluation={isAstNull ? [] : validationEvaluation}
+      />
+      {type === 'screening' && editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (
             <Button type="button" variant="secondary" onClick={handleAddTrigger}>

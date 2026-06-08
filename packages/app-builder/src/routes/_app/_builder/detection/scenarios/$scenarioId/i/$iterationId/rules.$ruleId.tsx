@@ -1,5 +1,6 @@
 import { Page, scenarioI18n } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { Callout } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { DeleteRule } from '@app-builder/components/Scenario/Rules/Actions/DeleteRule';
@@ -8,7 +9,11 @@ import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescript
 import { AiGenerateRule } from '@app-builder/components/Scenario/Rules/AiGenerateRule';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
-import { useDerivedIterationRuleGroupsData, useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
+import {
+  useDerivedIterationRuleGroupsData,
+  useDetectionScenarioData,
+  useDetectionScenarioIterationData,
+} from '@app-builder/hooks/routes-layout-data';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
@@ -16,14 +21,20 @@ import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-
 import { getBuilderOptionsFn } from '@app-builder/server-fns/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { isAiRuleBuildingAvailable } from '@app-builder/services/feature-access';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
+import {
+  collectRuleValidationMessages,
+  findRuleValidation,
+  hasRuleErrors,
+} from '@app-builder/services/validation/scenario-validation';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Tag } from 'ui-design-system';
@@ -158,8 +169,18 @@ function RuleDetail() {
   });
 
   const { currentScenario } = useDetectionScenarioData();
+  const { scenarioValidation } = useDetectionScenarioIterationData();
+  const getScenarioErrorMessage = useGetScenarioErrorMessage();
   const editor = useEditorMode();
   const ruleGroups = useDerivedIterationRuleGroupsData();
+
+  useEffect(() => {
+    if (scenarioValidation.rules.ruleItems[rule.id] === undefined) {
+      void router.invalidate();
+    }
+  }, [rule.id, scenarioValidation, router]);
+
+  const ruleValidation = useMemo(() => findRuleValidation(scenarioValidation, rule.id), [scenarioValidation, rule.id]);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef(null);
@@ -178,15 +199,30 @@ function RuleDetail() {
 
   const form = useForm({
     onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        mutation.mutate(value);
+      if (serverValidationMessages.length > 0 || !formApi.state.isValid) {
+        return;
       }
+
+      mutation.mutate(value);
     },
     validators: {
       onSubmit: editRuleFormSchema,
     },
     defaultValues: rule as EditRuleForm,
   });
+
+  const formFormula = useStore(form.store, (state) => state.values.formula);
+
+  const serverValidationMessages = useMemo(() => {
+    if (!hasRuleErrors(ruleValidation, { formFormula })) {
+      return [];
+    }
+    return collectRuleValidationMessages(ruleValidation, getScenarioErrorMessage, t('scenarios:edit_rule.formula'), {
+      formFormula,
+    });
+  }, [ruleValidation, formFormula, getScenarioErrorMessage, t]);
+
+  const hasFormulaValidationError = serverValidationMessages.length > 0;
 
   const [formulaKey, setFormulaKey] = useState(0);
 
@@ -233,14 +269,7 @@ function RuleDetail() {
       </Page.Header>
       <Page.Container>
         <Page.Content>
-          <form
-            className="relative flex flex-col"
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              form.handleSubmit();
-            }}
-          >
+          <form className="relative flex flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn('bg-surface-page sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl', {
                 'border-b-grey-border border-b': !intersection?.isIntersecting,
@@ -296,6 +325,15 @@ function RuleDetail() {
                 </div>
               ) : null}
             </div>
+            {serverValidationMessages.length > 0 ? (
+              <Callout color="red" icon="lightbulb" iconColor="red" className="max-w-3xl">
+                <ul className="flex flex-col gap-v2-xs pl-3">
+                  {serverValidationMessages.map((message) => (
+                    <li key={message}>{message}</li>
+                  ))}
+                </ul>
+              </Callout>
+            ) : null}
             <div className="flex flex-col gap-8">
               <div className="border-grey-border flex flex-col items-start gap-6 border-b pb-6 max-w-3xl">
                 <form.Field
@@ -344,7 +382,12 @@ function RuleDetail() {
               <div className="flex flex-col gap-2">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-v2-lg">
-                  <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
+                  <div
+                    className={cn(
+                      'bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl',
+                      hasFormulaValidationError && 'border-red-primary',
+                    )}
+                  >
                     <form.Field
                       name="formula"
                       validators={{
