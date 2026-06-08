@@ -99,7 +99,7 @@
         "react-dropzone-esm": "^15.2.0",
         "react-hot-toast": "^2.5.2",
         "react-i18next": "^17.0.7",
-        "remeda": "^2.21.2",
+        "remeda": "^2.38.0",
         "sharpstate": "^0.0.13",
         "short-uuid": "^6.0.3",
         "spin-delay": "^2.0.1",
@@ -244,7 +244,7 @@
         "date-fns": "^4.1.0",
         "markdown-to-jsx": "9.8.1",
         "react-day-picker": "^9.6.2",
-        "remeda": "^2.21.2",
+        "remeda": "^2.38.0",
         "sharpstate": "^0.0.13",
         "tailwind-merge": "^3.0.2",
         "tailwindcss-radix": "^4.0.2",
@@ -2374,7 +2374,7 @@
 
     "redux": ["redux@5.0.1", "", {}, "sha512-M9/ELqF6fy8FwmkpnF0S3YKOqMyoWJ4+CS5Efg2ct3oY9daQvd/Pc71FpGZsVsbl3Cpb+IIcjBDUnnyBdQbq4w=="],
 
-    "remeda": ["remeda@2.33.7", "", {}, "sha512-cXlyjevWx5AcslOUEETG4o8XYi9UkoCXcJmj7XhPFVbla+ITuOBxv6ijBrmbeg+ZhzmDThkNdO+iXKUfrJep1w=="],
+    "remeda": ["remeda@2.38.0", "", {}, "sha512-yhZjp7dd+L0NWS8gn4caKOHI6ALfbN3/2H5WNBCnFyzPYcG5vOw5b30FVpDFdQ+7Ui62QiCWKubJhG9Y5SqF5A=="],
 
     "remove-accents": ["remove-accents@0.4.4", "", {}, "sha512-EpFcOa/ISetVHEXqu+VwI96KZBmq+a8LJnGkaeFw45epGlxIZz5dhEEnNZMsQXgORu3qaMoLX4qJCzOik6ytAg=="],
 
