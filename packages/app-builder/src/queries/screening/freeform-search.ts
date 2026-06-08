@@ -15,9 +15,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-type FreeformSearchResponse =
-  | { success: true; data: { id: string; matches: ScreeningMatchPayload[] } }
-  | { success: false; error: unknown };
+type FreeformSearchResponse = { success: true; data: ScreeningMatchPayload[] } | { success: false; error: unknown };
 
 export const useFreeformSearchMutation = () => {
   const freeformSearch = useServerFn(freeformSearchFn);
