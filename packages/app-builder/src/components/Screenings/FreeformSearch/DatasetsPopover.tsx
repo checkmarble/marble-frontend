@@ -19,6 +19,7 @@ const SECTION_I18N_KEYS: Record<ScreeningCategory, string> = {
   peps: 'peps',
   'adverse-media': 'adverse_media',
   'third-parties': 'third_parties',
+  custom: 'custom',
   global: 'global',
 };
 

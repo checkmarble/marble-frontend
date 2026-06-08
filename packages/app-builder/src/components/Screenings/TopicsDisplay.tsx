@@ -10,6 +10,7 @@ export const topicCategoryPriority: Record<string, number> = {
   sanctions: 0,
   pep: 1,
   adverse_media: 2,
+  custom: 3,
 };
 
 const secondaryPriority: Record<string, Record<string, number>> = {
@@ -45,6 +46,7 @@ export const TOPIC_ORDER: Record<ScreeningCategory, keyof typeof topicCategoryPr
   sanctions: 'sanctions',
   peps: 'pep',
   'adverse-media': 'adverse_media',
+  custom: 'custom',
   'third-parties': '',
   global: '',
 };
