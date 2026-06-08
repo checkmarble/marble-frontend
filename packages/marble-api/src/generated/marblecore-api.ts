@@ -4118,6 +4118,7 @@ export function refineScreening(screeningRefineDto?: ScreeningRefineDto, opts?: 
  * Freeform search for sanctions matches
  */
 export function freeformSearch(body?: {
+    screening_id?: string;
     /** One of Thing, Person, Organization, or Vehicle must be provided */
     query: {
         Thing?: {
@@ -4148,10 +4149,7 @@ export function freeformSearch(body?: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: {
-            id: string;
-            matches: ScreeningMatchDto[];
-        };
+        data: ScreeningMatchDto[];
     }>(`/screenings/freeform-search${QS.query(QS.explode({
         limit
     }))}`, oazapfts.json({
@@ -4159,59 +4157,6 @@ export function freeformSearch(body?: {
         method: "POST",
         body
     })));
-}
-/**
- * List past freeform searches
- */
-export function listFreeformSearches({ limit, offsetId, order, sorting, userId, apiKeyId, isSaved }: {
-    limit?: number;
-    offsetId?: string;
-    order?: "ASC" | "DESC";
-    sorting?: "created_at";
-    userId?: string;
-    apiKeyId?: string;
-    isSaved?: boolean;
-} = {}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            data: {
-                id: string;
-                user_id?: string;
-                api_key_id?: string;
-                created_at: string;
-                search_input: {
-                    "type": "Thing" | "Person" | "Organization" | "Vehicle";
-                    query: {
-                        [key: string]: string[];
-                    };
-                };
-                search_config: {
-                    provider: string;
-                    filters: ScreeningConfigBodyFiltersDto;
-                    threshold?: number | null;
-                    limit: number;
-                };
-            }[];
-            has_next_page: boolean;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    }>(`/screenings/freeform-search${QS.query(QS.explode({
-        limit,
-        offset_id: offsetId,
-        order,
-        sorting,
-        user_id: userId,
-        api_key_id: apiKeyId,
-        is_saved: isSaved
-    }))}`, {
-        ...opts
-    }));
 }
 /**
  * Retrieve the freshness of sanction datasets

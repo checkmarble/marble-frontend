@@ -8,7 +8,6 @@ import { FreeformSearchForm } from './FreeformSearchForm';
 import { FreeformSearchResults } from './FreeformSearchResults';
 
 export interface FreeformSearchState {
-  searchId: string;
   results: ScreeningMatchPayload[];
   inputs: {
     entityType: SearchableSchema;
@@ -30,14 +29,13 @@ export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({
   const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
   const handleSearchComplete = useCallback(
-    (result: { id: string; matches: ScreeningMatchPayload[] }, inputs: FreeformSearchInput) => {
-      setResults(result.matches);
+    (data: ScreeningMatchPayload[], inputs: FreeformSearchInput) => {
+      setResults(data);
       setCurrentLimit(inputs.limit);
       // Extract the 'name' field value as the search term for highlighting
       setSearchTerm(inputs.fields.name as string | undefined);
       onSearchComplete?.({
-        searchId: result.id,
-        results: result.matches,
+        results: data,
         inputs: {
           entityType: inputs.entityType,
           fields: inputs.fields as Record<string, string>,
