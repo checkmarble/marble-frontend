@@ -5,7 +5,7 @@ import { useDataModel } from '@app-builder/services/data/data-model';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
 import {
@@ -220,6 +220,10 @@ export function EditTableDrawer({
     () => new Set(validationErrors.filter((e): e is LinkValidationError => e.kind === 'link').map((e) => e.linkId)),
     [validationErrors],
   );
+  const hasTableNameError = useMemo(
+    () => validationErrors.some((e) => e.kind === 'table' && e.field === 'name'),
+    [validationErrors],
+  );
 
   async function handleSave() {
     const links = getLinksForTable(tableModel.id);
@@ -304,8 +308,15 @@ export function EditTableDrawer({
             </button>
             <span className="text-l">{t('data:edit_table.header_prefix')}</span>
             <EditableAlias alias={tableState.alias} onChange={(alias) => updateTableState(tableModel.id, { alias })} />
-            {tableState.alias && tableState.alias !== tableState.name && (
-              <span className="text-s text-grey-secondary">({tableState.name})</span>
+            {(hasTableNameError || (tableState.alias && tableState.alias !== tableState.name)) && (
+              <span
+                className={cn(
+                  'text-s text-grey-secondary',
+                  hasTableNameError && 'text-red-primary underline decoration-red-primary decoration-wavy',
+                )}
+              >
+                ({tableState.name})
+              </span>
             )}
 
             <EntityTypeMenu

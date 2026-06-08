@@ -143,7 +143,7 @@ export function getMockValue(
         .with('String', () => 'Welcome to Marble')
         .with('Timestamp', () => '2021-01-01T14:20:00.000Z')
         .with(P.union('Int', 'Float'), () => 12345678)
-        .exhaustive();
+        .otherwise(() => 'unexpected value');
     }
     const value = match(semanticType)
       .with('text', () => 'Welcome to Marble')
@@ -154,7 +154,7 @@ export function getMockValue(
               .with('first_name', () => 'John')
               .with('last_name', () => 'Doe')
               .with('middle_name', () => 'Jr')
-              .exhaustive()
+              .otherwise(() => 'unexpected value')
           : 'John Doe Jr',
       )
       .with('enum', () =>
@@ -165,7 +165,7 @@ export function getMockValue(
               .with('key_color_value', () => 'value from enum')
               .with('mcc_code', () => '5219')
               .with('autocomplete', () => 'Autocompleted value')
-              .exhaustive()
+              .otherwise(() => 'unexpected value')
           : 'Enum value',
       )
       .with('currency_code', () => 'EUR')
@@ -178,7 +178,7 @@ export function getMockValue(
               .with('registration_number', () => 'REG1234567890')
               .with('tax_id', () => 'TAX1234567890')
               .with('opaque_id', () => '58e6908a-4eab-4985-8ebe-00b2f6900507')
-              .exhaustive()
+              .otherwise(() => 'unexpected value')
           : 'Unique ID value',
       )
       .with('link', () =>
@@ -187,7 +187,7 @@ export function getMockValue(
               .with('url', () => 'https://www.google.com')
               .with('email', () => 'john.doe@example.com')
               .with('phone', () => '+33612345678')
-              .exhaustive()
+              .otherwise(() => 'unexpected value')
           : 'Link value',
       )
       .with('account_identifier', () =>
@@ -196,7 +196,7 @@ export function getMockValue(
               .with('account_number', () => '12345678901234567890')
               .with('iban', () => 'FR7612345678901234567890123')
               .with('bic', () => 'TRZFR32AXXX')
-              .exhaustive()
+              .otherwise(() => 'unexpected value')
           : 'Account identifier value',
       )
       .with('timestamp', () => '2021-01-01T14:20:00.000Z')
@@ -212,7 +212,7 @@ export function getMockValue(
       .otherwise(() => 'unknown value');
     return value;
   } catch {
-    return 'unknown value';
+    return 'unexpected value';
   }
 }
 

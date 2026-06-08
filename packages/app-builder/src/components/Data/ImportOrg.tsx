@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { Callout } from '../Callout';
 
 export function ImportOrg({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation(['data', 'common']);
@@ -17,6 +18,7 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
   const importFileMutation = useImportOrgFromFileMutation();
   const importBodyMutation = useImportOrgMutation();
   const revalidate = useLoaderRevalidator();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const hasFile = selectedFile !== null;
   const hasJson = jsonContent.trim().length > 0;
@@ -27,12 +29,14 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
     setJsonContent('');
     setJsonError(null);
     setIsParsing(false);
+    setErrorMessage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
   const handleImport = async () => {
+    setErrorMessage(null);
     if (hasFile) {
       setIsParsing(true);
       importFileMutation.mutate(selectedFile, {
@@ -42,6 +46,9 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
             toast.success(t('data:import_org.success'));
             setIsOpen(false);
             resetState();
+          } else {
+            setErrorMessage(result.message);
+            setIsParsing(false);
           }
         },
         onError: () => {
@@ -61,6 +68,9 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
               revalidate();
               setIsOpen(false);
               resetState();
+            } else {
+              setErrorMessage(result.message);
+              setIsParsing(false);
             }
           },
           onError: () => {
@@ -126,6 +136,11 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
               }}
             />
             {jsonError ? <p className="text-xs text-red-primary">{jsonError}</p> : null}
+            {errorMessage ? (
+              <Callout color="red" icon="error" iconColor="red">
+                {errorMessage}
+              </Callout>
+            ) : null}
           </div>
         </div>
         <Modal.Footer>
