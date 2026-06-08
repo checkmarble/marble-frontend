@@ -4,12 +4,17 @@ import { NewStringConcatAstNode, type StringConcatAstNode } from '@app-builder/m
 import { reorder } from '@app-builder/utils/list';
 import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '@hello-pangea/dnd';
 import { replace } from 'radash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { splice } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchOperand } from './MatchOperand';
+
+function concatFromNodes(nodes: KnownOperandAstNode[]): AstNode | null {
+  const finalNodes = nodes.filter((n) => !isUndefinedAstNode(n));
+  return finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;
+}
 
 export function FieldNodeConcat({
   value,
@@ -26,28 +31,48 @@ export function FieldNodeConcat({
   onBlur?: () => void;
   viewOnly?: boolean;
 }) {
-  const [nodes, setNodes] = useState<KnownOperandAstNode[]>(value?.children?.length ? value.children : []);
+  const [nodes, setNodes] = useState<KnownOperandAstNode[]>(() =>
+    value?.children?.length ? value.children : [NewUndefinedAstNode()],
+  );
+
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  const emitFromNodes = (nextNodes: KnownOperandAstNode[]) => {
+    onChangeRef.current?.(concatFromNodes(nextNodes));
+  };
+
+  const applyNodes = (nextNodes: KnownOperandAstNode[]) => {
+    setNodes(nextNodes);
+    emitFromNodes(nextNodes);
+  };
 
   useEffect(() => {
-    if (nodes.length === 0) {
-      setNodes([NewUndefinedAstNode()]);
-    }
-  }, []);
+    setNodes((prev) => {
+      const filled = prev.filter((node) => !isUndefinedAstNode(node));
 
-  useEffect(() => {
-    const finalNodes = nodes.filter((n) => !isUndefinedAstNode(n));
+      if (value?.children?.length) {
+        // `concatFromNodes` strips placeholders before emitting, so the parent echoes
+        // back only the filled nodes. When that echo matches what we already hold
+        // (same filled nodes, by id), keep local placeholders intact instead of
+        // collapsing them. Only reconcile when the parent truly changed the data.
+        const isOwnEcho =
+          value.children.length === filled.length &&
+          value.children.every((child, index) => child.id === filled[index]?.id);
+        return isOwnEcho ? prev : value.children;
+      }
 
-    const result = finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;
-
-    onChange?.(result);
-  }, [nodes, onChange]);
+      // Parent cleared the value: reset to a single placeholder only if we held content.
+      return filled.length === 0 ? prev : [NewUndefinedAstNode()];
+    });
+  }, [value]);
 
   const onDragEnd: OnDragEndResponder<string> = (result): void => {
     if (!result.destination || result.destination.index === result.source.index) {
       return;
     }
 
-    setNodes((prev) => reorder(prev, result.source.index, result.destination!.index));
+    applyNodes(reorder(nodes, result.source.index, result.destination.index));
   };
 
   return (
@@ -79,7 +104,7 @@ export function FieldNodeConcat({
                               mode="icon"
                               variant="secondary"
                               appearance="link"
-                              onClick={() => setNodes((prev) => splice(prev, index, 1, []))}
+                              onClick={() => applyNodes(splice(nodes, index, 1, []))}
                             >
                               <Icon icon="cross" className="size-4" />
                             </Button>
@@ -91,9 +116,9 @@ export function FieldNodeConcat({
                               appearance="link"
                               disabled={nodes.length === limit}
                               onClick={() =>
-                                setNodes((prev) =>
-                                  splice(prev, index, 1, [
-                                    { ...prev[index]!, id: prev[index]!.id },
+                                applyNodes(
+                                  splice(nodes, index, 1, [
+                                    { ...nodes[index]!, id: nodes[index]!.id },
                                     NewUndefinedAstNode(),
                                   ]),
                                 )
@@ -110,7 +135,7 @@ export function FieldNodeConcat({
                         placeholder={placeholder}
                         onSave={(savedNode) => {
                           if (isKnownOperandAstNode(savedNode)) {
-                            setNodes((prev) => replace(prev, { ...savedNode, id: node.id }, (_, i) => i === index));
+                            applyNodes(replace(nodes, { ...savedNode, id: node.id }, (_, i) => i === index));
                           }
                         }}
                       />

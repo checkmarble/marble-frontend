@@ -29,8 +29,9 @@ export const FieldSkipIfUnder = ({ value, onBlur, onChange, editor, name }: Fiel
         onCheckedChange={(checked) => onChange(checked ? inputValue : null)}
         onBlur={onBlur}
         disabled={editor === 'view'}
+        id="ignore-check-if-under"
       />
-      <span className="text-s flex flex-row items-center gap-1">
+      <label htmlFor="ignore-check-if-under" className="text-s flex flex-row items-center gap-1">
         <Trans
           t={t}
           i18nKey="scenarios:edit_sanction.ignore_check_if_under"
@@ -48,7 +49,7 @@ export const FieldSkipIfUnder = ({ value, onBlur, onChange, editor, name }: Fiel
             ),
           }}
         />
-      </span>
+      </label>
     </div>
   );
 };

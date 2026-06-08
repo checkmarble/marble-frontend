@@ -43,8 +43,11 @@ export const ScreeningTermIgnoreList = ({
           onBlur={onBlur}
           onCheckedChange={(checked) => onChange(checked ? (selectedListId ?? customLists[0]?.id ?? null) : null)}
           disabled={editor === 'view'}
+          id="remove-terms-from-list"
         />
-        <span className="text-s">{t('scenarios:edit_sanction.remove_terms_from_list')}</span>
+        <label htmlFor="remove-terms-from-list" className="text-s">
+          {t('scenarios:edit_sanction.remove_terms_from_list')}
+        </label>
         <FieldToolTip>{t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}</FieldToolTip>
       </div>
       {value ? (
