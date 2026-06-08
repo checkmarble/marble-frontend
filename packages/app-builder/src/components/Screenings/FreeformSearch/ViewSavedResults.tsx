@@ -2,26 +2,26 @@ import { DateRangeFilter } from '@app-builder/components/Filters';
 import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-builder/components/Panel/Panel';
 import { type SavedScreeningSearch } from '@app-builder/models/screening';
 import { useSavedFreeformSearchesQuery } from '@app-builder/queries/screening/freeform-search';
-import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
+// import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
-import { useDebouncedCallbackRef } from '@marble/shared';
-import { type ReactNode, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Temporal } from 'temporal-polyfill';
+// import { Temporal } from 'temporal-polyfill';
 import {
-  Avatar,
+  // Avatar,
   Button,
-  Collapsible,
+  // Collapsible,
   cn,
-  ExpandableGroupTagLine,
+  // ExpandableGroupTagLine,
   Input,
   MenuCommand,
   Separator,
   Tag,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { FreeformMatchCard } from './FreeformMatchCard';
+
+// import { FreeformMatchCard } from './FreeformMatchCard';
 
 interface StaticDateRangeFilter {
   type: 'static';
@@ -34,17 +34,17 @@ interface DynamicDateRangeFilter {
 }
 type DateRangeFilterValue = StaticDateRangeFilter | DynamicDateRangeFilter | null;
 
-function toIsoRange(value: DateRangeFilterValue): { fromDate?: string; toDate?: string } {
-  if (!value) return {};
-  if (value.type === 'static') {
-    return { fromDate: value.startDate || undefined, toDate: value.endDate || undefined };
-  }
-  const now = Temporal.Now.zonedDateTimeISO();
-  return {
-    fromDate: now.add(value.fromNow).toInstant().toString(),
-    toDate: now.toInstant().toString(),
-  };
-}
+// function toIsoRange(value: DateRangeFilterValue): { fromDate?: string; toDate?: string } {
+//   if (!value) return {};
+//   if (value.type === 'static') {
+//     return { fromDate: value.startDate || undefined, toDate: value.endDate || undefined };
+//   }
+//   const now = Temporal.Now.zonedDateTimeISO();
+//   return {
+//     fromDate: now.add(value.fromNow).toInstant().toString(),
+//     toDate: now.toInstant().toString(),
+//   };
+// }
 
 const PAGE_SIZES = [25, 50, 100] as const;
 type PageSize = (typeof PAGE_SIZES)[number];
@@ -54,36 +54,37 @@ export const ViewSavedResults = () => {
   const [open, setOpen] = useState(false);
 
   const [nameInput, setNameInput] = useState('');
-  const [name, setName] = useState('');
+  // const [name, setName] = useState('');
   const [dateRange, setDateRange] = useState<DateRangeFilterValue>(null);
   const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState<PageSize>(25);
 
-  const applyName = useDebouncedCallbackRef((value: string) => {
-    setName(value);
-    setPage(1);
-  }, 300);
+  // const applyName = useDebouncedCallbackRef((value: string) => {
+  //   setName(value);
+  //   setPage(1);
+  // }, 300);
 
-  const { fromDate, toDate } = useMemo(() => toIsoRange(dateRange), [dateRange]);
+  // const { fromDate, toDate } = useMemo(() => toIsoRange(dateRange), [dateRange]);
 
-  const query = useSavedFreeformSearchesQuery({
-    name: name || undefined,
-    fromDate,
-    toDate,
-    ownerId,
-    page,
-    limit,
-  });
+  const query = useSavedFreeformSearchesQuery();
+
+  // {
+  //   name: name || undefined,
+  //   fromDate,
+  //   toDate,
+  //   ownerId,
+  //   page,
+  //   limit,
+  // });
 
   const data = query.data?.success ? query.data.data : undefined;
-  const items = data?.items ?? [];
-  const total = data?.total ?? 0;
+  const items = data?.data ?? [];
+  const hasNext = data?.has_next_page ?? false;
 
   const rangeStart = items.length > 0 ? (page - 1) * limit + 1 : 0;
   const rangeEnd = (page - 1) * limit + items.length;
   const hasPrev = page > 1;
-  const hasNext = page * limit < total;
 
   return (
     <>
@@ -114,7 +115,7 @@ export const ViewSavedResults = () => {
               value={nameInput}
               onChange={(e) => {
                 setNameInput(e.currentTarget.value);
-                applyName(e.currentTarget.value);
+                // applyName(e.currentTarget.value);
               }}
             />
             <PeriodFilter
@@ -179,121 +180,122 @@ export const ViewSavedResults = () => {
 };
 
 function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
-  const { t } = useTranslation(['screenings', 'common']);
-  const language = useFormatLanguage();
-  const { currentUser } = useOrganizationDetails();
-  const { getOrgUserById } = useOrganizationUsers();
-  const owner = getOrgUserById(search.ownerId);
-  const isYou = currentUser.actorIdentity.userId === search.ownerId;
+  // const { t } = useTranslation(['screenings', 'common']);
+  // const language = useFormatLanguage();
+  // const { currentUser } = useOrganizationDetails();
+  // const { getOrgUserById } = useOrganizationUsers();
+  // const owner = getOrgUserById(search.ownerId);
+  // const isYou = currentUser.actorIdentity.userId === search.ownerId;
 
   return (
-    <Collapsible.Container defaultOpen={false} className="bg-grey-background-light">
-      <Collapsible.Title size="small" iconPosition="left" className="grid">
-        <div className="flex flex-1 flex-wrap items-center gap-v2-sm">
-          <span className="text-grey-primary">{search.name}</span>
-          {owner ? (
-            <span className="inline-flex items-center gap-v2-xs">
-              <Avatar size="xs" firstName={owner.firstName} lastName={owner.lastName} />
-              <span className="text-s text-grey-secondary">
-                {`${owner.firstName} ${owner.lastName}`.trim()}
-                {isYou ? ` (${t('screenings:freeform_search.saved_results.you')})` : null}
-              </span>
-            </span>
-          ) : (
-            <span className="text-s text-grey-secondary">{search.ownerId}</span>
-          )}
-          <InputTags input={search.inputs} />
-        </div>
-        <div className="flex items-center gap-v2-xs">
-          <span className="text-s text-grey-placeholder">
-            {formatDateTimeWithoutPresets(search.createdAt, { language, dateStyle: 'short' })}
-          </span>
-          <span className="text-grey-border">•</span>
-          <span className="text-s text-grey-placeholder">
-            {t('screenings:freeform_search.results_count', { count: search.results.length })}
-          </span>
-        </div>
-      </Collapsible.Title>
-      <Collapsible.Content>
-        <div className="flex flex-col gap-v2-sm">
-          {search.results.map((entity) => (
-            <FreeformMatchCard key={entity.id} entity={entity} />
-          ))}
-        </div>
-      </Collapsible.Content>
-    </Collapsible.Container>
+    <div>{search.id}</div>
+    // <Collapsible.Container defaultOpen={false} className="bg-grey-background-light">
+    //   <Collapsible.Title size="small" iconPosition="left" className="grid">
+    //     <div className="flex flex-1 flex-wrap items-center gap-v2-sm">
+    //       <span className="text-grey-primary">{search.name}</span>
+    //       {owner ? (
+    //         <span className="inline-flex items-center gap-v2-xs">
+    //           <Avatar size="xs" firstName={owner.firstName} lastName={owner.lastName} />
+    //           <span className="text-s text-grey-secondary">
+    //             {`${owner.firstName} ${owner.lastName}`.trim()}
+    //             {isYou ? ` (${t('screenings:freeform_search.saved_results.you')})` : null}
+    //           </span>
+    //         </span>
+    //       ) : (
+    //         <span className="text-s text-grey-secondary">{search.ownerId}</span>
+    //       )}
+    //       <InputTags input={search.inputs} />
+    //     </div>
+    //     <div className="flex items-center gap-v2-xs">
+    //       <span className="text-s text-grey-placeholder">
+    //         {formatDateTimeWithoutPresets(search.createdAt, { language, dateStyle: 'short' })}
+    //       </span>
+    //       <span className="text-grey-border">•</span>
+    //       <span className="text-s text-grey-placeholder">
+    //         {t('screenings:freeform_search.results_count', { count: search.results.length })}
+    //       </span>
+    //     </div>
+    //   </Collapsible.Title>
+    //   <Collapsible.Content>
+    //     <div className="flex flex-col gap-v2-sm">
+    //       {search.results.map((entity) => (
+    //         <FreeformMatchCard key={entity.id} entity={entity} />
+    //       ))}
+    //     </div>
+    //   </Collapsible.Content>
+    // </Collapsible.Container>
   );
 }
 
-const inputTagOverflowButtonClassName = 'cursor-pointer shrink-0';
+// const inputTagOverflowButtonClassName = 'cursor-pointer shrink-0';
 
-function InputTags({ input }: { input: SavedScreeningSearch['inputs'] }) {
-  const { t } = useTranslation(['screenings']);
+// function InputTags({ input }: { input: SavedScreeningSearch['inputs'] }) {
+//   const { t } = useTranslation(['screenings']);
 
-  const tagItems = useMemo(() => {
-    const items: ReactNode[] = [];
+//   const tagItems = useMemo(() => {
+//     const items: ReactNode[] = [];
 
-    if (input.entityType) {
-      items.push(
-        <InputTag
-          key="entity"
-          label={`${t('screenings:freeform_search.saved_results.entity')}:`}
-          values={input.entityType}
-        />,
-      );
-    }
+//     if (input.entityType) {
+//       items.push(
+//         <InputTag
+//           key="entity"
+//           label={`${t('screenings:freeform_search.saved_results.entity')}:`}
+//           values={input.entityType}
+//         />,
+//       );
+//     }
 
-    const datasets = input.datasets.filter((d) => d.indexOf(':') <= 0);
-    if (datasets.length > 0) {
-      items.push(<InputTag key="datasets" values={datasets} />);
-    }
+//     const datasets = input.datasets.filter((d) => d.indexOf(':') <= 0);
+//     if (datasets.length > 0) {
+//       items.push(<InputTag key="datasets" values={datasets} />);
+//     }
 
-    for (const [field, value] of Object.entries(input.fields)) {
-      if (value) {
-        items.push(
-          <InputTag key={field} label={`${t(`screenings:entity.property.${field}.short`)}:`} values={value} />,
-        );
-      }
-    }
+//     for (const [field, value] of Object.entries(input.fields)) {
+//       if (value) {
+//         items.push(
+//           <InputTag key={field} label={`${t(`screenings:entity.property.${field}.short`)}:`} values={value} />,
+//         );
+//       }
+//     }
 
-    return items;
-  }, [input, t]);
+//     return items;
+//   }, [input, t]);
 
-  if (tagItems.length === 0) return null;
+//   if (tagItems.length === 0) return null;
 
-  return (
-    <ExpandableGroupTagLine
-      items={tagItems}
-      moreButton={(overflow, onExpand) => (
-        <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onExpand}>
-          +{overflow}
-        </Tag>
-      )}
-      lessButton={(onCollapse) => (
-        <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onCollapse}>
-          <Icon icon="minus" className="size-3" />
-        </Tag>
-      )}
-    />
-  );
-}
+//   return (
+//     <ExpandableGroupTagLine
+//       items={tagItems}
+//       moreButton={(overflow, onExpand) => (
+//         <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onExpand}>
+//           +{overflow}
+//         </Tag>
+//       )}
+//       lessButton={(onCollapse) => (
+//         <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onCollapse}>
+//           <Icon icon="minus" className="size-3" />
+//         </Tag>
+//       )}
+//     />
+//   );
+// }
 
-function InputTag({ label, values }: { label?: string; values: string | string[] }) {
-  if (values.length === 0) return null;
-  return (
-    <Tag color="white" appearance="monospace" className="gap-v2-xs">
-      {label ? <span>{label}</span> : null}
-      {Array.isArray(values) ? (
-        <span>
-          <span>{values.slice(0, 2).join(', ')}</span>
-          {values.length > 2 ? <span>{` +${values.length - 2}`}</span> : null}
-        </span>
-      ) : (
-        <span>{values}</span>
-      )}
-    </Tag>
-  );
-}
+// function InputTag({ label, values }: { label?: string; values: string | string[] }) {
+//   if (values.length === 0) return null;
+//   return (
+//     <Tag color="white" appearance="monospace" className="gap-v2-xs">
+//       {label ? <span>{label}</span> : null}
+//       {Array.isArray(values) ? (
+//         <span>
+//           <span>{values.slice(0, 2).join(', ')}</span>
+//           {values.length > 2 ? <span>{` +${values.length - 2}`}</span> : null}
+//         </span>
+//       ) : (
+//         <span>{values}</span>
+//       )}
+//     </Tag>
+//   );
+// }
 
 function PeriodFilter({
   value,

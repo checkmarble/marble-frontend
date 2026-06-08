@@ -10,7 +10,7 @@ import {
 } from '@app-builder/components/Screenings/FreeformSearch/FreeformSearchPrint';
 // TODO: Uncomment when the save search and view saved results are implemented
 // import { SaveSearch } from '@app-builder/components/Screenings/FreeformSearch/SaveSearch';
-// import { ViewSavedResults } from '@app-builder/components/Screenings/FreeformSearch/ViewSavedResults';
+import { ViewSavedResults } from '@app-builder/components/Screenings/FreeformSearch/ViewSavedResults';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { normalizeListConfig } from '@app-builder/queries/screening/lists-config';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -81,7 +81,7 @@ function ScreeningSearchIndexPage() {
                   {/* <SaveSearch search={searchState} /> */}
                 </>
               )}
-              {/* <ViewSavedResults /> */}
+              <ViewSavedResults />
             </div>
           </div>
           <FreeformSearchPage onSearchComplete={handleSearchComplete} listConfig={listConfig.filters} />

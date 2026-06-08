@@ -1,18 +1,14 @@
 import {
-  type SavedScreeningSearch,
   type SavedScreeningSearchFilters,
   type SavedScreeningSearchPage,
   type ScreeningMatchPayload,
 } from '@app-builder/models/screening';
 import {
-  deleteSavedFreeformSearchFn,
   type FreeformSearchInput,
   freeformSearchFn,
   listSavedFreeformSearchesFn,
-  type SaveFreeformSearchInput,
-  saveFreeformSearchFn,
 } from '@app-builder/server-fns/screenings';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
 type FreeformSearchResponse = { success: true; data: ScreeningMatchPayload[] } | { success: false; error: unknown };
@@ -36,22 +32,22 @@ export const useFreeformSearchMutation = () => {
   });
 };
 
-type SaveFreeformSearchResponse = { success: true; data: SavedScreeningSearch } | { success: false; error: unknown };
+// type SaveFreeformSearchResponse = { success: true; data: SavedScreeningSearch } | { success: false; error: unknown };
 
-export const useSaveFreeformSearchMutation = () => {
-  const saveSearch = useServerFn(saveFreeformSearchFn);
-  const queryClient = useQueryClient();
+// export const useSaveFreeformSearchMutation = () => {
+//   const saveSearch = useServerFn(saveFreeformSearchFn);
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationKey: ['screening', 'save-freeform-search'],
-    mutationFn: async (input: SaveFreeformSearchInput): Promise<SaveFreeformSearchResponse> => {
-      return saveSearch({ data: input }) as Promise<SaveFreeformSearchResponse>;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationKey: ['screening', 'save-freeform-search'],
+//     mutationFn: async (input: SaveFreeformSearchInput): Promise<SaveFreeformSearchResponse> => {
+//       return saveSearch({ data: input }) as Promise<SaveFreeformSearchResponse>;
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
+//     },
+//   });
+// };
 
 type ListSavedFreeformSearchesResponse =
   | { success: true; data: SavedScreeningSearchPage }
@@ -68,19 +64,19 @@ export const useSavedFreeformSearchesQuery = (filters: SavedScreeningSearchFilte
   });
 };
 
-type DeleteSavedFreeformSearchResponse = { success: true } | { success: false; error: unknown };
+// type DeleteSavedFreeformSearchResponse = { success: true } | { success: false; error: unknown };
 
-export const useDeleteSavedFreeformSearchMutation = () => {
-  const deleteSearch = useServerFn(deleteSavedFreeformSearchFn);
-  const queryClient = useQueryClient();
+// export const useDeleteSavedFreeformSearchMutation = () => {
+//   const deleteSearch = useServerFn(deleteSavedFreeformSearchFn);
+//   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationKey: ['screening', 'delete-saved-search'],
-    mutationFn: async (id: string): Promise<DeleteSavedFreeformSearchResponse> => {
-      return deleteSearch({ data: { id } }) as Promise<DeleteSavedFreeformSearchResponse>;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
-    },
-  });
-};
+//   return useMutation({
+//     mutationKey: ['screening', 'delete-saved-search'],
+//     mutationFn: async (id: string): Promise<DeleteSavedFreeformSearchResponse> => {
+//       return deleteSearch({ data: { id } }) as Promise<DeleteSavedFreeformSearchResponse>;
+//     },
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
+//     },
+//   });
+// };
