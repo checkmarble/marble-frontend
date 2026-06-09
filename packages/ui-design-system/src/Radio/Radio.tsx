@@ -36,7 +36,7 @@ const radioIndicator = cva(
         unselected: [
           'cursor-pointer border-purple-primary bg-grey-white',
           'hover:bg-purple-background',
-          'dark:bg-grey-background dark:hover:bg-grey-white',
+          'dark:bg-grey-background dark:hover:border-purple-hover dark:hover:bg-grey-background',
         ],
         selected: [
           'cursor-pointer border-purple-primary bg-grey-white',

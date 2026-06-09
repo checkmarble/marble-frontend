@@ -9,9 +9,9 @@ const checkbox = cva(
   [
     'group flex shrink-0 items-center justify-center rounded-sm border outline-hidden transition-colors',
     // Unchecked
-    'bg-grey-white border-purple-primary',
+    'border-purple-primary bg-grey-white',
     'hover:bg-purple-background',
-    'dark:bg-grey-background dark:hover:bg-grey-white',
+    'dark:bg-grey-background dark:hover:border-purple-hover dark:hover:bg-grey-background',
     // Checked
     'enabled:radix-state-checked:bg-purple-primary enabled:radix-state-checked:border-transparent',
     'enabled:radix-state-checked:hover:bg-purple-hover',

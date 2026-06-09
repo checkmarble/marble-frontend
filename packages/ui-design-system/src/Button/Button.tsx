@@ -161,6 +161,13 @@ export const CtaV2ClassName = cva(
         class:
           'bg-transparent border-green-primary text-green-primary enabled:hover:bg-green-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled focus-visible:outline-green-primary ',
       },
+      // destructive strocked
+      {
+        variant: 'destructive',
+        appearance: 'stroked',
+        class:
+          'bg-transparent border-red-primary text-red-primary enabled:hover:bg-red-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled focus-visible:outline-red-primary',
+      },
     ],
     defaultVariants: {
       variant: 'primary',
