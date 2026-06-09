@@ -4194,24 +4194,7 @@ export function listFreeformSearches({ limit, offsetId, order, sorting, userId, 
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            data: {
-                id: string;
-                user_id?: string;
-                api_key_id?: string;
-                created_at: string;
-                search_input: {
-                    "type": "Thing" | "Person" | "Organization" | "Vehicle";
-                    query: {
-                        [key: string]: string[];
-                    };
-                };
-                search_config: {
-                    provider: string;
-                    filters: ScreeningConfigBodyFiltersDto;
-                    threshold?: number | null;
-                    limit: number;
-                };
-            }[];
+            data: ScreeningFreeformSearchDto[];
             has_next_page: boolean;
         };
     } | {
