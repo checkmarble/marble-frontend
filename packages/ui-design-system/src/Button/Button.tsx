@@ -65,7 +65,7 @@ export const CtaV2ClassName = cva(
       {
         size: 'large',
         mode: 'normal',
-        class: 'min-h-10 p-v2-sm ',
+        class: 'min-h-10 p-v2-sm',
       },
       {
         size: 'large',
@@ -161,7 +161,7 @@ export const CtaV2ClassName = cva(
         class:
           'bg-transparent border-green-primary text-green-primary enabled:hover:bg-green-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled focus-visible:outline-green-primary ',
       },
-      // destructive strocked
+      // destructive stroked
       {
         variant: 'destructive',
         appearance: 'stroked',

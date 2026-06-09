@@ -33,6 +33,7 @@ export const ClearAllFiltersButton = forwardRef<
       className={CtaV2ClassName({ variant: 'secondary', color: 'grey', className: 'shrink-0' })}
       ref={ref}
       {...props}
+      type="button"
     >
       <Icon icon="cross" className="size-5" />
       <span className="line-clamp-1">{t('filters:clear_filters')}</span>

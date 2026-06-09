@@ -305,7 +305,7 @@ function InteractiveCheckbox({ size }: { size: Size }) {
       <span className="text-s font-medium">Interactive {size}</span>
       <div className="flex items-center gap-2">
         <Checkbox id={`design-cb-${size}`} checked={checked} onCheckedChange={setChecked} size={size} />
-        <label htmlFor="design-cb" className="text-s">
+        <label htmlFor={`design-cb-${size}`} className="text-s">
           Click me — current: {String(checked)}
         </label>
       </div>

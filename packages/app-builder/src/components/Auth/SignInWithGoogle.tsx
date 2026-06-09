@@ -26,7 +26,7 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
       color="grey"
       size="large"
       appearance="stroked"
-      className="w-full justify-center gap-2"
+      className="w-full justify-center gap-2 relative"
       onClick={onClick}
       disabled={loading}
     >

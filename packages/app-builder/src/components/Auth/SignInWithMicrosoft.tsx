@@ -26,7 +26,7 @@ function MicrosoftButton({ onClick, loading }: { onClick?: () => void; loading?:
       color="grey"
       size="large"
       appearance="stroked"
-      className="w-full justify-center gap-2"
+      className="w-full justify-center gap-2 relative"
       onClick={() => {
         void onClick?.();
       }}
