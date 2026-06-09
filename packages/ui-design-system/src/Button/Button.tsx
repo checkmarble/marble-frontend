@@ -3,43 +3,6 @@ import { forwardRef } from 'react';
 
 import { cn } from '../utils';
 
-export const CtaClassName = cva(
-  'text-s flex flex-row items-center justify-center rounded-sm font-semibold outline-hidden border border-solid transition-colors',
-  {
-    variants: {
-      variant: {
-        primary: 'text-grey-white focus:border-grey-primary',
-        secondary:
-          'text-grey-primary bg-surface-card border-grey-border disabled:text-grey-secondary aria-disabled:text-grey-secondary disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background',
-        tertiary: 'text-grey-disabled border-transparent',
-        ghost: 'text-grey-primary border-transparent',
-        outline:
-          'hover:bg-purple-background active:bg-purple-background bg-purple-background-light border-purple-primary text-purple-primary disabled:text-grey-secondary aria-disabled:text-grey-secondary disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background focus:border-purple-hover',
-        dropdown: 'text-grey-primary border-transparent disabled:text-grey-disabled disabled:bg-transparent',
-      },
-      color: {
-        purple:
-          'hover:bg-purple-hover active:bg-purple-hover border-purple-primary bg-purple-primary disabled:bg-purple-disabled disabled:border-purple-disabled aria-disabled:bg-purple-disabled aria-disabled:border-purple-disabled',
-        green:
-          'hover:bg-green-hover active:bg-green-hover border-green-primary bg-green-primary disabled:bg-green-disabled disabled:border-green-disabled aria-disabled:bg-green-disabled aria-disabled:border-green-disabled',
-        red: 'hover:bg-red-hover active:bg-red-hover border-red-primary bg-red-primary disabled:bg-red-disabled aria-disabled:bg-red-disabled',
-        grey: 'hover:bg-grey-background active:bg-grey-border focus:border-purple-primary',
-      },
-      size: {
-        default: 'px-4 py-2 gap-1',
-        medium: 'px-2 py-1.5 gap-1',
-        xs: 'h-6 px-1 gap-[3px] text-xs w-fit font-medium',
-        small: 'px-1.5 h-6 gap-0.5 text-xs w-fit',
-        icon: 'size-6 gap-1',
-        dropdown: 'p-2 gap-4',
-      },
-    },
-    defaultVariants: {
-      size: 'default',
-    },
-  },
-);
-
 export const CtaV2ClassName = cva(
   'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer transition-colors border border-solid disabled:cursor-default focus-visible:outline-2 outline-offset-2',
   {
@@ -82,7 +45,7 @@ export const CtaV2ClassName = cva(
       {
         size: 'small',
         mode: 'normal',
-        class: 'h-6 px-v2-sm',
+        class: 'min-h-6 px-v2-sm py-v2-xs',
       },
       {
         size: 'small',
@@ -92,7 +55,7 @@ export const CtaV2ClassName = cva(
       {
         size: 'medium',
         mode: 'normal',
-        class: 'h-8 px-v2-sm',
+        class: 'min-h-8 p-v2-sm',
       },
       {
         size: 'medium',
@@ -102,7 +65,7 @@ export const CtaV2ClassName = cva(
       {
         size: 'large',
         mode: 'normal',
-        class: 'h-10 px-v2-sm',
+        class: 'min-h-10 p-v2-sm ',
       },
       {
         size: 'large',
