@@ -365,7 +365,7 @@ function PeriodFilter({
           <Button
             variant="secondary"
             appearance="stroked"
-            size="default"
+            size="medium"
             onClick={() => {
               setDraft(null);
               onChange(null);
@@ -375,7 +375,7 @@ function PeriodFilter({
             {t('screenings:freeform_search.clear')}
           </Button>
           <Button
-            size="default"
+            size="medium"
             onClick={() => {
               onChange(draft);
               setOpen(false);
@@ -490,7 +490,7 @@ function ViewSavedResultsPaginationRow({
               key={size}
               variant="secondary"
               appearance="stroked"
-              size="default"
+              size="medium"
               className={cn(active && 'border-purple-primary text-purple-primary')}
               onClick={() => {
                 if (!active) onLimitChange(size);
@@ -505,24 +505,10 @@ function ViewSavedResultsPaginationRow({
         <span className="text-s text-grey-secondary">
           {t('screenings:freeform_search.saved_results.range', { start: rangeStart, end: rangeEnd })}
         </span>
-        <Button
-          mode="icon"
-          size="default"
-          variant="secondary"
-          appearance="stroked"
-          disabled={!hasPrev}
-          onClick={onPrev}
-        >
+        <Button mode="icon" size="medium" variant="secondary" appearance="stroked" disabled={!hasPrev} onClick={onPrev}>
           <Icon icon="arrow-left" className="size-5" />
         </Button>
-        <Button
-          mode="icon"
-          size="default"
-          variant="secondary"
-          appearance="stroked"
-          disabled={!hasNext}
-          onClick={onNext}
-        >
+        <Button mode="icon" size="medium" variant="secondary" appearance="stroked" disabled={!hasNext} onClick={onNext}>
           <Icon icon="arrow-right" className="size-5" />
         </Button>
       </div>

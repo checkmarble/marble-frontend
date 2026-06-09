@@ -242,7 +242,7 @@ export function ScenarioDeploymentModal({
     <Button
       className="flex-1"
       variant={gating.variant}
-      size="default"
+      size="medium"
       disabled={gating.disabled}
       onClick={() => setOpen(true)}
     >

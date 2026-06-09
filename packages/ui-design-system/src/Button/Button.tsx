@@ -87,13 +87,11 @@ export const CtaV2ClassName = cva(
       {
         size: 'small',
         mode: 'icon',
-        class: 'justify-center size-6',
         class: 'size-6 p-v2-xs',
       },
       {
         size: 'medium',
         mode: 'normal',
-        class: 'p-v2-sm h-8',
         class: 'h-8 px-v2-sm',
       },
       {

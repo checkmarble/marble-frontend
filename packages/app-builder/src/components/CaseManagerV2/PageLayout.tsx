@@ -294,11 +294,11 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button size="default" variant="secondary">
+            <Button size="medium" variant="secondary">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button size="default" onClick={() => form.handleSubmit()}>
+          <Button size="medium" onClick={() => form.handleSubmit()}>
             {t('common:validate')}
           </Button>
         </Modal.Footer>
