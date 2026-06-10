@@ -6,6 +6,7 @@ import { DataModel, DataModelObject } from '@app-builder/models';
 import { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
 import { Inbox } from '@app-builder/models/inbox';
+import { isAdmin } from '@app-builder/models/user';
 import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries/cases/edit-tags';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -138,7 +139,18 @@ export function CaseManagerPrincipalPage({
                 userScoringAccess={userScoringAccess}
               />
             ) : (
-              <Card />
+              <Card className="flex flex-col items-center justify-center gap-v2-sm text-small text-center">
+                <span className="text-grey-secondary">
+                  {isAdmin(currentUser)
+                    ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
+                    : t('cases:case_detail.pivot_panel.missing_pivot')}
+                </span>
+                {isAdmin(currentUser) ? (
+                  <Link to="/data" className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}>
+                    {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
+                  </Link>
+                ) : null}
+              </Card>
             )}
           </div>
         </div>
