@@ -17,7 +17,7 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, Card, CtaV2ClassName, Tag, TagList, TooltipV2 } from 'ui-design-system';
+import { Avatar, Button, Card, CtaV2ClassName, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PivotNavigationOptions } from '../CaseManager/PivotsPanel/PivotNavigationOptions';
 import { CaseInvestigation } from '../CaseManager/shared/CaseInvestigation/CaseInvestigation';
@@ -27,6 +27,7 @@ import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { PanelContainer, PanelContent, PanelRoot } from '../Panel';
 import { DataExplorerPanel } from './DataExplorerPanel';
+import { EscalateCaseButton } from './EscalateCaseButton';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
 import { getClientDisplayInfo } from './utils/client';
 
@@ -104,14 +105,7 @@ export function CaseManagerPrincipalPage({
                     />
                   )}
                 </tagsForm.Field>
-                <TooltipV2.Tooltip delayDuration={0}>
-                  <TooltipV2.TooltipTrigger asChild>
-                    <Button variant="secondary" size="small" mode="icon" className="ml-auto">
-                      <Icon icon="arrow-up" className="size-4" />
-                    </Button>
-                  </TooltipV2.TooltipTrigger>
-                  <TooltipV2.TooltipContent className="capitalize">{t('cases:escalate')}</TooltipV2.TooltipContent>
-                </TooltipV2.Tooltip>
+                <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ml-auto" />
               </div>
               <div className="grid grid-cols-2 gap-v2-sm">
                 <div className="flex flex-col gap-v2-sm">
