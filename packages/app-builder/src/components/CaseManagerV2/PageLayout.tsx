@@ -26,7 +26,7 @@ import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ActionBar, ActionButton, Button, cn, Modal, Radio, Tabs, tabClassName, TooltipV2 } from 'ui-design-system';
+import { ActionBar, ActionButton, Button, cn, Modal, Radio, Tabs, TooltipV2, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CloseCase } from '../Cases/CloseCase';
 import { OpenCase } from '../Cases/OpenCase';
