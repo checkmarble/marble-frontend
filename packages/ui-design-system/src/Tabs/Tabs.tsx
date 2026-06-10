@@ -13,6 +13,8 @@ export const tabClassName = cn(
   // Active state via data-status (Button)
   'data-[status=active]:bg-purple-primary data-[status=active]:text-white',
   'data-[status=active]:dark:bg-purple-primary data-[status=active]:dark:text-grey-white',
+  // Disabled state
+  'aria-disabled:text-grey-secondary',
 );
 
 /**

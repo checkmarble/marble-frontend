@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useDebouncedCallbackRef } from '@marble/shared';
+import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { Button } from '../Button/Button';
 import { MenuCommand } from '../MenuCommand/MenuCommand';
@@ -11,12 +12,14 @@ type EditableTagListProps = {
   editable: true;
   onChange: (tags: string[]) => void;
   placeholder: string;
+  debounceDelay?: number;
 };
 
 type ReadonlyTagListProps = {
   editable?: false;
   onChange?: never;
   placeholder?: never;
+  debounceDelay?: never;
 };
 
 export type TagListProps = {
@@ -27,22 +30,38 @@ export type TagListProps = {
 
 export function TagList({ tags, value, editable, align = 'start', ...rest }: TagListProps) {
   const [open, setOpen] = useState(false);
+  const [internalValue, setInternalValue] = useState(value);
+
+  useEffect(() => {
+    setInternalValue(value);
+  }, [value]);
+
+  const debouncedOnChange = useDebouncedCallbackRef(rest.onChange, rest.debounceDelay ?? 300);
+
   const handleClick = () => {
     setOpen((o) => !o);
   };
   const handleSelect = (tag: TagEntity) => {
-    const tagsIds = value.includes(tag.id) ? value.filter((tagId) => tagId !== tag.id) : [...value, tag.id];
+    const tagsIds = internalValue.includes(tag.id)
+      ? internalValue.filter((tagId) => tagId !== tag.id)
+      : [...internalValue, tag.id];
 
-    rest.onChange?.(tagsIds);
+    setInternalValue(tagsIds);
+    debouncedOnChange?.(tagsIds);
   };
 
   const anchor = (
     <div className="flex gap-v2-xs items-center">
-      <ListContainer tags={tags} value={value} onClick={handleClick} />
+      <ListContainer tags={tags} value={internalValue} onClick={handleClick} />
       {editable ? (
-        <Button variant="secondary" appearance="link" mode={value.length > 0 ? 'icon' : 'normal'} onClick={handleClick}>
+        <Button
+          variant="secondary"
+          appearance="link"
+          mode={internalValue.length > 0 ? 'icon' : 'normal'}
+          onClick={handleClick}
+        >
           <Icon icon="plus" className="size-4" />
-          {value.length === 0 ? <span>{rest.placeholder}</span> : null}
+          {internalValue.length === 0 ? <span>{rest.placeholder}</span> : null}
         </Button>
       ) : null}
     </div>
@@ -58,7 +77,7 @@ export function TagList({ tags, value, editable, align = 'start', ...rest }: Tag
           {tags.map((tag) => (
             <MenuCommand.Item key={tag.id} onSelect={() => handleSelect(tag)}>
               <Tag>{tag.name}</Tag>
-              {value.includes(tag.id) ? <Icon icon="tick" className="size-4" /> : null}
+              {internalValue.includes(tag.id) ? <Icon icon="tick" className="size-4" /> : null}
             </MenuCommand.Item>
           ))}
         </MenuCommand.List>

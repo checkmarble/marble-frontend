@@ -40,23 +40,21 @@ export function ClientRelatedAlertCasesCard({ caseId, pivotValue }: ClientRelate
             <div className="grid w-full grid-cols-[minmax(8rem,_auto)_1fr_auto] gap-v2-sm">
               {cases.map((caseObj, idx) => {
                 return (
-                  <div className="grid grid-cols-subgrid col-span-full" key={caseObj.id}>
-                    <div className="text-grey-secondary">
+                  <div className="grid grid-cols-subgrid col-span-full items-center" key={caseObj.id}>
+                    <span className="text-grey-secondary">
                       {formatDateTime(caseObj.createdAt, { dateStyle: 'short' })}
-                    </div>
-                    <div className="flex flex-col gap-v2-xs">
+                    </span>
+                    <div className="flex items-center gap-v2-xs">
                       <span>{caseObj.name}</span>
                       <CaseStatusBadgeV2 status={caseObj.status} variant="icon-only" />
                     </div>
-                    <div>
-                      <Link
-                        to="/cases/s/$caseId"
-                        params={{ caseId: fromUUIDtoSUUID(caseObj.id) }}
-                        className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}
-                      >
-                        {t('common:open')}
-                      </Link>
-                    </div>
+                    <Link
+                      to="/cases/s/$caseId"
+                      params={{ caseId: fromUUIDtoSUUID(caseObj.id) }}
+                      className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}
+                    >
+                      {t('common:open')}
+                    </Link>
                   </div>
                 );
               })}

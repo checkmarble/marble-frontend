@@ -1,6 +1,7 @@
 import { type AiCaseReviewListItem } from '@app-builder/models/cases';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
 import { useCaseReviewsQuery } from '@app-builder/queries/get-case-reviews';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -18,6 +19,7 @@ type AiReviewCardProps = {
 export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
   const [panelOpen, setPanelOpen] = useState(false);
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();
+  const queryClient = useQueryClient();
 
   const reviewsQuery = useCaseReviewsQuery(caseId, {
     refetchInterval: (query) =>
@@ -41,7 +43,11 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
             !latestReview ? (
               <EmptyBody
                 canManuallyReview={canManuallyReview}
-                onGenerate={() => enqueueReviewMutation.mutate(caseId)}
+                onGenerate={() =>
+                  enqueueReviewMutation.mutateAsync(caseId).then(() => {
+                    queryClient.invalidateQueries({ queryKey: ['cases', caseId, 'reviews'] });
+                  })
+                }
                 isGenerating={enqueueReviewMutation.isPending}
               />
             ) : latestReview.status === 'pending' ? (
