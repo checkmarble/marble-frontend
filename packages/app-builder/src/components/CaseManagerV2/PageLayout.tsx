@@ -18,6 +18,7 @@ import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotation
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import type { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { useForm, useStore } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -138,6 +139,7 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
   const { t } = useTranslation(['common', 'cases']);
   const editSuspicionMutation = useEditSuspicionMutation();
   const initialStatus = report?.status;
+  const queryClient = useQueryClient();
 
   const { getRootProps, getInputProps, isDragActive } = useFormDropzone({
     multiple: false,
@@ -158,8 +160,7 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
           }
           onOpenChange(false);
           form.setFieldValue('reportId', res.data?.id);
-          // setIsCompleted(res.data?.status === 'completed');
-          // revalidate();
+          queryClient.invalidateQueries({ queryKey: ['sar-reports', caseId] });
         })
         .catch(() => {
           toast.error(t('common:errors.unknown'));
