@@ -87,7 +87,7 @@ export function CaseManagerPrincipalPage({
         <div className="flex flex-col gap-v2-sm">
           <div className="text-default font-medium">{t('cases:case_detail.pivot_panel.informations')}</div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-v2-lg">
-            <Card className="flex flex-col gap-v2-sm text-small">
+            <Card className="flex flex-col gap-v2-sm text-small self-start">
               <div className="flex items-center gap-v2-xs">
                 <CaseStatusBadgeV2 status={caseDetail.status} variant="semi-full" />
                 <tagsForm.Field name="tagIds">
