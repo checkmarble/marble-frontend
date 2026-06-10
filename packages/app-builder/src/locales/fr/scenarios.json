@@ -105,6 +105,7 @@
   "deployment_modal.deactivate.confirm": "Veuillez confirmer ce qui suit :",
   "deployment_modal.deactivate.helper": "Vous pouvez revenir à une version précédente directement depuis la page des versions",
   "deployment_modal.deactivate.stop_operating": "Le scénario cessera de fonctionner et ne prendra plus aucune décision",
+  "deployment_modal.deactivate.success": "La version a été désactivée avec succès",
   "deployment_modal.deactivate.title": "Désactiver la version",
   "deployment_modal.prepare.activate_to_go_in_prod": "La nouvelle version ne sera pas active tant que vous ne l'aurez pas activée",
   "deployment_modal.prepare.activate_to_go_in_prod.tooltip": "Après avoir terminé la préparation, activez la version pour la mettre en production.",

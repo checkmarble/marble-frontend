@@ -105,6 +105,7 @@
   "deployment_modal.deactivate.confirm": "By deactivating, I understand :",
   "deployment_modal.deactivate.helper": "You can roll back to a previous version directly from the version page",
   "deployment_modal.deactivate.stop_operating": "The scenario will stop operating and no longer make any decision.",
+  "deployment_modal.deactivate.success": "The version has been successfully deactivated",
   "deployment_modal.deactivate.title": "Deactivate version",
   "deployment_modal.prepare.activate_to_go_in_prod": "Activating the prepared version is required for production",
   "deployment_modal.prepare.activate_to_go_in_prod.tooltip": "After completing the preparation, activate the version to make it live",

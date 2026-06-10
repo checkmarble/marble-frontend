@@ -105,6 +105,7 @@
   "deployment_modal.deactivate.confirm": "بإلغاء التفعيل، أفهم ما يلي:",
   "deployment_modal.deactivate.helper": "يمكنك التراجع إلى نسخة سابقة مباشرة من صفحة النسخ.",
   "deployment_modal.deactivate.stop_operating": "سيتوقف السيناريو عن العمل ولن يتخذ أي قرارات بعد الآن.",
+  "deployment_modal.deactivate.success": "تم إلغاء تفعيل النسخة بنجاح",
   "deployment_modal.deactivate.title": "إلغاء تفعيل النسخة",
   "deployment_modal.prepare.activate_to_go_in_prod": "يتطلب الإنتاج تفعيل النسخة المُحضَّرة",
   "deployment_modal.prepare.activate_to_go_in_prod.tooltip": "بعد إكمال التهيئة، قم بتفعيل النسخة لجعلها سارية المفعول.",
