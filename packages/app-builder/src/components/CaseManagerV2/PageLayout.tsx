@@ -15,17 +15,22 @@ import {
 } from '@app-builder/queries/cases/edit-suspicion';
 import { useSarReportsQuery } from '@app-builder/queries/cases/sar-report';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
+import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import type { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
+import { useServerFn } from '@tanstack/react-start';
 import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ActionBar, ActionButton, Button, cn, Modal, Radio, Tabs, tabClassName } from 'ui-design-system';
+import { ActionBar, ActionButton, Button, cn, Modal, Radio, Tabs, tabClassName, TooltipV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { CloseCase } from '../Cases/CloseCase';
+import { OpenCase } from '../Cases/OpenCase';
+import { SnoozeCase } from '../Cases/SnoozeCase';
 import { ClientCommentForm } from './ClientComments';
 import { CommentContext } from './hooks/comment-context';
 import { KycEnrichmentPanel } from './KycEnrichment/KycEnrichmentPanel';
@@ -50,6 +55,7 @@ export function CaseManagerPageLayout({
   const [kycEnrichmentPanelOpen, setKycEnrichmentPanelOpen] = useState(false);
   const { info } = CommentContext.useValue();
   const sarReportsQuery = useSarReportsQuery(caseDetail.id);
+  const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
 
   const handleSarAction = () => {
     setSarReportModalOpen(true);
@@ -68,8 +74,31 @@ export function CaseManagerPageLayout({
 
   return (
     <Page.Main>
-      <Page.Header color="page">
+      <Page.Header color="page" className="justify-between">
         <BreadCrumbs />
+        <div className="flex gap-v2-sm">
+          {caseDetail.status !== 'closed' ? (
+            <>
+              <SnoozeCase caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
+              <CloseCase id={caseDetail.id} />
+            </>
+          ) : (
+            <OpenCase id={caseDetail.id} />
+          )}
+          <TooltipV2.Tooltip delayDuration={0}>
+            <TooltipV2.TooltipTrigger asChild>
+              <Button
+                variant="secondary"
+                mode="icon"
+                aria-label={t('cases:next_unassigned_case')}
+                onClick={() => getNextUnassignedCase({ data: { caseId: caseDetail.id } })}
+              >
+                <Icon icon="arrow-right" className="size-4" />
+              </Button>
+            </TooltipV2.TooltipTrigger>
+            <TooltipV2.TooltipContent>{t('cases:next_unassigned_case')}</TooltipV2.TooltipContent>
+          </TooltipV2.Tooltip>
+        </div>
       </Page.Header>
       <Page.Container>
         <Page.ContentV2 className="px-v2-lg relative">

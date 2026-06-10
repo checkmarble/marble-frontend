@@ -105,7 +105,9 @@ export function CaseManagerPrincipalPage({
                     />
                   )}
                 </tagsForm.Field>
-                <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ml-auto" />
+                {caseDetail.status !== 'closed' ? (
+                  <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ml-auto" />
+                ) : null}
               </div>
               <div className="grid grid-cols-2 gap-v2-sm">
                 <div className="flex flex-col gap-v2-sm">
