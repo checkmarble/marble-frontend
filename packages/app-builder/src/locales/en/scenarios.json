@@ -114,6 +114,7 @@
   "deployment_modal.prepare.preparation_service_occupied": "The preparation service is currently occupied. Please try again later.",
   "deployment_modal.prepare.title": "Prepare version",
   "deployment_modal.prepare.validation_error": "The version cannot be activated due to validation errors. Create a draft from this version and fix the errors.",
+  "deployment_modal.prepare.waiting_for_activation": "Preparation can take some time. We will keep checking until activation is available.",
   "deployment_modal.steps.activate": "Activate",
   "deployment_modal.steps.commit": "Commit",
   "deployment_modal.steps.draft": "Draft",

@@ -1,11 +1,13 @@
+import { Callout } from '@app-builder/components/Callout';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { useActivateIterationMutation } from '@app-builder/queries/scenarios/activate-iteration';
 import { useCommitIterationMutation } from '@app-builder/queries/scenarios/commit-iteration';
 import { usePrepareIterationMutation } from '@app-builder/queries/scenarios/prepare-iteration';
+import { usePublicationPreparationStatusQuery } from '@app-builder/queries/scenarios/publication-preparation-status';
 import { useRuleSnoozesQuery } from '@app-builder/queries/scenarios/rule-snoozes';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, StepProgressBar, Tooltip } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
@@ -28,13 +30,38 @@ type ScenarioDeploymentModalProps = {
 };
 
 type Bullet = { text: string; tooltip?: string };
+type DeploymentStepDefinition = { key: DeploymentStep; label: string; isCurrent: boolean };
 
-// The current step is always derived from the live loader state, never an
-// internal cursor: reopening mid-flow resumes at the actual current step.
-function getCurrentStep(iteration: DeploymentIteration): DeploymentStep {
-  if (iteration.type === 'draft') return 'commit';
-  if (iteration.status === 'required') return 'prepare';
-  return 'activate';
+const PREPARATION_POLL_INTERVAL_MS = 2_000;
+const PREPARATION_WAIT_CALLOUT_DELAY_MS = 1_000;
+
+function* generateDeploymentSteps(
+  iteration: DeploymentIteration,
+  includePreparationStep: boolean,
+  t: ReturnType<typeof useTranslation>['t'],
+): Generator<DeploymentStepDefinition> {
+  yield {
+    key: 'draft',
+    label: t('scenarios:deployment_modal.steps.draft'),
+    isCurrent: false,
+  };
+  yield {
+    key: 'commit',
+    label: t('scenarios:deployment_modal.steps.commit'),
+    isCurrent: iteration.type === 'draft',
+  };
+  if (includePreparationStep) {
+    yield {
+      key: 'prepare',
+      label: t('scenarios:deployment_modal.steps.prepare'),
+      isCurrent: iteration.type !== 'draft' && iteration.status === 'required',
+    };
+  }
+  yield {
+    key: 'activate',
+    label: t('scenarios:deployment_modal.steps.activate'),
+    isCurrent: iteration.type !== 'draft' && iteration.status === 'ready_to_activate',
+  };
 }
 
 export function ScenarioDeploymentModal({
@@ -44,8 +71,11 @@ export function ScenarioDeploymentModal({
   rulesMetadata,
 }: ScenarioDeploymentModalProps) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const [open, setOpen] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isPreparationPollingStarted, setIsPreparationPollingStarted] = useState(false);
+  const [shouldPersistPreparationStep, setShouldPersistPreparationStep] = useState(false);
+  const [showPreparationWaitCallout, setShowPreparationWaitCallout] = useState(false);
   const revalidate = useLoaderRevalidator();
 
   const commitMutation = useCommitIterationMutation(scenario.id, iteration.id);
@@ -53,25 +83,61 @@ export function ScenarioDeploymentModal({
   const activateMutation = useActivateIterationMutation(scenario.id, iteration.id);
   const ruleSnoozesQuery = useRuleSnoozesQuery(scenario.id, iteration.id);
 
-  const currentStep = getCurrentStep(iteration);
+  const publicationPreparationStatusQuery = usePublicationPreparationStatusQuery(scenario.id, iteration.id, {
+    enabled: isPreparationPollingStarted && iteration.status !== 'ready_to_activate',
+    refetchInterval: (query) => {
+      if (!isPreparationPollingStarted) return false;
+      if (query.state.data?.status === 'ready_to_activate') return false;
+      return PREPARATION_POLL_INTERVAL_MS;
+    },
+  });
+
+  const effectiveIteration: DeploymentIteration = {
+    ...iteration,
+    status: publicationPreparationStatusQuery.data?.status ?? iteration.status,
+  };
+  const steps = Array.from(
+    generateDeploymentSteps(effectiveIteration, iteration.status === 'required' || shouldPersistPreparationStep, t),
+  );
+  const currentStep = steps.find((step) => step.isCurrent)?.key ?? 'activate';
+  const hasActivationBecomeAvailable = effectiveIteration.status === 'ready_to_activate';
+  const isWaitingForActivation = isPreparationPollingStarted && !hasActivationBecomeAvailable;
 
   // Reset the error whenever the flow advances to a new step.
-  React.useEffect(() => {
+  useEffect(() => {
     setErrorMessage(null);
   }, [currentStep]);
 
+  useEffect(() => {
+    setIsPreparationPollingStarted(false);
+    setShouldPersistPreparationStep(false);
+    setShowPreparationWaitCallout(false);
+  }, [iteration.id]);
+
+  useEffect(() => {
+    if (!isPreparationPollingStarted || !hasActivationBecomeAvailable) return;
+
+    setIsPreparationPollingStarted(false);
+    revalidate();
+  }, [hasActivationBecomeAvailable, isPreparationPollingStarted, revalidate]);
+
+  useEffect(() => {
+    if (!isWaitingForActivation) {
+      setShowPreparationWaitCallout(false);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setShowPreparationWaitCallout(true);
+    }, PREPARATION_WAIT_CALLOUT_DELAY_MS);
+
+    return () => clearTimeout(timeoutId);
+  }, [isWaitingForActivation]);
+
   const activeMutation =
     currentStep === 'commit' ? commitMutation : currentStep === 'prepare' ? prepareMutation : activateMutation;
-  const isPending = activeMutation.isPending || (currentStep === 'activate' && ruleSnoozesQuery.isPending);
-
-  const steps: { key: DeploymentStep; label: string }[] = [
-    { key: 'draft', label: t('scenarios:deployment_modal.steps.draft') },
-    { key: 'commit', label: t('scenarios:deployment_modal.steps.commit') },
-    ...(iteration.status === 'required'
-      ? [{ key: 'prepare' as const, label: t('scenarios:deployment_modal.steps.prepare') }]
-      : []),
-    { key: 'activate', label: t('scenarios:deployment_modal.steps.activate') },
-  ];
+  const isPending =
+    activeMutation.isPending || isWaitingForActivation || (currentStep === 'activate' && ruleSnoozesQuery.isPending);
 
   const action: { label: string; icon: IconName } =
     currentStep === 'commit'
@@ -156,6 +222,9 @@ export function ScenarioDeploymentModal({
           );
           return;
         }
+        setShouldPersistPreparationStep(true);
+        setIsPreparationPollingStarted(true);
+        return;
       } else {
         const res = await activateMutation.mutateAsync({ willBeLive: true, changeIsImmediate: true });
         if (res?.error) {
@@ -228,6 +297,11 @@ export function ScenarioDeploymentModal({
                 <div className="min-h-6 w-full">
                   <RuleSnoozeDetail scenarioId={scenario.id} iterationId={iteration.id} rulesMetadata={rulesMetadata} />
                 </div>
+              ) : null}
+              {showPreparationWaitCallout ? (
+                <Callout color="purple" icon="tip">
+                  {t('scenarios:deployment_modal.prepare.waiting_for_activation')}
+                </Callout>
               ) : null}
               {errorMessage ? <p className="text-s text-red-primary font-medium">{errorMessage}</p> : null}
             </div>
