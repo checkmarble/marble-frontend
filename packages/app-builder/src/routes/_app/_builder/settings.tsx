@@ -21,6 +21,7 @@ const settingsLoader = createServerFn()
 
     const inboxes = await inbox.listInboxes();
     const sections = getSettingsAccess(user, appConfig, inboxes);
+    if (appConfig.isManagedMarble) sections.screening_providers.settings = []; // not in SaaS
 
     return { sections, entitlements };
   });
