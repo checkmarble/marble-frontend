@@ -62,10 +62,10 @@ export function PivotNavigationOptions({
               <Fragment key={linkToTable.childTableName}>
                 {navigationOptions.map((navOption) => (
                   <Fragment key={`${navOption.targetTableName}_${navOption.orderingFieldName}`}>
-                    <label className="text-grey-secondary">
+                    <span className="text-grey-secondary">
                       {navOption.targetTableName}
                       {navigationOptions.length > 1 ? ` (${navOption.orderingFieldName})` : null}
-                    </label>
+                    </span>
                     <Button
                       disabled={navOption.status === 'pending'}
                       variant="secondary"

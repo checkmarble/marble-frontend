@@ -1,4 +1,5 @@
-import { type MouseEvent, type ReactNode, useLayoutEffect, useRef, useState } from 'react';
+import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
+import { type MouseEvent, type ReactNode, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { Tag } from '../Tag/Tag';
 import { cn } from '../utils';
@@ -45,7 +46,7 @@ export function ExpandableGroupTagLine({
   const ghostRef = useRef<HTMLDivElement>(null);
   const [maxVisible, setMaxVisible] = useState(items.length);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isExpanded) return;
     const container = containerRef.current;
     const ghost = ghostRef.current;
@@ -77,7 +78,7 @@ export function ExpandableGroupTagLine({
     observer.observe(container);
     recalculate();
     return () => observer.disconnect();
-  }, [isExpanded, items.length]);
+  }, [isExpanded, items.length, overflowTagWidth]);
 
   const overflow = isExpanded ? 0 : Math.max(0, items.length - maxVisible);
   const visibleItems = overflow > 0 ? items.slice(0, maxVisible) : items;

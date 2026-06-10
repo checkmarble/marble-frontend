@@ -1,14 +1,7 @@
 import { mergeRefs } from '@app-builder/utils/form';
+import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
 import type React from 'react';
-import {
-  type CSSProperties,
-  forwardRef,
-  type InputHTMLAttributes,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import { type CSSProperties, forwardRef, type InputHTMLAttributes, useEffect, useRef, useState } from 'react';
 
 interface AutowidthInputProps extends InputHTMLAttributes<HTMLInputElement> {
   extraWidth?: number | string;
@@ -64,7 +57,7 @@ export const AutoWidthInput = forwardRef<HTMLInputElement, AutowidthInputProps>(
     };
 
     /* Copy styles of the input field to the sizer, ensuring that the width of the input adjusts accordingly */
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       if (inputRef.current && sizerRef.current) {
         const computedStyle = window.getComputedStyle(inputRef.current);
 

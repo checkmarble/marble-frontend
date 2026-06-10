@@ -41,9 +41,9 @@ export function ClientRelatedAlertCasesCard({ caseId, pivotValue }: ClientRelate
               {cases.map((caseObj, idx) => {
                 return (
                   <div className="grid grid-cols-subgrid col-span-full items-center" key={caseObj.id}>
-                    <label className="text-grey-secondary">
+                    <span className="text-grey-secondary">
                       {formatDateTime(caseObj.createdAt, { dateStyle: 'short' })}
-                    </label>
+                    </span>
                     <div className="flex items-center gap-v2-xs">
                       <span>{caseObj.name}</span>
                       <CaseStatusBadgeV2 status={caseObj.status} variant="icon-only" />
