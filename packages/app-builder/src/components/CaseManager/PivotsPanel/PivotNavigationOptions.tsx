@@ -45,10 +45,10 @@ export function PivotNavigationOptions({
       {linksToTable.length > 0 ? (
         <div
           className={cn(
-            'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
-            options?.layout === '2-columns' && 'grid-cols-[repeat(2,minmax(max-content,1fr)_1fr)]',
-            options?.layout === '3-columns' && 'grid-cols-[repeat(3,minmax(max-content,1fr)_1fr)]',
-            (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[minmax(max-content,1fr)_1fr]',
+            'grid auto-rows-[minmax(2rem,auto)] gap-x-4 gap-y-2 break-all items-center',
+            options?.layout === '2-columns' && 'grid-cols-[repeat(2,max-content_minmax(0,1fr))]',
+            options?.layout === '3-columns' && 'grid-cols-[repeat(3,max-content_minmax(0,1fr))]',
+            (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_minmax(0,1fr)]',
             className,
           )}
         >
@@ -62,10 +62,10 @@ export function PivotNavigationOptions({
               <Fragment key={linkToTable.childTableName}>
                 {navigationOptions.map((navOption) => (
                   <Fragment key={`${navOption.targetTableName}_${navOption.orderingFieldName}`}>
-                    <div>
+                    <span className="text-grey-secondary">
                       {navOption.targetTableName}
                       {navigationOptions.length > 1 ? ` (${navOption.orderingFieldName})` : null}
-                    </div>
+                    </span>
                     <Button
                       disabled={navOption.status === 'pending'}
                       variant="secondary"

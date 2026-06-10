@@ -7,11 +7,11 @@ import { useScreeningDetailQuery } from '@app-builder/queries/screening/get-scre
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn } from 'ui-design-system';
+import { Button, cn, ExpandableGroupTagLine, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DecisionPanel } from '../CaseManager/DecisionPanel/DecisionPanel';
 import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
@@ -249,12 +249,8 @@ export const AlertCard = ({
  * Renders trigger object fields responsively — shows as many fields as fit
  * on one line, with a "+N" badge for overflow. Uses ResizeObserver to
  * recalculate when the container width changes.
- *
- * Two layers:
- *  - Measurement layer (invisible, absolute): renders ALL items so we can
- *    measure their positions against the container width.
- *  - Display layer: React-controlled, renders only `visibleCount` items + badge.
  */
+
 const TriggerFieldsRow = ({
   fields,
   triggerObject,
@@ -263,65 +259,10 @@ const TriggerFieldsRow = ({
   triggerObject: Record<string, unknown>;
 }) => {
   const { t } = useTranslation(casesI18n);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const measureRef = useRef<HTMLDivElement>(null);
-  const [visibleCount, setVisibleCount] = useState(fields.length);
-
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    const measure = measureRef.current;
-    if (!wrapper || !measure) return;
-
-    const recalculate = () => {
-      const items = measure.querySelectorAll<HTMLElement>('[data-field-item]');
-      if (items.length === 0) return;
-
-      const availableWidth = wrapper.clientWidth;
-      const measureLeft = measure.getBoundingClientRect().left;
-
-      // How many items fit without a badge?
-      let fitCount = 0;
-      for (const item of items) {
-        const itemRight = item.getBoundingClientRect().right - measureLeft;
-        if (itemRight <= availableWidth + 1) {
-          fitCount++;
-        } else {
-          break;
-        }
-      }
-
-      if (fitCount >= items.length) {
-        setVisibleCount(items.length);
-        return;
-      }
-
-      // Not all fit — account for the "+N" badge width (~40px)
-      const badgeWidth = 40;
-      let adjusted = 0;
-      for (const item of items) {
-        const itemRight = item.getBoundingClientRect().right - measureLeft;
-        if (itemRight <= availableWidth - badgeWidth + 1) {
-          adjusted++;
-        } else {
-          break;
-        }
-      }
-
-      setVisibleCount(Math.max(1, adjusted));
-    };
-
-    recalculate();
-    const observer = new ResizeObserver(recalculate);
-    observer.observe(wrapper);
-    return () => observer.disconnect();
-  }, [fields.length]);
-
-  const hiddenCount = fields.length - visibleCount;
-
   const renderField = (field: { id: string; name: string }, index: number) => (
-    <span key={field.id} data-field-item className="inline-flex shrink-0 items-baseline gap-0.5 ps-1">
-      {index > 0 ? <span className="text-grey-placeholder pe-1">&middot;</span> : null}
-      <span className="font-medium">{field.name}:</span>{' '}
+    <span key={field.id} data-field-item className="inline-flex shrink-0 items-baseline gap-v2-xs">
+      {index > 0 ? <span className="text-grey-placeholder">&middot;</span> : null}
+      <span className="font-medium">{field.name}:</span>
       <span className="max-w-[120px] truncate">
         <FormatData data={parseUnknownData(triggerObject[field.name])} />
       </span>
@@ -329,26 +270,21 @@ const TriggerFieldsRow = ({
   );
 
   return (
-    <div ref={wrapperRef} className="relative text-xs">
-      {/* Measurement layer: all items, invisible, same width as wrapper */}
-      <div
-        ref={measureRef}
-        className="pointer-events-none invisible absolute inset-x-0 top-0 flex items-baseline"
-        aria-hidden="true"
-      >
-        <span className="shrink-0">{t('cases:decisions.trigger_objects')}</span>
-        {fields.map(renderField)}
-      </div>
-
-      {/* Display layer: only items that fit + overflow badge */}
-      <div className="flex items-baseline">
+    <div className="relative text-xs">
+      <div className="flex items-baseline gap-v2-sm">
         <span className="text-grey-secondary shrink-0">{t('cases:decisions.trigger_objects')}</span>
-        {fields.slice(0, visibleCount).map(renderField)}
-        {hiddenCount > 0 ? (
-          <span className="border-grey-border ms-1 inline-flex shrink-0 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
-            +{hiddenCount}
-          </span>
-        ) : null}
+        <ExpandableGroupTagLine
+          items={fields.map(renderField)}
+          moreButton={(overflow) => (
+            <Tooltip.Default content={<div className="flex flex-wrap w-min text-xs">{fields.map(renderField)}</div>}>
+              <span className="border-grey-border ms-1 inline-flex shrink-0 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                +{overflow}
+              </span>
+            </Tooltip.Default>
+          )}
+          overflowTagWidth={40}
+          classname="gap-v2-xs"
+        />
       </div>
     </div>
   );

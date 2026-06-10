@@ -1,4 +1,5 @@
-import { type MouseEvent, type ReactNode, useLayoutEffect, useRef, useState } from 'react';
+import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
+import { type MouseEvent, type ReactNode, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { Tag } from '../Tag/Tag';
 import { cn } from '../utils';
@@ -13,6 +14,7 @@ export interface ExpandableGroupTagLineProps {
   lessButton?: (onCollapse: (event: MouseEvent) => void) => ReactNode;
   classname?: string;
   trailing?: ReactNode;
+  overflowTagWidth?: number;
 }
 
 function DefaultMoreButton({ overflow, onExpand }: { overflow: number; onExpand: (event: MouseEvent) => void }) {
@@ -37,13 +39,14 @@ export function ExpandableGroupTagLine({
   lessButton,
   classname,
   trailing,
+  overflowTagWidth = OVERFLOW_TAG_WIDTH_PX,
 }: ExpandableGroupTagLineProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
   const [maxVisible, setMaxVisible] = useState(items.length);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (isExpanded) return;
     const container = containerRef.current;
     const ghost = ghostRef.current;
@@ -60,7 +63,7 @@ export function ExpandableGroupTagLine({
         const tw = tagEls[i]!.offsetWidth;
         const gapBefore = i > 0 ? gap : 0;
         const isLast = i === tagEls.length - 1;
-        const needed = used + gapBefore + tw + (isLast ? 0 : gap + OVERFLOW_TAG_WIDTH_PX);
+        const needed = used + gapBefore + tw + (isLast ? 0 : gap + overflowTagWidth);
         if (needed <= availableWidth) {
           used += gapBefore + tw;
           count++;
@@ -75,7 +78,7 @@ export function ExpandableGroupTagLine({
     observer.observe(container);
     recalculate();
     return () => observer.disconnect();
-  }, [isExpanded, items.length]);
+  }, [isExpanded, items.length, overflowTagWidth]);
 
   const overflow = isExpanded ? 0 : Math.max(0, items.length - maxVisible);
   const visibleItems = overflow > 0 ? items.slice(0, maxVisible) : items;
@@ -90,15 +93,20 @@ export function ExpandableGroupTagLine({
   };
 
   return (
-    <div ref={containerRef} className={cn('relative min-w-0 w-full flex-1', classname)}>
+    <div ref={containerRef} className="relative min-w-0 w-full flex-1">
       <div
         ref={ghostRef}
-        className="pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-v2-sm"
+        className={cn(
+          'pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-v2-sm overflow-x-hidden',
+          classname,
+        )}
         aria-hidden="true"
       >
         {items}
       </div>
-      <div className={cn('flex min-w-0 items-center gap-v2-sm', isExpanded ? 'flex-wrap' : 'overflow-hidden')}>
+      <div
+        className={cn('flex min-w-0 items-center gap-v2-sm', isExpanded ? 'flex-wrap' : 'overflow-hidden', classname)}
+      >
         {visibleItems}
         {overflow > 0 &&
           (moreButton ? (

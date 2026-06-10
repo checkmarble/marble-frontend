@@ -6,6 +6,7 @@ import { DataModel, DataModelObject } from '@app-builder/models';
 import { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
 import { Inbox } from '@app-builder/models/inbox';
+import { isAdmin } from '@app-builder/models/user';
 import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries/cases/edit-tags';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -17,7 +18,7 @@ import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, Card, CtaV2ClassName, Tag, TagList, TooltipV2 } from 'ui-design-system';
+import { Avatar, Button, Card, CtaV2ClassName, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PivotNavigationOptions } from '../CaseManager/PivotsPanel/PivotNavigationOptions';
 import { CaseInvestigation } from '../CaseManager/shared/CaseInvestigation/CaseInvestigation';
@@ -27,6 +28,7 @@ import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { PanelContainer, PanelContent, PanelRoot } from '../Panel';
 import { DataExplorerPanel } from './DataExplorerPanel';
+import { EscalateCaseButton } from './EscalateCaseButton';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
 import { getClientDisplayInfo } from './utils/client';
 
@@ -87,9 +89,9 @@ export function CaseManagerPrincipalPage({
         <div className="flex flex-col gap-v2-sm">
           <div className="text-default font-medium">{t('cases:case_detail.pivot_panel.informations')}</div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-v2-lg">
-            <Card className="flex flex-col gap-v2-sm text-small">
+            <Card className="flex flex-col gap-v2-sm text-small self-start">
               <div className="flex items-center gap-v2-xs">
-                <CaseStatusBadgeV2 status={caseDetail.status} variant="semi-full" />
+                <CaseStatusBadgeV2 status={caseDetail.status} outcome={caseDetail.outcome} variant="semi-full" />
                 <tagsForm.Field name="tagIds">
                   {(field) => (
                     <TagList
@@ -104,14 +106,9 @@ export function CaseManagerPrincipalPage({
                     />
                   )}
                 </tagsForm.Field>
-                <TooltipV2.Tooltip delayDuration={0}>
-                  <TooltipV2.TooltipTrigger asChild>
-                    <Button variant="secondary" size="small" mode="icon" className="ml-auto">
-                      <Icon icon="arrow-up" className="size-4" />
-                    </Button>
-                  </TooltipV2.TooltipTrigger>
-                  <TooltipV2.TooltipContent className="capitalize">{t('cases:escalate')}</TooltipV2.TooltipContent>
-                </TooltipV2.Tooltip>
+                {caseDetail.status !== 'closed' ? (
+                  <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ml-auto" />
+                ) : null}
               </div>
               <div className="grid grid-cols-2 gap-v2-sm">
                 <div className="flex flex-col gap-v2-sm">
@@ -142,7 +139,18 @@ export function CaseManagerPrincipalPage({
                 userScoringAccess={userScoringAccess}
               />
             ) : (
-              <Card />
+              <Card className="flex flex-col items-center justify-center gap-v2-sm text-small text-center">
+                <span className="text-grey-secondary">
+                  {isAdmin(currentUser)
+                    ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
+                    : t('cases:case_detail.pivot_panel.missing_pivot')}
+                </span>
+                {isAdmin(currentUser) ? (
+                  <Link to="/data" className={CtaV2ClassName({ variant: 'primary', appearance: 'stroked' })}>
+                    {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
+                  </Link>
+                ) : null}
+              </Card>
             )}
           </div>
         </div>
