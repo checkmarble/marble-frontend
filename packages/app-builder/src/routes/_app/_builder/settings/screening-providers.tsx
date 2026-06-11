@@ -12,8 +12,9 @@ const screeningProvidersLoader = createServerFn()
     const { organization: orgRepo, user, entitlements } = context.authInfo;
     const { appConfig } = context;
 
-    if (!isAdmin(user) || !appConfig.isManagedMarble) {
-      throw redirect({ to: '/' });
+    if (!isAdmin(user) || appConfig.isManagedMarble) {
+      // not in SaaS
+      throw redirect({ to: '/settings' });
     }
 
     const organization = await orgRepo.getCurrentOrganization();
