@@ -18,15 +18,27 @@ import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotation
 import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import type { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
-import { Link } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
 import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ActionBar, ActionButton, Button, cn, Modal, Radio, Tabs, TooltipV2, tabClassName } from 'ui-design-system';
+import {
+  ActionBar,
+  ActionButton,
+  Button,
+  CtaV2ClassName,
+  cn,
+  Modal,
+  Radio,
+  Tabs,
+  TooltipV2,
+  tabClassName,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CloseCase } from '../Cases/CloseCase';
 import { OpenCase } from '../Cases/OpenCase';
@@ -56,6 +68,11 @@ export function CaseManagerPageLayout({
   const { info } = CommentContext.useValue();
   const sarReportsQuery = useSarReportsQuery(caseDetail.id);
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
+  const router = useRouter();
+  const nextUnassignedCaseHref = router.buildLocation({
+    to: '/ressources/cases/next-unassigned/$caseId',
+    params: { caseId: fromUUIDtoSUUID(caseDetail.id) },
+  }).href;
 
   const handleSarAction = () => {
     setSarReportModalOpen(true);
@@ -87,14 +104,19 @@ export function CaseManagerPageLayout({
           )}
           <TooltipV2.Tooltip delayDuration={0}>
             <TooltipV2.TooltipTrigger asChild>
-              <Button
-                variant="secondary"
-                mode="icon"
+              <a
+                href={nextUnassignedCaseHref}
                 aria-label={t('cases:next_unassigned_case')}
-                onClick={() => getNextUnassignedCase({ data: { caseId: caseDetail.id } })}
+                className={cn(CtaV2ClassName({ variant: 'secondary', mode: 'icon' }), 'hover:bg-grey-background')}
+                onClick={(e) => {
+                  // let modified clicks (cmd/ctrl/shift/alt) reach the browser to open a new tab
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                  e.preventDefault();
+                  getNextUnassignedCase({ data: { caseId: caseDetail.id } });
+                }}
               >
                 <Icon icon="arrow-right" className="size-4" />
-              </Button>
+              </a>
             </TooltipV2.TooltipTrigger>
             <TooltipV2.TooltipContent>{t('cases:next_unassigned_case')}</TooltipV2.TooltipContent>
           </TooltipV2.Tooltip>
