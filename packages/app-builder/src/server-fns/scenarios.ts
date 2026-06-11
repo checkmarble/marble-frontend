@@ -507,6 +507,13 @@ export const prepareIterationFn = createServerFn({ method: 'POST' })
     }
   });
 
+export const getPublicationPreparationStatusFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
+  .handler(async ({ context, data }) => {
+    return context.authInfo.scenario.getPublicationPreparationStatus({ iterationId: data.iterationId });
+  });
+
 export const getRuleSnoozeFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(z.object({ iterationId: z.string() }))
