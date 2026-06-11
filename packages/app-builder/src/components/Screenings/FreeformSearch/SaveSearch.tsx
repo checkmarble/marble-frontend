@@ -2,11 +2,11 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useEntityName } from '@app-builder/hooks/useEntityName';
-import { useSaveFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
+// import { useSaveFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+// import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -20,29 +20,29 @@ const saveSearchFormSchema = z.object({
 export const SaveSearch = ({ search }: { search: FreeformSearchState }) => {
   const { t } = useTranslation(['screenings', 'common']);
   const [open, setOpen] = useState(false);
-  const saveSearchMutation = useSaveFreeformSearchMutation();
+  // const saveSearchMutation = useSaveFreeformSearchMutation();
   const { getEntityName } = useEntityName();
 
   const form = useForm({
     defaultValues: { name: '' },
     onSubmit: ({ value, formApi }) => {
       if (!formApi.state.isValid) return;
-      saveSearchMutation
-        .mutateAsync({
-          name: value.name,
-          inputs: search.inputs,
-          results: search.results,
-        })
-        .then((res) => {
-          if (res.success) {
-            toast.success(t('screenings:freeform_search.save.success'));
-            setOpen(false);
-            form.reset();
-          } else {
-            toast.error(t('common:errors.unknown'));
-          }
-        })
-        .catch(() => toast.error(t('common:errors.unknown')));
+      // saveSearchMutation
+      //   .mutateAsync({
+      //     name: value.name,
+      //     inputs: search.inputs,
+      //     results: search.results,
+      //   })
+      //   .then((res) => {
+      //     if (res.success) {
+      //       toast.success(t('screenings:freeform_search.save.success'));
+      //       setOpen(false);
+      //       form.reset();
+      //     } else {
+      //       toast.error(t('common:errors.unknown'));
+      //     }
+      //   })
+      //   .catch(() => toast.error(t('common:errors.unknown')));
     },
     validators: {
       onSubmit: saveSearchFormSchema,
@@ -124,10 +124,10 @@ export const SaveSearch = ({ search }: { search: FreeformSearchState }) => {
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button variant="primary" type="submit" disabled={saveSearchMutation.isPending}>
+            {/* <Button variant="primary" type="submit" disabled={saveSearchMutation.isPending}>
               <Icon icon="save" className="size-4" />
               {t('screenings:freeform_search.save.submit')}
-            </Button>
+            </Button> */}
           </Modal.Footer>
         </form>
       </Modal.Content>
