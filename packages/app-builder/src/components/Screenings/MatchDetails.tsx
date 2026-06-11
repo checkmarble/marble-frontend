@@ -4,7 +4,6 @@ import { ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { EntityProperties } from './EntityProperties';
 import { Associations } from './MatchCard/Associations';
 import { FamilyDetail } from './MatchCard/FamilyDetail';
@@ -40,17 +39,45 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
 
   const deduplicatedEntity = useMemo(() => {
     if (entity.schema !== 'Person') return entity;
-
+    // family person & relative
     const familyPersonIds = new Set(entity.properties?.familyPerson?.flatMap(({ properties }) => properties?.person));
     if (!familyPersonIds.size) return entity;
+    const familyRelative = entity.properties.familyRelative?.filter(
+      ({ properties }) => !properties.relative?.some((relativeId) => familyPersonIds.has(relativeId)),
+    );
+    // assocations
+    const associateIds = new Set(
+      entity.properties?.associations?.flatMap(({ properties }) => properties?.person?.map((p) => p.id)),
+    );
+    const ignored: Array<{ id: string; relationship: string[] }> = [];
+    const associations = entity.properties?.associations?.filter(({ properties }) => {
+      if (!properties?.person) return false;
+      if (properties.person?.some((p) => associateIds.has(p.id))) {
+        const personId = properties.person?.find((p) => associateIds.has(p.id))?.id;
+        associateIds.delete(personId);
+        return true;
+      }
+      properties.person.forEach((p) => ignored.push({ id: p.id, relationship: properties.relationship! }));
+      return false;
+    });
+    // complete relationships of original associations with ignored relationships (only once)
+    ignored.forEach((person) => {
+      const association = entity.properties?.associations?.find(({ properties }) =>
+        properties?.person?.some((p) => p.id === person.id),
+      );
+      if (association) {
+        const relationships = new Set(association.properties.relationship ?? []);
+        person.relationship.forEach((r) => relationships.add(r));
+        association.properties.relationship = Array.from(relationships);
+      }
+    });
 
     return {
       ...entity,
       properties: {
         ...entity.properties,
-        familyRelative: entity.properties.familyRelative?.filter(
-          ({ properties }) => !properties.relative?.some((relativeId) => familyPersonIds.has(relativeId)),
-        ),
+        familyRelative,
+        associations,
       },
     };
   }, [entity]);
@@ -108,7 +135,7 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
         <MemberShip membershipMember={entity.properties['membershipMember']} />
       ) : null}
 
-      <Associations associations={entity.properties['associations']} />
+      <Associations associations={deduplicatedEntity.properties['associations']} />
 
       {entity.schema === 'Person' && deduplicatedEntity.properties?.['familyPerson']?.length ? (
         <FamilyDetail relation="familyPerson" familyMembers={deduplicatedEntity.properties['familyPerson']} />
