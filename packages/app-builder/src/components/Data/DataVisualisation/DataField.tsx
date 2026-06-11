@@ -245,18 +245,30 @@ function EmptyValue({ className }: { className?: string }) {
 function StringMain() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return <StringMainComponent value={value} />;
+}
+
+export function StringMainComponent({ value }: { value: string }) {
   return <span className="font-semibold">{value}</span>;
 }
 
 function StringCode() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return StringCodeComponent({ value });
+}
+
+export function StringCodeComponent({ value }: { value: string }) {
   return <span className={codeClassName}>{value}</span>;
 }
 
 function StringEmail() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return StringEmailComponent({ value });
+}
+
+export function StringEmailComponent({ value }: { value: string }) {
   const isValid = z.email().safeParse(value).success;
   if (!isValid) return <span>{value}</span>;
   return (
@@ -269,6 +281,10 @@ function StringEmail() {
 function StringPhone() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return StringPhoneComponent({ value });
+}
+
+export function StringPhoneComponent({ value }: { value: string }) {
   const phone = parsePhoneNumber(value);
   const strPhone = phone ? phone.formatInternational() : value;
   if (phone) {
@@ -290,15 +306,25 @@ function StringCity() {
 
 function StringCountry() {
   const value = useStringValue();
-  const language = useFormatLanguage();
   if (!value) return <EmptyValue />;
+  return StringCountryComponent({ value });
+}
+
+export function StringCountryComponent({
+  value,
+  withCountryName = true,
+}: {
+  value: string;
+  withCountryName?: boolean;
+}) {
+  const language = useFormatLanguage();
   const result = tryCatch(() => CountryFlag.byCountryCode(value.toUpperCase()));
   if (!result.ok) return <span>{value}</span>;
   const country = result.value;
   return (
     <span className="inline-flex items-center gap-1">
       <span>{country.flag}</span>
-      <span>{formatCountryName(country.isoAlpha2, language)}</span>
+      {withCountryName && <span>{formatCountryName(country.isoAlpha2, language)}</span>}
     </span>
   );
 }
@@ -306,6 +332,10 @@ function StringCountry() {
 function StringLink() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return StringLinkComponent({ value });
+}
+
+export function StringLinkComponent({ value }: { value: string }) {
   const result = tryCatch(() => new URL(value));
   if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <span>{value}</span>;
   return (
@@ -366,19 +396,21 @@ function StringFree() {
 
 function DateBirthdate() {
   const value = useStringValue();
+  if (!value) return <EmptyValue />;
+  return DateBirthdateComponent({ value });
+}
+
+export function DateBirthdateComponent({ value }: { value: string }) {
   const formatDateTime = useFormatDateTime();
   const language = useFormatLanguage();
-  if (value) {
-    const date = new Date(value);
-    const age = formatAge(date, language);
-    return (
-      <span className="inline-flex items-center gap-1">
-        <span className="text-grey-secondary text-xs">{age}</span>
-        <span className={cn(codeClassName, 'text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
-      </span>
-    );
-  }
-  return <EmptyValue />;
+  const date = new Date(value);
+  const age = formatAge(date, language);
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="text-grey-secondary text-xs">{age}</span>
+      <span className={cn(codeClassName, 'text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
+    </span>
+  );
 }
 
 function StringIban() {
@@ -405,12 +437,14 @@ function StringCurrency() {
 
 function DateDatetime() {
   const value = useStringValue();
+  if (!value) return <EmptyValue />;
+  return DateDatetimeComponent({ value });
+}
+
+export function DateDatetimeComponent({ value, withTime = true }: { value: string; withTime?: boolean }) {
   const formatDateTime = useFormatDateTime();
-  if (value) {
-    const date = new Date(value);
-    return <span>{formatDateTime(date, { dateStyle: 'short', timeStyle: 'short' })}</span>;
-  }
-  return <EmptyValue />;
+  const date = new Date(value);
+  return <span>{formatDateTime(date, { dateStyle: 'short', timeStyle: withTime ? 'short' : undefined })}</span>;
 }
 
 function DataGpsCoords() {
