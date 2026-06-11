@@ -13,7 +13,7 @@ import { tryCatch } from '@app-builder/utils/tryCatch';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
-import { type ComponentType, Fragment, lazy, Suspense, useMemo, useState } from 'react';
+import { type ComponentType, Fragment, lazy, ReactNode, Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isNonNullish } from 'remeda';
 import { match, P } from 'ts-pattern';
@@ -258,8 +258,8 @@ function StringCode() {
   return StringCodeComponent({ value });
 }
 
-export function StringCodeComponent({ value }: { value: string }) {
-  return <span className={codeClassName}>{value}</span>;
+export function StringCodeComponent({ value, children }: { value?: string; children?: ReactNode }) {
+  return <span className={codeClassName}>{value ?? children ?? '-'}</span>;
 }
 
 function StringEmail() {
@@ -441,10 +441,22 @@ function DateDatetime() {
   return DateDatetimeComponent({ value });
 }
 
-export function DateDatetimeComponent({ value, withTime = true }: { value: string; withTime?: boolean }) {
+export function DateDatetimeComponent({
+  value,
+  withTime = true,
+  monospaced = false,
+}: {
+  value: string;
+  withTime?: boolean;
+  monospaced?: boolean;
+}) {
   const formatDateTime = useFormatDateTime();
   const date = new Date(value);
-  return <span>{formatDateTime(date, { dateStyle: 'short', timeStyle: withTime ? 'short' : undefined })}</span>;
+  return (
+    <span className={cn(monospaced && codeClassName)}>
+      {formatDateTime(date, { dateStyle: 'short', timeStyle: withTime ? 'short' : undefined })}
+    </span>
+  );
 }
 
 function DataGpsCoords() {

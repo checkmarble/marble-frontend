@@ -1,5 +1,6 @@
 import {
   DateBirthdateComponent,
+  DateDatetimeComponent,
   StringCodeComponent,
   StringCountryComponent,
   StringEmailComponent,
@@ -8,8 +9,35 @@ import {
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { HighlightText } from '@app-builder/components/Screenings/HighlightText';
 import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
+import { Fragment } from 'react';
 import { match } from 'ts-pattern';
+import { cn, getCountryByName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+const EMBEDDED_ENGLISH_DATE_REGEX =
+  /\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}\b/g;
+
+type TextSegment = { type: 'text'; value: string } | { type: 'date'; value: string };
+
+function splitTextWithEmbeddedDates(value: string): TextSegment[] {
+  const segments: TextSegment[] = [];
+  let lastIndex = 0;
+
+  for (const match of value.matchAll(EMBEDDED_ENGLISH_DATE_REGEX)) {
+    const index = match.index ?? 0;
+    if (index > lastIndex) {
+      segments.push({ type: 'text', value: value.slice(lastIndex, index) });
+    }
+    segments.push({ type: 'date', value: match[0] });
+    lastIndex = index + match[0].length;
+  }
+
+  if (lastIndex < value.length) {
+    segments.push({ type: 'text', value: value.slice(lastIndex) });
+  }
+
+  return segments;
+}
 
 export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<
@@ -270,7 +298,7 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
               .split('\n')
               .map((v, index) =>
                 v ? (
-                  <HighlightText key={`chunk-${index}`} text={v} highlight={ctx.highlightText} asParagraph />
+                  <div key={`chunk-${index}`}>{formatedValue(format, v, ctx.highlightText)}</div>
                 ) : (
                   <br key={`chunk-${index}`} />
                 ),
@@ -304,23 +332,67 @@ function formatedValue(format: PropertyFormat | undefined, value: string, highli
     .with('position', () => <span>{value}</span>)
     .with('email', () => StringEmailComponent({ value }))
     .with('phone', () => StringPhoneComponent({ value }))
-    .with(undefined, () => <HighlightText text={value} highlight={highlightText} />)
+    .with(undefined, () => <TextWithEmbeddedDates value={value} highlightText={highlightText} />)
     .exhaustive();
+}
+
+function TextWithEmbeddedDates({ value, highlightText }: { value: string; highlightText?: string }) {
+  const segments = splitTextWithEmbeddedDates(value);
+
+  if (segments.length === 0) {
+    return <HighlightText text={value} highlight={highlightText} />;
+  }
+
+  return (
+    <>
+      {segments.map((segment, index) =>
+        segment.type === 'date' ? (
+          <Fragment key={index}>
+            {DateDatetimeComponent({ value: segment.value, withTime: false, monospaced: true })}
+          </Fragment>
+        ) : segment.value.length > 0 ? (
+          <HighlightText key={index} text={segment.value} highlight={highlightText} />
+        ) : null,
+      )}
+    </>
+  );
 }
 
 function ParseAddress({ address }: { address: string }) {
   const addressParts = address.split(',');
   return (
-    <li className="flex items-center gap-V2-xs">
-      <Icon icon="dot" className="text-grey-secondary me-4 size-1.5" />
-      {addressParts.map((part, index) => (
-        <div key={part} className="h-full flex items-center gap-v2-xs me-v2-xs">
-          <span>{part}</span>
-          {index < addressParts.length - 1 ? (
-            <Icon icon="dot" className="text-grey-secondary opacity-50 size-1.5" />
-          ) : null}
-        </div>
-      ))}
+    <li className="flex items-center gap-V2-sm">
+      <IconDot dark spaced />
+      {addressParts.map((part, index) => {
+        const trimmedPart = part.trim();
+        const isLastPart = index === addressParts.length - 1;
+        const country = isLastPart ? getCountryByName(trimmedPart) : undefined;
+
+        return (
+          <div key={`${index}-${trimmedPart}`} className="h-full flex items-center gap-v2-sm me-v2-sm">
+            {country ? (
+              StringCountryComponent({ value: country.isoAlpha2, withCountryName: true })
+            ) : (
+              <span>{trimmedPart}</span>
+            )}
+            {index < addressParts.length - 1 ? <IconDot /> : null}
+          </div>
+        );
+      })}
     </li>
+  );
+}
+
+export function IconDot({ dark, spaced }: { dark?: boolean; spaced?: boolean }) {
+  return (
+    <Icon
+      icon="dot"
+      className={cn(
+        'text-grey-border size-1.5 shrink-0 inline-block',
+        dark && 'text-grey-secondary opacity-100',
+        spaced && 'mx-v2-sm',
+        dark && spaced && 'ms-0',
+      )}
+    />
   );
 }

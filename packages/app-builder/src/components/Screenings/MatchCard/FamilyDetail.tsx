@@ -1,10 +1,19 @@
-import { FamilyPersonEntity, FamilyRelativeEntity, PersonEntity } from '@app-builder/models/screening';
-import { useFormatDateTime } from '@app-builder/utils/format';
+import { IconDot } from '@app-builder/constants/screening-entity';
+import {
+  type FamilyPersonEntity,
+  type FamilyRelationshipEntry,
+  type FamilyRelativeEntity,
+  PersonEntity,
+} from '@app-builder/models/screening';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Collapsible } from 'ui-design-system';
+import { cn, ExpandableGroupTagLine } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
-import { TopicTag } from '../TopicTag';
+import { isDisplayableTopic, TopicTag } from '../TopicTag';
+
+const MAX_FAMILY_MEMBERS = 5;
 
 export type RelationType = 'familyPerson' | 'familyRelative';
 export type RelationEntity<T extends RelationType> = T extends 'familyPerson'
@@ -16,77 +25,140 @@ export type FamilyDetailProps<T extends RelationType> = {
   familyMembers: RelationEntity<T>;
 };
 
-export function FamilyDetail<T extends RelationType>({ familyMembers, relation }: FamilyDetailProps<T>) {
-  const formatDateTime = useFormatDateTime();
+type FamilyMemberRow = {
+  key: string;
+  member: FamilyPersonEntity | FamilyRelativeEntity;
+  id: string;
+  properties: PersonEntity['properties'];
+  relationshipEntries: FamilyRelationshipEntry[];
+};
 
+function FamilyRelationshipTag({ value, source }: FamilyRelationshipEntry) {
   const { t } = useTranslation(['screenings']);
+  const label = value
+    ? t(`screenings:relation.${R.toCamelCase(value)}.label`, {
+        defaultValue: value,
+      })
+    : t('screenings:match.family.unknown_relationship');
 
   return (
-    <div className="grid grid-cols-[168px_1fr] gap-y-2">
-      <div className="font-bold py-6">{t('screenings:match.family-members.title')}</div>
-      <Collapsible.Container defaultOpen={familyMembers.length <= 3}>
-        <Collapsible.Title>
-          {t('screenings:match.family-member.count', { count: familyMembers.length })}
-        </Collapsible.Title>
-        <Collapsible.Content>
-          <div className="flex flex-col gap-2">
-            {familyMembers.map((member, memberIndex) => {
-              const entities = member.properties[relation === 'familyPerson' ? 'relative' : 'person'] as PersonEntity[];
+    <span className="inline-flex shrink-0 items-center gap-1 rounded-sm border border-grey-border bg-surface-card p-1 font-mono">
+      <Icon icon="arrow-forward" className={cn('size-4', source === 'familyRelative' && 'rotate-180')} />
+      <span>{label}</span>
+    </span>
+  );
+}
 
-              return entities?.map(({ id, properties }, idx) => {
-                if (!properties?.name?.[0]) return null;
-                const rel =
-                  member.properties.relationship
-                    ?.map((relation) =>
-                      t(`screenings:relation.${R.toCamelCase(relation)}.label`, {
-                        defaultValue: relation,
-                      }),
-                    )
-                    .join(' · ') ?? t('screenings:match.family.unknown_relationship');
+function flattenFamilyMembers<T extends RelationType>(
+  familyMembers: RelationEntity<T>,
+  relation: T,
+): FamilyMemberRow[] {
+  const rows: FamilyMemberRow[] = [];
 
-                return (
-                  <div key={`person-${id}-${idx}`} className="contents">
-                    <div className="flex flex-row items-start  gap-2 rounded-sm p-2 bg-surface-card">
-                      <div className="flex flex-col  gap-2">
-                        {properties.caption?.length > 0 ? (
-                          <div className="text-sm text-grey-70 font-medium">{properties.caption}</div>
-                        ) : (
-                          <div className="col-span-full flex w-full flex-wrap gap-1">
-                            <span>{properties.alias?.[0] ?? properties.name?.[0]}</span>
-                          </div>
-                        )}
-                        <div className="text-sm text-grey-70 font-medium">
-                          {rel}
-                          {member.properties.startDate?.[0] && (
-                            <span>
-                              {' '}
-                              ({formatDateTime(member.properties.startDate[0], { dateStyle: 'medium' })}
-                              {member.properties.endDate?.[0] && (
-                                <>
-                                  {' - '}
-                                  {formatDateTime(member.properties.endDate[0], { dateStyle: 'medium' })}
-                                </>
-                              )}
-                              )
-                            </span>
-                          )}
-                        </div>
-                        {properties['topics']?.length ? (
-                          <div className="col-span-full flex w-full flex-wrap gap-1">
-                            {getFilteredAndSortedTopics(properties['topics']).map((topic) => (
-                              <TopicTag key={`${id}-${topic}`} topic={topic} />
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                );
-              });
-            })}
-          </div>
-        </Collapsible.Content>
-      </Collapsible.Container>
-    </div>
+  familyMembers.forEach((member, memberIndex) => {
+    const entities = member.properties[relation === 'familyPerson' ? 'relative' : 'person'] as PersonEntity[];
+    const relationshipEntries: FamilyRelationshipEntry[] =
+      member.properties.relationships ??
+      (member.properties.relationship ?? []).map((value) => ({ value, source: relation }));
+
+    entities?.forEach(({ id, properties }, idx) => {
+      if (!properties?.name?.[0]) return;
+      rows.push({
+        key: `person-${memberIndex}-${id}-${idx}`,
+        member,
+        id,
+        properties,
+        relationshipEntries,
+      });
+    });
+  });
+
+  return rows;
+}
+
+export function FamilyDetail<T extends RelationType>({ familyMembers, relation }: FamilyDetailProps<T>) {
+  const { t } = useTranslation(['screenings', 'common']);
+  const [showAll, setShowAll] = useState(false);
+
+  const rows = useMemo(() => flattenFamilyMembers(familyMembers, relation), [familyMembers, relation]);
+  const hiddenCount = Math.max(0, rows.length - MAX_FAMILY_MEMBERS);
+  const visibleRows = showAll ? rows : rows.slice(0, MAX_FAMILY_MEMBERS);
+
+  return (
+    <ul className="grid grid-cols-[146px_1fr] gap-2">
+      {visibleRows.map((row, rowIndex) => {
+        const { key, member, id, properties, relationshipEntries } = row;
+        const isFirstElement = rowIndex === 0;
+
+        const tags = properties.topics?.length
+          ? getFilteredAndSortedTopics(properties.topics)
+              .filter(isDisplayableTopic)
+              .map((topic) => <TopicTag key={`${id}-${topic}`} topic={topic} />)
+          : [];
+
+        const expandableItems = [
+          <IconDot key="dot-1" dark spaced />,
+          properties.caption?.length > 0 ? (
+            <span key="caption" className="text-sm text-grey-70 shrink-0 font-medium">
+              {properties.caption}
+            </span>
+          ) : (
+            <span key="alias" className="shrink-0">
+              {properties.alias?.[0] ?? properties.name?.[0]}
+            </span>
+          ),
+          <IconDot key="dot-2" />,
+          ...(relationshipEntries.length > 0
+            ? relationshipEntries.map((entry, relIdx) => (
+                <FamilyRelationshipTag key={`rel-${key}-${relIdx}`} {...entry} />
+              ))
+            : [<FamilyRelationshipTag key={`rel-${key}-unknown`} value="" source={relation} />]),
+          ...(tags.length > 0 ? [<IconDot key="dot-3" />, ...tags] : []),
+        ];
+
+        return (
+          <li key={key} className="contents">
+            <div className="font-semibold">
+              {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.family-members.title')}</div>}
+            </div>
+            <div className="min-w-0">
+              <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" />
+
+              {member.properties.sourceUrl && member.properties.sourceUrl.length > 0 && (
+                <span className="col-span-full flex w-full flex-col gap-1">
+                  <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
+                  <ul className="list-disc list-inside pl-2">
+                    {member.properties.sourceUrl.map((url, urlIdx) => (
+                      <li key={`source-${id}-${urlIdx}`}>
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-primary hover:text-purple-75 underline"
+                        >
+                          {url}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </span>
+              )}
+            </div>
+          </li>
+        );
+      })}
+      {hiddenCount > 0 && !showAll && (
+        <li className="contents">
+          <span />
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover w-fit"
+          >
+            {t('common:more_remains', { count: hiddenCount })}
+          </button>
+        </li>
+      )}
+    </ul>
   );
 }

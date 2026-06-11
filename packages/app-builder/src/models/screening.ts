@@ -93,6 +93,13 @@ export type PersonEntity = OpenSanctionEntity & {
   } & Record<string, string[]>;
 };
 
+export type FamilyRelationshipSource = 'familyPerson' | 'familyRelative';
+
+export type FamilyRelationshipEntry = {
+  value: string;
+  source: FamilyRelationshipSource;
+};
+
 export type FamilyPersonEntity = OpenSanctionEntity & {
   schema: 'Family';
   properties: {
@@ -102,6 +109,7 @@ export type FamilyPersonEntity = OpenSanctionEntity & {
     sourceUrl?: string[];
     startDate?: string[];
     relationship?: string[];
+    relationships?: FamilyRelationshipEntry[];
   } & Record<string, string[]>;
 };
 
@@ -114,6 +122,7 @@ export type FamilyRelativeEntity = OpenSanctionEntity & {
     sourceUrl?: string[];
     startDate?: string[];
     relationship?: string[];
+    relationships?: FamilyRelationshipEntry[];
   } & Record<string, string[]>;
 };
 
