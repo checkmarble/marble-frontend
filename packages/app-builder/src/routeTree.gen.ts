@@ -44,6 +44,7 @@ import { Route as AppBuilderContinuousScreeningIndexRouteImport } from './routes
 import { Route as AppBuilderClientDetailIndexRouteImport } from './routes/_app/_builder/client-detail/index'
 import { Route as AppBuilderCasesIndexRouteImport } from './routes/_app/_builder/cases/index'
 import { Route as RessourcesListsDownloadCsvFileListIdRouteImport } from './routes/ressources/lists/download-csv-file.$listId'
+import { Route as RessourcesCasesNextUnassignedCaseIdRouteImport } from './routes/ressources/cases/next-unassigned.$caseId'
 import { Route as RessourcesCasesDownloadFileFileIdRouteImport } from './routes/ressources/cases/download-file.$fileId'
 import { Route as RessourcesCasesDownloadDataCaseIdRouteImport } from './routes/ressources/cases/download-data.$caseId'
 import { Route as AppBuilderUserScoringOverviewRouteImport } from './routes/_app/_builder/user-scoring/overview'
@@ -301,6 +302,12 @@ const RessourcesListsDownloadCsvFileListIdRoute =
   RessourcesListsDownloadCsvFileListIdRouteImport.update({
     id: '/ressources/lists/download-csv-file/$listId',
     path: '/ressources/lists/download-csv-file/$listId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const RessourcesCasesNextUnassignedCaseIdRoute =
+  RessourcesCasesNextUnassignedCaseIdRouteImport.update({
+    id: '/ressources/cases/next-unassigned/$caseId',
+    path: '/ressources/cases/next-unassigned/$caseId',
     getParentRoute: () => rootRouteImport,
   } as any)
 const RessourcesCasesDownloadFileFileIdRoute =
@@ -822,6 +829,7 @@ export interface FileRoutesByFullPath {
   '/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
   '/ressources/cases/download-file/$fileId': typeof RessourcesCasesDownloadFileFileIdRoute
+  '/ressources/cases/next-unassigned/$caseId': typeof RessourcesCasesNextUnassignedCaseIdRoute
   '/ressources/lists/download-csv-file/$listId': typeof RessourcesListsDownloadCsvFileListIdRoute
   '/cases/': typeof AppBuilderCasesIndexRoute
   '/client-detail/': typeof AppBuilderClientDetailIndexRoute
@@ -917,6 +925,7 @@ export interface FileRoutesByTo {
   '/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
   '/ressources/cases/download-file/$fileId': typeof RessourcesCasesDownloadFileFileIdRoute
+  '/ressources/cases/next-unassigned/$caseId': typeof RessourcesCasesNextUnassignedCaseIdRoute
   '/ressources/lists/download-csv-file/$listId': typeof RessourcesListsDownloadCsvFileListIdRoute
   '/client-detail': typeof AppBuilderClientDetailIndexRoute
   '/continuous-screening': typeof AppBuilderContinuousScreeningIndexRoute
@@ -1023,6 +1032,7 @@ export interface FileRoutesById {
   '/_app/_builder/user-scoring/overview': typeof AppBuilderUserScoringOverviewRoute
   '/ressources/cases/download-data/$caseId': typeof RessourcesCasesDownloadDataCaseIdRoute
   '/ressources/cases/download-file/$fileId': typeof RessourcesCasesDownloadFileFileIdRoute
+  '/ressources/cases/next-unassigned/$caseId': typeof RessourcesCasesNextUnassignedCaseIdRoute
   '/ressources/lists/download-csv-file/$listId': typeof RessourcesListsDownloadCsvFileListIdRoute
   '/_app/_builder/cases/': typeof AppBuilderCasesIndexRoute
   '/_app/_builder/client-detail/': typeof AppBuilderClientDetailIndexRoute
@@ -1134,6 +1144,7 @@ export interface FileRouteTypes {
     | '/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
     | '/ressources/cases/download-file/$fileId'
+    | '/ressources/cases/next-unassigned/$caseId'
     | '/ressources/lists/download-csv-file/$listId'
     | '/cases/'
     | '/client-detail/'
@@ -1229,6 +1240,7 @@ export interface FileRouteTypes {
     | '/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
     | '/ressources/cases/download-file/$fileId'
+    | '/ressources/cases/next-unassigned/$caseId'
     | '/ressources/lists/download-csv-file/$listId'
     | '/client-detail'
     | '/continuous-screening'
@@ -1334,6 +1346,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/user-scoring/overview'
     | '/ressources/cases/download-data/$caseId'
     | '/ressources/cases/download-file/$fileId'
+    | '/ressources/cases/next-unassigned/$caseId'
     | '/ressources/lists/download-csv-file/$listId'
     | '/_app/_builder/cases/'
     | '/_app/_builder/client-detail/'
@@ -1409,6 +1422,7 @@ export interface RootRouteChildren {
   RessourcesDataExportOrgRoute: typeof RessourcesDataExportOrgRoute
   RessourcesCasesDownloadDataCaseIdRoute: typeof RessourcesCasesDownloadDataCaseIdRoute
   RessourcesCasesDownloadFileFileIdRoute: typeof RessourcesCasesDownloadFileFileIdRoute
+  RessourcesCasesNextUnassignedCaseIdRoute: typeof RessourcesCasesNextUnassignedCaseIdRoute
   RessourcesListsDownloadCsvFileListIdRoute: typeof RessourcesListsDownloadCsvFileListIdRoute
   RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute: typeof RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute
   RessourcesScreeningsDownloadScreeningIdFileIdRoute: typeof RessourcesScreeningsDownloadScreeningIdFileIdRoute
@@ -1660,6 +1674,13 @@ declare module '@tanstack/react-router' {
       path: '/ressources/lists/download-csv-file/$listId'
       fullPath: '/ressources/lists/download-csv-file/$listId'
       preLoaderRoute: typeof RessourcesListsDownloadCsvFileListIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ressources/cases/next-unassigned/$caseId': {
+      id: '/ressources/cases/next-unassigned/$caseId'
+      path: '/ressources/cases/next-unassigned/$caseId'
+      fullPath: '/ressources/cases/next-unassigned/$caseId'
+      preLoaderRoute: typeof RessourcesCasesNextUnassignedCaseIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ressources/cases/download-file/$fileId': {
@@ -2775,6 +2796,8 @@ const rootRouteChildren: RootRouteChildren = {
     RessourcesCasesDownloadDataCaseIdRoute,
   RessourcesCasesDownloadFileFileIdRoute:
     RessourcesCasesDownloadFileFileIdRoute,
+  RessourcesCasesNextUnassignedCaseIdRoute:
+    RessourcesCasesNextUnassignedCaseIdRoute,
   RessourcesListsDownloadCsvFileListIdRoute:
     RessourcesListsDownloadCsvFileListIdRoute,
   RessourcesAnnotationsDownloadFileAnnotationIdFileIdRoute:
