@@ -309,8 +309,14 @@ function StringLink() {
   const result = tryCatch(() => new URL(value));
   if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <span>{value}</span>;
   return (
-    <a className="text-purple-primary" href={result.value.href}>
-      {value}
+    <a
+      className="text-purple-primary inline-flex items-center gap-0.5"
+      href={result.value.href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span>{value}</span>
+      <Icon icon="north-east" className="size-3 shrink-0" />
     </a>
   );
 }
