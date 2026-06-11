@@ -43,7 +43,7 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformM
       <Collapsible.Content>
         <div className="text-s flex flex-col gap-6 p-4">
           {entitySchema === 'person' && entity.datasets?.length ? (
-            <div className="grid grid-cols-[168px_1fr] gap-2">
+            <div className="grid grid-cols-[146px_1fr] gap-2">
               <div className="font-bold">{t('screenings:match.datasets.title')}</div>
               <div>
                 <ul>

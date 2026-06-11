@@ -6,7 +6,7 @@ export const MemberShip = ({ membershipMember }: { membershipMember: MembershipM
 
   return (
     <>
-      <div className="grid grid-cols-[168px_1fr] gap-2">
+      <div className="grid grid-cols-[146px_1fr] gap-2">
         {membershipMember?.map((membership, idx) => {
           return (
             <div key={`membership-${membership.id}-${idx}`} className="contents">

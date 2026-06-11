@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { Tag } from '../Tag/Tag';
 import { ExpandableGroupTagLine } from './ExpandableGroupTagLine';
@@ -18,35 +18,56 @@ function makeItems(count = labels.length) {
   ));
 }
 
+function mockLayoutWidths({ containerWidth, childWidth }: { containerWidth: number; childWidth: number }) {
+  vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
+    if (this.classList.contains('relative') && this.classList.contains('min-w-0')) {
+      return containerWidth;
+    }
+    return childWidth;
+  });
+  vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockImplementation(function (this: HTMLElement) {
+    return childWidth;
+  });
+}
+
 describe('ExpandableGroupTagLine', () => {
-  // In jsdom every element reports an offsetWidth of 0, so the overflow
-  // calculation keeps a single visible item and collapses the rest behind the
-  // "more" button. This lets us exercise the expand/collapse behaviour.
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
 
   it('should render successfully', () => {
     render(<ExpandableGroupTagLine items={makeItems()} />);
 
-    // Every item is also mirrored in the (aria-hidden) ghost row used for
-    // measuring, so each label is present at least once.
+    for (const label of labels) {
+      expect(screen.getAllByText(label).length).toBeGreaterThan(0);
+    }
+  });
+
+  it('should show all items when container width is not yet measurable', () => {
+    render(<ExpandableGroupTagLine items={makeItems()} />);
+
+    expect(screen.queryByText(/^\+\d+$/)).not.toBeInTheDocument();
     for (const label of labels) {
       expect(screen.getAllByText(label).length).toBeGreaterThan(0);
     }
   });
 
   it('should show the default overflow "more" button when items do not fit', () => {
+    mockLayoutWidths({ containerWidth: 100, childWidth: 50 });
     render(<ExpandableGroupTagLine items={makeItems()} />);
 
-    // 4 items, 1 visible => overflow of 3.
     expect(screen.getByText('+3')).toBeInTheDocument();
   });
 
   it('should not render the "more" button when a single item fits', () => {
+    mockLayoutWidths({ containerWidth: 400, childWidth: 50 });
     render(<ExpandableGroupTagLine items={makeItems(1)} />);
 
     expect(screen.queryByText(/^\+\d+$/)).not.toBeInTheDocument();
   });
 
   it('should expand to reveal all items and hide the "more" button on click', async () => {
+    mockLayoutWidths({ containerWidth: 100, childWidth: 50 });
     const user = userEvent.setup();
     render(<ExpandableGroupTagLine items={makeItems()} />);
 
@@ -56,6 +77,7 @@ describe('ExpandableGroupTagLine', () => {
   });
 
   it('should collapse back when the "less" button is clicked', async () => {
+    mockLayoutWidths({ containerWidth: 100, childWidth: 50 });
     const user = userEvent.setup();
     render(
       <ExpandableGroupTagLine
@@ -76,6 +98,7 @@ describe('ExpandableGroupTagLine', () => {
   });
 
   it('should use a custom "more" button when provided', () => {
+    mockLayoutWidths({ containerWidth: 100, childWidth: 50 });
     render(
       <ExpandableGroupTagLine
         items={makeItems()}

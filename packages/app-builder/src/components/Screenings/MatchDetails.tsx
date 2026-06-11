@@ -1,5 +1,11 @@
 import { type PropertyForSchema } from '@app-builder/constants/screening-entity';
-import { type ScreeningMatch, type ScreeningSanctionEntity } from '@app-builder/models/screening';
+import {
+  type FamilyPersonEntity,
+  type FamilyRelationshipEntry,
+  type FamilyRelativeEntity,
+  type ScreeningMatch,
+  type ScreeningSanctionEntity,
+} from '@app-builder/models/screening';
 import { ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -31,6 +37,20 @@ const sanctionProps = [
   'sourceUrl',
 ] satisfies PropertyForSchema<'Sanction'>[];
 
+function relationshipKey({ source, value }: FamilyRelationshipEntry) {
+  return `${source}:${value}`;
+}
+
+function dedupeRelationships(entries: FamilyRelationshipEntry[]) {
+  const seen = new Set<string>();
+  return entries.filter((entry) => {
+    const key = relationshipKey(entry);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export function MatchDetails({ entity, before, highlightText }: MatchDetailsProps) {
   const { t } = useTranslation(screeningsI18n);
   const [selectedSanction, setSelectedSanction] = useState<ScreeningSanctionEntity | null>(null);
@@ -39,43 +59,108 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
 
   const deduplicatedEntity = useMemo(() => {
     if (entity.schema !== 'Person') return entity;
-    // family person & relative
-    const familyPersonIds = new Set(entity.properties?.familyPerson?.flatMap(({ properties }) => properties?.person));
-    if (!familyPersonIds.size) return entity;
-    const familyRelative = entity.properties.familyRelative?.filter(
-      ({ properties }) => !properties.relative?.some((relativeId) => familyPersonIds.has(relativeId)),
-    );
-    // assocations
-    const associateIds = new Set(
-      entity.properties?.associations?.flatMap(({ properties }) => properties?.person?.map((p) => p.id)),
-    );
-    const ignored: Array<{ id: string; relationship: string[] }> = [];
-    const associations = entity.properties?.associations?.filter(({ properties }) => {
-      if (!properties?.person) return false;
-      if (properties.person?.some((p) => associateIds.has(p.id))) {
-        const personId = properties.person?.find((p) => associateIds.has(p.id))?.id;
-        associateIds.delete(personId);
-        return true;
-      }
-      properties.person.forEach((p) => ignored.push({ id: p.id, relationship: properties.relationship! }));
-      return false;
-    });
-    // complete relationships of original associations with ignored relationships (only once)
-    ignored.forEach((person) => {
-      const association = entity.properties?.associations?.find(({ properties }) =>
-        properties?.person?.some((p) => p.id === person.id),
+
+    let familyPerson = entity.properties.familyPerson;
+    let familyRelative = entity.properties.familyRelative;
+
+    if (entity.properties.familyPerson?.length) {
+      const familyPersonIds = new Set(
+        entity.properties.familyPerson.flatMap(({ properties }) => properties.person ?? []),
       );
-      if (association) {
-        const relationships = new Set(association.properties.relationship ?? []);
-        person.relationship.forEach((r) => relationships.add(r));
-        association.properties.relationship = Array.from(relationships);
-      }
-    });
+      const ignoredFamilyRelative: Array<{ relativePersonId: string; relationship: string[] }> = [];
+
+      familyRelative = entity.properties.familyRelative?.filter(({ properties }) => {
+        const matchingPersonId = properties.relative?.find((relativeId) => familyPersonIds.has(relativeId));
+        if (matchingPersonId) {
+          if (properties.relationship?.length) {
+            properties.person?.forEach((person) => {
+              ignoredFamilyRelative.push({
+                relativePersonId: person.id,
+                relationship: properties.relationship!,
+              });
+            });
+          }
+          return false;
+        }
+        return true;
+      });
+
+      familyPerson = entity.properties.familyPerson.map((entry) => ({
+        ...entry,
+        properties: {
+          ...entry.properties,
+          relationships: dedupeRelationships(
+            (entry.properties.relationship ?? []).map((value) => ({
+              value,
+              source: 'familyPerson' as const,
+            })),
+          ),
+        },
+      })) as FamilyPersonEntity[];
+
+      ignoredFamilyRelative.forEach(({ relativePersonId, relationship }) => {
+        const familyPersonEntry = familyPerson?.find(({ properties }) =>
+          properties.relative?.some((relative) => relative.id === relativePersonId),
+        );
+        if (!familyPersonEntry) return;
+
+        familyPersonEntry.properties.relationships = dedupeRelationships([
+          ...(familyPersonEntry.properties.relationships ?? []),
+          ...relationship.map((value) => ({ value, source: 'familyRelative' as const })),
+        ]);
+
+        const relationshipValues = new Set(familyPersonEntry.properties.relationship ?? []);
+        relationship.forEach((value) => relationshipValues.add(value));
+        familyPersonEntry.properties.relationship = Array.from(relationshipValues);
+      });
+
+      familyRelative = familyRelative?.map((entry) => ({
+        ...entry,
+        properties: {
+          ...entry.properties,
+          relationships: (entry.properties.relationship ?? []).map((value) => ({
+            value,
+            source: 'familyRelative' as const,
+          })),
+        },
+      })) as FamilyRelativeEntity[];
+    }
+
+    let associations = entity.properties.associations;
+    if (entity.properties.associations?.length) {
+      const associateIds = new Set(
+        entity.properties.associations.flatMap(({ properties }) => properties.person?.map((p) => p.id) ?? []),
+      );
+      const ignoredAssociation: Array<{ id: string; relationship: string[] }> = [];
+
+      associations = entity.properties.associations.filter(({ properties }) => {
+        if (!properties.person) return false;
+        if (properties.person.some((p) => associateIds.has(p.id))) {
+          const personId = properties.person.find((p) => associateIds.has(p.id))?.id;
+          if (personId) associateIds.delete(personId);
+          return true;
+        }
+        properties.person.forEach((p) =>
+          ignoredAssociation.push({ id: p.id, relationship: properties.relationship ?? [] }),
+        );
+        return false;
+      });
+
+      ignoredAssociation.forEach((person) => {
+        const association = associations?.find(({ properties }) => properties.person?.some((p) => p.id === person.id));
+        if (association) {
+          const relationships = new Set(association.properties.relationship ?? []);
+          person.relationship.forEach((r) => relationships.add(r));
+          association.properties.relationship = Array.from(relationships);
+        }
+      });
+    }
 
     return {
       ...entity,
       properties: {
         ...entity.properties,
+        familyPerson,
         familyRelative,
         associations,
       },

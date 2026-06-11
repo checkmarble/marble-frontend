@@ -1,6 +1,7 @@
 import {
   createPropertyTransformer,
   getSanctionEntityProperties,
+  IconDot,
   isPropertyListed,
   type PropertyForSchema,
   type ScreeningEntityProperty,
@@ -9,7 +10,6 @@ import { type OpenSanctionEntity } from '@app-builder/models/screening';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon } from 'ui-icons';
 import { screeningsI18n } from './screenings-i18n';
 
 export function EntityProperties<T extends OpenSanctionEntity>({
@@ -75,14 +75,12 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                   {values.map((v, i) => (
                     <Fragment key={i}>
                       <TransformProperty property={property} value={v} />
-                      {i === values.length - 1 || property === 'address' ? null : (
-                        <Icon icon="dot" className="text-grey-secondary opacity-50 size-1.5 mx-1 inline-block" />
-                      )}
+                      {i === values.length - 1 || property === 'address' ? null : <IconDot spaced />}
                     </Fragment>
                   ))}
                   {restItemsCount > 0 ? (
                     <>
-                      <span className="mx-1">·</span>
+                      {isPropertyListed(property) ? null : <IconDot spaced />}
                       <button
                         onClick={(e) => {
                           e.preventDefault();

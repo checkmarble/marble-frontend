@@ -1,88 +1,139 @@
+import { StringCodeComponent } from '@app-builder/components/Data/DataVisualisation/DataField';
+import { IconDot } from '@app-builder/constants/screening-entity';
 import { AssociationEntity } from '@app-builder/models/screening';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { ExpandableGroupTagLine } from 'ui-design-system';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
-import { TopicTag } from '../TopicTag';
+import { isDisplayableTopic, TopicTag } from '../TopicTag';
 
-const MAX_ASSOCIATIONS = 50;
+const MAX_ASSOCIATIONS = 5;
+
+type AssociationRow = {
+  key: string;
+  association: AssociationEntity;
+  id: string;
+  properties: NonNullable<AssociationEntity['properties']['person']>[number]['properties'];
+};
+
+function flattenAssociations(associations: AssociationEntity[]): AssociationRow[] {
+  const rows: AssociationRow[] = [];
+
+  associations.forEach((association, associationIndex) => {
+    association.properties.person?.forEach((person, idx) => {
+      if (!person.properties?.name?.[0]) return;
+      rows.push({
+        key: `person-${associationIndex}-${person.id}-${idx}`,
+        association,
+        id: person.id,
+        properties: person.properties,
+      });
+    });
+  });
+
+  return rows;
+}
 
 export const Associations = ({ associations }: { associations: AssociationEntity[] | undefined }) => {
-  const { t } = useTranslation(['screenings']);
+  const { t } = useTranslation(['screenings', 'common']);
+  const [showAll, setShowAll] = useState(false);
 
-  if (!associations || associations.length === 0) return null;
+  const rows = useMemo(() => (associations ? flattenAssociations(associations) : []), [associations]);
+  const hiddenCount = Math.max(0, rows.length - MAX_ASSOCIATIONS);
+  const visibleRows = showAll ? rows : rows.slice(0, MAX_ASSOCIATIONS);
+
+  if (rows.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-[168px_1fr] gap-2">
-      {associations.slice(0, MAX_ASSOCIATIONS).map((association, associationIndex) => {
-        return association.properties.person?.map((person: any, idx: number) => {
-          const { id, properties } = person;
-          if (!properties?.name?.[0]) return null;
-          const rel =
-            association.properties.relationship
-              ?.map((relation: string) =>
-                t(`screenings:relation.${R.toCamelCase(relation)}.label`, {
-                  defaultValue: relation,
-                }),
-              )
-              .join(' · ') ?? t('screenings:match.family.unknown_relationship');
+    <ul className="grid grid-cols-[146px_1fr] gap-2">
+      {visibleRows.map((row, rowIndex) => {
+        const { key, association, id, properties } = row;
+        const isFirstElement = rowIndex === 0;
 
-          const isFirstElement = associationIndex === 0 && idx === 0;
+        const rel = association.properties.relationship?.map((relation: string) =>
+          t(`screenings:relation.${R.toCamelCase(relation)}.label`, {
+            defaultValue: relation,
+          }),
+        );
 
-          return (
-            <div key={`person-${associationIndex}-${id}-${idx}`} className="contents">
-              <div className="font-semibold">
-                {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.associations.title')}</div>}
-              </div>
-              <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-surface-card">
-                <div className="flex flex-col gap-2">
-                  {properties.caption?.length > 0 ? (
-                    <div className="text-sm text-grey-70 font-medium">{properties.caption}</div>
-                  ) : (
-                    <div className="col-span-full flex w-full flex-wrap gap-1">
-                      <span>{properties.alias?.[0] ?? properties.name?.[0]}</span>
-                    </div>
-                  )}
-                  <div className="text-sm text-grey-70 font-medium">{rel}</div>
-                  {properties.topics?.length ? (
-                    <div className="col-span-full flex w-full flex-wrap gap-1">
-                      {getFilteredAndSortedTopics(properties.topics).map((topic: string) => (
-                        <TopicTag key={`${id}-${topic}`} topic={topic} />
-                      ))}
-                    </div>
-                  ) : null}
-                  {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (
-                    <div className="col-span-full flex w-full flex-col gap-1">
-                      <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
-                      <ul className="list-disc list-inside pl-2">
-                        {association.properties.sourceUrl.map((url, urlIdx) => (
-                          <li key={`source-${id}-${urlIdx}`}>
-                            <a
-                              href={url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-purple-primary hover:text-purple-75 underline"
-                            >
-                              {url}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
+        const tags = properties.topics?.length
+          ? getFilteredAndSortedTopics(properties.topics)
+              .filter(isDisplayableTopic)
+              .map((topic: string) => <TopicTag key={`${id}-${topic}`} topic={topic} />)
+          : [];
+
+        const expandableItems = [
+          <IconDot key="dot-1" dark spaced />,
+          properties.caption?.length > 0 ? (
+            <span key="caption" className="text-sm text-grey-70 shrink-0 font-medium">
+              {properties.caption}
+            </span>
+          ) : (
+            <span key="alias" className="shrink-0">
+              {properties.alias?.[0] ?? properties.name?.[0]}
+            </span>
+          ),
+          <IconDot key="dot-2" />,
+          rel ? (
+            <StringCodeComponent key="rel">
+              {rel?.map((r, index) => (
+                <span key={r}>
+                  {r}
+                  {index < rel.length - 1 ? <IconDot spaced /> : null}
+                </span>
+              ))}
+            </StringCodeComponent>
+          ) : (
+            <StringCodeComponent key="rel" value={t('screenings:match.family.unknown_relationship')} />
+          ),
+          <IconDot key="dot-3" />,
+          ...tags,
+        ];
+
+        return (
+          <li key={key} className="contents">
+            <div className="font-semibold">
+              {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.associations.title')}</div>}
             </div>
-          );
-        });
+            <div className="min-w-0">
+              <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" />
+
+              {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (
+                <span className="col-span-full flex w-full flex-col gap-1">
+                  <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
+                  <ul className="list-disc list-inside pl-2">
+                    {association.properties.sourceUrl.map((url, urlIdx) => (
+                      <li key={`source-${id}-${urlIdx}`}>
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-purple-primary hover:text-purple-75 underline"
+                        >
+                          {url}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </span>
+              )}
+            </div>
+          </li>
+        );
       })}
-      {associations.length > MAX_ASSOCIATIONS && (
-        <div className="contents">
+      {hiddenCount > 0 && !showAll && (
+        <li className="contents">
           <span />
-          <div className="font-semibold text-grey-secondary border border-grey-secondary rounded-sm p-2 mx-2 text-center">
-            {t('screenings:match.associations.more', { count: associations.length - MAX_ASSOCIATIONS })}
-          </div>
-        </div>
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover w-fit"
+          >
+            {t('common:more_remains', { count: hiddenCount })}
+          </button>
+        </li>
       )}
-    </div>
+    </ul>
   );
 };
