@@ -417,6 +417,56 @@
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
+/screenings/freeform-search/{id}/save:
+  post:
+    tags:
+      - Screening
+    summary: Manually save a freeform search and its results
+    operationId: saveFreeformSearch
+    parameters:
+      - name: id
+        description: ID of the freeform search to save
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: empty body on save
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/screenings/freeform-search/{id}:
+  get:
+    tags:
+      - Screening
+    summary: Get a freeform search and its results
+    operationId: getFreeformSearch
+    parameters:
+      - name: id
+        description: ID of the freeform search to retrieve
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The freeform search and its matches
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreeningFreeformSearchDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 
 components:
   schemas:
@@ -1008,6 +1058,7 @@ components:
         - created_at
         - search_input
         - search_config
+        - is_saved
       properties:
         id:
           type: string
@@ -1025,6 +1076,12 @@ components:
           $ref: '#/components/schemas/ScreeningFreeformSearchInputDto'
         search_config:
           $ref: '#/components/schemas/ScreeningFreeformSearchConfigDto'
+        is_saved:
+          type: boolean
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreeningMatchDto'
     ScreeningFreeformSearchInputDto:
       type: object
       required:
