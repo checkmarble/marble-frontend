@@ -1,5 +1,5 @@
 ARG BUN_IMAGE=oven/bun:1.3
-ARG RUNTIME_IMAGE=gcr.io/distroless/nodejs22-debian12:nonroot
+ARG RUNTIME_IMAGE=oven/bun:1.3-distroless
 # ---- Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-dev
 WORKDIR /usr/src/app
@@ -72,8 +72,10 @@ COPY packages/tests/package.json ./packages/tests/
 RUN --mount=type=cache,target=/root/.bun \
     bun install --production --frozen-lockfile
 
+RUN rm -rf /usr/src/app/node_modules/.bun
+
 # ---- Runtime stage ---- (uses prod deps)
-FROM ${BUN_IMAGE} AS app-builder
+FROM ${RUNTIME_IMAGE} AS app-builder
 WORKDIR /prod/app-builder
 
 ENV NODE_ENV=development
@@ -94,4 +96,4 @@ COPY --from=build /usr/src/app/packages/app-builder/.output ./.output
 COPY --from=deps-prod /usr/src/app/node_modules ./node_modules
 
 EXPOSE $PORT
-CMD ["bun", ".output/server/index.mjs"]
+CMD [".output/server/index.mjs"]
