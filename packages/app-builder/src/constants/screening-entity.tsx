@@ -1,6 +1,15 @@
+import {
+  DateBirthdateComponent,
+  StringCodeComponent,
+  StringCountryComponent,
+  StringEmailComponent,
+  StringPhoneComponent,
+} from '@app-builder/components/Data/DataVisualisation/DataField';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { HighlightText } from '@app-builder/components/Screenings/HighlightText';
 import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
+import { match } from 'ts-pattern';
+import { Icon } from 'ui-icons';
 
 export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<
@@ -140,49 +149,66 @@ const schemaInheritence = {
   MembershipMember: null,
 } satisfies Record<OpenSanctionEntitySchema, OpenSanctionEntitySchema | null>;
 
-const propertyMetadata = {
-  address: { type: 'string' },
+type PropertyFormat =
+  | 'monospace'
+  | 'date'
+  | 'dateTime'
+  | 'dateOfBirth'
+  | 'country'
+  | 'countryFlag'
+  | 'address'
+  | 'position'
+  | 'email'
+  | 'phone';
+
+type PropertyMetadata = {
+  type: PropertyDataType;
+  format?: PropertyFormat;
+};
+
+const propertyMetadata: Record<ScreeningEntityProperty, PropertyMetadata> = {
+  address: { type: 'string', format: 'address' },
   alias: { type: 'string' },
   appearance: { type: 'string' },
-  birthDate: { type: 'date' },
-  citizenship: { type: 'country' },
+  birthDate: { type: 'string', format: 'dateOfBirth' },
+  citizenship: { type: 'string', format: 'country' },
   classification: { type: 'string' },
-  country: { type: 'country' },
-  createdAt: { type: 'date' },
-  deathDate: { type: 'date' },
+  country: { type: 'string', format: 'country' },
+  createdAt: { type: 'string', format: 'dateTime' },
+  deathDate: { type: 'string', format: 'date' },
   description: { type: 'string' },
-  dissolutionDate: { type: 'date' },
-  dunsCode: { type: 'string' },
+  dissolutionDate: { type: 'string', format: 'date' },
+  dunsCode: { type: 'string', format: 'monospace' },
   education: { type: 'string' },
-  email: { type: 'string' },
+  email: { type: 'string', format: 'email' },
   ethnicity: { type: 'string' },
   eyeColor: { type: 'string' },
   fatherName: { type: 'string' },
   firstName: { type: 'string' },
-  gender: { type: 'string' },
+  gender: { type: 'string', format: 'monospace' },
   hairColor: { type: 'string' },
   height: { type: 'string' },
   icijId: { type: 'string' },
-  idNumber: { type: 'string' },
-  incorporationDate: { type: 'date' },
+  idNumber: { type: 'string', format: 'monospace' },
+  incorporationDate: { type: 'string', format: 'date' },
   innCode: { type: 'string' },
-  jurisdiction: { type: 'country' },
+  jurisdiction: { type: 'string', format: 'country' },
   keywords: { type: 'string' },
   lastName: { type: 'string' },
   legalForm: { type: 'string' },
   leiCode: { type: 'string' },
-  mainCountry: { type: 'country' },
+  mainCountry: { type: 'string', format: 'country' },
   middleName: { type: 'string' },
   motherName: { type: 'string' },
   name: { type: 'string' },
   nameSuffix: { type: 'string' },
-  nationality: { type: 'country' },
+  nationality: { type: 'string', format: 'country' },
   notes: { type: 'string' },
   npiCode: { type: 'string' },
   ogrnCode: { type: 'string' },
   okpoCode: { type: 'string' },
   opencorporatesUrl: { type: 'url' },
-  passportNumber: { type: 'string' },
+  passportNumber: { type: 'string', format: 'monospace' },
   phone: { type: 'string' },
   political: { type: 'string' },
   position: { type: 'string' },
@@ -208,13 +234,15 @@ const propertyMetadata = {
   wikidataId: { type: 'wikidataId' },
   authority: { type: 'string' },
   authorityId: { type: 'string' },
-  startDate: { type: 'date' },
-  endDate: { type: 'date' },
+  startDate: { type: 'string', format: 'date' },
+  endDate: { type: 'string', format: 'date' },
   programId: { type: 'string' },
   programUrl: { type: 'url' },
   reason: { type: 'string' },
-  listingDate: { type: 'date' },
-} satisfies Record<ScreeningEntityProperty, { type: PropertyDataType }>;
+  listingDate: { type: 'string', format: 'dateTime' },
+};
+
+export const propertyMetadataList: Array<keyof typeof propertyMetadata> = ['address'];
 
 export function getSanctionEntityProperties(schema: OpenSanctionEntitySchema) {
   let currentSchema: OpenSanctionEntitySchema | null = schema;
@@ -228,44 +256,33 @@ export function getSanctionEntityProperties(schema: OpenSanctionEntitySchema) {
   return properties;
 }
 
-export function createPropertyTransformer(ctx: { language: string; formatLanguage: string; highlightText?: string }) {
-  const intlCountry = new Intl.DisplayNames(ctx.language, { type: 'region' });
-  const intlDate = new Intl.DateTimeFormat(ctx.formatLanguage, {
-    dateStyle: 'short',
-    timeStyle: undefined,
-  });
+export function isPropertyListed(property: ScreeningEntityProperty) {
+  return propertyMetadataList.includes(property);
+}
 
+export function createPropertyTransformer(ctx: { language: string; formatLanguage: string; highlightText?: string }) {
   return function TransformProperty({ property, value }: { property: ScreeningEntityProperty; value: string }) {
-    const dataType = propertyMetadata[property].type;
-    switch (dataType) {
+    const { type, format } = propertyMetadata[property];
+    switch (type) {
       case 'string':
-        return value.includes('\n') ? (
-          value
-            .split('\n')
-            .map((v, index) =>
-              v ? (
-                <HighlightText key={`chunk-${index}`} text={v} highlight={ctx.highlightText} asParagraph />
-              ) : (
-                <br key={`chunk-${index}`} />
-              ),
-            )
-        ) : (
-          <HighlightText text={value} highlight={ctx.highlightText} />
-        );
+        return value.includes('\n')
+          ? value
+              .split('\n')
+              .map((v, index) =>
+                v ? (
+                  <HighlightText key={`chunk-${index}`} text={v} highlight={ctx.highlightText} asParagraph />
+                ) : (
+                  <br key={`chunk-${index}`} />
+                ),
+              )
+          : formatedValue(format, value, ctx.highlightText);
       case 'url':
         return (
           <ExternalLink className="break-all" href={value}>
             {value}
           </ExternalLink>
         );
-      case 'country':
-        try {
-          return <span>{intlCountry.of(value.toUpperCase())}</span>;
-        } catch {
-          return value.toUpperCase();
-        }
-      case 'date':
-        return <time dateTime={value}>{intlDate.format(new Date(value))}</time>;
+
       case 'wikidataId':
         return (
           <ExternalLink href={`https://wikidata.org/wiki/${value}`} className="normal-case break-all">
@@ -274,4 +291,36 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
         );
     }
   };
+}
+
+function formatedValue(format: PropertyFormat | undefined, value: string, highlightText?: string) {
+  return match(format)
+    .with('monospace', () => StringCodeComponent({ value }))
+    .with('date', 'dateTime', () => <time dateTime={value}>{value}</time>)
+    .with('dateOfBirth', () => DateBirthdateComponent({ value }))
+    .with('country', () => StringCountryComponent({ value, withCountryName: true }))
+    .with('countryFlag', () => StringCountryComponent({ value, withCountryName: false }))
+    .with('address', () => <ParseAddress address={value} />)
+    .with('position', () => <span>{value}</span>)
+    .with('email', () => StringEmailComponent({ value }))
+    .with('phone', () => StringPhoneComponent({ value }))
+    .with(undefined, () => <HighlightText text={value} highlight={highlightText} />)
+    .exhaustive();
+}
+
+function ParseAddress({ address }: { address: string }) {
+  const addressParts = address.split(',');
+  return (
+    <li className="flex items-center gap-V2-xs">
+      <Icon icon="dot" className="text-grey-secondary me-4 size-1.5" />
+      {addressParts.map((part, index) => (
+        <div key={part} className="h-full flex items-center gap-v2-xs me-v2-xs">
+          <span>{part}</span>
+          {index < addressParts.length - 1 ? (
+            <Icon icon="dot" className="text-grey-secondary opacity-50 size-1.5" />
+          ) : null}
+        </div>
+      ))}
+    </li>
+  );
 }

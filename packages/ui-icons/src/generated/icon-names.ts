@@ -43,6 +43,7 @@ export const iconNames = [
   'delete',
   'denied',
   'dns',
+  'dot',
   'dots-three',
   'download',
   'draft',

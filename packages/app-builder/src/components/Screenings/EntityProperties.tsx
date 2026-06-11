@@ -1,6 +1,7 @@
 import {
   createPropertyTransformer,
   getSanctionEntityProperties,
+  isPropertyListed,
   type PropertyForSchema,
   type ScreeningEntityProperty,
 } from '@app-builder/constants/screening-entity';
@@ -8,7 +9,7 @@ import { type OpenSanctionEntity } from '@app-builder/models/screening';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import { Icon } from 'ui-icons';
 import { screeningsI18n } from './screenings-i18n';
 
 export function EntityProperties<T extends OpenSanctionEntity>({
@@ -70,11 +71,13 @@ export function EntityProperties<T extends OpenSanctionEntity>({
             </span>
             <span className="wrap-break-word">
               {values.length > 0 ? (
-                <>
+                <PropertyContainer property={property}>
                   {values.map((v, i) => (
                     <Fragment key={i}>
                       <TransformProperty property={property} value={v} />
-                      {i === values.length - 1 ? null : <span className="mx-1">·</span>}
+                      {i === values.length - 1 || property === 'address' ? null : (
+                        <Icon icon="dot" className="text-grey-secondary opacity-50 size-1.5 mx-1 inline-block" />
+                      )}
                     </Fragment>
                   ))}
                   {restItemsCount > 0 ? (
@@ -91,7 +94,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                       </button>
                     </>
                   ) : null}
-                </>
+                </PropertyContainer>
               ) : (
                 <span className="text-grey-secondary">not available</span>
               )}
@@ -102,4 +105,9 @@ export function EntityProperties<T extends OpenSanctionEntity>({
       {after}
     </div>
   );
+}
+
+function PropertyContainer({ property, children }: { property: ScreeningEntityProperty; children: ReactNode }) {
+  if (isPropertyListed(property)) return <ul>{children}</ul>;
+  return <Fragment>{children}</Fragment>;
 }
