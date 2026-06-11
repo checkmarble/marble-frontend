@@ -84,7 +84,7 @@ export function FieldsForm({
           <p className="text-s text-grey-secondary">{description ?? t('data:upload_data.fields_description')}</p>
         </div>
         {isCreateDataModelFieldAvailable && (
-          <Button variant="primary" appearance="stroked" onClick={handleAddField}>
+          <Button variant="primary" appearance="stroked" onClick={handleAddField} className="shrink-0">
             <Icon icon="plus" className="size-4" />
             {t('data:upload_data.field_add')}
           </Button>
