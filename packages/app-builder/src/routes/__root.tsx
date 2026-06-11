@@ -127,6 +127,7 @@ function RootShell({ children }: { children: ReactNode }) {
           </I18nProvider>
         </I18nextProvider>
         <script
+          suppressHydrationWarning
           nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(env)}`,
