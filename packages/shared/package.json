@@ -23,10 +23,10 @@
     "vite": "^6.2.7"
   },
   "dependencies": {
-    "@preact/signals-react": "^3.0.1",
+    "@preact/signals-react": "^3.10.1",
     "deepsignal": "^1.6.0",
     "vitest": "4.1.7",
-    "zustand": "^5.0.13"
+    "zustand": "^5.0.14"
   },
   "peerDependencies": {
     "react": "18.3.1",
