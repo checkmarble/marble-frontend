@@ -6,7 +6,6 @@ import { SnoozePanel } from '@app-builder/components/CaseManager/SnoozePanel/Sno
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { CaseReviewsModal } from '@app-builder/components/Cases/CaseReviewsModal';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
-import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -15,14 +14,11 @@ import { isNotFoundHttpError } from '@app-builder/models';
 import { type CaseReview } from '@app-builder/models/cases';
 import { type DataModelObject } from '@app-builder/models/data-model';
 import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
-import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
-import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { ClientOnly, createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn, useServerFn } from '@tanstack/react-start';
-import { getRequest } from '@tanstack/react-start/server';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
@@ -34,7 +30,6 @@ const scenarioCaseDetailLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
   .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scenarioCaseDetailLoader({ context }) {
-    const request = getRequest();
     const { cases: caseRepository, dataModelRepository, aiAssistSettings, user, entitlements } = context.authInfo;
     const { detail: caseDetail, inbox: caseInbox } = context.case;
     const caseId = caseDetail.id;
@@ -85,7 +80,6 @@ const scenarioCaseDetailLoader = createServerFn()
       inboxes: context.inboxes,
       pivots,
       entitlements,
-      isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
       mostRecentReview: review,
       isKycEnrichmentEnabled: settings.kycEnrichmentSetting.enabled,
     };
@@ -126,7 +120,6 @@ function CaseManagerIndexPage() {
     currentUser,
     currentInbox,
     entitlements,
-    isMenuExpanded,
     mostRecentReview,
     isKycEnrichmentEnabled,
     reports,
@@ -140,15 +133,7 @@ function CaseManagerIndexPage() {
     to: '/ressources/cases/next-unassigned/$caseId',
     params: { caseId: fromUUIDtoSUUID(details.id) },
   }).href;
-  const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'snooze'>('pivot');
-
-  useEffect(() => {
-    if (isMenuExpanded) {
-      leftSidebarSharp.actions.setExpanded(false);
-      setPreferencesCookie('menuExpd', false);
-    }
-  }, [isMenuExpanded, leftSidebarSharp]);
 
   return (
     <Page.Main>

@@ -12,51 +12,31 @@ type NudgeProps = {
   iconClass?: string;
   link?: string;
   kind?: Exclude<FeatureAccessLevelDto, 'allowed'>;
-  collapsed?: boolean;
 };
 
-const triggerClassName = cva('flex items-center justify-center text-white ', {
+const triggerClassName = cva('flex items-center justify-center text-white rounded-sm size-6', {
   variants: {
     kind: {
       test: 'bg-purple-primary',
       restricted: 'bg-purple-disabled',
       missing_configuration: 'bg-yellow-primary',
     },
-    collapsed: {
-      true: 'absolute top-v2-sm right-v2-sm translate-x-[50%] -translate-y-[50%] rounded-full',
-      false: 'rounded-sm size-6',
-    },
-  },
-  defaultVariants: {
-    collapsed: false,
   },
 });
 
-const iconClassName = cva('', {
-  variants: {
-    collapsed: {
-      true: 'size-2.5',
-      false: 'size-3',
-    },
-  },
-  defaultVariants: {
-    collapsed: false,
-  },
-});
-
-export const Nudge = ({ content, link, className, kind = 'restricted', iconClass, collapsed = false }: NudgeProps) => {
+export const Nudge = ({ content, link, className, kind = 'restricted', iconClass }: NudgeProps) => {
   const { t } = useTranslation(['common']);
   return (
     <HoverCard>
       <HoverCardTrigger tabIndex={-1} asChild>
-        <span className={triggerClassName({ kind, collapsed, className })}>
+        <span className={triggerClassName({ kind, className })}>
           <Icon
             icon={match<typeof kind, IconName>(kind)
               .with('restricted', () => 'lock')
               .with('test', () => 'unlock-right')
               .with('missing_configuration', () => 'warning')
               .exhaustive()}
-            className={iconClassName({ collapsed, className: iconClass })}
+            className={cn('size-3', iconClass)}
             aria-hidden
           />
         </span>

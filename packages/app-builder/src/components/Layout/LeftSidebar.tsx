@@ -1,69 +1,11 @@
-import { useTheme } from '@app-builder/contexts/ThemeContext';
-import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
-import clsx from 'clsx';
 import type * as React from 'react';
-import { createSharpFactory } from 'sharpstate';
-import { Icon } from 'ui-icons';
-
-import { SidebarButton } from '../Navigation';
-
-export const LeftSidebarSharpFactory = createSharpFactory({
-  name: 'LeftSidebar',
-  initializer: (expanded: boolean = true) => ({ expanded }),
-}).withActions({
-  toggleExpanded(api) {
-    api.value.expanded = !api.value.expanded;
-  },
-  setExpanded(api, value: boolean) {
-    api.value.expanded = value;
-  },
-});
 
 export function LeftSidebar({ children }: { children: React.ReactNode }) {
-  const isExpanded = LeftSidebarSharpFactory.select((s) => s.expanded);
-
   return (
-    <div
-      aria-expanded={isExpanded}
-      className="bg-surface-sidebar group/nav border-e-grey-border z-20 flex max-h-screen w-14 shrink-0 flex-col border-e transition-all aria-expanded:w-[235px] dark:border-e-grey-border"
-    >
-      {children}
+    <div className="group/sidebar relative w-14 max-h-screen z-20">
+      <div className="group/nav h-full w-14 bg-surface-sidebar border-e border-e-grey-border flex flex-col group-hover/sidebar:absolute group-hover/sidebar:top-0 group-hover/sidebar:left-0 group-hover/sidebar:w-58.5 transition-all delay-300 group-hover/sidebar:delay-0 motion-reduce:delay-0 motion-reduce:duration-0 group-hover/sidebar:shadow-sticky-left">
+        {children}
+      </div>
     </div>
-  );
-}
-
-export function ToggleSidebar() {
-  const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
-  const isExpanded = leftSidebarSharp.select((s) => s.expanded);
-
-  const toggleExpanded = async () => {
-    leftSidebarSharp.actions.toggleExpanded();
-    setPreferencesCookie('menuExpd', leftSidebarSharp.value.expanded);
-  };
-
-  return (
-    <SidebarButton
-      onClick={toggleExpanded}
-      labelTKey={isExpanded ? 'navigation:collapse' : 'navigation:expand'}
-      Icon={({ className, ...props }) => (
-        <Icon
-          className={clsx('rtl:rotate-180', className)}
-          icon={isExpanded ? 'left-panel-close' : 'left-panel-open'}
-          {...props}
-        />
-      )}
-    />
-  );
-}
-
-export function ToggleTheme() {
-  const { theme, toggleTheme } = useTheme();
-
-  return (
-    <SidebarButton
-      onClick={toggleTheme}
-      labelTKey={theme === 'dark' ? 'navigation:light_mode' : 'navigation:dark_mode'}
-      Icon={(props) => <Icon icon={theme === 'dark' ? 'light_mode' : 'dark_mode'} {...props} />}
-    />
   );
 }
