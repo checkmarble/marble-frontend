@@ -368,14 +368,6 @@
       - $ref: 'components.yml#/parameters/limit'
       - $ref: 'components.yml#/parameters/offset_id'
       - $ref: 'components.yml#/parameters/order'
-      - name: sorting
-        description: the field used to sort the items
-        in: query
-        required: false
-        schema:
-          type: string
-          enum:
-            - created_at
       - name: user_id
         description: filter searches by user ID
         in: query
@@ -390,8 +382,8 @@
         schema:
           type: string
           format: uuid
-      - name: is_saved
-        description: show only searches that have been manually saved
+      - name: saved_only
+        description: If true, only return searches for which results were saved
         in: query
         required: false
         schema:

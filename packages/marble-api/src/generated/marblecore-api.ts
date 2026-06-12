@@ -4184,14 +4184,13 @@ export function freeformSearch(body?: {
 /**
  * List past freeform searches
  */
-export function listFreeformSearches({ limit, offsetId, order, sorting, userId, apiKeyId, isSaved }: {
+export function listFreeformSearches({ limit, offsetId, order, userId, apiKeyId, savedOnly }: {
     limit?: number;
     offsetId?: string;
     order?: "ASC" | "DESC";
-    sorting?: "created_at";
     userId?: string;
     apiKeyId?: string;
-    isSaved?: boolean;
+    savedOnly?: boolean;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -4209,10 +4208,9 @@ export function listFreeformSearches({ limit, offsetId, order, sorting, userId, 
         limit,
         offset_id: offsetId,
         order,
-        sorting,
         user_id: userId,
         api_key_id: apiKeyId,
-        is_saved: isSaved
+        saved_only: savedOnly
     }))}`, {
         ...opts
     }));
