@@ -155,7 +155,7 @@ export function makeGetScreeningRepository() {
       const { id, matches } = await marbleCoreApiClient.freeformSearch(dto, { limit });
       return {
         id,
-        matches: R.map(matches, (match) => adaptScreeningMatchPayload(match.payload)),
+        matches: R.map(matches, (match) => adaptScreeningMatchPayload(match)),
       };
     },
     getAiSuggestions: async ({ screeningId }) => {

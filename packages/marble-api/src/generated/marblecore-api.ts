@@ -4171,7 +4171,7 @@ export function freeformSearch(body?: {
         status: 200;
         data: {
             id: string;
-            matches: ScreeningMatchDto[];
+            matches: ScreeningMatchPayloadDto[];
         };
     }>(`/screenings/freeform-search${QS.query(QS.explode({
         limit
@@ -4215,6 +4215,46 @@ export function listFreeformSearches({ limit, offsetId, order, sorting, userId, 
         is_saved: isSaved
     }))}`, {
         ...opts
+    }));
+}
+/**
+ * Get a freeform search and its results
+ */
+export function getFreeformSearch(id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningFreeformSearchDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/screenings/freeform-search/${encodeURIComponent(id)}`, {
+        ...opts
+    }));
+}
+/**
+ * Manually save a freeform search and its results
+ */
+export function saveFreeformSearch(id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/screenings/freeform-search/${encodeURIComponent(id)}/save`, {
+        ...opts,
+        method: "POST"
     }));
 }
 /**
