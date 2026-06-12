@@ -421,7 +421,7 @@
   post:
     tags:
       - Screening
-    summary: Manually save a freeform search and its results
+    summary: Manually save a freeform search and its results. Idempotent if called multiple times. Returns a 409 if the set of entities returned by the search has changed since the initial search was done.
     operationId: saveFreeformSearch
     parameters:
       - name: id
@@ -440,6 +440,8 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+      '409':
+        $ref: 'components.yml#/responses/409'
 /screenings/freeform-search/{id}:
   get:
     tags:
