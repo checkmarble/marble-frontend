@@ -225,6 +225,18 @@ export const listSavedFreeformSearchesFn = createServerFn({ method: 'GET' })
     }
   });
 
+export const getFreeformSearchFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .inputValidator(z.object({ id: z.uuid() }))
+  .handler(async ({ context, data }) => {
+    try {
+      const result = await context.authInfo.screening.getFreeformSearch(data);
+      return { success: true as const, data: result };
+    } catch {
+      return { success: false as const, error: 'Get freeform search failed' };
+    }
+  });
+
 export const getEnrichedDataFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .inputValidator(getEnrichedDataInputSchema)

@@ -6,6 +6,7 @@ import {
 import {
   type FreeformSearchInput,
   freeformSearchFn,
+  getFreeformSearchFn,
   listSavedFreeformSearchesFn,
   saveFreeformSearchFn,
 } from '@app-builder/server-fns/screenings';
@@ -67,6 +68,20 @@ export const useSavedFreeformSearchesQuery = (filters: SavedScreeningSearchFilte
     queryKey: ['screening', 'saved-searches', filters],
     queryFn: async (): Promise<ListSavedFreeformSearchesResponse> => {
       return listSavedSearches({ data: filters }) as Promise<ListSavedFreeformSearchesResponse>;
+    },
+  });
+};
+
+type GetFreeformSearchResponse =
+  | { success: true; data: { id: string; matches: ScreeningMatchPayload[] } }
+  | { success: false; error: unknown };
+
+export const useGetFreeformSearchQuery = (id: string) => {
+  const getFreeformSearch = useServerFn(getFreeformSearchFn);
+  return useQuery({
+    queryKey: ['screening', 'freeform-search', id],
+    queryFn: async (): Promise<GetFreeformSearchResponse> => {
+      return getFreeformSearch({ data: { id } }) as Promise<GetFreeformSearchResponse>;
     },
   });
 };

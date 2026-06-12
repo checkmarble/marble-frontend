@@ -58,6 +58,7 @@ export interface ScreeningRepository {
   enrichedData(args: { entityId: string }): Promise<ScreeningMatchPayload>;
   getAvailableFilters(args: { feature: AvailableFeatures }): Promise<ScreeningAvailableFiltersAdapted>;
   listSavedScreeningSearches(filters: SavedScreeningSearchFilters): Promise<SavedScreeningSearchPage>;
+  getFreeformSearch(args: { id: string }): Promise<{ id: string; matches: ScreeningMatchPayload[] }>;
 }
 
 export function makeGetScreeningRepository() {
@@ -174,6 +175,13 @@ export function makeGetScreeningRepository() {
         limit,
         order,
       });
+    },
+    getFreeformSearch: async ({ id }) => {
+      const res = await marbleCoreApiClient.getFreeformSearch(id);
+      return {
+        id: res.id,
+        matches: res.matches ? R.map(res.matches, (match) => adaptScreeningMatchPayload(match)) : [],
+      };
     },
   });
 }

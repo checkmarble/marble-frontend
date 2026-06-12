@@ -3,7 +3,7 @@ import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useGetEnrichedDataQuery } from '@app-builder/queries/screening/get-enriched-data';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Collapsible, Tag } from 'ui-design-system';
+import { Collapsible, cn, Tag } from 'ui-design-system';
 import { MatchDetails } from '../MatchDetails';
 import { screeningsI18n } from '../screenings-i18n';
 import { TopicsDisplay } from '../TopicsDisplay';
@@ -12,9 +12,10 @@ interface FreeformMatchCardProps {
   entity: ScreeningMatchPayload;
   defaultOpen?: boolean;
   searchTerm?: string;
+  background?: 'card' | 'grey';
 }
 
-export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformMatchCardProps) {
+export function FreeformMatchCard({ entity, defaultOpen, searchTerm, background }: FreeformMatchCardProps) {
   const { t } = useTranslation(screeningsI18n);
   const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
 
@@ -22,7 +23,10 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformM
 
   return (
     <Collapsible.Container defaultOpen={defaultOpen} onOpenChange={setIsOpen}>
-      <Collapsible.Title iconPosition="left">
+      <Collapsible.Title
+        iconPosition="left"
+        className={cn(background === 'grey' && 'bg-grey-background-light', background === 'card' && 'bg-surface-card')}
+      >
         <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1 flex-1">
           <span className="font-semibold">{entity.caption}</span>
 
@@ -40,7 +44,9 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformM
         </div>
       </Collapsible.Title>
 
-      <Collapsible.Content>
+      <Collapsible.Content
+        className={cn(background === 'grey' && 'bg-grey-background-light', background === 'card' && 'bg-surface-card')}
+      >
         <div className="text-s flex flex-col gap-6 p-4">
           {entitySchema === 'person' && entity.datasets?.length ? (
             <div className="grid grid-cols-[146px_1fr] gap-2">

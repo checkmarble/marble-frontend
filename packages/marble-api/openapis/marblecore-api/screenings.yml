@@ -1075,7 +1075,7 @@ components:
         matches:
           type: array
           items:
-            $ref: '#/components/schemas/ScreeningMatchDto'
+            $ref: '#/components/schemas/ScreeningMatchPayloadDto'
     ScreeningFreeformSearchInputDto:
       type: object
       required:

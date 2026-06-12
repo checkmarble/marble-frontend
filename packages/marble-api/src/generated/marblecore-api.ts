@@ -1165,7 +1165,7 @@ export type ScreeningFreeformSearchDto = {
     };
     search_config: ScreeningFreeformSearchConfigDto;
     is_saved: boolean;
-    matches?: ScreeningMatchDto[];
+    matches?: ScreeningMatchPayloadDto[];
 };
 export type OpenSanctionsUpstreamDatasetFreshnessDto = {
     version: string;

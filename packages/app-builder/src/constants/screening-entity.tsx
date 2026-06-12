@@ -13,6 +13,7 @@ import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { tryCatch } from '@app-builder/utils/tryCatch';
 import { formatDuration as dateFnsFormatDuration } from 'date-fns/formatDuration';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -314,19 +315,83 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
           : formatedValue(format, value, ctx.highlightText);
       case 'url':
         return (
-          <ExternalLink className="break-all" href={value}>
-            {value}
+          <ExternalLink className="break-all" href={value} title={value}>
+            {cleanUrl(value)}
           </ExternalLink>
         );
 
       case 'wikidataId':
         return (
           <ExternalLink href={`https://wikidata.org/wiki/${value}`} className="normal-case break-all">
-            {value}
+            {cleanUrl(value)}
           </ExternalLink>
         );
     }
   };
+}
+
+const MAX_DISPLAY_PATH_SEGMENT_LENGTH = 20;
+
+export function cleanUrl(url: string) {
+  const parsed = tryCatch(() => new URL(url));
+  if (!parsed.ok) return url;
+
+  const { origin, hostname, pathname } = parsed.value;
+
+  const cleanedPathname = match(hostname)
+    .when(
+      (host) => host === 'web.archive.org',
+      () => {
+        const archiveMatch = pathname.match(/^\/web\/(\d{14})/);
+        if (!archiveMatch) return trimLongTrailingPathSegments(pathname);
+
+        const kept = `/web/${archiveMatch[1]}`;
+        const removedSegments = pathname
+          .slice(kept.length)
+          .split('/')
+          .filter((segment) => segment.length > 0);
+        const lastRemoved = removedSegments.at(-1);
+
+        if (!lastRemoved) return kept;
+
+        return `${kept}/${segmentPreview(lastRemoved)}...`;
+      },
+    )
+    .otherwise(() => trimLongTrailingPathSegments(pathname));
+
+  return decodeUrlForDisplay(formatPathForDisplay(origin + cleanedPathname));
+}
+
+function trimLongTrailingPathSegments(pathname: string): string {
+  const segments = pathname.split('/').filter((segment) => segment.length > 0);
+  let lastRemoved: string | undefined;
+
+  while (segments.length > 0 && (segments.at(-1)?.length ?? 0) > MAX_DISPLAY_PATH_SEGMENT_LENGTH) {
+    lastRemoved = segments.pop();
+  }
+
+  if (!lastRemoved) {
+    return segments.length > 0 ? `/${segments.join('/')}` : '/';
+  }
+
+  const base = segments.length > 0 ? `/${segments.join('/')}` : '';
+  return `${base}/${segmentPreview(lastRemoved)}...`;
+}
+
+function segmentPreview(segment: string): string {
+  const decoded = tryCatch(() => decodeURIComponent(segment));
+  const value = decoded.ok ? decoded.value : segment;
+  return value.slice(0, MAX_DISPLAY_PATH_SEGMENT_LENGTH);
+}
+
+function formatPathForDisplay(pathname: string): string {
+  if (pathname === '/') return pathname;
+  return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+}
+
+function decodeUrlForDisplay(url: string): string {
+  const decoded = tryCatch(() => decodeURI(url));
+  return decoded.ok ? decoded.value : url;
 }
 
 // format values using the components of the data field component

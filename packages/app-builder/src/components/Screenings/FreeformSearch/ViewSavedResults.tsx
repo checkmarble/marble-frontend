@@ -4,7 +4,10 @@ import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-build
 import { IconDot, SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { type SavedScreeningSearch } from '@app-builder/models/screening';
-import { useSavedFreeformSearchesQuery } from '@app-builder/queries/screening/freeform-search';
+import {
+  useGetFreeformSearchQuery,
+  useSavedFreeformSearchesQuery,
+} from '@app-builder/queries/screening/freeform-search';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
@@ -15,6 +18,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Collapsible, cn, Input, MenuCommand, Separator, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import FreeformMatchCard from './FreeformMatchCard';
 
 interface StaticDateRangeFilter {
   type: 'static';
@@ -229,12 +233,7 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
       <Collapsible.Content>
         <FilterValues filter={search.search_config} />
         <QueryValues query={search.search_input} type={search.search_input.type} />
-        {/* <div className="flex flex-col gap-v2-sm">
-          {search.results.map((entity) => (
-            <FreeformMatchCard key={entity.id} entity={entity} />
-          ))}
-        </div> */}
-        <pre>{JSON.stringify(search, null, 2)}</pre>
+        <SavedResults id={search.id} />
       </Collapsible.Content>
     </Collapsible.Container>
   );
@@ -532,4 +531,15 @@ function FilterPill({
       </Button>
     </Tag>
   );
+}
+
+function SavedResults({ id }: { id: string }) {
+  const query = useGetFreeformSearchQuery(id);
+  return query.data?.success ? (
+    <div className="grid gap-v2-sm mt-v2-sm">
+      {query.data.data.matches?.map((match) => {
+        return <FreeformMatchCard key={match.id} entity={match} background="card" />;
+      })}
+    </div>
+  ) : null;
 }
