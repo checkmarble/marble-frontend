@@ -8,10 +8,9 @@ import {
   PrintResults,
   PrintSearchSummary,
 } from '@app-builder/components/Screenings/FreeformSearch/FreeformSearchPrint';
-// TODO: Uncomment when the save search and view saved results are implemented
-// import { SaveSearch } from '@app-builder/components/Screenings/FreeformSearch/SaveSearch';
 import { ViewSavedResults } from '@app-builder/components/Screenings/FreeformSearch/ViewSavedResults';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { useSaveFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
 import { normalizeListConfig } from '@app-builder/queries/screening/lists-config';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import * as Sentry from '@sentry/react';
@@ -19,6 +18,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { type Namespace } from 'i18next';
 import { useCallback, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -47,12 +47,20 @@ function ScreeningSearchIndexPage() {
   const { currentUser } = useOrganizationDetails();
   const { listConfig } = Route.useLoaderData();
   const [searchState, setSearchState] = useState<FreeformSearchState | null>(null);
-
+  const saveSearchMutation = useSaveFreeformSearchMutation();
   const userName = [currentUser.actorIdentity.firstName, currentUser.actorIdentity.lastName].filter(Boolean).join(' ');
 
   const handleSearchComplete = useCallback((state: FreeformSearchState) => {
     setSearchState(state);
   }, []);
+
+  function handleSaveSearch() {
+    if (!searchState?.inputs) return;
+    saveSearchMutation
+      .mutateAsync({ id: searchState.searchId })
+      .then(() => toast.success(t('screenings:freeform_search.save.success')))
+      .catch(() => toast.error(t('common:errors.unknown')));
+  }
 
   const hasResults = searchState !== null && searchState.results.length > 0;
 
@@ -78,7 +86,12 @@ function ScreeningSearchIndexPage() {
                     <PrintSearchSummary searchInputs={searchState.inputs} />
                     <PrintResults results={searchState.results} />
                   </PrintView>
-                  {/* <SaveSearch search={searchState} /> */}
+                  {searchState.searchId && (
+                    <Button variant="secondary" onClick={handleSaveSearch}>
+                      <Icon icon="save" className="size-4" />
+                      {t('screenings:freeform_search.save.button')}
+                    </Button>
+                  )}
                 </>
               )}
               <ViewSavedResults />

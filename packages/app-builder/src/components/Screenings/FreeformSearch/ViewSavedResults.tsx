@@ -1,32 +1,20 @@
+import { CursorPaginationButtons, usePaginationsButton } from '@app-builder/components/Decisions/PaginationButtons';
 import { DateRangeFilter } from '@app-builder/components/Filters';
 import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-builder/components/Panel/Panel';
 import { IconDot, SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
+import { type PaginationParams } from '@app-builder/models/pagination';
 import { type SavedScreeningSearch } from '@app-builder/models/screening';
 import { useSavedFreeformSearchesQuery } from '@app-builder/queries/screening/freeform-search';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
-// import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
+import { omitUndefined } from '@app-builder/utils/omit-undefined';
+import { useDebouncedCallbackRef } from '@marble/shared';
 import { ScreeningConfigBodySectionDto } from 'marble-api';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-// import { Temporal } from 'temporal-polyfill';
-import {
-  Avatar,
-  // Avatar,
-  Button,
-  Collapsible,
-  // Collapsible,
-  cn,
-  // ExpandableGroupTagLine,
-  Input,
-  MenuCommand,
-  Separator,
-  Tag,
-} from 'ui-design-system';
+import { Avatar, Button, Collapsible, cn, Input, MenuCommand, Separator, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-// import { FreeformMatchCard } from './FreeformMatchCard';
 
 interface StaticDateRangeFilter {
   type: 'static';
@@ -62,34 +50,46 @@ export const ViewSavedResults = () => {
   // const [name, setName] = useState('');
   const [dateRange, setDateRange] = useState<DateRangeFilterValue>(null);
   const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<PageSize>(25);
+  const [paginationParams, setPaginationParams] = useState<PaginationParams>({ limit: 25 });
 
-  // const applyName = useDebouncedCallbackRef((value: string) => {
-  //   setName(value);
-  //   setPage(1);
-  // }, 300);
+  const filterValues = useMemo(
+    () =>
+      omitUndefined({
+        userId: ownerId,
+        isSaved: true,
+      }),
+    [ownerId],
+  );
+
+  const applyName = useDebouncedCallbackRef((_value: string) => {
+    // setName(value);
+    setPaginationParams((prev) => ({ limit: prev.limit ?? 25 }));
+  }, 300);
+
+  const resetPagination = () => {
+    setPaginationParams((prev) => ({ limit: prev.limit ?? 25 }));
+  };
 
   // const { fromDate, toDate } = useMemo(() => toIsoRange(dateRange), [dateRange]);
-
-  const query = useSavedFreeformSearchesQuery();
-
-  // {
-  //   name: name || undefined,
-  //   fromDate,
-  //   toDate,
-  //   ownerId,
-  //   page,
-  //   limit,
-  // });
+  const query = useSavedFreeformSearchesQuery(
+    omitUndefined({
+      ...filterValues,
+      ...paginationParams,
+    }),
+  );
 
   const data = query.data?.success ? query.data.data : undefined;
   const items = data?.data ?? [];
-  const hasNext = data?.has_next_page ?? false;
+  const hasNextPage = data?.has_next_page ?? false;
+  const limit = (paginationParams.limit ?? 25) as PageSize;
 
-  const rangeStart = items.length > 0 ? (page - 1) * limit + 1 : 0;
-  const rangeEnd = (page - 1) * limit + items.length;
-  const hasPrev = page > 1;
+  const paginationItems = useMemo(() => items.map((item) => ({ id: item.id, createdAt: item.created_at })), [items]);
+
+  const paginationState = usePaginationsButton({
+    filterValues,
+    items: paginationItems,
+    initialOffsetId: paginationParams.offsetId,
+  });
 
   return (
     <>
@@ -120,21 +120,21 @@ export const ViewSavedResults = () => {
               value={nameInput}
               onChange={(e) => {
                 setNameInput(e.currentTarget.value);
-                // applyName(e.currentTarget.value);
+                applyName(e.currentTarget.value);
               }}
             />
             <PeriodFilter
               value={dateRange}
               onChange={(v) => {
                 setDateRange(v);
-                setPage(1);
+                resetPagination();
               }}
             />
             <OwnerFilter
               value={ownerId}
               onChange={(v) => {
                 setOwnerId(v);
-                setPage(1);
+                resetPagination();
               }}
             />
           </div>
@@ -164,19 +164,25 @@ export const ViewSavedResults = () => {
           </PanelContent>
 
           <PanelFooter>
-            <ViewSavedResultsPaginationRow
-              limit={limit}
-              onLimitChange={(l) => {
-                setLimit(l);
-                setPage(1);
-              }}
-              rangeStart={rangeStart}
-              rangeEnd={rangeEnd}
-              hasPrev={hasPrev}
-              hasNext={hasNext}
-              onPrev={() => setPage((p) => Math.max(1, p - 1))}
-              onNext={() => setPage((p) => p + 1)}
-            />
+            <div className="flex w-full items-center justify-between">
+              <SavedResultsPageSizeSelector
+                limit={limit}
+                onLimitChange={(pageSize) => setPaginationParams({ limit: pageSize })}
+              />
+              <CursorPaginationButtons
+                items={paginationItems}
+                onPaginationChange={(newPaginationParams) =>
+                  setPaginationParams((prev) => ({
+                    limit: prev.limit ?? 25,
+                    ...newPaginationParams,
+                  }))
+                }
+                paginationState={paginationState}
+                boundariesDisplay="dates"
+                hasNextPage={hasNextPage}
+                itemsPerPage={limit}
+              />
+            </div>
           </PanelFooter>
         </PanelContainer>
       </PanelRoot>
@@ -213,7 +219,11 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
           <IconDot spaced />
           <span>{formatDateTimeWithoutPresets(search.created_at, { language, dateStyle: 'short' })}</span>
           <IconDot spaced />
-          {search.is_saved ? <span></span> : <span>{t('screenings:freeform_search.saved_results.not_saved')}</span>}
+          {search.is_saved ? (
+            <span>{search?.matches?.length ?? 0}</span>
+          ) : (
+            <span>{t('screenings:freeform_search.saved_results.not_saved')}</span>
+          )}
         </div>
       </Collapsible.Title>
       <Collapsible.Content>
@@ -224,7 +234,7 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
             <FreeformMatchCard key={entity.id} entity={entity} />
           ))}
         </div> */}
-        {/* <pre>{JSON.stringify(search, null, 2)}</pre> */}
+        <pre>{JSON.stringify(search, null, 2)}</pre>
       </Collapsible.Content>
     </Collapsible.Container>
   );
@@ -287,84 +297,16 @@ function QueryValues({ query, type }: { query: SavedScreeningSearch['search_inpu
           {t(`screenings:entity.schema.${type.toLocaleLowerCase()}`)}
         </Tag>
       )}
-      {entityTypeFields.map((field) => (
-        <Tag color="white" appearance="monospace" className="gap-v2-xs" key={field}>
-          <span>{t(`screenings:entity.property.${field}.short`)}</span>:<span>{query.query[field]?.join(', ')}</span>
-        </Tag>
-      ))}
+      {entityTypeFields.map((field) =>
+        query.query[field] ? (
+          <Tag color="white" appearance="monospace" className="gap-v2-xs" key={field}>
+            <span>{t(`screenings:entity.property.${field}.short`)}</span>:<span>{query.query[field].join(', ')}</span>
+          </Tag>
+        ) : null,
+      )}
     </div>
   );
 }
-
-// const inputTagOverflowButtonClassName = 'cursor-pointer shrink-0';
-
-// function InputTags({ input }: { input: SavedScreeningSearch['inputs'] }) {
-//   const { t } = useTranslation(['screenings']);
-
-//   const tagItems = useMemo(() => {
-//     const items: ReactNode[] = [];
-
-//     if (input.entityType) {
-//       items.push(
-//         <InputTag
-//           key="entity"
-//           label={`${t('screenings:freeform_search.saved_results.entity')}:`}
-//           values={input.entityType}
-//         />,
-//       );
-//     }
-
-//     const datasets = input.datasets.filter((d) => d.indexOf(':') <= 0);
-//     if (datasets.length > 0) {
-//       items.push(<InputTag key="datasets" values={datasets} />);
-//     }
-
-//     for (const [field, value] of Object.entries(input.fields)) {
-//       if (value) {
-//         items.push(
-//           <InputTag key={field} label={`${t(`screenings:entity.property.${field}.short`)}:`} values={value} />,
-//         );
-//       }
-//     }
-
-//     return items;
-//   }, [input, t]);
-
-//   if (tagItems.length === 0) return null;
-
-//   return (
-//     <ExpandableGroupTagLine
-//       items={tagItems}
-//       moreButton={(overflow, onExpand) => (
-//         <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onExpand}>
-//           +{overflow}
-//         </Tag>
-//       )}
-//       lessButton={(onCollapse) => (
-//         <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onCollapse}>
-//           <Icon icon="minus" className="size-3" />
-//         </Tag>
-//       )}
-//     />
-//   );
-// }
-
-// function InputTag({ label, values }: { label?: string; values: string | string[] }) {
-//   if (values.length === 0) return null;
-//   return (
-//     <Tag color="white" appearance="monospace" className="gap-v2-xs">
-//       {label ? <span>{label}</span> : null}
-//       {Array.isArray(values) ? (
-//         <span>
-//           <span>{values.slice(0, 2).join(', ')}</span>
-//           {values.length > 2 ? <span>{` +${values.length - 2}`}</span> : null}
-//         </span>
-//       ) : (
-//         <span>{values}</span>
-//       )}
-//     </Tag>
-//   );
-// }
 
 function PeriodFilter({
   value,
@@ -527,62 +469,37 @@ function OwnerFilter({
   );
 }
 
-function ViewSavedResultsPaginationRow({
+function SavedResultsPageSizeSelector({
   limit,
   onLimitChange,
-  rangeStart,
-  rangeEnd,
-  hasPrev,
-  hasNext,
-  onPrev,
-  onNext,
 }: {
   limit: PageSize;
   onLimitChange: (limit: PageSize) => void;
-  rangeStart: number;
-  rangeEnd: number;
-  hasPrev: boolean;
-  hasNext: boolean;
-  onPrev: () => void;
-  onNext: () => void;
 }) {
   const { t } = useTranslation(['screenings']);
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-v2-xs">
-        <span className="text-s text-grey-secondary">
-          {t('screenings:freeform_search.saved_results.results_per_page')}
-        </span>
-        {PAGE_SIZES.map((size) => {
-          const active = size === limit;
-          return (
-            <Button
-              key={size}
-              variant="secondary"
-              appearance="stroked"
-              size="medium"
-              className={cn(active && 'border-purple-primary text-purple-primary')}
-              onClick={() => {
-                if (!active) onLimitChange(size);
-              }}
-            >
-              {size}
-            </Button>
-          );
-        })}
-      </div>
-      <div className="flex items-center gap-v2-sm">
-        <span className="text-s text-grey-secondary">
-          {t('screenings:freeform_search.saved_results.range', { start: rangeStart, end: rangeEnd })}
-        </span>
-        <Button mode="icon" size="medium" variant="secondary" appearance="stroked" disabled={!hasPrev} onClick={onPrev}>
-          <Icon icon="arrow-left" className="size-5" />
-        </Button>
-        <Button mode="icon" size="medium" variant="secondary" appearance="stroked" disabled={!hasNext} onClick={onNext}>
-          <Icon icon="arrow-right" className="size-5" />
-        </Button>
-      </div>
+    <div className="flex items-center gap-v2-xs">
+      <span className="text-s text-grey-secondary">
+        {t('screenings:freeform_search.saved_results.results_per_page')}
+      </span>
+      {PAGE_SIZES.map((size) => {
+        const active = size === limit;
+        return (
+          <Button
+            key={size}
+            variant="secondary"
+            appearance="stroked"
+            size="medium"
+            className={cn(active && 'border-purple-primary text-purple-primary')}
+            onClick={() => {
+              if (!active) onLimitChange(size);
+            }}
+          >
+            {size}
+          </Button>
+        );
+      })}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   type FreeformSearchInput,
   freeformSearchFn,
   listSavedFreeformSearchesFn,
+  saveFreeformSearchFn,
 } from '@app-builder/server-fns/screenings';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
@@ -31,6 +32,23 @@ export const useFreeformSearchMutation = () => {
             )
           : input.datasets;
       return freeformSearch({ data: { ...input, datasets } }) as Promise<FreeformSearchResponse>;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
+    },
+  });
+};
+
+type SaveFreeformSearchResponse = { success: true } | { success: false; error: unknown };
+
+export const useSaveFreeformSearchMutation = () => {
+  const queryClient = useQueryClient();
+  const saveFreeformSearch = useServerFn(saveFreeformSearchFn);
+
+  return useMutation({
+    mutationKey: ['screening', 'save-freeform-search'],
+    mutationFn: async (input: { id: string }): Promise<SaveFreeformSearchResponse> => {
+      return saveFreeformSearch({ data: input });
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
