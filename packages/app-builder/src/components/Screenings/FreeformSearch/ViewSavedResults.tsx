@@ -1,16 +1,21 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
 import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-builder/components/Panel/Panel';
+import { IconDot, SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type SavedScreeningSearch } from '@app-builder/models/screening';
 import { useSavedFreeformSearchesQuery } from '@app-builder/queries/screening/freeform-search';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 // import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
+import { ScreeningConfigBodySectionDto } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // import { Temporal } from 'temporal-polyfill';
 import {
+  Avatar,
   // Avatar,
   Button,
+  Collapsible,
   // Collapsible,
   cn,
   // ExpandableGroupTagLine,
@@ -180,50 +185,114 @@ export const ViewSavedResults = () => {
 };
 
 function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
-  // const { t } = useTranslation(['screenings', 'common']);
-  // const language = useFormatLanguage();
-  // const { currentUser } = useOrganizationDetails();
-  // const { getOrgUserById } = useOrganizationUsers();
-  // const owner = getOrgUserById(search.ownerId);
-  // const isYou = currentUser.actorIdentity.userId === search.ownerId;
+  const { t } = useTranslation(['screenings', 'common']);
+  const language = useFormatLanguage();
+  const { currentUser } = useOrganizationDetails();
+  const { getOrgUserById } = useOrganizationUsers();
+  const owner = search.user_id ? getOrgUserById(search.user_id) : undefined;
+  const isYou = currentUser.actorIdentity.userId === search.user_id;
 
   return (
-    <div>{search.id}</div>
-    // <Collapsible.Container defaultOpen={false} className="bg-grey-background-light">
-    //   <Collapsible.Title size="small" iconPosition="left" className="grid">
-    //     <div className="flex flex-1 flex-wrap items-center gap-v2-sm">
-    //       <span className="text-grey-primary">{search.name}</span>
-    //       {owner ? (
-    //         <span className="inline-flex items-center gap-v2-xs">
-    //           <Avatar size="xs" firstName={owner.firstName} lastName={owner.lastName} />
-    //           <span className="text-s text-grey-secondary">
-    //             {`${owner.firstName} ${owner.lastName}`.trim()}
-    //             {isYou ? ` (${t('screenings:freeform_search.saved_results.you')})` : null}
-    //           </span>
-    //         </span>
-    //       ) : (
-    //         <span className="text-s text-grey-secondary">{search.ownerId}</span>
-    //       )}
-    //       <InputTags input={search.inputs} />
-    //     </div>
-    //     <div className="flex items-center gap-v2-xs">
-    //       <span className="text-s text-grey-placeholder">
-    //         {formatDateTimeWithoutPresets(search.createdAt, { language, dateStyle: 'short' })}
-    //       </span>
-    //       <span className="text-grey-border">•</span>
-    //       <span className="text-s text-grey-placeholder">
-    //         {t('screenings:freeform_search.results_count', { count: search.results.length })}
-    //       </span>
-    //     </div>
-    //   </Collapsible.Title>
-    //   <Collapsible.Content>
-    //     <div className="flex flex-col gap-v2-sm">
-    //       {search.results.map((entity) => (
-    //         <FreeformMatchCard key={entity.id} entity={entity} />
-    //       ))}
-    //     </div>
-    //   </Collapsible.Content>
-    // </Collapsible.Container>
+    <Collapsible.Container defaultOpen={false} className="bg-grey-background-light">
+      <Collapsible.Title size="small" iconPosition="left" className="grid">
+        <div className="flex flex-1 flex-wrap items-center gap-v2-sm">
+          <span className="text-grey-primary">{search.search_input.query?.['name']?.join(', ')}</span>
+        </div>
+        <div className="flex items-center gap-v2-xs text-s text-grey-secondary font-normal">
+          {owner ? (
+            <span className="inline-flex items-center gap-v2-xs">
+              <Avatar size="xs" firstName={owner.firstName} lastName={owner.lastName} />
+              <span className="text-grey-primary">
+                {`${owner.firstName} ${owner.lastName}`.trim()}
+                {isYou ? ` (${t('screenings:freeform_search.saved_results.you')})` : null}
+              </span>
+            </span>
+          ) : (
+            <span>{search.user_id}</span>
+          )}
+          <IconDot spaced />
+          <span>{formatDateTimeWithoutPresets(search.created_at, { language, dateStyle: 'short' })}</span>
+          <IconDot spaced />
+          {search.is_saved ? <span></span> : <span>{t('screenings:freeform_search.saved_results.not_saved')}</span>}
+        </div>
+      </Collapsible.Title>
+      <Collapsible.Content>
+        <FilterValues filter={search.search_config} />
+        <QueryValues query={search.search_input} type={search.search_input.type} />
+        {/* <div className="flex flex-col gap-v2-sm">
+          {search.results.map((entity) => (
+            <FreeformMatchCard key={entity.id} entity={entity} />
+          ))}
+        </div> */}
+        {/* <pre>{JSON.stringify(search, null, 2)}</pre> */}
+      </Collapsible.Content>
+    </Collapsible.Container>
+  );
+}
+
+function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'] }) {
+  return (
+    <div className="flex flex-wrap items-center gap-v2-xs">
+      <Tag color="white" appearance="monospace" className="gap-v2-xs">
+        {filter.provider}
+      </Tag>
+
+      {Object.entries(filter.filters)
+        .filter(([, value]) => value.enabled)
+        .map(([key, value], index) => (
+          <>
+            {value?.datasets?.length && (
+              <Tag color="white" appearance="monospace" className="gap-v2-xs" key={`dataset-${key}-${index}`}>
+                {key}:{value?.datasets?.length ?? 0}
+              </Tag>
+            )}
+            {value?.topics && <TopicTag key={`${key}-${index}`} topics={value.topics} />}
+          </>
+        ))}
+    </div>
+  );
+}
+
+function TopicTag({ topics }: { topics: NonNullable<ScreeningConfigBodySectionDto['topics']> }) {
+  const { t } = useTranslation(['screenings']);
+  if (topics['livness'] && topics['livness'].length === 1)
+    return (
+      <Tag color="white" appearance="monospace" className="gap-v2-xs">
+        {t('freeform_search.global.liveness')}
+      </Tag>
+    );
+  return (
+    <>
+      {Object.entries(topics).map(([key, value]) => (
+        <Tag color="white" appearance="monospace" className="gap-v2-xs" key={key}>
+          {key}:{value?.length ?? 0}
+        </Tag>
+      ))}
+    </>
+  );
+}
+
+function QueryValues({ query, type }: { query: SavedScreeningSearch['search_input']; type: SearchableSchema }) {
+  const { t } = useTranslation(['screenings']);
+  const entityType = query.type;
+  const entityTypeFields =
+    entityType && entityType in SEARCH_ENTITIES
+      ? SEARCH_ENTITIES[entityType].fields.filter((f: string) => f !== 'name')
+      : [];
+
+  return (
+    <div className="flex flex-wrap items-center gap-v2-xs">
+      {type !== 'Thing' && (
+        <Tag color="white" appearance="monospace" className="gap-v2-xs">
+          {t(`screenings:entity.schema.${type.toLocaleLowerCase()}`)}
+        </Tag>
+      )}
+      {entityTypeFields.map((field) => (
+        <Tag color="white" appearance="monospace" className="gap-v2-xs" key={field}>
+          <span>{t(`screenings:entity.property.${field}.short`)}</span>:<span>{query.query[field]?.join(', ')}</span>
+        </Tag>
+      ))}
+    </div>
   );
 }
 
@@ -339,7 +408,7 @@ function PeriodFilter({
       }}
     >
       <MenuCommand.Trigger>
-        <Button variant="secondary" appearance="stroked" className="w-full justify-between">
+        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="default">
           <span className="inline-flex items-center gap-v2-xs">
             <Icon icon="calendar-month" className="size-4" />
             <span className="truncate">{t('screenings:freeform_search.saved_results.select_period')}</span>
@@ -417,7 +486,7 @@ function OwnerFilter({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary" appearance="stroked" className="w-full justify-between">
+        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="default">
           <span className="truncate">{t('screenings:freeform_search.saved_results.select_owner')}</span>
           <Icon
             icon="smallarrow-up"

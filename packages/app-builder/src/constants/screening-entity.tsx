@@ -8,8 +8,15 @@ import {
 } from '@app-builder/components/Data/DataVisualisation/DataField';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { HighlightText } from '@app-builder/components/Screenings/HighlightText';
+import { screeningsI18n } from '@app-builder/components/Screenings/screenings-i18n';
+import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
+import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDuration as dateFnsFormatDuration } from 'date-fns/formatDuration';
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Temporal } from 'temporal-polyfill';
 import { match } from 'ts-pattern';
 import { cn, getCountryByName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -249,7 +256,7 @@ const propertyMetadata: Record<ScreeningEntityProperty, PropertyMetadata> = {
   sector: { type: 'string' },
   socialSecurityNumber: { type: 'string' },
   sourceUrl: { type: 'url' },
-  status: { type: 'string' },
+  status: { type: 'string', format: 'monospace' },
   summary: { type: 'string' },
   swiftBic: { type: 'string' },
   taxNumber: { type: 'string' },
@@ -324,9 +331,17 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
 
 // format values using the components of the data field component
 function formatedValue(format: PropertyFormat | undefined, value: string, highlightText?: string) {
+  const { locale } = FormatContext.useValue();
   return match(format)
     .with('monospace', () => StringCodeComponent({ value }))
-    .with('date', 'dateTime', () => <time dateTime={value}>{value}</time>)
+    .with('date', () => (
+      <time dateTime={value}>{formatDateTimeWithoutPresets(value, { language: locale, dateStyle: 'short' })}</time>
+    ))
+    .with('dateTime', () => (
+      <time dateTime={value}>
+        {formatDateTimeWithoutPresets(value, { language: locale, dateStyle: 'short', timeStyle: 'short' })}
+      </time>
+    ))
     .with('dateOfBirth', () => DateBirthdateComponent({ value }))
     .with('country', () => StringCountryComponent({ value, withCountryName: true }))
     .with('countryFlag', () => StringCountryComponent({ value, withCountryName: false }))
@@ -400,4 +415,121 @@ export function IconDot({ dark, spaced }: { dark?: boolean; spaced?: boolean }) 
       )}
     />
   );
+}
+
+const FULL_BIRTH_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const YEAR_ONLY_BIRTH_DATE_PATTERN = /^\d{4}$/;
+
+type BirthDateKind = 'full' | 'year';
+
+function classifyBirthDate(value: string): BirthDateKind | null {
+  if (FULL_BIRTH_DATE_PATTERN.test(value)) return 'full';
+  if (YEAR_ONLY_BIRTH_DATE_PATTERN.test(value)) return 'year';
+  return null;
+}
+
+function toBirthDate(value: string, kind: BirthDateKind): Temporal.PlainDate {
+  if (kind === 'full') return Temporal.PlainDate.from(value);
+  return Temporal.PlainDate.from(`${value}-07-01`);
+}
+
+function getAgeYears(value: string, kind: BirthDateKind): number {
+  const today = Temporal.Now.plainDateISO();
+  return Math.max(0, toBirthDate(value, kind).until(today, { largestUnit: 'year' }).years);
+}
+
+type BirthDateRange =
+  | { type: 'years'; minYear: number; maxYear: number }
+  | { type: 'same_year'; min: Temporal.PlainDate; max: Temporal.PlainDate; year: number }
+  | { type: 'full'; min: Temporal.PlainDate; max: Temporal.PlainDate };
+
+function getBirthDateRange(classified: { value: string; kind: BirthDateKind }[]): BirthDateRange | null {
+  if (classified.length < 2) return null;
+
+  const allYearOnly = classified.every((entry) => entry.kind === 'year');
+  if (allYearOnly) {
+    const years = classified.map((entry) => Number(entry.value)).sort((a, b) => a - b);
+    const minYear = years[0]!;
+    const maxYear = years[years.length - 1]!;
+    if (minYear === maxYear) return null;
+    return { type: 'years', minYear, maxYear };
+  }
+
+  const dates = classified.map((entry) => toBirthDate(entry.value, entry.kind)).sort(Temporal.PlainDate.compare);
+  const min = dates[0]!;
+  const max = dates[dates.length - 1]!;
+  if (Temporal.PlainDate.compare(min, max) === 0) return null;
+
+  if (min.year === max.year) {
+    return { type: 'same_year', min, max, year: min.year };
+  }
+
+  return { type: 'full', min, max };
+}
+
+function formatPlainDate(date: Temporal.PlainDate, language: string, options: Intl.DateTimeFormatOptions): string {
+  return formatDateTimeWithoutPresets(date.toString(), { language, ...options });
+}
+
+function formatBirthDateRange(range: BirthDateRange, language: string, t: (key: string, options?: object) => string) {
+  return match(range)
+    .with({ type: 'years' }, ({ minYear, maxYear }) =>
+      t('screenings:entity.property.birthDate.approximative_age.between_years', { min: minYear, max: maxYear }),
+    )
+    .with({ type: 'same_year' }, ({ min, max, year }) =>
+      t('screenings:entity.property.birthDate.approximative_age.between_same_year', {
+        min: formatPlainDate(min, language, { day: 'numeric', month: 'long' }),
+        max: formatPlainDate(max, language, { day: 'numeric', month: 'long' }),
+        year,
+      }),
+    )
+    .with({ type: 'full' }, ({ min, max }) =>
+      t('screenings:entity.property.birthDate.approximative_age.between_dates', {
+        min: formatPlainDate(min, language, { day: 'numeric', month: 'long', year: 'numeric' }),
+        max: formatPlainDate(max, language, { day: 'numeric', month: 'long', year: 'numeric' }),
+      }),
+    )
+    .exhaustive();
+}
+
+function ApproximativeAge({ ageYears, range }: { ageYears: number; range: BirthDateRange | null }) {
+  const language = useFormatLanguage();
+  const { t } = useTranslation(screeningsI18n);
+  const formatted = dateFnsFormatDuration(
+    { years: Math.max(0, Math.round(ageYears)) },
+    { locale: getDateFnsLocale(language) },
+  );
+  const rangeLabel = range ? formatBirthDateRange(range, language, t) : null;
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="text-grey-secondary text-xs">
+        ~{formatted}
+        {rangeLabel ? ` ${rangeLabel}` : null}
+      </span>
+    </span>
+  );
+}
+
+export function BirthdDateAverage({ values }: { values: string[] }) {
+  const classified = values
+    .map((value) => ({ value, kind: classifyBirthDate(value) }))
+    .filter((entry): entry is { value: string; kind: BirthDateKind } => entry.kind !== null);
+
+  if (classified.length === 0) {
+    const fallback = values[0];
+    return fallback ? DateBirthdateComponent({ value: fallback }) : null;
+  }
+
+  if (classified.length === 1) {
+    const entry = classified[0]!;
+    if (entry.kind === 'full') {
+      return DateBirthdateComponent({ value: entry.value });
+    }
+    return <ApproximativeAge ageYears={getAgeYears(entry.value, entry.kind)} range={null} />;
+  }
+
+  const averageAge = classified.reduce((sum, { value, kind }) => sum + getAgeYears(value, kind), 0) / classified.length;
+
+  return <ApproximativeAge ageYears={averageAge} range={getBirthDateRange(classified)} />;
 }

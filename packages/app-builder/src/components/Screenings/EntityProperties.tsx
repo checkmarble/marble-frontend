@@ -1,4 +1,5 @@
 import {
+  BirthdDateAverage,
   createPropertyTransformer,
   getSanctionEntityProperties,
   IconDot,
@@ -64,18 +65,20 @@ export function EntityProperties<T extends OpenSanctionEntity>({
       {entityPropertyList.map(({ property, values, restItemsCount }) => {
         return (
           <Fragment key={property}>
-            <span className="opacity-50">
+            <div className="opacity-50">
               {t(`screenings:entity.property.${property}`, {
                 defaultValue: property,
               })}
-            </span>
-            <span className="wrap-break-word">
-              {values.length > 0 ? (
+            </div>
+            <div className="wrap-break-word">
+              {property === 'birthDate' ? (
+                <BirthdDateAverage values={values} />
+              ) : values.length > 0 ? (
                 <PropertyContainer property={property}>
                   {values.map((v, i) => (
                     <Fragment key={i}>
                       <TransformProperty property={property} value={v} />
-                      {i === values.length - 1 || property === 'address' ? null : <IconDot spaced />}
+                      {i === values.length - 1 || isPropertyListed(property) ? null : <IconDot spaced />}
                     </Fragment>
                   ))}
                   {restItemsCount > 0 ? (
@@ -96,7 +99,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
               ) : (
                 <span className="text-grey-secondary">not available</span>
               )}
-            </span>
+            </div>
           </Fragment>
         );
       })}

@@ -8,7 +8,7 @@ import {
   freeformSearchFn,
   listSavedFreeformSearchesFn,
 } from '@app-builder/server-fns/screenings';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
 type FreeformSearchResponse =
@@ -17,6 +17,7 @@ type FreeformSearchResponse =
 
 export const useFreeformSearchMutation = () => {
   const freeformSearch = useServerFn(freeformSearchFn);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['screening', 'freeform-search'],
@@ -31,25 +32,11 @@ export const useFreeformSearchMutation = () => {
           : input.datasets;
       return freeformSearch({ data: { ...input, datasets } }) as Promise<FreeformSearchResponse>;
     },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
+    },
   });
 };
-
-// type SaveFreeformSearchResponse = { success: true; data: SavedScreeningSearch } | { success: false; error: unknown };
-
-// export const useSaveFreeformSearchMutation = () => {
-//   const saveSearch = useServerFn(saveFreeformSearchFn);
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationKey: ['screening', 'save-freeform-search'],
-//     mutationFn: async (input: SaveFreeformSearchInput): Promise<SaveFreeformSearchResponse> => {
-//       return saveSearch({ data: input }) as Promise<SaveFreeformSearchResponse>;
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
-//     },
-//   });
-// };
 
 type ListSavedFreeformSearchesResponse =
   | { success: true; data: SavedScreeningSearchPage }
@@ -65,20 +52,3 @@ export const useSavedFreeformSearchesQuery = (filters: SavedScreeningSearchFilte
     },
   });
 };
-
-// type DeleteSavedFreeformSearchResponse = { success: true } | { success: false; error: unknown };
-
-// export const useDeleteSavedFreeformSearchMutation = () => {
-//   const deleteSearch = useServerFn(deleteSavedFreeformSearchFn);
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationKey: ['screening', 'delete-saved-search'],
-//     mutationFn: async (id: string): Promise<DeleteSavedFreeformSearchResponse> => {
-//       return deleteSearch({ data: { id } }) as Promise<DeleteSavedFreeformSearchResponse>;
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
-//     },
-//   });
-// };
