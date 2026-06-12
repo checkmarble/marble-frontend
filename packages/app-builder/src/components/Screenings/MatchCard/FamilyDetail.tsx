@@ -12,6 +12,7 @@ import { cn, ExpandableGroupTagLine } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
+import ModalPerson from './ModalPerson';
 
 const MAX_FAMILY_MEMBERS = 5;
 
@@ -76,6 +77,15 @@ function flattenFamilyMembers<T extends RelationType>(
   return rows;
 }
 
+function getPersonName(entity: FamilyPersonEntity | FamilyRelativeEntity) {
+  const { firstName, lastName, name, alias } = entity.properties;
+  if (firstName?.[0] && lastName?.[0]) return `${firstName[0]} ${lastName[0]}`.trim();
+  if (name?.[0]) return name[0];
+  if (alias?.[0]) return alias[0];
+
+  return '?';
+}
+
 export function FamilyDetail<T extends RelationType>({ familyMembers, relation }: FamilyDetailProps<T>) {
   const { t } = useTranslation(['screenings', 'common']);
   const [showAll, setShowAll] = useState(false);
@@ -122,8 +132,10 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
               {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.family-members.title')}</div>}
             </div>
             <div className="min-w-0">
-              <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" />
-
+              <div className="flex items-center gap-v2-sm">
+                <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" overflowTagWidth={60} />
+                <ModalPerson personId={id} personName={getPersonName(member)} />
+              </div>
               {member.properties.sourceUrl && member.properties.sourceUrl.length > 0 && (
                 <span className="col-span-full flex w-full flex-col gap-1">
                   <div className="font-semibold">{t('screenings:match.family.source.label')}</div>

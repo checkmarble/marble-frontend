@@ -7,6 +7,7 @@ import * as R from 'remeda';
 import { ExpandableGroupTagLine } from 'ui-design-system';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
+import ModalPerson from './ModalPerson';
 
 const MAX_ASSOCIATIONS = 5;
 
@@ -71,7 +72,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
             </span>
           ) : (
             <span key="alias" className="shrink-0">
-              {properties.alias?.[0] ?? properties.name?.[0]}
+              {properties.name?.[0] ?? properties.alias?.[0]}
             </span>
           ),
           <IconDot key="dot-2" />,
@@ -97,7 +98,10 @@ export const Associations = ({ associations }: { associations: AssociationEntity
               {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.associations.title')}</div>}
             </div>
             <div className="min-w-0">
-              <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" />
+              <div className="flex items-center gap-v2-sm">
+                <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" overflowTagWidth={60} />
+                <ModalPerson personId={id} personName={properties.name?.[0] ?? properties.alias?.[0] ?? ''} />
+              </div>
 
               {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (
                 <span className="col-span-full flex w-full flex-col gap-1">

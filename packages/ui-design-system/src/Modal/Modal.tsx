@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
 
 const modalContentClassnames = cva(
-  'bg-surface-card top-[10vh] flex w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
+  'bg-surface-card top-[10vh] flex w-full flex-col rounded-lg drop-shadow-xl overflow-x-hidden overflow-y-auto max-h-[80vh]',
   {
     variants: {
       size: {
@@ -12,11 +12,15 @@ const modalContentClassnames = cva(
         medium: 'max-w-2xl',
         large: 'max-w-5xl',
         xlarge: 'max-w-7xl',
+        full: 'max-w-[90vw]',
       },
       fixedHeight: {
         true: null,
         false: 'h-fit',
       },
+    },
+    defaultVariants: {
+      size: 'full',
     },
   },
 );

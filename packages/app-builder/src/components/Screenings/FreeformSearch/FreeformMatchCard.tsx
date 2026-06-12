@@ -56,7 +56,7 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformM
               </div>
             </div>
           ) : null}
-          <DataContent entityId={entity.id} searchTerm={searchTerm} isOpen={isOpen} />
+          <FreeFormMatchCardDataContent entityId={entity.id} searchTerm={searchTerm} isOpen={isOpen} />
         </div>
       </Collapsible.Content>
     </Collapsible.Container>
@@ -65,7 +65,17 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm }: FreeformM
 
 export default FreeformMatchCard;
 
-function DataContent({ entityId, searchTerm, isOpen }: { entityId: string; searchTerm?: string; isOpen: boolean }) {
+export function FreeFormMatchCardDataContent({
+  entityId,
+  searchTerm,
+  isOpen,
+  withTopics = false,
+}: {
+  entityId: string;
+  searchTerm?: string;
+  isOpen: boolean;
+  withTopics?: boolean;
+}) {
   const { t } = useTranslation(screeningsI18n);
   const enrichedData = useGetEnrichedDataQuery({ entityId }, isOpen);
   if (enrichedData.isLoading) return <Spinner className="size-6" />;
@@ -74,6 +84,7 @@ function DataContent({ entityId, searchTerm, isOpen }: { entityId: string; searc
   if (!entity) return <div>{t('screenings:match.enriched_data_error')}</div>;
   return (
     <div className="text-s flex flex-col gap-6 p-4">
+      {withTopics && <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-1 font-normal" />}
       <MatchDetails entity={entity} highlightText={searchTerm} />
     </div>
   );

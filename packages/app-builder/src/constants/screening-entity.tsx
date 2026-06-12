@@ -270,6 +270,7 @@ const propertyMetadata: Record<ScreeningEntityProperty, PropertyMetadata> = {
   listingDate: { type: 'string', format: 'dateTime' },
 };
 
+// list of properties that are displayed in a list, not inline
 export const propertyMetadataList: Array<keyof typeof propertyMetadata> = ['address'];
 
 export function getSanctionEntityProperties(schema: OpenSanctionEntitySchema) {
@@ -321,6 +322,7 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
   };
 }
 
+// format values using the components of the data field component
 function formatedValue(format: PropertyFormat | undefined, value: string, highlightText?: string) {
   return match(format)
     .with('monospace', () => StringCodeComponent({ value }))
@@ -336,6 +338,8 @@ function formatedValue(format: PropertyFormat | undefined, value: string, highli
     .exhaustive();
 }
 
+// highlight the dates and show them in the locale formet
+// not sure if this one is really relevant
 function TextWithEmbeddedDates({ value, highlightText }: { value: string; highlightText?: string }) {
   const segments = splitTextWithEmbeddedDates(value);
 
@@ -358,6 +362,7 @@ function TextWithEmbeddedDates({ value, highlightText }: { value: string; highli
   );
 }
 
+// try to figure out the country to display it with the fancy flag
 function ParseAddress({ address }: { address: string }) {
   const addressParts = address.split(',');
   return (
