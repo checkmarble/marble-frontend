@@ -14,6 +14,7 @@ import { type ConstantAstNode, isConstant } from './constant';
 import { type CustomListAccessAstNode, isCustomListAccess } from './custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor';
 import { type IpHasFlagAstNode, isIpHasFlag } from './ip';
+import { type LuaAstNode, isLua } from './lua';
 import { isMonitoringListCheckAstNode, type MonitoringListCheckAstNode } from './monitoring-list-check';
 import { type IsMultipleOfAstNode, isIsMultipleOf } from './multiple-of';
 import { isRecordRiskLevelCheckAstNode, type RecordRiskLevelCheckAstNode } from './risk';
@@ -34,7 +35,8 @@ export type EditableAstNode =
   | FuzzyMatchFilterOptionsAstNode
   | MonitoringListCheckAstNode
   | IpHasFlagAstNode
-  | RecordRiskLevelCheckAstNode;
+  | RecordRiskLevelCheckAstNode
+  | LuaAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal
@@ -51,7 +53,8 @@ export function isEditableAstNode(node: AstNode): node is EditableAstNode {
     isStringTemplateAstNode(node) ||
     isMonitoringListCheckAstNode(node) ||
     isIpHasFlag(node) ||
-    isRecordRiskLevelCheckAstNode(node)
+    isRecordRiskLevelCheckAstNode(node) ||
+    isLua(node)
   );
 }
 

@@ -14,6 +14,7 @@ import {
 import { type CustomListAccessAstNode, isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isIpHasFlag } from '@app-builder/models/astNode/ip';
+import { type LuaAstNode, isLua } from '@app-builder/models/astNode/lua';
 import { isRecordRiskLevelCheckAstNode, RecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
 import { type FuzzyMatchComparatorAstNode, isFuzzyMatchComparator } from '@app-builder/models/astNode/strings';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
@@ -27,6 +28,7 @@ import clsx from 'clsx';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
+import { LuaCodeBlock } from './edition/EditModal/modals/Lua/LuaCodeBlock';
 import { AstBuilderDataSharpFactory } from './Provider';
 import { LogicalOperatorLabel } from './styles/LogicalOperatorLabel';
 import { ViewingAstBuilderOperand } from './viewing/ViewingOperand';
@@ -133,6 +135,16 @@ function OperandDescription({ node }: OperandDescriptionProps) {
   if (isRecordRiskLevelCheckAstNode(node) && node.children[0].constant.length > 0) {
     return <RecordRiskLevelDescription node={node} />;
   }
+  if (isLua(node)) {
+    return <LuaDescription node={node} />;
+  }
+}
+
+function LuaDescription({ node }: { node: IdLessAstNode<LuaAstNode> }) {
+  const code = node.namedChildren.code.constant;
+  if (!code) return null;
+
+  return <LuaCodeBlock code={code} className="bg-grey-background-light text-grey-primary max-w-[300px]" />;
 }
 
 function Description({ description }: { description: string }) {

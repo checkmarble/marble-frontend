@@ -3963,6 +3963,36 @@ export function upsertScreeningConfig(scenarioIterationId: string, screeningConf
     })));
 }
 /**
+ * Run a Lua script against the scenario iteration
+ */
+export function runLuaScript(scenarioIterationId: string, body?: {
+    code: string;
+    payload: {
+        [key: string]: any;
+    };
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            return_value: any;
+            error?: string;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/scenario-iterations/run-lua", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List screenings for a decision
  */
 export function listScreenings(decisionId: string, opts?: Oazapfts.RequestOpts) {

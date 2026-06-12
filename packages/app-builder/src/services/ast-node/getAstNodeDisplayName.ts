@@ -8,6 +8,7 @@ import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import { type IpHasFlagAstNode, isIpHasFlag } from '@app-builder/models/astNode/ip';
+import { isLua } from '@app-builder/models/astNode/lua';
 import {
   isMonitoringListCheckAstNode,
   type MonitoringListCheckAstNode,
@@ -95,6 +96,10 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
 
   if (isStringTemplateAstNode(astNode)) {
     return getStringTemplateDisplayName(astNode, context);
+  }
+
+  if (isLua(astNode)) {
+    return context.t('scenarios:edit_lua.title');
   }
 
   if (isFuzzyMatchFilterOptionsAstNode(astNode)) {

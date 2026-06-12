@@ -262,6 +262,56 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/scenario-iterations/run-lua:
+  post:
+    tags:
+      - Scenario Iterations
+    summary: Run a Lua script against the scenario iteration
+    operationId: runLuaScript
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Script to run
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - code
+              - payload
+            properties:
+              code:
+                type: string
+              payload:
+                type: object
+                additionalProperties: true
+    responses:
+      '200':
+        description: The scenario validation of the sent iteration
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - return_value
+              properties:
+                return_value: {}
+                error:
+                  type: string
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /scenario-iterations/{scenarioIterationId}/active-snoozes:
   get:
     tags:

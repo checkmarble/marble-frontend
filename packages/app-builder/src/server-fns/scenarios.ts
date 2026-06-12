@@ -372,6 +372,19 @@ export const validateAstFn = createServerFn({ method: 'POST' })
     }
   });
 
+// ---- Run Lua script ----
+
+export const runLuaScriptFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .inputValidator(
+    z.object({
+      scenarioIterationId: z.string(),
+      code: z.string(),
+      payload: z.record(z.string(), z.unknown()),
+    }),
+  )
+  .handler(async ({ context, data }) => context.authInfo.scenario.runLuaScript(data));
+
 // ---- Generate AST ----
 
 export const generateAstFn = createServerFn({ method: 'POST' })

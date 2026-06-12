@@ -1,6 +1,7 @@
 import { type AstNode, type DataType, type IdLessAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewIpHasFlagAstNode } from '@app-builder/models/astNode/ip';
+import { NewLuaAstNode } from '@app-builder/models/astNode/lua';
 import { monitoringListCheckAstNodeName, NewTagCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import { NewRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
@@ -28,6 +29,7 @@ const FUNCTIONS_OPTIONS: OperandMenuOption[] = [
   NewTimeNowAstNode(),
   NewIsMultipleOfAstNode(),
   NewIpHasFlagAstNode(),
+  NewLuaAstNode(),
 ].map((n) => ({ astNode: n }));
 
 export const MODELING_OPTIONS = ({

@@ -1,6 +1,7 @@
 import { isAggregation, isFuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { isIpHasFlag } from '@app-builder/models/astNode/ip';
+import { isLua } from '@app-builder/models/astNode/lua';
 import { isMonitoringListCheckAstNode } from '@app-builder/models/astNode/monitoring-list-check';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import { isRecordRiskLevelCheckAstNode } from '@app-builder/models/astNode/risk';
@@ -17,6 +18,7 @@ import { EditFuzzyMatchAggregation } from './modals/FuzzyMatchComparator/FuzzyMa
 import { EditFuzzyMatchComparator } from './modals/FuzzyMatchComparator/FuzzyMatchComparator';
 import { EditIpHasFlag } from './modals/IpHasFlag/IpHasFlag';
 import { EditIsMultipleOf } from './modals/IsMultipleOf/IsMultipleOf';
+import { EditLua } from './modals/Lua/Lua';
 import { EditMonitoringListCheck } from './modals/MonitoringListCheck/MonitoringListCheck';
 import { EditRecordRiskLevelCheck } from './modals/RecordRiskLevelCheck/RecordRiskLevelCheck';
 import { EditStringTemplate } from './modals/StringTemplate/StringTemplate';
@@ -62,6 +64,7 @@ export function OperandEditModal({ node, ...props }: OperandEditModalProps) {
         .when(isMonitoringListCheckAstNode, () => <EditMonitoringListCheck {...props} />)
         .when(isIpHasFlag, () => <EditIpHasFlag {...props} />)
         .when(isRecordRiskLevelCheckAstNode, () => <EditRecordRiskLevelCheck {...props} />)
+        .when(isLua, () => <EditLua {...props} />)
         .exhaustive()}
     </AstBuilderNodeSharpFactory.Provider>
   );

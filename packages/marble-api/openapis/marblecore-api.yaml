@@ -216,6 +216,8 @@ paths:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1screening
   /scenario-iterations/{scenarioIterationId}/screening/{screeningConfigId}:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1screening~1{screeningConfigId}
+  /scenario-iterations/run-lua:
+    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1run-lua
 
   # SCREENINGS
 

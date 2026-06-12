@@ -72,6 +72,12 @@ export interface ScenarioRepository {
     scenarioId: string,
     payload: { node: AstNode; expectedReturnType?: ReturnValueType },
   ): Promise<AstValidation>;
+  runLuaScript(args: {
+    scenarioIterationId: string;
+    code: string;
+    payload: Record<string, unknown>;
+    // biome-ignore lint/suspicious/noExplicitAny: a Lua script can return any JSON value
+  }): Promise<{ returnValue: any; error?: string }>;
   commitScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
   getPublicationPreparationStatus(args: { iterationId: string }): Promise<ScenarioPublicationStatus>;
   startPublicationPreparation(args: { iterationId: string }): Promise<void>;
@@ -188,6 +194,10 @@ export function makeGetScenarioRepository() {
       });
 
       return adaptAstValidation(ast_validation, expectedReturnType);
+    },
+    runLuaScript: async ({ scenarioIterationId, code, payload }) => {
+      const res = await marbleCoreApiClient.runLuaScript(scenarioIterationId, { code, payload });
+      return { returnValue: res.return_value, error: res.error };
     },
     commitScenarioIteration: async ({ iterationId }) => {
       const { iteration } = await marbleCoreApiClient.commitScenarioIteration(iterationId);
