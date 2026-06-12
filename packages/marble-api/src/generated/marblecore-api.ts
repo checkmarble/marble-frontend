@@ -4238,7 +4238,7 @@ export function getFreeformSearch(id: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
- * Manually save a freeform search and its results
+ * Manually save a freeform search and its results. Idempotent if called multiple times. Returns a 409 if the set of entities returned by the search has changed since the initial search was done.
  */
 export function saveFreeformSearch(id: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -4251,6 +4251,9 @@ export function saveFreeformSearch(id: string, opts?: Oazapfts.RequestOpts) {
         data: string;
     } | {
         status: 404;
+        data: string;
+    } | {
+        status: 409;
         data: string;
     }>(`/screenings/freeform-search/${encodeURIComponent(id)}/save`, {
         ...opts,
