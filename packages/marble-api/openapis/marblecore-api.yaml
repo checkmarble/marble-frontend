@@ -243,6 +243,10 @@ paths:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1refine
   /screenings/freeform-search:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1freeform-search
+  /screenings/freeform-search/{id}:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1freeform-search~1{id}
+  /screenings/freeform-search/{id}/save:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1freeform-search~1{id}~1save
   /screenings/freshness:
     $ref: ./marblecore-api/screenings.yml#/~1screenings~1freshness
   /screenings/entities/{entityId}:
