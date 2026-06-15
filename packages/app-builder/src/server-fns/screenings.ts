@@ -102,16 +102,11 @@ export const getEnrichedDataInputSchema = z.object({
 });
 export type GetEnrichedDataInput = z.infer<typeof getEnrichedDataInputSchema>;
 
-export const savedSearchFiltersSchema = z.object({
-  fromDate: z.string().optional(),
-  toDate: z.string().optional(),
-  name: z.string().optional(),
+const savedSearchFiltersSchema = z.object({
+  createdAfter: z.string().optional(),
+  createdBefore: z.string().optional(),
   offsetId: z.string().optional(),
-  next: z.coerce.boolean().optional(),
-  previous: z.coerce.boolean().optional(),
   limit: z.coerce.number().min(1).max(100).optional(),
-  order: z.enum(['ASC', 'DESC']).optional(),
-  sorting: z.enum(['created_at']).optional(),
   userId: z.string().optional(),
   apiKeyId: z.string().optional(),
   isSaved: z.boolean().optional(),

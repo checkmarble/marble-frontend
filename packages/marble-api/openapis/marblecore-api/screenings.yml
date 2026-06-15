@@ -388,6 +388,20 @@
         required: false
         schema:
           type: boolean
+      - name: created_after
+        description: Filter searches created after this date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: created_before
+        description: Filter searches created before this date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
     responses:
       '200':
         description: The list of past freeform searches
@@ -1053,6 +1067,7 @@ components:
         - search_input
         - search_config
         - is_saved
+        - nb_hits
       properties:
         id:
           type: string
@@ -1072,6 +1087,8 @@ components:
           $ref: '#/components/schemas/ScreeningFreeformSearchConfigDto'
         is_saved:
           type: boolean
+        nb_hits:
+          type: integer
         matches:
           type: array
           items:

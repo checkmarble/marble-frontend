@@ -163,6 +163,7 @@
   "freeform_search.saved_results.not_saved": "Non enregistré",
   "freeform_search.saved_results.range": "De {{start}} à {{end}}",
   "freeform_search.saved_results.results_per_page": "Résultats par page",
+  "freeform_search.saved_results.saved_only": "Uniquement les résultats sauvegardés",
   "freeform_search.saved_results.search_placeholder": "Rechercher un résultat...",
   "freeform_search.saved_results.select_owner": "Sélectionner un propriétaire",
   "freeform_search.saved_results.select_period": "Sélectionner une période",

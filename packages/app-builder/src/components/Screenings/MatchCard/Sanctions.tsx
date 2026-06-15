@@ -11,11 +11,30 @@ function getSanctionLabel(sanction: ScreeningSanctionEntity) {
   return sanction.properties['authority']?.[0] ?? sanction.id;
 }
 
+function getSanctionDedupeKey(sanction: ScreeningSanctionEntity) {
+  const normalizedProperties = Object.entries(sanction.properties)
+    .sort(([propertyA], [propertyB]) => propertyA.localeCompare(propertyB))
+    .map(([property, values]) => [property, [...values].sort()] as const);
+
+  return JSON.stringify(normalizedProperties);
+}
+
+function dedupeSanctions(sanctions: ScreeningSanctionEntity[]) {
+  const seen = new Set<string>();
+
+  return sanctions.filter((sanction) => {
+    const key = getSanctionDedupeKey(sanction);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export function Sanctions({ sanctions }: { sanctions: ScreeningSanctionEntity[] | undefined }) {
   const { t } = useTranslation(['screenings', 'common']);
   const [showAll, setShowAll] = useState(false);
 
-  const rows = useMemo(() => sanctions ?? [], [sanctions]);
+  const rows = useMemo(() => dedupeSanctions(sanctions ?? []), [sanctions]);
   const hiddenCount = Math.max(0, rows.length - MAX_SANCTIONS);
   const visibleRows = showAll ? rows : rows.slice(0, MAX_SANCTIONS);
 

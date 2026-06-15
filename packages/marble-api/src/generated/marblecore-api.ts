@@ -1165,6 +1165,7 @@ export type ScreeningFreeformSearchDto = {
     };
     search_config: ScreeningFreeformSearchConfigDto;
     is_saved: boolean;
+    nb_hits: number;
     matches?: ScreeningMatchPayloadDto[];
 };
 export type OpenSanctionsUpstreamDatasetFreshnessDto = {
@@ -4184,13 +4185,15 @@ export function freeformSearch(body?: {
 /**
  * List past freeform searches
  */
-export function listFreeformSearches({ limit, offsetId, order, userId, apiKeyId, savedOnly }: {
+export function listFreeformSearches({ limit, offsetId, order, userId, apiKeyId, savedOnly, createdAfter, createdBefore }: {
     limit?: number;
     offsetId?: string;
     order?: "ASC" | "DESC";
     userId?: string;
     apiKeyId?: string;
     savedOnly?: boolean;
+    createdAfter?: string;
+    createdBefore?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -4210,7 +4213,9 @@ export function listFreeformSearches({ limit, offsetId, order, userId, apiKeyId,
         order,
         user_id: userId,
         api_key_id: apiKeyId,
-        saved_only: savedOnly
+        saved_only: savedOnly,
+        created_after: createdAfter,
+        created_before: createdBefore
     }))}`, {
         ...opts
     }));

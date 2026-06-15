@@ -731,8 +731,8 @@ export type SavedScreeningSearch = ScreeningFreeformSearchDto;
 export interface SavedScreeningSearchFilters {
   limit?: number;
   offsetId?: string;
-  order?: 'ASC' | 'DESC';
-  sorting?: 'created_at';
+  createdAfter?: string;
+  createdBefore?: string;
   userId?: string;
   apiKeyId?: string;
   isSaved?: boolean;

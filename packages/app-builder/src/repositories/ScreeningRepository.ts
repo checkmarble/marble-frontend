@@ -166,14 +166,15 @@ export function makeGetScreeningRepository() {
     getAiSuggestions: async ({ screeningId }) => {
       return R.map(await marbleCoreApiClient.getScreeningAiSuggestions(screeningId), adaptScreeningAiSuggestion);
     },
-    listSavedScreeningSearches: async ({ isSaved, userId, apiKeyId, offsetId, limit, order }) => {
+    listSavedScreeningSearches: async ({ isSaved, userId, apiKeyId, offsetId, limit, createdAfter, createdBefore }) => {
       return await marbleCoreApiClient.listFreeformSearches({
         savedOnly: isSaved,
         userId,
         apiKeyId,
         offsetId,
         limit,
-        order,
+        createdAfter,
+        createdBefore,
       });
     },
     getFreeformSearch: async ({ id }) => {

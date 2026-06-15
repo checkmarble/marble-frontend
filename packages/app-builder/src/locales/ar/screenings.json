@@ -163,6 +163,7 @@
   "freeform_search.saved_results.not_saved": "غير محفوظ",
   "freeform_search.saved_results.range": "من {{start}} إلى {{end}}",
   "freeform_search.saved_results.results_per_page": "النتائج لكل صفحة",
+  "freeform_search.saved_results.saved_only": "النتائج المحفوظة فقط",
   "freeform_search.saved_results.search_placeholder": "ابحث عن نتيجة...",
   "freeform_search.saved_results.select_owner": "اختر مالكًا",
   "freeform_search.saved_results.select_period": "اختر فترة",

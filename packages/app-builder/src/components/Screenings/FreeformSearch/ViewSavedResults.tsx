@@ -13,11 +13,11 @@ import { useOrganizationDetails } from '@app-builder/services/organization/organ
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
 import { omitUndefined } from '@app-builder/utils/omit-undefined';
-import { useDebouncedCallbackRef } from '@marble/shared';
 import { ScreeningConfigBodySectionDto } from 'marble-api';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, Collapsible, cn, Input, MenuCommand, Separator, Tag } from 'ui-design-system';
+import { Temporal } from 'temporal-polyfill';
+import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import FreeformMatchCard from './FreeformMatchCard';
 
@@ -32,17 +32,17 @@ interface DynamicDateRangeFilter {
 }
 type DateRangeFilterValue = StaticDateRangeFilter | DynamicDateRangeFilter | null;
 
-// function toIsoRange(value: DateRangeFilterValue): { fromDate?: string; toDate?: string } {
-//   if (!value) return {};
-//   if (value.type === 'static') {
-//     return { fromDate: value.startDate || undefined, toDate: value.endDate || undefined };
-//   }
-//   const now = Temporal.Now.zonedDateTimeISO();
-//   return {
-//     fromDate: now.add(value.fromNow).toInstant().toString(),
-//     toDate: now.toInstant().toString(),
-//   };
-// }
+function toIsoRange(value: DateRangeFilterValue): { createdAfter?: string; createdBefore?: string } {
+  if (!value) return {};
+  if (value.type === 'static') {
+    return { createdAfter: value.startDate || undefined, createdBefore: value.endDate || undefined };
+  }
+  const now = Temporal.Now.zonedDateTimeISO();
+  return {
+    createdAfter: now.add(value.fromNow).toInstant().toString(),
+    createdBefore: now.toInstant().toString(),
+  };
+}
 
 const PAGE_SIZES = [25, 50, 100] as const;
 type PageSize = (typeof PAGE_SIZES)[number];
@@ -51,31 +51,27 @@ export const ViewSavedResults = () => {
   const { t } = useTranslation(['screenings', 'common']);
   const [open, setOpen] = useState(false);
 
-  const [nameInput, setNameInput] = useState('');
-  // const [name, setName] = useState('');
+  const [isSaved, setIsSaved] = useState(true);
   const [dateRange, setDateRange] = useState<DateRangeFilterValue>(null);
   const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({ limit: 25 });
+  const { createdAfter, createdBefore } = useMemo(() => toIsoRange(dateRange), [dateRange]);
 
   const filterValues = useMemo(
     () =>
       omitUndefined({
         userId: ownerId,
-        isSaved: true,
+        isSaved,
+        createdAfter,
+        createdBefore,
       }),
-    [ownerId],
+    [ownerId, isSaved, createdAfter, createdBefore],
   );
-
-  const applyName = useDebouncedCallbackRef((_value: string) => {
-    // setName(value);
-    setPaginationParams((prev) => ({ limit: prev.limit ?? 25 }));
-  }, 300);
 
   const resetPagination = () => {
     setPaginationParams((prev) => ({ limit: prev.limit ?? 25 }));
   };
 
-  // const { fromDate, toDate } = useMemo(() => toIsoRange(dateRange), [dateRange]);
   const query = useSavedFreeformSearchesQuery(
     omitUndefined({
       ...filterValues,
@@ -118,16 +114,6 @@ export const ViewSavedResults = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-v2-md pb-v2-md">
-            <Input
-              type="search"
-              startAdornment="search"
-              placeholder={t('screenings:freeform_search.saved_results.search_placeholder')}
-              value={nameInput}
-              onChange={(e) => {
-                setNameInput(e.currentTarget.value);
-                applyName(e.currentTarget.value);
-              }}
-            />
             <PeriodFilter
               value={dateRange}
               onChange={(v) => {
@@ -142,6 +128,19 @@ export const ViewSavedResults = () => {
                 resetPagination();
               }}
             />
+            <div className="flex h-10 items-center gap-v2-sm">
+              <Switch
+                id="saved-only"
+                checked={isSaved}
+                onCheckedChange={(value) => {
+                  setIsSaved(value);
+                  resetPagination();
+                }}
+              />
+              <label htmlFor="saved-only" className="text-s text-grey-primary">
+                {t('screenings:freeform_search.saved_results.saved_only')}
+              </label>
+            </div>
           </div>
 
           <PanelContent>
@@ -225,7 +224,7 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
           <span>{formatDateTimeWithoutPresets(search.created_at, { language, dateStyle: 'short' })}</span>
           <IconDot spaced />
           {search.is_saved ? (
-            <span>{search?.matches?.length ?? 0}</span>
+            <span>{search.nb_hits}</span>
           ) : (
             <span>{t('screenings:freeform_search.saved_results.not_saved')}</span>
           )}
