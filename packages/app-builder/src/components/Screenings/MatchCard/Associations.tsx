@@ -1,14 +1,14 @@
 import { StringCodeComponent } from '@app-builder/components/Data/DataVisualisation/DataField';
 import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { AssociationEntity } from '@app-builder/models/screening';
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { ExpandableGroupTagLine } from 'ui-design-system';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
 import ModalPerson from './ModalPerson';
-import { getPersonName } from './match-card-utility-functions';
+import { cleanUrl, getPersonName } from './match-card-utility-functions';
 
 const MAX_ASSOCIATIONS = 5;
 
@@ -107,20 +107,21 @@ export const Associations = ({ associations }: { associations: AssociationEntity
               {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (
                 <span className="col-span-full flex w-full flex-col gap-1">
                   <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
-                  <ul className="list-disc list-inside pl-2">
+                  <div className="flex gap-v2-sm">
                     {association.properties.sourceUrl.map((url, urlIdx) => (
-                      <li key={`source-${id}-${urlIdx}`}>
+                      <Fragment key={`source-${id}-${urlIdx}`}>
                         <a
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-purple-primary hover:text-purple-75 underline"
                         >
-                          {url}
+                          {cleanUrl(url)}
                         </a>
-                      </li>
+                        {urlIdx < association.properties.sourceUrl!.length - 1 ? <IconDot spaced /> : null}
+                      </Fragment>
                     ))}
-                  </ul>
+                  </div>
                 </span>
               )}
             </div>

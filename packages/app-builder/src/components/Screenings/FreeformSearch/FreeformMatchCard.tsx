@@ -4,6 +4,7 @@ import { useGetEnrichedDataQuery } from '@app-builder/queries/screening/get-enri
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Collapsible, cn, Tag } from 'ui-design-system';
+import { EntityDatasetsList } from '../MatchCard/match-card-entity-components';
 import { MatchDetails } from '../MatchDetails';
 import { screeningsI18n } from '../screenings-i18n';
 import { TopicsDisplay } from '../TopicsDisplay';
@@ -52,13 +53,7 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm, background 
             <div className="grid grid-cols-[146px_1fr] gap-2">
               <div className="font-bold">{t('screenings:match.datasets.title')}</div>
               <div>
-                <ul>
-                  {entity.datasets.map((name, index) => (
-                    <li className="break-all" key={`dataset-${index}`}>
-                      {name}
-                    </li>
-                  ))}
-                </ul>
+                <EntityDatasetsList datasets={entity.datasets} useCase="manual_search" itemClassName="break-all" />
               </div>
             </div>
           ) : null}
@@ -84,7 +79,7 @@ export function FreeFormMatchCardDataContent({
 }) {
   const { t } = useTranslation(screeningsI18n);
   const enrichedData = useGetEnrichedDataQuery({ entityId }, isOpen);
-  if (enrichedData.isLoading) return <Spinner className="size-6" />;
+  if (enrichedData.isLoading) return <Spinner className="size-6 shrink-0 block" />;
   if (!enrichedData.data?.success) return <div>{t('screenings:match.enriched_data_error')}</div>;
   const entity = enrichedData.data.data;
   if (!entity) return <div>{t('screenings:match.enriched_data_error')}</div>;

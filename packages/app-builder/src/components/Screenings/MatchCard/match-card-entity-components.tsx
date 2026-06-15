@@ -2,8 +2,11 @@ import {
   DateBirthdateComponent,
   StringCountryComponent,
 } from '@app-builder/components/Data/DataVisualisation/DataField';
+import { findDatasetByName, useDatasetTitle } from '@app-builder/components/ListAndTopicConfiguration/dataset-utils';
 import { HighlightText } from '@app-builder/components/Screenings/HighlightText';
 import { screeningsI18n } from '@app-builder/components/Screenings/screenings-i18n';
+import { type AvailableFeatures } from '@app-builder/models/screening';
+import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { formatDuration as dateFnsFormatDuration } from 'date-fns/formatDuration';
@@ -20,9 +23,36 @@ import {
   getBirthDateRange,
 } from './match-card-utility-functions';
 
+type EntityDatasetsListProps = {
+  datasets: string[];
+  useCase: AvailableFeatures;
+  listClassName?: string;
+  itemClassName?: string;
+};
+
+export function EntityDatasetsList({ datasets, useCase, listClassName, itemClassName }: EntityDatasetsListProps) {
+  const listConfigQuery = useListConfigQuery(useCase);
+  const { formatItemName } = useDatasetTitle();
+
+  return (
+    <ul className={listClassName}>
+      {datasets.map((name, index) => {
+        const found = findDatasetByName(listConfigQuery.data?.filters, name);
+        const label = found ? formatItemName(found) : name;
+        return (
+          <li className={itemClassName} key={`dataset-${name}-${index}`}>
+            {label}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export function ParseAlias({ value, highlightText }: { value: string; highlightText?: string }) {
+  const language = useFormatLanguage();
   const { t } = useTranslation(screeningsI18n);
-  const script = detectNativeScript(value);
+  const script = detectNativeScript(value, language);
 
   return (
     <li className="flex items-center gap-v2-sm">
@@ -55,7 +85,7 @@ export function ParseAddress({ address }: { address: AddressEntity }) {
   ].filter((segment): segment is NonNullable<typeof segment> => segment !== null);
 
   return (
-    <li className="flex items-center gap-v2-sm">
+    <li className="flex items-center">
       <IconDot dark spaced />
       {segments.map((segment, index) => (
         <div key={index} className="flex items-center gap-v2-sm me-v2-sm">

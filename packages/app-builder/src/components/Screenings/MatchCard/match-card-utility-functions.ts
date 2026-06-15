@@ -44,23 +44,199 @@ const EMBEDDED_ENGLISH_DATE_REGEX =
 const FULL_BIRTH_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const YEAR_ONLY_BIRTH_DATE_PATTERN = /^\d{4}$/;
 
-const SCRIPT_DETECTORS: Array<{ name: string; test: RegExp }> = [
-  { name: 'Arabic', test: /\p{Script=Arabic}/u },
-  { name: 'Hangul Syllables', test: /\p{Script=Hangul}/u },
-  { name: 'Cyrillic', test: /\p{Script=Cyrillic}/u },
-  { name: 'Han', test: /\p{Script=Han}/u },
-  { name: 'Hiragana', test: /\p{Script=Hiragana}/u },
-  { name: 'Katakana', test: /\p{Script=Katakana}/u },
-  { name: 'Hebrew', test: /\p{Script=Hebrew}/u },
-  { name: 'Greek', test: /\p{Script=Greek}/u },
-  { name: 'Devanagari', test: /\p{Script=Devanagari}/u },
-  { name: 'Thai', test: /\p{Script=Thai}/u },
-  { name: 'Armenian', test: /\p{Script=Armenian}/u },
-  { name: 'Georgian', test: /\p{Script=Georgian}/u },
-];
+const ALWAYS_SKIPPED_SCRIPTS = ['Common', 'Inherited'] as const;
 
-const LATIN_OR_NEUTRAL_CHAR =
-  /\p{Script=Latin}|\p{General_Category=Punctuation}|\p{General_Category=Separator}|\p{General_Category=Number}/u;
+function getSkippedScripts(language: string): Set<string> {
+  const isArabicInterface = language === 'ar' || language.startsWith('ar-');
+  return new Set(isArabicInterface ? [...ALWAYS_SKIPPED_SCRIPTS, 'Arabic'] : [...ALWAYS_SKIPPED_SCRIPTS, 'Latin']);
+}
+const NEUTRAL_CHAR = /\p{General_Category=Punctuation}|\p{General_Category=Separator}|\p{General_Category=Number}/u;
+
+const SCRIPT_NAME_OVERRIDES: Record<string, string> = {
+  Hangul: 'Hangul Syllables',
+  Han: 'Han',
+};
+
+const UNICODE_SCRIPTS = [
+  'Adlam',
+  'Ahom',
+  'Anatolian_Hieroglyphs',
+  'Arabic',
+  'Armenian',
+  'Avestan',
+  'Balinese',
+  'Bamum',
+  'Bassa_Vah',
+  'Batak',
+  'Bengali',
+  'Bhaiksuki',
+  'Brahmi',
+  'Braille',
+  'Buginese',
+  'Buhid',
+  'Canadian_Aboriginal',
+  'Carian',
+  'Caucasian_Albanian',
+  'Chakma',
+  'Cham',
+  'Cherokee',
+  'Chorasmian',
+  'Coptic',
+  'Cuneiform',
+  'Cypriot',
+  'Cypro_Minoan',
+  'Cyrillic',
+  'Deseret',
+  'Devanagari',
+  'Dives_Akuru',
+  'Dogra',
+  'Duployan',
+  'Egyptian_Hieroglyphs',
+  'Elbasan',
+  'Elymaic',
+  'Ethiopic',
+  'Georgian',
+  'Glagolitic',
+  'Gothic',
+  'Grantha',
+  'Greek',
+  'Gujarati',
+  'Gunjala_Gondi',
+  'Gurmukhi',
+  'Han',
+  'Hangul',
+  'Hanifi_Rohingya',
+  'Hanunoo',
+  'Hatran',
+  'Hebrew',
+  'Hiragana',
+  'Imperial_Aramaic',
+  'Inscriptional_Pahlavi',
+  'Inscriptional_Parthian',
+  'Javanese',
+  'Kaithi',
+  'Kannada',
+  'Katakana',
+  'Kawi',
+  'Kayah_Li',
+  'Kharoshthi',
+  'Khitan_Small_Script',
+  'Khmer',
+  'Khojki',
+  'Khudawadi',
+  'Lao',
+  'Lepcha',
+  'Limbu',
+  'Linear_A',
+  'Linear_B',
+  'Lisu',
+  'Lycian',
+  'Lydian',
+  'Mahajani',
+  'Makasar',
+  'Malayalam',
+  'Mandaic',
+  'Manichaean',
+  'Marchen',
+  'Masaram_Gondi',
+  'Medefaidrin',
+  'Meetei_Mayek',
+  'Mende_Kikakui',
+  'Meroitic_Cursive',
+  'Meroitic_Hieroglyphs',
+  'Miao',
+  'Modi',
+  'Mongolian',
+  'Mro',
+  'Multani',
+  'Myanmar',
+  'Nabataean',
+  'Nag_Mundari',
+  'Nandinagari',
+  'New_Tai_Lue',
+  'Newa',
+  'Nko',
+  'Nushu',
+  'Nyiakeng_Puachue_Hmong',
+  'Ogham',
+  'Ol_Chiki',
+  'Old_Hungarian',
+  'Old_Italic',
+  'Old_North_Arabian',
+  'Old_Permic',
+  'Old_Persian',
+  'Old_Sogdian',
+  'Old_South_Arabian',
+  'Old_Turkic',
+  'Old_Uyghur',
+  'Oriya',
+  'Osage',
+  'Osmanya',
+  'Pahawh_Hmong',
+  'Palmyrene',
+  'Pau_Cin_Hau',
+  'Phags_Pa',
+  'Phoenician',
+  'Psalter_Pahlavi',
+  'Rejang',
+  'Runic',
+  'Samaritan',
+  'Saurashtra',
+  'Sharada',
+  'Shavian',
+  'Siddham',
+  'SignWriting',
+  'Sinhala',
+  'Sogdian',
+  'Sora_Sompeng',
+  'Soyombo',
+  'Sundanese',
+  'Syloti_Nagri',
+  'Syriac',
+  'Tagalog',
+  'Tagbanwa',
+  'Tai_Le',
+  'Tai_Tham',
+  'Tai_Viet',
+  'Takri',
+  'Tamil',
+  'Tangsa',
+  'Tangut',
+  'Telugu',
+  'Thaana',
+  'Thai',
+  'Tibetan',
+  'Tifinagh',
+  'Tirhuta',
+  'Toto',
+  'Ugaritic',
+  'Vai',
+  'Vithkuqi',
+  'Wancho',
+  'Warang_Citi',
+  'Yezidi',
+  'Yi',
+  'Zanabazar_Square',
+] as const;
+
+const SCRIPT_CHAR_TESTERS = UNICODE_SCRIPTS.map((script) => ({
+  script,
+  test: new RegExp(`\\p{Script=${script}}`, 'u'),
+}));
+
+function formatScriptName(script: string): string {
+  return SCRIPT_NAME_OVERRIDES[script] ?? script.replaceAll('_', ' ');
+}
+
+function getCharScript(char: string): string | null {
+  if (NEUTRAL_CHAR.test(char)) return null;
+
+  for (const { script, test } of SCRIPT_CHAR_TESTERS) {
+    if (test.test(char)) return script;
+  }
+
+  return null;
+}
 
 export type TextSegment = { type: 'text'; value: string } | { type: 'date'; value: string };
 export type BirthDateKind = 'full' | 'year';
@@ -260,16 +436,16 @@ export function splitTextWithEmbeddedDates(value: string): TextSegment[] {
   return segments;
 }
 
-export function detectNativeScript(value: string): string | null {
+export function detectNativeScript(value: string, language: string): string | null {
+  const skippedScripts = getSkippedScripts(language);
   const counts = new Map<string, number>();
 
   for (const char of value) {
-    if (LATIN_OR_NEUTRAL_CHAR.test(char)) continue;
+    const script = getCharScript(char);
+    if (!script || skippedScripts.has(script)) continue;
 
-    const detector = SCRIPT_DETECTORS.find(({ test }) => test.test(char));
-    if (!detector) continue;
-
-    counts.set(detector.name, (counts.get(detector.name) ?? 0) + 1);
+    const scriptName = formatScriptName(script);
+    counts.set(scriptName, (counts.get(scriptName) ?? 0) + 1);
   }
 
   if (counts.size === 0) return null;
