@@ -36,7 +36,8 @@ import {
 
 const MapView = lazy(() => import('./MapView').then((m) => ({ default: m.MapView })));
 
-const codeClassName = 'font-mono border border-grey-border rounded-sm p-1 bg-surface-card';
+const codeClassName = (className?: string) =>
+  cn('font-mono border border-grey-border rounded-sm p-1 bg-surface-card', className);
 const subClassName = 'grid gap-1 px-2 py-1 border border-grey-border bg-grey-background-light rounded-lg';
 
 type DataFieldProps = {
@@ -258,8 +259,16 @@ function StringCode() {
   return StringCodeComponent({ value });
 }
 
-export function StringCodeComponent({ value, children }: { value?: string; children?: ReactNode }) {
-  return <span className={codeClassName}>{value ?? children ?? '-'}</span>;
+export function StringCodeComponent({
+  value,
+  children,
+  className,
+}: {
+  value?: string;
+  children?: ReactNode;
+  className?: string;
+}) {
+  return <span className={codeClassName(className)}>{value ?? children ?? '-'}</span>;
 }
 
 function StringEmail() {
@@ -356,7 +365,7 @@ function StringVpn() {
   const value = useStringValue();
   if (!value) return <span>{t('data:no_vpn')}</span>;
   return (
-    <span className={cn(codeClassName, 'flex gap-2 items-center')}>
+    <span className={codeClassName('flex gap-2 items-center')}>
       <span>{t('data:vpn')}</span>
       <span>{'-'}</span>
       <span>{value}</span>
@@ -366,7 +375,7 @@ function StringVpn() {
 
 function StringId() {
   const value = useStringValue();
-  if (!value) return <EmptyValue className={codeClassName} />;
+  if (!value) return <EmptyValue className={codeClassName()} />;
   return (
     <CopyToClipboardButton toCopy={value}>
       <span>{value}</span>
@@ -418,7 +427,7 @@ function StringIban() {
   if (!value) return <EmptyValue />;
   // Format the IBAN in groups of 4 characters separated by a space
   const strIban = value.replace(/(.{4})/g, '$1 ').trim();
-  return <span className={codeClassName}>{strIban}</span>;
+  return <span className={codeClassName()}>{strIban}</span>;
 }
 
 function StringCurrency() {
@@ -427,7 +436,7 @@ function StringCurrency() {
   const currency = cc.code(value);
   if (!currency) return <span>{value}</span>;
   return (
-    <span className={cn('inline-flex items-center gap-1', codeClassName)}>
+    <span className={codeClassName('inline-flex items-center gap-1')}>
       <span>{currency?.code}</span>
       <span>{'-'}</span>
       <span>{currency?.currency}</span>
@@ -445,15 +454,17 @@ export function DateDatetimeComponent({
   value,
   withTime = true,
   monospaced = false,
+  className,
 }: {
   value: string;
   withTime?: boolean;
   monospaced?: boolean;
+  className?: string;
 }) {
   const formatDateTime = useFormatDateTime();
   const date = new Date(value);
   return (
-    <span className={cn(monospaced && codeClassName)}>
+    <span className={monospaced ? codeClassName(className) : className}>
       {formatDateTime(date, { dateStyle: 'short', timeStyle: withTime ? 'short' : undefined })}
     </span>
   );
@@ -466,7 +477,7 @@ function DataGpsCoords() {
   const options = useOptions();
   const mapHeight = options?.mapHeight ?? MAP_HEIGHT;
 
-  if (!value || !opts) return <span className={codeClassName}>-</span>;
+  if (!value || !opts) return <span className={codeClassName()}>-</span>;
 
   return (
     <div className="grid gap-2">
@@ -570,21 +581,21 @@ function BooleanYesNo() {
 
 function EnumValues() {
   const value = useStringValue();
-  if (!value) return <EmptyValue className={codeClassName} />;
-  return <span className={codeClassName}>{value}</span>;
+  if (!value) return <EmptyValue className={codeClassName()} />;
+  return <span className={codeClassName()}>{value}</span>;
 }
 
 function DataIpAddress() {
   const value = useStringValue();
   const metaData = useFieldMetaData();
   const [isOpen, setIsOpen] = useState(false);
-  if (!value) return <EmptyValue className={codeClassName} />;
-  if (!metaData) return <span className={codeClassName}>{value}</span>;
+  if (!value) return <EmptyValue className={codeClassName()} />;
+  if (!metaData) return <span className={codeClassName()}>{value}</span>;
 
   return (
     <div className="grid gap-1">
       <button
-        className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')}
+        className={codeClassName('w-fit flex gap-2 items-center cursor-pointer')}
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{value}</span>
@@ -639,13 +650,13 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
   const objectDetailQuery = useObjectDetailsQuery(linkedTo, value, isOpen);
 
   if (!linkedTo || !value) {
-    return <EmptyValue className={codeClassName} />;
+    return <EmptyValue className={codeClassName()} />;
   }
 
   return (
     <div className="grid gap-1">
       <button
-        className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')}
+        className={codeClassName('w-fit flex gap-2 items-center cursor-pointer')}
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <span>{value}</span>

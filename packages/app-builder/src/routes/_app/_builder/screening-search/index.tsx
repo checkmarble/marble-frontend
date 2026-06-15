@@ -87,7 +87,7 @@ function ScreeningSearchIndexPage() {
                     <PrintResults results={searchState.results} />
                   </PrintView>
                   {searchState.searchId && (
-                    <Button variant="secondary" onClick={handleSaveSearch}>
+                    <Button variant="secondary" onClick={handleSaveSearch} disabled={saveSearchMutation.isPending}>
                       <Icon icon="save" className="size-4" />
                       {t('screenings:freeform_search.save.button')}
                     </Button>

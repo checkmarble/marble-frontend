@@ -1,5 +1,5 @@
 import { StringCodeComponent } from '@app-builder/components/Data/DataVisualisation/DataField';
-import { IconDot } from '@app-builder/constants/screening-entity';
+import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { AssociationEntity } from '@app-builder/models/screening';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,10 +8,11 @@ import { ExpandableGroupTagLine } from 'ui-design-system';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
 import ModalPerson from './ModalPerson';
+import { getPersonName } from './match-card-utility-functions';
 
 const MAX_ASSOCIATIONS = 5;
 
-type AssociationRow = {
+export type AssociationRow = {
   key: string;
   association: AssociationEntity;
   id: string;
@@ -72,7 +73,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
             </span>
           ) : (
             <span key="alias" className="shrink-0">
-              {properties.name?.[0] ?? properties.alias?.[0]}
+              {getPersonName(row)}
             </span>
           ),
           <IconDot key="dot-2" />,
@@ -100,7 +101,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
             <div className="min-w-0">
               <div className="flex items-center gap-v2-sm">
                 <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" overflowTagWidth={60} />
-                <ModalPerson personId={id} personName={properties.name?.[0] ?? properties.alias?.[0] ?? ''} />
+                <ModalPerson personId={id} personName={getPersonName(row)} />
               </div>
 
               {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (

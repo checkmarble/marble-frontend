@@ -1,7 +1,8 @@
 import { CursorPaginationButtons, usePaginationsButton } from '@app-builder/components/Decisions/PaginationButtons';
 import { DateRangeFilter } from '@app-builder/components/Filters';
 import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-builder/components/Panel/Panel';
-import { IconDot, SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
+import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
+import { SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { type SavedScreeningSearch } from '@app-builder/models/screening';
 import {
@@ -255,7 +256,7 @@ function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'
                 {key}:{value?.datasets?.length ?? 0}
               </Tag>
             )}
-            {value?.topics && <TopicTag key={`${key}-${index}`} topics={value.topics} />}
+            {value?.topics && <TopicTag key={`topic-${key}-${index}`} topics={value.topics} />}
           </>
         ))}
     </div>

@@ -1,9 +1,18 @@
 import {
+  IconDot,
+  ParseAddress,
+  ParseAlias,
+} from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
+import {
+  type AddressEntity,
+  mergeAddresses,
+} from '@app-builder/components/Screenings/MatchCard/match-card-utility-functions';
+import {
   BirthdDateAverage,
   createPropertyTransformer,
   getSanctionEntityProperties,
-  IconDot,
   isPropertyListed,
+  isScriptTaggedProperty,
   type PropertyForSchema,
   type ScreeningEntityProperty,
 } from '@app-builder/constants/screening-entity';
@@ -12,6 +21,13 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { screeningsI18n } from './screenings-i18n';
+
+type PropertyRow = {
+  property: ScreeningEntityProperty;
+  values: string[] | AddressEntity[];
+  restItemsCount: number;
+  isAddress?: boolean;
+};
 
 export function EntityProperties<T extends OpenSanctionEntity>({
   entity,
@@ -33,8 +49,9 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   const displayProperties = forcedProperties ?? getSanctionEntityProperties(entity.schema);
   const { t, i18n } = useTranslation(screeningsI18n);
   const language = useFormatLanguage();
-  const entityPropertyList = displayProperties
-    .map((property) => {
+
+  const entityPropertyList = useMemo(() => {
+    const rows: PropertyRow[] = displayProperties.map((property) => {
       const items = entity.properties?.[property] ?? [];
       const itemsToDisplay = displayAll[property] ? items : items.slice(0, 5);
       return {
@@ -42,8 +59,49 @@ export function EntityProperties<T extends OpenSanctionEntity>({
         values: itemsToDisplay,
         restItemsCount: Math.max(0, items.length - itemsToDisplay.length),
       };
-    })
-    .filter((prop) => (showUnavailable ? true : prop.values.length > 0));
+    });
+
+    const hasAddress = displayProperties.includes('address');
+    const hasAddressEntity = displayProperties.includes('addressEntity');
+
+    if (!hasAddress && !hasAddressEntity) {
+      return rows.filter((prop) => (showUnavailable ? true : prop.values.length > 0));
+    }
+
+    const addressStrings = (entity.properties?.['address'] ?? []).filter(
+      (value): value is string => typeof value === 'string',
+    );
+    const rawAddressEntities = entity.properties?.['addressEntity'] ?? [];
+    const mergedAddresses = mergeAddresses(addressStrings, rawAddressEntities);
+    const displayProperty: ScreeningEntityProperty = hasAddress ? 'address' : 'addressEntity';
+    const showAllAddresses = displayAll[displayProperty] ?? false;
+    const addressesToDisplay = showAllAddresses ? mergedAddresses : mergedAddresses.slice(0, 5);
+
+    const insertAt = displayProperties.findIndex((property) => property === 'address' || property === 'addressEntity');
+    const insertPosition =
+      insertAt >= 0
+        ? displayProperties
+            .slice(0, insertAt)
+            .filter((property) => property !== 'address' && property !== 'addressEntity').length
+        : rows.length;
+
+    const withoutAddressRows = rows.filter((row) => row.property !== 'address' && row.property !== 'addressEntity');
+
+    const mergedRow: PropertyRow = {
+      property: displayProperty,
+      values: addressesToDisplay,
+      restItemsCount: Math.max(0, mergedAddresses.length - addressesToDisplay.length),
+      isAddress: true,
+    };
+
+    const mergedList = [
+      ...withoutAddressRows.slice(0, insertPosition),
+      mergedRow,
+      ...withoutAddressRows.slice(insertPosition),
+    ];
+
+    return mergedList.filter((prop) => (showUnavailable ? true : prop.values.length > 0));
+  }, [displayProperties, entity.properties, displayAll, showUnavailable]);
 
   const TransformProperty = useMemo(
     () =>
@@ -62,7 +120,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   return (
     <div className="grid grid-cols-[146px_1fr] gap-3 text-xs">
       {before}
-      {entityPropertyList.map(({ property, values, restItemsCount }) => {
+      {entityPropertyList.map(({ property, values, restItemsCount, isAddress }) => {
         return (
           <Fragment key={property}>
             <div className="opacity-50">
@@ -72,10 +130,48 @@ export function EntityProperties<T extends OpenSanctionEntity>({
             </div>
             <div className="wrap-break-word">
               {property === 'birthDate' ? (
-                <BirthdDateAverage values={values} />
+                <BirthdDateAverage values={values as string[]} />
+              ) : isAddress ? (
+                <PropertyContainer property={property}>
+                  {(values as AddressEntity[]).map((address, index) => (
+                    <ParseAddress key={index} address={address} />
+                  ))}
+                  {restItemsCount > 0 ? (
+                    <li>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleShowMore(property);
+                        }}
+                        className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover"
+                      >
+                        {t('common:more_remains', { count: restItemsCount })}
+                      </button>
+                    </li>
+                  ) : null}
+                </PropertyContainer>
+              ) : isScriptTaggedProperty(property) ? (
+                <PropertyContainer property={property}>
+                  {(values as string[]).map((value, index) => (
+                    <ParseAlias key={index} value={value} highlightText={highlightText} />
+                  ))}
+                  {restItemsCount > 0 ? (
+                    <li>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleShowMore(property);
+                        }}
+                        className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover"
+                      >
+                        {t('common:more_remains', { count: restItemsCount })}
+                      </button>
+                    </li>
+                  ) : null}
+                </PropertyContainer>
               ) : values.length > 0 ? (
                 <PropertyContainer property={property}>
-                  {values.map((v, i) => (
+                  {(values as string[]).map((v, i) => (
                     <Fragment key={i}>
                       <TransformProperty property={property} value={v} />
                       {i === values.length - 1 || isPropertyListed(property) ? null : <IconDot spaced />}

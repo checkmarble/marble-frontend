@@ -1,4 +1,4 @@
-import { IconDot } from '@app-builder/constants/screening-entity';
+import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import {
   type FamilyPersonEntity,
   type FamilyRelationshipEntry,
@@ -13,6 +13,7 @@ import { Icon } from 'ui-icons';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
 import ModalPerson from './ModalPerson';
+import { getPersonName } from './match-card-utility-functions';
 
 const MAX_FAMILY_MEMBERS = 5;
 
@@ -26,7 +27,7 @@ export type FamilyDetailProps<T extends RelationType> = {
   familyMembers: RelationEntity<T>;
 };
 
-type FamilyMemberRow = {
+export type FamilyMemberRow = {
   key: string;
   member: FamilyPersonEntity | FamilyRelativeEntity;
   id: string;
@@ -77,15 +78,6 @@ function flattenFamilyMembers<T extends RelationType>(
   return rows;
 }
 
-function getPersonName(entity: FamilyPersonEntity | FamilyRelativeEntity) {
-  const { firstName, lastName, name, alias } = entity.properties;
-  if (firstName?.[0] && lastName?.[0]) return `${firstName[0]} ${lastName[0]}`.trim();
-  if (name?.[0]) return name[0];
-  if (alias?.[0]) return alias[0];
-
-  return '?';
-}
-
 export function FamilyDetail<T extends RelationType>({ familyMembers, relation }: FamilyDetailProps<T>) {
   const { t } = useTranslation(['screenings', 'common']);
   const [showAll, setShowAll] = useState(false);
@@ -114,7 +106,7 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
             </span>
           ) : (
             <span key="alias" className="shrink-0">
-              {properties.alias?.[0] ?? properties.name?.[0]}
+              {getPersonName(row)}
             </span>
           ),
           <IconDot key="dot-2" />,
@@ -134,7 +126,7 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
             <div className="min-w-0">
               <div className="flex items-center gap-v2-sm">
                 <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" overflowTagWidth={60} />
-                <ModalPerson personId={id} personName={getPersonName(member)} />
+                <ModalPerson personId={id} personName={getPersonName(row)} />
               </div>
               {member.properties.sourceUrl && member.properties.sourceUrl.length > 0 && (
                 <span className="col-span-full flex w-full flex-col gap-1">
