@@ -1,14 +1,14 @@
+import { FreeFormMatchCardDataContent } from '@app-builder/components/Screenings/FreeformSearch/FreeformMatchCard';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { FreeFormMatchCardDataContent } from '../FreeformSearch/FreeformMatchCard';
 
 export default function ModalPerson({ personId, personName }: { personId: string; personName: string }) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'screenings']);
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button variant="secondary" mode="icon">
+        <Button variant="secondary" mode="icon" aria-label={t('screenings:see_details')}>
           <Icon icon="eye" className="size-5 text-purple-primary" />
         </Button>
       </Modal.Trigger>

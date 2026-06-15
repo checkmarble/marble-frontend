@@ -49,7 +49,11 @@ export const useSaveFreeformSearchMutation = () => {
   return useMutation({
     mutationKey: ['screening', 'save-freeform-search'],
     mutationFn: async (input: { id: string }): Promise<SaveFreeformSearchResponse> => {
-      return saveFreeformSearch({ data: input });
+      const response = await saveFreeformSearch({ data: input });
+      if (!response.success) {
+        throw new Error('Failed to save freeform search');
+      }
+      return response;
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });

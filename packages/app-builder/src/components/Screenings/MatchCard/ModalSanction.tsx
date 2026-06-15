@@ -26,7 +26,7 @@ export function ModalSanction({ sanction }: { sanction: ScreeningSanctionEntity 
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button variant="secondary" mode="icon">
+        <Button variant="secondary" mode="icon" aria-label={t('screenings:see_details')}>
           <Icon icon="eye" className="size-5 text-purple-primary" />
         </Button>
       </Modal.Trigger>

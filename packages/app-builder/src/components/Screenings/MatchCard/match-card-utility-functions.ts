@@ -1,4 +1,4 @@
-import { FamilyPersonEntity, FamilyRelativeEntity } from '@app-builder/models/screening';
+import { FamilyPersonEntity, FamilyRelativeEntity, PersonEntity } from '@app-builder/models/screening';
 import { formatDateTimeWithoutPresets } from '@app-builder/utils/format';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { Temporal } from 'temporal-polyfill';
@@ -409,11 +409,20 @@ export function mergeAddresses(addressStrings: string[], rawAddressEntities: unk
 
 export function getPersonName(entity: FamilyMemberRow | AssociationRow | FamilyPersonEntity | FamilyRelativeEntity) {
   const { firstName, lastName, name, alias } = entity.properties;
-  if (firstName?.[0] || lastName?.[0]) return `${firstName?.[0]} ${lastName?.[0]}`.trim();
+  if (firstName?.[0] || lastName?.[0]) return [firstName?.[0], lastName?.[0]].filter(Boolean).join(' ');
   if (name?.[0]) return name[0];
   if (alias?.[0]) return alias[0];
 
   return '?';
+}
+
+/**
+ * A person is displayable if it has any identity field the UI can render:
+ * a caption, or any of the fields getPersonName falls back through.
+ */
+export function hasDisplayableName(properties: PersonEntity['properties']) {
+  const { firstName, lastName, name, alias, caption } = properties;
+  return Boolean(caption || firstName?.[0] || lastName?.[0] || name?.[0] || alias?.[0]);
 }
 
 export function splitTextWithEmbeddedDates(value: string): TextSegment[] {

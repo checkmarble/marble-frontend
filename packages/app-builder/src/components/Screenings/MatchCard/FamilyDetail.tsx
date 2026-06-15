@@ -13,7 +13,7 @@ import { Icon } from 'ui-icons';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
 import ModalPerson from './ModalPerson';
-import { getPersonName } from './match-card-utility-functions';
+import { getPersonName, hasDisplayableName } from './match-card-utility-functions';
 
 const MAX_FAMILY_MEMBERS = 5;
 
@@ -64,7 +64,7 @@ function flattenFamilyMembers<T extends RelationType>(
       (member.properties.relationship ?? []).map((value) => ({ value, source: relation }));
 
     entities?.forEach(({ id, properties }, idx) => {
-      if (!properties?.name?.[0]) return;
+      if (!properties || !hasDisplayableName(properties)) return;
       rows.push({
         key: `person-${memberIndex}-${id}-${idx}`,
         member,

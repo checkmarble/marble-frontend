@@ -228,7 +228,7 @@ const propertyMetadata: Record<ScreeningEntityProperty, PropertyMetadata> = {
   okpoCode: { type: 'string' },
   opencorporatesUrl: { type: 'url' },
   passportNumber: { type: 'string', format: 'monospace' },
-  phone: { type: 'string' },
+  phone: { type: 'string', format: 'phone' },
   political: { type: 'string' },
   position: { type: 'string' },
   previousName: { type: 'string' },

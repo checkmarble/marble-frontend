@@ -201,6 +201,7 @@
   "match.family.unknown_relationship": "غير معروف",
   "match.membership.no-caption": "بدون تسمية توضيحية",
   "match.membership.title": "العضويات",
+  "match.not_available": "غير متوفر",
   "match.not_reviewable": "غير قابل للمراجعة",
   "match.score": "النتيجة {{score}}%",
   "match.similarity": "التشابه {{percent}}%",

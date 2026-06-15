@@ -201,6 +201,7 @@
   "match.family.unknown_relationship": "Relation inconnue",
   "match.membership.no-caption": "Sans titre",
   "match.membership.title": "Affiliations",
+  "match.not_available": "Non disponible",
   "match.not_reviewable": "Non examinable",
   "match.score": "Score {{score}}%",
   "match.similarity": "Similarité {{percent}} %",

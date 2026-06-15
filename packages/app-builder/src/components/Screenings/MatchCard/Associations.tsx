@@ -8,7 +8,7 @@ import { ExpandableGroupTagLine } from 'ui-design-system';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
 import ModalPerson from './ModalPerson';
-import { cleanUrl, getPersonName } from './match-card-utility-functions';
+import { cleanUrl, getPersonName, hasDisplayableName } from './match-card-utility-functions';
 
 const MAX_ASSOCIATIONS = 5;
 
@@ -24,7 +24,7 @@ function flattenAssociations(associations: AssociationEntity[]): AssociationRow[
 
   associations.forEach((association, associationIndex) => {
     association.properties.person?.forEach((person, idx) => {
-      if (!person.properties?.name?.[0]) return;
+      if (!person.properties || !hasDisplayableName(person.properties)) return;
       rows.push({
         key: `person-${associationIndex}-${person.id}-${idx}`,
         association,
@@ -77,7 +77,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
             </span>
           ),
           <IconDot key="dot-2" />,
-          rel ? (
+          rel?.length ? (
             <StringCodeComponent key="rel">
               {rel?.map((r, index) => (
                 <span key={r}>

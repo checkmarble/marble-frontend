@@ -14,7 +14,7 @@ import { useOrganizationUsers } from '@app-builder/services/organization/organiz
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
 import { omitUndefined } from '@app-builder/utils/omit-undefined';
 import { ScreeningConfigBodySectionDto } from 'marble-api';
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag } from 'ui-design-system';
@@ -249,14 +249,14 @@ function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'
       {Object.entries(filter.filters)
         .filter(([, value]) => value.enabled)
         .map(([key, value], index) => (
-          <>
+          <Fragment key={`filter-${key}-${index}`}>
             {value?.datasets?.length && (
-              <Tag color="white" appearance="monospace" className="gap-v2-xs" key={`dataset-${key}-${index}`}>
+              <Tag color="white" appearance="monospace" className="gap-v2-xs">
                 {key}:{value?.datasets?.length ?? 0}
               </Tag>
             )}
-            {value?.topics && <TopicTag key={`topic-${key}-${index}`} topics={value.topics} />}
-          </>
+            {value?.topics && <TopicTag topics={value.topics} />}
+          </Fragment>
         ))}
     </div>
   );

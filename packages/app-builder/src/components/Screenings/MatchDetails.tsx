@@ -1,4 +1,5 @@
 import {
+  type AssociationEntity,
   type FamilyPersonEntity,
   type FamilyRelationshipEntry,
   type FamilyRelativeEntity,
@@ -111,8 +112,7 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
       associations = entity.properties.associations.filter(({ properties }) => {
         if (!properties.person) return false;
         if (properties.person.some((p) => associateIds.has(p.id))) {
-          const personId = properties.person.find((p) => associateIds.has(p.id))?.id;
-          if (personId) associateIds.delete(personId);
+          properties.person.forEach((p) => associateIds.delete(p.id));
           return true;
         }
         properties.person.forEach((p) =>
@@ -121,13 +121,27 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
         return false;
       });
 
-      ignoredAssociation.forEach((person) => {
-        const association = associations?.find(({ properties }) => properties.person?.some((p) => p.id === person.id));
-        if (association) {
-          const relationships = new Set(association.properties.relationship ?? []);
-          person.relationship.forEach((r) => relationships.add(r));
-          association.properties.relationship = Array.from(relationships);
-        }
+      const extraRelationshipsByPersonId = new Map<string, Set<string>>();
+      ignoredAssociation.forEach(({ id, relationship }) => {
+        const existing = extraRelationshipsByPersonId.get(id) ?? new Set<string>();
+        relationship.forEach((r) => existing.add(r));
+        extraRelationshipsByPersonId.set(id, existing);
+      });
+
+      associations = associations?.map((association) => {
+        const matchingPerson = association.properties.person?.find((p) => extraRelationshipsByPersonId.has(p.id));
+        if (!matchingPerson) return association;
+
+        const relationships = new Set(association.properties.relationship ?? []);
+        extraRelationshipsByPersonId.get(matchingPerson.id)!.forEach((r) => relationships.add(r));
+
+        return {
+          ...association,
+          properties: {
+            ...association.properties,
+            relationship: Array.from(relationships),
+          },
+        } as AssociationEntity;
       });
     }
 

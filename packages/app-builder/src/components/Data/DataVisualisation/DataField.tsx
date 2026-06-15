@@ -316,7 +316,7 @@ function StringCity() {
 function StringCountry() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
-  return StringCountryComponent({ value });
+  return <StringCountryComponent value={value} />;
 }
 
 export function StringCountryComponent({
@@ -406,7 +406,7 @@ function StringFree() {
 function DateBirthdate() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
-  return DateBirthdateComponent({ value });
+  return <DateBirthdateComponent value={value} />;
 }
 
 export function DateBirthdateComponent({ value }: { value: string }) {
@@ -417,7 +417,7 @@ export function DateBirthdateComponent({ value }: { value: string }) {
   return (
     <span className="inline-flex items-center gap-1">
       <span className="text-grey-secondary text-xs">{age}</span>
-      <span className={cn(codeClassName, 'text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
+      <span className={codeClassName('text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
     </span>
   );
 }
@@ -447,7 +447,7 @@ function StringCurrency() {
 function DateDatetime() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
-  return DateDatetimeComponent({ value });
+  return <DateDatetimeComponent value={value} />;
 }
 
 export function DateDatetimeComponent({

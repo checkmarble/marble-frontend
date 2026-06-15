@@ -20,6 +20,7 @@ import { type OpenSanctionEntity } from '@app-builder/models/screening';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
 import { screeningsI18n } from './screenings-i18n';
 
 type PropertyRow = {
@@ -138,15 +139,16 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                   ))}
                   {restItemsCount > 0 ? (
                     <li>
-                      <button
+                      <Button
+                        variant="primary"
+                        appearance="link"
                         onClick={(e) => {
                           e.preventDefault();
                           handleShowMore(property);
                         }}
-                        className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover"
                       >
                         {t('common:more_remains', { count: restItemsCount })}
-                      </button>
+                      </Button>
                     </li>
                   ) : null}
                 </PropertyContainer>
@@ -157,15 +159,16 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                   ))}
                   {restItemsCount > 0 ? (
                     <li>
-                      <button
+                      <Button
+                        variant="primary"
+                        appearance="link"
                         onClick={(e) => {
                           e.preventDefault();
                           handleShowMore(property);
                         }}
-                        className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover"
                       >
                         {t('common:more_remains', { count: restItemsCount })}
-                      </button>
+                      </Button>
                     </li>
                   ) : null}
                 </PropertyContainer>
@@ -180,20 +183,21 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                   {restItemsCount > 0 ? (
                     <>
                       {isPropertyListed(property) ? null : <IconDot spaced />}
-                      <button
+                      <Button
+                        variant="primary"
+                        appearance="link"
                         onClick={(e) => {
                           e.preventDefault();
                           handleShowMore(property);
                         }}
-                        className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover"
                       >
                         {t('common:more_remains', { count: restItemsCount })}
-                      </button>
+                      </Button>
                     </>
                   ) : null}
                 </PropertyContainer>
               ) : (
-                <span className="text-grey-secondary">not available</span>
+                <span className="text-grey-secondary">{t('screenings:match.not_available')}</span>
               )}
             </div>
           </Fragment>
