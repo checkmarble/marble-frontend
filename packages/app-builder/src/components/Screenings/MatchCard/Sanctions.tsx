@@ -2,7 +2,7 @@ import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card
 import { type ScreeningSanctionEntity } from '@app-builder/models/screening';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExpandableGroupTagLine } from 'ui-design-system';
+import { Button, ExpandableGroupTagLine } from 'ui-design-system';
 import { ModalSanction } from './ModalSanction';
 
 const MAX_SANCTIONS = 5;
@@ -70,13 +70,9 @@ export function Sanctions({ sanctions }: { sanctions: ScreeningSanctionEntity[] 
       {hiddenCount > 0 && !showAll && (
         <li className="contents">
           <span />
-          <button
-            type="button"
-            onClick={() => setShowAll(true)}
-            className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover w-fit"
-          >
+          <Button appearance="link" variant="primary" onClick={() => setShowAll(true)}>
             {t('common:more_remains', { count: hiddenCount })}
-          </button>
+          </Button>
         </li>
       )}
     </ul>
