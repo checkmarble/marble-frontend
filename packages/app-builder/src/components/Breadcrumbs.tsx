@@ -1,6 +1,6 @@
 import { Page } from '@app-builder/components/Page';
 import { createLink, type LinkComponent, useMatches } from '@tanstack/react-router';
-import React, { type FunctionComponent, useMemo } from 'react';
+import React, { Fragment, type FunctionComponent, useMemo } from 'react';
 import { cn } from 'ui-design-system';
 
 export type BreadCrumbProps<T = unknown> = {
@@ -28,8 +28,8 @@ const BreadCrumbLinkInner = React.forwardRef<HTMLAnchorElement, BreadCrumbLinkIn
       ref={ref}
       {...props}
       className={cn(
-        'text-s flex items-center font-bold transition-colors',
-        { 'text-grey-secondary hover:text-grey-primary': !isLast },
+        'text-h2 flex items-center font-semibold transition-colors',
+        { 'text-grey-placeholder hover:text-grey-primary': !isLast },
         className,
       )}
     >
@@ -62,24 +62,26 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
   return (
     <div className="flex flex-row items-center gap-4">
       {back ? <Page.BackLink to={back} /> : links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
-      {links.map(({ Elements, pathname, data }, linkIndex) => {
-        const isLastLink = linkIndex === links.length - 1;
+      <div className="flex gap-v2-sm items-center">
+        {links.map(({ Elements, pathname, data }, linkIndex) => {
+          const isLastLink = linkIndex === links.length - 1;
 
-        return Elements
-          ? Elements.map((Element, elementIndex) => {
-              const isLastElement = elementIndex === Elements.length - 1;
+          return Elements
+            ? Elements.map((Element, elementIndex) => {
+                const isLastElement = elementIndex === Elements.length - 1;
 
-              return (
-                <div className="flex items-center gap-4" key={`${pathname}-${elementIndex}`}>
-                  <Element key={pathname} isLast={isLastElement && isLastLink} data={data} />
-                  {!(isLastElement && isLastLink) ? (
-                    <span className="text-s text-grey-disabled font-bold">/</span>
-                  ) : null}
-                </div>
-              );
-            })
-          : null;
-      })}
+                return (
+                  <Fragment key={`${pathname}-${elementIndex}`}>
+                    <Element key={pathname} isLast={isLastElement && isLastLink} data={data} />
+                    {!(isLastElement && isLastLink) ? (
+                      <span className="text-h2 text-grey-disabled font-semibold">/</span>
+                    ) : null}
+                  </Fragment>
+                );
+              })
+            : null;
+        })}
+      </div>
     </div>
   );
 };

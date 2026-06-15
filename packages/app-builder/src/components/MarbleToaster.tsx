@@ -5,8 +5,6 @@ import { ToastBar, Toaster, toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-import { headerHeight } from './Page';
-
 export function MarbleToaster({ toastMessage }: { toastMessage?: ToastMessage }) {
   const { t } = useTranslation(['common']);
 
@@ -27,7 +25,6 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: ToastMessage })
   return (
     <Toaster
       position="top-center"
-      containerClassName={headerHeight({ type: 'mt' })}
       toastOptions={{
         className: 'bg-surface-card text-grey-primary',
         style: {

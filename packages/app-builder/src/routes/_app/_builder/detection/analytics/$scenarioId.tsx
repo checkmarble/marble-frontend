@@ -313,86 +313,84 @@ function Analytics() {
 
   return (
     <Page.Main>
-      <Page.Container>
-        <Page.ContentV2 className="gap-v2-md">
-          <DetectionNavigationTabs
-          // actions={
-          //   <Link
-          //     to="/analytics-legacy"
-          //     target="_blank"
-          //     className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
-          //   >
-          //     <Icon icon="openinnew" className="size-4" />
-          //     <span>{t('analytics:legacy-analytics-link')}</span>
-          //   </Link>
-          // }
-          />
-          <FormattingProvider
-            value={{
-              language: i18n.language,
-              formatDateTimeWithoutPresets: (d, opts) =>
-                formatDateTimeWithoutPresets(d, { language: i18n.language, ...(opts ?? {}) }),
-              formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
-            }}
-          >
-            <div className="bg-surface-page min-[2000px]:px-40 flex flex-col gap-v2-md">
-              <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
-                <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
-                  <FiltersBar
-                    descriptors={descriptors}
-                    dynamicDescriptors={dynamicDescriptors}
-                    value={filtersValues}
-                    onUpdate={onFiltersUpdate}
-                    onChange={(change, _next) => onInstantUpdate(change)}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col lg-analytics:flex-row gap-v2-md w-full items-stretch h-auto">
-                <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
-                  <Decisions
-                    data={decisionsOutcomesPerDayQuery.data ?? null}
-                    scenarioVersions={scenarioVersions}
-                    isLoading={decisionsOutcomesPerDayQuery.isFetching}
-                  />
-                </div>
-                {hasAnalyticsLicense ? (
-                  <div className="lg-analytics:basis-1/3 min-w-0">
-                    <DecisionsScoreDistribution query={decisionsScoreDistributionQuery} />
-                  </div>
-                ) : null}
-              </div>
-
-              {hasAnalyticsLicense ? (
-                <>
-                  <RulesHit
-                    isComparingRanges={effectiveRanges.length > 1}
-                    data={ruleHitTableQuery.data ?? []}
-                    isLoading={ruleHitTableQuery.isFetching}
-                  />
-                  <RuleVsDecisionOutcomes
-                    data={ruleVsDecisionOutcomeQuery.data ?? null}
-                    isLoading={ruleVsDecisionOutcomeQuery.isFetching}
-                  />
-                  <ScreeningHits
-                    data={screeningHitsTableQuery.data ?? []}
-                    isLoading={screeningHitsTableQuery.isFetching}
-                  />
-                </>
-              ) : (
-                <UpsellCard
-                  title={t('analytics:upsell.title')}
-                  description={t('analytics:upsell.description')}
-                  benefits={[
-                    t('analytics:upsell.benefit_1'),
-                    t('analytics:upsell.benefit_2'),
-                    t('analytics:upsell.benefit_3'),
-                  ]}
+      <Page.ContentV2 className="gap-v2-md">
+        <DetectionNavigationTabs
+        // actions={
+        //   <Link
+        //     to="/analytics-legacy"
+        //     target="_blank"
+        //     className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
+        //   >
+        //     <Icon icon="openinnew" className="size-4" />
+        //     <span>{t('analytics:legacy-analytics-link')}</span>
+        //   </Link>
+        // }
+        />
+        <FormattingProvider
+          value={{
+            language: i18n.language,
+            formatDateTimeWithoutPresets: (d, opts) =>
+              formatDateTimeWithoutPresets(d, { language: i18n.language, ...(opts ?? {}) }),
+            formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
+          }}
+        >
+          <div className="bg-surface-page min-[2000px]:px-40 flex flex-col gap-v2-md">
+            <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
+              <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
+                <FiltersBar
+                  descriptors={descriptors}
+                  dynamicDescriptors={dynamicDescriptors}
+                  value={filtersValues}
+                  onUpdate={onFiltersUpdate}
+                  onChange={(change, _next) => onInstantUpdate(change)}
                 />
-              )}
+              </div>
             </div>
-          </FormattingProvider>
-        </Page.ContentV2>
-      </Page.Container>
+            <div className="flex flex-col lg-analytics:flex-row gap-v2-md w-full items-stretch h-auto">
+              <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
+                <Decisions
+                  data={decisionsOutcomesPerDayQuery.data ?? null}
+                  scenarioVersions={scenarioVersions}
+                  isLoading={decisionsOutcomesPerDayQuery.isFetching}
+                />
+              </div>
+              {hasAnalyticsLicense ? (
+                <div className="lg-analytics:basis-1/3 min-w-0">
+                  <DecisionsScoreDistribution query={decisionsScoreDistributionQuery} />
+                </div>
+              ) : null}
+            </div>
+
+            {hasAnalyticsLicense ? (
+              <>
+                <RulesHit
+                  isComparingRanges={effectiveRanges.length > 1}
+                  data={ruleHitTableQuery.data ?? []}
+                  isLoading={ruleHitTableQuery.isFetching}
+                />
+                <RuleVsDecisionOutcomes
+                  data={ruleVsDecisionOutcomeQuery.data ?? null}
+                  isLoading={ruleVsDecisionOutcomeQuery.isFetching}
+                />
+                <ScreeningHits
+                  data={screeningHitsTableQuery.data ?? []}
+                  isLoading={screeningHitsTableQuery.isFetching}
+                />
+              </>
+            ) : (
+              <UpsellCard
+                title={t('analytics:upsell.title')}
+                description={t('analytics:upsell.description')}
+                benefits={[
+                  t('analytics:upsell.benefit_1'),
+                  t('analytics:upsell.benefit_2'),
+                  t('analytics:upsell.benefit_3'),
+                ]}
+              />
+            )}
+          </div>
+        </FormattingProvider>
+      </Page.ContentV2>
     </Page.Main>
   );
 }

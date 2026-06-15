@@ -100,14 +100,14 @@ function RootShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <html lang={locale} dir={i18n.dir()} className={clsx(theme === 'dark' && 'dark')}>
+    <html lang={locale} dir={i18n.dir()} className={clsx('overscroll-none', theme === 'dark' && 'dark')}>
       <head>
         <HeadContent />
         {segmentScript ? <SegmentScript nonce={nonce} script={segmentScript} /> : null}
       </head>
       <body
         data-hydrated={hydrated || undefined}
-        className="bg-surface-page selection:text-grey-white selection:bg-purple-primary h-screen w-full overflow-hidden antialiased text-grey-primary"
+        className="bg-surface-page selection:text-grey-white selection:bg-purple-primary min-h-screen w-full antialiased text-grey-primary"
       >
         <I18nextProvider i18n={i18n}>
           <I18nProvider>

@@ -114,7 +114,7 @@ function ScenarioHome() {
           <ScenarioHeader isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} scenario={currentScenario} />
         </div>
       </Page.Header>
-      <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
+      <Page.ContentV2 className="flex flex-col gap-v2-lg max-w-(--breakpoint-xl)">
         {currentScenario.archived ? (
           <Callout color="red" icon="warning" className="mb-4">
             {t('scenarios:archived_scenario_banner')}
@@ -164,37 +164,35 @@ function ScenarioHome() {
             ) : null}
           </div>
         </section>
-        <Page.ContentV2 centered paddingLess className="flex flex-col gap-v2-lg my-v2-xxl">
-          <section className="flex flex-col gap-v2-sm">
-            <Typo variant="title2" className="text-grey-primary">
-              {t('scenarios:home.execution')}
-            </Typo>
-            <div className="grid grid-cols-2 gap-v2-sm">
-              <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
-              <BatchSection
-                scenarioId={currentScenario.id}
-                isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
-                scheduledExecutions={scheduledExecutions}
-                liveIterationSchedule={liveIterationSchedule}
-                liveIterationId={liveScenarioIteration?.id}
-              />
-              {match(featureAccess.isTestRunAvailable)
-                .with('missing_configuration', (status) => <TestRunNudge kind={status} />)
-                .with('restricted', (status) => <TestRunNudge kind={status} />)
-                .otherwise(() => (
-                  <TestRunSection scenarioId={currentScenario.id} access={featureAccess.isTestRunAvailable} />
-                ))}
-              {match(featureAccess.isWorkflowsAvailable)
-                .with('missing_configuration', (status) => <WorkflowNudge kind={status} />)
-                .with('restricted', (status) => <WorkflowNudge kind={status} />)
-                .otherwise(() => (
-                  <WorkflowSection scenario={currentScenario} access={featureAccess.isWorkflowsAvailable} />
-                ))}
-            </div>
-          </section>
-          <ResourcesSection />
-        </Page.ContentV2>
-      </Page.Container>
+        <section className="flex flex-col gap-v2-sm">
+          <Typo variant="title2" className="text-grey-primary">
+            {t('scenarios:home.execution')}
+          </Typo>
+          <div className="grid grid-cols-2 gap-v2-sm">
+            <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
+            <BatchSection
+              scenarioId={currentScenario.id}
+              isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
+              scheduledExecutions={scheduledExecutions}
+              liveIterationSchedule={liveIterationSchedule}
+              liveIterationId={liveScenarioIteration?.id}
+            />
+            {match(featureAccess.isTestRunAvailable)
+              .with('missing_configuration', (status) => <TestRunNudge kind={status} />)
+              .with('restricted', (status) => <TestRunNudge kind={status} />)
+              .otherwise(() => (
+                <TestRunSection scenarioId={currentScenario.id} access={featureAccess.isTestRunAvailable} />
+              ))}
+            {match(featureAccess.isWorkflowsAvailable)
+              .with('missing_configuration', (status) => <WorkflowNudge kind={status} />)
+              .with('restricted', (status) => <WorkflowNudge kind={status} />)
+              .otherwise(() => (
+                <WorkflowSection scenario={currentScenario} access={featureAccess.isWorkflowsAvailable} />
+              ))}
+          </div>
+        </section>
+        <ResourcesSection />
+      </Page.ContentV2>
     </Page.Main>
   );
 }

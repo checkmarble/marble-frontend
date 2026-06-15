@@ -109,7 +109,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
           <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
             <MenuCommand.Trigger>
               <Button variant="secondary">
-                <Icon icon="snooze" className="size-5" aria-hidden />
+                <Icon icon="snooze" className="size-4" aria-hidden />
                 {t('cases:snooze_case.title')}
               </Button>
             </MenuCommand.Trigger>

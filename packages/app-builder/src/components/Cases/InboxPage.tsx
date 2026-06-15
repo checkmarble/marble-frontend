@@ -1,5 +1,4 @@
 import { Page } from '@app-builder/components';
-import { CaseRightPanel } from '@app-builder/components/Cases';
 import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
 import { FavoriteInboxButton } from '@app-builder/components/Cases/Inbox/FavoriteInboxButton';
 import { InboxFilterBar } from '@app-builder/components/Cases/Inbox/FilterBar/FilterBar';
@@ -7,7 +6,6 @@ import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useBase64Query } from '@app-builder/hooks/useBase64Query';
-import useIntersection from '@app-builder/hooks/useIntersection';
 import { Case } from '@app-builder/models/cases';
 import { InboxWithCasesCount } from '@app-builder/models/inbox';
 import { PaginatedResponse } from '@app-builder/models/pagination';
@@ -21,7 +19,9 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '../Panel';
 import { Spinner } from '../Spinner';
+import { CreateCase } from './CreateCase';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
 import { InboxEmptyState } from './Inbox/InboxEmptyState';
 import { SelectCaseById } from './Inbox/SelectCaseById';
@@ -66,6 +66,7 @@ export const InboxPage = ({
   const { t } = useTranslation(['common', 'cases']);
   const [searchValue, setSearchValue] = useState('');
   const [favoriteInboxId, setFavoriteInboxId] = useState(initialFavoriteInboxId);
+  const [isAddingCase, setIsAddingCase] = useState(false);
   const { orgUsers } = useOrganizationUsers();
   const navigate = useAgnosticNavigation();
 
@@ -89,13 +90,6 @@ export const InboxPage = ({
   const massUpdateCasesMutation = useMassUpdateCasesMutation();
   const queryClient = useQueryClient();
 
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const intersection = useIntersection(sentinelRef, {
-    root: wrapperRef.current,
-    rootMargin: '1px',
-    threshold: 1,
-  });
   const isSubsequentlyFetching = casesQuery.isFetchingNextPage || (casesQuery.isFetching && !casesQuery.isPending);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -155,116 +149,118 @@ export const InboxPage = ({
           },
         )}
       />
-      <CaseRightPanel.Root className="overflow-hidden">
-        <Page.Container ref={wrapperRef}>
-          <Page.ContentV2 className="gap-v2-md">
-            {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
-            <div className="flex flex-col gap-v2-md relative">
-              <MultiSelect.Root id={inboxId}>
-                <div className="flex justify-between">
-                  <div className="flex gap-v2-sm items-center">
-                    <MultiSelect.Subscribe<Case>>
-                      {(count, items) => {
-                        if (count === 0 || !casesQuery.isSuccess) return null;
+      <Page.ContentV2 className="gap-v2-md">
+        {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
+        <div className="flex flex-col gap-v2-md relative">
+          <MultiSelect.Root id={inboxId}>
+            <div className="flex justify-between">
+              <div className="flex gap-v2-sm items-center">
+                <MultiSelect.Subscribe<Case>>
+                  {(count, items) => {
+                    if (count === 0 || !casesQuery.isSuccess) return null;
 
-                        return (
-                          <BatchActions
-                            selectedCases={items}
-                            inboxes={inboxes}
-                            assignableUsers={assignableUsers}
-                            onMassUpdateCases={onMassUpdateCases}
-                          />
-                        );
-                      }}
-                    </MultiSelect.Subscribe>
-                    <InboxFilterBar
-                      inboxId={inboxId}
-                      inboxes={inboxes}
-                      allowedFilters={allowedFilters}
-                      filters={parsedQuery.asArray}
-                      updateFilters={parsedQuery.update}
-                      onInboxSelect={onInboxSelect}
-                    />
-                  </div>
-                  <div className="flex gap-v2-sm items-center">
-                    <FavoriteInboxButton
-                      inboxId={inboxId}
-                      isFavorite={favoriteInboxId === (inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId))}
-                      onToggle={setFavoriteInboxId}
-                    />
-                    <SelectCaseById onNavigate={handleNavigate} />
-                    <Input
-                      endAdornment="search"
-                      adornmentClassName="size-5"
-                      placeholder={t('cases:search.placeholder')}
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          parsedQuery.update({ name: searchValue });
-                          setSearchValue('');
-                        }
-                      }}
-                    />
-                    <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                      <Button
-                        size="medium"
-                        variant="primary"
-                        appearance="stroked"
-                        mode="icon"
-                        data-test="create-case-trigger"
-                      >
-                        <Icon icon="plus" className="size-4" />
-                      </Button>
-                    </CaseRightPanel.Trigger>
-                  </div>
-                </div>
-
-                {match(casesQuery)
-                  .with({ isPending: true }, () => {
                     return (
-                      <div className=" border border-grey-border rounded-v2-md">
-                        <div className="h-13 border-b border-grey-border"></div>
-                        <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
-                          <Spinner className="size-12" />
-                        </div>
-                      </div>
-                    );
-                  })
-                  .with({ isError: true }, () => {
-                    return (
-                      <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
-                        <span>{t('cases:errors.fetching_cases')}</span>
-                        <Button variant="secondary" onClick={() => casesQuery.refetch()}>
-                          {t('common:retry')}
-                        </Button>
-                      </div>
-                    );
-                  })
-                  .with({ isSuccess: true }, (successCasesQuery) => {
-                    return (
-                      <CasesList
-                        key={inboxId}
-                        casesQuery={successCasesQuery}
-                        sorting={order}
-                        limit={limit}
-                        setLimit={(newLimit) => updatePage(query, newLimit, order)}
-                        onSortingChange={(newOrder) => updatePage(query, limit, newOrder)}
-                        isPaginationSticky={!(intersection?.isIntersecting ?? true)}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        fromInboxId={inboxId}
+                      <BatchActions
+                        selectedCases={items}
+                        inboxes={inboxes}
+                        assignableUsers={assignableUsers}
+                        onMassUpdateCases={onMassUpdateCases}
                       />
                     );
-                  })
-                  .exhaustive()}
-
-                <div ref={sentinelRef} className="absolute left-0 bottom-0" />
-              </MultiSelect.Root>
+                  }}
+                </MultiSelect.Subscribe>
+                <InboxFilterBar
+                  inboxId={inboxId}
+                  inboxes={inboxes}
+                  allowedFilters={allowedFilters}
+                  filters={parsedQuery.asArray}
+                  updateFilters={parsedQuery.update}
+                  onInboxSelect={onInboxSelect}
+                />
+              </div>
+              <div className="flex gap-v2-sm items-center">
+                <FavoriteInboxButton
+                  inboxId={inboxId}
+                  isFavorite={favoriteInboxId === (inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId))}
+                  onToggle={setFavoriteInboxId}
+                />
+                <SelectCaseById onNavigate={handleNavigate} />
+                <Input
+                  endAdornment="search"
+                  adornmentClassName="size-5"
+                  placeholder={t('cases:search.placeholder')}
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      parsedQuery.update({ name: searchValue });
+                      setSearchValue('');
+                    }
+                  }}
+                />
+                <Button
+                  size="medium"
+                  variant="primary"
+                  appearance="stroked"
+                  mode="icon"
+                  data-test="create-case-trigger"
+                  onClick={() => {
+                    setIsAddingCase(true);
+                  }}
+                >
+                  <Icon icon="plus" className="size-4" />
+                </Button>
+                <PanelRoot open={isAddingCase} onOpenChange={setIsAddingCase}>
+                  <PanelContainer size="xl">
+                    <PanelContent>
+                      <PanelHeader>{t('cases:case.new_case')}</PanelHeader>
+                      <CreateCase inboxId={inboxId === MY_INBOX_ID ? null : inboxId} />
+                    </PanelContent>
+                  </PanelContainer>
+                </PanelRoot>
+              </div>
             </div>
-          </Page.ContentV2>
-        </Page.Container>
-      </CaseRightPanel.Root>
+
+            {match(casesQuery)
+              .with({ isPending: true }, () => {
+                return (
+                  <div className=" border border-grey-border rounded-v2-md">
+                    <div className="h-13 border-b border-grey-border"></div>
+                    <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
+                      <Spinner className="size-12" />
+                    </div>
+                  </div>
+                );
+              })
+              .with({ isError: true }, () => {
+                return (
+                  <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
+                    <span>{t('cases:errors.fetching_cases')}</span>
+                    <Button variant="secondary" onClick={() => casesQuery.refetch()}>
+                      {t('common:retry')}
+                    </Button>
+                  </div>
+                );
+              })
+              .with({ isSuccess: true }, (successCasesQuery) => {
+                return (
+                  <CasesList
+                    key={inboxId}
+                    casesQuery={successCasesQuery}
+                    sorting={order}
+                    limit={limit}
+                    setLimit={(newLimit) => updatePage(query, newLimit, order)}
+                    onSortingChange={(newOrder) => updatePage(query, limit, newOrder)}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    fromInboxId={inboxId}
+                  />
+                );
+              })
+              .exhaustive()}
+          </MultiSelect.Root>
+        </div>
+      </Page.ContentV2>
     </Page.Main>
   );
 };

@@ -1,5 +1,6 @@
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
+import { StickyComponent } from '@app-builder/components/ui/StickyComponent';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -20,7 +21,6 @@ export type CasesListProps = {
   onSortingChange: (sort: 'ASC' | 'DESC') => void;
   limit: number;
   setLimit: (limit: number) => void;
-  isPaginationSticky: boolean;
   currentPage: number;
   setCurrentPage: (page: number) => void;
 };
@@ -51,7 +51,6 @@ export function CasesList({
   casesQuery,
   limit,
   setLimit,
-  isPaginationSticky,
   currentPage,
   setCurrentPage,
   fromInboxId,
@@ -194,14 +193,16 @@ export function CasesList({
           </div>
         ))}
       </div>
-      <PaginationRow
-        casesQuery={casesQuery}
-        currentPage={currentPage}
-        currentLimit={limit}
-        setCurrentPage={setCurrentPage}
-        setLimit={setLimit}
-        className={isPaginationSticky ? 'shadow-sticky-bottom border-grey-border' : ''}
-      />
+      <StickyComponent sentinelClassName="bottom-0 h-px">
+        <PaginationRow
+          casesQuery={casesQuery}
+          currentPage={currentPage}
+          currentLimit={limit}
+          setCurrentPage={setCurrentPage}
+          setLimit={setLimit}
+          className="sentinel-intersect:shadow-sticky-bottom sentinel-intersect:border-grey-border"
+        />
+      </StickyComponent>
     </div>
   );
 }
