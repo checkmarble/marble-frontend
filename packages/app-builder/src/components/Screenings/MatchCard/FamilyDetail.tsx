@@ -8,7 +8,7 @@ import {
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { cn, ExpandableGroupTagLine } from 'ui-design-system';
+import { Button, cn, ExpandableGroupTagLine } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
@@ -154,13 +154,9 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
       {hiddenCount > 0 && !showAll && (
         <li className="contents">
           <span />
-          <button
-            type="button"
-            onClick={() => setShowAll(true)}
-            className="text-purple-primary font-semibold cursor-pointer hover:text-purple-hover w-fit"
-          >
+          <Button appearance="link" variant="primary" onClick={() => setShowAll(true)}>
             {t('common:more_remains', { count: hiddenCount })}
-          </button>
+          </Button>
         </li>
       )}
     </ul>
