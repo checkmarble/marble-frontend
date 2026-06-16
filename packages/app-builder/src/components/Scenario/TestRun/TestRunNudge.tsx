@@ -2,7 +2,7 @@ import { CalloutV2 } from '@app-builder/components/Callout';
 import { Nudge } from '@app-builder/components/Nudge';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
-import { Button, cn } from 'ui-design-system';
+import { Button, cn, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const TestRunNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, 'allowed' | 'test'> }) => {
@@ -15,7 +15,7 @@ export const TestRunNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, 'a
         'border-yellow-primary': kind === 'missing_configuration',
       })}
     >
-      <h3 className="text-grey-primary text-l font-bold">{t('scenarios:home.testrun')}</h3>
+      <Typo variant="subtitle1">{t('scenarios:home.testrun')}</Typo>
 
       <Nudge kind={kind} className="absolute -right-3 -top-3 size-6" content={t('scenarios:testrun.nudge')} />
 

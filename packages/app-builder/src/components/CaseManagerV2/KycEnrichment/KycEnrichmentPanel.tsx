@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/tanstackstart-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Markdown } from 'ui-design-system';
+import { Button, Markdown, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../../Callout';
 import { PanelContainer, PanelRoot } from '../../Panel';
@@ -66,7 +66,9 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
       <PanelContainer size="4xl">
         <div className="flex items-center gap-v2-sm pb-v2-md border-b border-grey-border">
           <Icon icon="ai-review" className="size-5 text-purple-primary shrink-0" />
-          <h2 className="flex-1 text-l font-semibold text-grey-primary">{t('cases:kyc_enrichment.title')}</h2>
+          <Typo variant="title2" className="flex-1 text-grey-primary">
+            {t('cases:kyc_enrichment.title')}
+          </Typo>
           <Icon
             icon="cross"
             className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary shrink-0"

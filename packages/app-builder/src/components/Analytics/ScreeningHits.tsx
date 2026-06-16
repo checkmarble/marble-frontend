@@ -3,7 +3,7 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useTable } from 'ui-design-system';
+import { Table, Typo, useTable } from 'ui-design-system';
 import { Spinner } from '../Spinner';
 import { AnalyticsTooltip } from './Tooltip';
 
@@ -85,7 +85,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:screening_hits.title')}</h2>
+        <Typo variant="title2">{t('analytics:screening_hits.title')}</Typo>
       </div>
       <div aria-busy={isLoading} className="relative">
         {isLoading ? (

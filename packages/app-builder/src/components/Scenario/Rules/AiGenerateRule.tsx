@@ -3,7 +3,7 @@ import { useGenerateRuleMutation } from '@app-builder/queries/scenarios/generate
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface AiGenerateRuleProps {
@@ -31,7 +31,9 @@ export function AiGenerateRule({ scenarioId, ruleId, onFormulaGenerated }: AiGen
 
   return (
     <div className="bg-surface-card border-grey-border rounded-md border p-4 max-w-2xl">
-      <h3 className="text-s font-medium mb-3">{t('scenarios:rules.ai_generate.title')}</h3>
+      <Typo variant="subtitle1" className="text-s font-medium mb-3">
+        {t('scenarios:rules.ai_generate.title')}
+      </Typo>
 
       <div className="flex flex-col gap-3">
         <textarea

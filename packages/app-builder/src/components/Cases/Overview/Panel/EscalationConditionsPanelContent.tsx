@@ -9,7 +9,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type EscalationCondition, EscalationConditionRow } from './EscalationConditionRow';
 
@@ -114,7 +114,7 @@ export const EscalationConditionsPanelContent = ({
   return (
     <PanelContainer size="xxl">
       <div className="flex items-center gap-v2-sm pb-4">
-        <h2 className="text-l font-semibold">{t('cases:overview.panel.escalation.title')}</h2>
+        <Typo variant="title2">{t('cases:overview.panel.escalation.title')}</Typo>
       </div>
       <PanelContent>
         {match(inboxesQuery)

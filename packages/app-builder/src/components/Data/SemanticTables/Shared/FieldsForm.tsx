@@ -5,7 +5,7 @@ import { useCallbackRef } from '@marble/shared';
 import { TFunction } from 'i18next';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, ScrollAreaV2 } from 'ui-design-system';
+import { Button, cn, ScrollAreaV2, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { DatatypeIcon } from './DatatypeOption';
@@ -80,7 +80,7 @@ export function FieldsForm({
     >
       <div className="flex shrink-0 items-center justify-between">
         <div className="flex flex-col gap-v2-xs">
-          <h4 className="text-m font-semibold">{title ?? t('data:upload_data.fields_title')}</h4>
+          <Typo variant="subtitle2">{title ?? t('data:upload_data.fields_title')}</Typo>
           <p className="text-s text-grey-secondary">{description ?? t('data:upload_data.fields_description')}</p>
         </div>
         {isCreateDataModelFieldAvailable && (

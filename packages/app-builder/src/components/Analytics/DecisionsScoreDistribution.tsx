@@ -5,7 +5,7 @@ import { UseQueryResult } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { GraphSpinnerOverlay } from './GraphSpinnerOverlay';
 
@@ -83,7 +83,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:decisions_score_distribution.title')}</h2>
+        <Typo variant="title2">{t('analytics:decisions_score_distribution.title')}</Typo>
         <Button
           disabled={!query.isSuccess || !query.data}
           variant="secondary"

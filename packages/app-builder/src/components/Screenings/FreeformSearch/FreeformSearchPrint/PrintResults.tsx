@@ -2,7 +2,7 @@ import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-
+import { Typo } from 'ui-design-system';
 import { screeningsI18n } from '../../screenings-i18n';
 import { PrintResultCard } from './PrintResultCard';
 
@@ -25,10 +25,10 @@ export const PrintResults: FunctionComponent<PrintResultsProps> = ({ results }) 
     ))
     .with(P.array(), (data) => (
       <div className="flex flex-col">
-        <h2 className="text-m text-grey-primary mb-2 font-semibold">
+        <Typo variant="title2" className="  mb-2">
           {t('screenings:freeform_search.results_title')} (
           {t('screenings:freeform_search.results_count', { count: data.length })})
-        </h2>
+        </Typo>
         {data.map((entity) => (
           <PrintResultCard key={entity.id} entity={entity} />
         ))}

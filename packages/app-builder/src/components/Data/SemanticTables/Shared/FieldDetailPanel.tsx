@@ -8,7 +8,7 @@ import {
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal, NumberInput, type SelectOption, SelectV2, Switch } from 'ui-design-system';
+import { Button, Input, Modal, NumberInput, type SelectOption, SelectV2, Switch, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataField } from '../../DataVisualisation/DataField';
 import { inferSemanticTypeFromName } from '../../DataVisualisation/dataFieldsUtils';
@@ -167,7 +167,7 @@ export function FieldDetailPanel({
             <button type="button" onClick={onClose} className="rounded-lg p-1 hover:bg-grey-border">
               <Icon icon="x" className="size-4" />
             </button>
-            <h4 className="text-m font-semibold">{title ?? t('data:upload_data.field_detail_title')}</h4>
+            <Typo variant="subtitle2">{title ?? t('data:upload_data.field_detail_title')}</Typo>
           </div>
           {canDeleteField ? (
             <Button variant="destructive" onClick={handleDeleteClick}>

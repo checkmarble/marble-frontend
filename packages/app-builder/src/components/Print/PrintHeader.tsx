@@ -1,6 +1,7 @@
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { type FunctionComponent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Typo } from 'ui-design-system';
 
 interface PrintHeaderProps {
   /**
@@ -41,7 +42,7 @@ export const PrintHeader: FunctionComponent<PrintHeaderProps> = ({
 
   return (
     <div className="mb-4 border-b border-grey-border pb-2">
-      <h1 className="text-l font-bold text-grey-primary">{title}</h1>
+      <Typo variant="title1">{title}</Typo>
       {subtitle && <p className="text-s text-grey-placeholder mt-1">{subtitle}</p>}
       {showTimestamp && (
         <p className="text-xs text-grey-placeholder mt-1">

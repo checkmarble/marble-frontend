@@ -88,13 +88,14 @@ Three locale directories (en, fr, ar) with multiple namespaces. Missing keys cau
 
 ```typescript
 import { useTranslation } from 'react-i18next';
+import { Typo } from 'ui-design-system';
 
 export function MyComponent() {
   const { t } = useTranslation(['common', 'cases']);
 
   return (
     <div>
-      <h1>{t('cases:case.title')}</h1>
+      <Typo type="title1">{t('cases:case.title')}</Typo>
       <Button>{t('common:cancel')}</Button>
     </div>
   );

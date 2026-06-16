@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteScreeningRuleMutation } from '@app-builder/queries/scenarios/delete-screening-rule';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Modal, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteScreeningRule({
@@ -34,7 +34,7 @@ export function DeleteScreeningRule({
             <div className="bg-red-background mb-6 box-border rounded-[90px] p-4">
               <Icon icon="delete" className="text-red-primary size-16" />
             </div>
-            <h1 className="text-l font-semibold">{t('scenarios:delete_sanction.title')}</h1>
+            <Typo variant="title1">{t('scenarios:delete_sanction.title')}</Typo>
             <p className="text-center">{t('scenarios:delete_sanction.content')}</p>
           </div>
         </div>

@@ -2,7 +2,7 @@ import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
-import { Button, Checkbox, type CheckedState, cn, Radio, Switch } from 'ui-design-system';
+import { Button, Checkbox, type CheckedState, cn, Radio, Switch, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const Route = createFileRoute('/_app/_builder/design')({
@@ -55,7 +55,7 @@ function Section({ title, description, children }: { title: string; description?
     <section className="flex flex-col gap-4 max-w-5xl">
       <header className="flex items-center justify-between">
         <div>
-          <h2 className="text-l font-semibold">{title}</h2>
+          <Typo variant="title2">{title}</Typo>
           {description ? <p className="text-s text-grey-secondary">{description}</p> : null}
         </div>
         <Button type="button" onClick={() => setDark((v) => !v)} variant="secondary" appearance="stroked" size="medium">

@@ -5,7 +5,7 @@ import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-h
 import { useQueryClient } from '@tanstack/react-query';
 import { type UploadLog } from 'marble-api';
 import { Trans, useTranslation } from 'react-i18next';
-import { Tag } from 'ui-design-system';
+import { Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { generateCsvTemplateLink, PastUploads, UploadForm } from './UploadIngestionComponents';
 
@@ -44,7 +44,7 @@ export function UploadTableDrawer({
               <Icon icon="x" className="size-5" />
             </button>
             <Icon icon="upload" className="size-5" />
-            <h3 className="text-l font-semibold">{t('upload:upload_cta', { replace: { objectType: tableName } })}</h3>
+            <Typo variant="subtitle1">{t('upload:upload_cta', { replace: { objectType: tableName } })}</Typo>
             <Tag color="grey">{tableName}</Tag>
           </header>
 
@@ -78,7 +78,7 @@ export function UploadTableDrawer({
 
               {uploadLogs.length > 0 ? (
                 <div className="flex flex-col gap-v2-sm">
-                  <h4 className="text-m font-semibold">{t('upload:past_uploads')}</h4>
+                  <Typo variant="subtitle2">{t('upload:past_uploads')}</Typo>
                   <PastUploads uploadLogs={uploadLogs} />
                 </div>
               ) : null}

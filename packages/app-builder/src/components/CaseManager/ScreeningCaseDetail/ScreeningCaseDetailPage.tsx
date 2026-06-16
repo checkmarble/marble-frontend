@@ -20,7 +20,7 @@ import { Inbox } from '@app-builder/models/inbox';
 import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Tag } from 'ui-design-system';
+import { Button, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseDocuments } from '../shared/CaseDocuments/CaseDocuments';
 import { CaseInvestigation } from '../shared/CaseInvestigation/CaseInvestigation';
@@ -63,7 +63,7 @@ export const ScreeningCaseDetailPage = ({
             <div className="h-full bg-surface-card border-l border-grey-border">
               <div className="p-v2-lg flex flex-col gap-v2-md top-0 sticky">
                 <div className="flex items-center gap-v2-sm">
-                  <h2 className="text-h2 font-medium">{t('continuousScreening:review.information_title')}</h2>
+                  <Typo variant="title2">{t('continuousScreening:review.information_title')}</Typo>
                   {isDirectContinuousScreening(screening) ? (
                     <Tag>{t(`continuousScreening:review.search_tag.${screening.triggerType}`)}</Tag>
                   ) : null}

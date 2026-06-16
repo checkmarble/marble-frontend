@@ -7,7 +7,7 @@ import { formatPercentage, useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeFilter } from './OutcomeFilter';
 import { AnalyticsTooltip } from './Tooltip';
@@ -75,7 +75,7 @@ export function RuleVsDecisionOutcomes({
     >
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-v2-sm">
-          <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
+          <Typo variant="title2">{t('analytics:rule_vs_decision_outcomes.title')}</Typo>
           <AnalyticsTooltip className="size-5" content={t('analytics:rule_vs_decision_outcomes.tooltip')} />
         </span>
         <Button

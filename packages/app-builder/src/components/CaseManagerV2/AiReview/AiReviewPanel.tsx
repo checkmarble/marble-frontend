@@ -7,7 +7,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Markdown, Tag } from 'ui-design-system';
+import { Button, Markdown, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelContainer, PanelRoot } from '../../Panel';
 
@@ -51,7 +51,9 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
           aria-label={t('common:close')}
         />
         <Icon icon="ai-review" className="size-4 text-purple-primary shrink-0" />
-        <h2 className="text-l font-semibold text-grey-primary">{t('cases:case_detail.ai_review.panel.title')}</h2>
+        <Typo variant="title2" className="text-grey-primary">
+          {t('cases:case_detail.ai_review.panel.title')}
+        </Typo>
         <ReviewStatusBadge status={selectedListItem.status} />
         <time className="text-xs text-grey-secondary" dateTime={selectedListItem.createdAt}>
           {formatDateTime(selectedListItem.createdAt, { dateStyle: 'short', timeStyle: 'short' })}

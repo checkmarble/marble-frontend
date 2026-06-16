@@ -9,7 +9,7 @@ import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import { Button, ExpandableGroupTagLine, Tag } from 'ui-design-system';
+import { Button, ExpandableGroupTagLine, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
@@ -74,7 +74,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
       <Page.Container>
         <Page.ContentV2 className="gap-v2-md">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold">{t('navigation:continuous-screening.configurations')}</h1>
+            <Typo variant="title1">{t('navigation:continuous-screening.configurations')}</Typo>
             {canEdit ? (
               <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
                 {t('continuousScreening:configurations.add_configuration')}

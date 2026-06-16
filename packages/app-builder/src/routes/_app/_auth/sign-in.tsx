@@ -15,7 +15,7 @@ import { createFileRoute, ErrorComponent, Link, redirect } from '@tanstack/react
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
-import { CtaV2ClassName } from 'ui-design-system';
+import { CtaV2ClassName, Typo } from 'ui-design-system';
 
 const signInLoader = createServerFn()
   .middleware([servicesMiddleware])
@@ -99,7 +99,9 @@ function Login() {
   return (
     <div className="flex flex-col gap-10 w-full">
       <div className="flex flex-col gap-8">
-        <h2 className="text-2xl text-center">{t('auth:sign_in')}</h2>
+        <Typo variant="title2" className="text-center">
+          {t('auth:sign_in')}
+        </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
         <div className="flex flex-col gap-2">
           {authProvider == 'oidc' ? (
@@ -145,7 +147,9 @@ function Login() {
             <div className="h-px bg-grey-border grow" />
           </div>
           <div className="flex flex-col gap-8">
-            <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>
+            <Typo variant="title2" className="text-center">
+              {t('auth:sign_in.first_connection')}
+            </Typo>
             <div className="flex flex-col gap-2">
               <SignInFirstConnection isSignInHomepage showAskDemoButton={isManagedMarble} />
             </div>

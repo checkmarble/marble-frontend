@@ -16,6 +16,7 @@ import { ClientOnly, createFileRoute, Link, redirect } from '@tanstack/react-rou
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
+import { Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const signInEmailLoader = createServerFn()
@@ -103,7 +104,9 @@ function LoginWithEmail() {
         </Link>
       ) : null}
       <div className="flex flex-col gap-8">
-        <h2 className="text-2xl text-center">{t('auth:sign_in')}</h2>
+        <Typo variant="title2" className="text-center">
+          {t('auth:sign_in')}
+        </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
         <ClientOnly
           fallback={
@@ -128,7 +131,9 @@ function LoginWithEmail() {
               <div className="h-px bg-grey-border grow" />
             </div>
             <div className="flex flex-col gap-8">
-              <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>
+              <Typo variant="title2" className="text-center">
+                {t('auth:sign_in.first_connection')}
+              </Typo>
               <div className="flex flex-col gap-2">
                 <SignInFirstConnection isSignInHomepage={false} showAskDemoButton={!isSsoEnabled && isManagedMarble} />
               </div>

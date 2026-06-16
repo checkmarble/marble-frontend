@@ -13,7 +13,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const Route = createFileRoute('/_app/_builder/data/list')({
@@ -86,7 +86,9 @@ function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
   return (
     <>
       <div className="flex gap-4">
-        <h1 className="text-xl font-bold flex-1">{t('data:data-model')}</h1>
+        <Typo variant="title1" className="flex-1">
+          {t('data:data-model')}
+        </Typo>
         <MenuCommand.Menu>
           <MenuCommand.Trigger>
             <Button type="button" size="medium">

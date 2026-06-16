@@ -20,7 +20,7 @@ import { type Namespace } from 'i18next';
 import { useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const screeningSearchLoader = createServerFn()
@@ -69,7 +69,7 @@ function ScreeningSearchIndexPage() {
       <Page.Container>
         <Page.ContentV2 className="h-full gap-v2-md">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold">{t('navigation:screening_search')}</h1>
+            <Typo variant="title1">{t('navigation:screening_search')}</Typo>
             <div className="flex items-center gap-v2-sm">
               {hasResults && (
                 <PrintView

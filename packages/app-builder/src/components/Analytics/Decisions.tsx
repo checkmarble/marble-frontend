@@ -15,7 +15,7 @@ import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { differenceInDays, getWeek, getYear } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { GraphSpinnerOverlay } from './GraphSpinnerOverlay';
 import { OutcomeFilter } from './OutcomeFilter';
@@ -267,7 +267,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
       }}
     >
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:decisions.title')}</h2>
+        <Typo variant="title2">{t('analytics:decisions.title')}</Typo>
         <Button
           variant="secondary"
           className="flex items-center gap-v2-sm"

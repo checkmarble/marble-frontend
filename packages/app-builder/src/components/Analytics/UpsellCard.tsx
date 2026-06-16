@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { CtaV2ClassName, cn } from 'ui-design-system';
+import { CtaV2ClassName, cn, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface UpsellCardProps {
@@ -24,7 +24,7 @@ export function UpsellCard({ title, description, benefits = [], className }: Ups
       </div>
 
       <div className="flex flex-col items-center gap-v2-xs">
-        <h3 className="text-h3 font-semibold">{title}</h3>
+        <Typo variant="subtitle1">{title}</Typo>
         <p className="text-s text-grey-secondary max-w-md">{description}</p>
       </div>
 

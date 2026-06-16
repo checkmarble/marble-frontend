@@ -3,7 +3,7 @@ import { useDataModel } from '@app-builder/services/data/data-model';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ScrollAreaV2, Stepper, type StepperStep } from 'ui-design-system';
+import { Button, ScrollAreaV2, Stepper, type StepperStep, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext';
@@ -165,7 +165,9 @@ export function CreateTableDrawer({
             >
               <Icon icon="x" className="size-5" />
             </button>
-            <h3 className="text-l flex-1 font-semibold">{t('data:create_table.title')}</h3>
+            <Typo variant="subtitle1" className="flex-1">
+              {t('data:create_table.title')}
+            </Typo>
             <Stepper steps={steps} currentStep={currentStep} />
           </header>
 

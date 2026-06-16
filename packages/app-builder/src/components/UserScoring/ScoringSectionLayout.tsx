@@ -10,7 +10,7 @@ import { Link, Outlet, useMatches, useNavigate, useParams, useRouter } from '@ta
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, type SelectOption, SelectV2, Tabs, Tooltip, tabClassName } from 'ui-design-system';
+import { Button, NumberInput, type SelectOption, SelectV2, Tabs, Tooltip, Typo, tabClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
 import { PanelContainer, PanelRoot } from '../Panel';
@@ -38,7 +38,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
         <Page.Container>
           <Page.ContentV2 className="flex flex-col gap-v2-md container mx-auto">
             <div className="flex items-center justify-between">
-              <h1 className="text-h1 font-bold">{t('user-scoring:section.title')}</h1>
+              <Typo variant="title1">{t('user-scoring:section.title')}</Typo>
               {showCreateButton ? (
                 <Button variant="secondary" onClick={() => setPanelOpen(true)}>
                   {t('user-scoring:section.configure_button')}
@@ -174,7 +174,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
           <button type="button" onClick={() => panelSharp.actions.close()}>
             <Icon icon="x" className="size-6" />
           </button>
-          <h2 className="text-h2 font-semibold">{t('user-scoring:section.create_panel.title')}</h2>
+          <Typo variant="title2">{t('user-scoring:section.create_panel.title')}</Typo>
         </div>
         <div>
           <form.Field name="recordType">

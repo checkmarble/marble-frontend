@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDuplicateRuleMutation } from '@app-builder/queries/scenarios/duplicate-rule';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Modal, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DuplicateRule({
@@ -38,7 +38,7 @@ export function DuplicateRule({
             <div className="bg-purple-background mb-8 box-border rounded-[90px] p-4">
               <Icon icon="copy" className="text-purple-primary size-16" />
             </div>
-            <h1 className="text-l font-semibold">{t('scenarios:clone_rule.title')}</h1>
+            <Typo variant="title1">{t('scenarios:clone_rule.title')}</Typo>
             <p className="text-center">{t('scenarios:clone_rule.content')}</p>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { cva } from 'class-variance-authority';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useTable } from 'ui-design-system';
+import { Table, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AnalyticsTooltip } from './Tooltip';
 
@@ -155,7 +155,7 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
   return (
     <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:rule_hits.title')}</h2>
+        <Typo variant="title2">{t('analytics:rule_hits.title')}</Typo>
       </div>
 
       <div aria-busy={isLoading} className="relative">

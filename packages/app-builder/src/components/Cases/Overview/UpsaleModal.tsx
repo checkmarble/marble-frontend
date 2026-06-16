@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Tag } from 'ui-design-system';
+import { Button, Modal, Tag, Typo as TypoComponent } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface UpsaleModalProps {
@@ -41,7 +41,7 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
       <Modal.Content size="small">
         <div className="flex flex-col gap-4 p-4">
           <div className="flex items-center gap-2">
-            <h2 className="text-l font-semibold">{displayTitle}</h2>
+            <TypoComponent variant="title2">{displayTitle}</TypoComponent>
             <Tag
               color="yellow"
               size="small"

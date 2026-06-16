@@ -5,6 +5,7 @@ import { ClientOnly, createFileRoute, Link, redirect } from '@tanstack/react-rou
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { Trans, useTranslation } from 'react-i18next';
+import { Typo } from 'ui-design-system';
 
 const createPasswordLoader = createServerFn()
   .middleware([servicesMiddleware])
@@ -37,7 +38,9 @@ function ForgotPassword() {
 
   return (
     <div className="flex flex-col gap-10 w-full">
-      <h2 className="text-2xl text-center">{t('auth:reset-password.title')}</h2>
+      <Typo variant="title2" className="text-center">
+        {t('auth:reset-password.title')}
+      </Typo>
       <ClientOnly fallback={<StaticResetPassword prefilledEmail={prefilledEmail} />}>
         <ResetPassword prefilledEmail={prefilledEmail} />
       </ClientOnly>

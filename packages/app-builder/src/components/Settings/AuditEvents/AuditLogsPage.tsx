@@ -11,7 +11,7 @@ import { auditEventsFiltersSchema } from '@app-builder/schemas/settings';
 import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { AuditEventsTable } from './AuditEventsTable';
 import { type FilterEntry } from './Filters/ActivatedAuditFilterItem';
 import { AuditEventsFiltersBar } from './Filters/AuditEventsFiltersBar';
@@ -77,7 +77,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
         <div className="flex flex-col gap-v2-md relative">
           {/* Title Row */}
           <div className="flex justify-between items-center">
-            <h1 className="text-l font-semibold text-grey-primary">{t('settings:audit.audit_logs_section')}</h1>
+            <Typo variant="title1">{t('settings:audit.audit_logs_section')}</Typo>
           </div>
 
           {/* Filters Row */}

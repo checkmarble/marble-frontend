@@ -37,6 +37,7 @@ import {
   Radio,
   Tabs,
   TooltipV2,
+  Typo,
   tabClassName,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -234,7 +235,7 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
     <Modal.Root open={open} onOpenChange={onOpenChange}>
       <Modal.Content>
         <div className="flex flex-col gap-v2-md p-v2-md">
-          <h2 className="text-h2 font-semibold">{t('cases:manager.sar_modal.title')}</h2>
+          <Typo variant="title2">{t('cases:manager.sar_modal.title')}</Typo>
           <span>
             {initialStatus ? t('cases:sar.modale.callout_add_documents') : t('cases:sar.modale.callout_new_report')}
           </span>
