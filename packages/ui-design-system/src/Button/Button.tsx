@@ -45,7 +45,7 @@ export const CtaV2ClassName = cva(
       {
         size: 'small',
         mode: 'normal',
-        class: 'min-h-6 px-v2-sm py-v2-xs',
+        class: 'h-6 px-v2-sm py-v2-xs',
       },
       {
         size: 'small',
@@ -55,7 +55,7 @@ export const CtaV2ClassName = cva(
       {
         size: 'medium',
         mode: 'normal',
-        class: 'min-h-8 p-v2-sm',
+        class: 'h-8 p-v2-sm',
       },
       {
         size: 'medium',
@@ -65,7 +65,7 @@ export const CtaV2ClassName = cva(
       {
         size: 'large',
         mode: 'normal',
-        class: 'min-h-10 p-v2-sm',
+        class: 'h-10 p-v2-sm',
       },
       {
         size: 'large',
