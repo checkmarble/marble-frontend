@@ -37,6 +37,7 @@ import * as Sentry from '@sentry/node';
 import { BackendGlobalError, marblecoreApi, TokenService, TokenServiceUpdate } from 'marble-api';
 import * as z from 'zod/v4';
 import { captureUnexpectedError } from '../monitoring';
+import { refreshFirebaseIdToken } from './firebase.server';
 import { makeOidcService } from './oidc.server';
 
 function redirect(url: string, init?: { status?: number; headers?: HeadersInit }): Response {
@@ -112,6 +113,7 @@ export interface AuthenticationServerService {
 const schema = z.object({
   type: z.enum(['google', 'microsoft', 'email']),
   idToken: z.string(),
+  refreshToken: z.string().optional(),
   csrf: z.string(),
 });
 export type AuthPayload = z.infer<typeof schema>;
@@ -180,6 +182,67 @@ export function makeAuthenticationServerService({
   getUserScoringRepository,
   makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
+  /**
+   * Exchange the provider refresh token (Firebase or OIDC) stored in the session
+   * for a fresh Marble token. Returns a `status: false` update when no refresh is
+   * possible (no stored refresh token, or unsupported provider).
+   *
+   * Used both proactively when an SSR request finds an expired Marble token (see
+   * `isAuthenticated`) and reactively when the backend answers 401 (see the
+   * authorization fetch middleware via `getTokenService`).
+   */
+  async function refreshMarbleToken(): Promise<TokenServiceUpdate> {
+    const appConfigRepository = getAppConfigRepository(marblecoreApi);
+    const appConfig = await appConfigRepository.getAppConfig();
+    const authSession = await useAuthSession();
+    const storedRefreshToken = authSession.data.refreshToken;
+
+    // TEMP(manual-test): trace the SSR refresh path.
+    console.log('[refreshMarbleToken]', {
+      provider: appConfig.auth.provider,
+      hasRefreshToken: Boolean(storedRefreshToken),
+    });
+
+    if (!storedRefreshToken) {
+      return { status: false, marbleToken: null, refreshToken: null };
+    }
+
+    if (appConfig.auth.provider == 'oidc') {
+      const oidc = await makeOidcService(appConfig);
+      const response = await oidc.refreshToken(storedRefreshToken);
+
+      const marbleToken = await marblecoreApi.postToken(
+        {
+          authorization: `Bearer ${response.idToken()}`,
+          xOidcAccessToken: response.accessToken(),
+        },
+        { baseUrl: getServerEnv('MARBLE_API_URL') },
+      );
+
+      return {
+        status: true,
+        marbleToken,
+        refreshToken: response.hasRefreshToken() ? response.refreshToken() : null,
+      };
+    }
+
+    if (appConfig.auth.provider == 'firebase') {
+      const { idToken, refreshToken } = await refreshFirebaseIdToken(appConfig, storedRefreshToken);
+
+      const marbleToken = await marblecoreApi.postToken(
+        { authorization: `Bearer ${idToken}` },
+        { baseUrl: getServerEnv('MARBLE_API_URL') },
+      );
+
+      // TEMP(manual-test): confirm the Firebase refresh succeeded.
+      console.log('[refreshMarbleToken] firebase refresh ok, new expires_at', marbleToken.expires_at);
+
+      return { status: true, marbleToken, refreshToken };
+    }
+
+    return { status: false, marbleToken: null, refreshToken: null };
+  }
+
   function getTokenService(marbleAccessToken: string, request: Request | undefined = undefined): TokenService<string> {
     let update: { value: TokenServiceUpdate } = {
       value: { status: false, marbleToken: null, refreshToken: null },
@@ -192,41 +255,15 @@ export function makeAuthenticationServerService({
         return update.value.status;
       },
       refreshToken: async () => {
-        const appConfigRepository = getAppConfigRepository(marblecoreApi);
-        const appConfig = await appConfigRepository.getAppConfig();
-
-        if (appConfig.auth.provider == 'oidc') {
-          const oidc = await makeOidcService(appConfig);
-
-          if (request) {
-            const authSession = await useAuthSession();
-
-            if (authSession.data.refreshToken) {
-              const response = await oidc.refreshToken(authSession.data.refreshToken);
-              const accessToken = response.accessToken();
-              const idToken = response.idToken();
-
-              const marbleToken = await marblecoreApi.postToken(
-                {
-                  authorization: `Bearer ${idToken}`,
-                  xOidcAccessToken: accessToken,
-                },
-                { baseUrl: getServerEnv('MARBLE_API_URL') },
-              );
-
-              let refreshToken = null;
-              if (response.hasRefreshToken()) {
-                refreshToken = response.refreshToken();
-              }
-
-              update.value = { status: true, marbleToken, refreshToken };
-
-              return marbleToken.access_token;
-            }
+        if (request) {
+          const result = await refreshMarbleToken();
+          if (result.status) {
+            update.value = result;
+            return result.marbleToken.access_token;
           }
         }
 
-        // We don't handle refresh for now, force a logout when 401 is returned instead
+        // No refresh possible — force a logout.
         const authSession = await useAuthSession();
         await authSession.clear();
         throw redirect('/sign-in');
@@ -236,7 +273,7 @@ export function makeAuthenticationServerService({
 
   async function authenticate(
     request: Request,
-    payload: { idToken: string; csrf: string },
+    payload: { idToken: string; refreshToken?: string; csrf: string },
     options: {
       successRedirect: string;
       failureRedirect: string;
@@ -256,7 +293,13 @@ export function makeAuthenticationServerService({
         { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
 
-      await authSession.update({ authToken: marbleToken, authError: undefined });
+      await authSession.update({
+        authToken: marbleToken,
+        authError: undefined,
+        // Persist the Firebase refresh token so the server can refresh the Marble
+        // token during SSR without a browser (fixes logout after inactivity).
+        ...(payload.refreshToken ? { refreshToken: payload.refreshToken } : {}),
+      });
       redirectUrl = options.successRedirect;
     } catch (error) {
       await authSession.update({ authError: { message: adaptAuthErrors(error) } });
@@ -367,7 +410,23 @@ export function makeAuthenticationServerService({
   ): Promise<AuthenticatedInfo | null> {
     const authSession = await useAuthSession();
 
-    const marbleToken = authSession.data.authToken;
+    let marbleToken = authSession.data.authToken;
+
+    // The browser can't see the Marble token expiry under SSR, so an expired
+    // token would otherwise log the user out after inactivity. If we hold a
+    // provider refresh token, mint a fresh Marble token server-side first.
+    // TEMP(manual-test): FORCE_TOKEN_REFRESH=true forces the refresh path on every SSR load.
+    const forceRefresh = process.env['FORCE_TOKEN_REFRESH'] === 'true';
+    if (marbleToken && (forceRefresh || marbleToken.expires_at < new Date().toISOString())) {
+      const refreshed = await refreshMarbleToken().catch(() => null);
+      if (refreshed?.status) {
+        await authSession.update({
+          authToken: refreshed.marbleToken,
+          ...(refreshed.refreshToken ? { refreshToken: refreshed.refreshToken } : {}),
+        });
+        marbleToken = refreshed.marbleToken;
+      }
+    }
 
     if (!marbleToken || marbleToken.expires_at < new Date().toISOString()) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);

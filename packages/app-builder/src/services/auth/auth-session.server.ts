@@ -6,6 +6,7 @@ import { type Token } from 'marble-api';
 
 export type AuthSessionData = {
   authToken?: Token;
+  /** Provider refresh token (OIDC or Firebase) used to refresh the Marble token server-side during SSR. */
   refreshToken?: string;
   authError?: { message: AuthErrors };
   createdApiKey?: CreatedApiKey;

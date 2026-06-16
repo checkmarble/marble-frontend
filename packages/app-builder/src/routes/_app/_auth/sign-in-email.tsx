@@ -84,7 +84,12 @@ function LoginWithEmail() {
   const signInMutation = useMutation({
     mutationFn: async (authPayload: AuthPayload) =>
       signInEmailFn({
-        data: { idToken: authPayload.idToken, csrf: authPayload.csrf, redirectTo: redirectTo ?? undefined },
+        data: {
+          idToken: authPayload.idToken,
+          refreshToken: authPayload.refreshToken,
+          csrf: authPayload.csrf,
+          redirectTo: redirectTo ?? undefined,
+        },
       }).then((r) => r.redirectTo),
     onSuccess: (destination) => {
       window.location.href = destination;

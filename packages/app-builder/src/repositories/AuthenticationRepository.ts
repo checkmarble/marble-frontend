@@ -4,13 +4,13 @@ import { User } from 'firebase/auth';
 
 export interface AuthenticationClientRepository {
   getCurrentUser: () => User | null;
-  googleSignIn: (locale: string) => Promise<string>;
-  microsoftSignIn: (locale: string) => Promise<string>;
+  googleSignIn: (locale: string) => Promise<{ idToken: string; refreshToken: string }>;
+  microsoftSignIn: (locale: string) => Promise<{ idToken: string; refreshToken: string }>;
   emailAndPasswordSignIn: (
     locale: string,
     email: string,
     password: string,
-  ) => Promise<{ idToken: string; emailVerified: true } | { emailVerified: false }>;
+  ) => Promise<{ idToken: string; refreshToken: string; emailVerified: true } | { emailVerified: false }>;
   emailAndPassswordSignUp: (locale: string, email: string, password: string) => Promise<void>;
   resendEmailVerification: (locale: string, logout: () => void) => Promise<void>;
   sendPasswordResetEmail: (locale: string, email: string) => Promise<void>;
@@ -37,7 +37,10 @@ export function getAuthenticationClientRepository(
     // Logout before sign in to avoid grant token firebase error
     await firebaseClient.logout(auth);
     const credential = await firebaseClient.signInWithOAuth(auth, firebaseClient.googleAuthProvider);
-    return credential.user.getIdToken();
+    return {
+      idToken: await credential.user.getIdToken(),
+      refreshToken: credential.user.refreshToken,
+    };
   }
 
   async function microsoftSignIn(locale: string) {
@@ -45,7 +48,10 @@ export function getAuthenticationClientRepository(
     // Logout before sign in to avoid grant token firebase error
     await firebaseClient.logout(auth);
     const credential = await firebaseClient.signInWithOAuth(auth, firebaseClient.microsoftAuthProvider);
-    return credential.user.getIdToken();
+    return {
+      idToken: await credential.user.getIdToken(),
+      refreshToken: credential.user.refreshToken,
+    };
   }
 
   async function emailAndPasswordSignIn(locale: string, email: string, password: string) {
@@ -58,6 +64,7 @@ export function getAuthenticationClientRepository(
     }
     return {
       idToken: await credential.user.getIdToken(),
+      refreshToken: credential.user.refreshToken,
       emailVerified: true as const,
     };
   }

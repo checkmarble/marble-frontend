@@ -53,9 +53,9 @@ function ClientSignInWithGoogle({
     try {
       const result = await googleSignIn();
       if (!result) return;
-      const { idToken, csrf } = result;
+      const { idToken, refreshToken, csrf } = result;
       if (!idToken) return;
-      signIn({ type: 'google', idToken, csrf });
+      signIn({ type: 'google', idToken, refreshToken, csrf });
     } catch (error) {
       if (error instanceof AccountExistsWithDifferentCredential) {
         toast.error(t('common:errors.account_exists_with_different_credential'));

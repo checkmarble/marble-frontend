@@ -5,7 +5,12 @@ import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import * as z from 'zod/v4';
 
-const signInPayload = z.object({ idToken: z.string(), csrf: z.string(), redirectTo: z.string().optional() });
+const signInPayload = z.object({
+  idToken: z.string(),
+  refreshToken: z.string().optional(),
+  csrf: z.string(),
+  redirectTo: z.string().optional(),
+});
 
 export const signInFn = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
@@ -15,7 +20,7 @@ export const signInFn = createServerFn({ method: 'POST' })
     const successRedirect = safeRedirect(data.redirectTo ?? null, '/app-router');
     return context.services.authService.authenticate(
       request,
-      { idToken: data.idToken, csrf: data.csrf },
+      { idToken: data.idToken, refreshToken: data.refreshToken, csrf: data.csrf },
       { successRedirect, failureRedirect: '/sign-in' },
     );
   });
@@ -28,7 +33,7 @@ export const signInEmailFn = createServerFn({ method: 'POST' })
     const successRedirect = safeRedirect(data.redirectTo ?? null, '/app-router');
     return context.services.authService.authenticate(
       request,
-      { idToken: data.idToken, csrf: data.csrf },
+      { idToken: data.idToken, refreshToken: data.refreshToken, csrf: data.csrf },
       { successRedirect, failureRedirect: '/sign-in-email' },
     );
   });

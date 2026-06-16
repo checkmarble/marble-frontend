@@ -31,8 +31,8 @@ export function useGoogleSignIn({ authenticationClientRepository }: Authenticati
 
   return async () => {
     try {
-      const idToken = await authenticationClientRepository.googleSignIn(language);
-      return { idToken, csrf };
+      const { idToken, refreshToken } = await authenticationClientRepository.googleSignIn(language);
+      return { idToken, refreshToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -64,8 +64,8 @@ export function useMicrosoftSignIn({ authenticationClientRepository }: Authentic
 
   return async () => {
     try {
-      const idToken = await authenticationClientRepository.microsoftSignIn(language);
-      return { idToken, csrf };
+      const { idToken, refreshToken } = await authenticationClientRepository.microsoftSignIn(language);
+      return { idToken, refreshToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -101,7 +101,7 @@ export function useEmailAndPasswordSignIn({ authenticationClientRepository }: Au
       if (!result.emailVerified) {
         throw new EmailUnverified();
       }
-      return { idToken: result.idToken, csrf };
+      return { idToken: result.idToken, refreshToken: result.refreshToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
