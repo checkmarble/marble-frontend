@@ -20,7 +20,7 @@
     "@types/node": "25.6.2",
     "knex": "^3.2.10",
     "pg": "^8.13.3",
-    "playwright": "^1.51.0",
+    "playwright": "^1.60.0",
     "testcontainers": "^10.18.0"
   }
 }
