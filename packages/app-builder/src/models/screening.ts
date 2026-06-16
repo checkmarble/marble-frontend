@@ -6,6 +6,7 @@ import {
   type ScreeningEntityDto,
   type ScreeningErrorDto,
   type ScreeningFileDto,
+  ScreeningFreeformSearchDto,
   type ScreeningMatchDto,
   type ScreeningMatchPayloadDto,
   type ScreeningRequestDto,
@@ -92,6 +93,13 @@ export type PersonEntity = OpenSanctionEntity & {
   } & Record<string, string[]>;
 };
 
+export type FamilyRelationshipSource = 'familyPerson' | 'familyRelative';
+
+export type FamilyRelationshipEntry = {
+  value: string;
+  source: FamilyRelationshipSource;
+};
+
 export type FamilyPersonEntity = OpenSanctionEntity & {
   schema: 'Family';
   properties: {
@@ -101,6 +109,7 @@ export type FamilyPersonEntity = OpenSanctionEntity & {
     sourceUrl?: string[];
     startDate?: string[];
     relationship?: string[];
+    relationships?: FamilyRelationshipEntry[];
   } & Record<string, string[]>;
 };
 
@@ -113,6 +122,7 @@ export type FamilyRelativeEntity = OpenSanctionEntity & {
     sourceUrl?: string[];
     startDate?: string[];
     relationship?: string[];
+    relationships?: FamilyRelationshipEntry[];
   } & Record<string, string[]>;
 };
 
@@ -716,27 +726,19 @@ export interface SavedScreeningSearchInputs {
   limit?: number;
 }
 
-export interface SavedScreeningSearch {
-  id: string;
-  name: string;
-  ownerId: string;
-  createdAt: string;
-  inputs: SavedScreeningSearchInputs;
-  results: ScreeningMatchPayload[];
-}
+export type SavedScreeningSearch = ScreeningFreeformSearchDto;
 
 export interface SavedScreeningSearchFilters {
-  fromDate?: string;
-  toDate?: string;
-  name?: string;
-  ownerId?: string;
   limit?: number;
-  page?: number;
+  offsetId?: string;
+  createdAfter?: string;
+  createdBefore?: string;
+  userId?: string;
+  apiKeyId?: string;
+  isSaved?: boolean;
 }
 
 export interface SavedScreeningSearchPage {
-  items: SavedScreeningSearch[];
-  total: number;
-  page: number;
-  limit: number;
+  data: ScreeningFreeformSearchDto[];
+  has_next_page: boolean;
 }

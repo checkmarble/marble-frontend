@@ -10,8 +10,8 @@ interface SpinnerProps {
 export function Spinner({ className }: SpinnerProps) {
   const { t } = useTranslation(['common']);
   return (
-    <div role="status">
-      <div
+    <span role="status">
+      <span
         aria-hidden
         className={clsx(
           'border-purple-background border-r-purple-primary box-border shrink-0 animate-spin rounded-full border-2 border-solid',
@@ -19,7 +19,7 @@ export function Spinner({ className }: SpinnerProps) {
         )}
       />
       <span className="sr-only">{t('common:loading')}</span>
-    </div>
+    </span>
   );
 }
 

@@ -1146,6 +1146,28 @@ export type UpdateScreeningMatchDto = {
     whitelist?: boolean;
 };
 export type ScreeningRefineDto = object;
+export type ScreeningFreeformSearchConfigDto = {
+    provider: string;
+    filters: ScreeningConfigBodyFiltersDto;
+    threshold?: number | null;
+    limit: number;
+};
+export type ScreeningFreeformSearchDto = {
+    id: string;
+    user_id?: string;
+    api_key_id?: string;
+    created_at: string;
+    search_input: {
+        "type": "Thing" | "Person" | "Organization" | "Vehicle";
+        query: {
+            [key: string]: string[];
+        };
+    };
+    search_config: ScreeningFreeformSearchConfigDto;
+    is_saved: boolean;
+    nb_hits: number;
+    matches?: ScreeningMatchPayloadDto[];
+};
 export type OpenSanctionsUpstreamDatasetFreshnessDto = {
     version: string;
     name: string;
@@ -4118,7 +4140,6 @@ export function refineScreening(screeningRefineDto?: ScreeningRefineDto, opts?: 
  * Freeform search for sanctions matches
  */
 export function freeformSearch(body?: {
-    screening_id?: string;
     /** One of Thing, Person, Organization, or Vehicle must be provided */
     query: {
         Thing?: {
@@ -4149,7 +4170,10 @@ export function freeformSearch(body?: {
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScreeningMatchDto[];
+        data: {
+            id: string;
+            matches: ScreeningMatchPayloadDto[];
+        };
     }>(`/screenings/freeform-search${QS.query(QS.explode({
         limit
     }))}`, oazapfts.json({
@@ -4157,6 +4181,87 @@ export function freeformSearch(body?: {
         method: "POST",
         body
     })));
+}
+/**
+ * List past freeform searches
+ */
+export function listFreeformSearches({ limit, offsetId, order, userId, apiKeyId, savedOnly, createdAfter, createdBefore }: {
+    limit?: number;
+    offsetId?: string;
+    order?: "ASC" | "DESC";
+    userId?: string;
+    apiKeyId?: string;
+    savedOnly?: boolean;
+    createdAfter?: string;
+    createdBefore?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            data: ScreeningFreeformSearchDto[];
+            has_next_page: boolean;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/screenings/freeform-search${QS.query(QS.explode({
+        limit,
+        offset_id: offsetId,
+        order,
+        user_id: userId,
+        api_key_id: apiKeyId,
+        saved_only: savedOnly,
+        created_after: createdAfter,
+        created_before: createdBefore
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Get a freeform search and its results
+ */
+export function getFreeformSearch(id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningFreeformSearchDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/screenings/freeform-search/${encodeURIComponent(id)}`, {
+        ...opts
+    }));
+}
+/**
+ * Manually save a freeform search and its results. Idempotent if called multiple times. Returns a 409 if the set of entities returned by the search has changed since the initial search was done.
+ */
+export function saveFreeformSearch(id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/screenings/freeform-search/${encodeURIComponent(id)}/save`, {
+        ...opts,
+        method: "POST"
+    }));
 }
 /**
  * Retrieve the freshness of sanction datasets

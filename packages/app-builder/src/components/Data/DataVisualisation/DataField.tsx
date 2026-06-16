@@ -13,7 +13,7 @@ import { tryCatch } from '@app-builder/utils/tryCatch';
 import CountryFlag from 'country-flag-emojis';
 import cc from 'currency-codes';
 import parsePhoneNumber from 'libphonenumber-js/min';
-import { type ComponentType, Fragment, lazy, Suspense, useMemo, useState } from 'react';
+import { type ComponentType, Fragment, lazy, ReactNode, Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isNonNullish } from 'remeda';
 import { match, P } from 'ts-pattern';
@@ -36,7 +36,8 @@ import {
 
 const MapView = lazy(() => import('./MapView').then((m) => ({ default: m.MapView })));
 
-const codeClassName = 'font-mono border border-grey-border rounded-sm p-1 bg-surface-card';
+const codeClassName = (className?: string) =>
+  cn('font-mono border border-grey-border rounded-sm p-1 bg-surface-card', className);
 const subClassName = 'grid gap-1 px-2 py-1 border border-grey-border bg-grey-background-light rounded-lg';
 
 type DataFieldProps = {
@@ -245,18 +246,38 @@ function EmptyValue({ className }: { className?: string }) {
 function StringMain() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return <StringMainComponent value={value} />;
+}
+
+export function StringMainComponent({ value }: { value: string }) {
   return <span className="font-semibold">{value}</span>;
 }
 
 function StringCode() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
-  return <span className={codeClassName}>{value}</span>;
+  return StringCodeComponent({ value });
+}
+
+export function StringCodeComponent({
+  value,
+  children,
+  className,
+}: {
+  value?: string;
+  children?: ReactNode;
+  className?: string;
+}) {
+  return <span className={codeClassName(className)}>{value ?? children ?? '-'}</span>;
 }
 
 function StringEmail() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return StringEmailComponent({ value });
+}
+
+export function StringEmailComponent({ value }: { value: string }) {
   const isValid = z.email().safeParse(value).success;
   if (!isValid) return <span>{value}</span>;
   return (
@@ -269,6 +290,10 @@ function StringEmail() {
 function StringPhone() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return StringPhoneComponent({ value });
+}
+
+export function StringPhoneComponent({ value }: { value: string }) {
   const phone = parsePhoneNumber(value);
   const strPhone = phone ? phone.formatInternational() : value;
   if (phone) {
@@ -290,15 +315,25 @@ function StringCity() {
 
 function StringCountry() {
   const value = useStringValue();
-  const language = useFormatLanguage();
   if (!value) return <EmptyValue />;
+  return <StringCountryComponent value={value} />;
+}
+
+export function StringCountryComponent({
+  value,
+  withCountryName = true,
+}: {
+  value: string;
+  withCountryName?: boolean;
+}) {
+  const language = useFormatLanguage();
   const result = tryCatch(() => CountryFlag.byCountryCode(value.toUpperCase()));
   if (!result.ok) return <span>{value}</span>;
   const country = result.value;
   return (
     <span className="inline-flex items-center gap-1">
       <span>{country.flag}</span>
-      <span>{formatCountryName(country.isoAlpha2, language)}</span>
+      {withCountryName && <span>{formatCountryName(country.isoAlpha2, language)}</span>}
     </span>
   );
 }
@@ -306,6 +341,10 @@ function StringCountry() {
 function StringLink() {
   const value = useStringValue();
   if (!value) return <EmptyValue />;
+  return StringLinkComponent({ value });
+}
+
+export function StringLinkComponent({ value }: { value: string }) {
   const result = tryCatch(() => new URL(value));
   if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <span>{value}</span>;
   return (
@@ -326,7 +365,7 @@ function StringVpn() {
   const value = useStringValue();
   if (!value) return <span>{t('data:no_vpn')}</span>;
   return (
-    <span className={cn(codeClassName, 'flex gap-2 items-center')}>
+    <span className={codeClassName('flex gap-2 items-center')}>
       <span>{t('data:vpn')}</span>
       <span>{'-'}</span>
       <span>{value}</span>
@@ -336,7 +375,7 @@ function StringVpn() {
 
 function StringId() {
   const value = useStringValue();
-  if (!value) return <EmptyValue className={codeClassName} />;
+  if (!value) return <EmptyValue className={codeClassName()} />;
   return (
     <CopyToClipboardButton toCopy={value}>
       <span>{value}</span>
@@ -366,19 +405,21 @@ function StringFree() {
 
 function DateBirthdate() {
   const value = useStringValue();
+  if (!value) return <EmptyValue />;
+  return <DateBirthdateComponent value={value} />;
+}
+
+export function DateBirthdateComponent({ value }: { value: string }) {
   const formatDateTime = useFormatDateTime();
   const language = useFormatLanguage();
-  if (value) {
-    const date = new Date(value);
-    const age = formatAge(date, language);
-    return (
-      <span className="inline-flex items-center gap-1">
-        <span className="text-grey-secondary text-xs">{age}</span>
-        <span className={cn(codeClassName, 'text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
-      </span>
-    );
-  }
-  return <EmptyValue />;
+  const date = new Date(value);
+  const age = formatAge(date, language);
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="text-grey-secondary text-xs">{age}</span>
+      <span className={codeClassName('text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
+    </span>
+  );
 }
 
 function StringIban() {
@@ -386,7 +427,7 @@ function StringIban() {
   if (!value) return <EmptyValue />;
   // Format the IBAN in groups of 4 characters separated by a space
   const strIban = value.replace(/(.{4})/g, '$1 ').trim();
-  return <span className={codeClassName}>{strIban}</span>;
+  return <span className={codeClassName()}>{strIban}</span>;
 }
 
 function StringCurrency() {
@@ -395,7 +436,7 @@ function StringCurrency() {
   const currency = cc.code(value);
   if (!currency) return <span>{value}</span>;
   return (
-    <span className={cn('inline-flex items-center gap-1', codeClassName)}>
+    <span className={codeClassName('inline-flex items-center gap-1')}>
       <span>{currency?.code}</span>
       <span>{'-'}</span>
       <span>{currency?.currency}</span>
@@ -405,12 +446,28 @@ function StringCurrency() {
 
 function DateDatetime() {
   const value = useStringValue();
+  if (!value) return <EmptyValue />;
+  return <DateDatetimeComponent value={value} />;
+}
+
+export function DateDatetimeComponent({
+  value,
+  withTime = true,
+  monospaced = false,
+  className,
+}: {
+  value: string;
+  withTime?: boolean;
+  monospaced?: boolean;
+  className?: string;
+}) {
   const formatDateTime = useFormatDateTime();
-  if (value) {
-    const date = new Date(value);
-    return <span>{formatDateTime(date, { dateStyle: 'short', timeStyle: 'short' })}</span>;
-  }
-  return <EmptyValue />;
+  const date = new Date(value);
+  return (
+    <span className={monospaced ? codeClassName(className) : className}>
+      {formatDateTime(date, { dateStyle: 'short', timeStyle: withTime ? 'short' : undefined })}
+    </span>
+  );
 }
 
 function DataGpsCoords() {
@@ -420,7 +477,7 @@ function DataGpsCoords() {
   const options = useOptions();
   const mapHeight = options?.mapHeight ?? MAP_HEIGHT;
 
-  if (!value || !opts) return <span className={codeClassName}>-</span>;
+  if (!value || !opts) return <span className={codeClassName()}>-</span>;
 
   return (
     <div className="grid gap-2">
@@ -524,21 +581,21 @@ function BooleanYesNo() {
 
 function EnumValues() {
   const value = useStringValue();
-  if (!value) return <EmptyValue className={codeClassName} />;
-  return <span className={codeClassName}>{value}</span>;
+  if (!value) return <EmptyValue className={codeClassName()} />;
+  return <span className={codeClassName()}>{value}</span>;
 }
 
 function DataIpAddress() {
   const value = useStringValue();
   const metaData = useFieldMetaData();
   const [isOpen, setIsOpen] = useState(false);
-  if (!value) return <EmptyValue className={codeClassName} />;
-  if (!metaData) return <span className={codeClassName}>{value}</span>;
+  if (!value) return <EmptyValue className={codeClassName()} />;
+  if (!metaData) return <span className={codeClassName()}>{value}</span>;
 
   return (
     <div className="grid gap-1">
       <button
-        className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')}
+        className={codeClassName('w-fit flex gap-2 items-center cursor-pointer')}
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{value}</span>
@@ -593,13 +650,13 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
   const objectDetailQuery = useObjectDetailsQuery(linkedTo, value, isOpen);
 
   if (!linkedTo || !value) {
-    return <EmptyValue className={codeClassName} />;
+    return <EmptyValue className={codeClassName()} />;
   }
 
   return (
     <div className="grid gap-1">
       <button
-        className={cn(codeClassName, 'w-fit flex gap-2 items-center cursor-pointer')}
+        className={codeClassName('w-fit flex gap-2 items-center cursor-pointer')}
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <span>{value}</span>

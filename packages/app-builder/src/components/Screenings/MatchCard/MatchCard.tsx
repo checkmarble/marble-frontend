@@ -11,6 +11,7 @@ import { StatusTag } from '../StatusTag';
 import { screeningsI18n } from '../screenings-i18n';
 import { TopicsDisplay } from '../TopicsDisplay';
 import { CommentLine } from './CommentLine';
+import { EntityDatasetsList } from './match-card-entity-components';
 
 type MatchCardProps = {
   screening: Screening;
@@ -90,13 +91,12 @@ export const MatchCard = ({
             <div className="grid grid-cols-[146px_1fr] gap-3">
               <div className="text-xs opacity-50">{t('screenings:match.datasets.title')}</div>
               <div>
-                <ul className="list-disc ps-4">
-                  {entity?.datasets?.map((name, index) => (
-                    <li className="break-all text-xs" key={`dataset-${index}`}>
-                      {name}
-                    </li>
-                  ))}
-                </ul>
+                <EntityDatasetsList
+                  datasets={entity.datasets}
+                  useCase="transaction_monitoring"
+                  listClassName="list-disc ps-4"
+                  itemClassName="break-all text-xs"
+                />
               </div>
             </div>
           ) : null}
