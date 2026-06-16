@@ -13,7 +13,7 @@ import { Icon } from 'ui-icons';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
 import ModalPerson from './ModalPerson';
-import { getPersonName, hasDisplayableName } from './match-card-utility-functions';
+import { cleanUrl, getPersonName, hasDisplayableName } from './match-card-utility-functions';
 
 const MAX_FAMILY_MEMBERS = 5;
 
@@ -34,6 +34,13 @@ export type FamilyMemberRow = {
   properties: PersonEntity['properties'];
   relationshipEntries: FamilyRelationshipEntry[];
 };
+
+function preferFamilyPersonRelationships(entries: FamilyRelationshipEntry[]): FamilyRelationshipEntry[] {
+  const familyPersonValues = new Set(
+    entries.filter((entry) => entry.source === 'familyPerson').map((entry) => entry.value),
+  );
+  return entries.filter((entry) => entry.source !== 'familyRelative' || !familyPersonValues.has(entry.value));
+}
 
 function FamilyRelationshipTag({ value, source }: FamilyRelationshipEntry) {
   const { t } = useTranslation(['screenings']);
@@ -59,9 +66,10 @@ function flattenFamilyMembers<T extends RelationType>(
 
   familyMembers.forEach((member, memberIndex) => {
     const entities = member.properties[relation === 'familyPerson' ? 'relative' : 'person'] as PersonEntity[];
-    const relationshipEntries: FamilyRelationshipEntry[] =
+    const relationshipEntries = preferFamilyPersonRelationships(
       member.properties.relationships ??
-      (member.properties.relationship ?? []).map((value) => ({ value, source: relation }));
+        (member.properties.relationship ?? []).map((value) => ({ value, source: relation })),
+    );
 
     entities?.forEach(({ id, properties }, idx) => {
       if (!properties || !hasDisplayableName(properties)) return;
@@ -131,16 +139,17 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
               {member.properties.sourceUrl && member.properties.sourceUrl.length > 0 && (
                 <span className="col-span-full flex w-full flex-col gap-1">
                   <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
-                  <ul className="list-disc list-inside pl-2">
+                  <ul className="list-inside pl-2">
                     {member.properties.sourceUrl.map((url, urlIdx) => (
-                      <li key={`source-${id}-${urlIdx}`}>
+                      <li key={`source-${id}-${urlIdx}`} className="flex items-center gap-v2-xs">
+                        <Icon icon="external-link" className="size-4 shrink-0" />
                         <a
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-purple-primary hover:text-purple-75 underline"
                         >
-                          {url}
+                          {cleanUrl(url)}
                         </a>
                       </li>
                     ))}

@@ -115,16 +115,14 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
         limit: value.limit ?? DEFAULT_LIMIT,
       };
 
-      try {
-        const result = await searchMutation.mutateAsync(submitValue);
-        if (result.success) {
-          onSearchComplete(result.data, submitValue);
-        } else {
+      searchMutation
+        .mutateAsync(submitValue)
+        .then((result) => {
+          onSearchComplete(result, submitValue);
+        })
+        .catch(() => {
           toast.error(t('common:errors.unknown'));
-        }
-      } catch {
-        toast.error(t('common:errors.unknown'));
-      }
+        });
     },
   });
 

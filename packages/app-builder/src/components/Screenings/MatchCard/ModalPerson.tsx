@@ -14,7 +14,7 @@ export default function ModalPerson({ personId, personName }: { personId: string
       </Modal.Trigger>
       <Modal.Content size="xlarge">
         <Modal.Title>{personName}</Modal.Title>
-        <Modal.Description>
+        <Modal.Description asChild>
           <FreeFormMatchCardDataContent entityId={personId} isOpen={true} withTopics={true} />
         </Modal.Description>
         <Modal.Footer>

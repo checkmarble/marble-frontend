@@ -80,8 +80,8 @@ export function FreeFormMatchCardDataContent({
   const { t } = useTranslation(screeningsI18n);
   const enrichedData = useGetEnrichedDataQuery({ entityId }, isOpen);
   if (enrichedData.isLoading) return <Spinner className="size-6 shrink-0 block" />;
-  if (!enrichedData.data?.success) return <div>{t('screenings:match.enriched_data_error')}</div>;
-  const entity = enrichedData.data.data;
+  if (enrichedData.isError) return <div>{t('screenings:match.enriched_data_error')}</div>;
+  const entity = enrichedData.data;
   if (!entity) return <div>{t('screenings:match.enriched_data_error')}</div>;
   return (
     <div className="text-s flex flex-col gap-6 p-4">

@@ -79,7 +79,7 @@ export const ViewSavedResults = () => {
     }),
   );
 
-  const data = query.data?.success ? query.data.data : undefined;
+  const data = query.data;
   const items = data?.data ?? [];
   const hasNextPage = data?.has_next_page ?? false;
   const limit = (paginationParams.limit ?? 25) as PageSize;
@@ -148,7 +148,7 @@ export const ViewSavedResults = () => {
               <div className="text-s text-grey-secondary p-v2-md">
                 {t('screenings:freeform_search.saved_results.loading')}
               </div>
-            ) : query.data?.success === false ? (
+            ) : query.isError ? (
               <div className="text-s text-red-primary p-v2-md">
                 {t('screenings:freeform_search.saved_results.error')}
               </div>
@@ -535,9 +535,9 @@ function FilterPill({
 
 function SavedResults({ id }: { id: string }) {
   const query = useGetFreeformSearchQuery(id);
-  return query.data?.success ? (
+  return query.isSuccess && query.data && query.data.matches ? (
     <div className="grid gap-v2-sm mt-v2-sm">
-      {query.data.data.matches?.map((match) => {
+      {query.data.matches?.map((match) => {
         return <FreeformMatchCard key={match.id} entity={match} background="card" />;
       })}
     </div>

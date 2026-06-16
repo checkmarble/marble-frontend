@@ -230,7 +230,7 @@ const propertyMetadata: Record<ScreeningEntityProperty, PropertyMetadata> = {
   passportNumber: { type: 'string', format: 'monospace' },
   phone: { type: 'string', format: 'phone' },
   political: { type: 'string' },
-  position: { type: 'string' },
+  position: { type: 'string', format: 'position' },
   previousName: { type: 'string' },
   program: { type: 'string' },
   publisher: { type: 'string' },

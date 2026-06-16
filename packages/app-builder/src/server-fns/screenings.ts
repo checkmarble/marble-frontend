@@ -189,10 +189,10 @@ export const freeformSearchFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.screening.freeformSearch(data);
-      return { success: true as const, data: result };
+      return result;
     } catch (error) {
       console.error(`Freeform search error (${data})`, error);
-      return { success: false as const, error: 'Freeform search failed' };
+      throw new Error('Freeform search failed');
     }
   });
 
@@ -202,9 +202,8 @@ export const saveFreeformSearchFn = createServerFn({ method: 'POST' })
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.screening.saveFreeformSearch(data);
-      return { success: true as const };
     } catch {
-      return { success: false as const, error: 'Save freeform search failed' };
+      throw new Error('Save freeform search failed');
     }
   });
 
@@ -214,9 +213,9 @@ export const listSavedFreeformSearchesFn = createServerFn({ method: 'GET' })
   .handler(async ({ context, data }) => {
     try {
       const page = await context.authInfo.screening.listSavedScreeningSearches(data);
-      return { success: true as const, data: page };
+      return page;
     } catch {
-      return { success: false as const, error: 'List saved searches failed' };
+      throw new Error('List saved searches failed');
     }
   });
 
@@ -226,9 +225,9 @@ export const getFreeformSearchFn = createServerFn({ method: 'GET' })
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.screening.getFreeformSearch(data);
-      return { success: true as const, data: result };
+      return result;
     } catch {
-      return { success: false as const, error: 'Get freeform search failed' };
+      throw new Error('Get freeform search failed');
     }
   });
 
@@ -238,9 +237,9 @@ export const getEnrichedDataFn = createServerFn({ method: 'GET' })
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.screening.enrichedData(data);
-      return { success: true as const, data: result };
+      return result;
     } catch {
-      return { success: false as const, error: 'Enriched data failed' };
+      throw new Error('Enriched data failed');
     }
   });
 

@@ -1,10 +1,11 @@
 import { StringCodeComponent } from '@app-builder/components/Data/DataVisualisation/DataField';
 import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { AssociationEntity } from '@app-builder/models/screening';
-import { Fragment, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, ExpandableGroupTagLine } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { getFilteredAndSortedTopics } from '../TopicsDisplay';
 import { isDisplayableTopic, TopicTag } from '../TopicTag';
 import ModalPerson from './ModalPerson';
@@ -107,9 +108,10 @@ export const Associations = ({ associations }: { associations: AssociationEntity
               {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (
                 <span className="col-span-full flex w-full flex-col gap-1">
                   <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
-                  <div className="flex gap-v2-sm">
+                  <ul className="list-inside pl-2">
                     {association.properties.sourceUrl.map((url, urlIdx) => (
-                      <Fragment key={`source-${id}-${urlIdx}`}>
+                      <li key={`source-${id}-${urlIdx}`} className="flex items-center gap-v2-xs">
+                        <Icon icon="external-link" className="size-4 shrink-0" />
                         <a
                           href={url}
                           target="_blank"
@@ -119,9 +121,9 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                           {cleanUrl(url)}
                         </a>
                         {urlIdx < association.properties.sourceUrl!.length - 1 ? <IconDot spaced /> : null}
-                      </Fragment>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </span>
               )}
             </div>

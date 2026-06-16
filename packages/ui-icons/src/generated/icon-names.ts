@@ -54,6 +54,7 @@ export const iconNames = [
   'empty-flag',
   'enum',
   'error',
+  'external-link',
   'eye-slash',
   'eye',
   'field',

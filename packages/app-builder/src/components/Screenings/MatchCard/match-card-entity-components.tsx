@@ -102,7 +102,7 @@ export function IconDot({ dark, spaced }: { dark?: boolean; spaced?: boolean }) 
     <Icon
       icon="dot"
       className={cn(
-        'text-grey-border size-1.5 shrink-0 inline-block',
+        'text-grey-border size-4 shrink-0 inline-block',
         dark && 'text-grey-secondary opacity-100',
         spaced && 'mx-v2-sm',
         dark && spaced && 'ms-0',

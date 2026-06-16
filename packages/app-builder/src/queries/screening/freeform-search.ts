@@ -13,9 +13,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-type FreeformSearchResponse =
-  | { success: true; data: { id: string; matches: ScreeningMatchPayload[] } }
-  | { success: false; error: unknown };
+type FreeformSearchResponse = { id: string; matches: ScreeningMatchPayload[] };
 
 export const useFreeformSearchMutation = () => {
   const freeformSearch = useServerFn(freeformSearchFn);
@@ -40,20 +38,14 @@ export const useFreeformSearchMutation = () => {
   });
 };
 
-type SaveFreeformSearchResponse = { success: true } | { success: false; error: unknown };
-
 export const useSaveFreeformSearchMutation = () => {
   const queryClient = useQueryClient();
   const saveFreeformSearch = useServerFn(saveFreeformSearchFn);
 
   return useMutation({
     mutationKey: ['screening', 'save-freeform-search'],
-    mutationFn: async (input: { id: string }): Promise<SaveFreeformSearchResponse> => {
-      const response = await saveFreeformSearch({ data: input });
-      if (!response.success) {
-        throw new Error('Failed to save freeform search');
-      }
-      return response;
+    mutationFn: async (input: { id: string }): Promise<void> => {
+      await saveFreeformSearch({ data: input });
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
@@ -61,24 +53,18 @@ export const useSaveFreeformSearchMutation = () => {
   });
 };
 
-type ListSavedFreeformSearchesResponse =
-  | { success: true; data: SavedScreeningSearchPage }
-  | { success: false; error: unknown };
-
 export const useSavedFreeformSearchesQuery = (filters: SavedScreeningSearchFilters = {}) => {
   const listSavedSearches = useServerFn(listSavedFreeformSearchesFn);
 
   return useQuery({
     queryKey: ['screening', 'saved-searches', filters],
-    queryFn: async (): Promise<ListSavedFreeformSearchesResponse> => {
-      return listSavedSearches({ data: filters }) as Promise<ListSavedFreeformSearchesResponse>;
+    queryFn: async (): Promise<SavedScreeningSearchPage> => {
+      return listSavedSearches({ data: filters }) as Promise<SavedScreeningSearchPage>;
     },
   });
 };
 
-type GetFreeformSearchResponse =
-  | { success: true; data: { id: string; matches: ScreeningMatchPayload[] } }
-  | { success: false; error: unknown };
+type GetFreeformSearchResponse = { id: string; matches: ScreeningMatchPayload[] };
 
 export const useGetFreeformSearchQuery = (id: string) => {
   const getFreeformSearch = useServerFn(getFreeformSearchFn);
