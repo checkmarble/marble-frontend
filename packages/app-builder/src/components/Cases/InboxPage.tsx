@@ -208,7 +208,7 @@ export const InboxPage = ({
                     />
                     <CaseRightPanel.Trigger asChild data={{ inboxId }}>
                       <Button
-                        size="default"
+                        size="medium"
                         variant="primary"
                         appearance="stroked"
                         mode="icon"
