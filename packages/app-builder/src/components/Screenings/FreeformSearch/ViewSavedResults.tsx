@@ -349,7 +349,7 @@ function PeriodFilter({
       }}
     >
       <MenuCommand.Trigger>
-        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="default">
+        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="medium">
           <span className="inline-flex items-center gap-v2-xs">
             <Icon icon="calendar-month" className="size-4" />
             <span className="truncate">{t('screenings:freeform_search.saved_results.select_period')}</span>
@@ -427,7 +427,7 @@ function OwnerFilter({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="default">
+        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="medium">
           <span className="truncate">{t('screenings:freeform_search.saved_results.select_owner')}</span>
           <Icon
             icon="smallarrow-up"
