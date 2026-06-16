@@ -6,6 +6,7 @@ import { ClientOnly, createFileRoute, Link, redirect } from '@tanstack/react-rou
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
+import { Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const emailVerificationLoader = createServerFn()
@@ -50,7 +51,9 @@ function SignUp() {
         <Icon icon="arrow-left" className="size-4" />
         {t('common:back')}
       </Link>
-      <h2 className="text-2xl text-center">{t('auth:email-verification.title')}</h2>
+      <Typo variant="title2" className="text-center">
+        {t('auth:email-verification.title')}
+      </Typo>
 
       <div className="flex flex-col gap-6 items-center">
         <p>{t('auth:email-verification.email_sent')}</p>

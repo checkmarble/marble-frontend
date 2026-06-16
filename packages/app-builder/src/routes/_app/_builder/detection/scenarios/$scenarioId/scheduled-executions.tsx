@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/react';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
+import { Typo } from 'ui-design-system';
 
 const scheduledExecutionsLoader = createServerFn()
   .middleware([authMiddleware])
@@ -59,11 +60,11 @@ function ScheduledExecutions() {
 
       <Page.Container>
         <Page.Content className="max-w-(--breakpoint-lg)">
-          <h1 className="text-grey-primary text-m font-bold">
+          <Typo variant="title1" className="text-grey-primary text-m">
             {t('scenarios:home.execution.batch.scheduled_execution', {
               count: scheduledExecutions.length,
             })}
-          </h1>
+          </Typo>
           <ScheduledExecutionsList scheduledExecutions={scheduledExecutions} />
         </Page.Content>
       </Page.Container>

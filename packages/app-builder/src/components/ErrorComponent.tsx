@@ -2,7 +2,7 @@ import { FORBIDDEN, NOT_FOUND } from '@app-builder/utils/http/http-status-codes'
 import { useCanGoBack, useRouter } from '@tanstack/react-router';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 
 export const handle = {
   i18n: ['common'] satisfies Namespace,
@@ -29,7 +29,9 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4">
-      <h1 className="text-l text-purple-hover font-semibold">{title}</h1>
+      <Typo variant="title1" className="text-purple-hover">
+        {title}
+      </Typo>
       {subtitle ? <p className="text-grey-primary text-s mb-6">{subtitle}</p> : null}
 
       {canGoBack ? (
@@ -66,6 +68,6 @@ const ErrorDetail = ({ error }: { error: unknown }) => {
       </div>
     );
   } else {
-    return <h1 className="text-grey-primary">Unknown Error</h1>;
+    return <Typo variant="title1">Unknown Error</Typo>;
   }
 };

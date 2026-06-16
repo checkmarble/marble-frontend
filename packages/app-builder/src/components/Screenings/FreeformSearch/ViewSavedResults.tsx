@@ -17,7 +17,7 @@ import { ScreeningConfigBodySectionDto } from 'marble-api';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag } from 'ui-design-system';
+import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import FreeformMatchCard from './FreeformMatchCard';
 
@@ -108,9 +108,9 @@ export const ViewSavedResults = () => {
             >
               <Icon icon="cross" className="size-5" />
             </button>
-            <h2 className="text-l font-bold text-grey-primary">
+            <Typo variant="title2" className="text-grey-primary">
               {t('screenings:freeform_search.saved_results.title')}
-            </h2>
+            </Typo>
           </div>
 
           <div className="grid grid-cols-3 gap-v2-md pb-v2-md">

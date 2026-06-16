@@ -27,7 +27,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Table, useTable } from 'ui-design-system';
+import { Button, Table, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const apiKeysLoader = createServerFn()
@@ -274,7 +274,9 @@ function WebhooksSection({
         </CollapsiblePaper.Title>
         <CollapsiblePaper.Content>
           <div className="flex flex-col items-center gap-4 py-8">
-            <h2 className="text-grey-primary font-semibold">{t('settings:webhooks.configuration_error')}</h2>
+            <Typo variant="title2" className="text-grey-primary">
+              {t('settings:webhooks.configuration_error')}
+            </Typo>
             <Callout variant="outlined">
               <p className="whitespace-pre-wrap">
                 <Trans

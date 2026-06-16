@@ -3,7 +3,7 @@ import { Page } from '@app-builder/components/Page';
 import { type InboxMetadata } from '@app-builder/models/inbox';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
-
+import { Typo } from 'ui-design-system';
 import { CaseByDateGraph } from './Graph/CaseByDateGraph';
 import { CaseByInboxGraph } from './Graph/CaseByInboxGraph';
 import { AIConfigSection } from './Section/AIConfigSection';
@@ -43,7 +43,7 @@ export const OverviewPage = ({
               </div>
             </div>
             <div className="flex flex-col gap-v2-lg">
-              <h2 className="text-h2 font-semibold">{t('cases:overview.general_config.title')}</h2>
+              <Typo variant="title2">{t('cases:overview.general_config.title')}</Typo>
               {canViewAdminSections ? (
                 <AutoAssignmentSection
                   currentUserId={currentUserId}

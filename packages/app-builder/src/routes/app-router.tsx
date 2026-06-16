@@ -8,7 +8,7 @@ import * as Sentry from '@sentry/tanstackstart-react';
 import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { authMiddleware } from '../middlewares/auth-middleware';
 
@@ -39,7 +39,9 @@ function AppRouterError({ error }: { error: unknown }) {
   if (error instanceof Response && error.status === FORBIDDEN) {
     errorComponent = (
       <div className="m-auto flex flex-col items-center gap-4">
-        <h1 className="text-l text-purple-hover font-semibold">{t('common:error_boundary.marble_admin.title')}</h1>
+        <Typo variant="title1" className="text-purple-hover">
+          {t('common:error_boundary.marble_admin.title')}
+        </Typo>
         <p className="text-s mb-6">{t('common:error_boundary.marble_admin.subtitle')}</p>
         <div className="mb-1">
           <Button

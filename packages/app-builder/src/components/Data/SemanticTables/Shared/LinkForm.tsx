@@ -3,7 +3,7 @@ import { linkRelationTypes } from '@app-builder/models';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Input, SelectV2 } from 'ui-design-system';
+import { Button, cn, Input, SelectV2, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DatatypeIcon } from './DatatypeOption';
 
@@ -21,7 +21,7 @@ export function LinkForm({
   const { isCreateDataModelLinkAvailable } = useDataModelFeatureAccess();
   return (
     <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'bg-red-primary/5 p-v2-sm')}>
-      <h4 className="text-m font-semibold">{t('data:upload_data.links_settings')}</h4>
+      <Typo variant="subtitle2">{t('data:upload_data.links_settings')}</Typo>
       <div className="flex flex-col gap-v2-md">
         {links.map((link) => (
           <LinkRow key={link.linkId} linkId={link.linkId} compact={compact} hasError={errorLinkIds?.has(link.linkId)} />

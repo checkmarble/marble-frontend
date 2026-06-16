@@ -5,7 +5,7 @@ import { Client360Table, GroupedAnnotations } from 'marble-api';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, MenuCommand, Tag } from 'ui-design-system';
+import { Button, MenuCommand, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientRiskCategoriesEditSelect } from '../Annotations/ClientRiskCategoriesEditSelect';
 import { ClientTagsEditSelect } from '../Annotations/ClientTagsEditSelect';
@@ -30,7 +30,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   return (
     <div className="flex gap-v2-md items-center min-w-0">
       <div className="flex gap-v2-xs items-center shrink-0">
-        <h1 className="text-l font-bold capitalize">{objectDetails.data[metadata.caption_field] as string}</h1>
+        <Typo variant="title1">{objectDetails.data[metadata.caption_field] as string}</Typo>
         <Tag color="grey">{entityName}</Tag>
       </div>
       <div className="flex gap-v2-xs items-center font-normal">

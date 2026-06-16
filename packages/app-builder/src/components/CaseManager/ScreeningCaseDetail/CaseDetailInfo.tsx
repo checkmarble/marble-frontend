@@ -21,7 +21,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseDetailInfoProps = {
@@ -117,7 +117,7 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
 function ScreeningCaseSubtitle({ screening }: { screening: ContinuousScreening }) {
   const { t } = useTranslation(['continuousScreening', 'screeningTopics']);
   return (
-    <h2 className="text-h2 text-grey-secondary">
+    <Typo variant="title2" className="text-grey-secondary">
       {match(screening)
         .when(isIndirectContinuousScreening, (indirectScreening) => {
           const queries = R.entries(indirectScreening.request.searchInput.queries).map(([key, value]) => value);
@@ -147,6 +147,6 @@ function ScreeningCaseSubtitle({ screening }: { screening: ContinuousScreening }
           });
         })
         .exhaustive()}
-    </h2>
+    </Typo>
   );
 }

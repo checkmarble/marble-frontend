@@ -1,6 +1,7 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 
 import { Button } from '../Button/Button';
+import Typo from '../Typography/Typo';
 import { Card, type CardProps } from './Card';
 
 const cardColors = ['default', 'purple'] as const;
@@ -42,7 +43,7 @@ export const Variants: StoryFn<StoryProps> = () => (
 
 export const WithRichContent: StoryFn<StoryProps> = () => (
   <Card className="flex max-w-sm flex-col gap-3">
-    <h3 className="text-l font-semibold text-grey-primary">Card title</h3>
+    <Typo variant="subtitle1">Card title</Typo>
     <p className="text-s text-grey-secondary">
       Cards group related content and actions. They accept any children and an optional color variant.
     </p>

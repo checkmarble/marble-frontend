@@ -17,7 +17,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Table, useTable } from 'ui-design-system';
+import { Button, Table, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const webhooksLoader = createServerFn()
@@ -165,9 +165,9 @@ function WebhooksError({ error }: { error: unknown }) {
       <Page.Content className="relative max-w-(--breakpoint-xl)">
         <div className="bg-grey-primary/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
           <div className="bg-surface-card border-grey-border flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
-            <h1 className="bg-grey-background text-grey-primary w-full p-8 text-center font-semibold">
+            <Typo variant="title1" className="bg-grey-background w-full p-8 text-center">
               {t('settings:webhooks.configuration_error')}
-            </h1>
+            </Typo>
             <div className="w-full p-12">
               <Callout variant="outlined">
                 <p className="whitespace-pre-wrap">

@@ -20,7 +20,7 @@ const modalContentClassnames = cva(
       },
     },
     defaultVariants: {
-      size: 'full',
+      size: 'medium',
     },
   },
 );
@@ -28,7 +28,7 @@ const modalContentClassnames = cva(
 interface ModalContentProps extends Dialog.DialogContentProps, VariantProps<typeof modalContentClassnames> {}
 
 const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function ModalContent(
-  { className, size = 'full', ...props },
+  { className, size, ...props },
   ref,
 ) {
   return (

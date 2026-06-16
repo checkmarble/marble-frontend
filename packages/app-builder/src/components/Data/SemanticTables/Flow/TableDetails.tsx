@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand, Tag, tagClassName } from 'ui-design-system';
+import { Button, cn, MenuCommand, Tag, Typo, tagClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DeleteTableModal } from '../../DeleteDataModel/DeleteTableModal';
 import { dataI18n } from '../../data-i18n';
@@ -180,9 +180,9 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             }}
           />
           <div className="flex-1 flex flex-col gap-v2-xs">
-            <h4 className="font-semibold text-purple-primary" title={data.tableModel.name}>
+            <Typo variant="subtitle2" className="text-purple-primary" title={data.tableModel.name}>
               {data.tableModel.alias || data.tableModel.name}
-            </h4>
+            </Typo>
             <div className="flex gap-v2-xs">
               {data.tableModel.semanticType == null ? (
                 <Tag color="red">{t('data:table_details.other_table')}</Tag>

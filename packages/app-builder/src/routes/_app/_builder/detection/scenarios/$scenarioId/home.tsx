@@ -30,7 +30,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, HiddenInputs } from 'ui-design-system';
+import { Button, CtaV2ClassName, HiddenInputs, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -166,7 +166,9 @@ function ScenarioHome() {
         </section>
         <Page.ContentV2 centered paddingLess className="flex flex-col gap-v2-lg my-v2-xxl">
           <section className="flex flex-col gap-v2-sm">
-            <h2 className="text-grey-primary text-m font-semibold">{t('scenarios:home.execution')}</h2>
+            <Typo variant="title2" className="text-grey-primary">
+              {t('scenarios:home.execution')}
+            </Typo>
             <div className="grid grid-cols-2 gap-v2-sm">
               <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
               <BatchSection
@@ -314,7 +316,9 @@ function RealTimeSection({
 function TabHeader({ title, spinner }: { title: string; spinner: boolean }) {
   return (
     <div className="flex items-center gap-v2-md border-l border-t border-r bg-surface-card border-grey-border rounded-t-v2-md py-v2-xs px-2 w-fit">
-      <h3 className="text-grey-secondary font-medium">{title}</h3>
+      <Typo variant="subtitle1" className="text-grey-secondary">
+        {title}
+      </Typo>
       {spinner ? <Spinner className="size-3" /> : null}
     </div>
   );
@@ -536,7 +540,9 @@ function ResourcesSection() {
   const { t } = useTranslation(['common', 'scenarios']);
   return (
     <section className="flex flex-col gap-v2-sm mx-auto">
-      <h2 className="text-grey-primary text-m font-semibold">{t('scenarios:home.resources')}</h2>
+      <Typo variant="title2" className="text-grey-primary">
+        {t('scenarios:home.resources')}
+      </Typo>
       <div className="flex flex-row gap-v2-sm">
         {resources.map(({ tKey, href, src }) => (
           <a

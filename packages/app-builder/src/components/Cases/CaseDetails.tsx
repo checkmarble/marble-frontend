@@ -13,7 +13,7 @@ import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipbo
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Markdown } from 'ui-design-system';
+import { Button, cn, Markdown, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseFileButton } from '../CaseManager/shared/CaseDocuments/CaseFileButton';
 import { CaseAlerts } from './CaseAlerts';
@@ -268,7 +268,7 @@ export const CaseDetails = ({
         ) : (
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <h2 className="text-h2 font-medium">{t('cases:case_detail.ai_review.title')}</h2>
+              <Typo variant="title2">{t('cases:case_detail.ai_review.title')}</Typo>
 
               <div className="flex gap-2 justify-end">
                 <Button

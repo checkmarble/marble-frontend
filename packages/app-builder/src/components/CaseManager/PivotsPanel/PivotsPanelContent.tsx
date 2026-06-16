@@ -11,7 +11,7 @@ import { cva } from 'class-variance-authority';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, cn } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { KycEnrichment } from '../KycEnrichment';
 import { DataCard } from './DataCard';
@@ -335,11 +335,14 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
 
               return (
                 <Fragment key={relatedObjectType}>
-                  <h4 className="border-grey-border mb-3 border-b text-right text-xs font-semibold">
+                  <Typo
+                    variant="subtitle2"
+                    className="border-grey-border mb-3 border-b text-right text-xs font-semibold"
+                  >
                     {t('cases:case_detail.pivot_panel.related_object', {
                       tableName,
                     })}
-                  </h4>
+                  </Typo>
                   <DataFields table={relatedObjectType} object={{ data: relatedObject.relatedObjectDetail.data }} />
                 </Fragment>
               );

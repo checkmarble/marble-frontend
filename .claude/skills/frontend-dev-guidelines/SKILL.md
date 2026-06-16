@@ -25,7 +25,7 @@ interface CaseCardProps {
 export function CaseCard({ caseData, onSelect, className }: CaseCardProps) {
   return (
     <div className={cn('rounded-lg border border-grey-border p-4', className)}>
-      <h3 className="text-l font-semibold text-grey-primary">{caseData.name}</h3>
+      <Typo variant="subtitle1">{caseData.name}</Typo>
       <Button onClick={() => onSelect?.(caseData.id)}>Select</Button>
     </div>
   );

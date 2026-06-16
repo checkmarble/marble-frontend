@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
-import { cn } from 'ui-design-system';
+import { cn, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelOverlay } from './PanelOverlay';
 
@@ -172,7 +172,7 @@ export function PanelHeader({ children, className }: PanelHeaderProps) {
 
   return (
     <div className={cn('flex items-center justify-between pb-v2-md', className)}>
-      <h2 className="text-l font-bold text-grey-primary">{children}</h2>
+      <Typo variant="title2">{children}</Typo>
       <Icon
         icon="cross"
         className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary"

@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type ReactNode } from 'react';
+import { Typo } from 'ui-design-system';
 
 const titleVariants = cva('text-s px-2 py-3 font-semibold flex justify-between items-center', {
   variants: {
@@ -22,10 +23,10 @@ type DataCardProps = {
 export function DataCard({ title, subtitle, children, borderless }: DataCardProps) {
   return (
     <div>
-      <h3 className={titleVariants({ borderless })}>
+      <Typo variant="subtitle1" className={titleVariants({ borderless })}>
         <span>{title}</span>
         {subtitle ? <span className="text-purple-disabled text-xs">{subtitle}</span> : null}
-      </h3>
+      </Typo>
       {children}
     </div>
   );

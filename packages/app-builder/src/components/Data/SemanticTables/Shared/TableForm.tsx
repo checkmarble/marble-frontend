@@ -2,7 +2,7 @@ import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEdi
 import { ftmEntities, ftmEntityPersonOptions } from '@app-builder/models';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Input, SelectV2 } from 'ui-design-system';
+import { Button, cn, Input, SelectV2, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FieldsEditorContext } from '../../shared/FieldsEditorContext';
 import { DrawerContext } from './DrawerContext';
@@ -119,7 +119,7 @@ export function FormTable({
       <div className="flex flex-1 min-w-0 min-h-0 flex-col gap-v2-lg">
         {!tableState.tableId ? (
           <section className="flex flex-col gap-v2-md">
-            <h4 className="text-m font-semibold">{t('data:upload_data.general_settings')}</h4>
+            <Typo variant="subtitle2">{t('data:upload_data.general_settings')}</Typo>
             <div className="flex items-center gap-v2-md">
               <Input
                 value={tableState.alias}
@@ -184,7 +184,7 @@ export function SummaryView() {
 
   return (
     <div className="flex flex-col gap-v2-md">
-      <h4 className="text-m font-semibold">{t('data:upload_data.tables_label')}</h4>
+      <Typo variant="subtitle2">{t('data:upload_data.tables_label')}</Typo>
       <div className="flex flex-col gap-v2-md">
         {tableIds.map((tableId) => (
           <SummaryTableRow key={tableId} tableId={tableId} />

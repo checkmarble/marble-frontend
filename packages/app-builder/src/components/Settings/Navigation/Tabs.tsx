@@ -2,7 +2,7 @@ import { type Sections } from '@app-builder/services/settings-access';
 import { Link } from '@tanstack/react-router';
 import { type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Tabs, tabClassName } from 'ui-design-system';
+import { Tabs, Typo, tabClassName } from 'ui-design-system';
 
 const sectionTKeys: Record<keyof Sections, ParseKeys<['settings']>> = {
   api: 'settings:api',
@@ -19,7 +19,7 @@ export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
 
   return (
     <div className="flex flex-col gap-v2-sm">
-      <h1 className="text-xl font-bold">{t('navigation:settings')}</h1>
+      <Typo variant="title1">{t('navigation:settings')}</Typo>
       <Tabs>
         {(Object.keys(sections) as Array<keyof Sections>).map((sectionKey) => {
           const { settings } = sections[sectionKey];

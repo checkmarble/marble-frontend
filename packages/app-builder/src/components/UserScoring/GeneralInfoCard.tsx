@@ -22,7 +22,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Fragment, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, type SelectOption, SelectV2, Tooltip } from 'ui-design-system';
+import { Button, NumberInput, type SelectOption, SelectV2, Tooltip, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelContainer, PanelRoot } from '../Panel';
 import { PanelSharpFactory } from '../Panel/Panel';
@@ -225,7 +225,7 @@ function EditGeneralSettingsPanel({
           <button type="button" onClick={() => panelSharp.actions.close()}>
             <Icon icon="x" className="size-6" />
           </button>
-          <h2 className="text-h2 font-semibold">{t('user-scoring:ruleset.edit_settings_title')}</h2>
+          <Typo variant="title2">{t('user-scoring:ruleset.edit_settings_title')}</Typo>
         </div>
         <div className="flex flex-col gap-v2-sm">
           {t('user-scoring:section.create_panel.general_settings')}

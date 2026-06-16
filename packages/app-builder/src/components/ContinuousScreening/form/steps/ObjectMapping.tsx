@@ -13,7 +13,7 @@ import * as Collapsible from '@radix-ui/react-collapsible';
 import { FtmEntity } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand } from 'ui-design-system';
+import { Button, cn, MenuCommand, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   ContinuousScreeningConfigurationStepper,
@@ -237,9 +237,9 @@ const ObjectMappingFtmContent = ({
       {ftmEntity ? (
         <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-lg bg-surface-card">
           <div className="flex items-center gap-4 p-v2-md border-b border-grey-border">
-            <h3 className="text-h3 font-semibold">
+            <Typo variant="subtitle1" className="text-h3 font-semibold">
               {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.title')}
-            </h3>
+            </Typo>
             {mode !== 'view' && (
               <Button variant="primary" appearance="stroked" onClick={handleSuggest}>
                 {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.suggest')}

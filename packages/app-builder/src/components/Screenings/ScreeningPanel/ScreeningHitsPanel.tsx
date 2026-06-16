@@ -20,7 +20,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Checkbox } from 'ui-design-system';
+import { Button, Checkbox, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelContainer, PanelContent, PanelRoot } from '../../Panel/Panel';
 import { Spinner } from '../../Spinner';
@@ -172,7 +172,7 @@ export function ScreeningHitsPanel({
             aria-label="Close panel"
           />
           <div className="flex flex-1 items-center gap-2">
-            <h2 className="text-xl font-semibold text-grey-primary tracking-[-0.8px] leading-0">{currentName}</h2>
+            <Typo variant="title2">{currentName}</Typo>
             <ScreeningStatusTag
               status={currentStatus}
               pendingHitCount={screeningQuery.data?.matches.filter((m) => m.status === 'pending').length}

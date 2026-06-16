@@ -1,7 +1,7 @@
 import { useExportOrgMutation } from '@app-builder/queries/data/export-org';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DataPageHeader({ handleOpenCreateDrawer }: { handleOpenCreateDrawer: () => void }) {
@@ -11,7 +11,7 @@ export function DataPageHeader({ handleOpenCreateDrawer }: { handleOpenCreateDra
 
   return (
     <div className="flex items-center justify-between gap-v2-md">
-      <h1 className="text-xl font-bold">{t('navigation:data')}</h1>
+      <Typo variant="title1">{t('navigation:data')}</Typo>
       <div className="flex gap-2">
         <Button
           variant="secondary"
