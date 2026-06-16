@@ -1,13 +1,16 @@
 import { Page, Paper } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { LoadingIcon } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type TableModel } from '@app-builder/models';
+import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
 import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-data';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
-import { ClientOnly, createFileRoute, redirect, useRouter } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { ClientOnly, createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
@@ -15,6 +18,7 @@ import { type Namespace, type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
@@ -63,7 +67,7 @@ type ModalContent = {
   error?: string;
 };
 
-const UploadForm = ({ objectType }: { objectType: string }) => {
+const UploadForm = ({ objectType, onSuccess }: { objectType: string; onSuccess?: () => void }) => {
   const { t } = useTranslation(['common', 'upload']);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -71,7 +75,6 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
     message: '',
     success: true,
   });
-  const router = useRouter();
   const uploadIngestionData = useUploadIngestionData(objectType);
 
   const computeModalMessage = useCallback(
@@ -136,7 +139,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         success: true,
         linesProcessed: uploadLog.lines_processed,
       });
-      void router.invalidate();
+      onSuccess?.();
     } catch (error) {
       setIsModalOpen(true);
       computeModalMessage({
@@ -258,7 +261,15 @@ const ResultModal = ({
 
 const columnHelper = createColumnHelper<UploadLog>();
 
-const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
+const PastUploads = ({
+  uploadLogs,
+  onRefresh,
+  isFetching,
+}: {
+  uploadLogs: UploadLog[];
+  onRefresh: () => void;
+  isFetching: boolean;
+}) => {
   const { t } = useTranslation(['upload']);
   const language = useFormatLanguage();
   const formatDateTime = useFormatDateTime();
@@ -325,7 +336,18 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
 
   return (
     <Paper.Container className="bg-surface-card mb-10 w-full">
-      <Paper.Title>{t('upload:past_uploads')}</Paper.Title>
+      <div className="flex items-center justify-between">
+        <Paper.Title>{t('upload:past_uploads')}</Paper.Title>
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={onRefresh}
+          disabled={isFetching}
+          aria-label={t('upload:refresh')}
+        >
+          <LoadingIcon icon="restart-alt" loading={isFetching} className="size-4" />
+        </Button>
+      </div>
       <Table.Container {...getContainerProps()} className="max-h-96">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
@@ -363,7 +385,19 @@ const getStatusTKey = (status: string): ParseKeys<['upload']> => {
 
 function Upload() {
   const { t } = useTranslation(['common', 'upload']);
-  const { objectType, table, uploadLogs } = Route.useLoaderData();
+  const { objectType, table, uploadLogs: initialUploadLogs } = Route.useLoaderData();
+  const queryClient = useQueryClient();
+  const { data: uploadLogs = initialUploadLogs, refetch, isFetching } = useUploadTableQuery(objectType, true);
+
+  const handleUploadSuccess = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ['ingestion', 'upload-logs', objectType] });
+  }, [queryClient, objectType]);
+
+  const handleRefresh = useCallback(() => {
+    void refetch().then((result) => {
+      if (result.isError) toast.error(t('common:errors.unknown'));
+    });
+  }, [refetch, t]);
 
   return (
     <Page.Main>
@@ -403,9 +437,11 @@ function Upload() {
             </ClientOnly>
           </div>
           <ClientOnly fallback={<Loading />}>
-            <UploadForm objectType={objectType} />
+            <UploadForm objectType={objectType} onSuccess={handleUploadSuccess} />
           </ClientOnly>
-          {uploadLogs.length > 0 ? <PastUploads uploadLogs={uploadLogs} /> : null}
+          {uploadLogs.length > 0 ? (
+            <PastUploads uploadLogs={uploadLogs} onRefresh={handleRefresh} isFetching={isFetching} />
+          ) : null}
         </Page.Content>
       </Page.Container>
     </Page.Main>

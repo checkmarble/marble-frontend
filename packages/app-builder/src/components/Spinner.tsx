@@ -10,7 +10,7 @@ interface SpinnerProps {
 export function Spinner({ className }: SpinnerProps) {
   const { t } = useTranslation(['common']);
   return (
-    <span role="status">
+    <span role="status" className="inline-flex items-center justify-center">
       <span
         aria-hidden
         className={clsx(
