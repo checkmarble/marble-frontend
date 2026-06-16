@@ -194,7 +194,7 @@
  * ======================================== */
 @variant dark (&:where(.dark, .dark *));
 
-@custom-variant sentinel-intersect ([data-sentinel][data-intersect] + &);
+@custom-variant sentinel-intersect ([data-sentinel][data-intersect] + &, &:has(+ [data-sentinel][data-intersect]));
 
 .dark {
   /* ========================================

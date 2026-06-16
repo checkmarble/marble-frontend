@@ -1,22 +1,19 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import { VariantProps } from 'class-variance-authority';
+import { IconProps } from 'packages/ui-icons/src/Icon';
+import { forwardRef, type ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
-import { cn, Typo } from 'ui-design-system';
+import { match } from 'ts-pattern';
+import { Button, CtaV2ClassName, cn, StickyComponent, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelOverlay } from './PanelOverlay';
 
-export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | '4xl' | '5xl' | 'max';
+export type PanelSize = 'small' | 'medium' | 'large';
 
 const sizeClasses: Record<PanelSize, string> = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
-  xxl: 'max-w-2xl',
-  xxxl: 'max-w-3xl',
-  '4xl': 'max-w-4xl',
-  '5xl': 'max-w-5xl',
-  max: 'max-w-[1000px]',
+  small: 'max-w-[calc(100vw_/_3)]',
+  medium: 'max-w-[50vw]',
+  large: 'max-w-[calc(100vw_*_(2_/_3))]',
 };
 
 type OnOpenChangeFn = (state: boolean) => void;
@@ -60,7 +57,7 @@ export const PanelSharpFactory = createSharpFactory({
   },
 });
 
-export function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
+function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const sharp = PanelSharpFactory.createSharp({
     open,
@@ -73,6 +70,10 @@ export function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
     }
     sharp.value.isOpen = !!open;
   }, [sharp, open]);
+
+  useEffect(() => {
+    sharp.value.onOpenChange = onOpenChange;
+  }, [onOpenChange]);
 
   return (
     <PanelSharpFactory.Provider value={sharp}>
@@ -95,7 +96,7 @@ interface PanelContainerProps {
   size?: PanelSize;
 }
 
-export function PanelContainer({ children, className, size = 'md' }: PanelContainerProps) {
+function PanelContainer({ children, className, size = 'small' }: PanelContainerProps) {
   const sharp = PanelSharpFactory.useSharp();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -150,7 +151,7 @@ export function PanelContainer({ children, className, size = 'md' }: PanelContai
     <div
       ref={panelRef}
       className={cn(
-        'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border overflow-y-auto p-lg w-full flex flex-col animate-slideRightAndFadeIn',
+        'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border w-full flex flex-col animate-slideRightAndFadeIn overflow-y-auto',
         sizeClasses[size],
         className,
       )}
@@ -167,19 +168,27 @@ interface PanelHeaderProps {
   className?: string;
 }
 
-export function PanelHeader({ children, className }: PanelHeaderProps) {
+function PanelHeader({ children, className }: PanelHeaderProps) {
   const sharp = PanelSharpFactory.useSharp();
 
   return (
-    <div className={cn('flex items-center justify-between pb-md', className)}>
-      <Typo variant="title2">{children}</Typo>
-      <Icon
-        icon="cross"
-        className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary"
-        onClick={sharp.actions.close}
-        aria-label="Close panel"
-      />
-    </div>
+    <StickyComponent sentinelClassName="h-0 top-0">
+      <div
+        className={cn(
+          'sticky top-0 -m-lg mb-0 p-lg flex gap-md items-center bg-surface-card z-1 border-b border-transparent sentinel-intersect:border-grey-border sentinel-intersect:shadow-sticky-top',
+        )}
+      >
+        <Icon
+          icon="x"
+          className="size-6 cursor-pointer text-grey-secondary hover:text-grey-primary"
+          onClick={sharp.actions.close}
+          aria-label="Close panel"
+        />
+        <Typo as="div" variant="title2" className={cn('grow', className)}>
+          {children}
+        </Typo>
+      </div>
+    </StickyComponent>
   );
 }
 
@@ -189,7 +198,7 @@ interface PanelContentProps {
 }
 
 export function PanelContent({ children, className }: PanelContentProps) {
-  return <div className={cn('flex-1 overflow-y-auto pb-md', className)}>{children}</div>;
+  return <div className={cn('relative min-h-screen p-lg flex flex-col grow', className)}>{children}</div>;
 }
 
 interface PanelFooterProps {
@@ -197,6 +206,92 @@ interface PanelFooterProps {
   className?: string;
 }
 
-export function PanelFooter({ children, className }: PanelFooterProps) {
-  return <div className={cn('pt-md border-t border-grey-border mt-auto', className)}>{children}</div>;
+function PanelFooter({ children, className }: PanelFooterProps) {
+  return (
+    <StickyComponent inFlow="after" sentinelClassName="top-lg -translate-y-2xs">
+      <div
+        className={cn(
+          'sticky flex justify-end gap-md bottom-0 bg-surface-card -m-lg mt-auto p-lg border-t border-transparent sentinel-intersect:border-grey-border sentinel-intersect:shadow-sticky-bottom',
+          className,
+        )}
+      >
+        {children}
+      </div>
+    </StickyComponent>
+  );
 }
+
+type PanelButtonVariant = Extract<
+  VariantProps<typeof CtaV2ClassName>['variant'],
+  'primary' | 'destructive' | 'secondary'
+>;
+type PanelButtonAppearance = Extract<VariantProps<typeof CtaV2ClassName>['appearance'], 'stroked' | 'filled'>;
+
+type PanelFooterButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Button>, 'variant' | 'appearance' | 'size'> & {
+  label: string;
+  variant?: PanelButtonVariant;
+  isLoading?: boolean;
+  leadingIcon?: IconProps['icon'];
+  trailingIcon?: IconProps['icon'];
+  children?: ReactNode;
+};
+
+const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(function ModalFooterButton(
+  { variant, isLoading, leadingIcon, trailingIcon, disabled, label, children, className, ...props },
+  ref,
+) {
+  const { variant: buttonVariant, appearance } = match(variant)
+    .with('secondary', () => ({
+      variant: 'secondary' as PanelButtonVariant,
+      appearance: 'stroked' as PanelButtonAppearance,
+    }))
+    .with('destructive', () => ({
+      variant: 'destructive' as PanelButtonVariant,
+      appearance: 'filled' as PanelButtonAppearance,
+    }))
+    .otherwise(() => ({
+      variant: 'primary' as PanelButtonVariant,
+      appearance: 'filled' as PanelButtonAppearance,
+    }));
+
+  return (
+    <Button
+      ref={ref}
+      variant={buttonVariant}
+      appearance={appearance}
+      disabled={disabled || isLoading}
+      aria-busy={isLoading || undefined}
+      aria-disabled={disabled || isLoading || undefined}
+      size="large"
+      className={cn(isLoading && 'pointer-events-none', className)}
+      {...props}
+    >
+      {leadingIcon ? (
+        isLoading ? (
+          <Icon icon="spinner" className="size-5 animate-spin" />
+        ) : (
+          <Icon icon={leadingIcon} className="size-5" />
+        )
+      ) : null}
+      {label}
+      {children}
+      {trailingIcon ? (
+        isLoading && !leadingIcon ? (
+          <Icon icon="spinner" className="size-5 animate-spin" />
+        ) : (
+          <Icon icon={trailingIcon} className="size-5" />
+        )
+      ) : null}
+      {isLoading && !leadingIcon && !trailingIcon ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
+    </Button>
+  );
+});
+
+export const Panel = {
+  Root: PanelRoot,
+  Container: PanelContainer,
+  Content: PanelContent,
+  Header: PanelHeader,
+  Footer: PanelFooter,
+  FooterButton: PanelFooterButton,
+};

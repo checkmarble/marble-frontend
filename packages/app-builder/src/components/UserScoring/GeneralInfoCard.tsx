@@ -1,3 +1,4 @@
+import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
@@ -22,10 +23,8 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Fragment, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, type SelectOption, SelectV2, Tooltip, Typo } from 'ui-design-system';
+import { Button, NumberInput, type SelectOption, SelectV2, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PanelContainer, PanelRoot } from '../Panel';
-import { PanelSharpFactory } from '../Panel/Panel';
 import { ScoringLevelThresholds } from './ScoringLevelThresholds';
 
 interface GeneralInfoCardProps {
@@ -136,9 +135,9 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
 
       <RiskLevelBadges maxRiskLevel={settings.maxRiskLevel} thresholds={ruleset.thresholds} />
 
-      <PanelRoot open={editPanelOpen} onOpenChange={setEditPanelOpen}>
+      <Panel.Root open={editPanelOpen} onOpenChange={setEditPanelOpen}>
         <EditGeneralSettingsPanel ruleset={ruleset} maxRiskLevel={settings.maxRiskLevel} />
-      </PanelRoot>
+      </Panel.Root>
     </div>
   );
 }
@@ -219,60 +218,64 @@ function EditGeneralSettingsPanel({
   });
 
   return (
-    <PanelContainer size="lg" className="flex-col gap-md">
-      <form className="contents" onSubmit={handleSubmit(form)}>
-        <div className="flex items-center gap-md">
-          <button type="button" onClick={() => panelSharp.actions.close()}>
-            <Icon icon="x" className="size-6" />
-          </button>
-          <Typo variant="title2">{t('user-scoring:ruleset.edit_settings_title')}</Typo>
-        </div>
-        <div className="flex flex-col gap-sm">
-          {t('user-scoring:section.create_panel.general_settings')}
-          <div className="border border-grey-border rounded-md p-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-sm gap-y-md">
-            <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
-              <form.Field name="cooldownSeconds">
-                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
-              </form.Field>
-              <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
-                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
-              </Tooltip.Default>
+    <form className="contents" onSubmit={handleSubmit(form)}>
+      <Panel.Container size="small">
+        <Panel.Content>
+          <Panel.Header>{t('user-scoring:ruleset.edit_settings_title')}</Panel.Header>
+          <div className="flex flex-col gap-md">
+            <div className="flex flex-col gap-sm">
+              {t('user-scoring:section.create_panel.general_settings')}
+              <div className="border border-grey-border rounded-md p-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-sm gap-y-md">
+                <div className="grid grid-cols-subgrid col-span-full items-center">
+                  <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
+                  <form.Field name="cooldownSeconds">
+                    {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
+                  </form.Field>
+                  <Tooltip.Default content={t('user-scoring:section.create_panel.lower_score_duration_tooltip')}>
+                    <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+                  </Tooltip.Default>
+                </div>
+                <div className="grid grid-cols-subgrid col-span-full items-center">
+                  <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
+                  <form.Field name="scoringIntervalSeconds">
+                    {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
+                  </form.Field>
+                  <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
+                    <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
+                  </Tooltip.Default>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-subgrid col-span-full items-center">
-              <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
-              <form.Field name="scoringIntervalSeconds">
-                {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
-              </form.Field>
-              <Tooltip.Default content={t('user-scoring:section.create_panel.recalculation_duration_tooltip')}>
-                <Icon icon="helpcenter" className="size-5 text-grey-secondary" />
-              </Tooltip.Default>
-            </div>
+            <form.Field name="thresholds">
+              {(field) => (
+                <ScoringLevelThresholds
+                  maxRiskLevel={maxRiskLevel}
+                  thresholds={field.state.value}
+                  onThresholdsChange={field.handleChange}
+                />
+              )}
+            </form.Field>
           </div>
-        </div>
-        <form.Field name="thresholds">
-          {(field) => (
-            <ScoringLevelThresholds
-              maxRiskLevel={maxRiskLevel}
-              thresholds={field.state.value}
-              onThresholdsChange={field.handleChange}
+          <Panel.Footer>
+            <Panel.FooterButton
+              variant="secondary"
+              onClick={() => panelSharp.actions.close()}
+              label={t('user-scoring:section.create_panel.cancel')}
             />
-          )}
-        </form.Field>
-        <div className="flex gap-sm justify-end mt-auto">
-          <Button appearance="stroked" onClick={() => panelSharp.actions.close()}>
-            {t('user-scoring:section.create_panel.cancel')}
-          </Button>
-          <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
-            {([canSubmit, isSubmitting]) => (
-              <Button disabled={!canSubmit || isSubmitting} type="submit">
-                {t('user-scoring:section.create_panel.validate')}
-              </Button>
-            )}
-          </form.Subscribe>
-        </div>
-      </form>
-    </PanelContainer>
+            <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
+              {([canSubmit, isSubmitting]) => (
+                <Panel.FooterButton
+                  disabled={!canSubmit}
+                  isLoading={isSubmitting}
+                  type="submit"
+                  label={t('user-scoring:section.create_panel.validate')}
+                />
+              )}
+            </form.Subscribe>
+          </Panel.Footer>
+        </Panel.Content>
+      </Panel.Container>
+    </form>
   );
 }
 

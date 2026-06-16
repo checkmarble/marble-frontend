@@ -3,7 +3,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
-import { PanelContainer, PanelContent, PanelFooter, PanelHeader } from '@app-builder/components/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { type AiSettingSchema, aiSettingSchema } from '@app-builder/models/ai-settings';
 import { useUpdateAiSettings } from '@app-builder/queries/cases/update-ai-settings';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
@@ -12,7 +12,6 @@ import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { LanguageDropdown } from './LanguageDropdown';
 
 interface AIConfigPanelContentProps {
@@ -56,14 +55,9 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
   });
 
   return (
-    <PanelContainer size="xxl">
-      <PanelHeader>
-        <div className="flex items-center gap-sm">
-          <span>{t('cases:overview.panel.ai_config.title')}</span>
-        </div>
-      </PanelHeader>
-
-      <PanelContent>
+    <Panel.Container size="small">
+      <Panel.Content>
+        <Panel.Header>{t('cases:overview.panel.ai_config.title')}</Panel.Header>
         <form id="ai-config-panel-form" className="flex flex-col gap-sm" onSubmit={handleSubmit(form)}>
           {/* Section: Informations générales */}
           <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-lg p-md flex flex-col gap-md">
@@ -315,33 +309,25 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             </form.Field>
           </div>
         </form>
-      </PanelContent>
-
-      {!readOnly && (
-        <PanelFooter>
-          <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => {
-              const isPending = isSubmitting || updateMutation.isPending;
-              return (
-                <Button
-                  type="submit"
-                  form="ai-config-panel-form"
-                  variant="primary"
-                  size="medium"
-                  className="w-full justify-center"
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <Icon icon="spinner" className="size-4 animate-spin" />
-                  ) : (
-                    t('cases:overview.validate_config')
-                  )}
-                </Button>
-              );
-            }}
-          </form.Subscribe>
-        </PanelFooter>
-      )}
-    </PanelContainer>
+        {!readOnly && (
+          <Panel.Footer>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => {
+                const isPending = isSubmitting || updateMutation.isPending;
+                return (
+                  <Panel.FooterButton
+                    type="submit"
+                    form="ai-config-panel-form"
+                    variant="primary"
+                    label={t('cases:overview.validate_config')}
+                    isLoading={isPending}
+                  />
+                );
+              }}
+            </form.Subscribe>
+          </Panel.Footer>
+        )}
+      </Panel.Content>
+    </Panel.Container>
   );
 }

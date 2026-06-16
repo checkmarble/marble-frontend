@@ -1,3 +1,4 @@
+import { Panel } from '@app-builder/components/Panel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useAddCommentMutation } from '@app-builder/queries/cases/add-comment';
 import { useCreateKycEnrichmentQuery } from '@app-builder/queries/cases/create-kyc-enrichment';
@@ -8,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { Button, Markdown, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../../Callout';
-import { PanelContainer, PanelRoot } from '../../Panel';
 import { Spinner } from '../../Spinner';
 
 type KycEnrichmentPanelProps = {
@@ -62,8 +62,8 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
   };
 
   return (
-    <PanelRoot open={open} onOpenChange={onOpenChange}>
-      <PanelContainer size="4xl">
+    <Panel.Root open={open} onOpenChange={onOpenChange}>
+      <Panel.Container size="medium">
         <div className="flex items-center gap-sm pb-md border-b border-grey-border">
           <Icon icon="ai-review" className="size-5 text-purple-primary shrink-0" />
           <Typo variant="title2" className="flex-1 text-grey-primary">
@@ -125,8 +125,8 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
             {t('common:close')}
           </Button>
         </div>
-      </PanelContainer>
-    </PanelRoot>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
 

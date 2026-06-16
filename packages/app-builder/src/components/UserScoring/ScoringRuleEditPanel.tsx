@@ -1,4 +1,5 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
+import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { type DataModel } from '@app-builder/models';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
@@ -17,10 +18,8 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, type SelectOption, SelectV2, Tag } from 'ui-design-system';
+import { cn, type SelectOption, SelectV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PanelContainer, PanelContent, PanelFooter } from '../Panel';
-import { PanelSharpFactory } from '../Panel/Panel';
 import { SwitchNode } from './SwitchNode';
 
 type ScoringRuleEditPanelProps = {
@@ -110,63 +109,57 @@ export function ScoringRuleEditPanel({
 
   return (
     <AstBuilder.StaticProvider data={builderOptionsData} mode="edit">
-      <PanelContainer size="xxxl" className="flex flex-col">
-        <div className="flex items-center gap-md pb-md">
-          <Icon
-            icon="cross"
-            className="size-6 shrink-0 cursor-pointer text-grey-secondary hover:text-grey-primary"
-            onClick={sharp.actions.close}
-            aria-label="Close panel"
-          />
-          <div className="flex flex-1 flex-col">
-            <input
-              ref={nameInputRef}
-              className={cn(
-                'text-l font-semibold outline-none',
-                nameTouched && !name.trim() ? 'border-b border-red-primary' : '',
-              )}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onBlur={() => setNameTouched(true)}
-              placeholder={t('user-scoring:rule_edit.name_placeholder')}
-            />
-            {nameTouched && !name.trim() ? (
-              <span className="text-xs text-red-primary mt-xs">{t('user-scoring:rule_edit.name_required')}</span>
+      <Panel.Container size="small">
+        <Panel.Content>
+          <Panel.Header className="flex items-center">
+            <div className="flex flex-1 flex-col">
+              <input
+                ref={nameInputRef}
+                className={cn(
+                  'text-h2 font-semibold outline-none h-6',
+                  nameTouched && !name.trim() ? 'border-b border-red-primary' : '',
+                )}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={() => setNameTouched(true)}
+                placeholder={t('user-scoring:rule_edit.name_placeholder')}
+              />
+              {nameTouched && !name.trim() ? (
+                <span className="text-xs text-red-primary mt-1">{t('user-scoring:rule_edit.name_required')}</span>
+              ) : null}
+            </div>
+            {onDelete ? (
+              <button
+                onClick={onDelete}
+                className="ms-auto flex size-6 shrink-0 items-center justify-center rounded-lg border border-red-primary text-red-primary hover:bg-red-primary hover:text-white"
+                aria-label="Delete rule"
+              >
+                <Icon icon="delete" className="size-4" />
+              </button>
             ) : null}
+          </Panel.Header>
+          <div className="flex flex-wrap items-center gap-2 pb-md">
+            <Tag color="grey">{entityType}</Tag>
+            {currentModel ? (
+              <Tag color="grey">
+                {match(currentModel)
+                  .with({ type: 'user_attribute' }, () => t('user-scoring:rule_edit.model_type.user_attribute'))
+                  .with({ type: 'aggregate' }, () => t('user-scoring:rule_edit.model_type.aggregate'))
+                  .with({ type: 'screening_tags' }, () => t('user-scoring:rule_edit.model_type.screening_tags'))
+                  .with({ type: 'entity_tags' }, () => t('user-scoring:rule_edit.model_type.entity_tags'))
+                  .with({ type: 'past_alerts' }, () => t('user-scoring:rule_edit.model_type.past_alerts'))
+                  .exhaustive()}
+              </Tag>
+            ) : null}
+            <SelectV2
+              variant="tag"
+              options={RISK_TYPE_OPTIONS}
+              value={riskType}
+              onChange={setRiskType}
+              placeholder={t('user-scoring:rule_edit.risk_type_placeholder')}
+              menuClassName="min-w-40"
+            />
           </div>
-          {onDelete ? (
-            <button
-              onClick={onDelete}
-              className="flex size-6 shrink-0 items-center justify-center rounded-lg border border-red-primary text-red-primary hover:bg-red-primary hover:text-white"
-              aria-label="Delete rule"
-            >
-              <Icon icon="delete" className="size-4" />
-            </button>
-          ) : null}
-        </div>
-        <div className="flex flex-wrap items-center gap-sm pb-md">
-          <Tag color="grey">{entityType}</Tag>
-          {currentModel ? (
-            <Tag color="grey">
-              {match(currentModel)
-                .with({ type: 'user_attribute' }, () => t('user-scoring:rule_edit.model_type.user_attribute'))
-                .with({ type: 'aggregate' }, () => t('user-scoring:rule_edit.model_type.aggregate'))
-                .with({ type: 'screening_tags' }, () => t('user-scoring:rule_edit.model_type.screening_tags'))
-                .with({ type: 'entity_tags' }, () => t('user-scoring:rule_edit.model_type.entity_tags'))
-                .with({ type: 'past_alerts' }, () => t('user-scoring:rule_edit.model_type.past_alerts'))
-                .exhaustive()}
-            </Tag>
-          ) : null}
-          <SelectV2
-            variant="tag"
-            options={RISK_TYPE_OPTIONS}
-            value={riskType}
-            onChange={setRiskType}
-            placeholder={t('user-scoring:rule_edit.risk_type_placeholder')}
-            menuClassName="min-w-40"
-          />
-        </div>
-        <PanelContent>
           <div className="flex flex-col gap-md p-md border border-grey-border rounded-md">
             <SwitchNode
               mode="edit"
@@ -178,18 +171,21 @@ export function ScoringRuleEditPanel({
               onModelChange={(model) => setCurrentModel(model)}
             />
           </div>
-        </PanelContent>
-        <PanelFooter>
-          <div className="flex justify-end gap-sm">
-            <Button variant="secondary" onClick={sharp.actions.close}>
-              {t('user-scoring:rule_edit.cancel')}
-            </Button>
-            <Button variant="primary" onClick={handleValidate} disabled={!isValid}>
-              {t('user-scoring:rule_edit.save')}
-            </Button>
-          </div>
-        </PanelFooter>
-      </PanelContainer>
+          <Panel.Footer>
+            <Panel.FooterButton
+              variant="secondary"
+              onClick={sharp.actions.close}
+              label={t('user-scoring:rule_edit.cancel')}
+            />
+            <Panel.FooterButton
+              variant="primary"
+              onClick={handleValidate}
+              disabled={!isValid}
+              label={t('user-scoring:rule_edit.save')}
+            />
+          </Panel.Footer>
+        </Panel.Content>
+      </Panel.Container>
     </AstBuilder.StaticProvider>
   );
 }

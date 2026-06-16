@@ -1,5 +1,6 @@
 import { BackButton } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
+import { Panel } from '@app-builder/components/Panel';
 import { DataModelObject, isAnalyst } from '@app-builder/models';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
@@ -21,7 +22,6 @@ import { ClientDocumentsPopover } from '../Annotations/ClientDocumentsPopover';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorer } from '../DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
-import { PanelContainer, PanelHeader, PanelRoot } from '../Panel';
 import { Spinner } from '../Spinner';
 import { AlertHitsList } from './AlertHitsList';
 import { ClientComments } from './ClientComments';
@@ -277,44 +277,48 @@ export const ClientDetailPage = ({
           </Page.Content>
         </Page.Container>
       </Page.Main>
-      <PanelRoot open={showAlertHitsPanel} onOpenChange={setShowAlertHitsPanel}>
-        <PanelContainer size="xxl">
-          <PanelHeader>{t('client360:client_detail.alert_hits.panel_title')}</PanelHeader>
-          <div className="text-small">
+      <Panel.Root open={showAlertHitsPanel} onOpenChange={setShowAlertHitsPanel}>
+        <Panel.Container size="medium">
+          <Panel.Content>
+            <Panel.Header>{t('client360:client_detail.alert_hits.panel_title')}</Panel.Header>
             <AlertHitsList alertHitsQuery={alertHitsQuery} showAll />
-          </div>
-        </PanelContainer>
-      </PanelRoot>
-      <PanelRoot open={showMonitoringHitsPanel} onOpenChange={setShowMonitoringHitsPanel}>
-        <PanelContainer size="xxl">
-          <PanelHeader>{t('client360:client_detail.monitoring_hits.panel_title')}</PanelHeader>
-          <div className="text-small">
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
+      <Panel.Root open={showMonitoringHitsPanel} onOpenChange={setShowMonitoringHitsPanel}>
+        <Panel.Container size="medium">
+          <Panel.Content>
+            <Panel.Header>{t('client360:client_detail.monitoring_hits.panel_title')}</Panel.Header>
             <MonitoringHitsList monitoringHitsQuery={monitoringHitsQuery} showAll />
-          </div>
-        </PanelContainer>
-      </PanelRoot>
-      <PanelRoot open={showHierarchyPanel} onOpenChange={setShowHierarchyPanel}>
-        <PanelContainer size="xxl">
-          <PanelHeader>{t('client360:client_detail.hierarchy.title')}</PanelHeader>
-          <ObjectHierarchy
-            showAll
-            objectType={objectType}
-            objectId={objectId}
-            metadata={metadata}
-            allMetadata={allMetadata}
-            dataModelQuery={dataModelQuery}
-            handleExplore={() => setShowExplorer(true)}
-          />
-        </PanelContainer>
-      </PanelRoot>
-      <PanelRoot open={showExplorer} onOpenChange={setShowExplorer}>
-        <PanelContainer className="max-w-[90vw]">
-          <PanelHeader>{t('client360:client_detail.data_exploration.panel_title')}</PanelHeader>
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            <DataModelExplorer dataModel={dataModelQuery.data?.dataModel ?? []} />
-          </div>
-        </PanelContainer>
-      </PanelRoot>
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
+      <Panel.Root open={showHierarchyPanel} onOpenChange={setShowHierarchyPanel}>
+        <Panel.Container size="small">
+          <Panel.Content>
+            <Panel.Header>{t('client360:client_detail.hierarchy.title')}</Panel.Header>
+            <ObjectHierarchy
+              showAll
+              objectType={objectType}
+              objectId={objectId}
+              metadata={metadata}
+              allMetadata={allMetadata}
+              dataModelQuery={dataModelQuery}
+              handleExplore={() => setShowExplorer(true)}
+            />
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
+      <Panel.Root open={showExplorer} onOpenChange={setShowExplorer}>
+        <Panel.Container className="max-w-[90vw]">
+          <Panel.Content>
+            <Panel.Header>{t('client360:client_detail.data_exploration.panel_title')}</Panel.Header>
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+              <DataModelExplorer dataModel={dataModelQuery.data?.dataModel ?? []} />
+            </div>
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
       {scoringSettings && activeScore && isAccessible(userScoringAccess) ? (
         <ScoreDetailPanel
           open={showScorePanel}

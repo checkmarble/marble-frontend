@@ -1,5 +1,5 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
-import { PanelRoot } from '@app-builder/components/Panel/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { ApiKey } from '@app-builder/models/api-keys';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -141,9 +141,9 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
         ))}
       </Table.Body>
       {currentAuditEvent ? (
-        <PanelRoot open onOpenChange={() => setCurrentAuditEvent(null)}>
+        <Panel.Root open onOpenChange={() => setCurrentAuditEvent(null)}>
           <AuditEventDetailPanel event={currentAuditEvent} />
-        </PanelRoot>
+        </Panel.Root>
       ) : null}
     </Table.Container>
   );

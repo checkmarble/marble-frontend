@@ -1,4 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
+import { Panel } from '@app-builder/components/Panel';
 import { type DataModelField } from '@app-builder/models';
 import { type LinkToSingle, type TableModel } from '@app-builder/models/data-model';
 import { useDataModel } from '@app-builder/services/data/data-model';
@@ -294,73 +295,74 @@ export function EditTableDrawer({
         removeField,
       }}
     >
-      {/* Backdrop */}
-      <div
-        className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs"
-        onClick={requestClose}
-      />
-      {/* Drawer panel */}
-      <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
-        <div ref={containerRef} className="bg-surface-card flex h-full flex-col overflow-y-auto">
-          <header className="flex shrink-0 items-center gap-md border-b border-grey-border p-lg">
-            <button type="button" onClick={requestClose} className="rounded-lg p-sm hover:bg-grey-border">
-              <Icon icon="x" className="size-5" />
-            </button>
-            <span className="text-l">{t('data:edit_table.header_prefix')}</span>
-            <EditableAlias alias={tableState.alias} onChange={(alias) => updateTableState(tableModel.id, { alias })} />
-            {(hasTableNameError || (tableState.alias && tableState.alias !== tableState.name)) && (
-              <span
-                className={cn(
-                  'text-s text-grey-secondary',
-                  hasTableNameError && 'text-red-primary underline decoration-red-primary decoration-wavy',
+      <Panel.Root
+        open={open}
+        onOpenChange={(state) => {
+          if (!state) {
+            requestClose();
+          }
+        }}
+      >
+        <Panel.Container size="large">
+          <Panel.Content>
+            <Panel.Header>
+              <div className="flex shrink-0 items-center gap-md">
+                <span>{t('data:edit_table.header_prefix')}</span>
+                <EditableAlias
+                  alias={tableState.alias}
+                  onChange={(alias) => updateTableState(tableModel.id, { alias })}
+                />
+                {(hasTableNameError || (tableState.alias && tableState.alias !== tableState.name)) && (
+                  <span
+                    className={cn(
+                      'text-s text-grey-secondary',
+                      hasTableNameError && 'text-red-primary underline decoration-red-primary decoration-wavy',
+                    )}
+                  >
+                    ({tableState.name})
+                  </span>
                 )}
-              >
-                ({tableState.name})
-              </span>
-            )}
 
-            <EntityTypeMenu
-              entityType={tableState.entityType}
-              entitySubtype={tableState.subEntity}
-              isChanged={isSemanticTypeChanged}
-              onSelect={(entityType, subEntity) => updateTableState(tableModel.id, { entityType, subEntity })}
-            />
-          </header>
+                <EntityTypeMenu
+                  entityType={tableState.entityType}
+                  entitySubtype={tableState.subEntity}
+                  isChanged={isSemanticTypeChanged}
+                  onSelect={(entityType, subEntity) => updateTableState(tableModel.id, { entityType, subEntity })}
+                />
+              </div>
+            </Panel.Header>
 
-          <div className="flex-1 overflow-hidden flex flex-col px-lg py-lg">
-            <FormTable
-              tableId={tableModel.id}
-              errorFieldIds={fieldErrorIds}
-              errorLinkIds={linkErrorIds}
-              destinationTableOptions={destinationTableOptions}
-            />
-          </div>
-
-          <footer className="flex shrink-0 items-start justify-between gap-md border-t border-grey-border p-lg">
-            {validationErrors.length > 0 || isSemanticTypeChanged ? (
-              <Callout color="red" icon="lightbulb" iconColor="red" className="min-w-0 flex-1">
-                <ul className="flex flex-col gap-xs ps-md">
-                  {validationErrors.map((error, index) => (
-                    <li key={`${error.kind}-${index}`}>{error.message}</li>
-                  ))}
-                  {isSemanticTypeChanged ? <li>{t('data:edit_table.entity_type_change_warning')}</li> : null}
-                </ul>
-              </Callout>
-            ) : (
-              <div className="min-w-0 flex-1" />
-            )}
-
-            <div className="flex shrink-0 items-center gap-md self-center">
-              <Button variant="secondary" appearance="stroked" onClick={requestClose}>
-                {t('common:cancel')}
-              </Button>
-              <Button variant="primary" onClick={handleSave}>
-                {t('data:edit_table.button_accept')}
-              </Button>
+            <div className="flex-1 overflow-hidden flex flex-col">
+              <FormTable
+                tableId={tableModel.id}
+                errorFieldIds={fieldErrorIds}
+                errorLinkIds={linkErrorIds}
+                destinationTableOptions={destinationTableOptions}
+              />
             </div>
-          </footer>
-        </div>
-      </aside>
+            <Panel.Footer>
+              {validationErrors.length > 0 || isSemanticTypeChanged ? (
+                <Callout color="red" icon="lightbulb" iconColor="red" className="min-w-0 flex-1">
+                  <ul className="flex flex-col gap-xs ps-md">
+                    {validationErrors.map((error, index) => (
+                      <li key={`${error.kind}-${index}`}>{error.message}</li>
+                    ))}
+                    {isSemanticTypeChanged ? <li>{t('data:edit_table.entity_type_change_warning')}</li> : null}
+                  </ul>
+                </Callout>
+              ) : (
+                <div className="min-w-0 flex-1" />
+              )}
+
+              <div className="flex shrink-0 items-center gap-md self-center ms-auto">
+                <Panel.FooterButton variant="secondary" onClick={requestClose} label={t('common:cancel')} />
+                <Panel.FooterButton variant="primary" onClick={handleSave} label={t('data:edit_table.button_accept')} />
+              </div>
+            </Panel.Footer>
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
+
       <UnsavedChangesDialog
         open={isUnsavedChangesDialogOpen}
         onOpenChange={setIsUnsavedChangesDialogOpen}
