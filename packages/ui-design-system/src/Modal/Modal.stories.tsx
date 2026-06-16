@@ -37,3 +37,31 @@ const Template: StoryFn<typeof Modal> = (args) => (
 
 export const Primary = Template.bind({});
 Primary.args = {};
+
+const ScrollableTemplate: StoryFn<typeof Modal> = (args) => (
+  <Modal.Root {...args}>
+    <Modal.Trigger asChild>
+      <Button>Open scrollable modal</Button>
+    </Modal.Trigger>
+    <Modal.Content>
+      <Modal.Title>Scrollable modal</Modal.Title>
+      <Modal.Description className="text-grey-secondary text-small px-6 pb-4 text-center">
+        Scroll the content to see sticky header and footer borders appear and disappear.
+      </Modal.Description>
+      <div className="flex flex-col gap-4 p-6">
+        {Array.from({ length: 30 }, (_, index) => (
+          <p key={index}>Content line {index + 1}</p>
+        ))}
+      </div>
+      <Modal.Footer>
+        <Modal.Close asChild>
+          <Button variant="secondary">Cancel</Button>
+        </Modal.Close>
+        <Button variant="primary">Save</Button>
+      </Modal.Footer>
+    </Modal.Content>
+  </Modal.Root>
+);
+
+export const Scrollable = ScrollableTemplate.bind({});
+Scrollable.args = {};

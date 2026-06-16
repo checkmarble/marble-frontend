@@ -32,12 +32,12 @@ type TypoOwnProps = VariantProps<typeof typoClassName> & {
   children?: React.ReactNode;
 };
 
-export type TypoProps<E extends ElementType = 'p'> = TypoOwnProps & {
+export type TypoProps<E extends ElementType = ElementType> = TypoOwnProps & {
   as?: E;
 } & Omit<ComponentPropsWithoutRef<E>, keyof TypoOwnProps | 'as'>;
 
-type TypoComponent = <E extends ElementType = 'p'>(
-  props: TypoProps<E> & { ref?: React.Ref<React.ComponentRef<E>> },
+type TypoComponent = <E extends ElementType = ElementType>(
+  props: TypoProps<E> & { ref?: React.Ref<HTMLElement> },
 ) => React.ReactElement | null;
 
 export const Typo = forwardRef<HTMLElement, TypoProps<ElementType>>(function Typo(

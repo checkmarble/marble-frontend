@@ -147,18 +147,32 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                 sideOffset={24}
                 alignOffset={-18}
                 onOpenAutoFocus={(e) => e.preventDefault()}
-                className="w-fit min-w-[500px] max-w-[60vw] p-0 overflow-hidden flex flex-col"
+                className="w-fit min-w-[500px] max-w-[60vw] p-0"
               >
-                <SectionPanel
-                  sectionKey={activeSectionKey}
-                  section={activeSection}
-                  sectionCount={sections.length}
-                  onApply={onApply}
-                  onCancel={() => {
-                    setActiveSectionKey(null);
-                    onCancel?.();
-                  }}
-                />
+                <SectionPanel sectionKey={activeSectionKey} section={activeSection} sectionCount={sections.length} />
+                <Popover.Footer className="flex gap-2 p-4">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="medium"
+                    className="flex-1 justify-center"
+                    onClick={() => {
+                      setActiveSectionKey(null);
+                      onCancel?.();
+                    }}
+                  >
+                    {t('common:cancel')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="medium"
+                    className="flex-1 justify-center"
+                    onClick={onApply}
+                  >
+                    {t('screenings:freeform_search.apply')}
+                  </Button>
+                </Popover.Footer>
               </Popover.Content>
             )}
           </Popover.Root>
@@ -297,11 +311,9 @@ type SectionPanelProps = {
   sectionKey: ScreeningCategory;
   section: SectionData;
   sectionCount: number;
-  onApply?: () => void;
-  onCancel?: () => void;
 };
 
-const SectionPanel = ({ sectionKey, section, sectionCount, onApply, onCancel }: SectionPanelProps) => {
+const SectionPanel = ({ sectionKey, section, sectionCount }: SectionPanelProps) => {
   const listConfig = ListAndTopicDatasetConfiguration.useSharp();
   const mode = ListAndTopicDatasetConfiguration.select((state) => state.mode);
   const provider = ListAndTopicDatasetConfiguration.select((state) => state.provider);
@@ -313,41 +325,31 @@ const SectionPanel = ({ sectionKey, section, sectionCount, onApply, onCancel }: 
   const { getLaTagLabel } = useDatasetTag();
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
-      <div className="flex-1 min-h-0 overflow-auto">
-        <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
-          <Switch
-            id={`section-switch-${sectionKey}`}
-            checked={isEnabled}
-            disabled={mode === 'view' || isUniqueListForLN}
-            onCheckedChange={(checked) => {
-              listConfig.update((state) => {
-                state.datasets[sectionKey] = checked;
-                if (provider === 'opensanctions' || sectionKey === 'custom')
-                  selectAllInSection(state.datasets, sectionKey, section, checked);
-              });
-            }}
-          />
-          <label
-            htmlFor={`section-switch-${sectionKey}`}
-            className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}
-          >
-            {t('continuousScreening:creation.datasetSelection.section.activate', {
-              category: getLaTagLabel(sectionKey),
-            })}
-          </label>
-        </div>
-        {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
+    <>
+      <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
+        <Switch
+          id={`section-switch-${sectionKey}`}
+          checked={isEnabled}
+          disabled={mode === 'view' || isUniqueListForLN}
+          onCheckedChange={(checked) => {
+            listConfig.update((state) => {
+              state.datasets[sectionKey] = checked;
+              if (provider === 'opensanctions' || sectionKey === 'custom')
+                selectAllInSection(state.datasets, sectionKey, section, checked);
+            });
+          }}
+        />
+        <label
+          htmlFor={`section-switch-${sectionKey}`}
+          className={cn('text-s font-semibold', isEnabled ? 'text-purple-primary' : 'text-grey-primary')}
+        >
+          {t('continuousScreening:creation.datasetSelection.section.activate', {
+            category: getLaTagLabel(sectionKey),
+          })}
+        </label>
       </div>
-      <div className="border-t border-grey-border flex gap-2 p-4">
-        <Button type="button" variant="secondary" size="medium" className="flex-1 justify-center" onClick={onCancel}>
-          {t('common:cancel')}
-        </Button>
-        <Button type="button" variant="primary" size="medium" className="flex-1 justify-center" onClick={onApply}>
-          {t('screenings:freeform_search.apply')}
-        </Button>
-      </div>
-    </div>
+      {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
+    </>
   );
 };
 
