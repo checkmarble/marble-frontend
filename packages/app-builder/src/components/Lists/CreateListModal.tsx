@@ -125,11 +125,11 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button type="button" variant="secondary" appearance="stroked">
+              <Button type="button" variant="secondary" appearance="stroked" size="large">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button variant="primary" type="submit" name="create">
+            <Button variant="primary" type="submit" name="create" size="large">
               {t('lists:create_list.button_accept')}
             </Button>
           </Modal.Footer>

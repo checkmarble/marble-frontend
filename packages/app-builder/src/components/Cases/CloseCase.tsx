@@ -133,11 +133,13 @@ export const CloseCase = ({
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked" type="button">
+              <Button variant="secondary" appearance="stroked" type="button" size="large">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button type="submit">{t('common:validate')}</Button>
+            <Button type="submit" size="large">
+              {t('common:validate')}
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

@@ -212,16 +212,14 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
           <div>{t('continuousScreening:review.dismiss_alert_modal.confirmation_text')}</div>
         </div>
         <Modal.Footer>
-          <div className="flex flex-row gap-v2-sm p-v2-md justify-end">
-            <Modal.Close asChild>
-              <Button variant="secondary" type="button">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="primary" onClick={dismissAlert}>
-              {t('continuousScreening:review.dismiss_alert_modal.confirm_button')}
+          <Modal.Close asChild>
+            <Button variant="secondary" type="button" size="large">
+              {t('common:cancel')}
             </Button>
-          </div>
+          </Modal.Close>
+          <Button variant="primary" onClick={dismissAlert} size="large">
+            {t('continuousScreening:review.dismiss_alert_modal.confirm_button')}
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

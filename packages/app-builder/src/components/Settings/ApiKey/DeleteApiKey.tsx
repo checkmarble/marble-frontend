@@ -47,11 +47,11 @@ function DeleteApiKeyContent({ apiKey, onSuccess }: { apiKey: ApiKey; onSuccess:
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel">
+          <Button variant="secondary" appearance="stroked" name="cancel" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="destructive" name="delete" onClick={handleDeleteApiKey}>
+        <Button variant="destructive" name="delete" onClick={handleDeleteApiKey} size="large">
           <Icon icon="delete" className="size-5" />
           {t('common:delete')}
         </Button>

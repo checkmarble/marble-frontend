@@ -394,11 +394,11 @@ export function FieldDetailPanel({
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked">
+              <Button variant="secondary" appearance="stroked" size="large">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button variant="primary" onClick={performDelete}>
+            <Button variant="primary" onClick={performDelete} size="large">
               {t('common:delete')}
             </Button>
           </Modal.Footer>

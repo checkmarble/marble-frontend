@@ -33,12 +33,13 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
         <div className={cn('flex flex-col gap-4 p-4', className)}>{props.children}</div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
           <Button
             variant="primary"
+            size="large"
             disabled={props.saveDisabled}
             onClick={() => {
               props.onSave(nodeSharp.value.node as EditableAstNode);

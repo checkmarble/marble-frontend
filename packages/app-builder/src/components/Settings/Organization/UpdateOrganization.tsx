@@ -138,11 +138,17 @@ export function UpdateOrganizationSettingsContents({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" type="button">
+          <Button variant="secondary" appearance="stroked" type="button" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit" name="update" disabled={updateOrganizationMutation.isPending}>
+        <Button
+          variant="primary"
+          type="submit"
+          name="update"
+          disabled={updateOrganizationMutation.isPending}
+          size="large"
+        >
           {t('common:save')}
         </Button>
       </Modal.Footer>

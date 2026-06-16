@@ -52,10 +52,10 @@ export function RemoveFileAnnotation({ annotation, onClose, onDelete }: RemoveFi
           />
         </Modal.Title>
         <Modal.Footer>
-          <Button variant="secondary" appearance="stroked" className="flex-1" onClick={onClose}>
+          <Button variant="secondary" appearance="stroked" size="large" onClick={onClose}>
             {t('common:cancel')}
           </Button>
-          <Button variant="destructive" className="flex-1" onClick={handleDelete}>
+          <Button variant="destructive" size="large" onClick={handleDelete}>
             {t('common:delete')}
           </Button>
         </Modal.Footer>

@@ -223,12 +223,14 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
         <Modal.Footer>
           <div className="flex gap-v2-sm justify-end p-v2-md">
             {currentStep > 1 ? (
-              <Button variant="secondary" onClick={handleBack}>
+              <Button variant="secondary" size="large" onClick={handleBack}>
                 {t('scenarios:monitoring_list_check.back')}
               </Button>
             ) : (
               <Modal.Close asChild>
-                <Button variant="secondary">{t('common:cancel')}</Button>
+                <Button variant="secondary" size="large">
+                  {t('common:cancel')}
+                </Button>
               </Modal.Close>
             )}
 
@@ -241,11 +243,17 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
                   (currentStep === 3 && !canSaveFromStep3)
                 }
                 onClick={handleSave}
+                size="large"
               >
                 {t('scenarios:monitoring_list_check.validate')}
               </Button>
             ) : (
-              <Button variant="primary" disabled={!hasContinuousScreening || !canProceedFromStep1} onClick={handleNext}>
+              <Button
+                variant="primary"
+                size="large"
+                disabled={!hasContinuousScreening || !canProceedFromStep1}
+                onClick={handleNext}
+              >
                 {t('scenarios:monitoring_list_check.next')}
               </Button>
             )}

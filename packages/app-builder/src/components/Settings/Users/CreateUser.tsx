@@ -200,11 +200,11 @@ function CreateUserContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button type="button" variant="secondary" appearance="stroked" name="cancel">
+          <Button type="button" variant="secondary" appearance="stroked" name="cancel" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit" name="create">
+        <Button variant="primary" type="submit" name="create" size="large">
           {t('settings:users.new_user.create')}
         </Button>
       </Modal.Footer>

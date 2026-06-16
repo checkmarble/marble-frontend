@@ -105,11 +105,12 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
                   e.preventDefault();
                   setIsOpen(false);
                 }}
+                size="large"
               >
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button variant="primary" type="submit" key="create">
+            <Button variant="primary" type="submit" key="create" size="large">
               {t('common:save')}
             </Button>
           </Modal.Footer>

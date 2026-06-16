@@ -181,11 +181,11 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
+          <Button type="button" variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit" disabled={isSubmitting}>
+        <Button variant="primary" type="submit" disabled={isSubmitting} size="large">
           {isSubmitting ? <Spinner className="size-4" /> : null}
           {t('common:save')}
         </Button>

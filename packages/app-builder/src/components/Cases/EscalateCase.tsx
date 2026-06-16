@@ -81,11 +81,13 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
         <form onSubmit={handleSubmit(form)}>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked" type="button">
+              <Button variant="secondary" appearance="stroked" type="button" size="large">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button type="submit">{t('cases:escalate-case.modal.submit-button.label')}</Button>
+            <Button type="submit" size="large">
+              {t('cases:escalate-case.modal.submit-button.label')}
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

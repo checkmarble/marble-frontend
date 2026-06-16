@@ -44,15 +44,15 @@ export function CancelTestRun({
         </Modal.Description>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
           <Button
-            className="flex-1"
             variant="primary"
             onClick={handleCancelScenario}
             disabled={cancelTestRunMutation.isPending}
+            size="large"
           >
             {t('scenarios:testrun.cancel')}
           </Button>

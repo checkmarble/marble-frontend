@@ -19,11 +19,11 @@ export function UnsavedChangesDialog({ open, onOpenChange, onConfirm }: UnsavedC
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked" name="cancel">
+            <Button variant="secondary" appearance="stroked" name="cancel" size="large">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button variant="primary" name="confirm" onClick={onConfirm}>
+          <Button variant="primary" name="confirm" onClick={onConfirm} size="large">
             {t('data:unsaved_changes.confirm')}
           </Button>
         </Modal.Footer>

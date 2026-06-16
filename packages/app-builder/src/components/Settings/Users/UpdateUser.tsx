@@ -175,11 +175,11 @@ function UpdateUserContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel">
+          <Button variant="secondary" appearance="stroked" name="cancel" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit" name="update">
+        <Button variant="primary" type="submit" name="update" size="large">
           {t('common:save')}
         </Button>
       </Modal.Footer>

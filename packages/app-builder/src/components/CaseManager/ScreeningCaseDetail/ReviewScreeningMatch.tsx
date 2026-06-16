@@ -91,11 +91,11 @@ export const ReviewScreeningMatch = ({
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary" appearance="stroked" name="cancel">
+              <Button variant="secondary" appearance="stroked" size="large" name="cancel">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button type="submit" disabled={!currentStatus} className="flex-1" variant="primary" name="save">
+            <Button type="submit" disabled={!currentStatus} size="large" variant="primary" name="save">
               {t('common:save')}
             </Button>
           </Modal.Footer>

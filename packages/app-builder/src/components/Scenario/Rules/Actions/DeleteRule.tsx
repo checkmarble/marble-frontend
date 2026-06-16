@@ -44,15 +44,15 @@ export function DeleteRule({
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
           <Button
-            className="flex-1"
             variant="destructive"
             type="button"
             onClick={handleDeleteRule}
+            size="large"
             disabled={deleteRuleMutation.isPending}
           >
             <Icon icon="delete" className="size-5" />

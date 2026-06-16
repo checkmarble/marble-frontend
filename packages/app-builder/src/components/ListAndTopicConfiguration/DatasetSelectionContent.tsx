@@ -154,8 +154,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                   <Button
                     type="button"
                     variant="secondary"
-                    size="medium"
-                    className="flex-1 justify-center"
+                    size="large"
                     onClick={() => {
                       setActiveSectionKey(null);
                       onCancel?.();
@@ -163,13 +162,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                   >
                     {t('common:cancel')}
                   </Button>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="medium"
-                    className="flex-1 justify-center"
-                    onClick={onApply}
-                  >
+                  <Button type="button" variant="primary" size="large" onClick={onApply}>
                     {t('screenings:freeform_search.apply')}
                   </Button>
                 </Popover.Footer>

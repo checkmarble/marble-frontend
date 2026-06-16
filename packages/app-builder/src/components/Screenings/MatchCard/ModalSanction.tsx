@@ -37,7 +37,7 @@ export function ModalSanction({ sanction }: { sanction: ScreeningSanctionEntity 
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:close')}
             </Button>
           </Modal.Close>

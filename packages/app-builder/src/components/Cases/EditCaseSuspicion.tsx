@@ -200,7 +200,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
               </div>
               <Modal.Footer>
                 <Modal.Close asChild>
-                  <Button variant="secondary" appearance="stroked">
+                  <Button variant="secondary" appearance="stroked" size="large">
                     {t('common:cancel')}
                   </Button>
                 </Modal.Close>
@@ -211,6 +211,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                     field.handleChange('completed');
                     form.handleSubmit();
                   }}
+                  size="large"
                 >
                   {isCompleted
                     ? t('cases:sar.modale.save')

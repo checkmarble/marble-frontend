@@ -256,41 +256,40 @@ function Filters() {
               {t('settings:filters.delete_filter.content')}
             </Modal.Description>
             <Modal.Footer>
-              <div className="bg-grey-background-light flex justify-end gap-3 border-t p-4">
-                <Button variant="secondary" onClick={() => setIsConfirmOpen(false)}>
-                  {t('common:cancel')}
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    if (!itemToDelete) return;
-                    const payload: DeleteExportedFieldPayload =
-                      itemToDelete.kind === 'trigger'
-                        ? { triggerObjectField: itemToDelete.field! }
-                        : {
-                            ingestedDataField: {
-                              path: itemToDelete.path ?? [],
-                              name: itemToDelete.name!,
-                            },
-                          };
-                    deleteFilterMutation
-                      .mutateAsync({
-                        tableId: itemToDelete.tableId,
-                        payload,
-                      })
-                      .then(() => {
-                        setIsConfirmOpen(false);
-                        setItemToDelete(null);
-                        revalidate();
-                      })
-                      .catch(() => {
-                        toast.error(t('common:errors.unknown'));
-                      });
-                  }}
-                >
-                  {t('settings:filters.delete_filter')}
-                </Button>
-              </div>
+              <Button variant="secondary" onClick={() => setIsConfirmOpen(false)} size="large">
+                {t('common:cancel')}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  if (!itemToDelete) return;
+                  const payload: DeleteExportedFieldPayload =
+                    itemToDelete.kind === 'trigger'
+                      ? { triggerObjectField: itemToDelete.field! }
+                      : {
+                          ingestedDataField: {
+                            path: itemToDelete.path ?? [],
+                            name: itemToDelete.name!,
+                          },
+                        };
+                  deleteFilterMutation
+                    .mutateAsync({
+                      tableId: itemToDelete.tableId,
+                      payload,
+                    })
+                    .then(() => {
+                      setIsConfirmOpen(false);
+                      setItemToDelete(null);
+                      revalidate();
+                    })
+                    .catch(() => {
+                      toast.error(t('common:errors.unknown'));
+                    });
+                }}
+                size="large"
+              >
+                {t('settings:filters.delete_filter')}
+              </Button>
             </Modal.Footer>
           </Modal.Content>
         </Modal.Root>

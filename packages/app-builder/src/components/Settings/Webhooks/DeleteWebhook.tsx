@@ -43,7 +43,7 @@ function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onS
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
@@ -53,6 +53,7 @@ function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onS
           name="create"
           onClick={handleDeleteWebhook}
           disabled={deleteWebhookMutation.isPending}
+          size="large"
         >
           <LoadingIcon icon="delete" className="size-5" loading={deleteWebhookMutation.isPending} />
           {t('common:delete')}

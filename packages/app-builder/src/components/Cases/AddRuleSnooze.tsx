@@ -201,11 +201,11 @@ function AddRuleSnoozeContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit" name="update">
+        <Button variant="primary" type="submit" name="update" size="large">
           <LoadingIcon icon="snooze" className="size-5" loading={addRuleSnoozeMutation.isPending} />
           {t('cases:decisions.rule.snooze')}
         </Button>

@@ -134,11 +134,11 @@ function WorkflowClientContent() {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked" onClick={cancelDeleteRule}>
+              <Button variant="secondary" appearance="stroked" onClick={cancelDeleteRule} size="large">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button variant="destructive" onClick={confirmDeleteRule}>
+            <Button variant="destructive" onClick={confirmDeleteRule} size="large">
               <Icon icon="delete" className="size-4" />
               {t('workflows:delete_rule.delete_button')}
             </Button>

@@ -74,11 +74,13 @@ export const OpenCase = ({ id }: { id: string }) => {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked">
+              <Button variant="secondary" appearance="stroked" size="large">
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button type="submit">Re-Open</Button>
+            <Button type="submit" size="large">
+              Re-Open
+            </Button>
           </Modal.Footer>
         </form>
       </Modal.Content>

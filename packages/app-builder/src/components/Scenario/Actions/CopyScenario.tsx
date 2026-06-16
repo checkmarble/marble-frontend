@@ -99,11 +99,11 @@ function CopyScenarioContent({ scenarioId, scenarioName, onSuccess }: CopyScenar
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button className="flex-1" variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit">
+        <Button variant="primary" type="submit" size="large">
           {t('scenarios:copy_scenario.button')}
         </Button>
       </Modal.Footer>

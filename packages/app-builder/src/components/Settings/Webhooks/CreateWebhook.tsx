@@ -178,11 +178,11 @@ function CreateWebhookContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit" name="create" disabled={createWebhookMutation.isPending}>
+        <Button variant="primary" type="submit" name="create" disabled={createWebhookMutation.isPending} size="large">
           <LoadingIcon icon="plus" className="size-5" loading={createWebhookMutation.isPending} />
           {t('settings:webhooks.new_webhook.create')}
         </Button>

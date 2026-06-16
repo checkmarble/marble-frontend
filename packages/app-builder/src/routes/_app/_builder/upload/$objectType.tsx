@@ -248,7 +248,7 @@ const ResultModal = ({
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="primary">
+            <Button variant="secondary" appearance="stroked" size="large">
               <Icon icon="tick" className="size-5" />
               {t('common:understand')}
             </Button>

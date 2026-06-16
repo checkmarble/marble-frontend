@@ -112,11 +112,11 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" type="button" name="cancel">
+          <Button variant="secondary" appearance="stroked" type="button" name="cancel" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit" name="update" disabled={updateTagMutation.isPending}>
+        <Button variant="primary" type="submit" name="update" disabled={updateTagMutation.isPending} size="large">
           {t('common:save')}
         </Button>
       </Modal.Footer>

@@ -157,11 +157,11 @@ function ReviewDecisionContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked" size="large">
             {t('cases:case_detail.review_decision.go_back')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" size="large">
           <LoadingIcon icon="case-manager" className="size-5" loading={reviewDecisionMutation.isPending} />
           {t('common:validate')}
         </Button>

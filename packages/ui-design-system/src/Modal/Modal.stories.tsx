@@ -55,9 +55,13 @@ const ScrollableTemplate: StoryFn<typeof Modal> = (args) => (
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary">Cancel</Button>
+          <Button variant="secondary" size="large">
+            Cancel
+          </Button>
         </Modal.Close>
-        <Button variant="primary">Save</Button>
+        <Button variant="primary" size="large">
+          Save
+        </Button>
       </Modal.Footer>
     </Modal.Content>
   </Modal.Root>

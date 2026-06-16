@@ -19,7 +19,7 @@ export default function ModalPerson({ personId, personName }: { personId: string
         </Modal.Description>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:close')}
             </Button>
           </Modal.Close>

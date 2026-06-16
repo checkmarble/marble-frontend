@@ -69,7 +69,7 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
@@ -77,6 +77,7 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
             variant="primary"
             disabled={!selectedArchetype || applyArchetypeMutation.isPending}
             onClick={handleApply}
+            size="large"
           >
             {applyArchetypeMutation.isPending ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
             {t('data:select_archetype.button_accept')}

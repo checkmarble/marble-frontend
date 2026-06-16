@@ -52,11 +52,11 @@ const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel">
+          <Button variant="secondary" appearance="stroked" name="cancel" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="destructive" name="delete" onClick={handleDeleteInboxUser}>
+        <Button variant="destructive" name="delete" onClick={handleDeleteInboxUser} size="large">
           <Icon icon="delete" className="size-5" />
           {t('common:delete')}
         </Button>

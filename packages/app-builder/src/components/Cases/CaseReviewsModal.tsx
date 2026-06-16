@@ -110,10 +110,10 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
 
       <Modal.Footer>
         {review ? (
-          <div className="flex flex-1 gap-2">
+          <>
             <Button
               variant={review.reaction === 'ok' ? 'primary' : 'secondary'}
-              size="small"
+              size="large"
               onClick={() => feedbackMutation.mutate('ok')}
             >
               <Icon icon="thumb-up" className="size-4" />
@@ -121,7 +121,7 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
             </Button>
             <Button
               variant={review.reaction === 'ko' ? 'primary' : 'secondary'}
-              size="small"
+              size="large"
               onClick={() => feedbackMutation.mutate('ko')}
             >
               <Icon icon="thumb-down" className="size-4" />
@@ -129,7 +129,7 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
             </Button>
             <Button
               variant="secondary"
-              size="small"
+              size="large"
               onClick={() =>
                 addCommentMutation.mutate(undefined, {
                   onSuccess: () => toast.success(t('cases:case_detail.ai_review.actions.add_to_comment.success')),
@@ -140,10 +140,12 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
               <Icon icon="comment" className="size-4" />
               {t('cases:case_detail.ai_review.actions.add_to_comment')}
             </Button>
-          </div>
+          </>
         ) : null}
         <Modal.Close asChild>
-          <Button variant="secondary">{t('common:close')}</Button>
+          <Button variant="secondary" size="large">
+            {t('common:close')}
+          </Button>
         </Modal.Close>
       </Modal.Footer>
     </>
@@ -280,7 +282,9 @@ export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string
 
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary">{t('common:close')}</Button>
+          <Button variant="secondary" size="large">
+            {t('common:close')}
+          </Button>
         </Modal.Close>
       </Modal.Footer>
     </div>

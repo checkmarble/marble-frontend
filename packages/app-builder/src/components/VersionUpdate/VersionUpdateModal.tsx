@@ -35,12 +35,12 @@ export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
         </div>
 
         <Modal.Footer>
-          <div className="flex items-center justify-end gap-2 p-4">
-            <Button appearance="stroked" onClick={() => onOpenChange(false)}>
-              {t('common:understand')}
-            </Button>
-            <Button onClick={() => window.open(releaseUrl, '_blank')}>{t('common:version_update.view_release')}</Button>
-          </div>
+          <Button appearance="stroked" onClick={() => onOpenChange(false)} size="large">
+            {t('common:understand')}
+          </Button>
+          <Button onClick={() => window.open(releaseUrl, '_blank')} size="large">
+            {t('common:version_update.view_release')}
+          </Button>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

@@ -188,28 +188,26 @@ export const AddConfigurationModal = ({
           </form>
         </div>
         <Modal.Footer>
-          <div className="flex items-center gap-v2-sm justify-end p-v2-md">
-            <Modal.Close asChild>
-              <Button variant="secondary" size="small">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <form.Subscribe selector={(state) => state.canSubmit}>
-              {(canSubmit) => {
-                return (
-                  <Button
-                    disabled={!canSubmit}
-                    form="add-configuration-form"
-                    type="submit"
-                    variant="primary"
-                    size="small"
-                  >
-                    {t('common:save')}
-                  </Button>
-                );
-              }}
-            </form.Subscribe>
-          </div>
+          <Modal.Close asChild>
+            <Button variant="secondary" size="large">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <form.Subscribe selector={(state) => state.canSubmit}>
+            {(canSubmit) => {
+              return (
+                <Button
+                  disabled={!canSubmit}
+                  form="add-configuration-form"
+                  type="submit"
+                  variant="primary"
+                  size="large"
+                >
+                  {t('common:save')}
+                </Button>
+              );
+            }}
+          </form.Subscribe>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

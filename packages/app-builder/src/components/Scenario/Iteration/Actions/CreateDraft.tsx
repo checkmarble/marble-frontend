@@ -104,9 +104,9 @@ const ExistingDraftModal = ({
         <Modal.Footer>
           <Modal.Close asChild>
             <Button
-              className="flex-1"
               variant="secondary"
               appearance="stroked"
+              size="large"
               onClick={() =>
                 navigate({
                   to: '../$iterationId',
@@ -121,8 +121,8 @@ const ExistingDraftModal = ({
             </Button>
           </Modal.Close>
           <Button
-            className="flex-1"
             variant="primary"
+            size="large"
             name="create"
             onClick={handleOverrideDraft}
             disabled={createDraftIterationMutation.isPending}

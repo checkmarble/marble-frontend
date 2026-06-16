@@ -105,11 +105,11 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button type="button" variant="secondary" appearance="stroked">
+          <Button type="button" variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" size="large">
           {t('settings:api_keys.create')}
         </Button>
       </Modal.Footer>

@@ -148,7 +148,7 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
         </form>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked" className="flex-1">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
@@ -156,7 +156,7 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
             type="submit"
             form={`create_navigation_option_form_${link.parentTableId}_${link.childTableId}`}
             variant="primary"
-            className="flex-1"
+            size="large"
           >
             {t('common:save')}
           </Button>

@@ -414,7 +414,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="primary">
+              <Button variant="primary" size="large">
                 <Icon icon="tick" className="size-5" />
                 {t('common:understand')}
               </Button>

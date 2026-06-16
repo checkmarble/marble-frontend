@@ -128,20 +128,19 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
           ) : null}
         </div>
         <Modal.Footer>
-          <div className="flex flex-1 flex-row gap-2 p-4 justify-end">
-            <Button
-              disabled={addCommentMutation.isPending || !isSuccess || isCommentAdded}
-              variant="primary"
-              onClick={() => handleAddComment()}
-            >
-              {t('cases:kyc_enrichment.attach_to_case')}
+          <Button
+            disabled={addCommentMutation.isPending || !isSuccess || isCommentAdded}
+            variant="primary"
+            size="large"
+            onClick={() => handleAddComment()}
+          >
+            {t('cases:kyc_enrichment.attach_to_case')}
+          </Button>
+          <Modal.Close asChild>
+            <Button disabled={addCommentMutation.isPending} variant="secondary" onClick={() => setOpen(false)}>
+              {t('common:close')}
             </Button>
-            <Modal.Close asChild>
-              <Button disabled={addCommentMutation.isPending} variant="secondary" onClick={() => setOpen(false)}>
-                {t('common:close')}
-              </Button>
-            </Modal.Close>
-          </div>
+          </Modal.Close>
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

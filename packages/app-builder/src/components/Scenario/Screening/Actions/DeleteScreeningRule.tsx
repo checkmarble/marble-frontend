@@ -40,17 +40,17 @@ export function DeleteScreeningRule({
         </div>
         <Modal.Footer>
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" appearance="stroked">
+            <Button variant="secondary" appearance="stroked" size="large">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
           <Button
             variant="destructive"
-            className="flex-1"
             type="button"
             name="delete"
             onClick={handleDeleteScreeningRule}
             disabled={deleteScreeningRuleMutation.isPending}
+            size="large"
           >
             <Icon icon="delete" className="size-5" />
             {t('common:delete')}

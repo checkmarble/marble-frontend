@@ -156,11 +156,11 @@ function UpdateWebhookContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
+          <Button variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button variant="primary" type="submit" name="update" disabled={updateWebhookMutation.isPending}>
+        <Button variant="primary" type="submit" name="update" disabled={updateWebhookMutation.isPending} size="large">
           <LoadingIcon icon="edit-square" className="size-5" loading={updateWebhookMutation.isPending} />
           {t('settings:webhooks.update_webhook')}
         </Button>

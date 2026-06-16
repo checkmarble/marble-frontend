@@ -308,21 +308,16 @@ export function ScenarioDeploymentModal({
           </div>
           <Modal.Footer>
             <Button
-              className="flex-1"
               variant="secondary"
               appearance="stroked"
               name="cancel"
+              size="large"
               disabled={isPending}
               onClick={() => setOpen(false)}
             >
               {t('common:cancel')}
             </Button>
-            <Button
-              className="flex-1"
-              variant="primary"
-              disabled={isPending || !iteration.isValid}
-              onClick={handleAction}
-            >
+            <Button variant="primary" disabled={isPending || !iteration.isValid} onClick={handleAction} size="large">
               {isPending ? <Spinner className="size-5" /> : <Icon icon={action.icon} className="size-5" />}
               {action.label}
             </Button>

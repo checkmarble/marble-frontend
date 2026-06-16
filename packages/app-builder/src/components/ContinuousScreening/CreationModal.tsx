@@ -55,9 +55,11 @@ export const CreationModal = ({ open, onOpenChange, onSubmit }: CreationModalPro
           </div>
           <Modal.Footer>
             <Modal.Close asChild>
-              <Button variant="secondary">{t('common:cancel')}</Button>
+              <Button variant="secondary" size="large">
+                {t('common:cancel')}
+              </Button>
             </Modal.Close>
-            <Button type="submit" variant="primary" disabled={!isValid}>
+            <Button type="submit" variant="primary" disabled={!isValid} size="large">
               {t('common:create')}
             </Button>
           </Modal.Footer>

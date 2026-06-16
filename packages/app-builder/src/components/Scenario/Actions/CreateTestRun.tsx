@@ -230,11 +230,11 @@ function CreateTestRunToContent({
       </div>
       <Modal.Footer>
         <Modal.Close asChild>
-          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
+          <Button type="button" variant="secondary" appearance="stroked" size="large">
             {t('common:cancel')}
           </Button>
         </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit">
+        <Button variant="primary" type="submit" size="large">
           {t('common:save')}
         </Button>
       </Modal.Footer>
