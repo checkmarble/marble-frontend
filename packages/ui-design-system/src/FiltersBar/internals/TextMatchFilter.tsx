@@ -81,7 +81,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
           <div className="flex justify-end gap-v2-xs">
             <Button
               variant="secondary"
-              size="default"
+              size="medium"
               onClick={() => {
                 setLocalText('');
                 emitRemove(filter.name);
@@ -90,7 +90,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
             >
               {t('filters:ds.clear_button.label')}
             </Button>
-            <Button size="default" onClick={validate}>
+            <Button size="medium" onClick={validate}>
               {t('filters:ds.apply_button.label')}
             </Button>
           </div>

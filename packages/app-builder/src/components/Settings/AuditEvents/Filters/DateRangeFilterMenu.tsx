@@ -31,7 +31,7 @@ export const DateRangeFilterMenu: FunctionComponent<DateRangeFilterMenuProps> = 
             }
           }}
         >
-          <Button disabled={!value} size="default">
+          <Button disabled={!value} size="medium">
             {t('common:save')}
           </Button>
         </MenuCommand.HeadlessItem>

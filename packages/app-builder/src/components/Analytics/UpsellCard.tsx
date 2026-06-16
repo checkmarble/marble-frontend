@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { CtaClassName, cn } from 'ui-design-system';
+import { CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface UpsellCardProps {
@@ -40,7 +40,7 @@ export function UpsellCard({ title, description, benefits = [], className }: Ups
       ) : null}
 
       <a
-        className={CtaClassName({ variant: 'primary', color: 'purple' })}
+        className={CtaV2ClassName({ variant: 'primary', size: 'large', color: 'primary' })}
         href="https://checkmarble.com/upgrade"
         target="_blank"
         rel="noreferrer"

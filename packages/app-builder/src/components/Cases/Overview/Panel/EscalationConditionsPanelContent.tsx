@@ -160,7 +160,7 @@ export const EscalationConditionsPanelContent = ({
       {readOnly ? null : (
         <PanelFooter>
           <Button
-            size="default"
+            size="medium"
             className="w-full justify-center"
             onClick={handleSave}
             disabled={updateEscalationMutation.isPending}

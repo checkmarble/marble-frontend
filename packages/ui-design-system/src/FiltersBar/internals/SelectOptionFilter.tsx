@@ -51,7 +51,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
           <Button
             variant="primary"
             mode="normal"
-            size="default"
+            size="medium"
             className="justify-between w-full"
             style={{ width: `${maxOptionLabelLength}ch` }}
           >

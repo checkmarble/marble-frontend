@@ -340,10 +340,10 @@ const SectionPanel = ({ sectionKey, section, sectionCount, onApply, onCancel }: 
         {isEnabled && <SectionContent sectionKey={sectionKey} section={section} />}
       </div>
       <div className="border-t border-grey-border flex gap-2 p-4">
-        <Button type="button" variant="secondary" size="default" className="flex-1 justify-center" onClick={onCancel}>
+        <Button type="button" variant="secondary" size="medium" className="flex-1 justify-center" onClick={onCancel}>
           {t('common:cancel')}
         </Button>
-        <Button type="button" variant="primary" size="default" className="flex-1 justify-center" onClick={onApply}>
+        <Button type="button" variant="primary" size="medium" className="flex-1 justify-center" onClick={onApply}>
           {t('screenings:freeform_search.apply')}
         </Button>
       </div>

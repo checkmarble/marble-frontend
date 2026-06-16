@@ -13,6 +13,7 @@ import * as Sentry from '@sentry/tanstackstart-react';
 import { ClientOnly } from '@tanstack/react-router';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 import { PopupBlockedError } from './PopupBlockedError';
 
@@ -20,8 +21,12 @@ function MicrosoftButton({ onClick, loading }: { onClick?: () => void; loading?:
   const { t } = useTranslation(['auth']);
 
   return (
-    <button
-      className="relative flex h-10 w-full items-center justify-center rounded-sm border border-grey-border disabled:cursor-wait gap-2"
+    <Button
+      variant="secondary"
+      color="grey"
+      size="large"
+      appearance="stroked"
+      className="w-full justify-center gap-2 relative"
       onClick={() => {
         void onClick?.();
       }}
@@ -30,7 +35,7 @@ function MicrosoftButton({ onClick, loading }: { onClick?: () => void; loading?:
       <Logo logo="microsoft-logo" className="size-6" />
       <span className="text-s whitespace-nowrap text-center font-medium">{t('auth:sign_in.microsoft')}</span>
       <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
-    </button>
+    </Button>
   );
 }
 

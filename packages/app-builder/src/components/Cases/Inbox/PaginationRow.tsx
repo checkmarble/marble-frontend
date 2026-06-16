@@ -67,7 +67,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
               <Button
                 variant="secondary"
                 appearance="stroked"
-                size="default"
+                size="medium"
                 key={`pagination-limit-${limit}`}
                 className={cn(isActive && 'border-purple-primary text-purple-primary')}
                 onClick={() => {
@@ -91,7 +91,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
           ) : null}
           <Button
             mode="icon"
-            size="default"
+            size="medium"
             variant="secondary"
             appearance="stroked"
             disabled={currentPage === 0}
@@ -103,7 +103,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
           </Button>
           <Button
             mode="icon"
-            size="default"
+            size="medium"
             variant="secondary"
             appearance="stroked"
             disabled={

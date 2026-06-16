@@ -40,7 +40,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
             <Button
               variant="secondary"
               appearance="stroked"
-              size="default"
+              size="medium"
               key={`pagination-limit-${limit}`}
               className={cn(isActive && 'border-purple-primary text-purple-primary')}
               onClick={() => {
@@ -57,7 +57,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
       <div className="flex items-center gap-v2-xs">
         <Button
           mode="icon"
-          size="default"
+          size="medium"
           variant="secondary"
           appearance="stroked"
           disabled={!hasPreviousPage}
@@ -67,7 +67,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
         </Button>
         <Button
           mode="icon"
-          size="default"
+          size="medium"
           variant="secondary"
           appearance="stroked"
           disabled={!hasNextPage}

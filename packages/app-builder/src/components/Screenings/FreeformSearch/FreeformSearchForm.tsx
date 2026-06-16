@@ -212,7 +212,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
           <div className="flex gap-2 justify-end">
             {hasActiveFilters && (
               <div className="flex gap-2">
-                <Button variant="secondary" appearance="stroked" size="default" onClick={handleClearFilters}>
+                <Button variant="secondary" appearance="stroked" size="medium" onClick={handleClearFilters}>
                   {t('screenings:freeform_search.clear_filters')}
                 </Button>
               </div>
@@ -222,7 +222,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
                 return (
                   <Button
                     variant="primary"
-                    size="default"
+                    size="medium"
                     type="submit"
                     disabled={!canSubmit || isSubmitting}
                     onClick={handleSubmit}

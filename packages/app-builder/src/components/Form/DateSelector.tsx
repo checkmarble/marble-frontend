@@ -23,7 +23,7 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
     <div ref={ref} className="flex flex-row items-center gap-2">
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild>
-          <Button variant="secondary" size="default">
+          <Button variant="secondary" size="medium">
             <Icon
               icon="calendar-month"
               className={cn('size-5', selectedDate ? 'text-grey-primary' : 'text-grey-secondary')}

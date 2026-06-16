@@ -143,7 +143,7 @@ export function SignInWithEmailAndPassword({
         </Link>
       </div>
       <div className="flex flex-col gap-2">
-        <Button type="submit" disabled={!hydrated}>
+        <Button type="submit" size="large" className="w-full justify-center" disabled={!hydrated}>
           {loading || form.state.isSubmitting ? <Spinner className="size-4" /> : t('auth:sign_in')}
         </Button>
         {additionalContent}
@@ -194,7 +194,7 @@ export const StaticSignInWithEmailAndPassword = ({
         </Link>
       </div>
       <div className="flex flex-col gap-2">
-        <Button type="submit" disabled={!hydrated}>
+        <Button type="submit" size="large" className="w-full justify-center" disabled={!hydrated}>
           {t('auth:sign_in')}
         </Button>
         {additionalContent}

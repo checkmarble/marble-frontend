@@ -89,7 +89,7 @@ function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
         <h1 className="text-xl font-bold flex-1">{t('data:data-model')}</h1>
         <MenuCommand.Menu>
           <MenuCommand.Trigger>
-            <Button type="button" size="default">
+            <Button type="button" size="medium">
               {t('data:empty_state.create_table.title')}
               <Icon icon="plus" className=" size-4" />
             </Button>
@@ -130,13 +130,13 @@ function DataListEmptyState({ onCreateTable }: { onCreateTable: () => void }) {
         </header>
         <div className="grid grid-cols-3 gap-v2-sm">
           <SelectArchetype>
-            <Button type="button" appearance="stroked" size="default" className="w-full justify-center">
+            <Button type="button" appearance="stroked" size="medium" className="w-full justify-center">
               <span>{t('data:empty_state.select_archetype.title')}</span>
               <Icon icon="category" className="size-4" />
             </Button>
           </SelectArchetype>
           <ImportOrg>
-            <Button type="button" appearance="stroked" size="default" className="w-full justify-center">
+            <Button type="button" appearance="stroked" size="medium" className="w-full justify-center">
               <span>{t('data:empty_state.import_org.title')}</span>
               <Icon icon="upload" className="size-4" />
             </Button>
@@ -144,7 +144,7 @@ function DataListEmptyState({ onCreateTable }: { onCreateTable: () => void }) {
           <Button
             type="button"
             appearance="stroked"
-            size="default"
+            size="medium"
             className="w-full justify-center"
             onClick={onCreateTable}
           >

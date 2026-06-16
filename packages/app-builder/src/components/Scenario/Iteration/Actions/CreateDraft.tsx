@@ -47,7 +47,7 @@ const NewDraftButton = ({ iterationId, scenarioId }: { iterationId: string; scen
   };
 
   return (
-    <Button onClick={handleNewDraft} size="default">
+    <Button onClick={handleNewDraft} size="medium">
       <Icon icon="plus" className="size-5" />
       <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
     </Button>
@@ -88,7 +88,7 @@ const ExistingDraftModal = ({
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button size="default">
+        <Button size="medium">
           <Icon icon="plus" className="size-5" />
           <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
         </Button>

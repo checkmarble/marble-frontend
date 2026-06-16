@@ -15,7 +15,7 @@ export function InboxEmptyState({ canManageInboxes }: { canManageInboxes: boolea
       {canManageInboxes ? (
         <>
           <p className="text-grey-secondary text-center text-s font-medium">{t('cases:inbox.need_first_inbox')}</p>
-          <Link to="/settings/inboxes" className={CtaV2ClassName({ variant: 'primary', size: 'default' })}>
+          <Link to="/settings/inboxes" className={CtaV2ClassName({ variant: 'primary', size: 'medium' })}>
             <Icon icon="settings" className="size-4" />
             {t('cases:inbox.go_to_inbox_settings')}
           </Link>

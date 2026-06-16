@@ -39,7 +39,7 @@ export const SelectCaseById = ({ onNavigate }: { onNavigate: (caseId: string) =>
       onAdornmentClick={handleSubmitValue}
     />
   ) : (
-    <Button variant="secondary" size="default" onClick={() => setOpen(true)}>
+    <Button variant="secondary" size="medium" onClick={() => setOpen(true)}>
       {buttonText}
       <Icon icon="arrow-right" className="size-4" />
     </Button>
