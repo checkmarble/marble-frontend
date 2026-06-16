@@ -16,8 +16,8 @@ export function UserInfo({ isAutoAssignmentAvailable = false }: UserInfoProps) {
           <CustomLogo
             logo="logo"
             alt="Logo"
-            className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12 text-grey-primary"
-            customLogoClassName="size-6 shrink-0 object-contain transition-all group-aria-expanded/nav:h-12 group-aria-expanded/nav:w-auto"
+            className="size-6 shrink-0 transition-all group-hover/sidebar:size-12 delay-300 group-hover/sidebar:delay-0 text-grey-primary"
+            customLogoClassName="size-6 shrink-0 object-contain transition-all group-hover/sidebar:h-12 delay-300 group-hover/sidebar:delay-0 group-hover/sidebar:w-auto"
           />
           {isAutoAssignmentAvailable && unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
             <div className="absolute top-1 left-1 flex h-3 w-3">
@@ -28,7 +28,7 @@ export function UserInfo({ isAutoAssignmentAvailable = false }: UserInfoProps) {
           <CustomLogo
             logo="marble"
             alt="Logo"
-            className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100 dark:invert"
+            className="h-6 w-full opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0 dark:invert"
             hideWhenCustom
           />
         </div>

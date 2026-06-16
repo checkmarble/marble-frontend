@@ -6,7 +6,6 @@ import { SnoozePanel } from '@app-builder/components/CaseManager/SnoozePanel/Sno
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { CaseReviewsModal } from '@app-builder/components/Cases/CaseReviewsModal';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
-import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -15,17 +14,15 @@ import { isNotFoundHttpError } from '@app-builder/models';
 import { type CaseReview } from '@app-builder/models/cases';
 import { type DataModelObject } from '@app-builder/models/data-model';
 import { getNextUnassignedCaseFn } from '@app-builder/server-fns/cases';
-import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
-import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
-import { ClientOnly, createFileRoute } from '@tanstack/react-router';
+import { ClientOnly, createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn, useServerFn } from '@tanstack/react-start';
-import { getRequest } from '@tanstack/react-start/server';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, Modal } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
 
@@ -33,7 +30,6 @@ const scenarioCaseDetailLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
   .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scenarioCaseDetailLoader({ context }) {
-    const request = getRequest();
     const { cases: caseRepository, dataModelRepository, aiAssistSettings, user, entitlements } = context.authInfo;
     const { detail: caseDetail, inbox: caseInbox } = context.case;
     const caseId = caseDetail.id;
@@ -84,7 +80,6 @@ const scenarioCaseDetailLoader = createServerFn()
       inboxes: context.inboxes,
       pivots,
       entitlements,
-      isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
       mostRecentReview: review,
       isKycEnrichmentEnabled: settings.kycEnrichmentSetting.enabled,
     };
@@ -125,7 +120,6 @@ function CaseManagerIndexPage() {
     currentUser,
     currentInbox,
     entitlements,
-    isMenuExpanded,
     mostRecentReview,
     isKycEnrichmentEnabled,
     reports,
@@ -134,15 +128,12 @@ function CaseManagerIndexPage() {
   const { caseAiAssist: aiAssistEnabled } = entitlements;
   const { t } = useTranslation(casesI18n);
   const getNextUnassignedCase = useServerFn(getNextUnassignedCaseFn);
-  const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
+  const router = useRouter();
+  const nextUnassignedCaseHref = router.buildLocation({
+    to: '/ressources/cases/next-unassigned/$caseId',
+    params: { caseId: fromUUIDtoSUUID(details.id) },
+  }).href;
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'snooze'>('pivot');
-
-  useEffect(() => {
-    if (isMenuExpanded) {
-      leftSidebarSharp.actions.setExpanded(false);
-      setPreferencesCookie('menuExpd', false);
-    }
-  }, [isMenuExpanded, leftSidebarSharp]);
 
   return (
     <Page.Main>
@@ -166,10 +157,19 @@ function CaseManagerIndexPage() {
               </Modal.Content>
             </ClientOnly>
           </Modal.Root>
-          <Button variant="secondary" onClick={() => getNextUnassignedCase({ data: { caseId: details.id } })}>
+          <a
+            href={nextUnassignedCaseHref}
+            className={cn(CtaV2ClassName({ variant: 'secondary' }), 'hover:bg-grey-background')}
+            onClick={(e) => {
+              // let modified clicks (cmd/ctrl/shift/alt) reach the browser to open a new tab
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+              e.preventDefault();
+              getNextUnassignedCase({ data: { caseId: details.id } });
+            }}
+          >
             {t('cases:next_unassigned_case')}
             <Icon icon="arrow-up" className="size-3.5 rotate-90" />
-          </Button>
+          </a>
         </div>
       </Page.Header>
       <Page.Container className="text-default relative h-full flex-row p-0 lg:p-0">

@@ -6,9 +6,10 @@ import { getToast } from '@app-builder/services/toast.server';
 import { commitCsrfToken } from '@app-builder/utils/csrf.server';
 import { getClientEnvVars, getServerEnv } from '@app-builder/utils/environment';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
+import { getRequestNonce, setContentSecurityPolicy } from '@app-builder/utils/security-headers.server';
 import { createContentSecurityPolicy } from '@mcansh/http-helmet';
 import { createServerFn } from '@tanstack/react-start';
-import { getRequest, setResponseHeaders } from '@tanstack/react-start/server';
+import { getRequest } from '@tanstack/react-start/server';
 
 export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
   .middleware([servicesMiddleware])
@@ -35,8 +36,10 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     const disableSegment = getServerEnv('DISABLE_SEGMENT') ?? false;
     const segmentScript = !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined;
 
-    // Generate a per-request CSP nonce and set the Content-Security-Policy header.
-    const nonce = crypto.randomUUID().replace(/-/g, '');
+    // Use the per-request nonce opened by `securityHeadersMiddleware`, so this CSP, the
+    // hydration scripts (`router.ssr.nonce`), and the inline scripts below all match.
+    // Fallback keeps the loader resilient if it ever runs outside that middleware scope.
+    const nonce = getRequestNonce() ?? crypto.randomUUID().replace(/-/g, '');
 
     const firebaseUrl = appConfig.auth.firebase.isEmulator
       ? [appConfig.auth.firebase.emulatorUrl]
@@ -74,10 +77,10 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
       frameSrc: frames.length > 0 ? frames : ["'none'"],
     });
 
-    // Set CSP header.
-    const responseHeaders = new Headers();
-    responseHeaders.set('Content-Security-Policy', csp);
-    setResponseHeaders(responseHeaders);
+    // Publish the CSP to `securityHeadersMiddleware` (see start.ts), which sets it on
+    // the document response. We cannot set it here directly: this server fn runs in its
+    // own H3 event scope, so `setResponseHeaders` never reaches the streamed document.
+    setContentSecurityPolicy(csp);
 
     return { ENV, locale, timezone, theme, csrf: csrfToken, toastMessage, segmentScript, appConfig, nonce };
   });

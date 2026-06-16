@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "allow": ["Edit:*", "Write:*", "MultiEdit:*", "NotebookEdit:*", "Bash:*"],
+    "allow": ["Edit", "Write", "MultiEdit", "NotebookEdit", "Bash"],
     "defaultMode": "acceptEdits"
   },
   "hooks": {
