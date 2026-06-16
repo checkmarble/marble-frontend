@@ -104,6 +104,28 @@ export function findDatasetOrTopicByKey(
   return undefined;
 }
 
+/** Finds a dataset by its plain name key across all sections of a normalized list config. */
+export function findDatasetByName(
+  filters: ListConfigFilters | null | undefined,
+  name: string,
+): DatasetTopicSearchResult | undefined {
+  const normalizedName = name?.trim() ?? '';
+  if (normalizedName === '' || !filters) return undefined;
+
+  for (const section of Object.values(filters)) {
+    if (!section) continue;
+    for (const group of section.datasets ?? []) {
+      for (const dataset of group.datasets) {
+        if (dataset.name === normalizedName) {
+          return { name: dataset.name, title: dataset.title ?? dataset.name };
+        }
+      }
+    }
+  }
+
+  return undefined;
+}
+
 // All fields derived from listConfig.global.topics + conventions:
 // - keys[0]: always persisted when the global topic switch is active
 // - keys[1] / value: persisted when the switch is ON

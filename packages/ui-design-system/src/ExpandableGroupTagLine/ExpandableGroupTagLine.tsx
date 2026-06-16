@@ -6,6 +6,11 @@ import { cn } from '../utils';
 
 const OVERFLOW_TAG_WIDTH_PX = 36;
 
+function getElementWidth(el: HTMLElement): number {
+  const { width: rectWidth } = el.getBoundingClientRect();
+  return Math.max(rectWidth, el.offsetWidth || 0, el.scrollWidth || 0);
+}
+
 const overflowButtonClassName = 'cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors min-w-min';
 
 export interface ExpandableGroupTagLineProps {
@@ -45,6 +50,7 @@ export function ExpandableGroupTagLine({
   const containerRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
   const [maxVisible, setMaxVisible] = useState(items.length);
+  const [renderedCount, setRenderedCount] = useState(items.length);
 
   useIsomorphicLayoutEffect(() => {
     if (isExpanded) return;
@@ -53,14 +59,16 @@ export function ExpandableGroupTagLine({
     if (!container || !ghost) return;
 
     const recalculate = () => {
-      const gap = parseFloat(getComputedStyle(ghost).gap) || 4;
       const availableWidth = container.offsetWidth;
+      if (availableWidth === 0) return;
+
+      const gap = parseFloat(getComputedStyle(ghost).gap) || 4;
       const tagEls = Array.from(ghost.children) as HTMLElement[];
 
       let used = 0;
       let count = 0;
       for (let i = 0; i < tagEls.length; i++) {
-        const tw = tagEls[i]!.offsetWidth;
+        const tw = getElementWidth(tagEls[i]!);
         const gapBefore = i > 0 ? gap : 0;
         const isLast = i === tagEls.length - 1;
         const needed = used + gapBefore + tw + (isLast ? 0 : gap + overflowTagWidth);
@@ -71,6 +79,8 @@ export function ExpandableGroupTagLine({
           break;
         }
       }
+
+      setRenderedCount(tagEls.length);
       setMaxVisible(Math.max(count, 1));
     };
 
@@ -80,7 +90,7 @@ export function ExpandableGroupTagLine({
     return () => observer.disconnect();
   }, [isExpanded, items.length, overflowTagWidth]);
 
-  const overflow = isExpanded ? 0 : Math.max(0, items.length - maxVisible);
+  const overflow = isExpanded ? 0 : Math.max(0, renderedCount - maxVisible);
   const visibleItems = overflow > 0 ? items.slice(0, maxVisible) : items;
 
   const handleExpand = (event: MouseEvent) => {
@@ -97,7 +107,7 @@ export function ExpandableGroupTagLine({
       <div
         ref={ghostRef}
         className={cn(
-          'pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-v2-sm overflow-x-hidden',
+          'pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-v2-sm overflow-x-hidden [&>*]:shrink-0',
           classname,
         )}
         aria-hidden="true"
@@ -105,7 +115,11 @@ export function ExpandableGroupTagLine({
         {items}
       </div>
       <div
-        className={cn('flex min-w-0 items-center gap-v2-sm', isExpanded ? 'flex-wrap' : 'overflow-hidden', classname)}
+        className={cn(
+          'flex min-w-0 items-center gap-v2-sm [&>*]:shrink-0',
+          isExpanded ? 'flex-wrap' : 'overflow-hidden',
+          classname,
+        )}
       >
         {visibleItems}
         {overflow > 0 &&

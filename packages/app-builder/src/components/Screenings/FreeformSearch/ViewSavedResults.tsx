@@ -1,27 +1,25 @@
+import { CursorPaginationButtons, usePaginationsButton } from '@app-builder/components/Decisions/PaginationButtons';
 import { DateRangeFilter } from '@app-builder/components/Filters';
 import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-builder/components/Panel/Panel';
+import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
+import { SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
+import { type PaginationParams } from '@app-builder/models/pagination';
 import { type SavedScreeningSearch } from '@app-builder/models/screening';
-import { useSavedFreeformSearchesQuery } from '@app-builder/queries/screening/freeform-search';
+import {
+  useGetFreeformSearchQuery,
+  useSavedFreeformSearchesQuery,
+} from '@app-builder/queries/screening/freeform-search';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
-import { useDebouncedCallbackRef } from '@marble/shared';
-import { type ReactNode, useMemo, useState } from 'react';
+import { omitUndefined } from '@app-builder/utils/omit-undefined';
+import { ScreeningConfigBodySectionDto } from 'marble-api';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import {
-  Avatar,
-  Button,
-  Collapsible,
-  cn,
-  ExpandableGroupTagLine,
-  Input,
-  MenuCommand,
-  Separator,
-  Tag,
-} from 'ui-design-system';
+import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { FreeformMatchCard } from './FreeformMatchCard';
+import FreeformMatchCard from './FreeformMatchCard';
 
 interface StaticDateRangeFilter {
   type: 'static';
@@ -34,15 +32,15 @@ interface DynamicDateRangeFilter {
 }
 type DateRangeFilterValue = StaticDateRangeFilter | DynamicDateRangeFilter | null;
 
-function toIsoRange(value: DateRangeFilterValue): { fromDate?: string; toDate?: string } {
+function toIsoRange(value: DateRangeFilterValue): { createdAfter?: string; createdBefore?: string } {
   if (!value) return {};
   if (value.type === 'static') {
-    return { fromDate: value.startDate || undefined, toDate: value.endDate || undefined };
+    return { createdAfter: value.startDate || undefined, createdBefore: value.endDate || undefined };
   }
   const now = Temporal.Now.zonedDateTimeISO();
   return {
-    fromDate: now.add(value.fromNow).toInstant().toString(),
-    toDate: now.toInstant().toString(),
+    createdAfter: now.add(value.fromNow).toInstant().toString(),
+    createdBefore: now.toInstant().toString(),
   };
 }
 
@@ -53,37 +51,46 @@ export const ViewSavedResults = () => {
   const { t } = useTranslation(['screenings', 'common']);
   const [open, setOpen] = useState(false);
 
-  const [nameInput, setNameInput] = useState('');
-  const [name, setName] = useState('');
+  const [isSaved, setIsSaved] = useState(true);
   const [dateRange, setDateRange] = useState<DateRangeFilterValue>(null);
   const [ownerId, setOwnerId] = useState<string | undefined>(undefined);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState<PageSize>(25);
+  const [paginationParams, setPaginationParams] = useState<PaginationParams>({ limit: 25 });
+  const { createdAfter, createdBefore } = useMemo(() => toIsoRange(dateRange), [dateRange]);
 
-  const applyName = useDebouncedCallbackRef((value: string) => {
-    setName(value);
-    setPage(1);
-  }, 300);
+  const filterValues = useMemo(
+    () =>
+      omitUndefined({
+        userId: ownerId,
+        isSaved,
+        createdAfter,
+        createdBefore,
+      }),
+    [ownerId, isSaved, createdAfter, createdBefore],
+  );
 
-  const { fromDate, toDate } = useMemo(() => toIsoRange(dateRange), [dateRange]);
+  const resetPagination = () => {
+    setPaginationParams((prev) => ({ limit: prev.limit ?? 25 }));
+  };
 
-  const query = useSavedFreeformSearchesQuery({
-    name: name || undefined,
-    fromDate,
-    toDate,
-    ownerId,
-    page,
-    limit,
+  const query = useSavedFreeformSearchesQuery(
+    omitUndefined({
+      ...filterValues,
+      ...paginationParams,
+    }),
+  );
+
+  const data = query.data;
+  const items = data?.data ?? [];
+  const hasNextPage = data?.has_next_page ?? false;
+  const limit = (paginationParams.limit ?? 25) as PageSize;
+
+  const paginationItems = useMemo(() => items.map((item) => ({ id: item.id, createdAt: item.created_at })), [items]);
+
+  const paginationState = usePaginationsButton({
+    filterValues,
+    items: paginationItems,
+    initialOffsetId: paginationParams.offsetId,
   });
-
-  const data = query.data?.success ? query.data.data : undefined;
-  const items = data?.items ?? [];
-  const total = data?.total ?? 0;
-
-  const rangeStart = items.length > 0 ? (page - 1) * limit + 1 : 0;
-  const rangeEnd = (page - 1) * limit + items.length;
-  const hasPrev = page > 1;
-  const hasNext = page * limit < total;
 
   return (
     <>
@@ -107,30 +114,33 @@ export const ViewSavedResults = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-v2-md pb-v2-md">
-            <Input
-              type="search"
-              startAdornment="search"
-              placeholder={t('screenings:freeform_search.saved_results.search_placeholder')}
-              value={nameInput}
-              onChange={(e) => {
-                setNameInput(e.currentTarget.value);
-                applyName(e.currentTarget.value);
-              }}
-            />
             <PeriodFilter
               value={dateRange}
               onChange={(v) => {
                 setDateRange(v);
-                setPage(1);
+                resetPagination();
               }}
             />
             <OwnerFilter
               value={ownerId}
               onChange={(v) => {
                 setOwnerId(v);
-                setPage(1);
+                resetPagination();
               }}
             />
+            <div className="flex h-10 items-center gap-v2-sm">
+              <Switch
+                id="saved-only"
+                checked={isSaved}
+                onCheckedChange={(value) => {
+                  setIsSaved(value);
+                  resetPagination();
+                }}
+              />
+              <label htmlFor="saved-only" className="text-s text-grey-primary">
+                {t('screenings:freeform_search.saved_results.saved_only')}
+              </label>
+            </div>
           </div>
 
           <PanelContent>
@@ -138,7 +148,7 @@ export const ViewSavedResults = () => {
               <div className="text-s text-grey-secondary p-v2-md">
                 {t('screenings:freeform_search.saved_results.loading')}
               </div>
-            ) : query.data?.success === false ? (
+            ) : query.isError ? (
               <div className="text-s text-red-primary p-v2-md">
                 {t('screenings:freeform_search.saved_results.error')}
               </div>
@@ -158,19 +168,25 @@ export const ViewSavedResults = () => {
           </PanelContent>
 
           <PanelFooter>
-            <ViewSavedResultsPaginationRow
-              limit={limit}
-              onLimitChange={(l) => {
-                setLimit(l);
-                setPage(1);
-              }}
-              rangeStart={rangeStart}
-              rangeEnd={rangeEnd}
-              hasPrev={hasPrev}
-              hasNext={hasNext}
-              onPrev={() => setPage((p) => Math.max(1, p - 1))}
-              onNext={() => setPage((p) => p + 1)}
-            />
+            <div className="flex w-full items-center justify-between">
+              <SavedResultsPageSizeSelector
+                limit={limit}
+                onLimitChange={(pageSize) => setPaginationParams({ limit: pageSize })}
+              />
+              <CursorPaginationButtons
+                items={paginationItems}
+                onPaginationChange={(newPaginationParams) =>
+                  setPaginationParams((prev) => ({
+                    limit: prev.limit ?? 25,
+                    ...newPaginationParams,
+                  }))
+                }
+                paginationState={paginationState}
+                boundariesDisplay="dates"
+                hasNextPage={hasNextPage}
+                itemsPerPage={limit}
+              />
+            </div>
           </PanelFooter>
         </PanelContainer>
       </PanelRoot>
@@ -183,115 +199,111 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
   const language = useFormatLanguage();
   const { currentUser } = useOrganizationDetails();
   const { getOrgUserById } = useOrganizationUsers();
-  const owner = getOrgUserById(search.ownerId);
-  const isYou = currentUser.actorIdentity.userId === search.ownerId;
+  const owner = search.user_id ? getOrgUserById(search.user_id) : undefined;
+  const isYou = currentUser.actorIdentity.userId === search.user_id;
 
   return (
     <Collapsible.Container defaultOpen={false} className="bg-grey-background-light">
       <Collapsible.Title size="small" iconPosition="left" className="grid">
         <div className="flex flex-1 flex-wrap items-center gap-v2-sm">
-          <span className="text-grey-primary">{search.name}</span>
+          <span className="text-grey-primary">{search.search_input.query?.['name']?.join(', ')}</span>
+        </div>
+        <div className="flex items-center gap-v2-xs text-s text-grey-secondary font-normal">
           {owner ? (
             <span className="inline-flex items-center gap-v2-xs">
               <Avatar size="xs" firstName={owner.firstName} lastName={owner.lastName} />
-              <span className="text-s text-grey-secondary">
+              <span className="text-grey-primary">
                 {`${owner.firstName} ${owner.lastName}`.trim()}
                 {isYou ? ` (${t('screenings:freeform_search.saved_results.you')})` : null}
               </span>
             </span>
           ) : (
-            <span className="text-s text-grey-secondary">{search.ownerId}</span>
+            <span>{search.user_id}</span>
           )}
-          <InputTags input={search.inputs} />
-        </div>
-        <div className="flex items-center gap-v2-xs">
-          <span className="text-s text-grey-placeholder">
-            {formatDateTimeWithoutPresets(search.createdAt, { language, dateStyle: 'short' })}
-          </span>
-          <span className="text-grey-border">•</span>
-          <span className="text-s text-grey-placeholder">
-            {t('screenings:freeform_search.results_count', { count: search.results.length })}
-          </span>
+          <IconDot spaced />
+          <span>{formatDateTimeWithoutPresets(search.created_at, { language, dateStyle: 'short' })}</span>
+          <IconDot spaced />
+          {search.is_saved ? (
+            <span>{search.nb_hits}</span>
+          ) : (
+            <span>{t('screenings:freeform_search.saved_results.not_saved')}</span>
+          )}
         </div>
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="flex flex-col gap-v2-sm">
-          {search.results.map((entity) => (
-            <FreeformMatchCard key={entity.id} entity={entity} />
-          ))}
-        </div>
+        <FilterValues filter={search.search_config} />
+        <QueryValues query={search.search_input} type={search.search_input.type} />
+        <SavedResults id={search.id} />
       </Collapsible.Content>
     </Collapsible.Container>
   );
 }
 
-const inputTagOverflowButtonClassName = 'cursor-pointer shrink-0';
-
-function InputTags({ input }: { input: SavedScreeningSearch['inputs'] }) {
-  const { t } = useTranslation(['screenings']);
-
-  const tagItems = useMemo(() => {
-    const items: ReactNode[] = [];
-
-    if (input.entityType) {
-      items.push(
-        <InputTag
-          key="entity"
-          label={`${t('screenings:freeform_search.saved_results.entity')}:`}
-          values={input.entityType}
-        />,
-      );
-    }
-
-    const datasets = input.datasets.filter((d) => d.indexOf(':') <= 0);
-    if (datasets.length > 0) {
-      items.push(<InputTag key="datasets" values={datasets} />);
-    }
-
-    for (const [field, value] of Object.entries(input.fields)) {
-      if (value) {
-        items.push(
-          <InputTag key={field} label={`${t(`screenings:entity.property.${field}.short`)}:`} values={value} />,
-        );
-      }
-    }
-
-    return items;
-  }, [input, t]);
-
-  if (tagItems.length === 0) return null;
-
+function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'] }) {
   return (
-    <ExpandableGroupTagLine
-      items={tagItems}
-      moreButton={(overflow, onExpand) => (
-        <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onExpand}>
-          +{overflow}
-        </Tag>
-      )}
-      lessButton={(onCollapse) => (
-        <Tag color="white" appearance="monospace" className={inputTagOverflowButtonClassName} onClick={onCollapse}>
-          <Icon icon="minus" className="size-3" />
-        </Tag>
-      )}
-    />
+    <div className="flex flex-wrap items-center gap-v2-xs">
+      <Tag color="white" appearance="monospace" className="gap-v2-xs">
+        {filter.provider}
+      </Tag>
+
+      {Object.entries(filter.filters)
+        .filter(([, value]) => value.enabled)
+        .map(([key, value], index) => (
+          <Fragment key={`filter-${key}-${index}`}>
+            {value?.datasets?.length && (
+              <Tag color="white" appearance="monospace" className="gap-v2-xs">
+                {key}:{value?.datasets?.length ?? 0}
+              </Tag>
+            )}
+            {value?.topics && <TopicTag topics={value.topics} />}
+          </Fragment>
+        ))}
+    </div>
   );
 }
 
-function InputTag({ label, values }: { label?: string; values: string | string[] }) {
-  if (values.length === 0) return null;
+function TopicTag({ topics }: { topics: NonNullable<ScreeningConfigBodySectionDto['topics']> }) {
+  const { t } = useTranslation(['screenings']);
+  if (topics['livness'] && topics['livness'].length === 1)
+    return (
+      <Tag color="white" appearance="monospace" className="gap-v2-xs">
+        {t('freeform_search.global.liveness')}
+      </Tag>
+    );
   return (
-    <Tag color="white" appearance="monospace" className="gap-v2-xs">
-      {label ? <span>{label}</span> : null}
-      {Array.isArray(values) ? (
-        <span>
-          <span>{values.slice(0, 2).join(', ')}</span>
-          {values.length > 2 ? <span>{` +${values.length - 2}`}</span> : null}
-        </span>
-      ) : (
-        <span>{values}</span>
+    <>
+      {Object.entries(topics).map(([key, value]) => (
+        <Tag color="white" appearance="monospace" className="gap-v2-xs" key={key}>
+          {key}:{value?.length ?? 0}
+        </Tag>
+      ))}
+    </>
+  );
+}
+
+function QueryValues({ query, type }: { query: SavedScreeningSearch['search_input']; type: SearchableSchema }) {
+  const { t } = useTranslation(['screenings']);
+  const entityType = query.type;
+  const entityTypeFields =
+    entityType && entityType in SEARCH_ENTITIES
+      ? SEARCH_ENTITIES[entityType].fields.filter((f: string) => f !== 'name')
+      : [];
+
+  return (
+    <div className="flex flex-wrap items-center gap-v2-xs">
+      {type !== 'Thing' && (
+        <Tag color="white" appearance="monospace" className="gap-v2-xs">
+          {t(`screenings:entity.schema.${type.toLocaleLowerCase()}`)}
+        </Tag>
       )}
-    </Tag>
+      {entityTypeFields.map((field) =>
+        query.query[field] ? (
+          <Tag color="white" appearance="monospace" className="gap-v2-xs" key={field}>
+            <span>{t(`screenings:entity.property.${field}.short`)}</span>:<span>{query.query[field].join(', ')}</span>
+          </Tag>
+        ) : null,
+      )}
+    </div>
   );
 }
 
@@ -337,7 +349,7 @@ function PeriodFilter({
       }}
     >
       <MenuCommand.Trigger>
-        <Button variant="secondary" appearance="stroked" className="w-full justify-between">
+        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="medium">
           <span className="inline-flex items-center gap-v2-xs">
             <Icon icon="calendar-month" className="size-4" />
             <span className="truncate">{t('screenings:freeform_search.saved_results.select_period')}</span>
@@ -365,7 +377,7 @@ function PeriodFilter({
           <Button
             variant="secondary"
             appearance="stroked"
-            size="default"
+            size="medium"
             onClick={() => {
               setDraft(null);
               onChange(null);
@@ -375,7 +387,7 @@ function PeriodFilter({
             {t('screenings:freeform_search.clear')}
           </Button>
           <Button
-            size="default"
+            size="medium"
             onClick={() => {
               onChange(draft);
               setOpen(false);
@@ -415,7 +427,7 @@ function OwnerFilter({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary" appearance="stroked" className="w-full justify-between">
+        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="medium">
           <span className="truncate">{t('screenings:freeform_search.saved_results.select_owner')}</span>
           <Icon
             icon="smallarrow-up"
@@ -456,76 +468,37 @@ function OwnerFilter({
   );
 }
 
-function ViewSavedResultsPaginationRow({
+function SavedResultsPageSizeSelector({
   limit,
   onLimitChange,
-  rangeStart,
-  rangeEnd,
-  hasPrev,
-  hasNext,
-  onPrev,
-  onNext,
 }: {
   limit: PageSize;
   onLimitChange: (limit: PageSize) => void;
-  rangeStart: number;
-  rangeEnd: number;
-  hasPrev: boolean;
-  hasNext: boolean;
-  onPrev: () => void;
-  onNext: () => void;
 }) {
   const { t } = useTranslation(['screenings']);
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-v2-xs">
-        <span className="text-s text-grey-secondary">
-          {t('screenings:freeform_search.saved_results.results_per_page')}
-        </span>
-        {PAGE_SIZES.map((size) => {
-          const active = size === limit;
-          return (
-            <Button
-              key={size}
-              variant="secondary"
-              appearance="stroked"
-              size="default"
-              className={cn(active && 'border-purple-primary text-purple-primary')}
-              onClick={() => {
-                if (!active) onLimitChange(size);
-              }}
-            >
-              {size}
-            </Button>
-          );
-        })}
-      </div>
-      <div className="flex items-center gap-v2-sm">
-        <span className="text-s text-grey-secondary">
-          {t('screenings:freeform_search.saved_results.range', { start: rangeStart, end: rangeEnd })}
-        </span>
-        <Button
-          mode="icon"
-          size="default"
-          variant="secondary"
-          appearance="stroked"
-          disabled={!hasPrev}
-          onClick={onPrev}
-        >
-          <Icon icon="arrow-left" className="size-5" />
-        </Button>
-        <Button
-          mode="icon"
-          size="default"
-          variant="secondary"
-          appearance="stroked"
-          disabled={!hasNext}
-          onClick={onNext}
-        >
-          <Icon icon="arrow-right" className="size-5" />
-        </Button>
-      </div>
+    <div className="flex items-center gap-v2-xs">
+      <span className="text-s text-grey-secondary">
+        {t('screenings:freeform_search.saved_results.results_per_page')}
+      </span>
+      {PAGE_SIZES.map((size) => {
+        const active = size === limit;
+        return (
+          <Button
+            key={size}
+            variant="secondary"
+            appearance="stroked"
+            size="medium"
+            className={cn(active && 'border-purple-primary text-purple-primary')}
+            onClick={() => {
+              if (!active) onLimitChange(size);
+            }}
+          >
+            {size}
+          </Button>
+        );
+      })}
     </div>
   );
 }
@@ -558,4 +531,15 @@ function FilterPill({
       </Button>
     </Tag>
   );
+}
+
+function SavedResults({ id }: { id: string }) {
+  const query = useGetFreeformSearchQuery(id);
+  return query.isSuccess && query.data && query.data.matches ? (
+    <div className="grid gap-v2-sm mt-v2-sm">
+      {query.data.matches?.map((match) => {
+        return <FreeformMatchCard key={match.id} entity={match} background="card" />;
+      })}
+    </div>
+  ) : null;
 }

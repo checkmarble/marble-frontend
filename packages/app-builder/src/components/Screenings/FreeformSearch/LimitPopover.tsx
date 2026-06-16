@@ -142,7 +142,7 @@ export const LimitPopover = ({
             <Button
               type="button"
               variant="secondary"
-              size="default"
+              size="medium"
               className="flex-1 justify-center"
               onClick={handleCancel}
             >
@@ -152,7 +152,7 @@ export const LimitPopover = ({
             <Button
               type="button"
               variant="primary"
-              size="default"
+              size="medium"
               className="flex-1 justify-center"
               onClick={handleApply}
             >

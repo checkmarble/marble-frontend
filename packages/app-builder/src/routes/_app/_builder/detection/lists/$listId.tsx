@@ -29,7 +29,7 @@ import * as React from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, CtaClassName, Input, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaV2ClassName, Input, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -110,6 +110,7 @@ function Lists() {
               {listFeatureAccess.isDeleteListValueAvailable ? (
                 <DeleteListValueModal listId={customList.id} listValueId={row.original.id} value={value}>
                   <button
+                    data-test="delete-list-value-trigger"
                     className="group-hover:text-grey-primary text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
                     tabIndex={-1}
@@ -191,7 +192,7 @@ function DownloadAsCSV({ listId }: { listId: string }) {
   const downloadUrl = `/ressources/lists/download-csv-file/${fromUUIDtoSUUID(listId)}`;
 
   return (
-    <Link reloadDocument to={downloadUrl} className={CtaClassName({ variant: 'secondary', className: 'w-fit' })}>
+    <Link reloadDocument to={downloadUrl} className={CtaV2ClassName({ variant: 'secondary', className: 'w-fit' })}>
       <Icon icon="download" className="size-6" />
       {t('lists:download_values_as_csv')}
     </Link>

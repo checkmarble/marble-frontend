@@ -245,3 +245,9 @@ export function CountryFlagItem({ country, selected }: { country: CountryFlag; s
     </span>
   );
 }
+
+export function getCountryByName(name: string): CountryFlag | undefined {
+  return Object.values(allCountryFlags as Record<string, CountryFlag>).find(
+    (c) => c.nameEnglish.toLowerCase() === name.toLowerCase(),
+  );
+}

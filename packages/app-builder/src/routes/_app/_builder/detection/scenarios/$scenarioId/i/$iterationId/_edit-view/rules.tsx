@@ -39,7 +39,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { CtaClassName, Input, Table, Tag, useVirtualTable } from 'ui-design-system';
+import { CtaV2ClassName, Input, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const rulesLoader = createServerFn()
@@ -69,7 +69,7 @@ const AddRuleOrScreening = ({
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className={CtaClassName({ variant: 'primary', color: 'purple' })}>
+      <DropdownMenu.Trigger className={CtaV2ClassName({ variant: 'primary', color: 'primary' })}>
         <Icon icon="plus" className="size-6" />
         {t('common:add')}
       </DropdownMenu.Trigger>

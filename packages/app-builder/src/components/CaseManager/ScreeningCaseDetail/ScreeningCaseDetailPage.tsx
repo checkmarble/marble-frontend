@@ -4,6 +4,7 @@ import { DataListGrid } from '@app-builder/components/DataModelExplorer/DataList
 import { PanelContainer, PanelContent } from '@app-builder/components/Panel';
 import { PanelRoot, PanelSharpFactory } from '@app-builder/components/Panel/Panel';
 import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
+import { EntityDatasetsList } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { SquareTag } from '@app-builder/components/SquareTag';
 import { Case, type CaseDetail } from '@app-builder/models/cases';
@@ -197,11 +198,11 @@ const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPay
               <>
                 <div className="font-bold">{t('screenings:dataset', { count: entity.datasets.length })}</div>
                 <div className="">
-                  <ul className="list-disc list-inside">
-                    {entity.datasets.map((dataset) => (
-                      <li key={dataset}>{dataset}</li>
-                    ))}
-                  </ul>
+                  <EntityDatasetsList
+                    datasets={entity.datasets}
+                    useCase="transaction_monitoring"
+                    listClassName="list-disc list-inside"
+                  />
                 </div>
               </>
             }

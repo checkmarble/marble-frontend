@@ -327,7 +327,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                   type="submit"
                   form="ai-config-panel-form"
                   variant="primary"
-                  size="default"
+                  size="medium"
                   className="w-full justify-center"
                   disabled={isPending}
                 >

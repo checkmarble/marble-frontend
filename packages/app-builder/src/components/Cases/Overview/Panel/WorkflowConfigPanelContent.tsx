@@ -143,7 +143,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
       {readOnly ? null : (
         <PanelFooter>
           <Button
-            size="default"
+            size="medium"
             className="w-full justify-center"
             onClick={handleSave}
             disabled={updateWorkflowMutation.isPending}

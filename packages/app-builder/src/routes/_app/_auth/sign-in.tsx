@@ -15,7 +15,7 @@ import { createFileRoute, ErrorComponent, Link, redirect } from '@tanstack/react
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
-import { CtaClassName } from 'ui-design-system';
+import { CtaV2ClassName } from 'ui-design-system';
 
 const signInLoader = createServerFn()
   .middleware([servicesMiddleware])
@@ -123,10 +123,11 @@ function Login() {
               <SignInWithGoogle signIn={signIn} loading={loading && type === 'google'} />
               <SignInWithMicrosoft signIn={signIn} loading={loading && type === 'microsoft'} />
               <Link
-                className={CtaClassName({
+                className={CtaV2ClassName({
                   variant: 'primary',
-                  color: 'purple',
-                  className: 'text-s',
+                  color: 'primary',
+                  size: 'large',
+                  className: 'w-full justify-center',
                 })}
                 to="/sign-in-email"
               >

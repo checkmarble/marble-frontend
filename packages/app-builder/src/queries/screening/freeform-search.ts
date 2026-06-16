@@ -1,24 +1,23 @@
 import {
-  type SavedScreeningSearch,
   type SavedScreeningSearchFilters,
   type SavedScreeningSearchPage,
   type ScreeningMatchPayload,
 } from '@app-builder/models/screening';
 import {
-  deleteSavedFreeformSearchFn,
   type FreeformSearchInput,
   freeformSearchFn,
+  getFreeformSearchFn,
   listSavedFreeformSearchesFn,
-  type SaveFreeformSearchInput,
   saveFreeformSearchFn,
 } from '@app-builder/server-fns/screenings';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-type FreeformSearchResponse = { success: true; data: ScreeningMatchPayload[] } | { success: false; error: unknown };
+type FreeformSearchResponse = { id: string; matches: ScreeningMatchPayload[] };
 
 export const useFreeformSearchMutation = () => {
   const freeformSearch = useServerFn(freeformSearchFn);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['screening', 'freeform-search'],
@@ -33,54 +32,46 @@ export const useFreeformSearchMutation = () => {
           : input.datasets;
       return freeformSearch({ data: { ...input, datasets } }) as Promise<FreeformSearchResponse>;
     },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
+    },
   });
 };
 
-type SaveFreeformSearchResponse = { success: true; data: SavedScreeningSearch } | { success: false; error: unknown };
-
 export const useSaveFreeformSearchMutation = () => {
-  const saveSearch = useServerFn(saveFreeformSearchFn);
   const queryClient = useQueryClient();
+  const saveFreeformSearch = useServerFn(saveFreeformSearchFn);
 
   return useMutation({
     mutationKey: ['screening', 'save-freeform-search'],
-    mutationFn: async (input: SaveFreeformSearchInput): Promise<SaveFreeformSearchResponse> => {
-      return saveSearch({ data: input }) as Promise<SaveFreeformSearchResponse>;
+    mutationFn: async (input: { id: string }): Promise<void> => {
+      await saveFreeformSearch({ data: input });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
+      void queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
     },
   });
 };
-
-type ListSavedFreeformSearchesResponse =
-  | { success: true; data: SavedScreeningSearchPage }
-  | { success: false; error: unknown };
 
 export const useSavedFreeformSearchesQuery = (filters: SavedScreeningSearchFilters = {}) => {
   const listSavedSearches = useServerFn(listSavedFreeformSearchesFn);
 
   return useQuery({
     queryKey: ['screening', 'saved-searches', filters],
-    queryFn: async (): Promise<ListSavedFreeformSearchesResponse> => {
-      return listSavedSearches({ data: filters }) as Promise<ListSavedFreeformSearchesResponse>;
+    queryFn: async (): Promise<SavedScreeningSearchPage> => {
+      return listSavedSearches({ data: filters }) as Promise<SavedScreeningSearchPage>;
     },
   });
 };
 
-type DeleteSavedFreeformSearchResponse = { success: true } | { success: false; error: unknown };
+type GetFreeformSearchResponse = { id: string; matches: ScreeningMatchPayload[] };
 
-export const useDeleteSavedFreeformSearchMutation = () => {
-  const deleteSearch = useServerFn(deleteSavedFreeformSearchFn);
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationKey: ['screening', 'delete-saved-search'],
-    mutationFn: async (id: string): Promise<DeleteSavedFreeformSearchResponse> => {
-      return deleteSearch({ data: { id } }) as Promise<DeleteSavedFreeformSearchResponse>;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['screening', 'saved-searches'] });
+export const useGetFreeformSearchQuery = (id: string) => {
+  const getFreeformSearch = useServerFn(getFreeformSearchFn);
+  return useQuery({
+    queryKey: ['screening', 'freeform-search', id],
+    queryFn: async (): Promise<GetFreeformSearchResponse> => {
+      return getFreeformSearch({ data: { id } }) as Promise<GetFreeformSearchResponse>;
     },
   });
 };

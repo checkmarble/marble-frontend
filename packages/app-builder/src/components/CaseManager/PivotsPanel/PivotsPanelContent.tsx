@@ -11,7 +11,7 @@ import { cva } from 'class-variance-authority';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaClassName, CtaV2ClassName, cn } from 'ui-design-system';
+import { Button, CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { KycEnrichment } from '../KycEnrichment';
 import { DataCard } from './DataCard';
@@ -62,7 +62,7 @@ export function PivotsPanelContent({
               : t('cases:case_detail.pivot_panel.missing_pivot')}
           </span>
           {isAdmin(currentUser) ? (
-            <Link to="/data" className={CtaClassName({ variant: 'secondary', size: 'small' })}>
+            <Link to="/data" className={CtaV2ClassName({ variant: 'secondary', size: 'small' })}>
               {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
             </Link>
           ) : null}

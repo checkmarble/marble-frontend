@@ -3,7 +3,7 @@ import { cva } from 'class-variance-authority';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { CtaClassName, cn } from 'ui-design-system';
+import { CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 type NudgeProps = {
@@ -80,9 +80,9 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
           </div>
           {kind !== 'missing_configuration' ? (
             <a
-              className={CtaClassName({
+              className={CtaV2ClassName({
                 variant: 'primary',
-                color: 'purple',
+                color: 'primary',
                 className: 'mt-4 text-center',
               })}
               href="https://checkmarble.com/upgrade"

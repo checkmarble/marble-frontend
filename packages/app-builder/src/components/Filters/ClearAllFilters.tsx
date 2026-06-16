@@ -1,8 +1,7 @@
 import { Link, type LinkProps as RemixLinkProps } from '@tanstack/react-router';
-import { clsx } from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CtaClassName } from 'ui-design-system';
+import { CtaV2ClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { filtersI18n } from './filters-i18n';
@@ -11,7 +10,12 @@ export const ClearAllFiltersLink = forwardRef<HTMLAnchorElement, Omit<RemixLinkP
   function ClearAllFiltersButton(props, ref) {
     const { t } = useTranslation(filtersI18n);
     return (
-      <Link className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')} ref={ref} {...props}>
+      <Link
+        data-test="clear-all-filters-link"
+        className={CtaV2ClassName({ variant: 'secondary', color: 'grey', className: 'shrink-0' })}
+        ref={ref}
+        {...props}
+      >
         <Icon icon="cross" className="size-5" />
         <span className="line-clamp-1">{t('filters:clear_filters')}</span>
       </Link>
@@ -25,7 +29,12 @@ export const ClearAllFiltersButton = forwardRef<
 >(function ClearAllFiltersButton(props, ref) {
   const { t } = useTranslation(filtersI18n);
   return (
-    <button className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')} ref={ref} {...props}>
+    <button
+      className={CtaV2ClassName({ variant: 'secondary', color: 'grey', className: 'shrink-0' })}
+      ref={ref}
+      {...props}
+      type="button"
+    >
       <Icon icon="cross" className="size-5" />
       <span className="line-clamp-1">{t('filters:clear_filters')}</span>
     </button>

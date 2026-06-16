@@ -5,16 +5,21 @@ import { useState } from 'react';
 import { Checkbox } from './Checkbox';
 
 const Story: Meta<typeof Checkbox> = {
-  component: Checkbox,
   title: 'Checkbox',
-  args: { disabled: false },
+  component: Checkbox,
+  args: { disabled: false, size: 'regular' },
   argTypes: {
     disabled: { control: 'boolean' },
+    size: { control: 'radio', options: ['regular', 'small'] },
+    checked: {
+      control: 'radio',
+      options: [false, true, 'indeterminate'],
+    },
   },
 };
 export default Story;
 
-export const WithoutLabel: StoryFn<typeof Checkbox> = (args) => <Checkbox {...args} />;
+export const Default: StoryFn<typeof Checkbox> = (args) => <Checkbox {...args} />;
 
 export const WithLabel: StoryFn<typeof Checkbox> = (args) => (
   <form>
@@ -25,6 +30,9 @@ export const WithLabel: StoryFn<typeof Checkbox> = (args) => (
   </form>
 );
 
+// Kept as a distinct story because it exercises custom indeterminate-state logic
+// (a Map of fruits with a parent checkbox that derives true/false/indeterminate
+// from the children) — not expressible as plain args.
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
 
 export const WithIntermediate: StoryFn<typeof Checkbox> = () => {

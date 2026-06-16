@@ -28,7 +28,10 @@ import { EntitySearchFormProvider } from './entity-search-form-context';
 import { DEFAULT_LIMIT, LimitPopover } from './LimitPopover';
 
 interface FreeformSearchFormProps {
-  onSearchComplete: (results: ScreeningMatchPayload[], searchInputs: FreeformSearchInput) => void;
+  onSearchComplete: (
+    result: { id: string; matches: ScreeningMatchPayload[] },
+    searchInputs: FreeformSearchInput,
+  ) => void;
   listConfig: ListConfigFilters;
 }
 
@@ -112,16 +115,14 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
         limit: value.limit ?? DEFAULT_LIMIT,
       };
 
-      try {
-        const result = await searchMutation.mutateAsync(submitValue);
-        if (result.success) {
-          onSearchComplete(result.data, submitValue);
-        } else {
+      searchMutation
+        .mutateAsync(submitValue)
+        .then((result) => {
+          onSearchComplete(result, submitValue);
+        })
+        .catch(() => {
           toast.error(t('common:errors.unknown'));
-        }
-      } catch {
-        toast.error(t('common:errors.unknown'));
-      }
+        });
     },
   });
 
@@ -212,7 +213,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
           <div className="flex gap-2 justify-end">
             {hasActiveFilters && (
               <div className="flex gap-2">
-                <Button variant="secondary" appearance="stroked" size="default" onClick={handleClearFilters}>
+                <Button variant="secondary" appearance="stroked" size="medium" onClick={handleClearFilters}>
                   {t('screenings:freeform_search.clear_filters')}
                 </Button>
               </div>
@@ -222,7 +223,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
                 return (
                   <Button
                     variant="primary"
-                    size="default"
+                    size="medium"
                     type="submit"
                     disabled={!canSubmit || isSubmitting}
                     onClick={handleSubmit}

@@ -249,7 +249,7 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
             <Button
               type="button"
               variant="primary"
-              size="default"
+              size="medium"
               className="w-full justify-center"
               onClick={handleApply}
             >
@@ -258,7 +258,7 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
             <Button
               type="button"
               variant="secondary"
-              size="default"
+              size="medium"
               className="w-full justify-center"
               onClick={handleCancel}
             >

@@ -2,7 +2,7 @@ import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
-
+import { EntityDatasetsList } from '../../MatchCard/match-card-entity-components';
 import { MatchDetails } from '../../MatchDetails';
 import { screeningsI18n } from '../../screenings-i18n';
 import { TopicsDisplay } from '../../TopicsDisplay';
@@ -50,13 +50,12 @@ export const PrintResultCard: FunctionComponent<PrintResultCardProps> = ({ entit
           <div className="grid grid-cols-[140px_1fr] gap-2 mb-2">
             <div className="font-bold">{t('screenings:match.datasets.title')}</div>
             <div>
-              <ul className="list-disc list-inside">
-                {entity.datasets.map((name, index) => (
-                  <li className="break-all" key={`dataset-${index}`}>
-                    {name}
-                  </li>
-                ))}
-              </ul>
+              <EntityDatasetsList
+                datasets={entity.datasets}
+                useCase="manual_search"
+                listClassName="list-disc list-inside"
+                itemClassName="break-all"
+              />
             </div>
           </div>
         ) : null}
