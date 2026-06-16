@@ -12,6 +12,7 @@
   },
   "license": "MIT",
   "overrides": {
+    "@preact/signals-core": "1.14.1",
     "@tanstack/react-router": "1.168.21",
     "@tanstack/react-router-devtools": "1.166.13",
     "@tanstack/react-router-ssr-query": "1.166.11",
