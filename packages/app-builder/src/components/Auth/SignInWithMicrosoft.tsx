@@ -55,9 +55,9 @@ function ClientSignInWithMicrosoft({
     try {
       const result = await microsoftSignIn();
       if (!result) return;
-      const { idToken, csrf } = result;
+      const { idToken, refreshToken, csrf } = result;
       if (!idToken) return;
-      signIn({ type: 'microsoft', idToken, csrf });
+      signIn({ type: 'microsoft', idToken, refreshToken, csrf });
     } catch (error) {
       if (error instanceof AccountExistsWithDifferentCredential) {
         toast.error(t('common:errors.account_exists_with_different_credential'));

@@ -58,9 +58,9 @@ export function SignInWithEmailAndPassword({
       try {
         const result = await emailAndPasswordSignIn(credentials.email, credentials.password);
         if (!result) return;
-        const { idToken, csrf } = result;
+        const { idToken, refreshToken, csrf } = result;
         if (!idToken) return;
-        signIn({ type: 'email', idToken, csrf });
+        signIn({ type: 'email', idToken, refreshToken, csrf });
         // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
         await sleep(1000);
       } catch (error) {
