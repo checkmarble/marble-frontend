@@ -3,7 +3,7 @@ import { useDeleteTagMutation } from '@app-builder/queries/settings/tags/delete-
 import { type Tag } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteTag({ tag }: { tag: Tag }) {
@@ -59,22 +59,14 @@ const DeleteTagContent = ({ tagId, onSuccess }: { tagId: string; onSuccess: () =
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('common:delete')}
           variant="destructive"
-          type="submit"
-          name="delete"
           onClick={handleDeleteTag}
           disabled={deleteTagMutation.isPending}
-          size="large"
-        >
-          <Icon icon="delete" className="size-5" />
-          {t('common:delete')}
-        </Button>
+          leadingIcon="delete"
+        />
       </Modal.Footer>
     </>
   );

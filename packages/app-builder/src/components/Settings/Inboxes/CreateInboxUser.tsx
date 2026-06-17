@@ -252,15 +252,13 @@ export function CreateInboxUserContent({
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button type="button" variant="secondary" appearance="stroked" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" name="create" size="large">
-          <Icon icon="new-inbox" className="size-5" />
-          {t('settings:inboxes.inbox_details.create_user')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('settings:inboxes.inbox_details.create_user')}
+          type="submit"
+          name="create"
+          leadingIcon="new-inbox"
+        />
       </Modal.Footer>
     </form>
   );

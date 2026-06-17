@@ -7,7 +7,7 @@ import {
   Popover as PopoverPrimitive,
   PopoverTrigger,
 } from '@radix-ui/react-popover';
-import { createContext, forwardRef, type ReactNode, useCallback, useContext, useMemo, useRef } from 'react';
+import { createContext, forwardRef, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
 import { useScrollBorders } from '../Modal/modal-scroll';
 import { cn } from '../utils';
@@ -28,10 +28,10 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(function 
   { className, children, ...props },
   ref,
 ) {
-  const contentElementRef = useRef<HTMLDivElement | null>(null);
-  const { showFooterBorder } = useScrollBorders(contentElementRef);
+  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
+  const { showFooterBorder } = useScrollBorders(contentElement);
   const handleContentRef = useCallback((node: HTMLDivElement | null) => {
-    contentElementRef.current = node;
+    setContentElement((prev) => (prev === node ? prev : node));
   }, []);
   const composedRef = useComposedRefs(ref, handleContentRef);
 

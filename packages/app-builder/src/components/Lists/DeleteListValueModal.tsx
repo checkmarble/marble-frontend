@@ -5,7 +5,7 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, Modal, Typo } from 'ui-design-system';
+import { HiddenInputs, Modal, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteListValueModal({
@@ -63,15 +63,14 @@ export function DeleteListValueModal({
             </div>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked" size="large">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="destructive" type="submit" name="delete" size="large">
-              <Icon icon="delete" className="size-5" />
-              <p>{t('common:delete')}</p>
-            </Button>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            <Modal.FooterButton
+              label={t('common:delete')}
+              type="submit"
+              name="delete"
+              variant="destructive"
+              leadingIcon="delete"
+            />
           </Modal.Footer>
         </form>
       </Modal.Content>

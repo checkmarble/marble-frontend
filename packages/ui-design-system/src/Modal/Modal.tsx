@@ -2,7 +2,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import { createContext, forwardRef, type ReactNode, useCallback, useContext, useMemo, useRef } from 'react';
+import { createContext, forwardRef, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 import { Button, CtaV2ClassName } from '../Button/Button';
@@ -56,10 +56,10 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
   { className, size, fixedHeight, children, ...props },
   ref,
 ) {
-  const contentElementRef = useRef<HTMLDivElement | null>(null);
-  const scrollState = useScrollBorders(contentElementRef);
+  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
+  const scrollState = useScrollBorders(contentElement);
   const handleContentRef = useCallback((node: HTMLDivElement | null) => {
-    contentElementRef.current = node;
+    setContentElement((prev) => (prev === node ? prev : node));
   }, []);
   const composedRef = useComposedRefs(ref, handleContentRef);
   const scrollContextValue = useMemo(() => scrollState, [scrollState.showTitleBorder, scrollState.showFooterBorder]);
@@ -155,18 +155,7 @@ function FooterButtonSpinner() {
 }
 
 const ModalFooterButton = forwardRef<HTMLButtonElement, ModalFooterButtonProps>(function ModalFooterButton(
-  {
-    variant = 'primary',
-    isCloseButton,
-    isLoading,
-    leadingIcon,
-    trailingIcon,
-    disabled,
-    label,
-    children,
-    className,
-    ...props
-  },
+  { variant, isCloseButton, isLoading, leadingIcon, trailingIcon, disabled, label, children, className, ...props },
   ref,
 ) {
   const { variant: buttonVariant, appearance } = match(variant)
@@ -179,10 +168,9 @@ const ModalFooterButton = forwardRef<HTMLButtonElement, ModalFooterButtonProps>(
       appearance: 'filled' as ModalButtonAppearance,
     }))
     .otherwise(() => ({
-      variant: (isCloseButton ? 'secondary' : 'primary') as ModalButtonVariant,
-      appearance: (isCloseButton ? 'stroked' : 'filled') as ModalButtonAppearance,
+      variant: (isCloseButton ? (variant ?? 'secondary') : 'primary') as ModalButtonVariant,
+      appearance: (isCloseButton && variant !== 'primary' ? 'stroked' : 'filled') as ModalButtonAppearance,
     }));
-
   const button = (
     <Button
       ref={ref}

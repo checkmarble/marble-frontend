@@ -3,7 +3,6 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Nudge } from '@app-builder/components/Nudge';
-import { LoadingIcon } from '@app-builder/components/Spinner';
 import { SelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type EventType } from '@app-builder/models/webhook';
@@ -20,7 +19,7 @@ import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 export function CreateWebhook({
   children,
@@ -177,15 +176,14 @@ function CreateWebhookContent({
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" name="create" disabled={createWebhookMutation.isPending} size="large">
-          <LoadingIcon icon="plus" className="size-5" loading={createWebhookMutation.isPending} />
-          {t('settings:webhooks.new_webhook.create')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('settings:webhooks.new_webhook.create')}
+          type="submit"
+          name="create"
+          isLoading={createWebhookMutation.isPending}
+          leadingIcon="plus"
+        />
       </Modal.Footer>
     </form>
   );

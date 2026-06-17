@@ -98,14 +98,12 @@ function CopyScenarioContent({ scenarioId, scenarioName, onSuccess }: CopyScenar
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" size="large">
-          {t('scenarios:copy_scenario.button')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('scenarios:copy_scenario.button')}
+          type="submit"
+          isLoading={copyScenarioMutation.isPending}
+        />
       </Modal.Footer>
     </form>
   );

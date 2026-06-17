@@ -18,7 +18,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, SelectV2 } from 'ui-design-system';
+import { Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateUser({
@@ -172,14 +172,13 @@ function UpdateUserContent({
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" name="update" size="large">
-          {t('common:save')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('common:save')}
+          type="submit"
+          name="update"
+          isLoading={updateUserMutation.isPending}
+        />
       </Modal.Footer>
     </form>
   );

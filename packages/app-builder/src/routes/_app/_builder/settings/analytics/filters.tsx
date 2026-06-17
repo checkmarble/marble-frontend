@@ -224,6 +224,32 @@ function Filters() {
     enableSorting: false,
   });
 
+  const handleDeleteFilter = () => {
+    if (!itemToDelete) return;
+    const payload: DeleteExportedFieldPayload =
+      itemToDelete.kind === 'trigger'
+        ? { triggerObjectField: itemToDelete.field! }
+        : {
+            ingestedDataField: {
+              path: itemToDelete.path ?? [],
+              name: itemToDelete.name!,
+            },
+          };
+    deleteFilterMutation
+      .mutateAsync({
+        tableId: itemToDelete.tableId,
+        payload,
+      })
+      .then(() => {
+        setIsConfirmOpen(false);
+        setItemToDelete(null);
+        revalidate();
+      })
+      .catch(() => {
+        toast.error(t('common:errors.unknown'));
+      });
+  };
+
   return (
     <Page.Container>
       <Page.Content>
@@ -256,40 +282,19 @@ function Filters() {
               {t('settings:filters.delete_filter.content')}
             </Modal.Description>
             <Modal.Footer>
-              <Button variant="secondary" onClick={() => setIsConfirmOpen(false)} size="large">
-                {t('common:cancel')}
-              </Button>
-              <Button
+              <Modal.FooterButton
+                isCloseButton
+                variant="secondary"
+                label={t('common:cancel')}
+                onClick={() => setIsConfirmOpen(false)}
+              />
+              <Modal.FooterButton
                 variant="destructive"
-                onClick={() => {
-                  if (!itemToDelete) return;
-                  const payload: DeleteExportedFieldPayload =
-                    itemToDelete.kind === 'trigger'
-                      ? { triggerObjectField: itemToDelete.field! }
-                      : {
-                          ingestedDataField: {
-                            path: itemToDelete.path ?? [],
-                            name: itemToDelete.name!,
-                          },
-                        };
-                  deleteFilterMutation
-                    .mutateAsync({
-                      tableId: itemToDelete.tableId,
-                      payload,
-                    })
-                    .then(() => {
-                      setIsConfirmOpen(false);
-                      setItemToDelete(null);
-                      revalidate();
-                    })
-                    .catch(() => {
-                      toast.error(t('common:errors.unknown'));
-                    });
-                }}
-                size="large"
-              >
-                {t('settings:filters.delete_filter')}
-              </Button>
+                label={t('settings:filters.delete_filter')}
+                onClick={handleDeleteFilter}
+                leadingIcon="delete"
+                isLoading={deleteFilterMutation.isPending}
+              />
             </Modal.Footer>
           </Modal.Content>
         </Modal.Root>

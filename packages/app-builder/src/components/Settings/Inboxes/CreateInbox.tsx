@@ -102,15 +102,14 @@ export function CreateInboxContent({
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" name="create" disabled={createInboxMutation.isPending} size="large">
-          <Icon icon="new-inbox" className="size-5" />
-          {t('settings:inboxes.new_inbox.create')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('settings:inboxes.new_inbox.create')}
+          type="submit"
+          name="create"
+          disabled={createInboxMutation.isPending}
+          leadingIcon="new-inbox"
+        />
       </Modal.Footer>
     </form>
   );

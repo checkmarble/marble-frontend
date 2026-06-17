@@ -5,7 +5,7 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { endOfToday } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Calendar, Modal } from 'ui-design-system';
+import { Calendar, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SetMyselfUnavailable() {
@@ -47,15 +47,13 @@ export function SetMyselfUnavailable() {
         </div>
 
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked" size="large">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button variant="primary" onClick={setMeUnavailable} disabled={!dateSelected} size="large">
-            <Icon icon="account-circle-off" className="size-4" />
-            {t('settings:set_myself_unavailable.validate.button')}
-          </Button>
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton
+            label={t('settings:set_myself_unavailable.validate.button')}
+            onClick={setMeUnavailable}
+            disabled={!dateSelected}
+            leadingIcon="account-circle-off"
+          />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

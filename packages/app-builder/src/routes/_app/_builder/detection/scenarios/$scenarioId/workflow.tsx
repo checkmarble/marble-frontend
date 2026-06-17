@@ -13,7 +13,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const workflowLoader = createServerFn()
@@ -133,15 +133,18 @@ function WorkflowClientContent() {
             </div>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked" onClick={cancelDeleteRule} size="large">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="destructive" onClick={confirmDeleteRule} size="large">
-              <Icon icon="delete" className="size-4" />
-              {t('workflows:delete_rule.delete_button')}
-            </Button>
+            <Modal.FooterButton
+              isCloseButton
+              variant="secondary"
+              label={t('common:cancel')}
+              onClick={cancelDeleteRule}
+            />
+            <Modal.FooterButton
+              variant="destructive"
+              label={t('workflows:delete_rule.delete_button')}
+              onClick={confirmDeleteRule}
+              leadingIcon="delete"
+            />
           </Modal.Footer>
         </Modal.Content>
       </Modal.Root>

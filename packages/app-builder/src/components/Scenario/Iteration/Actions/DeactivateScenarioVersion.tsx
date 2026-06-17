@@ -56,15 +56,13 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="destructive" onClick={handleDeactivate} size="large">
-          <Icon icon="stop" className="size-5" />
-          {t('scenarios:deployment_modal.deactivate.button')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('scenarios:deployment_modal.deactivate.button')}
+          onClick={handleDeactivate}
+          variant="destructive"
+          leadingIcon="stop"
+        />
       </Modal.Footer>
     </>
   );

@@ -1,5 +1,4 @@
 import { Callout } from '@app-builder/components/Callout';
-import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { useActivateIterationMutation } from '@app-builder/queries/scenarios/activate-iteration';
@@ -307,20 +306,19 @@ export function ScenarioDeploymentModal({
             </div>
           </div>
           <Modal.Footer>
-            <Button
-              variant="secondary"
-              appearance="stroked"
-              name="cancel"
-              size="large"
+            <Modal.FooterButton
+              isCloseButton
+              label={t('common:cancel')}
               disabled={isPending}
               onClick={() => setOpen(false)}
-            >
-              {t('common:cancel')}
-            </Button>
-            <Button variant="primary" disabled={isPending || !iteration.isValid} onClick={handleAction} size="large">
-              {isPending ? <Spinner className="size-5" /> : <Icon icon={action.icon} className="size-5" />}
-              {action.label}
-            </Button>
+            />
+            <Modal.FooterButton
+              label={action.label}
+              disabled={isPending || !iteration.isValid}
+              onClick={handleAction}
+              isLoading={isPending}
+              leadingIcon={action.icon}
+            />
           </Modal.Footer>
         </Modal.Content>
       </Modal.Root>

@@ -104,14 +104,8 @@ export function EditListModal({ listId, name, description }: { listId: string; n
             </div>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button type="button" variant="secondary" appearance="stroked" size="large">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="primary" type="submit" name="editList" size="large">
-              {t('common:save')}
-            </Button>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            <Modal.FooterButton label={t('common:save')} type="submit" name="editList" />
           </Modal.Footer>
         </form>
       </Modal.Content>

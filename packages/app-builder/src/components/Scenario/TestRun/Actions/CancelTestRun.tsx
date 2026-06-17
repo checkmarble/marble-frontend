@@ -5,7 +5,7 @@ import { useCancelTestRunMutation } from '@app-builder/queries/scenarios/cancel-
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 export function CancelTestRun({
   children,
@@ -43,19 +43,12 @@ export function CancelTestRun({
           </Callout>
         </Modal.Description>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked" size="large">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            variant="primary"
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton
+            label={t('scenarios:testrun.cancel')}
             onClick={handleCancelScenario}
-            disabled={cancelTestRunMutation.isPending}
-            size="large"
-          >
-            {t('scenarios:testrun.cancel')}
-          </Button>
+            isLoading={cancelTestRunMutation.isPending}
+          />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

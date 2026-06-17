@@ -102,34 +102,24 @@ const ExistingDraftModal = ({
           </div>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button
-              variant="secondary"
-              appearance="stroked"
-              size="large"
-              onClick={() =>
-                navigate({
-                  to: '../$iterationId',
-                  from: '/detection/scenarios/$scenarioId/i/$iterationId',
-                  params: {
-                    iterationId: fromUUIDtoSUUID(draftId),
-                  },
-                })
-              }
-            >
-              {t('scenarios:create_draft.keep_existing_draft')}
-            </Button>
-          </Modal.Close>
-          <Button
-            variant="primary"
-            size="large"
-            name="create"
+          <Modal.FooterButton
+            label={t('scenarios:create_draft.keep_existing_draft')}
+            onClick={() =>
+              navigate({
+                to: '../$iterationId',
+                from: '/detection/scenarios/$scenarioId/i/$iterationId',
+                params: {
+                  iterationId: fromUUIDtoSUUID(draftId),
+                },
+              })
+            }
+          />
+          <Modal.FooterButton
+            label={t('scenarios:create_draft.override_existing_draft')}
             onClick={handleOverrideDraft}
-            disabled={createDraftIterationMutation.isPending}
-          >
-            {createDraftIterationMutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
-            {t('scenarios:create_draft.override_existing_draft')}
-          </Button>
+            isLoading={createDraftIterationMutation.isPending}
+            name="create"
+          />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

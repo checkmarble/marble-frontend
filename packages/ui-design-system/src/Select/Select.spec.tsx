@@ -34,7 +34,7 @@ describe('Select', () => {
 
     render(<TestSelect />);
 
-    const combobox = screen.getByRole('combobox');
+    const combobox = screen.getByRole('button', { name: 'Select a value...' });
 
     expect(within(combobox).getByText('Select a value...')).toBeInTheDocument();
 

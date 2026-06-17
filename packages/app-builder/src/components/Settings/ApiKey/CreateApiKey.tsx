@@ -102,14 +102,8 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button type="button" variant="secondary" appearance="stroked" size="large">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" size="large">
-          {t('settings:api_keys.create')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton label={t('settings:api_keys.create')} type="submit" />
       </Modal.Footer>
     </form>
   );

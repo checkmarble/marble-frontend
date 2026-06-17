@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteRuleMutation } from '@app-builder/queries/scenarios/delete-rule';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Typo } from 'ui-design-system';
+import { Modal, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteRule({
@@ -43,21 +43,14 @@ export function DeleteRule({
           </div>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked" size="large">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton
+            label={t('common:delete')}
             variant="destructive"
-            type="button"
             onClick={handleDeleteRule}
-            size="large"
-            disabled={deleteRuleMutation.isPending}
-          >
-            <Icon icon="delete" className="size-5" />
-            {t('common:delete')}
-          </Button>
+            isLoading={deleteRuleMutation.isPending}
+            leadingIcon="delete"
+          />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
