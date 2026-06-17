@@ -103,8 +103,14 @@ export const AdvancedSetupsSection = ({
         if (link.parentTableName === selectedTable.name && monitoredTableNames.has(table.name)) {
           // Check if selectedTable (source/parent) has navigationOptions configured for this relationship
           // NavigationOptions are stored on the SOURCE table, not the TARGET table
+          // Match the option to THIS specific link (several links can point at the same
+          // child table): a down-navigation option filters the child on its FK field,
+          // which is the link's child field.
           const navOption = selectedTable.navigationOptions?.find(
-            (nav) => nav.sourceTableName === selectedTable.name && nav.targetTableName === table.name,
+            (nav) =>
+              nav.sourceTableName === selectedTable.name &&
+              nav.targetTableName === table.name &&
+              nav.filterFieldName === link.childFieldName,
           );
           const hasNavOptions = !!navOption;
 

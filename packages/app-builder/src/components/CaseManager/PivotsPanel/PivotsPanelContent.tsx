@@ -19,7 +19,11 @@ import { PivotAnnotations } from './PivotAnnotations';
 import { PivotNavigationOptions } from './PivotNavigationOptions';
 
 function pivotUniqKey(pivotObject?: PivotObject) {
-  return pivotObject ? `${pivotObject.pivotObjectName}_${pivotObject.pivotFieldName}_${pivotObject.pivotValue}` : null;
+  // Include the pivot id: several pivot objects can share the same value string across
+  // different parent types (polymorphic belongs_to) and must not collapse to one tab.
+  return pivotObject
+    ? `${pivotObject.pivotId ?? ''}_${pivotObject.pivotObjectName}_${pivotObject.pivotFieldName}_${pivotObject.pivotValue}`
+    : null;
 }
 
 export function PivotsPanelContent({
@@ -171,10 +175,7 @@ export function PivotsPanelContent({
                       <div className="h-px bg-grey-border" />
                       <div className="flex flex-col gap-2">
                         {navigationOptions.map((navOption) => (
-                          <div
-                            key={navOption.targetTableName}
-                            className="grid grid-cols-[116px_1fr] gap-x-3 items-center"
-                          >
+                          <div key={navOption.id} className="grid grid-cols-[116px_1fr] gap-x-3 items-center">
                             <div>{navOption.targetTableName}</div>
                             <Button
                               disabled={navOption.status === 'pending'}
@@ -187,6 +188,7 @@ export function PivotsPanelContent({
                                     pivotObjectName: tableModel.name,
                                   },
                                   sourceObject: proof.object.data,
+                                  navigationOptionId: navOption.id,
                                   sourceTableName: tableModel.name,
                                   sourceFieldName: navOption.sourceFieldName,
                                   targetTableName: navOption.targetTableName,

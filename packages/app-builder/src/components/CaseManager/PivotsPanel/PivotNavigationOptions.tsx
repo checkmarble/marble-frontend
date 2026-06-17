@@ -36,6 +36,10 @@ export function PivotNavigationOptions({
       R.filter((dataModelTable) => dataModelTable.name !== table.name),
       R.flatMap((dataModelTable) => dataModelTable.linksToSingle),
       R.filter((dataModelTable) => dataModelTable.parentTableName === table.name),
+      // Several links can point at the same child table; the nav options are filtered by
+      // child table name below, so keep one entry per child table to avoid rendering the
+      // same options twice.
+      R.uniqueBy((link) => link.childTableName),
     );
   }, [table, dataModel]);
   const dataModelExplorerContext = DataModelExplorerContext.useValue();
@@ -61,7 +65,7 @@ export function PivotNavigationOptions({
             return navigationOptions.length > 0 ? (
               <Fragment key={linkToTable.childTableName}>
                 {navigationOptions.map((navOption) => (
-                  <Fragment key={`${navOption.targetTableName}_${navOption.orderingFieldName}`}>
+                  <Fragment key={navOption.id}>
                     <span className="text-grey-secondary">
                       {navOption.targetTableName}
                       {navigationOptions.length > 1 ? ` (${navOption.orderingFieldName})` : null}
@@ -73,6 +77,7 @@ export function PivotNavigationOptions({
                         dataModelExplorerContext.startNavigation({
                           pivotObject,
                           sourceObject: pivotObject.pivotObjectData.data,
+                          navigationOptionId: navOption.id,
                           sourceTableName: table.name,
                           sourceFieldName: navOption.sourceFieldName,
                           targetTableName: navOption.targetTableName,

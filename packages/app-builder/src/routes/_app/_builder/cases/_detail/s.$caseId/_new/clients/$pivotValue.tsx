@@ -1,11 +1,14 @@
 import { CaseManagerClientsPage } from '@app-builder/components/CaseManagerV2/ClientsPage';
+import { getPivotObjectKey } from '@app-builder/models/cases';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/_new/clients/$pivotValue')({
   beforeLoad: ({ context, params }) => {
     const { pivotObjects } = context;
 
-    const pivotObject = (pivotObjects ?? []).find((p) => p.pivotValue === params.pivotValue);
+    // The `$pivotValue` route param carries the pivot object key (pivot id when known),
+    // so same-valued pivots of different parent types resolve to distinct objects.
+    const pivotObject = (pivotObjects ?? []).find((p) => getPivotObjectKey(p) === params.pivotValue);
     if (!pivotObject) {
       throw redirect({ from: '/cases/s/$caseId/', to: './principal' });
     }
