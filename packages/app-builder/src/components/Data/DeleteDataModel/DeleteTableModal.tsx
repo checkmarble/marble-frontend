@@ -14,7 +14,7 @@ import { TFunction } from 'i18next';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal } from 'ui-design-system';
+import { Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { dataI18n } from '../data-i18n';
 
@@ -128,25 +128,18 @@ export function DeleteTableModal({ table, onDeleted, children, open, onOpenChang
           </div>
         ) : null}
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" onClick={handleClose} size="large">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} onClick={handleClose} />
           {isBlocked ? (
-            <Button variant="primary" onClick={handleClose} size="large">
-              {t('data:delete.understood')}
-            </Button>
+            <Modal.FooterButton label={t('data:delete.understood')} onClick={handleClose} />
           ) : (
-            <Button
+            <Modal.FooterButton
               variant="destructive"
+              label={t('common:delete')}
               onClick={handleConfirmDelete}
               disabled={deleteTableMutation.isPending || !isConfirmed}
-              size="large"
-            >
-              <Icon icon="delete" className="size-5" />
-              {t('common:delete')}
-            </Button>
+              isLoading={deleteTableMutation.isPending}
+              leadingIcon="delete"
+            />
           )}
         </Modal.Footer>
       </Modal.Content>

@@ -199,26 +199,22 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                 </div>
               </div>
               <Modal.Footer>
-                <Modal.Close asChild>
-                  <Button variant="secondary" appearance="stroked" size="large">
-                    {t('common:cancel')}
-                  </Button>
-                </Modal.Close>
-                <Button
+                <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+                <Modal.FooterButton
+                  label={
+                    isCompleted
+                      ? t('cases:sar.modale.save')
+                      : reportFile
+                        ? t('cases:sar.modale.confirm_with_file')
+                        : t('cases:sar.modale.confirm_without_file')
+                  }
                   type="submit"
                   disabled={isCompleted && reportFile === undefined}
                   onClick={() => {
                     field.handleChange('completed');
                     form.handleSubmit();
                   }}
-                  size="large"
-                >
-                  {isCompleted
-                    ? t('cases:sar.modale.save')
-                    : reportFile
-                      ? t('cases:sar.modale.confirm_with_file')
-                      : t('cases:sar.modale.confirm_without_file')}
-                </Button>
+                />
               </Modal.Footer>
             </Modal.Content>
           </Modal.Root>

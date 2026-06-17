@@ -183,13 +183,22 @@ export type ButtonV2Props = VariantProps<typeof CtaV2ClassName> &
   React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonV2Props>(function Button(
-  { variant = 'primary', mode = 'normal', size = 'small', appearance, color = 'primary', className, ...props },
+  {
+    variant = 'primary',
+    mode = 'normal',
+    size = 'small',
+    appearance,
+    color = 'primary',
+    className,
+    type = 'button',
+    ...props
+  },
   ref,
 ) {
   return (
     <button
       ref={ref}
-      type="button"
+      type={type}
       className={cn(CtaV2ClassName({ variant, mode, size, appearance, color }), className)}
       {...props}
     />

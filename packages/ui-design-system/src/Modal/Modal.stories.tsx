@@ -54,14 +54,8 @@ const ScrollableTemplate: StoryFn<typeof Modal> = (args) => (
         ))}
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" size="large">
-            Cancel
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" size="large">
-          Save
-        </Button>
+        <Modal.FooterButton isCloseButton label="Cancel" />
+        <Modal.FooterButton label="Save" />
       </Modal.Footer>
     </Modal.Content>
   </Modal.Root>
@@ -69,3 +63,25 @@ const ScrollableTemplate: StoryFn<typeof Modal> = (args) => (
 
 export const Scrollable = ScrollableTemplate.bind({});
 Scrollable.args = {};
+
+const LoadingFooterTemplate: StoryFn<typeof Modal> = (args) => (
+  <Modal.Root defaultOpen {...args}>
+    <Modal.Trigger asChild>
+      <Button>Open modal</Button>
+    </Modal.Trigger>
+    <Modal.Content>
+      <Modal.Title>Delete item</Modal.Title>
+      <Modal.Description className="text-grey-secondary text-small px-6 pb-4">
+        Footer buttons with loading spinners keep enabled colors for contrast.
+      </Modal.Description>
+      <Modal.Footer>
+        <Modal.FooterButton isCloseButton label="Cancel" />
+        <Modal.FooterButton variant="destructive" label="Delete" isLoading leadingIcon="delete" />
+        <Modal.FooterButton label="Save" isLoading />
+      </Modal.Footer>
+    </Modal.Content>
+  </Modal.Root>
+);
+
+export const LoadingFooter = LoadingFooterTemplate.bind({});
+LoadingFooter.args = {};

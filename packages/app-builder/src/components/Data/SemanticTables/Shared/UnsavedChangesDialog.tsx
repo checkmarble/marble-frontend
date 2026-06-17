@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 type UnsavedChangesDialogProps = {
   open: boolean;
@@ -18,14 +18,8 @@ export function UnsavedChangesDialog({ open, onOpenChange, onConfirm }: UnsavedC
           <p className="text-s text-grey-primary">{t('data:unsaved_changes.description')}</p>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked" name="cancel" size="large">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button variant="primary" name="confirm" onClick={onConfirm} size="large">
-            {t('data:unsaved_changes.confirm')}
-          </Button>
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton label={t('data:unsaved_changes.confirm')} onClick={onConfirm} />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

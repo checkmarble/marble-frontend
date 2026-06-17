@@ -4,7 +4,7 @@ import { useDeleteAnnotationMutation } from '@app-builder/queries/annotations/de
 import { useCallbackRef } from '@marble/shared';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 type RemoveFileAnnotationProps = {
   annotation: FileAnnotation;
@@ -52,12 +52,8 @@ export function RemoveFileAnnotation({ annotation, onClose, onDelete }: RemoveFi
           />
         </Modal.Title>
         <Modal.Footer>
-          <Button variant="secondary" appearance="stroked" size="large" onClick={onClose}>
-            {t('common:cancel')}
-          </Button>
-          <Button variant="destructive" size="large" onClick={handleDelete}>
-            {t('common:delete')}
-          </Button>
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} onClick={onClose} />
+          <Modal.FooterButton variant="destructive" label={t('common:delete')} onClick={handleDelete} />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

@@ -10,7 +10,7 @@ import { RadioGroup, RadioProvider } from '@ariakit/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Switch, TextArea } from 'ui-design-system';
+import { Button, MenuCommand, Modal, Switch, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { RadioItem } from './StatusRadioGroup';
 import { screeningsI18n } from './screenings-i18n';
@@ -125,27 +125,14 @@ export function ReviewMatchPopover({
             </form.Field>
           ) : null}
 
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              appearance="stroked"
-              size="small"
-              className="w-full justify-center"
-              onClick={() => onOpenChange(false)}
-            >
-              {t('common:cancel')}
-            </Button>
-            <Button
+          <Modal.Footer>
+            <Modal.FooterButton variant="secondary" label={t('common:cancel')} onClick={() => onOpenChange(false)} />
+            <Modal.FooterButton
               type="submit"
-              variant="primary"
-              size="small"
-              className="w-full justify-center"
+              label={t('common:save')}
               disabled={!currentStatus || reviewScreeningMatchMutation.isPending}
-            >
-              {t('common:save')}
-            </Button>
-          </div>
+            />
+          </Modal.Footer>
         </form>
       </MenuCommand.Content>
     </MenuCommand.Menu>

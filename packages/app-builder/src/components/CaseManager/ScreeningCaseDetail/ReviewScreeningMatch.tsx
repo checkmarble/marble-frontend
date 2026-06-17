@@ -10,7 +10,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, TextArea } from 'ui-design-system';
+import { Modal, TextArea } from 'ui-design-system';
 
 type ReviewScreeningMatchProps = {
   screeningMatch: ContinuousScreeningMatch;
@@ -90,14 +90,8 @@ export const ReviewScreeningMatch = ({
             </form.Field>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked" size="large" name="cancel">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button type="submit" disabled={!currentStatus} size="large" variant="primary" name="save">
-              {t('common:save')}
-            </Button>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            <Modal.FooterButton label={t('common:save')} disabled={!currentStatus} />
           </Modal.Footer>
         </form>
       </Modal.Content>

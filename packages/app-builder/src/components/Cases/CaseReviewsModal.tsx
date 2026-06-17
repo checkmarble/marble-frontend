@@ -111,42 +111,32 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
       <Modal.Footer>
         {review ? (
           <>
-            <Button
+            <Modal.FooterButton
               variant={review.reaction === 'ok' ? 'primary' : 'secondary'}
-              size="large"
               onClick={() => feedbackMutation.mutate('ok')}
-            >
-              <Icon icon="thumb-up" className="size-4" />
-              {t('cases:case_detail.ai_review.actions.feedback_ok')}
-            </Button>
-            <Button
+              label={t('cases:case_detail.ai_review.actions.feedback_ok')}
+              leadingIcon="thumb-up"
+            />
+            <Modal.FooterButton
               variant={review.reaction === 'ko' ? 'primary' : 'secondary'}
-              size="large"
               onClick={() => feedbackMutation.mutate('ko')}
-            >
-              <Icon icon="thumb-down" className="size-4" />
-              {t('cases:case_detail.ai_review.actions.feedback_ko')}
-            </Button>
-            <Button
+              label={t('cases:case_detail.ai_review.actions.feedback_ko')}
+              leadingIcon="thumb-down"
+            />
+            <Modal.FooterButton
               variant="secondary"
-              size="large"
               onClick={() =>
                 addCommentMutation.mutate(undefined, {
                   onSuccess: () => toast.success(t('cases:case_detail.ai_review.actions.add_to_comment.success')),
                   onError: () => toast.error(t('common:errors.unknown')),
                 })
               }
-            >
-              <Icon icon="comment" className="size-4" />
-              {t('cases:case_detail.ai_review.actions.add_to_comment')}
-            </Button>
+              label={t('cases:case_detail.ai_review.actions.add_to_comment')}
+              leadingIcon="comment"
+            />
           </>
         ) : null}
-        <Modal.Close asChild>
-          <Button variant="secondary" size="large">
-            {t('common:close')}
-          </Button>
-        </Modal.Close>
+        <Modal.FooterButton isCloseButton label={t('common:close')} />
       </Modal.Footer>
     </>
   );
@@ -281,11 +271,7 @@ export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string
       </div>
 
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" size="large">
-            {t('common:close')}
-          </Button>
-        </Modal.Close>
+        <Modal.FooterButton isCloseButton label={t('common:close')} />
       </Modal.Footer>
     </div>
   );

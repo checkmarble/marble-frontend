@@ -144,15 +144,14 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked" size="large">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button variant="primary" disabled={!canImport || isParsing} onClick={handleImport} size="large">
-            {isParsing ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
-            {t('data:import_org.button_accept')}
-          </Button>
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton
+            label={t('data:import_org.button_accept')}
+            type="submit"
+            disabled={!canImport || isParsing}
+            isLoading={isParsing}
+            onClick={handleImport}
+          />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

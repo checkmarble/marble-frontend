@@ -11,7 +11,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Modal, TextArea } from 'ui-design-system';
+import { cn, Modal, TextArea } from 'ui-design-system';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { LoadingIcon } from '../Spinner';
 import { ReviewStatusTag } from './ReviewStatusTag';
@@ -156,15 +156,15 @@ function ReviewDecisionContent({
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" size="large">
-            {t('cases:case_detail.review_decision.go_back')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" size="large">
+        <Modal.FooterButton isCloseButton label={t('cases:case_detail.review_decision.go_back')} />
+        <Modal.FooterButton
+          variant="primary"
+          type="submit"
+          label={t('common:validate')}
+          disabled={reviewDecisionMutation.isPending}
+        >
           <LoadingIcon icon="case-manager" className="size-5" loading={reviewDecisionMutation.isPending} />
-          {t('common:validate')}
-        </Button>
+        </Modal.FooterButton>
       </Modal.Footer>
     </form>
   );

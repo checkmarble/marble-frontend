@@ -16,7 +16,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Stepper, type StepperStep } from 'ui-design-system';
+import { Modal, Stepper, type StepperStep } from 'ui-design-system';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { type OperandEditModalProps } from '../../EditModal';
@@ -221,43 +221,33 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
         </div>
 
         <Modal.Footer>
-          <div className="flex gap-v2-sm justify-end p-v2-md">
-            {currentStep > 1 ? (
-              <Button variant="secondary" size="large" onClick={handleBack}>
-                {t('scenarios:monitoring_list_check.back')}
-              </Button>
-            ) : (
-              <Modal.Close asChild>
-                <Button variant="secondary" size="large">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
-            )}
+          {currentStep > 1 ? (
+            <Modal.FooterButton
+              variant="secondary"
+              label={t('scenarios:monitoring_list_check.back')}
+              onClick={handleBack}
+            />
+          ) : (
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          )}
 
-            {isLastStep ? (
-              <Button
-                variant="primary"
-                disabled={
-                  !hasContinuousScreening ||
-                  createNavigationOptionMutation.isPending ||
-                  (currentStep === 3 && !canSaveFromStep3)
-                }
-                onClick={handleSave}
-                size="large"
-              >
-                {t('scenarios:monitoring_list_check.validate')}
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                size="large"
-                disabled={!hasContinuousScreening || !canProceedFromStep1}
-                onClick={handleNext}
-              >
-                {t('scenarios:monitoring_list_check.next')}
-              </Button>
-            )}
-          </div>
+          {isLastStep ? (
+            <Modal.FooterButton
+              label={t('scenarios:monitoring_list_check.validate')}
+              onClick={handleSave}
+              disabled={
+                !hasContinuousScreening ||
+                createNavigationOptionMutation.isPending ||
+                (currentStep === 3 && !canSaveFromStep3)
+              }
+            />
+          ) : (
+            <Modal.FooterButton
+              label={t('scenarios:monitoring_list_check.next')}
+              onClick={handleNext}
+              disabled={!hasContinuousScreening || !canProceedFromStep1}
+            />
+          )}
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

@@ -94,14 +94,8 @@ export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseB
         </div>
         <form onSubmit={handleSubmit(form)}>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked" type="button" size="large">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button type="submit" size="large">
-              {t('cases:escalate-case.modal.submit-button.label')}
-            </Button>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            <Modal.FooterButton label={t('cases:escalate-case.modal.submit-button.label')} type="submit" />
           </Modal.Footer>
         </form>
       </Modal.Content>

@@ -397,6 +397,8 @@
   "overview.workflow.case_escalated": "حالة مُصعّدة إلى صندوق الوارد هذا",
   "overview.workflow.manual_request": "مراجعة يدوية",
   "pick_file_cta": "اختر ملفًا",
+  "reopen-case.modal.callout": "هل أنت متأكد أنك تريد إعادة فتح الحالة؟",
+  "reopen-case.modal.submit-button.label": "إعادة فتح",
   "required_actions.decide_final_status": "حدّد الحالة النهائية",
   "required_actions.review_screening_hits": "مراجعة مطابقات الفحص ({{count}})",
   "required_actions.see_screening_hits": "عرض مطابقات الفحص ({{count}})",

@@ -188,23 +188,16 @@ export const AddConfigurationModal = ({
           </form>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" size="large">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
           <form.Subscribe selector={(state) => state.canSubmit}>
             {(canSubmit) => {
               return (
-                <Button
+                <Modal.FooterButton
                   disabled={!canSubmit}
                   form="add-configuration-form"
                   type="submit"
-                  variant="primary"
-                  size="large"
-                >
-                  {t('common:save')}
-                </Button>
+                  label={t('common:save')}
+                />
               );
             }}
           </form.Subscribe>
