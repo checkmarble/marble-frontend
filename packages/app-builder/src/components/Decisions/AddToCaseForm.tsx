@@ -11,7 +11,7 @@ import { useForm } from '@tanstack/react-form';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Select, Switch } from 'ui-design-system';
+import { Button, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type OnSuccessAddFn = (type: 'new_case' | 'existing_case', caseDetail: CaseDetail) => void;
@@ -136,22 +136,19 @@ function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSu
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
                 {t('decisions:add_to_case.new_case.select_inbox')}
               </FormLabel>
-              <Select.Default
+              <SelectV2
                 className="w-full overflow-hidden"
                 value={field.state.value}
-                onValueChange={(type) => {
+                onChange={(type) => {
                   field.handleChange(type);
                   field.handleBlur();
                 }}
-              >
-                {inboxes.map(({ name, id }) => {
-                  return (
-                    <Select.DefaultItem key={id} value={id}>
-                      {name}
-                    </Select.DefaultItem>
-                  );
-                })}
-              </Select.Default>
+                placeholder={t('decisions:add_to_case.new_case.select_inbox')}
+                options={inboxes.map(({ name, id }) => ({
+                  label: name,
+                  value: id,
+                }))}
+              />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}

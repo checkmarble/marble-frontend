@@ -20,7 +20,7 @@ import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
@@ -156,23 +156,19 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
                     </Ariakit.Hovercard>
                   </Ariakit.HovercardProvider>
                 </FormLabel>
-                <Select.Default
+                <SelectV2
                   placeholder={t('scenarios:create_scenario.trigger_object_placeholder')}
-                  defaultValue={field.state.value}
-                  onValueChange={(value) => {
+                  value={field.state.value}
+                  onChange={(value) => {
                     field.handleChange(value);
                     field.handleBlur();
                   }}
-                >
-                  {dataModel.map((tableName) => {
-                    return (
-                      <Select.DefaultItem key={tableName.name} value={tableName.name}>
-                        {tableName.name}
-                      </Select.DefaultItem>
-                    );
-                  })}
-                  {dataModel.length === 0 ? <p>{t('scenarios:create_scenario.no_trigger_object')}</p> : null}
-                </Select.Default>
+                  options={dataModel.map((tableName) => ({
+                    label: tableName.name,
+                    value: tableName.name,
+                  }))}
+                />
+                {dataModel.length === 0 ? <p>{t('scenarios:create_scenario.no_trigger_object')}</p> : null}
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}

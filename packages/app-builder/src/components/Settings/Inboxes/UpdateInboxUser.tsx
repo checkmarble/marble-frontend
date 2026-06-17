@@ -17,7 +17,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateInboxUser({
@@ -118,19 +118,16 @@ export function UpdateInboxUserContent({
                   <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                 )}
               </FormLabel>
-              <Select.Default
-                name={field.name}
-                defaultValue={field.state.value}
-                onValueChange={(value: 'admin' | 'member') => field.handleChange(value)}
-                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+              <SelectV2
+                value={field.state.value}
+                onChange={(value) => field.handleChange(value)}
+                placeholder={t('settings:inboxes.inbox_details.role')}
                 disabled={!isAccessible(access)}
-              >
-                {inboxUserRoles.map((role) => (
-                  <Select.DefaultItem key={role} value={role}>
-                    {t(tKeyForInboxUserRole(role))}
-                  </Select.DefaultItem>
-                ))}
-              </Select.Default>
+                options={inboxUserRoles.map((role) => ({
+                  label: t(tKeyForInboxUserRole(role)),
+                  value: role,
+                }))}
+              />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}

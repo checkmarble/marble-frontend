@@ -18,7 +18,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateUser({
@@ -155,18 +155,16 @@ function UpdateUserContent({
                     <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                   )}
                 </FormLabel>
-                <Select.Default
-                  defaultValue={field.state.value}
-                  onValueChange={(value) => field.handleChange(value as UpdateUserPayload['role'])}
+                <SelectV2
+                  value={field.state.value}
+                  onChange={(value) => field.handleChange(value as UpdateUserPayload['role'])}
                   disabled={!isAccessible(access)}
-                  name={field.name}
-                >
-                  {userRoles.map((role) => (
-                    <Select.DefaultItem key={role} value={role}>
-                      {t(tKeyForUserRole(role))}
-                    </Select.DefaultItem>
-                  ))}
-                </Select.Default>
+                  placeholder={t('settings:users.role')}
+                  options={userRoles.map((role) => ({
+                    label: t(tKeyForUserRole(role)),
+                    value: role as UpdateUserPayload['role'],
+                  }))}
+                />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}

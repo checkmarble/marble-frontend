@@ -1,33 +1,19 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 
-import { Select, type SelectProps } from './Select';
-import { selectBorder, selectBorderColor } from './Select.constants';
+import { SelectV2, type SelectV2Props } from './Select';
 
-type StoryProps = Pick<SelectProps, 'disabled' | 'placeholder' | 'border' | 'borderColor'>;
+type StoryProps = Pick<SelectV2Props<string>, 'disabled' | 'placeholder'>;
 
-/**
- * @deprecated Use `MenuCommand` instead.
- */
 const Story: Meta<StoryProps> = {
-  component: Select.Default,
-  title: 'Select (Deprecated)',
+  component: SelectV2,
+  title: 'SelectV2',
   args: {
     placeholder: 'Select a value...',
     disabled: false,
-    border: selectBorder[0],
-    borderColor: selectBorderColor[0],
   },
   argTypes: {
     placeholder: { type: 'string' },
     disabled: { type: 'boolean' },
-    border: {
-      control: { type: 'radio' },
-      options: selectBorder.slice(),
-    },
-    borderColor: {
-      control: { type: 'radio' },
-      options: selectBorderColor.slice(),
-    },
   },
 };
 
@@ -36,15 +22,15 @@ export default Story;
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
 
 export const Default: StoryFn<StoryProps> = (args) => (
-  <Select.Default {...args}>
-    {fruits.map((fruit) => {
-      return (
-        <Select.DefaultItem key={fruit} value={fruit}>
-          {fruit}
-        </Select.DefaultItem>
-      );
-    })}
-  </Select.Default>
+  <SelectV2
+    {...args}
+    value="apple"
+    onChange={() => undefined}
+    options={fruits.map((fruit) => ({
+      label: fruit,
+      value: fruit,
+    }))}
+  />
 );
 
 const books = new Map(
@@ -64,31 +50,27 @@ const books = new Map(
 
 const bookKeys = Array.from(books.keys());
 
-export const Complex: StoryFn<StoryProps> = ({ placeholder, border, borderColor, ...args }: StoryProps) => (
-  <Select.Root {...args} aria-invalid>
-    <Select.Trigger border={border} borderColor={borderColor}>
-      <Select.Value placeholder={placeholder} />
-    </Select.Trigger>
-    <Select.Content className="max-h-60 w-full">
-      <Select.Viewport>
-        {bookKeys.map((bookKey) => {
-          const book = books.get(bookKey);
-          if (!book) return undefined;
+export const Complex: StoryFn<StoryProps> = ({ placeholder, ...args }: StoryProps) => (
+  <SelectV2
+    {...args}
+    value={bookKeys[0] ?? ''}
+    onChange={() => undefined}
+    placeholder={placeholder}
+    displayedValue={(option) => books.get(option.value)?.title ?? option.value}
+    options={bookKeys.map((bookKey) => {
+      const book = books.get(bookKey);
 
-          return (
-            <Select.Item key={bookKey} value={bookKey} className="group">
-              <Select.ItemText>
-                <p className="text-s text-grey-primary group-radix-highlighted:text-blue-58 group-radix-state-open:text-blue-58 text-start font-semibold">
-                  {book.title}
-                </p>
-                <p className="text-grey-secondary group-radix-highlighted:text-blue-58 group-radix-state-open:text-blue-58 text-start text-xs font-normal">
-                  {book.author}
-                </p>
-              </Select.ItemText>
-            </Select.Item>
-          );
-        })}
-      </Select.Viewport>
-    </Select.Content>
-  </Select.Root>
+      return {
+        label: book ? (
+          <div>
+            <p className="text-s text-grey-primary text-start font-semibold">{book.title}</p>
+            <p className="text-grey-secondary text-start text-xs font-normal">{book.author}</p>
+          </div>
+        ) : (
+          bookKey
+        ),
+        value: bookKey,
+      };
+    })}
+  />
 );

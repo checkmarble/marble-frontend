@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type RefObject, useEffect, useState } from 'react';
 
 export type ScrollBorders = {
   showTitleBorder: boolean;
@@ -18,10 +18,11 @@ const defaultScrollBorders: ScrollBorders = {
   showFooterBorder: false,
 };
 
-export function useScrollBorders(scrollElement: HTMLElement | null) {
+export function useScrollBorders(scrollElementRef: RefObject<HTMLElement | null>) {
   const [scrollBorders, setScrollBorders] = useState<ScrollBorders>(defaultScrollBorders);
 
   useEffect(() => {
+    const scrollElement = scrollElementRef.current;
     if (!scrollElement) {
       setScrollBorders(defaultScrollBorders);
       return;
@@ -29,7 +30,8 @@ export function useScrollBorders(scrollElement: HTMLElement | null) {
 
     const updateScrollBorders = () => {
       const { scrollTop, scrollHeight, clientHeight } = scrollElement;
-      setScrollBorders(getModalScrollBorders(scrollTop, scrollHeight, clientHeight));
+      const nextBorders = getModalScrollBorders(scrollTop, scrollHeight, clientHeight);
+      setScrollBorders(nextBorders);
     };
 
     updateScrollBorders();
@@ -48,7 +50,7 @@ export function useScrollBorders(scrollElement: HTMLElement | null) {
       resizeObserver?.disconnect();
       mutationObserver?.disconnect();
     };
-  }, [scrollElement]);
+  }, [scrollElementRef]);
 
   return scrollBorders;
 }

@@ -2,7 +2,7 @@ import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import { createContext, forwardRef, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, forwardRef, type ReactNode, useCallback, useContext, useMemo, useRef } from 'react';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 import { Button, CtaV2ClassName } from '../Button/Button';
@@ -22,6 +22,10 @@ const ModalScrollContext = createContext<ModalScrollState>({
 
 function useModalScroll() {
   return useContext(ModalScrollContext);
+}
+
+function ModalRoot(props: Dialog.DialogProps) {
+  return <Dialog.Root {...props} />;
 }
 
 const modalContentClassnames = cva(
@@ -52,10 +56,10 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
   { className, size, fixedHeight, children, ...props },
   ref,
 ) {
-  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
-  const scrollState = useScrollBorders(contentElement);
+  const contentElementRef = useRef<HTMLDivElement | null>(null);
+  const scrollState = useScrollBorders(contentElementRef);
   const handleContentRef = useCallback((node: HTMLDivElement | null) => {
-    setContentElement((prev) => (prev === node ? prev : node));
+    contentElementRef.current = node;
   }, []);
   const composedRef = useComposedRefs(ref, handleContentRef);
   const scrollContextValue = useMemo(() => scrollState, [scrollState.showTitleBorder, scrollState.showFooterBorder]);
@@ -209,7 +213,7 @@ const ModalFooterButton = forwardRef<HTMLButtonElement, ModalFooterButtonProps>(
 ModalFooterButton.displayName = 'ModalFooterButton';
 
 export const Modal = {
-  Root: Dialog.Root,
+  Root: ModalRoot,
   Trigger: Dialog.Trigger,
   Close: Dialog.Close,
   Description: Dialog.Description,

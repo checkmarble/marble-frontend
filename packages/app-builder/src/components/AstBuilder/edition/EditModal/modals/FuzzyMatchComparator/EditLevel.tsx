@@ -1,6 +1,6 @@
 import { type BaseFuzzyMatchConfig, type Level } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { useTranslation } from 'react-i18next';
-import { Select } from 'ui-design-system';
+import { SelectV2 } from 'ui-design-system';
 
 import { operatorContainerClassnames } from '../../../OperatorSelect';
 
@@ -18,30 +18,22 @@ export function EditLevel({ config, level, setLevel }: EditLevelProps) {
       <label htmlFor="level" className="text-m text-grey-primary font-normal">
         {t('scenarios:edit_fuzzy_match.level.label')}
       </label>
-      <Select.Root value={level} onValueChange={setLevel}>
-        <Select.Trigger id="level" className={operatorContainerClassnames()}>
-          <span className="text-s text-grey-primary w-full text-center font-medium">
-            <Select.Value placeholder="..." />
-          </span>
-        </Select.Trigger>
-        <Select.Content className="max-h-60">
-          <Select.Viewport>
-            {config.getLevels().map((level) => {
-              return (
-                <Select.Item className="min-w-[110px]" key={level} value={level}>
-                  <Select.ItemText>
-                    <span className="text-s text-grey-primary font-semibold uppercase">
-                      {t(`scenarios:edit_fuzzy_match.level.${level}`, {
-                        defaultValue: level,
-                      })}
-                    </span>
-                  </Select.ItemText>
-                </Select.Item>
-              );
-            })}
-          </Select.Viewport>
-        </Select.Content>
-      </Select.Root>
+      <SelectV2
+        value={level}
+        onChange={setLevel}
+        placeholder="..."
+        className={operatorContainerClassnames()}
+        options={config.getLevels().map((level) => ({
+          label: (
+            <span className="text-s text-grey-primary font-semibold uppercase">
+              {t(`scenarios:edit_fuzzy_match.level.${level}`, {
+                defaultValue: level,
+              })}
+            </span>
+          ),
+          value: level,
+        }))}
+      />
     </div>
   );
 }
