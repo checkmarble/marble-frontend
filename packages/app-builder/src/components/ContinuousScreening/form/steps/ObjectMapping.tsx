@@ -248,7 +248,7 @@ const ObjectMappingFtmContent = ({
           </div>
           <div className="grid grid-cols-[auto_40px_1fr] gap-sm p-md">
             {table.fields
-              .filter((f) => f.dataType === 'String')
+              .filter((f) => ['String', 'Timestamp'].includes(f.dataType) && f.name != 'updated_at')
               .map((field) => {
                 const ftmProperty = field.ftmProperty ?? mappingConfig.fieldMapping[field.id] ?? null;
                 const hasSavedMapping = field.ftmProperty !== undefined;

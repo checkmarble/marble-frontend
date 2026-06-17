@@ -1,15 +1,16 @@
 import { decisionsI18n } from '@app-builder/components';
+import { DataModelField, TableModel } from '@app-builder/models';
+import { DataType, getDataTypeIcon } from '@app-builder/models/data-model';
 import { isScreeningError, type Screening } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { MatchCard } from '../Screenings/MatchCard';
 import { ScreeningErrors } from '../Screenings/ScreeningErrors';
 import { ScreeningStatusTag } from '../Screenings/ScreeningStatusTag';
 
-export function ScreeningDetail({ screening }: { screening: Screening }) {
+export function ScreeningDetail({ screening, table }: { screening: Screening; table?: TableModel }) {
   const hasError = isScreeningError(screening);
 
   return (
@@ -27,8 +28,8 @@ export function ScreeningDetail({ screening }: { screening: Screening }) {
       <Collapsible.Content>
         <div className="flex flex-col gap-md">
           {hasError ? <ScreeningErrors screening={screening} /> : null}
-          {screening.request ? <SearchInput request={screening.request} /> : null}
-          <div className="flex flex-col gap-sm">
+          {screening.request ? <SearchInput request={screening.request} fields={table?.fields} /> : null}
+          <div className="flex flex-col gap-2">
             {screening.matches.map((match) => (
               <MatchCard
                 readonly
@@ -45,23 +46,47 @@ export function ScreeningDetail({ screening }: { screening: Screening }) {
   );
 }
 
-const SearchInput = ({ request }: { request: NonNullable<Screening['request']> }) => {
+const SearchInput = ({
+  request,
+  fields,
+}: {
+  request: NonNullable<Screening['request']>;
+  fields?: DataModelField[];
+}) => {
   const { t } = useTranslation(decisionsI18n);
+
   const searchInputList = R.pipe(
     R.values(request.queries),
-    R.flatMap((query) => R.values(query.properties)),
-    R.flat(),
+    R.flatMap((query) =>
+      R.pipe(
+        R.entries(query.properties),
+        R.flatMap(([ftmProperty, values]) => {
+          const field = fields?.find((f) => f.ftmProperty === ftmProperty);
+
+          return values.map((value) => ({ value, type: field?.dataType ?? 'String' }));
+        }),
+      ),
+    ),
   );
+
+  const iconForType = (type: DataType) => {
+    switch (type) {
+      case 'Timestamp':
+        return 'calendar-month';
+    }
+
+    return getDataTypeIcon(type);
+  };
 
   return (
     <div className="flex items-center gap-sm">
       <span>{t('screenings:search_input')}</span>
-      {searchInputList.map((input, i) => (
+      {searchInputList.map(({ value, type }, i) => (
         <div key={i} className="border-grey-border flex items-center gap-sm rounded-sm border p-sm">
           <span className="bg-grey-background size-6 rounded-xs p-xs">
-            <Icon icon="string" className="size-4" />
+            <Icon icon={iconForType(type) ?? 'string'} className="size-4" />
           </span>
-          {input}
+          {value}
         </div>
       ))}
     </div>
