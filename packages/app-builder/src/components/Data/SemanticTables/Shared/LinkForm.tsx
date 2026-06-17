@@ -70,28 +70,23 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
     [sourceTableFields],
   );
 
-  const belongsToAlreadyUsed = useMemo(
-    () => links.some((l) => l.linkId !== linkId && l.relationType === 'belongs_to'),
-    [links, linkId],
-  );
-
+  // A table may have several belongs_to links (polymorphic belongs_to: at most one
+  // applies per row)
   const relationOptions = useMemo(
     () =>
-      linkRelationTypes
-        .filter((rel) => rel !== 'belongs_to' || !belongsToAlreadyUsed)
-        .map((rel) => ({
-          label: (
-            <span className="flex items-center gap-v2-sm">
-              <Icon
-                icon={rel === 'belongs_to' ? 'arrow-forward' : 'arrow-range'}
-                className="size-4 text-purple-primary"
-              />
-              <span>{t(`data:upload_data.link_relation_${rel}`)}</span>
-            </span>
-          ),
-          value: rel,
-        })),
-    [t, belongsToAlreadyUsed],
+      linkRelationTypes.map((rel) => ({
+        label: (
+          <span className="flex items-center gap-v2-sm">
+            <Icon
+              icon={rel === 'belongs_to' ? 'arrow-forward' : 'arrow-range'}
+              className="size-4 text-purple-primary"
+            />
+            <span>{t(`data:upload_data.link_relation_${rel}`)}</span>
+          </span>
+        ),
+        value: rel,
+      })),
+    [t],
   );
 
   const destinationOptions = useMemo(

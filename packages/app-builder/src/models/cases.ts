@@ -561,6 +561,16 @@ export type PivotObject = {
   numberOfDecisions: number;
 };
 
+/**
+ * Stable key identifying a pivot object among a case's pivot objects. Prefers the
+ * pivot id, because several pivot objects can share the same pivot value string
+ * (e.g. a User "123" and a Merchant "123" under polymorphic belongs_to) and must not
+ * be merged. Falls back to the value when the id is absent.
+ */
+export function getPivotObjectKey(pivotObject: Pick<PivotObject, 'pivotId' | 'pivotValue'>): string {
+  return pivotObject.pivotId ?? pivotObject.pivotValue;
+}
+
 export function adaptPivotObject(dto: PivotObjectDto): PivotObject {
   return {
     pivotObjectId: dto.pivot_object_id,
