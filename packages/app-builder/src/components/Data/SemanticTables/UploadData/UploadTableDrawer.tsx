@@ -1,11 +1,13 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { LoadingIcon } from '@app-builder/components/Spinner';
 import { type TableModel } from '@app-builder/models';
 import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { useQueryClient } from '@tanstack/react-query';
 import { type UploadLog } from 'marble-api';
+import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Tag, Typo } from 'ui-design-system';
+import { Button, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { generateCsvTemplateLink, PastUploads, UploadForm } from './UploadIngestionComponents';
 
@@ -26,6 +28,12 @@ export function UploadTableDrawer({
 
   const handleUploadSuccess = (_uploadLog: UploadLog) => {
     queryClient.invalidateQueries({ queryKey: ['ingestion', 'upload-logs', tableName] });
+  };
+
+  const handleRefresh = () => {
+    uploadLogsQuery.refetch().then((result) => {
+      if (result.isError) toast.error(t('common:errors.unknown'));
+    });
   };
 
   if (!open) return null;
@@ -78,7 +86,18 @@ export function UploadTableDrawer({
 
               {uploadLogs.length > 0 ? (
                 <div className="flex flex-col gap-v2-sm">
-                  <Typo variant="subtitle2">{t('upload:past_uploads')}</Typo>
+                  <div className="flex items-center justify-between">
+                    <Typo variant="subtitle2">{t('upload:past_uploads')}</Typo>
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      onClick={handleRefresh}
+                      disabled={uploadLogsQuery.isFetching}
+                      aria-label={t('upload:refresh')}
+                    >
+                      <LoadingIcon icon="restart-alt" loading={uploadLogsQuery.isFetching} className="size-4" />
+                    </Button>
+                  </div>
                   <PastUploads uploadLogs={uploadLogs} />
                 </div>
               ) : null}
