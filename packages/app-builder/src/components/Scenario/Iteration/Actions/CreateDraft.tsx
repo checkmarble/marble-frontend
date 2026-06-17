@@ -104,6 +104,7 @@ const ExistingDraftModal = ({
         <Modal.Footer>
           <Modal.FooterButton
             label={t('scenarios:create_draft.keep_existing_draft')}
+            isCloseButton
             onClick={() =>
               navigate({
                 to: '../$iterationId',

@@ -199,7 +199,12 @@ function AddRuleSnoozeContent({
       </div>
       <Modal.Footer>
         <Modal.FooterButton isCloseButton label={t('common:cancel')} />
-        <Modal.FooterButton label={t('cases:decisions.rule.snooze')} type="submit" name="update" />
+        <Modal.FooterButton
+          label={t('cases:decisions.rule.snooze')}
+          type="submit"
+          name="update"
+          isLoading={addRuleSnoozeMutation.isPending}
+        />
       </Modal.Footer>
     </form>
   );

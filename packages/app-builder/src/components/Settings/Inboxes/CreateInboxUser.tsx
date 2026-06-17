@@ -258,6 +258,7 @@ export function CreateInboxUserContent({
           type="submit"
           name="create"
           leadingIcon="new-inbox"
+          isLoading={createInboxUserMutation.isPending}
         />
       </Modal.Footer>
     </form>

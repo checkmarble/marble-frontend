@@ -134,7 +134,7 @@ export function RefineSearchModal({
             </div>
             <Modal.Footer>
               <Modal.FooterButton
-                isCloseButton
+                variant="secondary"
                 label={t('screenings:refine_modal.back_search')}
                 onClick={handleBackToSearch}
               />

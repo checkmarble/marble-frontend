@@ -91,7 +91,7 @@ export const ReviewScreeningMatch = ({
           </div>
           <Modal.Footer>
             <Modal.FooterButton isCloseButton label={t('common:cancel')} />
-            <Modal.FooterButton label={t('common:save')} disabled={!currentStatus} />
+            <Modal.FooterButton label={t('common:save')} disabled={!currentStatus} type="submit" />
           </Modal.Footer>
         </form>
       </Modal.Content>

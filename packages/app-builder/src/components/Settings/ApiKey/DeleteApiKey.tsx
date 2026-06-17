@@ -52,6 +52,7 @@ function DeleteApiKeyContent({ apiKey, onSuccess }: { apiKey: ApiKey; onSuccess:
           variant="destructive"
           onClick={handleDeleteApiKey}
           leadingIcon="delete"
+          isLoading={deleteApiKeyMutation.isPending}
         />
       </Modal.Footer>
     </>

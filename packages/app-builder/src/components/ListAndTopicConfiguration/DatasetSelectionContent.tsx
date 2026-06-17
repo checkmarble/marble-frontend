@@ -162,7 +162,15 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                   >
                     {t('common:cancel')}
                   </Button>
-                  <Button type="button" variant="primary" size="large" onClick={onApply}>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    size="large"
+                    onClick={() => {
+                      onApply?.();
+                      setActiveSectionKey(null);
+                    }}
+                  >
                     {t('screenings:freeform_search.apply')}
                   </Button>
                 </Popover.Footer>

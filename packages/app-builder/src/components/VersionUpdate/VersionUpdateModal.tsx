@@ -39,7 +39,7 @@ export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
           {t('common:understand')}
           <Modal.FooterButton
             label={t('common:version_update.view_release')}
-            onClick={() => window.open(releaseUrl, '_blank')}
+            onClick={() => window.open(releaseUrl, '_blank', 'noopener,noreferrer')}
           />
         </Modal.Footer>
       </Modal.Content>

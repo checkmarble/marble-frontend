@@ -145,15 +145,6 @@ type ModalFooterButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Button>
   children?: ReactNode;
 };
 
-function FooterButtonSpinner() {
-  return (
-    <span
-      aria-hidden
-      className="box-border size-5 shrink-0 animate-spin rounded-full border-2 border-solid border-current/25 border-r-current"
-    />
-  );
-}
-
 const ModalFooterButton = forwardRef<HTMLButtonElement, ModalFooterButtonProps>(function ModalFooterButton(
   { variant, isCloseButton, isLoading, leadingIcon, trailingIcon, disabled, label, children, className, ...props },
   ref,
@@ -176,18 +167,30 @@ const ModalFooterButton = forwardRef<HTMLButtonElement, ModalFooterButtonProps>(
       ref={ref}
       variant={buttonVariant}
       appearance={appearance}
-      disabled={disabled && !isLoading}
+      disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
       aria-disabled={disabled || isLoading || undefined}
       size="large"
       className={cn(isLoading && 'pointer-events-none', className)}
       {...props}
     >
-      {leadingIcon ? <Icon icon={leadingIcon} className="size-5" /> : null}
+      {leadingIcon ? (
+        isLoading ? (
+          <Icon icon="spinner" className="size-5 animate-spin" />
+        ) : (
+          <Icon icon={leadingIcon} className="size-5" />
+        )
+      ) : null}
       {label}
       {children}
-      {trailingIcon && !isLoading ? <Icon icon={trailingIcon} className="size-5" /> : null}
-      {isLoading ? <FooterButtonSpinner /> : null}
+      {trailingIcon ? (
+        isLoading && !leadingIcon ? (
+          <Icon icon="spinner" className="size-5 animate-spin" />
+        ) : (
+          <Icon icon={trailingIcon} className="size-5" />
+        )
+      ) : null}
+      {isLoading && !leadingIcon && !trailingIcon ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
     </Button>
   );
 
