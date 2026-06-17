@@ -19,8 +19,8 @@ test.fixme('Create a webhook', async ({ page }) => {
 
   await dialog.getByRole('textbox').and(dialog.locator('[name="url"]')).fill(webhookUrl);
 
-  // Event types are required (zod enum array). Open the combobox, pick one event, close it.
-  await dialog.getByRole('combobox').click();
+  // Event types are required (zod enum array). Open the select, pick one event, close it.
+  await dialog.getByRole('button', { name: 'All events by default' }).click();
   await page.getByRole('option', { name: 'decision.created' }).click();
   await page.keyboard.press('Escape');
 

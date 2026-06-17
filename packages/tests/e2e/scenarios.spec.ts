@@ -10,9 +10,14 @@ async function createScenarioAndGoToRules(page: import('@playwright/test').Page)
   await waitForHydration(page);
 
   await page.getByRole('button', { name: 'New Scenario' }).click();
-  await waitForThen(page, page.getByRole('textbox', { name: 'Name' }), async (f) => await f.fill(scenarioName));
-  await page.getByRole('textbox', { name: 'Description' }).fill('DESC');
-  await waitForThen(page, page.getByRole('combobox'), async (box) => await box.click());
+  const dialog = page.getByRole('dialog');
+  await waitForThen(page, dialog.getByRole('textbox', { name: 'Name' }), async (f) => await f.fill(scenarioName));
+  await dialog.getByRole('textbox', { name: 'Description' }).fill('DESC');
+  await waitForThen(
+    page,
+    dialog.getByRole('button', { name: 'Select a trigger object' }),
+    async (box) => await box.click(),
+  );
   await waitForThen(page, page.getByRole('option', { name: 'transactions' }), async (option) => await option.click());
   await page.getByRole('button', { name: 'Save' }).click();
   await waitForHydration(page);
@@ -65,11 +70,20 @@ test('Create a simple scenario', async ({ page }) => {
 
   await page.getByRole('button', { name: 'New Scenario' }).click();
 
-  await waitForThen(page, page.getByRole('textbox', { name: 'Name' }), async (field) => await field.fill(scenarioName));
+  const dialog = page.getByRole('dialog');
+  await waitForThen(
+    page,
+    dialog.getByRole('textbox', { name: 'Name' }),
+    async (field) => await field.fill(scenarioName),
+  );
 
-  await page.getByRole('textbox', { name: 'Description' }).fill('DESC');
+  await dialog.getByRole('textbox', { name: 'Description' }).fill('DESC');
 
-  await waitForThen(page, page.getByRole('combobox'), async (box) => await box.click());
+  await waitForThen(
+    page,
+    dialog.getByRole('button', { name: 'Select a trigger object' }),
+    async (box) => await box.click(),
+  );
 
   await waitForThen(page, page.getByRole('option', { name: 'transactions' }), async (option) => await option.click());
 
