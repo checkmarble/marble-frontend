@@ -272,7 +272,7 @@ function RuleDetail() {
           <form className="relative flex flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn(
-                'bg-surface-page sticky top-0 flex h-[88px] items-center justify-between gap-md max-w-3xl',
+                'bg-surface-page sticky top-0 flex h-[88px] items-center justify-between gap-md max-w-[48rem]',
                 {
                   'border-b-grey-border border-b': !intersection?.isIntersecting,
                 },
@@ -329,7 +329,7 @@ function RuleDetail() {
               ) : null}
             </div>
             {serverValidationMessages.length > 0 ? (
-              <Callout color="red" icon="lightbulb" iconColor="red" className="max-w-3xl">
+              <Callout color="red" icon="lightbulb" iconColor="red" className="max-w-[48rem]">
                 <ul className="flex flex-col gap-xs ps-md">
                   {serverValidationMessages.map((message) => (
                     <li key={message}>{message}</li>
@@ -338,7 +338,7 @@ function RuleDetail() {
               </Callout>
             ) : null}
             <div className="flex flex-col gap-xl">
-              <div className="border-grey-border flex flex-col items-start gap-lg border-b pb-lg max-w-3xl">
+              <div className="border-grey-border flex flex-col items-start gap-lg border-b pb-lg max-w-[48rem]">
                 <form.Field
                   name="description"
                   validators={{
@@ -387,7 +387,7 @@ function RuleDetail() {
                 <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-lg">
                   <div
                     className={cn(
-                      'bg-surface-card border-grey-border rounded-md border p-lg max-w-3xl',
+                      'bg-surface-card border-grey-border rounded-md border p-lg max-w-[48rem]',
                       hasFormulaValidationError && 'border-red-primary',
                     )}
                   >
@@ -420,7 +420,7 @@ function RuleDetail() {
                     <AiDescription
                       isPending={isDebouncing || ruleDescriptionMutation.isPending}
                       description={ruleDescription}
-                      className="self-start max-w-2xl"
+                      className="self-start max-w-[42rem]"
                     />
                   ) : null}
 
@@ -436,7 +436,7 @@ function RuleDetail() {
                     />
                   ) : null}
                 </div>
-                <div className="bg-surface-card border-grey-border rounded-md border p-lg max-w-3xl">
+                <div className="bg-surface-card border-grey-border rounded-md border p-lg max-w-[48rem]">
                   <div className="flex items-center gap-sm">
                     <span className="bg-grey-background text-grey-secondary dark:text-grey-secondary text-s inline-flex rounded-sm p-sm font-medium">
                       {t('scenarios:edit_rule.score_heading')}

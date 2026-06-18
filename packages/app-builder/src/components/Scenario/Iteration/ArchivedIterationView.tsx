@@ -103,7 +103,7 @@ export function ArchivedIterationView({ rulesMetadata, scenarioIteration }: Arch
         </Table.Body>
       </Table.Container>
 
-      <Collapsible.Container className="bg-surface-card max-w-3xl">
+      <Collapsible.Container className="bg-surface-card max-w-[48rem]">
         <Collapsible.Title>{t('scenarios:decision.score_based.title')}</Collapsible.Title>
         <Collapsible.Content>
           <ScoreOutcomeThresholds

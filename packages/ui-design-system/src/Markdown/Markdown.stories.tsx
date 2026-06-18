@@ -34,7 +34,7 @@ const Story: Meta<typeof Markdown> = {
 export default Story;
 
 const Template: StoryFn<typeof Markdown> = (args) => (
-  <div className="max-w-2xl">
+  <div className="max-w-[42rem]">
     <Markdown {...args} />
   </div>
 );
