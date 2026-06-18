@@ -53,18 +53,18 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
 
   if (!currentTable) {
     return (
-      <div className="border-red-primary bg-red-background text-red-primary mt-3 rounded-sm border p-2">
+      <div className="border-red-primary bg-red-background text-red-primary mt-md rounded-sm border p-sm">
         {t('common:global_error')}
       </div>
     );
   }
 
   return (
-    <div className="mt-3 flex min-h-0 flex-1 flex-col">
+    <div className="mt-md flex min-h-0 flex-1 flex-col">
       {match(dataListQuery)
         .with({ isError: true }, () => {
           return (
-            <div className="border-red-primary bg-red-background text-red-primary mt-3 rounded-sm border p-2">
+            <div className="border-red-primary bg-red-background text-red-primary mt-md rounded-sm border p-sm">
               {t('common:global_error')}
             </div>
           );
@@ -192,7 +192,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
           const parsedData = parseUnknownData(info.getValue());
           return (
             <span
-              className={cn('relative line-clamp-1 px-4', {
+              className={cn('relative line-clamp-1 px-sm', {
                 'text-right': parsedData.type === 'number' || parsedData.value === null,
               })}
             >
@@ -265,8 +265,8 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
   const hasPinnedColumns = pinnedLeft.length > 0;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2">
-      <div className="flex items-center gap-3">
+    <div className="flex min-h-0 flex-1 flex-col gap-sm">
+      <div className="flex items-center gap-md">
         <div className="text-m font-semibold">{table.name}</div>
         {list.length > 0 ? (
           <MenuCommand.Menu>
@@ -284,12 +284,12 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                     <MenuCommand.Item key={fieldName} onSelect={() => handleToggleColumn(fieldName)}>
                       <div className="flex w-full items-center justify-between">
                         <span>{fieldName}</span>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-xs">
                           <span
                             role="button"
                             tabIndex={0}
                             className={cn(
-                              'flex items-center justify-center rounded p-0.5 hover:bg-grey-background-light',
+                              'flex items-center justify-center rounded p-2xs hover:bg-grey-background-light',
                               isPinned ? 'text-purple-primary' : 'text-grey-secondary',
                             )}
                             onClick={(e) => {
@@ -319,7 +319,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
       <div className="flex min-h-0 flex-1 overflow-auto" ref={wrapperRef}>
         <div ref={sentinelRef} className="w-0" />
         {list.length > 0 ? (
-          <table className="mb-4 border-separate border-spacing-0">
+          <table className="mb-md border-separate border-spacing-0">
             <thead>
               {reactTable.getHeaderGroups().map((headerGroup) => (
                 <tr
@@ -329,7 +329,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                   <th
                     ref={rowNumberColRef}
                     className={cn(
-                      'border-grey-border bg-surface-card sticky left-0 z-30 border-y border-r p-2 font-normal',
+                      'border-grey-border bg-surface-card sticky left-0 z-30 border-y border-r p-sm font-normal',
                       {
                         'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
                       },
@@ -347,7 +347,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                           else headerRefs.current.delete(header.column.id);
                         }}
                         className={cn(
-                          'border-grey-border border-y px-2 font-normal not-last:border-r box-border group/th',
+                          'border-grey-border border-y px-xs font-normal not-last:border-r box-border group/th',
                           {
                             'sticky z-30 bg-surface-card border-r': isPinned,
                             'shadow-sticky-left':
@@ -359,7 +359,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                           ...getHeaderStyle(fieldStatistic),
                         }}
                       >
-                        <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center justify-between gap-sm">
                           <span className="truncate">
                             {header.isPlaceholder
                               ? null
@@ -399,13 +399,13 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                   <tr key={row.id} className="border-grey-border group z-0 h-10">
                     <td
                       className={cn(
-                        'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky left-0 z-10 h-full border-b border-r p-2',
+                        'border-grey-border bg-surface-card group-hover:bg-grey-background-light sticky left-0 z-10 h-full border-b border-r p-sm',
                         {
                           'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting && !hasPinnedColumns,
                         },
                       )}
                     >
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center justify-between gap-sm">
                         {row.index + 1}
                         <DataTableActionsButton
                           caseId={caseId}
@@ -444,12 +444,12 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
             </tbody>
           </table>
         ) : (
-          <div className="border-grey-border rounded-sm border p-2 text-center">
+          <div className="border-grey-border rounded-sm border p-sm text-center">
             {t('cases:data_explorer.no_table_data', { tableName: table.name })}
           </div>
         )}
       </div>
-      <div className="flex justify-end gap-2">{pagination}</div>
+      <div className="flex justify-end gap-sm">{pagination}</div>
     </div>
   );
 }
@@ -518,7 +518,7 @@ function DataTableActionsButton({
                 className={cn(
                   'hover:border-purple-primary data-[state=open]:border-purple-primary hover:z-10 data-[state=open]:z-10',
                   {
-                    '-ml-px rounded-l-none': showCommentAction,
+                    '-ms-px rounded-l-none': showCommentAction,
                   },
                 )}
               >
@@ -531,7 +531,7 @@ function DataTableActionsButton({
                   <MenuCommand.Group>
                     <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
                       <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-sm">
                           {t('cases:annotations.popover.annotate.title')}{' '}
                           <span className="text-grey-disabled text-xs">{annotationsCount}</span>
                         </div>
@@ -546,7 +546,7 @@ function DataTableActionsButton({
                     <MenuCommand.Separator className="bg-grey-border" />
                     <MenuCommand.Group
                       heading={
-                        <div className="p-1 py-2 text-xs font-semibold">
+                        <div className="p-xs py-xs text-xs font-semibold">
                           {t('cases:case_detail.pivot_panel.explore')}
                         </div>
                       }

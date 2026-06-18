@@ -10,8 +10,8 @@ export const GeneralInfo = ({ stableId }: { stableId: string }) => {
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   return (
-    <div className="flex flex-col gap-v2-sm p-v2-md rounded-v2-md bg-surface-card border border-grey-border">
-      <div className="grid grid-cols-[3fr_2fr] gap-v2-lg">
+    <div className="flex flex-col gap-sm p-md rounded-md bg-surface-card border border-grey-border">
+      <div className="grid grid-cols-[3fr_2fr] gap-lg">
         <Input readOnly={mode === 'view'} value={name.value} onChange={(e) => (name.value = e.target.value)} />
         <div className="self-center">
           <CopyToClipboardButton toCopy={stableId} size="chip" rounded>

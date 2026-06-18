@@ -36,8 +36,8 @@ export const ScreeningTermIgnoreList = ({
   };
 
   return (
-    <div className="flex flex-col gap-2.5">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-sm.5">
+      <div className="flex items-center gap-sm">
         <Switch
           checked={value !== null}
           onBlur={onBlur}
@@ -51,7 +51,7 @@ export const ScreeningTermIgnoreList = ({
         <FieldToolTip>{t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}</FieldToolTip>
       </div>
       {value ? (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-xs">
           <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
               <Button variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
@@ -62,7 +62,7 @@ export const ScreeningTermIgnoreList = ({
                 <Icon icon="caret-down" className="text-grey-secondary size-4" />
               </Button>
             </MenuCommand.Trigger>
-            <MenuCommand.Content sameWidth className="mt-2">
+            <MenuCommand.Content sameWidth className="mt-sm">
               <MenuCommand.List>
                 {customLists.map((list) => (
                   <MenuCommand.Item key={list.id} onSelect={() => handleListSelect(list.id)}>

@@ -23,7 +23,7 @@ interface PrintSectionProps {
  */
 export const PrintSection: FunctionComponent<PrintSectionProps> = ({ title, children, className }) => {
   return (
-    <div className={clsx('mb-4 break-inside-avoid', className)}>
+    <div className={clsx('mb-md break-inside-avoid', className)}>
       {title && <Typo variant="title2">{title}</Typo>}
       {children}
     </div>

@@ -72,11 +72,11 @@ export function ClientCommentForm({
   return (
     <form
       onSubmit={handleSubmit(form)}
-      className={cn('flex justify-between rounded-v2-md px-4 py-3 bg-surface-elevated', className)}
+      className={cn('flex justify-between rounded-md px-md py-md bg-surface-elevated', className)}
     >
       <form.Field name="payload.text">
         {(field) => (
-          <div className="flex grow flex-col gap-1">
+          <div className="flex grow flex-col gap-xs">
             <textarea
               value={field.state.value}
               onChange={(e) => field.handleChange(e.currentTarget.value)}

@@ -26,8 +26,8 @@ export const ClientComments = ({ objectType, objectId, annotationsQuery, root }:
   const queryClient = useQueryClient();
 
   return (
-    <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border overflow-hidden">
-      <div className="p-4">
+    <div className="border-grey-border bg-surface-card flex flex-col rounded-lg border overflow-hidden">
+      <div className="p-md">
         {match(annotationsQuery)
           .with({ isPending: true }, () => (
             <div className="h-20 flex items-center justify-center">
@@ -109,17 +109,17 @@ const Comments = ({ comments: _comments, root }: CommentsProps) => {
   }, [comments]);
 
   return (
-    <div className="relative z-0 flex w-full flex-col gap-3">
+    <div className="relative z-0 flex w-full flex-col gap-md">
       {comments.length > 0 ? (
         <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
           <div className="bg-grey-border -z-10 h-full w-px" />
         </div>
       ) : null}
-      <div className="bg-surface-card sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
+      <div className="bg-surface-card sticky left-0 top-0 z-[-15] flex w-full items-center justify-between ps-lg">
         <span className="text-grey-secondary text-small">
           {t('cases:investigation.more_recent', { number: newerCommentCount })}
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-sm">
           <Button variant="secondary" onClick={() => setShowAll(!showAll)}>
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
             {showAll ? t('common:collapse') : t('common:expand')}
@@ -128,14 +128,14 @@ const Comments = ({ comments: _comments, root }: CommentsProps) => {
       </div>
       <div
         ref={containerRef}
-        className={cn('flex flex-col gap-3 overflow-x-hidden', {
+        className={cn('flex flex-col gap-md overflow-x-hidden', {
           'max-h-[400px] overflow-y-scroll': !showAll,
         })}
       >
         {comments.map((comment) => {
           const user = getOrgUserById(comment.annotated_by);
           return (
-            <div key={comment.id} className="flex items-start gap-2">
+            <div key={comment.id} className="flex items-start gap-sm">
               <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xxs" color="grey" />
               <span className="text-grey-primary whitespace-pre-wrap text-xs">
                 <Markdown>{comment.payload.text}</Markdown>
@@ -147,7 +147,7 @@ const Comments = ({ comments: _comments, root }: CommentsProps) => {
       </div>
       {showAll ? null : (
         <span
-          className={cn('bg-surface-card text-grey-secondary sticky left-0 top-0 z-[-15] pl-6 text-xs', {
+          className={cn('bg-surface-card text-grey-secondary sticky left-0 top-0 z-[-15] ps-lg text-xs', {
             'text-grey-white': showAll,
           })}
         >

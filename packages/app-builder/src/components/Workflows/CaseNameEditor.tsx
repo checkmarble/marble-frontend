@@ -42,10 +42,10 @@ export const CaseNameEditor = ({ label, value, onChange, scenario }: CaseNameEdi
   return (
     <>
       <div>{label}</div>
-      <div className="flex items-stretch gap-2">
+      <div className="flex items-stretch gap-sm">
         <button
           onClick={() => setIsEditing(true)}
-          className="border-grey-border text-s inline-flex items-center rounded-sm border p-2 max-w-full"
+          className="border-grey-border text-s inline-flex items-center rounded-sm border p-sm max-w-full"
         >
           {caseNameContent}
         </button>

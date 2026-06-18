@@ -11,7 +11,7 @@ export default Story;
 const Template: StoryFn<LinkWrapperProps> = (args) => (
   <LinkWrapper
     {...args}
-    className="hover:bg-purple-background-light flex max-w-md cursor-pointer flex-col gap-2 rounded-sm border border-grey-border bg-surface-card p-4 outline-hidden focus-visible:ring-2 focus-visible:ring-purple-primary"
+    className="hover:bg-purple-background-light flex max-w-md cursor-pointer flex-col gap-sm rounded-sm border border-grey-border bg-surface-card p-md outline-hidden focus-visible:ring-2 focus-visible:ring-purple-primary"
     link={
       <a href="#row-target" onClick={(e) => e.preventDefault()}>
         Open row
@@ -24,7 +24,7 @@ const Template: StoryFn<LinkWrapperProps> = (args) => (
     </span>
     <button
       type="button"
-      className="self-start rounded-xs border border-grey-border px-2 py-1 text-s"
+      className="self-start rounded-xs border border-grey-border px-xs py-2xs text-s"
       onClick={() => alert('Inner button clicked — link suppressed')}
     >
       Inner action

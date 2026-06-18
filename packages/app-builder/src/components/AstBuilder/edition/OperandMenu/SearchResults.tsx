@@ -116,8 +116,8 @@ export function SearchResults({ onSelect, search }: SearchResultsProps) {
 
 function ResultTitle({ count }: { count: number }) {
   return (
-    <div className="flex min-h-10 select-none flex-row items-center gap-1 p-2">
-      <div className="flex w-full items-baseline gap-1">
+    <div className="flex min-h-10 select-none flex-row items-center gap-xs p-sm">
+      <div className="flex w-full items-baseline gap-xs">
         <div className="text-grey-primary text-m flex items-baseline whitespace-pre font-semibold">Results</div>
         <div className="text-grey-disabled text-xs font-medium">{count}</div>
       </div>

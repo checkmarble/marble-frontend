@@ -59,8 +59,8 @@ export function CaseManagerDrawerButtons({ expandable = false }: { expandable?: 
   const context = DrawerContext.useValue();
 
   return (
-    <div className="p-4">
-      <div className="border-grey-border bg-surface-card z-10 flex gap-v2-sm p-v2-sm rounded-md border">
+    <div className="p-md">
+      <div className="border-grey-border bg-surface-card z-10 flex gap-sm p-sm rounded-md border">
         <button
           type="button"
           onClick={expandable ? () => context.setExpanded(false) : undefined}
@@ -84,7 +84,7 @@ export function CaseManagerDrawerButtons({ expandable = false }: { expandable?: 
 
 export function DrawerBreadcrumb({ items }: { items: string[] }) {
   return (
-    <div className="flex shrink-0 items-center gap-3 font-medium">
+    <div className="flex shrink-0 items-center gap-md font-medium">
       {items.map((item, i) => {
         return (
           <Fragment key={`${item}_${i}`}>

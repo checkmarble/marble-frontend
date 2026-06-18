@@ -96,7 +96,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
             {/*
             TODO: uncomment when indexation is done
             availableGlobalTopicConfigs.length > 0 && (
-              <div className="flex flex-col gap-v2-sm px-v2-md py-v2-sm">
+              <div className="flex flex-col gap-sm px-md py-sm">
                 {availableGlobalTopicConfigs.map((config) => (
                   <GlobalTopicSwitch key={config.groupKey} config={config} />
                 ))}
@@ -185,12 +185,12 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
   return (
     <>
       {variant === 'default' && (
-        <div className="border-b border-grey-border p-v2-md flex justify-between items-center">
+        <div className="border-b border-grey-border p-md flex justify-between items-center">
           <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
           <SelectedListsCount listConfigQuery={listConfigQuery} />
         </div>
       )}
-      <ScrollAreaV2 className="p-v2-md" orientation="vertical">
+      <ScrollAreaV2 className="p-md" orientation="vertical">
         {match(listConfigQuery)
           .with({ isPending: true }, () => (
             <div className="flex items-center justify-center h-50">
@@ -198,7 +198,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
             </div>
           ))
           .with({ isError: true }, () => (
-            <div className="flex flex-col gap-v2-md items-center justify-center h-50">
+            <div className="flex flex-col gap-md items-center justify-center h-50">
               <div className="">{t('common:generic_fetch_data_error')}</div>
               <Button variant="secondary" onClick={() => listConfigQuery.refetch()}>
                 {t('common:retry')}
@@ -246,10 +246,10 @@ const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: Sect
 
   return match(variant)
     .with('default', () => (
-      <Collapsible.Container className="border-none px-v2-md py-v2-sm h-fit" defaultOpen={false}>
+      <Collapsible.Container className="border-none px-md py-sm h-fit" defaultOpen={false}>
         <Collapsible.Title iconPosition="hidden" asChild size="null">
           <div className="flex items-center justify-between">
-            <div className="flex gap-v2-md items-center">
+            <div className="flex gap-md items-center">
               <span onClick={(e) => e.stopPropagation()} className="inline-flex">
                 <Checkbox
                   stopPropagation
@@ -273,7 +273,7 @@ const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: Sect
               <DatasetTag category={sectionKey} />
             </div>
             {datasetNames.length > 0 && (
-              <span className="text-xs text-grey-50 pl-v2-md">
+              <span className="text-xs text-grey-50 pl-md">
                 {selectedCount} / {datasetNames.length}
               </span>
             )}
@@ -289,14 +289,14 @@ const Section = ({ sectionKey, section, isActive, onSelect, sectionCount }: Sect
         type="button"
         onClick={() => onSelect?.()}
         className={cn(
-          'flex h-10 w-full flex-row items-center justify-between gap-2 rounded-xs p-2 outline-hidden',
+          'flex h-10 w-full flex-row items-center justify-between gap-sm rounded-xs p-sm outline-hidden',
           'hover:bg-purple-background-light cursor-pointer',
           isActive && 'bg-purple-background-light',
         )}
       >
         <DatasetTag category={sectionKey} />
         {datasetNames.length > 0 && (
-          <span className="flex items-center gap-v2-md">
+          <span className="flex items-center gap-md">
             <span className="text-xs text-grey-50">
               {t('continuousScreening:creation.datasetSelection.lists', { count: datasetNames.length })}
             </span>
@@ -327,7 +327,7 @@ const SectionPanel = ({ sectionKey, section, sectionCount }: SectionPanelProps) 
 
   return (
     <>
-      <div className="flex items-center gap-v2-md px-v2-md py-v2-sm">
+      <div className="flex items-center gap-md px-md py-sm">
         <Switch
           id={`section-switch-${sectionKey}`}
           checked={isEnabled}
@@ -411,7 +411,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
   return (
     <div className="flex flex-col h-full">
       {hasDatasets && (
-        <div className="px-v2-md py-v2-sm">
+        <div className="px-md py-sm">
           <Input
             placeholder={t('continuousScreening:creation.datasetSelection.search_placeholder')}
             value={searchTerm}
@@ -423,7 +423,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
         </div>
       )}
       {isDatasetsEmpty ? (
-        <div className="text-s text-grey-50 px-v2-md py-v2-md">
+        <div className="text-s text-grey-50 px-md py-md">
           {t('continuousScreening:creation.datasetSelection.search_empty')}
         </div>
       ) : (
@@ -507,18 +507,18 @@ const ItemGroup = ({
   return (
     <Collapsible.Container
       key={forceOpen ? 'open' : 'closed'}
-      className="border-none px-v2-md py-v2-sm h-fit"
+      className="border-none px-md py-sm h-fit"
       defaultOpen={forceOpen}
     >
       <Collapsible.Title iconPosition="left" asChild size="null">
-        <div className="flex items-center gap-v2-md justify-between w-full">
-          <span className="flex items-center gap-v2-md">
+        <div className="flex items-center gap-md justify-between w-full">
+          <span className="flex items-center gap-md">
             <span className="text-s font-semibold">{formatDatasetTitle(title)}</span>
             <span className="text-xs text-grey-secondary">
               {selectedCount} / {names.length}
             </span>
           </span>
-          <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-v2-md font-normal">
+          <span onClick={(e) => e.stopPropagation()} className="flex items-center gap-md font-normal">
             <label htmlFor={`select-all-checkbox-${title}`} className="text-s text-grey-50">
               {t(
                 `continuousScreening:creation.datasetSelection.list.section.${checkState === true ? 'unselect_all' : 'select_all'}`,
@@ -536,8 +536,8 @@ const ItemGroup = ({
         </div>
       </Collapsible.Title>
       <Collapsible.Content className="flex flex-col overflow-hidden border-none bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
-        <div className="flex flex-col gap-v2-sm">
-          <div className="flex flex-col overflow-hidden border border-grey-border rounded-v2-md ">
+        <div className="flex flex-col gap-sm">
+          <div className="flex flex-col overflow-hidden border border-grey-border rounded-md ">
             {items.map((item) => (
               <ItemRow
                 key={item.name}
@@ -586,7 +586,7 @@ const ItemRow = ({
     <label
       htmlFor={`item-checkbox-${name}`}
       className={cn(
-        'flex flex-row items-center gap-v2-sm p-v2-md even:bg-grey-background-light text-s',
+        'flex flex-row items-center gap-sm p-md even:bg-grey-background-light text-s',
         mode !== 'view' && 'cursor-pointer',
       )}
     >
@@ -618,7 +618,7 @@ const RemovableTag = ({ label, onRemove }: { label: string; onRemove: () => void
         <span className="max-w-[20ch] truncate text-center flex-1 translate-x-[9px] group-hover:translate-x-0 transition-transform duration-150">
           {formatTopicLabel(label)}
         </span>
-        <span className="inline-flex items-center justify-center w-4 ml-1 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-150">
+        <span className="inline-flex items-center justify-center w-4 ms-xs opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-150">
           <Icon icon="cross" className="size-3" />
         </span>
       </span>
@@ -694,7 +694,7 @@ const FilterGroupRow = ({
   return (
     <>
       {isSpecialTopic(sectionKey, groupKey) ? (
-        <div className="px-v2-md py-v2-sm">
+        <div className="px-md py-sm">
           <SpecialTopicSwitch
             sectionKey={sectionKey}
             section={section}
@@ -704,9 +704,9 @@ const FilterGroupRow = ({
           />
         </div>
       ) : (
-        <div className="flex items-start gap-v2-md px-v2-md py-v2-sm">
+        <div className="flex items-start gap-md px-md py-sm">
           <span className="text-s font-semibold shrink-0">{formatDatasetTitle(label)}:</span>
-          <div className="flex min-w-0 flex-1 items-center gap-v2-sm">
+          <div className="flex min-w-0 flex-1 items-center gap-sm">
             {singleItem ? (
               <SingleItemToggle
                 item={singleItem}
@@ -756,7 +756,7 @@ const SpecialTopicSwitch = ({
   const { t } = useTranslation(['continuousScreening']);
 
   return (
-    <div className="flex items-center gap-v2-sm">
+    <div className="flex items-center gap-sm">
       <Switch
         id={switchId}
         checked={isSelected}
@@ -922,8 +922,8 @@ const FilterGroupTags = ({
     ));
 
   const tagsContent = (
-    <div className={cn('flex min-w-0 w-full flex-1', variant === 'popover' && 'flex-col gap-v2-sm overflow-x-hidden')}>
-      <div className="flex min-w-0 w-full items-center gap-v2-xs flex-1">
+    <div className={cn('flex min-w-0 w-full flex-1', variant === 'popover' && 'flex-col gap-sm overflow-x-hidden')}>
+      <div className="flex min-w-0 w-full items-center gap-xs flex-1">
         {isAllSelected ? (
           <>
             <Tag color="purple" size="small">
@@ -1007,11 +1007,11 @@ const FilterGroupMenu = ({
 
   if (variant === 'popover') {
     return (
-      <div className="rounded-v2-md border border-grey-border bg-grey-background-light p-v2-sm flex flex-col gap-v2-xs">
+      <div className="rounded-md border border-grey-border bg-grey-background-light p-sm flex flex-col gap-xs">
         <button
           type="button"
           onClick={toggleAll}
-          className="flex h-10 items-center justify-between gap-2 rounded-xs p-2 hover:bg-purple-background-light cursor-pointer"
+          className="flex h-10 items-center justify-between gap-sm rounded-xs p-sm hover:bg-purple-background-light cursor-pointer"
         >
           <span className="text-purple-primary">
             {t(`continuousScreening:creation.datasetSelection.filter.${allSelected ? 'unselect_all' : 'select_all'}`)}
@@ -1025,7 +1025,7 @@ const FilterGroupMenu = ({
               key={item.name}
               htmlFor={`filter-group-menu-item-${item.name}`}
               className={cn(
-                'flex h-10 flex-row items-center gap-v2-sm rounded-xs p-2 cursor-pointer text-s hover:bg-purple-background-light',
+                'flex h-10 flex-row items-center gap-sm rounded-xs p-sm cursor-pointer text-s hover:bg-purple-background-light',
                 mode === 'view' && 'cursor-not-allowed',
                 isSelected && 'bg-purple-background-light',
               )}
@@ -1111,7 +1111,7 @@ const FilterGroupMenu = ({
 //   );
 
 //   return (
-//     <div className="flex items-center gap-v2-sm">
+//     <div className="flex items-center gap-sm">
 //       <Switch
 //         id={switchId}
 //         checked={isSelected}

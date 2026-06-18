@@ -79,7 +79,7 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
         id: 'status',
 
         cell: ({ getValue }) => (
-          <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-sm">
             {getStatusIcon(getValue<string>())}
             <p className="capitalize">{t(getStatusTKey(getValue()))}</p>
           </div>

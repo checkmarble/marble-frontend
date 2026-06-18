@@ -50,7 +50,7 @@ export const FieldDatasetFilters = ({
   }, [searchValue]);
 
   return (
-    <div className="flex w-full items-center gap-2">
+    <div className="flex w-full items-center gap-sm">
       <div className="relative z-0 grow">
         <Input
           className="text-s h-8"
@@ -71,19 +71,19 @@ export const FieldDatasetFilters = ({
           <Button variant="secondary">
             <Icon icon="add-circle" className="size-3.5" />
             <span className="text-xs">Type</span>
-            {filters.tags.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
+            {filters.tags.length > 0 ? <div className="bg-grey-disabled mx-xs h-3 w-px" /> : null}
             {filters.tags.map((tag) => (
               <DatasetTag key={tag} category={tag as ScreeningCategory} />
             ))}
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content className="mt-2 max-h-[400px] max-w-[210px]" align="end">
-          <MenuCommand.Combobox className="m-1 mb-0 h-8 p-0" iconClasses="size-4" />
-          <MenuCommand.List className="p-1">
+        <MenuCommand.Content className="mt-sm max-h-[400px] max-w-[210px]" align="end">
+          <MenuCommand.Combobox className="m-xs mb-0 h-8 p-0" iconClasses="size-4" />
+          <MenuCommand.List className="p-xs">
             {tags.map((tag) => (
               <MenuCommand.Item
                 onSelect={() => setFilters((prev) => ({ ...prev, tags: toggle(prev.tags, tag) }))}
-                className="flex min-h-0 cursor-pointer items-center justify-start p-1.5"
+                className="flex min-h-0 cursor-pointer items-center justify-start p-xs.5"
                 key={tag}
                 value={tag}
               >
@@ -91,7 +91,7 @@ export const FieldDatasetFilters = ({
                 <DatasetTag category={tag as ScreeningCategory} />
               </MenuCommand.Item>
             ))}
-            <div className="bg-surface-card sticky bottom-0 flex w-full gap-2">
+            <div className="bg-surface-card sticky bottom-0 flex w-full gap-sm">
               <Button
                 variant="secondary"
                 size="small"

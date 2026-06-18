@@ -29,7 +29,7 @@ export const AuditEventsFiltersBar = ({
   const remainingFilters = availableFilters.filter((name) => !activeFilterNames.includes(name));
 
   return (
-    <div className="flex flex-row flex-wrap items-center gap-2">
+    <div className="flex flex-row flex-wrap items-center gap-sm">
       {filters.map((filter) => {
         const [filterName] = filter;
         const handleClear = () => updateFilters({ [filterName]: undefined });

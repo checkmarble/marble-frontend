@@ -32,7 +32,7 @@ export function ModalSanction({ sanction }: { sanction: ScreeningSanctionEntity 
       </Modal.Trigger>
       <Modal.Content size="large" className="max-h-[80vh]">
         <Modal.Title>{t('screenings:sanction_detail.title')}</Modal.Title>
-        <div className="overflow-y-auto p-6">
+        <div className="overflow-y-auto p-lg">
           <EntityProperties entity={sanction} forcedProperties={sanctionProps} />
         </div>
         <Modal.Footer>

@@ -87,7 +87,7 @@ function Tags() {
               size: 100,
               cell: ({ cell }) => {
                 return (
-                  <div className="flex gap-2">
+                  <div className="flex gap-sm">
                     {isEditTagAvailable ? (
                       <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
                         <UpdateTag tag={cell.row.original} />

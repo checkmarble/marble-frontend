@@ -156,11 +156,11 @@ export function CreateTableDrawer({
           }}
           className="bg-surface-card flex h-full flex-col overflow-y-auto"
         >
-          <header className="flex shrink-0 items-center gap-v2-md p-v2-lg">
+          <header className="flex shrink-0 items-center gap-md p-lg">
             <button
               type="button"
               onClick={handleBackdropClose}
-              className="rounded-lg p-2 hover:bg-grey-border"
+              className="rounded-lg p-sm hover:bg-grey-border"
               title={t('common:close')}
             >
               <Icon icon="x" className="size-5" />
@@ -171,7 +171,7 @@ export function CreateTableDrawer({
             <Stepper steps={steps} currentStep={currentStep} />
           </header>
 
-          <div className="flex-1 overflow-hidden flex flex-col px-v2-lg">
+          <div className="flex-1 overflow-hidden flex flex-col px-lg">
             {currentStep === 0 ? (
               <ScrollAreaV2 className="flex-1">
                 <CreateTableEntityStep errorFields={tableErrorFields} />
@@ -187,10 +187,10 @@ export function CreateTableDrawer({
             ) : null}
           </div>
 
-          <footer className="flex shrink-0 justify-between gap-v2-md border-t border-grey-border p-v2-lg">
+          <footer className="flex shrink-0 justify-between gap-md border-t border-grey-border p-lg">
             {validationErrors.length > 0 ? (
               <Callout color="red" icon="lightbulb" iconColor="red">
-                <ul className="flex flex-col gap-v2-xs pl-3">
+                <ul className="flex flex-col gap-xs ps-md">
                   {validationErrors.map((error, index) => (
                     <li key={`${error.kind}-${index}`}>{error.message}</li>
                   ))}
@@ -199,7 +199,7 @@ export function CreateTableDrawer({
             ) : (
               <div />
             )}
-            <div className="flex justify-end gap-v2-md">
+            <div className="flex justify-end gap-md">
               <Button variant="secondary" appearance="stroked" onClick={handleBackdropClose}>
                 {t('common:cancel')}
               </Button>

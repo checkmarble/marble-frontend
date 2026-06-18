@@ -107,7 +107,7 @@ export function ExpandableGroupTagLine({
       <div
         ref={ghostRef}
         className={cn(
-          'pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-v2-sm overflow-x-hidden [&>*]:shrink-0',
+          'pointer-events-none invisible absolute top-0 right-0 left-0 flex items-center gap-sm overflow-x-hidden [&>*]:shrink-0',
           classname,
         )}
         aria-hidden="true"
@@ -116,7 +116,7 @@ export function ExpandableGroupTagLine({
       </div>
       <div
         className={cn(
-          'flex min-w-0 items-center gap-v2-sm [&>*]:shrink-0',
+          'flex min-w-0 items-center gap-sm [&>*]:shrink-0',
           isExpanded ? 'flex-wrap' : 'overflow-hidden',
           classname,
         )}

@@ -38,21 +38,21 @@ export function AiDescription({ isPending, description, className }: AiDescripti
   return (
     <div
       className={cn(
-        'text-default rounded-v2-md border border-purple-border bg-purple-background-light text-purple-primary flex flex-col gap-v2-sm p-v2-md dark:border-grey-border',
+        'text-default rounded-md border border-purple-border bg-purple-background-light text-purple-primary flex flex-col gap-sm p-md dark:border-grey-border',
         className,
       )}
     >
-      <div className="flex items-center gap-v2-xs">
+      <div className="flex items-center gap-xs">
         <Icon icon="ai-review" className="size-5" />
         <div>{t('scenarios:rules.ai_description.title')}</div>
       </div>
       {description ? (
         <div
           ref={descriptionContainerRef}
-          className="bg-surface-card rounded-v2-s border border-l-2 border-l-purple-primary border-grey-border text-grey-primary text-small overflow-hidden transition-all duration-500"
+          className="bg-surface-card rounded-sm border border-l-2 border-l-purple-primary border-grey-border text-grey-primary text-small overflow-hidden transition-all duration-500"
           style={{ height: currentHeight ? `${currentHeight}px` : undefined }}
         >
-          <div ref={descriptionElementRef} className="p-v2-sm ">
+          <div ref={descriptionElementRef} className="p-sm ">
             <Markdown>{displayedDescription}</Markdown>
           </div>
         </div>

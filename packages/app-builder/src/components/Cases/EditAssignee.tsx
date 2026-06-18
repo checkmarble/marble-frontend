@@ -60,12 +60,12 @@ export const EditCaseAssignee = ({
       }}
     >
       {(field) => (
-        <div className="flex w-full gap-1">
-          <div className="flex items-center gap-2">
+        <div className="flex w-full gap-xs">
+          <div className="flex items-center gap-sm">
             {assignee ? (
-              <span className="inline-flex items-center gap-1">
+              <span className="inline-flex items-center gap-xs">
                 <Avatar size="xs" firstName={assignee?.firstName} lastName={assignee?.lastName} />
-                <span className="inline-flex gap-0.5 text-xs font-medium">
+                <span className="inline-flex gap-2xs text-xs font-medium">
                   {`${capitalize(assignee?.firstName)} ${capitalize(assignee?.lastName)}`}
                   {currentUser.actorIdentity.userId === assignee?.userId ? (
                     <span className="text-xs font-medium">(you)</span>
@@ -94,7 +94,7 @@ export const EditCaseAssignee = ({
                     {!assignee ? <span className="text-grey-secondary text-xs">Add</span> : null}
                   </Button>
                 </MenuCommand.Trigger>
-                <MenuCommand.Content sameWidth className="mt-2">
+                <MenuCommand.Content sameWidth className="mt-sm">
                   <MenuCommand.Combobox placeholder="Search..." />
                   <MenuCommand.List>
                     {orgUsers.map(({ userId, firstName, lastName }) => (

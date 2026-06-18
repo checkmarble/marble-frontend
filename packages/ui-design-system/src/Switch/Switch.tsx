@@ -5,7 +5,7 @@ import { forwardRef } from 'react';
 import { cn } from '../utils';
 
 const switchRoot = cva([
-  'group/switch relative flex h-6 w-10 items-center rounded-full px-1 outline-hidden transition-colors',
+  'group/switch relative flex h-6 w-10 items-center rounded-full px-2xs outline-hidden transition-colors',
   // Off (unchecked) — light + dark
   'bg-grey-border dark:bg-grey-secondary',
   // On (checked) — purple-primary applies in both enabled and disabled.

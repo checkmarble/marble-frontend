@@ -25,7 +25,7 @@ type TableCellProps = {
 };
 
 const TableCell = ({ className, children }: TableCellProps) => {
-  return <div className={cn('p-v2-md flex gap-v2-sm items-center', className)}>{children}</div>;
+  return <div className={cn('p-md flex gap-sm items-center', className)}>{children}</div>;
 };
 
 const GridTable = {

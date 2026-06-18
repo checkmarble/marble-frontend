@@ -24,8 +24,8 @@ export function RulesFiltersBar() {
   return (
     <>
       <Separator className="bg-grey-border" decorative />
-      <div className="flex flex-row items-center justify-between gap-2">
-        <div className="flex flex-row flex-wrap gap-2">
+      <div className="flex flex-row items-center justify-between gap-sm">
+        <div className="flex flex-row flex-wrap gap-sm">
           {definedRulesFilterNames.map((filterName) => (
             <FiltersBarItem key={filterName} filterName={filterName} />
           ))}

@@ -13,7 +13,7 @@ export function DatasetFreshnessBanner() {
   }
 
   return (
-    <div className="text-red-primary bg-red-background border-b-red-disabled text-s flex items-center gap-2 border-b-[0.5px] p-2 lg:px-8">
+    <div className="text-red-primary bg-red-background border-b-red-disabled text-s flex items-center gap-sm border-b-[0.5px] p-sm lg:px-xl">
       <Icon icon="error" className="size-5" />
       <span>
         <Trans

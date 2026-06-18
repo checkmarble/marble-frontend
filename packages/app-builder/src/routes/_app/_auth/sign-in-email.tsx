@@ -96,14 +96,14 @@ function LoginWithEmail() {
   const type = signInMutation.variables?.type;
 
   return (
-    <div className="flex flex-col gap-10 w-full">
+    <div className="flex flex-col gap-2xl w-full">
       {isSsoEnabled ? (
-        <Link className="absolute top-[60px] left-[60px] flex gap-2 text-s items-center" to="/sign-in">
+        <Link className="absolute top-[60px] left-[60px] flex gap-sm text-s items-center" to="/sign-in">
           <Icon icon="arrow-left" className="size-4" />
           {t('common:back')}
         </Link>
       ) : null}
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-xl">
         <Typo variant="title2" className="text-center">
           {t('auth:sign_in')}
         </Typo>
@@ -125,23 +125,23 @@ function LoginWithEmail() {
         </ClientOnly>
         {!isSsoEnabled ? (
           <>
-            <div className="flex items-center gap-4 self-stretch">
+            <div className="flex items-center gap-md self-stretch">
               <div className="h-px bg-grey-border grow" />
               <span>{t('common:or')}</span>
               <div className="h-px bg-grey-border grow" />
             </div>
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-xl">
               <Typo variant="title2" className="text-center">
                 {t('auth:sign_in.first_connection')}
               </Typo>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-sm">
                 <SignInFirstConnection isSignInHomepage={false} showAskDemoButton={!isSsoEnabled && isManagedMarble} />
               </div>
             </div>
           </>
         ) : null}
       </div>
-      {authError ? <AuthError error={authError as AuthErrors} className="mt-8" /> : null}
+      {authError ? <AuthError error={authError as AuthErrors} className="mt-xl" /> : null}
     </div>
   );
 }

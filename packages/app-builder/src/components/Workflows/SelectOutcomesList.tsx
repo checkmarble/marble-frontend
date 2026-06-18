@@ -42,7 +42,7 @@ export function SelectOutcomesList({
           {(() => {
             const validOutcomes = selectedOutcomes.filter((outcome) => outcome && outcome.length > 0);
             return validOutcomes.length > 0 ? (
-              <div className="flex gap-1 flex-nowrap overflow-x-auto">
+              <div className="flex gap-xs flex-nowrap overflow-x-auto">
                 {validOutcomes.map((outcome) => (
                   <OutcomeBadge key={outcome} outcome={outcome} size="md" className="shrink-0" />
                 ))}
@@ -64,7 +64,7 @@ export function SelectOutcomesList({
               <MenuCommand.Item
                 key={outcome}
                 onSelect={() => handleItemSelect(outcome)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-sm"
               >
                 <div className="flex items-center justify-center w-5 h-5">
                   {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}

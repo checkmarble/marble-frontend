@@ -126,7 +126,7 @@ export function CreateInboxUserContent({
       }}
     >
       <Modal.Title>{t('settings:inboxes.inbox_details.add_member')}</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <form.Field
           name="userId"
           validators={{
@@ -134,7 +134,7 @@ export function CreateInboxUserContent({
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
+            <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.user')}</FormLabel>
               <MenuCommand.Menu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
                 <MenuCommand.Trigger>
@@ -162,7 +162,7 @@ export function CreateInboxUserContent({
                       </MenuCommand.Item>
                     ))}
                     <MenuCommand.Empty>
-                      <div className="text-center p-2">{t('common:no_results', { defaultValue: '' })}</div>
+                      <div className="text-center p-sm">{t('common:no_results', { defaultValue: '' })}</div>
                     </MenuCommand.Empty>
                   </MenuCommand.List>
                 </MenuCommand.Content>
@@ -178,8 +178,8 @@ export function CreateInboxUserContent({
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
-              <FormLabel name={field.name} className="flex gap-2">
+            <div className="group flex flex-col gap-sm">
+              <FormLabel name={field.name} className="flex gap-sm">
                 <span className={clsx({ 'text-grey-disabled': access === 'restricted' })}>
                   {t('settings:inboxes.inbox_details.role')}
                 </span>
@@ -227,8 +227,8 @@ export function CreateInboxUserContent({
         >
           {(field) => (
             <div className="group flex justify-between">
-              <div className="flex gap-2">
-                <FormLabel name={field.name} className="flex items-center gap-2">
+              <div className="flex gap-sm">
+                <FormLabel name={field.name} className="flex items-center gap-sm">
                   {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
                 </FormLabel>
                 {!isAutoAssignmentAvailable ? (

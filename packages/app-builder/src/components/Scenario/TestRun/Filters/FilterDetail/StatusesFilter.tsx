@@ -15,7 +15,7 @@ export function StatusesFilter() {
   const matches = useMemo(() => matchSorter(toggle(statuses, 'unknown'), deferredValue), [deferredValue]);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-sm p-sm">
       <SelectWithCombobox.Root
         open
         onSearchValueChange={setSearchValue}

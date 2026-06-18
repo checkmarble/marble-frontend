@@ -36,9 +36,9 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
 
   return (
     <OperandEditModalContainer {...props} title={t('scenarios:edit_is_multiple_of.title')} size="large">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
+      <div className="flex flex-col gap-md">
+        <div className="flex flex-col gap-sm">
+          <div className="flex gap-sm">
             <EditionAstBuilderOperand
               node={node.namedChildren.value}
               optionsDataType={['Int', 'Float']}
@@ -51,7 +51,7 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
               }}
               validationStatus={getValidationStatus(evaluation, node.namedChildren.value.id)}
             />
-            <div className="border-grey-border bg-grey-background-light flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-2 text-center">
+            <div className="border-grey-border bg-grey-background-light flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-sm text-center">
               <span className="text-s text-grey-primary font-medium">{t('scenarios:edit_is_multiple_of.label')}</span>
             </div>
             <MenuCommand.Menu>
@@ -86,7 +86,7 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
           </div>
           <EditionEvaluationErrors id={node.id} filterOut={['FUNCTION_ERROR']} />
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-md">
           <Examples divider={divider} />
         </div>
       </div>

@@ -77,11 +77,11 @@ function CopyScenarioContent({ scenarioId, scenarioName, onSuccess }: CopyScenar
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>{t('scenarios:copy_scenario.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <p className="text-s text-grey-secondary">{t('scenarios:copy_scenario.description', { name: scenarioName })}</p>
         <form.Field name="name">
           {(field) => (
-            <div className="group flex w-full flex-col gap-2">
+            <div className="group flex w-full flex-col gap-sm">
               <FormLabel name={field.name}>{t('scenarios:copy_scenario.name')}</FormLabel>
               <FormInput
                 type="text"

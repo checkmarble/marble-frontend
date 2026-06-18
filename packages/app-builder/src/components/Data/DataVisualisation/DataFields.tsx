@@ -191,10 +191,10 @@ function DataFieldsHeader({ object }: { object: DataModelObject }) {
   const formatDateTime = useFormatDateTime();
   const objectId = object.data?.['object_id'] as string;
   return (
-    <div className="text-m col-span-full flex items-center gap-2 mb-2">
-      <span className="bg-surface-card border-blue-58 text-blue-58 rounded-sm border px-2 py-1">ID: {objectId}</span>
+    <div className="text-m col-span-full flex items-center gap-sm mb-sm">
+      <span className="bg-surface-card border-blue-58 text-blue-58 rounded-sm border px-xs py-2xs">ID: {objectId}</span>
       {object?.metadata?.validFrom && (
-        <span className="bg-surface-card border-grey-placeholder text-grey-secondary rounded-sm border px-2 py-1">
+        <span className="bg-surface-card border-grey-placeholder text-grey-secondary rounded-sm border px-xs py-2xs">
           {t('data:last_ingestion_at', {
             date: formatDateTime(object.metadata.validFrom, {
               dateStyle: 'short',

@@ -14,7 +14,7 @@ export function EditLevel({ config, level, setLevel }: EditLevelProps) {
   const { t } = useTranslation(['common', 'scenarios']);
 
   return (
-    <div className="flex flex-1 flex-col gap-2">
+    <div className="flex flex-1 flex-col gap-sm">
       <label htmlFor="level" className="text-m text-grey-primary font-normal">
         {t('scenarios:edit_fuzzy_match.level.label')}
       </label>

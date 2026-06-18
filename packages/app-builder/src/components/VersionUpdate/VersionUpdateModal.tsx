@@ -23,14 +23,14 @@ export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
   return (
     <Modal.Root open={open} onOpenChange={onOpenChange}>
       <Modal.Content size="xlarge" fixedHeight className="max-h-[80vh] flex flex-col">
-        <div className="flex items-center gap-2 border-b border-grey-border p-4">
+        <div className="flex items-center gap-sm border-b border-grey-border p-md">
           <Icon icon="speakerphone" className="size-8 shrink-0 text-purple-primary" />
           <Modal.Title className="text-l font-semibold text-left">
             {t('common:version_update.title', { version })}
           </Modal.Title>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-md">
           <ReleaseMarkdown>{releaseNotes}</ReleaseMarkdown>
         </div>
 

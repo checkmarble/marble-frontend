@@ -56,16 +56,16 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
   };
 
   return (
-    <div className="flex flex-col gap-v2-md">
-      <div className="grid grid-cols-[1fr_auto] gap-v2-lg items-start">
+    <div className="flex flex-col gap-md">
+      <div className="grid grid-cols-[1fr_auto] gap-lg items-start">
         <div className="flex flex-col">
-          <div className="flex gap-v2-xs items-center">
+          <div className="flex gap-xs items-center">
             {screening ? <ReviewStatusBadge status={screening.status} hitsCount={screening.matches.length} /> : null}
             <EditCaseName name={caseDetail.name} id={caseDetail.id} />
           </div>
           {screening ? <ScreeningCaseSubtitle screening={screening} /> : null}
         </div>
-        <div className="flex gap-v2-sm">
+        <div className="flex gap-sm">
           <EscalateCase id={caseDetail.id} inboxId={caseInbox.id} isAdminUser={isUserAdmin} />
           {caseDetail.status !== 'closed' ? (
             <Button
@@ -85,12 +85,12 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
           )}
         </div>
       </div>
-      <div className="text-small grid grid-cols-[repeat(2,_minmax(auto,_calc(var(--spacing)_*_35))_1fr)] gap-v2-sm p-v2-md rounded-lg border border-grey-border bg-surface-card">
+      <div className="text-small grid grid-cols-[repeat(2,_minmax(auto,_calc(var(--spacing)_*_35))_1fr)] gap-sm p-md rounded-lg border border-grey-border bg-surface-card">
         <div className="grid grid-cols-subgrid col-span-full h-8 items-center">
           <div className="text-grey-secondary">{t('cases:case.date')}</div>
           <div>{formatDateTime(caseDetail.createdAt, { dateStyle: 'short' })}</div>
           <div className="text-grey-secondary">{t('cases:case.tags')}</div>
-          <div className="flex gap-v2-xs">
+          <div className="flex gap-xs">
             <EditCaseTags id={caseDetail.id} tagIds={caseDetail.tags.map(({ tagId }) => tagId)} />
           </div>
         </div>
@@ -100,7 +100,7 @@ export const CaseDetailInfo = ({ caseDetail, caseInbox, isUserAdmin }: CaseDetai
             <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
           </div>
           <div className="text-grey-secondary">{t('cases:assigned_to')}</div>
-          <div className="flex gap-v2-xs">
+          <div className="flex gap-xs">
             <EditCaseAssignee
               currentUser={currentUser}
               assigneeId={caseDetail.assignedTo}

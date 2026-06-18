@@ -71,7 +71,7 @@ function UpdateScenarioContent({
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>{t('scenarios:update_scenario.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <form.Field
           name="name"
           validators={{
@@ -80,7 +80,7 @@ function UpdateScenarioContent({
           }}
         >
           {(field) => (
-            <div className="group flex w-full flex-col gap-2">
+            <div className="group flex w-full flex-col gap-sm">
               <FormLabel name={field.name}>{t('scenarios:create_scenario.name')}</FormLabel>
               <FormInput
                 type="text"
@@ -103,7 +103,7 @@ function UpdateScenarioContent({
           }}
         >
           {(field) => (
-            <div className="group flex w-full flex-col gap-2">
+            <div className="group flex w-full flex-col gap-sm">
               <FormLabel name={field.name}>{t('scenarios:create_scenario.description')}</FormLabel>
               <FormInput
                 type="text"

@@ -188,7 +188,7 @@ export const Route = createFileRoute(
         const configId = useParam('screeningId');
 
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-sm">
             <BreadCrumbLink
               isLast={isLast}
               to="/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId"
@@ -413,13 +413,13 @@ function ScreeningDetail() {
 
   const screeningCardClassName = (hasError: boolean, className?: string) =>
     cn(
-      'bg-surface-card border-grey-border flex flex-col gap-4 rounded-md border p-4',
+      'bg-surface-card border-grey-border flex flex-col gap-md rounded-md border p-md',
       hasError && 'border-red-primary',
       className,
     );
 
   const queryFieldHighlightClassName = (fieldKey: string) =>
-    cn(highlight.queryField(fieldKey) && 'rounded-sm border border-red-primary p-1');
+    cn(highlight.queryField(fieldKey) && 'rounded-sm border border-red-primary p-xs');
 
   useEffect(() => {
     if (showValidationSummary && formValidationIssues.length === 0 && serverValidationIssues.length === 0) {
@@ -435,9 +435,9 @@ function ScreeningDetail() {
       <Page.Container ref={containerRef}>
         <Page.Content className="pt-0 lg:pt-0">
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
-            <div className="sticky top-0 z-40 flex flex-col gap-4 bg-surface-page py-4">
+            <div className="sticky top-0 z-40 flex flex-col gap-md bg-surface-page py-sm">
               <div
-                className={cn('flex h-fit items-center justify-between gap-4', {
+                className={cn('flex h-fit items-center justify-between gap-md', {
                   'border-b-grey-border border-b': !intersection?.isIntersecting,
                 })}
               >
@@ -449,7 +449,7 @@ function ScreeningDetail() {
                   }}
                 >
                   {(field) => (
-                    <div className="flex w-full flex-col gap-1">
+                    <div className="flex w-full flex-col gap-xs">
                       <input
                         ref={nameInputRef}
                         type="text"
@@ -471,7 +471,7 @@ function ScreeningDetail() {
                   )}
                 </form.Field>
                 {editor === 'edit' ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-sm">
                     <DeleteScreeningRule iterationId={iterationId} scenarioId={scenario.id} screeningId={screeningId}>
                       <Button variant="destructive" className="w-fit" size="small">
                         <Icon icon="delete" className="size-4" aria-hidden />
@@ -499,7 +499,7 @@ function ScreeningDetail() {
 
               {validationIssues.length > 0 ? (
                 <Callout color="red" icon="lightbulb" iconColor="red">
-                  <ul className="flex flex-col gap-v2-xs pl-3">
+                  <ul className="flex flex-col gap-xs ps-md">
                     {validationIssues.map((issue) => (
                       <li key={issueDedupeKey(issue)}>{issue.message}</li>
                     ))}
@@ -508,8 +508,8 @@ function ScreeningDetail() {
               ) : null}
             </div>
 
-            <div className="flex flex-col gap-8">
-              <div className="border-grey-border flex flex-col items-start gap-6 border-b pb-6">
+            <div className="flex flex-col gap-xl">
+              <div className="border-grey-border flex flex-col items-start gap-lg border-b lg">
                 <form.Field
                   name="description"
                   validators={{
@@ -518,7 +518,7 @@ function ScreeningDetail() {
                   }}
                 >
                   {(field) => (
-                    <div ref={descriptionRef} className="flex w-full flex-col gap-1">
+                    <div ref={descriptionRef} className="flex w-full flex-col gap-xs">
                       <textarea
                         name={field.name}
                         defaultValue={field.state.value}
@@ -540,7 +540,7 @@ function ScreeningDetail() {
                   }}
                 >
                   {(field) => (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-sm">
                       <FieldRuleGroup
                         disabled
                         onChange={field.handleChange}
@@ -554,7 +554,7 @@ function ScreeningDetail() {
                 </form.Field>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-sm">
                 <span className="text-s font-semibold">{t('scenarios:edit_sanction.global_settings')}</span>
                 <div className={screeningCardClassName(highlight.trigger)}>
                   <Callout variant="outlined">
@@ -588,7 +588,7 @@ function ScreeningDetail() {
                     )}
                   </form.Field>
                 </div>
-                <div className="bg-surface-card border-grey-border flex flex-col gap-2 rounded-md border p-4">
+                <div className="bg-surface-card border-grey-border flex flex-col gap-sm rounded-md border p-md">
                   <form.Field
                     name="threshold"
                     validators={{
@@ -597,7 +597,7 @@ function ScreeningDetail() {
                     }}
                   >
                     {(field) => (
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-xs">
                         <ScreeningThreshold
                           threshold={field.state.value}
                           onChange={(value) => form.setFieldValue(field.name, value)}
@@ -610,11 +610,11 @@ function ScreeningDetail() {
                     )}
                   </form.Field>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-sm">
                     <span className="text-s">{t('scenarios:sanction_forced_outcome_heading')}</span>
                     <form.Field name="forcedOutcome">
                       {(field) => (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-xs">
                           <FieldOutcomes
                             disabled={editor === 'view'}
                             name={field.name}
@@ -632,8 +632,8 @@ function ScreeningDetail() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <span className="text-s inline-flex items-center gap-2 font-semibold">
+              <div className="flex flex-col gap-sm">
+                <span className="text-s inline-flex items-center gap-sm font-semibold">
                   {t('scenarios:sanction_counterparty_id')}
                   <FieldToolTip>{t('scenarios:sanction_counterparty_id.tooltip')}</FieldToolTip>
                 </span>
@@ -655,14 +655,14 @@ function ScreeningDetail() {
               </div>
 
               <AstBuilder.Provider scenarioId={scenario.id} initialData={builderOptions} mode={editor}>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-sm">
                   <span className="text-s font-semibold">{t('scenarios:sanction.match_settings.title')}</span>
                   <div className={screeningCardClassName(highlight.matchSettings, 'rounded-sm')}>
                     <Callout variant="outlined">
                       <p className="whitespace-pre-wrap">{t('scenarios:sanction.match_settings.callout')}</p>
                     </Callout>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-s inline-flex items-center gap-1">
+                    <div className="flex flex-col gap-xs">
+                      <span className="text-s inline-flex items-center gap-xs">
                         {t('scenarios:edit_sanction.entity_type.heading')}
                         <FieldToolTip>{t('scenarios:edit_sanction.entity_type.tooltip')}</FieldToolTip>
                       </span>
@@ -670,15 +670,15 @@ function ScreeningDetail() {
                         {(field) => <FieldEntityType entityType={field.state.value} onChange={field.handleChange} />}
                       </form.Field>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="bg-surface-card border-grey-border flex flex-col gap-2 rounded-sm border p-2">
+                    <div className="flex flex-col gap-sm">
+                      <div className="bg-surface-card border-grey-border flex flex-col gap-sm rounded-sm border p-sm">
                         <form.Field name="query.name">
                           {(field) => {
                             const value = field.state.value;
                             return (
-                              <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('name'))}>
-                                <div className="flex flex-col gap-1">
-                                  <span className="text-s inline-flex items-center gap-1">
+                              <div className={cn('flex flex-col gap-xs', queryFieldHighlightClassName('name'))}>
+                                <div className="flex flex-col gap-xs">
+                                  <span className="text-s inline-flex items-center gap-xs">
                                     {t('scenarios:screening.filter.name')}
                                     <FieldToolTip>{t('scenarios:screening.filter.name.tooltip')}</FieldToolTip>
                                   </span>
@@ -709,7 +709,7 @@ function ScreeningDetail() {
                         </form.Field>
                         <form.Field name="preprocessing.removeNumbers">
                           {(field) => (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-sm">
                               <Switch
                                 checked={field.state.value}
                                 onCheckedChange={field.handleChange}
@@ -738,7 +738,7 @@ function ScreeningDetail() {
                         {entityType === 'Thing' ? (
                           <form.Field name="preprocessing.useNer">
                             {(field) => (
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-sm">
                                 <Switch
                                   checked={field.state.value}
                                   onCheckedChange={(checked) => field.handleChange(checked)}
@@ -752,7 +752,7 @@ function ScreeningDetail() {
                                 <FieldToolTip>
                                   {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
                                 </FieldToolTip>
-                                <span className="text-xs rounded-full bg-purple-primary px-2 py-0.5 text-grey-white">
+                                <span className="text-xs rounded-full bg-purple-primary px-xs py-0.5 text-grey-white">
                                   beta
                                 </span>
                               </div>
@@ -762,7 +762,7 @@ function ScreeningDetail() {
                         {useNerEnabled ? (
                           <form.Field name="preprocessing.nerIgnoreClassification">
                             {(field) => (
-                              <div className="flex items-center gap-2 ml-12 mt-1">
+                              <div className="flex items-center gap-sm ms-3xl mt-xs">
                                 <Switch
                                   checked={field.state.value}
                                   onCheckedChange={(checked) => field.handleChange(checked)}
@@ -786,9 +786,11 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('birthDate'))}>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-s inline-flex items-center gap-1">
+                                  <div
+                                    className={cn('flex flex-col gap-xs', queryFieldHighlightClassName('birthDate'))}
+                                  >
+                                    <div className="flex flex-col gap-xs">
+                                      <span className="text-s inline-flex items-center gap-xs">
                                         {t('scenarios:edit_sanction.birthdate')}
                                       </span>
                                       <FieldNodeConcat
@@ -810,10 +812,10 @@ function ScreeningDetail() {
                                 const value = field.state.value;
                                 return (
                                   <div
-                                    className={cn('flex flex-col gap-1', queryFieldHighlightClassName('nationality'))}
+                                    className={cn('flex flex-col gap-xs', queryFieldHighlightClassName('nationality'))}
                                   >
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-s inline-flex items-center gap-1">
+                                    <div className="flex flex-col gap-xs">
+                                      <span className="text-s inline-flex items-center gap-xs">
                                         {t('scenarios:edit_sanction.nationality')}
                                       </span>
                                       <FieldNodeConcat
@@ -836,12 +838,12 @@ function ScreeningDetail() {
                                 return (
                                   <div
                                     className={cn(
-                                      'flex flex-col gap-1',
+                                      'flex flex-col gap-xs',
                                       queryFieldHighlightClassName('passportNumber'),
                                     )}
                                   >
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-s inline-flex items-center gap-1">
+                                    <div className="flex flex-col gap-xs">
+                                      <span className="text-s inline-flex items-center gap-xs">
                                         {t('scenarios:edit_sanction.passport_number')}
                                       </span>
                                       <FieldNodeConcat
@@ -862,9 +864,9 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('address'))}>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-s inline-flex items-center gap-1">
+                                  <div className={cn('flex flex-col gap-xs', queryFieldHighlightClassName('address'))}>
+                                    <div className="flex flex-col gap-xs">
+                                      <span className="text-s inline-flex items-center gap-xs">
                                         {t('scenarios:edit_sanction.address')}
                                       </span>
                                       <FieldNodeConcat
@@ -889,9 +891,9 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('country'))}>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-s inline-flex items-center gap-1">
+                                  <div className={cn('flex flex-col gap-xs', queryFieldHighlightClassName('country'))}>
+                                    <div className="flex flex-col gap-xs">
+                                      <span className="text-s inline-flex items-center gap-xs">
                                         {t('scenarios:edit_sanction.country')}
                                       </span>
                                       <FieldNodeConcat
@@ -914,12 +916,12 @@ function ScreeningDetail() {
                                 return (
                                   <div
                                     className={cn(
-                                      'flex flex-col gap-1',
+                                      'flex flex-col gap-xs',
                                       queryFieldHighlightClassName('registrationNumber'),
                                     )}
                                   >
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-s inline-flex items-center gap-1">
+                                    <div className="flex flex-col gap-xs">
+                                      <span className="text-s inline-flex items-center gap-xs">
                                         {t('scenarios:edit_sanction.registrationnumber')}
                                       </span>
                                       <FieldNodeConcat
@@ -940,9 +942,9 @@ function ScreeningDetail() {
                               {(field) => {
                                 const value = field.state.value;
                                 return (
-                                  <div className={cn('flex flex-col gap-1', queryFieldHighlightClassName('address'))}>
-                                    <div className="flex flex-col gap-1">
-                                      <span className="text-s inline-flex items-center gap-1">
+                                  <div className={cn('flex flex-col gap-xs', queryFieldHighlightClassName('address'))}>
+                                    <div className="flex flex-col gap-xs">
+                                      <span className="text-s inline-flex items-center gap-xs">
                                         {t('scenarios:edit_sanction.address')}
                                       </span>
                                       <FieldNodeConcat
@@ -968,12 +970,12 @@ function ScreeningDetail() {
                               return (
                                 <div
                                   className={cn(
-                                    'flex flex-col gap-1',
+                                    'flex flex-col gap-xs',
                                     queryFieldHighlightClassName('registrationNumber'),
                                   )}
                                 >
-                                  <div className="flex flex-col gap-1">
-                                    <span className="text-s inline-flex items-center gap-1">
+                                  <div className="flex flex-col gap-xs">
+                                    <span className="text-s inline-flex items-center gap-xs">
                                       {t('scenarios:edit_sanction.registrationnumber')}
                                     </span>
                                     <FieldNodeConcat

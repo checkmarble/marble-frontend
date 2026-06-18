@@ -23,7 +23,7 @@ export const Default: StoryFn<typeof Checkbox> = (args) => <Checkbox {...args} /
 
 export const WithLabel: StoryFn<typeof Checkbox> = (args) => (
   <form>
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row gap-sm">
       <Checkbox {...args} id="c1" />
       <Label.Root htmlFor="c1">Accept terms and conditions.</Label.Root>
     </div>
@@ -45,9 +45,9 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
 
   return (
     <form>
-      <fieldset className="border-grey-disabled flex w-fit flex-col gap-4 rounded-sm border p-4">
-        <legend className="text-grey-secondary p-2">Fruits</legend>
-        <div className="flex flex-row gap-2">
+      <fieldset className="border-grey-disabled flex w-fit flex-col gap-md rounded-sm border p-md">
+        <legend className="text-grey-secondary p-sm">Fruits</legend>
+        <div className="flex flex-row gap-sm">
           <Checkbox
             id="c1"
             checked={allChecked}
@@ -63,10 +63,10 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
           />
           <Label.Root htmlFor="c1">All fruits</Label.Root>
         </div>
-        <ul className="flex flex-col gap-2 rounded-sm border p-2">
+        <ul className="flex flex-col gap-sm rounded-sm border p-sm">
           {fruits.map((fruit) => (
             <li key={fruit}>
-              <div className="flex flex-row gap-2">
+              <div className="flex flex-row gap-sm">
                 <Checkbox
                   id={fruit}
                   checked={checkedFruits.get(fruit)}

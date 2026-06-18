@@ -40,7 +40,7 @@ export const FieldOutcomes = ({
         {selectedOutcome ? <OutcomeBadge size="sm" outcome={selectedOutcome} /> : null}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-sm p-sm">
         <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
           {matches.map((outcome) => (

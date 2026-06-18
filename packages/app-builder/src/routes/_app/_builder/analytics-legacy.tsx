@@ -38,7 +38,7 @@ export const Route = createFileRoute('/_app/_builder/analytics-legacy')({
 
         return (
           <BreadCrumbLink to="/detection/analytics" isLast={isLast}>
-            <Icon icon="analytics" className="me-2 size-6" />
+            <Icon icon="analytics" className="me-sm size-6" />
             <span className="line-clamp-1 text-start">{t('navigation:analytics')}</span>
           </BreadCrumbLink>
         );

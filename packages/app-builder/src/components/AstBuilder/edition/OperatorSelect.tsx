@@ -10,7 +10,7 @@ import { Icon } from 'ui-icons';
 
 export const operatorContainerClassnames = cva(
   [
-    'flex h-10 min-w-[40px] items-center justify-between outline-hidden gap-2 rounded-sm px-2 border',
+    'flex h-10 min-w-[40px] items-center justify-between outline-hidden gap-sm rounded-sm px-xs border',
     'bg-surface-card disabled:border-transparent disabled:bg-grey-background-light',
     'radix-state-open:border-purple-primary  radix-state-open:bg-purple-background-light',
   ],
@@ -99,8 +99,8 @@ export function OperatorSelect<Op extends string>({
                 key={op.value}
                 onSelect={() => onOperatorChange(op.value)}
               >
-                <div className="flex w-full items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                <div className="flex w-full items-center justify-between gap-sm">
+                  <div className="flex items-center gap-sm">
                     <span className="font-semibold">{getOperatorName(t, op.value, isFilter)}</span>
                     {op.tooltipKey ? <OperatorTooltip tooltipKey={op.tooltipKey} /> : null}
                   </div>

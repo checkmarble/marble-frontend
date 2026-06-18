@@ -94,7 +94,7 @@ export function CaseManagerPageLayout({
     <Page.Main>
       <Page.Header color="page" className="justify-between">
         <BreadCrumbs />
-        <div className="flex gap-v2-sm">
+        <div className="flex gap-sm">
           {caseDetail.status !== 'closed' ? (
             <>
               <SnoozeCase caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
@@ -124,8 +124,8 @@ export function CaseManagerPageLayout({
         </div>
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 className="px-v2-lg relative">
-          <div className="flex justify-between mb-v2-lg">
+        <Page.ContentV2 className="px-lg relative">
+          <div className="flex justify-between mb-lg">
             <Tabs>
               <Link className={tabClassName} from="/cases/s/$caseId" to="./principal">
                 {t('cases:case_detail.tab.principal')}
@@ -174,7 +174,7 @@ function StickyCommentForm({ objectId, objectType }: StickyCommentFormProps) {
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
 
   return (
-    <div className="sticky flex justify-end right-v2-lg bottom-v2-lg mt-v2-lg">
+    <div className="sticky flex justify-end right-lg bottom-lg mt-lg">
       <ClientCommentForm annotationsQuery={annotationsQuery} objectId={objectId} objectType={objectType} />
     </div>
   );
@@ -234,7 +234,7 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
   return (
     <Modal.Root open={open} onOpenChange={onOpenChange}>
       <Modal.Content>
-        <div className="flex flex-col gap-v2-md p-v2-md">
+        <div className="flex flex-col gap-md p-md">
           <Typo variant="title2">{t('cases:manager.sar_modal.title')}</Typo>
           <span>
             {initialStatus ? t('cases:sar.modale.callout_add_documents') : t('cases:sar.modale.callout_new_report')}
@@ -248,11 +248,11 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
                   onValueChange={(v) => field.handleChange(v as SuspiciousActivityReportStatus)}
                   className="flex flex-col"
                 >
-                  <div className="flex gap-v2-md px-v2-md items-center h-9">
+                  <div className="flex gap-md px-md items-center h-9">
                     <Radio.Item value="pending" />
                     <span className="font-medium">{t('cases:manager.sar_modal.status_pending')}</span>
                   </div>
-                  <div className="flex gap-v2-md px-v2-md items-center h-9">
+                  <div className="flex gap-md px-md items-center h-9">
                     <Radio.Item value="completed" />
                     <span className="font-medium">{t('cases:manager.sar_modal.status_completed')}</span>
                   </div>
@@ -265,20 +265,20 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
             <div
               {...getRootProps()}
               className={cn(
-                'flex flex-col items-center justify-center gap-6 rounded-sm border-2 border-dashed p-6',
+                'flex flex-col items-center justify-center gap-lg rounded-sm border-2 border-dashed p-lg',
                 isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-border',
               )}
             >
               <input {...getInputProps()} />
-              <div className="flex flex-col gap-v2-xs justify-center text-center">
-                <div className="inline-flex gap-v2-sm items-center">
+              <div className="flex flex-col gap-xs justify-center text-center">
+                <div className="inline-flex gap-sm items-center">
                   <Icon icon="attachment" className="size-6 -rotate-45 text-grey-secondary" />
                   <span className="text-purple-primary font-medium">{t('cases:manager.sar_modal.add_documents')}</span>
                 </div>
                 <div className="text-tiny text-grey-secondary">{t('cases:drop_file_accepted_types')}</div>
               </div>
               {reportFile ? (
-                <span className="border-grey-border flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                <span className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs.5 py-0.5 text-xs font-medium">
                   {reportFile.name}
                   <Button
                     variant="secondary"

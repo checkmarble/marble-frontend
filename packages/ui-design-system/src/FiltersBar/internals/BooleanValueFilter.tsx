@@ -56,14 +56,14 @@ export function BooleanValueFilter({
         ) : null}
       </FilterItem.Root>
       <FilterPopover.Content>
-        <div className="p-4 flex flex-col gap-3 w-64">
-          <div className="flex items-center gap-2">
+        <div className="p-md flex flex-col gap-md w-64">
+          <div className="flex items-center gap-sm">
             <Checkbox checked={localChecked} onCheckedChange={(checked) => setLocalChecked(checked as any)} />
             <span>Checked</span>
           </div>
           <div className="flex justify-end">
             <button
-              className={cn('text-s bg-purple-primary text-white rounded-sm px-3 py-1.5 outline-hidden')}
+              className={cn('text-s bg-purple-primary text-white rounded-sm px-md py-2xs.5 outline-hidden')}
               onClick={() => {
                 if (localChecked === 'indeterminate') {
                   emitSet(filter.name, null);

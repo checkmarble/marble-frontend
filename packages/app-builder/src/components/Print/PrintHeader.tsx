@@ -41,11 +41,11 @@ export const PrintHeader: FunctionComponent<PrintHeaderProps> = ({
   const timestamp = formatDateTime(new Date(), { dateStyle: 'short', timeStyle: 'short' });
 
   return (
-    <div className="mb-4 border-b border-grey-border pb-2">
+    <div className="mb-md border-b border-grey-border pb-sm">
       <Typo variant="title1">{title}</Typo>
-      {subtitle && <p className="text-s text-grey-placeholder mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-s text-grey-placeholder mt-xs">{subtitle}</p>}
       {showTimestamp && (
-        <p className="text-xs text-grey-placeholder mt-1">
+        <p className="text-xs text-grey-placeholder mt-xs">
           {t('common:print.generated_at_by', {
             date: timestamp,
             user: userName,

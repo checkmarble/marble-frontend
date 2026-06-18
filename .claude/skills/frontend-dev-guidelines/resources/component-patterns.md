@@ -42,19 +42,19 @@ export function CaseCard({ caseData, onSelect, className }: CaseCardProps) {
 
 ## Class Composition: cn (preferred) and clsx
 
-**Prefer `cn`** from ui-design-system — it wraps `tailwind-merge` so conflicting Tailwind classes resolve correctly (e.g., `cn('p-2', 'p-4')` yields `p-4`). `clsx` only concatenates strings and won't resolve conflicts.
+**Prefer `cn`** from ui-design-system — it wraps `tailwind-merge` so conflicting Tailwind classes resolve correctly (e.g., `cn('p-sm', 'p-md')` yields `p-md`). `clsx` only concatenates strings and won't resolve conflicts.
 
 ```typescript
 import { cn } from 'ui-design-system';
 
 // Basic composition (most common)
-className={cn('rounded-lg border p-4', className)}
+className={cn('rounded-lg border p-md', className)}
 
 // Conditional with ternary
 className={cn('border-grey-border col-span-5 w-2 border-e', isFirst ? 'h-4' : 'h-2')}
 
 // Object syntax for conditionals
-className={cn('flex flex-row gap-6 select-none', {
+className={cn('flex flex-row gap-lg select-none', {
   'opacity-50': disabled,
   'pointer-events-none': disabled,
 })}
@@ -145,7 +145,7 @@ ui-design-system uses CVA for variant-based styling:
 import { cva } from 'class-variance-authority';
 
 export const CtaV2ClassName = cva(
-  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer',
+  'text-default font-medium w-fit rounded-md inline-flex items-center gap-xs cursor-pointer',
   {
     variants: {
       variant: { primary: '...', secondary: '...' },

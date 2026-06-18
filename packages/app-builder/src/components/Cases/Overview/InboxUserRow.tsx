@@ -32,8 +32,8 @@ export const InboxUserRow = ({
   const isChecked = checked ?? user.autoAssignable;
 
   return (
-    <div className={cn('flex items-center gap-v2-sm', { 'pl-12': variant === INBOX_USER_ROW_VARIANTS.default })}>
-      <div className="flex-1 flex items-center gap-v2-xs">
+    <div className={cn('flex items-center gap-sm', { 'ps-3xl': variant === INBOX_USER_ROW_VARIANTS.default })}>
+      <div className="flex-1 flex items-center gap-xs">
         <span className="text-xs">{userName}</span>
         <Tag color="purple" size="small">
           {roleLabel}

@@ -95,8 +95,8 @@ const ExistingDraftModal = ({
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('scenarios:create_iteration.title')}</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <div className="text-s flex flex-1 flex-col gap-4">
+        <div className="flex flex-col gap-lg p-lg">
+          <div className="text-s flex flex-1 flex-col gap-md">
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist')}</p>
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist_possibility')}</p>
           </div>

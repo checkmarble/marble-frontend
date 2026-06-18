@@ -141,7 +141,7 @@ function DetectionScenariosPage() {
 
           if (row.original.archived) {
             return (
-              <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+              <div className="flex items-center justify-end gap-sm" onClick={(event) => event.stopPropagation()}>
                 <UpdateScenarioButton
                   defaultValue={{
                     name: row.original.name,
@@ -155,7 +155,7 @@ function DetectionScenariosPage() {
           }
 
           return (
-            <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-center justify-end gap-sm" onClick={(event) => event.stopPropagation()}>
               <UpdateScenarioButton
                 defaultValue={{
                   name: row.original.name,
@@ -196,7 +196,7 @@ function DetectionScenariosPage() {
   return (
     <Page.Main>
       <Page.Container>
-        <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
+        <Page.ContentV2 className="gap-md max-w-(--breakpoint-xl)">
           <DetectionNavigationTabs
             actions={
               <CreateScenario>
@@ -208,9 +208,9 @@ function DetectionScenariosPage() {
             }
           />
           <Callout variant="outlined">{t('scenarios:list.callout')}</Callout>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-md">
             {isEmpty ? (
-              <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-md">
                 <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
               </div>
             ) : (

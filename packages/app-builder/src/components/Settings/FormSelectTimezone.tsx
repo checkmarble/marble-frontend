@@ -41,7 +41,7 @@ export const FormSelectTimezone = ({
         {selectedTimezone}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2" unmountOnHide>
+      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-sm p-sm" unmountOnHide>
         <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
           {matches.slice(0, MAX_TIMEZONE_MATCHES).map((tz) => (
@@ -50,12 +50,12 @@ export const FormSelectTimezone = ({
             </SelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
-            <p className="text-s text-grey-secondary flex items-center justify-center p-2">
+            <p className="text-s text-grey-secondary flex items-center justify-center p-sm">
               {t('settings:scenario_default_timezone.no_match')}
             </p>
           ) : null}
           {matches.length > MAX_TIMEZONE_MATCHES ? (
-            <p className="text-s text-grey-secondary flex items-center justify-center whitespace-pre-wrap text-balance p-2 text-center">
+            <p className="text-s text-grey-secondary flex items-center justify-center whitespace-pre-wrap text-balance p-sm text-center">
               {t('settings:scenario_default_timezone.more_results', {
                 count: matches.length - MAX_TIMEZONE_MATCHES,
               })}

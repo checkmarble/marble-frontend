@@ -113,25 +113,25 @@ export const EscalationConditionsPanelContent = ({
 
   return (
     <PanelContainer size="xxl">
-      <div className="flex items-center gap-v2-sm pb-4">
+      <div className="flex items-center gap-sm pb-md">
         <Typo variant="title2">{t('cases:overview.panel.escalation.title')}</Typo>
       </div>
       <PanelContent>
         {match(inboxesQuery)
           .with({ isPending: true }, () => (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-xl">
               <Spinner className="size-8" />
             </div>
           ))
           .with({ isError: true }, () => (
-            <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
+            <div className="text-s text-grey-secondary py-sm">{t('cases:overview.config.error_loading')}</div>
           ))
           .with({ isSuccess: true }, () => (
-            <div className="flex flex-col gap-v2-md">
-              <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light dark:bg-surface-card flex flex-col gap-v2-md">
+            <div className="flex flex-col gap-md">
+              <div className="border border-grey-border rounded-lg p-md bg-grey-background-light dark:bg-surface-card flex flex-col gap-md">
                 <div className="text-s font-medium">{t('cases:overview.panel.escalation.conditions_title')}</div>
 
-                <div className="flex flex-col gap-v2-md">
+                <div className="flex flex-col gap-md">
                   {conditions.map((condition) => (
                     <EscalationConditionRow
                       key={condition.id}

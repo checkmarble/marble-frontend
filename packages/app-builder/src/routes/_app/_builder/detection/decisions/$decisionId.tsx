@@ -148,7 +148,7 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/$decisi
         const { decision } = Route.useLoaderData();
 
         return (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-md">
             <BreadCrumbLink
               isLast={isLast}
               to="/detection/decisions/$decisionId"
@@ -203,8 +203,8 @@ function DecisionPage() {
         </Page.Header>
         <Page.Container>
           <Page.Content>
-            <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
-              <div className="flex flex-col gap-4 lg:gap-8">
+            <div className="grid grid-cols-[2fr_1fr] gap-md lg:gap-xl">
+              <div className="flex flex-col gap-md lg:gap-xl">
                 <DecisionDetail decision={decision} />
                 <PivotDetail pivotValues={pivotValues} existingPivotDefinition={existingPivotDefinition} />
                 <RulesDetail
@@ -217,8 +217,8 @@ function DecisionPage() {
                   <ScreeningDetail key={s.id} screening={s} />
                 ))}
               </div>
-              <div className="flex flex-col gap-4 lg:gap-8 shrink-0">
-                <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
+              <div className="flex flex-col gap-md lg:gap-xl shrink-0">
+                <div className="flex flex-col gap-md lg:flex-row lg:gap-xl">
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />
                 </div>

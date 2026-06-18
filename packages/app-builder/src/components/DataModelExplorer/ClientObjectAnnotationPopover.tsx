@@ -107,8 +107,8 @@ export function ClientObjectAnnotationPopover({
 function AnnotationSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex shrink flex-col">
-      <div className="px-3 pb-1 pt-2 text-xs font-semibold">{title}</div>
-      <div className="max-h-[400px] overflow-y-scroll px-4 pb-2 pt-1">{children}</div>
+      <div className="px-md pb-xs pt-sm text-xs font-semibold">{title}</div>
+      <div className="max-h-[400px] overflow-y-scroll px-md pb-sm pt-xs">{children}</div>
     </div>
   );
 }

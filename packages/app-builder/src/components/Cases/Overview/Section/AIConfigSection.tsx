@@ -32,9 +32,9 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
   };
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       {/* Section header */}
-      <div className="flex items-center gap-v2-sm h-7">
+      <div className="flex items-center gap-sm h-7">
         <span className="flex-1 text-s font-medium">{t('cases:overview.config.ai_title')}</span>
         {/* @TODO: Add credit usage when ready */}
         {/* <Tag color="purple" size="small">
@@ -44,12 +44,12 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
 
       {match(aiSettingsQuery)
         .with({ isPending: true }, () => (
-          <div className="border border-grey-border rounded-v2-lg p-v2-md bg-surface-card flex items-center justify-center min-h-[100px]">
+          <div className="border border-grey-border rounded-lg p-md bg-surface-card flex items-center justify-center min-h-[100px]">
             <Spinner className="size-6" />
           </div>
         ))
         .with({ isError: true }, () => (
-          <div className="border border-grey-border rounded-v2-lg p-v2-md bg-surface-card flex items-center justify-center min-h-[100px] text-red-primary">
+          <div className="border border-grey-border rounded-lg p-md bg-surface-card flex items-center justify-center min-h-[100px] text-red-primary">
             {t('cases:overview.config.error_loading')}
           </div>
         ))

@@ -24,7 +24,7 @@ export const DatasetSelectionRecap = () => {
         const sectionLabel = t(`scenarios:sanction.lists.${SCREENING_CATEGORY_I18N_KEY_MAP[key]}`);
         return (
           <RecapCapsule key={key}>
-            <span className="flex flex-row items-center gap-v2-xs">
+            <span className="flex flex-row items-center gap-xs">
               <span>{sectionLabel}</span>
               <span>
                 {t('continuousScreening:creation.datasetSelection.recap.section_items', { count: leafCount })}

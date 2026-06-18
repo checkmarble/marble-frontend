@@ -83,27 +83,27 @@ function ScenarioEditLayout() {
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between gap-4">
-        <div className="flex flex-row items-center gap-4">
+      <Page.Header className="justify-between gap-md">
+        <div className="flex flex-row items-center gap-md">
           <ScenarioHeader isEditScenarioAvailable={isEditScenarioAvailable} scenario={currentScenario} />
           <VersionSelect currentIteration={currentIteration} scenarioIterations={scenarioIterations} />
           {withEditTag ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
       </Page.Header>
-      <Page.ContentV2 className="flex flex-col gap-v2-lg max-w-(--breakpoint-xl)">
+      <Page.ContentV2 className="flex flex-col gap-lg max-w-(--breakpoint-xl)">
         {scenarioIteration.archived ? (
-          <Callout color="red" icon="warning" className="mb-4">
+          <Callout color="red" icon="warning" className="mb-md">
             {t('scenarios:iteration.archived_message')}
           </Callout>
         ) : (
-          <section className="flex flex-row gap-6 items-center">
+          <section className="flex flex-row gap-lg items-center">
             {currentScenario.description ? (
               <Page.Description withIcon={false} className="flex-1">
                 {currentScenario.description}
               </Page.Description>
             ) : null}
 
-            <div className="flex flex-row items-center gap-4">
+            <div className="flex flex-row items-center gap-md">
               {withCreateDraftIteration ? (
                 <CreateDraftIteration
                   iterationId={currentIteration.id}
@@ -142,7 +142,7 @@ function ScenarioEditLayout() {
               <Link
                 from="/detection/scenarios/$scenarioId/i/$iterationId"
                 to="./trigger"
-                className={cn(tabClassName, 'gap-2')}
+                className={cn(tabClassName, 'gap-sm')}
                 aria-invalid={hasTriggerErrors(scenarioValidation)}
               >
                 <ScenariosLinkIcon icon="trigger" withPing={hasTriggerErrors(scenarioValidation)} className="size-5" />
@@ -151,7 +151,7 @@ function ScenarioEditLayout() {
               <Link
                 from="/detection/scenarios/$scenarioId/i/$iterationId"
                 to="./rules"
-                className={cn(tabClassName, 'gap-2')}
+                className={cn(tabClassName, 'gap-sm')}
                 aria-invalid={hasRulesErrors(scenarioValidation)}
               >
                 <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
@@ -160,7 +160,7 @@ function ScenarioEditLayout() {
               <Link
                 from="/detection/scenarios/$scenarioId/i/$iterationId"
                 to="./decision"
-                className={cn(tabClassName, 'gap-2')}
+                className={cn(tabClassName, 'gap-sm')}
                 aria-invalid={hasDecisionErrors(scenarioValidation)}
               >
                 <ScenariosLinkIcon

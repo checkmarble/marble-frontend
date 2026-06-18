@@ -103,11 +103,11 @@ export function RefineSearchModal({
         <Modal.Title>{t('screenings:refine_modal.title')}</Modal.Title>
         {searchResults ? (
           <>
-            <div className="flex flex-col gap-8 overflow-y-scroll p-6">
+            <div className="flex flex-col gap-xl overflow-y-scroll p-lg">
               {searchResults.length > 0 ? (
                 <>
                   <Field label={t('screenings:refine_modal.result_label')}>
-                    <div className="flex grow flex-col gap-2">
+                    <div className="flex grow flex-col gap-sm">
                       {searchResults.map((match) => {
                         return <MatchResult key={match.id} entity={match} />;
                       })}
@@ -119,7 +119,7 @@ export function RefineSearchModal({
                 <>
                   <span>{t('screenings:refine_modal.no_match_label')}</span>
                   <Callout bordered>
-                    <div className="flex flex-col items-start gap-2">
+                    <div className="flex flex-col items-start gap-sm">
                       <Trans
                         t={t}
                         i18nKey="screenings:refine_modal.no_match_callout"
@@ -148,7 +148,7 @@ export function RefineSearchModal({
           </>
         ) : (
           <form onSubmit={handleSubmit(form)} className="contents">
-            <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
+            <div className="flex h-full flex-col gap-lg overflow-y-scroll p-xl">
               {screening.request ? <SearchInput request={screening.request} /> : null}
               <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
                 {(field) => (
@@ -199,9 +199,9 @@ type FieldProps = {
 
 function Field({ label, children }: FieldProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-sm">
       <span>{label}</span>
-      <div className="flex gap-2">{children}</div>
+      <div className="flex gap-sm">{children}</div>
     </div>
   );
 }
@@ -239,7 +239,7 @@ export function EntitySelect({ name, value, onChange }: EntitySelectProps) {
 
             return (
               <Select.Item key={schema} value={schema}>
-                <div className="flex items-center gap-2 p-2">
+                <div className="flex items-center gap-sm p-sm">
                   <Icon icon="plus" className="size-5" />
                   <div className="flex flex-col">
                     <span>{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
@@ -269,8 +269,8 @@ function SearchInput({ request }: { request: NonNullable<Screening['request']> }
   return (
     <Field label={t('screenings:refine_modal.search_input_label')}>
       {searchInputs.map((input, i) => (
-        <div key={i} className="border-grey-border flex items-center gap-2 rounded-sm border p-2">
-          <span className="bg-grey-background size-6 rounded-xs p-1">
+        <div key={i} className="border-grey-border flex items-center gap-sm rounded-sm border p-sm">
+          <span className="bg-grey-background size-6 rounded-xs p-xs">
             <Icon icon="string" className="size-4" />
           </span>
           {input}

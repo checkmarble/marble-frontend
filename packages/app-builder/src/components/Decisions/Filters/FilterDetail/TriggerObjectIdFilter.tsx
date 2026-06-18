@@ -18,7 +18,7 @@ export function TriggerObjectIdFilter() {
   };
 
   return (
-    <div className="flex gap-2 p-2">
+    <div className="flex gap-sm p-sm">
       <Input
         className="flex-1"
         value={selectedTriggerObjectId ?? ''}

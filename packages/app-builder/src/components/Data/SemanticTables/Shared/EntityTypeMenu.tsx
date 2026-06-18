@@ -88,10 +88,10 @@ export function EntityTypeMenu({
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-sm">
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <Tag color={isChanged ? 'red' : 'grey'} className="cursor-pointer gap-1">
+          <Tag color={isChanged ? 'red' : 'grey'} className="cursor-pointer gap-xs">
             {isChanged && <Icon icon="tip" className="size-3" />}
             {selectedEntity && selectedEntity !== 'unset'
               ? t(`data:upload_data.ftm_entity.${selectedEntity}`)
@@ -112,7 +112,7 @@ export function EntityTypeMenu({
       {selectedEntity === 'person' && (
         <MenuCommand.Menu open={openSubType} onOpenChange={setOpenSubType}>
           <MenuCommand.Trigger>
-            <Tag className="cursor-pointer gap-1" color="grey">
+            <Tag className="cursor-pointer gap-xs" color="grey">
               {entitySubtypeOptions.find((option) => option.value === selectedPersonEntity)?.label ??
                 t('data:upload_data.object_placeholder')}
               <Icon icon="caret-down" className={cn('size-3 transition-transform', openSubType && 'rotate-180')} />

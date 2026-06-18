@@ -58,20 +58,20 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
   return (
     <PanelContainer size="xxl">
       <PanelHeader>
-        <div className="flex items-center gap-v2-sm">
+        <div className="flex items-center gap-sm">
           <span>{t('cases:overview.panel.ai_config.title')}</span>
         </div>
       </PanelHeader>
 
       <PanelContent>
-        <form id="ai-config-panel-form" className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
+        <form id="ai-config-panel-form" className="flex flex-col gap-sm" onSubmit={handleSubmit(form)}>
           {/* Section: Informations générales */}
-          <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
+          <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-lg p-md flex flex-col gap-md">
             <span className="text-s font-medium">{t('cases:ai_settings.general.title')}</span>
             <form.Field name="caseReviewSetting.orgDescription">
               {(field) => (
-                <div className="flex flex-col gap-v2-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-2">
+                <div className="flex flex-col gap-xs">
+                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.org_description.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -102,8 +102,8 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
 
             <form.Field name="caseReviewSetting.structure">
               {(field) => (
-                <div className="flex flex-col gap-v2-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-2">
+                <div className="flex flex-col gap-xs">
+                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.structure.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -140,8 +140,8 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
 
             <form.Field name="caseReviewSetting.language">
               {(field) => (
-                <div className="flex flex-col gap-v2-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-2">
+                <div className="flex flex-col gap-xs">
+                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.language.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -164,8 +164,8 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
 
             <form.Field name="caseReviewSetting.additionalCaseReviewInstruction">
               {(field) => (
-                <div className="flex flex-col gap-v2-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-2">
+                <div className="flex flex-col gap-xs">
+                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.general.additional_instruction.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -196,18 +196,18 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
           </div>
 
           {/* Section: IA (KYC Enrichment) */}
-          <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
+          <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-lg p-md flex flex-col gap-md">
             <span className="text-s font-medium">{t('cases:overview.panel.ai_config.kyc_enrichment')}</span>
             <form.Field name="kycEnrichmentSetting.enabled">
               {(field) => (
-                <div className="flex gap-2 text-pretty">
+                <div className="flex gap-sm text-pretty">
                   <Switch
                     className="shrink-0"
                     checked={field.state.value}
                     onCheckedChange={(val) => field.handleChange(val)}
                     disabled={readOnly}
                   />
-                  <div className="flex flex-col gap-v2-xs">
+                  <div className="flex flex-col gap-xs">
                     <div className="text-s text-grey-primary">
                       <Trans
                         t={t}
@@ -225,8 +225,8 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
 
             <form.Field name="kycEnrichmentSetting.customInstructions">
               {(field) => (
-                <div className="flex flex-col gap-v2-xs">
-                  <FormLabel name={field.name} className="text-xs flex items-center gap-2">
+                <div className="flex flex-col gap-xs">
+                  <FormLabel name={field.name} className="text-xs flex items-center gap-sm">
                     {t('cases:ai_settings.kyc_enrichment.custom_instructions.field.label')}
                     <Tooltip.Default
                       delayDuration={300}
@@ -265,12 +265,12 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
 
             <form.Field name="kycEnrichmentSetting.domainsFilter" mode="array">
               {(domainsField) => (
-                <div className="flex flex-col gap-v2-sm">
+                <div className="flex flex-col gap-sm">
                   {domainsField.state.value.map((_, idx) => (
                     <form.Field key={idx} name={`kycEnrichmentSetting.domainsFilter[${idx}]`}>
                       {(field) => (
-                        <div className="flex flex-col gap-v2-xs">
-                          <div className="flex gap-v2-sm items-center">
+                        <div className="flex flex-col gap-xs">
+                          <div className="flex gap-sm items-center">
                             <Input
                               className="flex-1 [&>input]:disabled:cursor-not-allowed"
                               value={field.state.value}

@@ -19,7 +19,7 @@ export const CopyToClipboardChip = ({
   return (
     <button
       className={cn(
-        'cursor-pointer border border-grey-border rounded-full py-v2-xs px-v2-sm flex items-center gap-v2-xs font-semibold text-small',
+        'cursor-pointer border border-grey-border rounded-full py-xs px-sm flex items-center gap-xs font-semibold text-small',
         className,
       )}
       onClick={(e) => {

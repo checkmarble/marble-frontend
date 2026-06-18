@@ -5,7 +5,7 @@ export function getSegmentScript(apiKey: string) {
     apiKey,
 
     // TODO(GDPR): uncomment to lazy load segment after GDPR consent
-    // Ressource to implement in house cookie consent banner: https://github.com/remix-run/examples/tree/main/gdpr-cookie-consent
+    // Ressource to implement in house cookie consent banner: https://github.com/remix-run/examples/tree/main/gdpe-cookie-consent
     // load: false,
 
     // page tracking is done manually

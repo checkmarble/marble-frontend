@@ -20,7 +20,7 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
   const formatDateTime = useFormatDateTime();
 
   return (
-    <div ref={ref} className="flex flex-row items-center gap-2">
+    <div ref={ref} className="flex flex-row items-center gap-sm">
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild>
           <Button variant="secondary" size="medium">
@@ -34,7 +34,7 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
           </Button>
         </Popover.Trigger>
         <Popover.Content
-          className="bg-surface-card border-grey-border isolate rounded-md border p-4"
+          className="bg-surface-card border-grey-border isolate rounded-md border p-md"
           align="start"
           sideOffset={2}
           side="bottom"

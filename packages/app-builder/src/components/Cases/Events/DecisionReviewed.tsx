@@ -18,8 +18,8 @@ export const DecisionReviewedDetail = ({ event }: { event: DecisionReviewedEvent
     : 'cases:case_detail.history.event_detail.decision_reviewed';
 
   return (
-    <div className="flex flex-col gap-2">
-      <div key={event.id} className="flex w-full items-center gap-2">
+    <div className="flex flex-col gap-sm">
+      <div key={event.id} className="flex w-full items-center gap-sm">
         <div className="bg-surface-card border-grey-border flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
           <Icon icon="manage-search" className="text-grey-primary size-3" />
         </div>
@@ -37,8 +37,8 @@ export const DecisionReviewedDetail = ({ event }: { event: DecisionReviewedEvent
         <EventTime time={event.createdAt} />
       </div>
       {event.comment && (
-        <div className="flex items-start gap-2 ps-8">
-          <Icon icon="comment" className="text-grey-primary size-3 shrink-0 mt-1" />
+        <div className="flex items-start gap-sm ps-xl">
+          <Icon icon="comment" className="text-grey-primary size-3 shrink-0 mt-xs" />
           <div className="text-grey-primary text-xs italic">{event.comment}</div>
         </div>
       )}

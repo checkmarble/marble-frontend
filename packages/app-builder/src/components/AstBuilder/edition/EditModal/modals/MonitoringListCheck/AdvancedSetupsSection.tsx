@@ -218,7 +218,7 @@ export const AdvancedSetupsSection = ({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-lg">
       <div className="text-s font-medium text-grey-primary">
         {t('scenarios:monitoring_list_check.advanced_question', { tableName: selectedTable.name })}
       </div>
@@ -288,9 +288,9 @@ const LinkedObjectCheckItem = ({
   const displayValue = selectedFieldName || t('scenarios:monitoring_list_check.select_field');
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-grey-border p-4">
+    <div className="flex flex-col gap-md rounded-lg border border-grey-border p-md">
       {/* Main checkbox */}
-      <label className="flex cursor-pointer items-center gap-2">
+      <label className="flex cursor-pointer items-center gap-sm">
         <Checkbox checked={isEnabled} onCheckedChange={onToggle} />
         <span className="text-s font-medium text-grey-primary">{option.linkDescription}</span>
         <Icon icon={option.direction === 'up' ? 'arrow-up' : 'arrow-down'} className="size-4 text-grey-secondary" />
@@ -298,7 +298,7 @@ const LinkedObjectCheckItem = ({
 
       {/* Navigation config for "down" direction without pre-configured navigationOptions */}
       {isEnabled && needsNavigationConfig && (
-        <div className="ml-6 flex items-center gap-2 rounded-md bg-grey-background-light p-3">
+        <div className="ms-lg flex items-center gap-sm rounded-md bg-grey-background-light p-md">
           <span className="text-xs text-grey-primary">{t('scenarios:monitoring_list_check.order_by_label')}</span>
 
           <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>

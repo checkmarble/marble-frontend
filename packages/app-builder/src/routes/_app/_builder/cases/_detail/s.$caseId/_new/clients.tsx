@@ -12,11 +12,11 @@ function RouteComponent() {
   return (
     <>
       {pivotObjects.length > 1 ? (
-        <div className="flex gap-v2-sm mb-v2-lg">
+        <div className="flex gap-sm mb-lg">
           {pivotObjects.map((p, i) => (
             <Link
               key={p.pivotValue}
-              className="px-v2-sm h-8 rounded-md border border-grey-border flex items-center aria-[current=page]:border-purple-primary"
+              className="px-sm h-8 rounded-md border border-grey-border flex items-center aria-[current=page]:border-purple-primary"
               from="/cases/s/$caseId/"
               to="./clients/$pivotValue"
               params={{ pivotValue: p.pivotValue }}

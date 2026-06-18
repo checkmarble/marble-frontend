@@ -35,7 +35,7 @@ const Story: Meta<StoryProps> = {
   },
   decorators: [
     (StoryComponent, context) => (
-      <div style={{ width: context.args.width }} className="border-grey-border rounded border p-2">
+      <div style={{ width: context.args.width }} className="border-grey-border rounded border p-sm">
         <StoryComponent />
       </div>
     ),

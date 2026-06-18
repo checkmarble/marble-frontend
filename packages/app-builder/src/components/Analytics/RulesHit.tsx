@@ -153,7 +153,7 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
     enableSorting: false,
   });
   return (
-    <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="bg-surface-card border border-grey-border rounded-lg p-md flex flex-col gap-sm">
       <div className="flex items-center justify-between">
         <Typo variant="title2">{t('analytics:rule_hits.title')}</Typo>
       </div>
@@ -164,7 +164,7 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
             <Spinner className="size-6" />
           </div>
         ) : null}
-        <div className="flex w-full flex-col items-start gap-v2-md">
+        <div className="flex w-full flex-col items-start gap-md">
           <Table.Container {...getContainerProps()} className="bg-surface-card w-full">
             <Table.Header headerGroups={table.getHeaderGroups()} />
             <Table.Body {...getBodyProps()}>
@@ -177,7 +177,7 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
                   onClick={() => setExpanded(true)}
                 >
                   <td
-                    className="text-s w-full truncate px-4 font-medium text-purple-primary"
+                    className="text-s w-full truncate px-md font-medium text-purple-primary"
                     colSpan={table.getHeaderGroups()[0]?.headers.length ?? 5}
                   >
                     {t('analytics:rule_hits.see_more.label')}
@@ -188,8 +188,8 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
           </Table.Container>
         </div>
         {!isLoading && !data.length ? (
-          <div className="flex items-center justify-center py-v2-xl">
-            <span className="text-v2-md text-grey-disabled">{t('analytics:no_data')}</span>
+          <div className="flex items-center justify-center py-xl">
+            <span className="text-md text-grey-disabled">{t('analytics:no_data')}</span>
           </div>
         ) : null}
       </div>

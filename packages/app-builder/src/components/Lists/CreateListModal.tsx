@@ -59,11 +59,11 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
           }}
         >
           <Modal.Title>{t('lists:create_list.title')}</Modal.Title>
-          <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-1 flex-col gap-4">
+          <div className="flex flex-col gap-lg p-lg">
+            <div className="flex flex-1 flex-col gap-md">
               <form.Field name="name">
                 {(field) => (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-sm">
                     <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
                     <FormInput
                       type="text"
@@ -80,7 +80,7 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
               </form.Field>
               <form.Field name="description">
                 {(field) => (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-sm">
                     <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
                     <FormInput
                       type="text"
@@ -98,7 +98,7 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
 
               <form.Field name="kind">
                 {(field) => (
-                  <div className="flex flex-1 flex-col gap-2">
+                  <div className="flex flex-1 flex-col gap-sm">
                     <FormLabel name={field.name}>{t('lists:kind')}</FormLabel>
                     <SelectV2
                       className="w-full overflow-hidden"
@@ -112,7 +112,7 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
                         },
                         {
                           label: (
-                            <span className="flex w-full items-center gap-2">
+                            <span className="flex w-full items-center gap-sm">
                               <span>{t('lists:kind.cidrs')}</span>
                               {!isIpGpsAvailable ? <Nudge kind="restricted" content={t('common:premium')} /> : null}
                             </span>

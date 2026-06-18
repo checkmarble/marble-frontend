@@ -56,7 +56,7 @@ export const ConfigurationPanel = ({
       <ContinuousScreeningConfigurationStepper.Provider value={configurationStepper}>
         <ListAndTopicDatasetConfigurationBridge useCase="continuous_monitoring">
           <ConfigurationPanelHeader />
-          <div className="p-v2-lg grow">
+          <div className="p-lg grow">
             {match(configurationStepper.value.__internals.currentStep)
               .with(0, () => <GeneralInfo stableId={baseConfig.stableId} />)
               .with(1, () => <ObjectMapping baseConfig={baseConfig} />)
@@ -78,11 +78,11 @@ const ConfigurationPanelHeader = () => {
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   return (
-    <div className="flex items-center justify-between gap-v2-md bg-surface-card h-16 px-v2-md border-b border-grey-border shrink-0 sticky top-0 z-10">
+    <div className="flex items-center justify-between gap-md bg-surface-card h-16 px-md border-b border-grey-border shrink-0 sticky top-0 z-10">
       <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
         <Icon icon="arrow-left" className="size-4" />
       </Button>
-      <span className="text-h1 mr-auto font-bold">
+      <span className="text-h1 me-auto font-bold">
         {mode === 'view' ? t('continuousScreening:panel.title.view') : t('continuousScreening:panel.title.edit')}
       </span>
       <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:panel.stepper.${stepName}`)} />

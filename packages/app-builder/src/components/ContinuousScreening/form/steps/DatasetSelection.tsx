@@ -12,11 +12,11 @@ export const DatasetSelection = ({ useCase }: { useCase: AvailableFeatures }) =>
   const tKey = mode === 'view' ? 'view' : 'creation';
 
   return (
-    <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-surface-card mx-v2-md">
+    <div className="flex flex-col gap-md">
+      <Callout bordered className="bg-surface-card mx-md">
         {t(`continuousScreening:${tKey}.datasetSelection.callout`)}
       </Callout>
-      <div className="bg-surface-card rounded-v2-lg border border-grey-border">
+      <div className="bg-surface-card rounded-lg border border-grey-border">
         <DatasetSelectionContent useCase={useCase} />
       </div>
     </div>

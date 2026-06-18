@@ -23,18 +23,18 @@ export const TestRunDetails = ({
   const { t } = useTranslation(['common', 'scenarios']);
 
   return (
-    <div className="bg-surface-card border-grey-border flex flex-row gap-10 rounded-lg border p-8">
-      <div className="flex flex-col gap-2">
+    <div className="bg-surface-card border-grey-border flex flex-row gap-2xl rounded-lg border p-xl">
+      <div className="flex flex-col gap-sm">
         <span className="text-grey-primary font-semibold">{t('scenarios:testrun.filters.version')}</span>
         <TestRunVersions iterations={iterations} refIterationId={refIterationId} testIterationId={testIterationId} />
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <span className="text-grey-primary font-semibold">{t('scenarios:testrun.filters.period')}</span>
         <TestRunPeriod className="h-10" startDate={startDate} endDate={endDate} />
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <span className="text-grey-primary font-semibold">{t('scenarios:testrun.filters.creator')}</span>
-        <div className="flex flex-row items-center gap-4">
+        <div className="flex flex-row items-center gap-md">
           <Avatar firstName={creator?.firstName} lastName={creator?.lastName} size="m" />
           {creator ? (
             <span className="text-grey-primary text-s">
@@ -43,9 +43,9 @@ export const TestRunDetails = ({
           ) : null}
         </div>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <span className="text-grey-primary font-semibold">{t('scenarios:testrun.filters.status')}</span>
-        <div className="flex flex-row items-center gap-1">
+        <div className="flex flex-row items-center gap-xs">
           <TestRunStatus status={status} />
         </div>
       </div>

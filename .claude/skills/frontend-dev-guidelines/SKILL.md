@@ -24,7 +24,7 @@ interface CaseCardProps {
 
 export function CaseCard({ caseData, onSelect, className }: CaseCardProps) {
   return (
-    <div className={cn('rounded-lg border border-grey-border p-4', className)}>
+    <div className={cn('rounded-lg border border-grey-border p-md', className)}>
       <Typo variant="subtitle1">{caseData.name}</Typo>
       <Button onClick={() => onSelect?.(caseData.id)}>Select</Button>
     </div>
@@ -35,22 +35,23 @@ export function CaseCard({ caseData, onSelect, className }: CaseCardProps) {
 ### Query Hook (one file per query)
 
 ```typescript
-// queries/cases/get-case.ts
+// /queries/continuous-screening/configuration.ts
+import { getContinuousScreeningConfigurationFn } from '@app-builder/server-fns/continuous-screening';
 import { useQuery } from '@tanstack/react-query';
-import { getRoute } from '@app-builder/utils/routes';
+import { useServerFn } from '@tanstack/react-start';
 
-export function useGetCaseQuery(caseId: string) {
+export const useContinuousScreeningConfigurationQuery = (stableId: string) => {
+  const getContinuousScreeningConfiguration = useServerFn(getContinuousScreeningConfigurationFn);
+
   return useQuery({
-    queryKey: ['cases', 'get-case', caseId],
+    queryKey: ['continuous-screening', 'configuration', stableId],
     queryFn: async () => {
-      const response = await fetch(
-        getRoute('/ressources/cases/:caseId', { caseId }),
-      );
-      return response.json() as Promise<CaseDetail>;
+      const result = await getContinuousScreeningConfiguration({ data: { stableId } });
+      return result.config;
     },
-    enabled: !!caseId,
   });
-}
+};
+
 ```
 
 ---

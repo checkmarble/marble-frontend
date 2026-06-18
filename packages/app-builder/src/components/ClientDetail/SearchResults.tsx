@@ -22,12 +22,12 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
 
   return match(searchQuery)
     .with({ isPending: true }, () => (
-      <div className="mt-v2-lg h-50 flex items-center justify-center">
+      <div className="mt-lg h-50 flex items-center justify-center">
         <Spinner className="size-10" />
       </div>
     ))
     .with({ isError: true }, () => (
-      <div className="mt-v2-lg h-50 flex items-center justify-center">
+      <div className="mt-lg h-50 flex items-center justify-center">
         <span className="text-center">{t('common:generic_fetch_data_error')}</span>
         <Button variant="secondary" onClick={() => searchQuery.refetch()}>
           {t('common:retry')}
@@ -36,7 +36,7 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
     ))
     .with({ isSuccess: true }, ({ data }) => {
       return (
-        <div className="flex flex-col gap-v2-sm mt-v2-lg">
+        <div className="flex flex-col gap-sm mt-lg">
           {data.pages
             .flatMap((page) => page.items)
             .map((item) => {
@@ -48,7 +48,7 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                   link={
                     <Link to="/client-detail/$objectType/$objectId" params={{ objectType: payload.table, objectId }} />
                   }
-                  className="p-v2-md flex items-center border border-grey-border rounded-v2-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
+                  className="p-md flex items-center border border-grey-border rounded-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
                 >
                   <Highlight
                     text={String(item[metadata.caption_field] ?? '')}
@@ -89,7 +89,7 @@ const EntityTags = ({ objectType, objectId }: { objectType: string; objectId: st
     .with({ isError: true }, () => <div>{t('common:global_error')}</div>)
     .with({ isSuccess: true }, ({ data }) => {
       return (
-        <div className="flex items-center gap-v2-sm ml-10">
+        <div className="flex items-center gap-sm ms-2xl">
           {data.annotations.tags.map((tagAnnotation) => {
             const tag = orgObjectTags.find((t) => t.id === tagAnnotation.payload.tag_id);
             return tag ? <Tag key={tag.id}>{tag.name}</Tag> : null;

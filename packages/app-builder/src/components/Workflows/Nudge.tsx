@@ -10,7 +10,7 @@ export const WorkflowNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, '
 
   return (
     <section
-      className={cn('bg-surface-card relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border-2 p-8', {
+      className={cn('bg-surface-card relative flex h-fit max-w-[500px] flex-col gap-md rounded-lg border-2 p-xl', {
         'border-purple-disabled': kind === 'restricted',
         'border-yellow-primary': kind === 'missing_configuration',
       })}
@@ -21,7 +21,7 @@ export const WorkflowNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, '
 
       <CalloutV2>{t('scenarios:home.workflow_description')}</CalloutV2>
 
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row gap-md">
         <Button variant="primary" disabled className="isolate h-10 w-fit">
           <Icon icon="plus" className="size-5" aria-hidden />
           {t('scenarios:home.workflow.create')}

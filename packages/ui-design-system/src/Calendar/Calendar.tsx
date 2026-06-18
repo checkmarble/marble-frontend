@@ -23,8 +23,8 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
       showOutsideDays={showOutsideDays}
       fixedWeeks={fixedWeeks}
       classNames={{
-        [UI.Months]: 'relative flex gap-4 w-fit',
-        [UI.Month]: 'flex flex-col gap-4',
+        [UI.Months]: 'relative flex gap-md w-fit',
+        [UI.Month]: 'flex flex-col gap-md',
         [UI.MonthCaption]: 'bloc text-center',
         [UI.CaptionLabel]:
           'text-grey-primary text-s font-medium capitalize items-center whitespace-nowrap h-10 flex justify-center',
@@ -53,10 +53,10 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         [UI.DayButton]: 'size-12 text-default font-medium',
         [SelectionState.selected]: clsx(
           'transition-colors',
-          props.mode === 'single' && 'rounded-v2-md bg-purple-primary text-grey-white ',
+          props.mode === 'single' && 'rounded-md bg-purple-primary text-grey-white ',
         ),
-        [SelectionState.range_start]: 'text-grey-white bg-purple-primary rounded-s-v2-md',
-        [SelectionState.range_end]: 'text-grey-white bg-purple-primary rounded-e-v2-md',
+        [SelectionState.range_start]: 'text-grey-white bg-purple-primary rounded-sm-md',
+        [SelectionState.range_end]: 'text-grey-white bg-purple-primary rounded-e-md',
         [SelectionState.range_middle]: 'text-purple-primary bg-purple-background-light',
         [DayFlag.outside]: 'text-grey-disabled',
         [DayFlag.disabled]: 'text-grey-disabled',

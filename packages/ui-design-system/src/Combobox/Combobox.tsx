@@ -54,7 +54,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, Ariakit.ComboboxIte
         ref={ref}
         {...props}
         className={clsx(
-          'data-active-item:bg-purple-background-light hover:bg-purple-background-light group flex flex-row items-center gap-2 rounded-sm p-2',
+          'data-active-item:bg-purple-background-light hover:bg-purple-background-light group flex flex-row items-center gap-sm rounded-sm p-sm',
           props.className,
         )}
       />

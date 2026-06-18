@@ -37,7 +37,7 @@ export function IngestedObjectDetailModal({
           {object && !noObjectFound ? (
             <DataFields table={tableName} object={object} options={{ hideLinks: true }} />
           ) : (
-            <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
+            <div className="p-md text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
           )}
         </div>
       </Modal.Content>

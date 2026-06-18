@@ -29,7 +29,7 @@ export function ListAndTopicDatasetConfigurationBridge({
 
   return match(listConfigQuery)
     .with({ isError: true }, () => (
-      <div className="flex h-50 flex-col items-center justify-center gap-2">
+      <div className="flex h-50 flex-col items-center justify-center gap-sm">
         <span className="text-s text-text-secondary">
           <Trans i18nKey="common:generic_fetch_data_error" />
         </span>

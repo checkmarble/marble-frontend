@@ -30,7 +30,7 @@ export const InputWithButton = ({
   const isValid = validator ? validator.safeParse(value).success : true;
 
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-xs">
       <Input
         type="search"
         aria-label={label}

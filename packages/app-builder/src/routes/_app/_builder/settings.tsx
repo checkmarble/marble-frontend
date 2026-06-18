@@ -56,7 +56,7 @@ function Settings() {
   return (
     <Page.Main>
       {hideTabs ? null : (
-        <div className="p-v2-lg pb-0">
+        <div className="p-lg pb-0">
           <SettingsNavigationTabs sections={sections} />
         </div>
       )}

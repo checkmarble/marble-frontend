@@ -50,7 +50,7 @@ export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | nu
 
   return (
     <form
-      className="flex w-full flex-col gap-4"
+      className="flex w-full flex-col gap-md"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -65,7 +65,7 @@ export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | nu
         }}
       >
         {(field) => (
-          <div className="flex flex-col items-start gap-2">
+          <div className="flex flex-col items-start gap-sm">
             <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
               {t('auth:sign_in.email')}
             </FormLabel>
@@ -91,8 +91,8 @@ export const StaticResetPassword = ({ prefilledEmail }: { prefilledEmail?: strin
   const { t } = useTranslation(['auth', 'common']);
 
   return (
-    <form className="flex w-full flex-col gap-4">
-      <div className="flex flex-col items-start gap-2">
+    <form className="flex w-full flex-col gap-md">
+      <div className="flex flex-col items-start gap-sm">
         <FormLabel name="email">{t('auth:sign_in.email')}</FormLabel>
         <FormInput type="email" className="w-full" defaultValue={prefilledEmail ?? ''} enablePasswordManagers />
       </div>

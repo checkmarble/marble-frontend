@@ -17,7 +17,7 @@ export const FieldEntityType = ({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <Button variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
@@ -25,7 +25,7 @@ export const FieldEntityType = ({
             <Icon icon="caret-down" className="text-grey-secondary size-4" />
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content sameWidth className="mt-2">
+        <MenuCommand.Content sameWidth className="mt-sm">
           <MenuCommand.List>
             <MenuCommand.Item onSelect={() => onChange('Thing')}>{getEntityName('Thing')}</MenuCommand.Item>
             <MenuCommand.Item onSelect={() => onChange('Person')}>{getEntityName('Person')}</MenuCommand.Item>

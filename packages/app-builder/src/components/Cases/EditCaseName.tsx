@@ -37,8 +37,8 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
         }}
       >
         {(field) => (
-          <div className="flex w-full flex-col gap-1">
-            <div className="flex items-center gap-2">
+          <div className="flex w-full flex-col gap-xs">
+            <div className="flex items-center gap-sm">
               {!isEditing ? (
                 <>
                   <span className="text-grey-primary text-s border-none bg-transparent font-medium outline-hidden">
@@ -47,7 +47,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                   <Button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="w-fit p-0.5"
+                    className="w-fit p-2xs"
                     variant="secondary"
                     mode="icon"
                   >
@@ -56,7 +56,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-sm">
                     <Button type="submit" disabled={form.state.isSubmitting} variant="primary">
                       <Icon icon="save" className="size-3.5" />
                       {t('common:save')}

@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
         const { currentScenario } = Route.useLoaderData();
 
         return (
-          <div className="flex flex-row items-center gap-4">
+          <div className="flex flex-row items-center gap-md">
             <BreadCrumbLink
               isLast={isLast}
               to="/detection/scenarios/$scenarioId"

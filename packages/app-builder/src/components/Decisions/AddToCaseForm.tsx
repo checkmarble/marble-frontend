@@ -47,8 +47,8 @@ export function AddToCaseForm() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-md">
+      <div className="flex items-center gap-sm">
         <FormLabel name="newCase" className="text-xs first-letter:capitalize">
           {t('decisions:add_to_case.create_new_case')}
         </FormLabel>
@@ -96,7 +96,7 @@ function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSu
 
   return (
     <form onSubmit={handleSubmit(form)} id="add-to-case-form">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-md">
         <p className="text-s text-grey-primary font-semibold first-letter:capitalize">
           {t('decisions:add_to_case.new_case.informations')}
         </p>
@@ -108,7 +108,7 @@ function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSu
           }}
         >
           {(field) => (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
                 {t('decisions:add_to_case.new_case.new_case_name')}
               </FormLabel>
@@ -132,7 +132,7 @@ function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSu
           }}
         >
           {(field) => (
-            <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-sm">
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
                 {t('decisions:add_to_case.new_case.select_inbox')}
               </FormLabel>
@@ -189,7 +189,7 @@ function ExistingCaseForm({ onSuccess }: { onSuccess: OnSuccessAddFn }) {
 
   return (
     <form onSubmit={handleSubmit(form)} id="add-to-case-form">
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-md">
         <p className="text-s text-grey-primary font-semibold first-letter:capitalize">
           {t('decisions:add_to_case.new_case.attribution')}
         </p>
@@ -201,7 +201,7 @@ function ExistingCaseForm({ onSuccess }: { onSuccess: OnSuccessAddFn }) {
           }}
         >
           {(field) => (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
                 {t('decisions:add_to_case.new_case.case_id.label')}
               </FormLabel>

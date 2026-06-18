@@ -188,7 +188,7 @@ function SubMenu({
               <Icon
                 aria-hidden="true"
                 icon="arrow-right"
-                className="group-data-[state=open]/menu-item:text-purple-primary ml-auto size-5 shrink-0 rtl:rotate-180"
+                className="group-data-[state=open]/menu-item:text-purple-primary ms-auto size-5 shrink-0 rtl:rotate-180"
               />
             )}
           </Item>
@@ -239,7 +239,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
       type="button"
       className={cn(
         clsx([
-          'flex h-10 min-w-[40px] items-center justify-between gap-2 rounded-sm border px-2 outline-hidden',
+          'flex h-10 min-w-[40px] items-center justify-between gap-sm rounded-sm border px-xs outline-hidden',
           'disabled:bg-grey-background disabled:text-grey-disabled data-[read-only]:pointer-events-none data-[read-only]:bg-grey-background-light data-[read-only]:border-transparent',
           'bg-surface-elevated border-grey-border focus:not-data-[read-only]:border-purple-primary',
           'dark:disabled:bg-transparent',
@@ -361,15 +361,15 @@ function Combobox({ className, onValueChange, iconClasses, filterMode = 'default
   }, [internalSharp]);
 
   return (
-    <div className={cn('relative m-2 mb-0 h-10', className)}>
+    <div className={cn('relative m-sm mb-0 h-10', className)}>
       <Command.Input
         ref={inputRef}
-        className={cn(inputClassname(), 'ps-8')}
+        className={cn(inputClassname(), 'ps-xl')}
         value={menuState.value.search}
         onValueChange={setSearch}
         {...props}
       />
-      <div className="text-grey-secondary peer-focus:text-grey-primary pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
+      <div className="text-grey-secondary peer-focus:text-grey-primary pointer-events-none absolute inset-y-0 start-0 flex items-center ps-sm">
         <Icon icon="search" className={cn('size-5', iconClasses)} />
       </div>
     </div>
@@ -415,7 +415,7 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       className={cn(
         [
           'aria-selected:bg-purple-background-light data-[state=open]:bg-purple-background-light aria-disabled:text-grey-disabled outline-hidden',
-          'flex h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-xs p-2',
+          'flex h-10 scroll-mb-sm scroll-mt-2xl flex-row items-center justify-between gap-sm rounded-xs p-sm',
         ],
         { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
         className,
@@ -429,7 +429,7 @@ const Separator = React.forwardRef<
   React.ElementRef<typeof Command.Separator>,
   React.ComponentPropsWithoutRef<typeof Command.Separator>
 >(({ className, ...props }, ref) => (
-  <Command.Separator ref={ref} className={cn('bg-grey-border -mx-2 my-2 h-px', className)} {...props} />
+  <Command.Separator ref={ref} className={cn('bg-grey-border -mx-sm my-sm h-px', className)} {...props} />
 ));
 Separator.displayName = Command.Separator.displayName;
 
@@ -438,7 +438,7 @@ function List({ className, ...props }: ListProps) {
   return (
     <Command.List
       className={cn(
-        'flex-1 overflow-y-auto overflow-x-hidden p-v2-sm group-[[data-size="small"]]/menu-command-content:p-v2-xs',
+        'flex-1 overflow-y-auto overflow-x-hidden p-sm group-[[data-size="small"]]/menu-command-content:p-xs',
         className,
       )}
       {...props}

@@ -50,7 +50,7 @@ export function PayloadEvaluationCondition({ condition, onChange, scenario }: Pa
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-sm">
       <AstBuilder.Provider scenarioId={scenario.id} mode="edit" showValues={false}>
         <AstBuilder.Root
           node={currentExpression}

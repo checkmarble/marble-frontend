@@ -6,7 +6,7 @@ export function ScreeningErrors({ screening }: { screening: ScreeningError }) {
   const { t } = useTranslation(['screenings']);
 
   return (
-    <div className="text-s bg-red-background text-red-primary flex items-center gap-4 rounded-sm p-4">
+    <div className="text-s bg-red-background text-red-primary flex items-center gap-md rounded-sm p-md">
       <Icon icon="error" className="size-5 shrink-0" />
       <div className="flex flex-col">
         <span className="font-semibold">

@@ -87,7 +87,7 @@ export const IpWhitelistingSettingsPage = ({
           <CollapsiblePaper.Content>
             <form
               onSubmit={handleSubmit(form)}
-              className="grid grid-cols-[300px_1fr] gap-v2-sm items-center"
+              className="grid grid-cols-[300px_1fr] gap-sm items-center"
               id="ip-whitelisting-form"
             >
               <form.Field name="allowedNetworks" mode="array">
@@ -105,7 +105,7 @@ export const IpWhitelistingSettingsPage = ({
                               }}
                               placeholder={t('settings:ip_whitelisting.placeholder')}
                             />
-                            <div className="flex items-center gap-v2-sm">
+                            <div className="flex items-center gap-sm">
                               <Button mode="icon" variant="secondary" onClick={() => networksField.removeValue(idx)}>
                                 <Icon
                                   icon="delete"
@@ -125,7 +125,7 @@ export const IpWhitelistingSettingsPage = ({
                         )}
                       </form.Field>
                     ))}
-                    <div className="flex gap-v2-md items-center col-span-full">
+                    <div className="flex gap-md items-center col-span-full">
                       <Button variant="primary" className="w-fit" onClick={() => networksField.pushValue('')}>
                         <Icon icon="plus" className="size-3.5 shrink-0 cursor-pointer" />
                         {t('settings:ip_whitelisting.add_new')}

@@ -10,19 +10,19 @@ export function CaseTags({ caseTagIds, orgTags }: { caseTagIds: string[]; orgTag
   return (
     <Tooltip.Default
       content={
-        <div className="flex max-w-sm flex-wrap gap-1">
+        <div className="flex max-w-sm flex-wrap gap-xs">
           {caseTagIds.map((caseTagId) => (
             <CaseTag key={caseTagId} tag={orgTags.find((t) => t.id === caseTagId)} />
           ))}
         </div>
       }
     >
-      <div className="flex w-fit flex-wrap items-center gap-1">
+      <div className="flex w-fit flex-wrap items-center gap-xs">
         {caseTagIds.slice(0, 3).map((caseTagId) => (
           <CaseTag key={caseTagId} tag={orgTags.find((t) => t.id === caseTagId)} />
         ))}
         {caseTagIds.length > 3 ? (
-          <div className="text-grey-primary bg-grey-background flex h-6 items-center rounded-s px-2 text-xs font-normal">
+          <div className="text-grey-primary bg-grey-background flex h-6 items-center rounded-sm px-xs text-xs font-normal">
             {t('cases:case_detail.other_tags_count', {
               count: caseTagIds.length - 3,
             })}
@@ -37,7 +37,7 @@ export function CaseTag({ tag }: { tag?: Tag }) {
   const { t } = useTranslation(casesI18n);
 
   return (
-    <div className="bg-grey-background flex h-6 items-center rounded-sm px-2" style={{ backgroundColor: tag?.color }}>
+    <div className="bg-grey-background flex h-6 items-center rounded-sm px-xs" style={{ backgroundColor: tag?.color }}>
       <span className="text-grey-primary line-clamp-1 text-xs font-normal">
         {tag?.name || t('cases:case_detail.unknown_tag')}
       </span>

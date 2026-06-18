@@ -14,10 +14,10 @@ function CommandExample() {
           <span>Add a rule group</span>
         </Button>
       </Popover.Trigger>
-      <Popover.Content className="mt-1" align="start">
-        <Command className="w-[400px] p-2">
-          <div className="border-grey-border flex items-center gap-2 border-b p-2 pb-4">
-            <div className="bg-purple-background flex size-fit flex-row items-center gap-2 rounded-full px-2 py-1">
+      <Popover.Content className="mt-xs" align="start">
+        <Command className="w-[400px] p-sm">
+          <div className="border-grey-border flex items-center gap-sm border-b p-sm pb-md">
+            <div className="bg-purple-background flex size-fit flex-row items-center gap-sm rounded-full px-xs py-2xs">
               <span className="text-purple-primary text-xs">Rule group 1</span>
               <Icon icon="cross" className="text-purple-primary size-4" />
             </div>
@@ -27,17 +27,17 @@ function CommandExample() {
             <CommandItem>+ Typing to create a new label</CommandItem>
             <CommandGroup heading="Select a rule group or create one">
               <CommandItem>
-                <div className="bg-purple-background flex size-fit flex-row items-center gap-2 rounded-full px-2 py-1">
+                <div className="bg-purple-background flex size-fit flex-row items-center gap-sm rounded-full px-xs py-2xs">
                   <span className="text-purple-primary text-xs">Rule group 1</span>
                 </div>
               </CommandItem>
               <CommandItem>
-                <div className="bg-purple-background flex size-fit flex-row items-center gap-2 rounded-full px-2 py-1">
+                <div className="bg-purple-background flex size-fit flex-row items-center gap-sm rounded-full px-xs py-2xs">
                   <span className="text-purple-primary text-xs">Rule group 2</span>
                 </div>
               </CommandItem>
               <CommandItem>
-                <div className="bg-purple-background flex size-fit flex-row items-center gap-2 rounded-full px-2 py-1">
+                <div className="bg-purple-background flex size-fit flex-row items-center gap-sm rounded-full px-xs py-2xs">
                   <span className="text-purple-primary text-xs">Rule group 3</span>
                 </div>
               </CommandItem>

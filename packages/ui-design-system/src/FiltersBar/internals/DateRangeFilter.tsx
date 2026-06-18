@@ -105,11 +105,11 @@ function DateRangeFilterFromNowPicker({
   const { fromNow } = useDateRangeFilterContext();
 
   return (
-    <div className={clsx('flex flex-col gap-4 p-4', className)}>
+    <div className={clsx('flex flex-col gap-md p-md', className)}>
       <div className="flex items-center">
         <p className="text-grey-disabled text-s font-normal first-letter:capitalize">{title}</p>
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-xs">
         {Array.from(presetDurations.entries()).map(([duration, label]) => (
           <button
             key={duration}
@@ -117,7 +117,7 @@ function DateRangeFilterFromNowPicker({
               onFromNowSelect(duration);
             }}
             className={clsx(
-              'text-s bg-surface-card text-grey-primary border-grey-white flex h-10 items-center rounded-sm border p-2 outline-hidden',
+              'text-s bg-surface-card text-grey-primary border-grey-white flex h-10 items-center rounded-sm border p-sm outline-hidden',
               'hover:bg-purple-background-light active:bg-purple-background hover:text-purple-primary',
               fromNow === duration && 'bg-purple-background border-purple-primary text-purple-primary', // highlight the currently selected
             )}
@@ -134,7 +134,7 @@ function DateRangeFilterCalendar({ className, locale }: { className?: string; lo
   const { calendarSelected, onCalendarSelect } = useDateRangeFilterContext();
 
   return (
-    <div className={clsx('p-4', className)}>
+    <div className={clsx('p-md', className)}>
       <Calendar
         mode="range"
         selected={calendarSelected}
@@ -160,15 +160,15 @@ function DateRangeFilterSummary({
   if (fromNow) {
     if (presetDurations.has(fromNow)) {
       return (
-        <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
+        <div className={clsx('m-md flex h-10 w-full items-center justify-center', className)}>
           {presetDurations.get(fromNow)}
         </div>
       );
     }
     return (
-      <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
+      <div className={clsx('m-md flex h-10 w-full items-center justify-center', className)}>
         <time
-          className="text-s text-grey-primary flex h-10 items-center rounded-sm p-2 outline-hidden"
+          className="text-s text-grey-primary flex h-10 items-center rounded-sm p-sm outline-hidden"
           dateTime={fromNow}
         >
           {t('filters:up_to', {
@@ -180,7 +180,7 @@ function DateRangeFilterSummary({
   }
 
   return (
-    <div className={clsx('grid grid-cols-[1fr_max-content_1fr] gap-1 p-4', className)}>
+    <div className={clsx('grid grid-cols-[1fr_max-content_1fr] gap-xs p-md', className)}>
       <FormatStaticDate className="justify-self-end" date={calendarSelected?.from} />
       <span className="text-l self-center">→</span>
       <FormatStaticDate date={calendarSelected?.to} />
@@ -203,7 +203,7 @@ function FormatStaticDate({ date, className }: { date?: string | Date; className
     <time
       dateTime={dateTime}
       className={clsx(
-        'border-grey-border h-10 w-fit rounded-sm border p-2',
+        'border-grey-border h-10 w-fit rounded-sm border p-sm',
         date ? 'text-grey-primary' : 'text-grey-secondary',
         className,
       )}

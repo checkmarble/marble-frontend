@@ -81,13 +81,13 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
   const { t } = useTranslation(['common', 'analytics']);
 
   return (
-    <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="bg-surface-card border border-grey-border rounded-lg p-md flex flex-col gap-sm">
       <div className="flex items-center justify-between">
         <Typo variant="title2">{t('analytics:decisions_score_distribution.title')}</Typo>
         <Button
           disabled={!query.isSuccess || !query.data}
           variant="secondary"
-          className="flex items-center gap-v2-sm"
+          className="flex items-center gap-sm"
           onClick={() => query.data && handleExportCsv(query.data)}
         >
           <Icon icon="download" className="size-4" />
@@ -97,14 +97,14 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
 
       <div className="min-h-[500px]">
         <div className="w-full">
-          <div className="bg-surface-card border border-grey-border rounded-lg p-v2-md mt-v2-sm relative">
+          <div className="bg-surface-card border border-grey-border rounded-lg p-md mt-sm relative">
             {query.isFetching ? <GraphSpinnerOverlay /> : null}
             {query.isError ? (
               <div className="absolute inset-0 z-5 flex items-center justify-center rounded-lg bg-grey-background/80">
                 <span className="text-s text-grey-60">{t('common:global_error')}</span>
               </div>
             ) : null}
-            <div className="flex w-full h-[500px] flex-col items-end justify-end gap-v2-md">
+            <div className="flex w-full h-[500px] flex-col items-end justify-end gap-md">
               {match(query)
                 .with({ isSuccess: true }, (successQuery) => (
                   <DecisionsScoreDistributionGraph data={successQuery.data ?? []} />
@@ -144,7 +144,7 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
         <span className="text-s">{t('analytics:decisions_score_distribution.left-axis-legend')}</span>
         <Button
           variant="secondary"
-          className="flex items-center gap-v2-sm"
+          className="flex items-center gap-sm"
           disabled={!hasOutliers}
           onClick={() => setIsExpanded(!isExpanded)}
         >
@@ -196,9 +196,9 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
               return null;
             }
             return (
-              <div className="flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
+              <div className="flex flex-col gap-xs bg-surface-card px-md py-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
                 <span className="text-s text-grey-primary font-semibold">{`Score: ${point.data.x.toFixed(0)} → ${(point.data.x + bucketSize).toFixed(0)}`}</span>
-                <div className="flex items-center justify-between gap-v2-md">
+                <div className="flex items-center justify-between gap-md">
                   <span className="text-s text-grey-secondary">
                     {t('analytics:decisions_score_distribution.left-axis-legend')}
                   </span>

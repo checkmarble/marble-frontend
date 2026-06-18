@@ -81,7 +81,7 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
         <Modal.Title>{t('data:create_navigation_option.title')}</Modal.Title>
         <form
           id={`create_navigation_option_form_${link.parentTableId}_${link.childTableId}`}
-          className="grid grid-cols-[auto_1fr] items-center gap-2 p-8"
+          className="grid grid-cols-[auto_1fr] items-center gap-sm p-xl"
           onSubmit={handleSubmit(form)}
         >
           <span>{t('data:create_navigation_option.labels.from')}</span>
@@ -144,7 +144,7 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
               }}
             </form.Field>
           </div>
-          <div className="col-span-full mt-4">{t('data:create_navigation_option.explanation_text')}</div>
+          <div className="col-span-full mt-md">{t('data:create_navigation_option.explanation_text')}</div>
         </form>
         <Modal.Footer>
           <Modal.FooterButton isCloseButton label={t('common:cancel')} />

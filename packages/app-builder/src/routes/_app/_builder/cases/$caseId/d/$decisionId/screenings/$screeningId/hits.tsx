@@ -29,7 +29,7 @@ function CaseSanctionsHitsPage() {
 
   return (
     <div className="bg-surface-card border-grey-border grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
-      <div className="col-span-full flex flex-row gap-12 p-4">
+      <div className="col-span-full flex flex-row gap-3xl p-md">
         <ScreeningReviewSection
           screening={screening}
           onRefineSuccess={(screeningId) => {
@@ -38,13 +38,13 @@ function CaseSanctionsHitsPage() {
             );
           }}
         />
-        <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
+        <div className="sticky top-0 flex h-fit flex-1 flex-col gap-lg">
           {screening.request ? (
             <ScreeningQueryDetail request={screening.request} initialQuery={screening.initialQuery} />
           ) : null}
           {pivotValues.length > 0 && (
-            <div className="flex h-fit flex-col gap-2">
-              <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
+            <div className="flex h-fit flex-col gap-sm">
+              <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-sm">
                 <span className="text-grey-primary text-xs font-medium first-letter:capitalize">
                   {t('cases:case_detail.pivot_values')}
                 </span>
@@ -53,8 +53,8 @@ function CaseSanctionsHitsPage() {
             </div>
           )}
 
-          <div className="flex h-fit flex-col gap-2">
-            <div className="flex flex-row items-center justify-between gap-2">
+          <div className="flex h-fit flex-col gap-sm">
+            <div className="flex flex-row items-center justify-between gap-sm">
               <span className="text-grey-primary text-xs font-medium first-letter:capitalize">
                 {t('cases:case_detail.trigger_object')}
               </span>

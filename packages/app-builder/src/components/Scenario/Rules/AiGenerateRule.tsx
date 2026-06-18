@@ -30,12 +30,12 @@ export function AiGenerateRule({ scenarioId, ruleId, onFormulaGenerated }: AiGen
   };
 
   return (
-    <div className="bg-surface-card border-grey-border rounded-md border p-4 max-w-2xl">
-      <Typo variant="subtitle1" className="text-s font-medium mb-3">
+    <div className="bg-surface-card border-grey-border rounded-md border p-md max-w-2xl">
+      <Typo variant="subtitle1" className="text-s font-medium mb-md">
         {t('scenarios:rules.ai_generate.title')}
       </Typo>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-md">
         <textarea
           value={instruction}
           onChange={(e) => setInstruction(e.currentTarget.value)}

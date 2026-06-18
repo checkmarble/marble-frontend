@@ -35,14 +35,14 @@ export const Primary = Template.bind({});
 Primary.args = {};
 
 export const Variants: StoryFn<StoryProps> = () => (
-  <div className="flex flex-col gap-4 md:flex-row">
+  <div className="flex flex-col gap-md md:flex-row">
     <Card color="default">Default card</Card>
     <Card color="purple">Purple card</Card>
   </div>
 );
 
 export const WithRichContent: StoryFn<StoryProps> = () => (
-  <Card className="flex max-w-sm flex-col gap-3">
+  <Card className="flex max-w-sm flex-col gap-md">
     <Typo variant="subtitle1">Card title</Typo>
     <p className="text-s text-grey-secondary">
       Cards group related content and actions. They accept any children and an optional color variant.

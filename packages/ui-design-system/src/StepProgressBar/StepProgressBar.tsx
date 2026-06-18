@@ -56,7 +56,7 @@ export function StepProgressBar<const K extends string>({
   const fillPercent = activeIndex < 0 ? 0 : ((activeIndex + 1) / steps.length) * 100;
 
   return (
-    <div className={cn('flex w-full flex-col gap-2', className)}>
+    <div className={cn('flex w-full flex-col gap-sm', className)}>
       <div className="flex w-full">
         {steps.map((step, index) => {
           const isActive = index <= activeIndex;

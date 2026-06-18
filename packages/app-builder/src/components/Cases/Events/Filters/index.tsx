@@ -21,7 +21,7 @@ export const caseEventsFilterSchema = z.object({
 export type CaseEventFiltersForm = z.infer<typeof caseEventsFilterSchema>;
 
 const Badge = ({ children }: ComponentProps<'span'>) => (
-  <span className="bg-purple-primary text-grey-white text-small rounded-sm px-1 py-0.5">{children}</span>
+  <span className="bg-purple-primary text-grey-white text-small rounded-sm px-2xs py-0.5">{children}</span>
 );
 
 export type CaseEventFiltersProps = {
@@ -47,7 +47,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
     .otherwise(() => 'indeterminate');
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-sm">
       {isDirty ? (
         <Button variant="secondary" onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_CATEGORIES_FILTER })}>
           <Icon icon="cross" className="size-4" />
@@ -59,7 +59,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
           <Button variant="secondary" appearance="link">
             <Icon icon="plus" className="size-4" />
             <span>Type</span>
-            {/*{filters.types.length > 0 ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
+            {/*{filters.types.length > 0 ? <div className="bg-grey-disabled mx-xs h-3 w-px" /> : null}
             {filters.types.length >= 3 ? (
               <Badge>{t('cases:case_detail.history.nb_selected', { count: filters.types.length })}</Badge>
             ) : (
@@ -70,10 +70,10 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
           </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content sideOffset={4} className="max-h-[400px] max-w-[210px]" align="end">
-          <MenuCommand.Combobox className="m-1 mb-0 h-8 p-0" iconClasses="size-4" />
-          <MenuCommand.List className="p-1">
+          <MenuCommand.Combobox className="m-xs mb-0 h-8 p-0" iconClasses="size-4" />
+          <MenuCommand.List className="p-xs">
             <MenuCommand.Item
-              className="flex min-h-0 cursor-pointer items-center justify-start p-1.5"
+              className="flex min-h-0 cursor-pointer items-center justify-start p-xs.5"
               onSelect={() => {
                 setFilters({ types: checked === true ? [] : [...CASE_EVENT_CATEGORIES] });
               }}
@@ -81,11 +81,11 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
               <Checkbox size="small" checked={checked} />
               <span className="text-s">{t(`common:${checked === true ? 'select_none' : 'select_all'}`)}</span>
             </MenuCommand.Item>
-            <MenuCommand.Separator className="-mx-1" />
+            <MenuCommand.Separator className="-mx-xs" />
             {CASE_EVENT_CATEGORIES.map((type) => (
               <MenuCommand.Item
                 onSelect={() => setFilters((prev) => ({ ...prev, types: toggle(prev.types, type) }))}
-                className="flex min-h-0 cursor-pointer items-center justify-start p-1.5"
+                className="flex min-h-0 cursor-pointer items-center justify-start p-xs.5"
                 key={type}
               >
                 <Checkbox size="small" checked={filters?.types.includes(type)} />
@@ -100,7 +100,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
           <Button variant="secondary" appearance="link">
             <Icon icon="plus" className="size-4" />
             <span>Date</span>
-            {filters.startDate || filters.endDate ? <div className="bg-grey-disabled mx-1 h-3 w-px" /> : null}
+            {filters.startDate || filters.endDate ? <div className="bg-grey-disabled mx-xs h-3 w-px" /> : null}
             {filters.startDate ? (
               <Badge>
                 {t('common:from', {
@@ -117,8 +117,8 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
             ) : null}
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content className="mt-2">
-          <MenuCommand.List className="p-2">
+        <MenuCommand.Content className="mt-sm">
+          <MenuCommand.List className="p-sm">
             <Calendar
               mode="range"
               selected={{

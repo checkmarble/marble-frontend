@@ -55,7 +55,7 @@ export function TagSelector({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-sm">
       {(maxVisibleTags ? selectedTagIds.slice(0, maxVisibleTags) : selectedTagIds).map((id) => (
         <TagPreview key={id} name={formattedTags[id]?.name ?? id} />
       ))}
@@ -69,7 +69,7 @@ export function TagSelector({
             {!selectedTagIds.length ? <span className="text-grey-secondary text-xs">{t('common:add')}</span> : null}
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom" align="end">
+        <MenuCommand.Content className="mt-sm min-w-[200px]" side="bottom" align="end">
           <MenuCommand.Combobox placeholder={t('workflows:action.tags.search_placeholder')} />
           <MenuCommand.List>
             {tags.map(({ id: tagId }) => (
@@ -86,7 +86,7 @@ export function TagSelector({
               </MenuCommand.Item>
             ))}
             <MenuCommand.Empty>
-              <div className="px-3 py-2 text-grey-60">{t('workflows:action.tags.no_result')}</div>
+              <div className="px-md py-xs text-grey-60">{t('workflows:action.tags.no_result')}</div>
             </MenuCommand.Empty>
           </MenuCommand.List>
         </MenuCommand.Content>

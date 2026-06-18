@@ -57,8 +57,8 @@ export function OperandInfos(props: OperandInfosProps) {
       </HoverCardTrigger>
       <HoverCardPortal>
         <HoverCardContent side="right" align="start" sideOffset={20} alignOffset={-8} className={contentClassnames}>
-          <div className="bg-surface-card flex flex-col gap-2 overflow-auto p-4">
-            <div className="flex flex-col gap-1">
+          <div className="bg-surface-card flex flex-col gap-sm overflow-auto p-md">
+            <div className="flex flex-col gap-xs">
               <TypeInfos operandType={props.operandType} dataType={props.dataType} />
               <p className="text-grey-primary text-s text-ellipsis hyphens-auto font-normal">{props.displayName}</p>
             </div>
@@ -86,11 +86,11 @@ function TypeInfos({ operandType, dataType }: TypeInfosProps) {
   if (typeInfos.filter(({ tKey }) => !!tKey).length === 0) return null;
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row gap-sm">
       {typeInfos.map(({ icon, tKey }) => {
         if (!tKey) return null;
         return (
-          <span key={tKey} className="text-purple-disabled inline-flex items-center gap-[2px] text-xs font-normal">
+          <span key={tKey} className="text-purple-disabled inline-flex items-center gap-2xs text-xs font-normal">
             {icon ? <Icon icon={icon} className="size-3" /> : null}
             {t(tKey, { count: 1 })}
           </span>
@@ -154,11 +154,11 @@ function RecordRiskLevelDescription({ node }: { node: IdLessAstNode<RecordRiskLe
 
   return (
     <>
-      <div className="flex gap-v2-xs items-center">
+      <div className="flex gap-xs items-center">
         {node.children[0].constant.map((level) => (
           <div
             key={level}
-            className="flex gap-v2-xs items-center border rounded-full px-v2-sm py-v2-xs text-small"
+            className="flex gap-xs items-center border rounded-full px-sm py-xs text-small"
             style={{ borderColor: levelColorsMap[level] }}
           >
             <div className="size-4 rounded-full" style={{ backgroundColor: levelColorsMap[level] }} />
@@ -182,7 +182,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
   const percentileValue = percentile?.constant;
 
   return (
-    <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
+    <div className="grid grid-cols-[min-content_1fr] items-center gap-sm">
       <span className="text-purple-primary text-center font-bold">{aggregator.constant}</span>
       <span className="font-bold">{aggregatedFieldName}</span>
       {percentileValue !== undefined && aggregator.constant === 'PCTILE' ? (
@@ -196,7 +196,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
         return (
           <Fragment key={`filter_${index}`}>
             <LogicalOperatorLabel operator={index === 0 ? 'where' : 'and'} type="text" />
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-xs">
               {/* TODO: replace with OperandLabel for consistency,
               we may need to change the AggregatorEditableAstNode to register a valid Payload node (instead of the shorthand Constant)
               but it can be cumbersome for api compatibility (notably when getting the astNode from the server)
@@ -205,7 +205,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
               - a field name (string) = fieldName?.constant
               - a table name (string) = tableName?.constant
               */}
-              <p className="bg-grey-background-light whitespace-nowrap p-2 text-end">{fieldName.constant ?? '...'}</p>
+              <p className="bg-grey-background-light whitespace-nowrap p-sm text-end">{fieldName.constant ?? '...'}</p>
               <ViewingOperator operator={operator.constant} isFilter />
               {!isUnaryAggregationFilter(filter) ? (
                 <ViewingAstBuilderOperand node={filter.namedChildren.value} />
@@ -229,7 +229,7 @@ function FuzzyMatchComparatorDescription({ node }: FuzzyMatchComparatorDescripti
   if (!level) return null;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-sm">
       <span className="text-grey-50 text-xs">{t('scenarios:edit_fuzzy_match.level.label')}</span>
       <span className="text-grey-00 text-xs font-medium uppercase">
         {t(`scenarios:edit_fuzzy_match.level.${level}`)}
@@ -262,7 +262,7 @@ function DataAccessorDescription({ node, dataModel, triggerObjectTable }: DataAc
     <>
       <Description description={field.description} />
       {field.isEnum && field.values && field.values.length > 0 ? (
-        <div className="text-grey-secondary flex max-w-[300px] flex-col gap-1">
+        <div className="text-grey-secondary flex max-w-[300px] flex-col gap-xs">
           <p className="text-s">{t('scenarios:enum_options')}</p>
           <ul className="flex flex-col">
             {field.values

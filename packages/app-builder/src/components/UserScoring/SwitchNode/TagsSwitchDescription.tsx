@@ -12,11 +12,11 @@ interface TagsSwitchDescriptionProps {
 export function TagsSwitchDescription({ conditions, maxRiskLevel, getTagLabel }: TagsSwitchDescriptionProps) {
   const { t } = useTranslation(['user-scoring']);
   return (
-    <ul className="flex flex-col gap-v2-sm">
+    <ul className="flex flex-col gap-sm">
       {conditions.branches.map((branch, idx) => (
         <SwitchCaseRow key={idx} impact={branch.impact} maxRiskLevel={maxRiskLevel}>
           <span>{t('user-scoring:switch.screening_tags.if_tags_include')}</span>
-          <span className="flex flex-wrap gap-1">
+          <span className="flex flex-wrap gap-xs">
             {branch.value.map((tag) => (
               <Tag key={tag} color="grey">
                 {getTagLabel(tag)}

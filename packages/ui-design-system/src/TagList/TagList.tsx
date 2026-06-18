@@ -51,7 +51,7 @@ export function TagList({ tags, value, editable, align = 'start', ...rest }: Tag
   };
 
   const anchor = (
-    <div className="flex gap-v2-xs items-center">
+    <div className="flex gap-xs items-center">
       <ListContainer tags={tags} value={internalValue} onClick={handleClick} />
       {editable ? (
         <Button
@@ -90,7 +90,7 @@ function ListContainer({ tags, value, onClick }: { tags: TagEntity[]; value: str
   const valueTags = value.map((id) => tags.find((t) => t.id === id)).filter(Boolean) as TagEntity[];
 
   return (
-    <div className={cn('flex gap-v2-xs', { 'cursor-pointer': !!onClick, hidden: value.length === 0 })}>
+    <div className={cn('flex gap-xs', { 'cursor-pointer': !!onClick, hidden: value.length === 0 })}>
       {valueTags.map((tag) => (
         <Tag tabIndex={0} key={tag.id} onClick={onClick}>
           {tag.name}

@@ -14,7 +14,7 @@ export function CaseAssignedTo({ userId }: { userId: string }) {
   return (
     <Tooltip.Default
       content={
-        <div key={user?.userId ?? 0} className="flex flex-row items-center gap-1">
+        <div key={user?.userId ?? 0} className="flex flex-row items-center gap-xs">
           <Avatar key={user?.userId} size="xs" firstName={user?.firstName} lastName={user?.lastName} />
           <div className="text-grey-primary text-xs font-normal capitalize">
             {getFullName(user) || t('cases:case_detail.unknown_user')}
@@ -22,7 +22,7 @@ export function CaseAssignedTo({ userId }: { userId: string }) {
         </div>
       }
     >
-      <div className="flex w-fit flex-row items-center gap-1">
+      <div className="flex w-fit flex-row items-center gap-xs">
         <Avatar
           key={user?.userId ?? 0}
           className="border-grey-white border-2"

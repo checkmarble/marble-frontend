@@ -106,11 +106,11 @@ function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: U
   return (
     <div>
       <Modal.Title>{t('cases:add_file')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <div
           {...getRootProps()}
           className={clsx(
-            'text-s flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+            'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
             isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
           )}
         >
@@ -139,7 +139,7 @@ const Loading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
       )}
     >
       {t('common:loading')}

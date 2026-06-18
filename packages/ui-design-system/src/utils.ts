@@ -21,7 +21,7 @@ const twMerge = extendTailwindMerge({
   },
   extend: {
     classGroups: {
-      p: ['p-v2-xxxl', 'p-v2-xxl', 'p-v2-xl', 'p-v2-lg', 'p-v2-md', 'p-v2-sm', 'p-v2-xs', 'p-v2-xxs'],
+      p: ['p-3xl', 'p-2xl', 'p-xl', 'p-lg', 'p-md', 'p-sm', 'p-xs', 'p-2xs'],
     },
   },
 });

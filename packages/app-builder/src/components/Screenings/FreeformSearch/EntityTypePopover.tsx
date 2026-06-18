@@ -43,10 +43,10 @@ export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
   const schemas = R.keys(SEARCH_ENTITIES);
 
   return (
-    <div className="flex items-center gap-2 relative">
+    <div className="flex items-center gap-sm relative">
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild disabled={disabled}>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-sm flex-wrap">
             <Tag
               color={disabled ? 'grey' : 'purple'}
               className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -65,7 +65,7 @@ export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
           align="start"
         >
           {/* Entity type list */}
-          <div className="max-h-[300px] overflow-y-auto p-2">
+          <div className="max-h-[300px] overflow-y-auto p-sm">
             {schemas.map((schema) => {
               const schemaKey = schema.toLowerCase();
               const fieldForSchema = SEARCH_ENTITIES[schema].fields;
@@ -77,7 +77,7 @@ export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
                   type="button"
                   onClick={() => handleSelect(schema)}
                   className={cn(
-                    'text-s flex w-full items-center gap-2 rounded px-3 py-2 text-left',
+                    'text-s flex w-full items-center gap-sm rounded px-md py-xs text-left',
                     isSelected ? 'bg-purple-background-light text-purple-primary' : 'hover:bg-grey-background-light',
                   )}
                 >
@@ -187,7 +187,7 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
       <Popover.Trigger asChild disabled={disabled}>
         <button
           type="button"
-          className="flex items-center gap-2 flex-wrap"
+          className="flex items-center gap-sm flex-wrap"
           aria-label={t('screenings:freeform_search.advanced_filters')}
         >
           {filterTags}
@@ -205,7 +205,7 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
         sideOffset={8}
         align="start"
       >
-        <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-1 p-2">
+        <div className="mt-sm grid grid-cols-2 gap-sm lg:grid-cols-1 p-sm">
           {entityTypeFields.map((fieldName, index) => {
             const isLastOdd = index === entityTypeFields.length - 1 && entityTypeFields.length % 2 === 1;
             const localValue = localFields[fieldName] ?? '';
@@ -227,7 +227,7 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
             }
             if (fieldName === 'birthDate') {
               return (
-                <div key={fieldName} className={cn('flex flex-col gap-1', isLastOdd && 'col-span-2 lg:col-span-1')}>
+                <div key={fieldName} className={cn('flex flex-col gap-xs', isLastOdd && 'col-span-2 lg:col-span-1')}>
                   <Input
                     name={`fields.${fieldName}`}
                     value={localValue}

@@ -29,7 +29,7 @@ function SelectContent({ children, className, ...props }: React.PropsWithChildre
   return (
     <Portal>
       <Content
-        className={clsx('bg-surface-card border-grey-border z-50 mt-2 rounded-sm border shadow-md', className)}
+        className={clsx('bg-surface-card border-grey-border z-50 mt-sm rounded-sm border shadow-md', className)}
         position="popper"
         {...props}
       >
@@ -47,7 +47,7 @@ function SelectContent({ children, className, ...props }: React.PropsWithChildre
 
 function SelectViewport({ children, className, ...props }: React.PropsWithChildren<SelectViewportProps>) {
   return (
-    <Viewport className={clsx('flex flex-col gap-2 p-2', className)} {...props}>
+    <Viewport className={clsx('flex flex-col gap-sm p-sm', className)} {...props}>
       {children}
     </Viewport>
   );
@@ -62,8 +62,8 @@ export const selectTrigger = cva(
         disabled: 'bg-grey-background-light',
       },
       border: {
-        square: 'gap-2 rounded-sm p-2',
-        rounded: 'rounded-full p-2',
+        square: 'gap-sm rounded-sm p-sm',
+        rounded: 'rounded-full p-sm',
       },
       borderColor: {
         'greyfigma-90': 'border-grey-border focus:border-purple-primary',
@@ -110,7 +110,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
     <Item
       ref={ref}
       className={clsx(
-        'text-s rounded-xs p-2 font-medium outline-hidden',
+        'text-s rounded-xs p-sm font-medium outline-hidden',
         'radix-highlighted:bg-purple-background-light radix-highlighted:text-purple-primary',
         className,
       )}
@@ -128,7 +128,7 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps & { align?: 'cen
   return (
     <span
       className={clsx(
-        'w-full group-data-[border=rounded]/trigger:px-2',
+        'w-full group-data-[border=rounded]/trigger:px-xs',
         { 'text-center': align === 'center', 'text-start': align === 'start' },
         className,
       )}
@@ -301,7 +301,7 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
   const renderTriggerContent = () => {
     if (props.multiple && selectedOptions && selectedOptions.length > 0) {
       return (
-        <span className="flex flex-wrap gap-1">
+        <span className="flex flex-wrap gap-xs">
           {selectedOptions.map((opt, i) => (
             <Tag key={i} color="grey" size="small">
               {renderOptionLabel(opt, displayedValue)}
@@ -342,7 +342,7 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
             ref={ref}
             aria-label={triggerAccessibleName}
             disabled={disabled}
-            className={cn('flex gap-v2-xxs items-center', className)}
+            className={cn('flex gap-2xs items-center', className)}
           >
             {props.multiple && selectedOptions && selectedOptions.length > 0 ? (
               <Tag color="purple">

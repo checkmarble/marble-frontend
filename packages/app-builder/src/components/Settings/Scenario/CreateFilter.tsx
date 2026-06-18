@@ -87,8 +87,8 @@ export function CreateFilter({
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <form onSubmit={handleSubmit(form)}>
           <Modal.Title>{t('settings:scenarios.filters.new_filter.title')}</Modal.Title>
-          <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-lg p-lg">
+            <div className="flex flex-col gap-sm">
               <MenuCommand.Menu open={openUnifiedMenu} onOpenChange={setOpenUnifiedMenu}>
                 <MenuCommand.Trigger>
                   <MenuCommand.SelectButton>{summaryLabel()}</MenuCommand.SelectButton>
@@ -157,7 +157,7 @@ export function CreateFilter({
                 </MenuCommand.Content>
               </MenuCommand.Menu>
             </div>
-            <div className="flex flex-1 gap-2 justify-end">
+            <div className="flex flex-1 gap-sm justify-end">
               <Modal.Close asChild>
                 <Button variant="secondary" onClick={() => setOpen(false)}>
                   {t('common:cancel')}

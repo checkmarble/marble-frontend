@@ -30,7 +30,7 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
     <Modal.Root open onOpenChange={handleOpenChange}>
       <Modal.Content size={props.size} onInteractOutside={handleImplicitClose} onEscapeKeyDown={handleImplicitClose}>
         <Modal.Title>{props.title}</Modal.Title>
-        <div className={cn('flex flex-col gap-4 p-4', className)}>{props.children}</div>
+        <div className={cn('flex flex-col gap-md p-md', className)}>{props.children}</div>
         <Modal.Footer>
           <Modal.FooterButton isCloseButton label={t('common:cancel')} />
           <Modal.FooterButton

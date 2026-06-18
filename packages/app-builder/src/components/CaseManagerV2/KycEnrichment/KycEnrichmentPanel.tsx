@@ -64,7 +64,7 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
   return (
     <PanelRoot open={open} onOpenChange={onOpenChange}>
       <PanelContainer size="4xl">
-        <div className="flex items-center gap-v2-sm pb-v2-md border-b border-grey-border">
+        <div className="flex items-center gap-sm pb-md border-b border-grey-border">
           <Icon icon="ai-review" className="size-5 text-purple-primary shrink-0" />
           <Typo variant="title2" className="flex-1 text-grey-primary">
             {t('cases:kyc_enrichment.title')}
@@ -77,10 +77,10 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
           />
         </div>
 
-        <div className="flex flex-col gap-v2-md flex-1 overflow-y-auto py-v2-md">
+        <div className="flex flex-col gap-md flex-1 overflow-y-auto py-md">
           {isPending ? (
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-center gap-2">
+            <div className="flex flex-col gap-md">
+              <div className="flex justify-center gap-sm">
                 <Spinner className="size-6" />
                 <span>{t('cases:kyc_enrichment.loading')}</span>
               </div>
@@ -95,9 +95,9 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
               </Callout>
               <div>
                 <Markdown>{kycCaseEnrichment.analysis}</Markdown>
-                <div className="mt-4">
+                <div className="mt-md">
                   {kycCaseEnrichment.citations.map((citation, index) => (
-                    <div key={`citation.${index}`} className="mb-2">
+                    <div key={`citation.${index}`} className="mb-sm">
                       <span>[{index + 1}]</span>{' '}
                       <a
                         className="text-purple-primary hover:bg-purple-background hover:text-grey-secondary"
@@ -113,7 +113,7 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
           ) : null}
         </div>
 
-        <div className="pt-v2-md border-t border-grey-border mt-auto flex items-center justify-end gap-v2-xs">
+        <div className="pt-md border-t border-grey-border mt-auto flex items-center justify-end gap-xs">
           <Button
             disabled={addCommentMutation.isPending || !isSuccess || isCommentAdded}
             variant="primary"
@@ -132,9 +132,9 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
 
 function AnalysisSkeleton() {
   return (
-    <div className="flex flex-row gap-6 p-4">
-      <div className="flex h-fit flex-2 flex-col gap-2">
-        <div className="flex flex-row items-center justify-between gap-2">
+    <div className="flex flex-row gap-lg p-md">
+      <div className="flex h-fit flex-2 flex-col gap-sm">
+        <div className="flex flex-row items-center justify-between gap-sm">
           <div className="bg-grey-border h-4 w-32 animate-pulse rounded-md" />
         </div>
         <div className="bg-grey-border h-12 animate-pulse rounded-lg" />

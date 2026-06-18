@@ -95,13 +95,13 @@ function DetectionListsPage() {
   return (
     <Page.Main>
       <Page.Container>
-        <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
+        <Page.ContentV2 className="gap-md max-w-(--breakpoint-xl)">
           <DetectionNavigationTabs
             actions={isCreateListAvailable ? <CreateListModal isIpGpsAvailable={isIpGpsAvailable} /> : undefined}
           />
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-md">
             {isEmpty ? (
-              <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-md">
                 <p className="text-s font-medium">{t('lists:empty_custom_lists_list')}</p>
               </div>
             ) : (

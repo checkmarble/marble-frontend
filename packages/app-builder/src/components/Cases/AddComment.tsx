@@ -47,23 +47,23 @@ export function AddComment({ caseId }: { caseId: string }) {
   const hasContent = useStore(form.store, (s) => s.values.comment.length > 0);
 
   return (
-    <form onSubmit={handleSubmit(form)} className="bg-surface-elevated border-grey-border gap-4 border-t p-4">
+    <form onSubmit={handleSubmit(form)} className="bg-surface-elevated border-grey-border gap-md border-t p-md">
       <div
-        className="grid grid-cols-[auto_1fr_auto] gap-v2-sm items-start group/comment-form"
+        className="grid grid-cols-[auto_1fr_auto] gap-sm items-start group/comment-form"
         data-has-content={hasContent}
       >
         <form.Field name="files">
           {(field) => (
             <div>
               <input {...getInputProps()} />
-              <div className="flex items-center gap-2 invisible group-focus-within/comment-form:visible group-data-[has-content='true']/comment-form:visible">
+              <div className="flex items-center gap-sm invisible group-focus-within/comment-form:visible group-data-[has-content='true']/comment-form:visible">
                 <Button type="button" variant="secondary" mode="icon" {...getRootProps()}>
                   <Icon icon="attachment" className="text-grey-secondary size-3.5" />
                 </Button>
                 {field.state.value.map((file) => (
                   <div
                     key={file.name}
-                    className="border-grey-border flex items-center gap-1 rounded-sm border px-1.5 py-0.5"
+                    className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs.5 py-0.5"
                   >
                     <span className="text-xs font-medium">{file.name}</span>
                     <Icon

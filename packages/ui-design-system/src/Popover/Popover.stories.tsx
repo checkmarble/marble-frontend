@@ -12,12 +12,12 @@ export default Story;
 export const Primary: StoryFn<typeof Popover.Content> = () => (
   <Popover.Root>
     <Popover.Trigger asChild>
-      <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-3 py-1 text-s">
+      <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-md py-2xs text-s">
         Open popover
       </button>
     </Popover.Trigger>
-    <Popover.Content side="bottom" sideOffset={4} className="p-3">
-      <div className="flex w-64 flex-col gap-2">
+    <Popover.Content side="bottom" sideOffset={4} className="p-md">
+      <div className="flex w-64 flex-col gap-sm">
         <span className="text-m font-semibold">Popover title</span>
         <span className="text-s text-grey-secondary">
           A floating panel anchored to its trigger. Click outside or press Escape to close.
@@ -34,14 +34,14 @@ export const WithAnchor: StoryFn<typeof Popover.Content> = () => (
         Anchor element
       </div>
     </Popover.Anchor>
-    <div className="mt-4">
+    <div className="mt-md">
       <Popover.Trigger asChild>
-        <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-3 py-1 text-s">
+        <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-md py-2xs text-s">
           Toggle (anchored above)
         </button>
       </Popover.Trigger>
     </div>
-    <Popover.Content side="bottom" sideOffset={4} className="p-3">
+    <Popover.Content side="bottom" sideOffset={4} className="p-md">
       <span className="text-s">Positioned relative to the anchor, not the trigger.</span>
     </Popover.Content>
   </Popover.Root>

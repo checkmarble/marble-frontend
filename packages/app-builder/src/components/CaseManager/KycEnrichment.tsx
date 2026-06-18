@@ -66,9 +66,9 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
   };
 
   const AnalysisSkeleton = () => (
-    <div className="flex flex-row gap-6 p-4">
-      <div className="flex h-fit flex-2 flex-col gap-2">
-        <div className="flex flex-row items-center justify-between gap-2">
+    <div className="flex flex-row gap-lg p-md">
+      <div className="flex h-fit flex-2 flex-col gap-sm">
+        <div className="flex flex-row items-center justify-between gap-sm">
           <div className="bg-grey-border h-4 w-32 animate-pulse rounded-md" />
         </div>
         <div className="bg-grey-border h-12 animate-pulse rounded-lg" />
@@ -88,10 +88,10 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
       </Modal.Trigger>
       <Modal.Content size="xlarge" className="h-[90vh] flex flex-col">
         <Modal.Title>{t('cases:kyc_enrichment.title')}</Modal.Title>
-        <div className="flex flex-col gap-4 py-8 px-4 flex-1 min-h-0">
+        <div className="flex flex-col gap-md py-xl px-sm flex-1 min-h-0">
           {isPending && (
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-center gap-2">
+            <div className="flex flex-col gap-md">
+              <div className="flex justify-center gap-sm">
                 <Spinner className="size-6" />
                 <span>{t('cases:kyc_enrichment.loading')}</span>
               </div>
@@ -100,16 +100,16 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
           )}
           {error && <Callout variant="outlined">{error.message}</Callout>}
           {isSuccess && data.success && kycCaseEnrichment ? (
-            <div className="flex flex-col gap-4 flex-1 min-h-0">
+            <div className="flex flex-col gap-md flex-1 min-h-0">
               <Callout variant="outlined">
                 {t('cases:kyc_enrichment.for')} <strong>{kycCaseEnrichment.entityName}</strong>
               </Callout>
               <ScrollAreaV2 orientation="vertical" className="flex-1 min-h-0">
-                <div className="p-4">
+                <div className="p-md">
                   <Markdown>{kycCaseEnrichment.analysis}</Markdown>
-                  <div className="mt-4">
+                  <div className="mt-md">
                     {kycCaseEnrichment.citations.map((citation: any, index: number) => (
-                      <div key={`citation.${index}`} className="mb-2">
+                      <div key={`citation.${index}`} className="mb-sm">
                         <span>[{index + 1}]</span>
                         <span>
                           <a

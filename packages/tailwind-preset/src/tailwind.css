@@ -107,22 +107,22 @@
   --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
   --color-orange-background-light: oklch(0.9456 0.0322 55.36); /* #FFE8D9 */
 
-  --spacing-v2-xxxxl: 5rem;
-  --spacing-v2-xxxl: 3rem;
-  --spacing-v2-xxl: 2.5rem;
-  --spacing-v2-xl: 2rem;
-  --spacing-v2-lg: 1.5rem;
-  --spacing-v2-md: 1rem;
-  --spacing-v2-sm: 0.5rem;
-  --spacing-v2-xs: 0.25rem;
-  --spacing-v2-xxs: 0.125rem;
+  --spacing-4xl: 5rem;
+  --spacing-3xl: 3rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-xl: 2rem;
+  --spacing-lg: 1.5rem;
+  --spacing-md: 1rem;
+  --spacing-sm: 0.5rem;
+  --spacing-xs: 0.25rem;
+  --spacing-2xs: 0.125rem;
 
-  --radius-v2-xxl: 1.5rem;
-  --radius-v2-xl: 1rem;
-  --radius-v2-lg: 0.75rem;
-  --radius-v2-md: 0.5rem;
-  --radius-v2-s: 0.25rem;
-  --radius-v2-xs: 0.125rem;
+  --radius-2xl: 1.5rem;
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-xs: 0.125rem;
 
   /* Font sizes */
   --text-2xl: 28px;

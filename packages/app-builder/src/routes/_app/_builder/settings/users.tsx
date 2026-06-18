@@ -117,7 +117,7 @@ function Users() {
               size: 50,
               cell: ({ cell }) => {
                 return (
-                  <div className="flex gap-2">
+                  <div className="flex gap-sm">
                     {isEditUserAvailable ? (
                       <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
                         <UpdateUser user={cell.row.original} userRoles={userRoles} access={entitlements.userRoles} />

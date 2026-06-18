@@ -21,7 +21,7 @@ export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsMod
   const rulesetsQuery = useListScoringRulesetsQuery();
 
   return (
-    <div className="flex flex-col gap-v2-md">
+    <div className="flex flex-col gap-md">
       <ScoringSettings settings={settings} />
       {settings
         ? match(rulesetsQuery)
@@ -31,7 +31,7 @@ export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsMod
               </div>
             ))
             .with({ isError: true }, () => (
-              <div className="flex flex-col gap-v2-sm items-center justify-center">
+              <div className="flex flex-col gap-sm items-center justify-center">
                 <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
                 <Button variant="secondary" onClick={() => rulesetsQuery.refetch()}>
                   {t('common:retry')}
@@ -42,7 +42,7 @@ export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsMod
               const rulesets = data?.rulesets ?? [];
               if (rulesets.length > 0) {
                 return (
-                  <div className="grid grid-cols-[repeat(auto-fill,minmax(500px,1fr))] gap-v2-md">
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(500px,1fr))] gap-md">
                     {rulesets.map((ruleset) => (
                       <ScoringRulesetCard key={ruleset.id} ruleset={ruleset} settings={settings} />
                     ))}
@@ -50,7 +50,7 @@ export function ScoringOverviewPage({ settings }: { settings: ScoringSettingsMod
                 );
               }
               return (
-                <div className="bg-surface-card border border-grey-border p-v2-md rounded-v2-md flex flex-col gap-v2-md">
+                <div className="bg-surface-card border border-grey-border p-md rounded-md flex flex-col gap-md">
                   <span>{t('user-scoring:overview.no_ruleset')}</span>
                   <Button appearance="stroked" onClick={() => setOpen(true)}>
                     {t('user-scoring:overview.configure_score')}
@@ -74,7 +74,7 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
   const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
-    <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md h-[400px]">
+    <div className="bg-surface-card border border-grey-border rounded-md p-md flex flex-col gap-md h-[400px]">
       <p className="text-s font-medium">{t('user-scoring:overview.ruleset_card.title', { name: entityName })}</p>
       {match(distributionQuery)
         .with({ isPending: true }, () => (
@@ -108,7 +108,7 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
             }));
 
           return (
-            <div className="flex flex-1 flex-col gap-v2-sm">
+            <div className="flex flex-1 flex-col gap-sm">
               <div className="flex-1">
                 <ResponsivePie
                   data={pieData}
@@ -117,7 +117,7 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
                   colors={{ datum: 'data.color' }}
                   enableArcLabels={false}
                   tooltip={({ datum }) => (
-                    <div className="flex items-center gap-v2-xs bg-surface-card p-v2-xs rounded-lg border border-grey-border shadow-sm text-s text-grey-primary whitespace-nowrap">
+                    <div className="flex items-center gap-xs bg-surface-card p-xs rounded-lg border border-grey-border shadow-sm text-s text-grey-primary whitespace-nowrap">
                       <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: datum.color }} />
                       {datum.label}: {datum.value} ({Math.round((datum.value / total) * 100)}%)
                     </div>
@@ -126,9 +126,9 @@ function ScoringRulesetCard({ ruleset, settings }: { ruleset: ScoringRuleset; se
                   margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                 />
               </div>
-              <div className="flex flex-wrap items-center justify-center gap-x-v2-md gap-y-v2-xs">
+              <div className="flex flex-wrap items-center justify-center gap-x-md gap-y-xs">
                 {pieData.map((item) => (
-                  <div key={item.id} className="flex items-center gap-v2-xs">
+                  <div key={item.id} className="flex items-center gap-xs">
                     <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                     <span className="text-xs font-medium text-grey-secondary">{item.label}</span>
                   </div>

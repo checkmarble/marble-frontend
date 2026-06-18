@@ -12,7 +12,7 @@ const iconColorClassName = {
   yellow: 'text-yellow-primary',
 } as const;
 
-const callout = cva('text-s flex flex-row items-center gap-2 rounded-sm p-2 font-normal', {
+const callout = cva('text-s flex flex-row items-center gap-sm rounded-sm p-sm font-normal', {
   variants: {
     /**
      * Outlined variant is usefull when you want to use the callout on non white background
@@ -67,7 +67,7 @@ export function CalloutV2({ children, className, ...otherProps }: React.Componen
   return (
     <aside
       className={cn(
-        'bg-purple-background-light text-s text-purple-primary flex flex-row gap-2 rounded-lg p-4 font-normal items-center dark:text-grey-primary',
+        'bg-purple-background-light text-s text-purple-primary flex flex-row gap-sm rounded-lg p-md font-normal items-center dark:text-grey-primary',
         className,
       )}
       {...otherProps}

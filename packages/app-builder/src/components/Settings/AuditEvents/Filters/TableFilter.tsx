@@ -37,7 +37,7 @@ export const TableFilterMenu = ({ onSelect }: TableFilterMenuProps) => {
   }, [deferredValue]);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-sm p-sm">
       <MenuCommand.Combobox placeholder={t('settings:audit.filter.search_table')} onValueChange={setSearchValue} />
       <MenuCommand.List className="max-h-40">
         {matches.map((table) => (

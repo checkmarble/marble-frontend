@@ -18,8 +18,8 @@ export const ScoringConfiguration = () => {
   const tKey = mode === 'view' ? 'view' : 'creation';
 
   return (
-    <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-surface-card mx-v2-md">
+    <div className="flex flex-col gap-md">
+      <Callout bordered className="bg-surface-card mx-md">
         {t(`continuousScreening:${tKey}.scoringConfiguration.callout`)}
       </Callout>
       <Field title={t('continuousScreening:creation.scoringConfiguration.matchThreshold.title')}>
@@ -44,7 +44,7 @@ export const ScoringConfiguration = () => {
         />
         <span>{t('continuousScreening:creation.scoringConfiguration.matchLimit.text')}</span>
       </Field>
-      <div className="grid grid-cols-1 gap-v2-md">
+      <div className="grid grid-cols-1 gap-md">
         <Field
           required={mode === 'create'}
           title={t('continuousScreening:creation.scoringConfiguration.alertAutomation.title')}
@@ -82,7 +82,7 @@ const InboxSelector = () => {
       </div>
     ))
     .with({ isError: true }, () => (
-      <div className="flex gap-v2-md items-center">
+      <div className="flex gap-md items-center">
         <div className="">{t('common:generic_fetch_data_error')}</div>
         <Button variant="secondary" onClick={() => inboxesQuery.refetch()}>
           {t('common:retry')}

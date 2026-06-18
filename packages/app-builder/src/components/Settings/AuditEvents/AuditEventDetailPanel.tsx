@@ -20,10 +20,10 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
     <PanelContainer size="xl">
       <PanelHeader>{t('settings:audit.detail.title')}</PanelHeader>
       <PanelContent>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-lg">
           {/* Event metadata */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1">
+          <div className="grid grid-cols-2 gap-md">
+            <div className="flex flex-col gap-xs">
               <span className="text-grey-secondary text-xs">{t('settings:audit.table.timestamp')}</span>
               <span className="text-grey-primary text-sm">
                 {event.createdAt
@@ -35,11 +35,11 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
                   : '-'}
               </span>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-xs">
               <span className="text-grey-secondary text-xs">{t('settings:audit.table.operation')}</span>
               <OperationBadge operation={event.operation} />
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-xs">
               <span className="text-grey-secondary text-xs">
                 {event.actor?.type === 'api_key'
                   ? t('settings:audit.detail.api_key')
@@ -50,11 +50,11 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
               </span>
               <span className="text-grey-primary text-sm">{event.actor?.name ?? '-'}</span>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-xs">
               <span className="text-grey-secondary text-xs">{t('settings:audit.table.table')}</span>
               <span className="text-grey-primary text-sm">{event.table ?? '-'}</span>
             </div>
-            <div className="col-span-2 flex flex-col gap-1">
+            <div className="col-span-2 flex flex-col gap-xs">
               <span className="text-grey-secondary text-xs">{t('settings:audit.table.entity_id')}</span>
               {event.entityId ? (
                 <CopyToClipboardButton toCopy={event.entityId} size="sm">
@@ -67,7 +67,7 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
           </div>
 
           {/* JSON diff */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <span className="text-grey-primary text-sm font-semibold">{t('settings:audit.detail.data')}</span>
             <JsonDiff oldData={event.oldData} newData={event.newData} />
           </div>

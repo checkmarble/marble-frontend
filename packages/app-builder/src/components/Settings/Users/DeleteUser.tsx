@@ -51,8 +51,8 @@ const DeleteUserContent = ({ userId, onSuccess }: { userId: string; onSuccess: (
   return (
     <>
       <Modal.Title>{t('settings:users.delete_user.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="text-s flex flex-1 flex-col gap-4">
+      <div className="flex flex-col gap-lg p-lg">
+        <div className="text-s flex flex-1 flex-col gap-md">
           <input name="userId" value={userId} type="hidden" />
           <p className="text-center">{t('settings:users.delete_user.content')}</p>
         </div>

@@ -103,7 +103,7 @@ function AddRuleSnoozeContent({
       }}
     >
       <Modal.Title>{t('cases:case_detail.add_rule_snooze.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <Modal.Description asChild>
           <Callout variant="outlined">
             <p className="whitespace-pre-wrap">
@@ -126,7 +126,7 @@ function AddRuleSnoozeContent({
           }}
         >
           {(field) => (
-            <div className="row-span-full grid grid-rows-subgrid gap-2">
+            <div className="row-span-full grid grid-rows-subgrid gap-sm">
               <FormLabel name={field.name}>{t('cases:case_detail.add_rule_snooze.comment.label')}</FormLabel>
               <TextArea
                 className="w-full"
@@ -142,7 +142,7 @@ function AddRuleSnoozeContent({
           )}
         </form.Field>
 
-        <div className="grid w-full grid-cols-2 grid-rows-[repeat(3,max-content)] gap-2">
+        <div className="grid w-full grid-cols-2 grid-rows-[repeat(3,max-content)] gap-sm">
           <form.Field
             name="durationValue"
             validators={{
@@ -151,7 +151,7 @@ function AddRuleSnoozeContent({
             }}
           >
             {(field) => (
-              <div className="row-span-full grid grid-rows-subgrid gap-2">
+              <div className="row-span-full grid grid-rows-subgrid gap-sm">
                 <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
                   {t('cases:case_detail.add_rule_snooze.duration_value')}
                 </FormLabel>
@@ -177,7 +177,7 @@ function AddRuleSnoozeContent({
             }}
           >
             {(field) => (
-              <div className="row-span-full grid grid-rows-subgrid gap-2">
+              <div className="row-span-full grid grid-rows-subgrid gap-sm">
                 <FormLabel name={field.name}>{t('cases:case_detail.add_rule_snooze.duration_unit')}</FormLabel>
                 <SelectV2
                   className="h-10 w-full"

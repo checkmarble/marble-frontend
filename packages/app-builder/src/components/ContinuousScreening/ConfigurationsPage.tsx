@@ -72,7 +72,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
   return (
     <Page.Main>
       <Page.Container>
-        <Page.ContentV2 className="gap-v2-md">
+        <Page.ContentV2 className="gap-md">
           <div className="flex items-center justify-between">
             <Typo variant="title1">{t('navigation:continuous-screening.configurations')}</Typo>
             {canEdit ? (
@@ -85,7 +85,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
             .with(P.nullish, () => null)
             .with(P.array(), (configurations) =>
               configurations.length === 0 ? (
-                <div className="flex flex-col gap-v2-sm items-center justify-center py-10 border border-grey-border rounded-lg bg-surface-card">
+                <div className="flex flex-col gap-sm items-center justify-center py-2xs0 border border-grey-border rounded-lg bg-surface-card">
                   <Icon icon="scan-eye" className="size-10 text-purple-primary" />
                   <span>{t('continuousScreening:configurations.list.empty')}</span>
                   {canEdit ? (
@@ -109,7 +109,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
                       className="hover:bg-grey-background-light"
                       onClick={() => handleRowClick(item)}
                     >
-                      <GridTable.Cell className="flex gap-v2-md items-center justify-between">
+                      <GridTable.Cell className="flex gap-md items-center justify-between">
                         <span className="truncate">{item.name}</span>
                         <CopyToClipboardButton toCopy={item.stableId} className="min-w-40" size="chip" rounded>
                           <span className="text-xs">{item.stableId}</span>

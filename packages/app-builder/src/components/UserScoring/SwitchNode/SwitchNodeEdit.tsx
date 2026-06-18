@@ -29,7 +29,7 @@ export function SwitchNodeEdit({
   if (!model) return null;
 
   return (
-    <div className="flex flex-col gap-v2-sm text-s text-grey-secondary">
+    <div className="flex flex-col gap-sm text-s text-grey-secondary">
       {match(model)
         .with({ type: 'user_attribute' }, (m) => (
           <UserAttributeRuleEdit

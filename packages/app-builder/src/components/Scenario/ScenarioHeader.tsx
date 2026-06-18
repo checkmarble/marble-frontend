@@ -33,7 +33,7 @@ export function ScenarioHeader({ isEditScenarioAvailable, scenario }: ScenarioHe
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <div className="flex flex-row items-center gap-v2-xs">
+    <div className="flex flex-row items-center gap-xs">
       <BackButton />
       <EditableScenarioField
         scenarioId={scenario.id}
@@ -71,7 +71,7 @@ export function ScenarioDescriptionEditable({
       editLabel={t('scenarios:update_scenario.title')}
       disabled={!isEditScenarioAvailable || !hydrated}
       formClassName="w-full"
-      containerClassName="w-full items-center gap-3"
+      containerClassName="w-full items-center gap-md"
       displayValueClassName="min-w-0"
       emptyValueClassName="text-grey-placeholder"
       inputClassName="text-s text-grey-secondary min-w-0 flex-1 border-none bg-transparent font-normal outline-hidden"
@@ -155,8 +155,8 @@ export function EditableScenarioField({
         }}
       >
         {(field) => (
-          <div className="flex min-w-0 flex-col gap-1">
-            <div className={clsx('flex min-w-0 items-center gap-2', containerClassName)}>
+          <div className="flex min-w-0 flex-col gap-xs">
+            <div className={clsx('flex min-w-0 items-center gap-sm', containerClassName)}>
               {isEditing ? (
                 <input
                   type="text"

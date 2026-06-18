@@ -88,7 +88,7 @@ function ReviewDecisionContent({
         form.handleSubmit();
       }}
     >
-      <div className="flex flex-col gap-2 p-4">
+      <div className="flex flex-col gap-sm p-md">
         <p className="text-grey-primary text-base font-semibold leading-[1.1]">
           {t('cases:case_detail.review_decision.title')}
         </p>
@@ -103,13 +103,13 @@ function ReviewDecisionContent({
           }}
         >
           {(field) => (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               {nonPendingReviewStatuses.map((reviewStatus) => {
                 const isSelected = field.state.value === reviewStatus;
                 const hasScreeningWarning = screening && screening.status !== 'no_hit' && reviewStatus === 'approve';
 
                 return (
-                  <label key={reviewStatus} className="flex cursor-pointer items-center gap-2">
+                  <label key={reviewStatus} className="flex cursor-pointer items-center gap-sm">
                     <input
                       type="radio"
                       name="reviewStatus"
@@ -121,7 +121,7 @@ function ReviewDecisionContent({
                         isSelected ? 'border-[5px] border-purple-primary' : 'border border-purple-primary bg-white',
                       )}
                     />
-                    <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-col gap-2xs">
                       <ReviewStatusTag size="small" className="w-fit" reviewStatus={reviewStatus} />
                       {hasScreeningWarning ? (
                         <span className="text-red-hover text-xs">

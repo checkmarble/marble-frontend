@@ -29,7 +29,7 @@ export function CaseAnalyticsDateRangeMenu({ value, onChange }: CaseAnalyticsDat
       }}
     >
       <MenuCommand.Trigger>
-        <Button variant="secondary" className="flex h-12 min-w-60 items-center gap-v2-sm px-v2-md text-s">
+        <Button variant="secondary" className="flex h-12 min-w-60 items-center gap-sm px-md text-s">
           <Icon icon="calendar-month" className="size-5" />
           <span className="flex-1 text-left">{label}</span>
           <Icon icon="caret-down" className="size-5" />
@@ -45,7 +45,7 @@ export function CaseAnalyticsDateRangeMenu({ value, onChange }: CaseAnalyticsDat
             <DateRangeFilter.Summary className="col-span-3 row-span-1" />
           </DateRangeFilter.Root>
         </MenuCommand.List>
-        <div className="border-grey-border flex justify-center gap-2 overflow-x-auto border-t p-2">
+        <div className="border-grey-border flex justify-center gap-sm overflow-x-auto border-t p-sm">
           <MenuCommand.HeadlessItem
             onSelect={() => {
               if (draft) {

@@ -61,7 +61,7 @@ export const EditDataModelField = ({
       <MenuCommand.Trigger>
         <button
           disabled={disabled}
-          className="border-grey-border text-s bg-surface-card aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-2"
+          className="border-grey-border text-s bg-surface-card aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-xs"
         >
           {showPlaceholder ? (
             <span>{placeholder}</span>
@@ -104,7 +104,7 @@ export const EditDataModelFieldTableMenu = ({ tableName, fields, onChange }: Edi
     <MenuCommand.List>
       <MenuCommand.Group
         heading={
-          <div className="text-grey-secondary mb-2 items-center px-2 pb-2 text-xs">
+          <div className="text-grey-secondary mb-sm items-center px-sm pb-sm text-xs">
             <Trans t={t} i18nKey="scenarios:edit_aggregation.available_fields" values={{ tableName }} />
           </div>
         }
@@ -114,7 +114,7 @@ export const EditDataModelFieldTableMenu = ({ tableName, fields, onChange }: Edi
           return (
             <MenuCommand.Item
               key={field.fieldName}
-              className="data-active-item:bg-purple-background-light group grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
+              className="data-active-item:bg-purple-background-light group grid w-full select-none grid-cols-[20px_1fr] gap-xs rounded-xs p-sm outline-hidden"
               onSelect={() => onChange(field)}
             >
               {typeIcon ? <Icon icon={typeIcon} className="col-start-1 size-5 shrink-0" /> : null}
@@ -152,7 +152,7 @@ function FieldInfo({ field }: { field: DataModelField }) {
         portal
         className="bg-surface-card border-grey-border text-s flex max-h-[min(var(--popover-available-height),400px)] max-w-(--popover-available-width) rounded-sm border shadow-md"
       >
-        <div className="p-4">{field.description}</div>
+        <div className="p-md">{field.description}</div>
       </Ariakit.Hovercard>
     </Ariakit.HovercardProvider>
   );

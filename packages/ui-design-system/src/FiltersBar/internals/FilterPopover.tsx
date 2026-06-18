@@ -53,7 +53,7 @@ const FilterItemTrigger = forwardRef<HTMLButtonElement, Popover.PopoverTriggerPr
     <FilterPopover.Trigger
       ref={ref}
       className={clsx(
-        'text-purple-primary focus:border-purple-primary -mr-1 flex h-full flex-row items-center gap-1 rounded-sm border border-solid border-transparent px-2 outline-hidden',
+        'text-purple-primary focus:border-purple-primary -me-xs flex h-full flex-row items-center gap-xs rounded-sm border border-solid border-transparent px-xs outline-hidden',
         className,
       )}
       {...props}
@@ -69,7 +69,7 @@ const FilterItemClear = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<'
     <button
       ref={ref}
       className={clsx(
-        'focus:border-purple-primary -ml-1 h-full rounded-sm border border-solid border-transparent px-2 outline-hidden',
+        'focus:border-purple-primary -ms-xs h-full rounded-sm border border-solid border-transparent px-xs outline-hidden',
         className,
       )}
       {...props}

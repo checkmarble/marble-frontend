@@ -100,12 +100,12 @@ export const ScreeningProvidersSettingsPage = ({
             </Button>
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <Callout color="red" icon="error" iconColor="red" className="mb-v2-md">
+            <Callout color="red" icon="error" iconColor="red" className="mb-md">
               {submitError}
             </Callout>
             <form
               onSubmit={handleSubmit(form)}
-              className="grid grid-cols-[300px_1fr] gap-v2-sm items-center"
+              className="grid grid-cols-[300px_1fr] gap-sm items-center"
               id="screening-providers-form"
             >
               {SCREENING_FEATURES.map((feature) => (

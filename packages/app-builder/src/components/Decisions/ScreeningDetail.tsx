@@ -25,10 +25,10 @@ export function ScreeningDetail({ screening }: { screening: Screening }) {
         </div>
       </Collapsible.Title>
       <Collapsible.Content>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-md">
           {hasError ? <ScreeningErrors screening={screening} /> : null}
           {screening.request ? <SearchInput request={screening.request} /> : null}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             {screening.matches.map((match) => (
               <MatchCard
                 readonly
@@ -54,11 +54,11 @@ const SearchInput = ({ request }: { request: NonNullable<Screening['request']> }
   );
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-sm">
       <span>{t('screenings:search_input')}</span>
       {searchInputList.map((input, i) => (
-        <div key={i} className="border-grey-border flex items-center gap-2 rounded-sm border p-2">
-          <span className="bg-grey-background size-6 rounded-xs p-1">
+        <div key={i} className="border-grey-border flex items-center gap-sm rounded-sm border p-sm">
+          <span className="bg-grey-background size-6 rounded-xs p-xs">
             <Icon icon="string" className="size-4" />
           </span>
           {input}

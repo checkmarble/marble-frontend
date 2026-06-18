@@ -34,11 +34,11 @@ export const EditionEvaluationErrors = memo(function (props: EditionEvaluationEr
   if (errorModels.length === 0) return null;
 
   return (
-    <div className={cn('flex flex-row flex-wrap gap-2', props.className)}>
+    <div className={cn('flex flex-row flex-wrap gap-sm', props.className)}>
       {errorModels.map((errorModel, i) => (
         <span
           key={i}
-          className="bg-red-background text-s text-red-primary flex h-8 items-center justify-center rounded-sm border border-transparent px-2 py-1 font-medium dark:bg-transparent dark:border-red-primary"
+          className="bg-red-background text-s text-red-primary flex h-8 items-center justify-center rounded-sm border border-transparent px-xs py-2xs font-medium dark:bg-transparent dark:border-red-primary"
         >
           {translateError(errorModel)}
         </span>

@@ -31,7 +31,7 @@ export function MarkdownHoverCardLink({
           align="start"
           alignOffset={-16}
           sideOffset={12}
-          className="bg-surface-card p-4 flex flex-col gap-2 items-center border border-grey-border rounded-sm shadow-md"
+          className="bg-surface-card p-md flex flex-col gap-sm items-center border border-grey-border rounded-sm shadow-md"
         >
           <HoverCardArrow className="fill-grey-white" />
 

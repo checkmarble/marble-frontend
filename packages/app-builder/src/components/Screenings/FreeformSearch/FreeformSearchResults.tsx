@@ -27,22 +27,22 @@ export const FreeformSearchResults: FunctionComponent<FreeformSearchResultsProps
   return match(results)
     .with(null, () => (
       // Initial state - no search performed yet
-      <div className="bg-surface-card border-grey-border rounded-lg border p-4">
+      <div className="bg-surface-card border-grey-border rounded-lg border p-md">
         <p className="text-s text-grey-secondary">{t('screenings:freeform_search.initial_state')}</p>
       </div>
     ))
     .with([], () => (
       // No results found
-      <div className="bg-surface-card border-grey-border rounded-lg border p-4">
+      <div className="bg-surface-card border-grey-border rounded-lg border p-md">
         <p className="text-s text-grey-secondary">{t('screenings:freeform_search.no_results_title')}</p>
-        <p className="text-s text-grey-placeholder mt-1">{t('screenings:freeform_search.no_results_description')}</p>
+        <p className="text-s text-grey-placeholder mt-xs">{t('screenings:freeform_search.no_results_description')}</p>
       </div>
     ))
     .with(P.array(), (data) => (
       // Results found
-      <div className="flex flex-col gap-2">
-        <div className="bg-surface-card border-grey-border flex flex-col gap-2 rounded-md border px-4 py-3">
-          <div className="text-s flex items-center gap-2">
+      <div className="flex flex-col gap-sm">
+        <div className="bg-surface-card border-grey-border flex flex-col gap-sm rounded-md border px-sm py-sm">
+          <div className="text-s flex items-center gap-sm">
             <span className="text-grey-primary font-semibold">{t('screenings:freeform_search.results_title')}</span>
             <span className="text-grey-placeholder">
               {t('screenings:freeform_search.results_count', { count: data.length })}

@@ -38,12 +38,12 @@ function AppRouterError({ error }: { error: unknown }) {
   let errorComponent;
   if (error instanceof Response && error.status === FORBIDDEN) {
     errorComponent = (
-      <div className="m-auto flex flex-col items-center gap-4">
+      <div className="m-auto flex flex-col items-center gap-md">
         <Typo variant="title1" className="text-purple-hover">
           {t('common:error_boundary.marble_admin.title')}
         </Typo>
-        <p className="text-s mb-6">{t('common:error_boundary.marble_admin.subtitle')}</p>
-        <div className="mb-1">
+        <p className="text-s mb-lg">{t('common:error_boundary.marble_admin.subtitle')}</p>
+        <div className="mb-xs">
           <Button
             variant="primary"
             onClick={() => {
@@ -64,7 +64,7 @@ function AppRouterError({ error }: { error: unknown }) {
 
   return (
     <div className="bg-purple-background-light flex size-full items-center justify-center">
-      <div className="bg-surface-card flex max-w-md rounded-2xl p-10 shadow-md">{errorComponent}</div>
+      <div className="bg-surface-card flex max-w-md rounded-2xl p-2xl shadow-md">{errorComponent}</div>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { Icon } from 'ui-icons';
 import { RuleExecutionStatus } from './RuleExecutionStatus';
 
 export function RulesExecutionsContainer({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
-  return <div className={cn('grid grid-cols-[max-content_1fr_max-content] gap-2', className)} {...props} />;
+  return <div className={cn('grid grid-cols-[max-content_1fr_max-content] gap-sm', className)} {...props} />;
 }
 
 export function RuleExecutionCollapsible({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
@@ -14,7 +14,7 @@ export function RuleExecutionCollapsible({ className, ...props }: React.Componen
     <CollapsibleV2.Provider>
       <div
         className={cn(
-          'border-grey-border col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg border bg-surface-card p-2',
+          'border-grey-border col-span-full grid grid-cols-subgrid gap-sm overflow-hidden rounded-lg border bg-surface-card p-sm',
           className,
         )}
         {...props}
@@ -40,7 +40,7 @@ export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecu
 export function RuleExecutionContent({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <CollapsibleV2.Content className="col-span-full">
-      <div className={cn('flex flex-col gap-4 p-2', className)} {...props} />
+      <div className={cn('flex flex-col gap-md p-sm', className)} {...props} />
     </CollapsibleV2.Content>
   );
 }
@@ -48,7 +48,7 @@ export function RuleExecutionContent({ className, ...props }: React.ComponentPro
 export function RuleExecutionDescription({ description }: { description?: string }) {
   if (!description) return null;
   return (
-    <div className="bg-purple-background-light border-purple-border flex flex-row gap-2 rounded-sm border p-2 dark:bg-transparent dark:border-purple-primary">
+    <div className="bg-purple-background-light border-purple-border flex flex-row gap-sm rounded-sm border p-sm dark:bg-transparent dark:border-purple-primary">
       <Icon icon="tip" className="text-purple-primary size-5 shrink-0" />
       <span className="text-s text-purple-primary font-normal">{description}</span>
     </div>

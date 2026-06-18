@@ -13,7 +13,7 @@ export function TriggerObjectFilter() {
   const matches = useMemo(() => matchSorter(triggerObjects, searchValue), [searchValue, triggerObjects]);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-sm p-sm">
       <SelectWithCombobox.Root
         open
         onSearchValueChange={setSearchValue}

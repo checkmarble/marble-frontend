@@ -6,7 +6,7 @@ export function CasesNavigationTabs({ actions }: { actions?: React.ReactNode }) 
   const { t } = useTranslation(['navigation', 'cases']);
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       <Typo variant="title1">{t('navigation:case_manager')}</Typo>
       <div className="flex items-center justify-between">
         <Tabs>

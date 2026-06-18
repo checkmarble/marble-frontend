@@ -22,7 +22,7 @@ function useRadioContext() {
   return context;
 }
 
-const radioRoot = cva(['flex flex-col gap-2']);
+const radioRoot = cva(['flex flex-col gap-sm']);
 
 const radioIndicator = cva(
   ['group/radio relative flex shrink-0 items-center justify-center rounded-full border transition-colors'],
@@ -168,11 +168,11 @@ export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function R
  * const [selected, setSelected] = useState('option1');
  *
  * <Radio.Root value={selected} onValueChange={setSelected} size="regular">
- *   <label className="flex items-center gap-2">
+ *   <label className="flex items-center gap-sm">
  *     <Radio.Item value="option1" />
  *     Option 1
  *   </label>
- *   <label className="flex items-center gap-2">
+ *   <label className="flex items-center gap-sm">
  *     <Radio.Item value="option2" disabled />
  *     Option 2 (disabled)
  *   </label>

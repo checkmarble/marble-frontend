@@ -33,7 +33,7 @@ export const ClientTimeline = () => {
   }, [emblaApi, onSelect]);
 
   return (
-    <div className="flex gap-v2-sm">
+    <div className="flex gap-sm">
       <Button
         variant="secondary"
         size="medium"
@@ -44,7 +44,7 @@ export const ClientTimeline = () => {
         <Icon icon="arrow-left" className="size-5" />
       </Button>
       <div ref={emblaRef} className="grow overflow-hidden">
-        <div className="flex gap-8">
+        <div className="flex gap-xl">
           {[1, 2, 3, 4, 5, 6, 7, 8].map((idx) => (
             <div className="h-[30px] w-50 shrink-0 bg-blue-58 even:bg-green-primary" key={idx}></div>
           ))}

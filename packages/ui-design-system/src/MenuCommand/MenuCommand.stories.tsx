@@ -44,7 +44,7 @@ export const WithCombobox: StoryFn<typeof MenuCommand.Menu> = () => {
         <MenuCommand.Combobox placeholder="Search fruit..." />
         <MenuCommand.List>
           <MenuCommand.Empty>
-            <div className="p-2 text-s text-grey-secondary">No matches</div>
+            <div className="p-sm text-s text-grey-secondary">No matches</div>
           </MenuCommand.Empty>
           {fruits.map((fruit) => (
             <MenuCommand.Item key={fruit} value={fruit} onSelect={() => setSelected(fruit)}>
@@ -64,7 +64,7 @@ export const WithSubMenuAndSeparator: StoryFn<typeof MenuCommand.Menu> = () => (
     </MenuCommand.Trigger>
     <MenuCommand.Content align="start" sideOffset={4}>
       <MenuCommand.List>
-        <MenuCommand.Group heading={<div className="px-2 py-1 text-xs text-grey-secondary">Primary</div>}>
+        <MenuCommand.Group heading={<div className="px-xs py-2xs text-xs text-grey-secondary">Primary</div>}>
           <MenuCommand.Item value="open" onSelect={() => alert('Open')}>
             Open
           </MenuCommand.Item>

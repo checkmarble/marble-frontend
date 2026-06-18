@@ -11,8 +11,8 @@ export function UserInfo({ isAutoAssignmentAvailable = false }: UserInfoProps) {
 
   return (
     <div className="relative">
-      <div className="group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
-        <div className="inline-flex items-center gap-5">
+      <div className="group flex w-full flex-row items-center justify-between gap-sm overflow-hidden rounded-md p-sm">
+        <div className="inline-flex items-center gap-md">
           <CustomLogo
             logo="logo"
             alt="Logo"

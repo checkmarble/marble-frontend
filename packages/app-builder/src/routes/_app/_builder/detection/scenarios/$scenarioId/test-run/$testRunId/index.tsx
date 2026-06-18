@@ -43,7 +43,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
         const { t } = useTranslation(['scenarios']);
 
         return (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-md">
             <BreadCrumbLink
               isLast={isLast}
               to="/detection/scenarios/$scenarioId/test-run/$testRunId"
@@ -108,7 +108,7 @@ function TestRun() {
       </Page.Header>
 
       <Page.Container>
-        <Page.Content className="flex max-w-(--breakpoint-lg) flex-col gap-8">
+        <Page.Content className="flex max-w-(--breakpoint-lg) flex-col gap-xl">
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
           <Await promise={decisionsPromise} fallback={<DistributionOfDecisionChartSkeleton />}>
             {(decisions) => <DistributionOfDecisionChart versions={versions} decisions={decisions} />}

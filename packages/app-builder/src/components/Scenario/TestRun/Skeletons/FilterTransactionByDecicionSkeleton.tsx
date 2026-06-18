@@ -8,13 +8,13 @@ export const FilterTransactionByDecisionSkeleton = () => {
     <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('scenarios:testrun.transaction_by_decision')}</Collapsible.Title>
       <Collapsible.Content>
-        <div className="mb-6 flex items-center justify-end space-x-2">
+        <div className="mb-lg flex items-center justify-end space-x-2">
           <span className="text-s text-grey-primary font-medium">{t('scenarios:testrun.show_rules_changes')}</span>
           <Switch id="show-changes" disabled />
         </div>
 
         <div className="space-y-2">
-          <div className="mb-4 grid grid-cols-2 gap-4">
+          <div className="mb-md grid grid-cols-2 gap-md">
             <div className="bg-grey-border h-4 w-24 animate-pulse rounded-sm" />
             <div className="bg-grey-border h-4 w-16 animate-pulse rounded-sm" />
           </div>
@@ -22,7 +22,7 @@ export const FilterTransactionByDecisionSkeleton = () => {
           {[1, 2, 3, 4].map((index) => (
             <div
               key={index}
-              className="border-grey-border grid grid-cols-2 gap-4 rounded-lg border p-4 transition-colors"
+              className="border-grey-border grid grid-cols-2 gap-md rounded-lg border p-md transition-colors"
             >
               <div className="flex items-center space-x-2">
                 <div className="bg-grey-border size-4 animate-pulse rounded-sm" />

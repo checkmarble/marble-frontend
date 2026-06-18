@@ -94,7 +94,7 @@ const TextInputFilterMenu = ({ placeholder, onSelect }: TextInputFilterMenuProps
   const [value, setValue] = useState('');
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-sm p-sm">
       <Input
         placeholder={placeholder}
         value={value}

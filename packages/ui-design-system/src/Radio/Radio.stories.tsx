@@ -29,7 +29,7 @@ export const Default: StoryFn<Args> = (args) => {
   return (
     <Radio.Root value={selected} onValueChange={setSelected} size={args.size}>
       {OPTIONS.map((value) => (
-        <label key={value} className="text-s flex items-center gap-2">
+        <label key={value} className="text-s flex items-center gap-sm">
           <Radio.Item value={value} disabled={args.disabledItems?.includes(value)} />
           {value}
         </label>

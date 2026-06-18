@@ -145,7 +145,7 @@ function ApiKeys() {
   return (
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex flex-col items-start gap-sm">
           <Button
             variant="secondary"
             onClick={() => {
@@ -160,7 +160,7 @@ function ApiKeys() {
               }
             }}
           >
-            <Icon icon="download" className="me-2 size-5" />
+            <Icon icon="download" className="me-sm size-5" />
             {t('api:download_openapi_spec_v1')}
           </Button>
         </div>
@@ -198,7 +198,7 @@ function CreatedAPIKey({ createdApiKey }: { createdApiKey: CreatedApiKey }) {
   const { t } = useTranslation(['settings']);
   return (
     <Callout variant="outlined">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-xs">
         <span className="font-bold">{t('settings:api_keys.new_api_key')}</span>
         <span>{t('settings:api_keys.copy_api_key')}</span>
         <CopyToClipboardButton toCopy={createdApiKey.key}>
@@ -254,7 +254,7 @@ function WebhooksSection({
   });
 
   const webhooksTitleContent = (
-    <span className="flex flex-1 items-center gap-2">
+    <span className="flex flex-1 items-center gap-sm">
       {t('settings:webhooks')}
       {webhooksStatus !== 'allowed' && !isAccessible(webhooksStatus) ? (
         <Nudge content="" kind={webhooksStatus} className="size-5" />
@@ -273,7 +273,7 @@ function WebhooksSection({
           </Button>
         </CollapsiblePaper.Title>
         <CollapsiblePaper.Content>
-          <div className="flex flex-col items-center gap-4 py-8">
+          <div className="flex flex-col items-center gap-md py-xl">
             <Typo variant="title2" className="text-grey-primary">
               {t('settings:webhooks.configuration_error')}
             </Typo>
@@ -310,7 +310,7 @@ function WebhooksSection({
         ) : null}
       </CollapsiblePaper.Title>
       <CollapsiblePaper.Content>
-        <Callout className="mb-4 lg:mb-6" variant="outlined">
+        <Callout className="mb-md lg:mb-lg" variant="outlined">
           <p className="whitespace-pre-wrap">
             <Trans
               t={t}

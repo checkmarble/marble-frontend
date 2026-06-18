@@ -161,9 +161,9 @@ function DetectionDecisions() {
     <DecisionRightPanel.Root content={<AddToCaseForm />}>
       <Page.Main>
         <Page.Container>
-          <Page.ContentV2 className="gap-v2-md">
+          <Page.ContentV2 className="gap-md">
             <DetectionNavigationTabs />
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-md">
               <DecisionFiltersProvider
                 scenarios={scenarios}
                 submitDecisionFilters={navigateDecisionList}
@@ -171,9 +171,9 @@ function DetectionDecisions() {
                 hasPivots={hasPivots}
                 inboxes={inboxes}
               >
-                <div className="flex justify-between gap-4">
+                <div className="flex justify-between gap-md">
                   <SearchById />
-                  <div className="flex gap-4">
+                  <div className="flex gap-md">
                     <DecisionFiltersMenu filterNames={decisionFilterNames}>
                       <FiltersButton />
                     </DecisionFiltersMenu>
@@ -269,7 +269,7 @@ function SearchById() {
   });
 
   return (
-    <form className="flex gap-1" onSubmit={handleSubmit(form)}>
+    <form className="flex gap-xs" onSubmit={handleSubmit(form)}>
       <form.Field name="decisionId">
         {(field) => (
           <Input

@@ -79,7 +79,7 @@ const TokenRefresher = () => {
 };
 
 const SIDEBAR_NUDGE_CLASS = cn(
-  'absolute top-v2-sm right-v2-sm translate-x-[50%] -translate-y-[50%] rounded-full size-2.5',
+  'absolute top-sm right-sm translate-x-[50%] -translate-y-[50%] rounded-full size-2.5',
   'group-hover/sidebar:static group-hover/sidebar:translate-x-0 group-hover/sidebar:translate-y-0',
   'group-hover/sidebar:rounded-sm group-hover/sidebar:size-6',
   'transition-all delay-300 group-hover/sidebar:delay-0 motion-reduce:delay-0 motion-reduce:duration-0',
@@ -111,11 +111,11 @@ function Builder() {
               {/*<DatasetFreshnessBanner />*/}
               <div className="relative flex min-h-screen">
                 <LeftSidebar>
-                  <div className="h-24 px-2 pt-3">
+                  <div className="h-24 px-xs pt-md">
                     <UserInfo isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable} />
                   </div>
-                  <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
-                    <ul className="flex flex-col gap-2">
+                  <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
+                    <ul className="flex flex-col gap-sm">
                       {/* Detection - flat link (tabs are inside the page) */}
                       {!isAnalyst(user) && (
                         <li>
@@ -141,7 +141,7 @@ function Builder() {
                             })
                             .otherwise((value) => {
                               return (
-                                <div className="text-grey-disabled relative flex gap-2 p-2">
+                                <div className="text-grey-disabled relative flex gap-sm p-sm">
                                   <Icon icon="123" className="size-6 shrink-0" />
                                   <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
                                     {t('navigation:user_scoring')}
@@ -167,7 +167,7 @@ function Builder() {
                             })
                             .otherwise((value) => {
                               return (
-                                <div className="text-grey-disabled relative flex gap-2 p-2">
+                                <div className="text-grey-disabled relative flex gap-sm p-sm">
                                   <Icon icon="scan-eye" className="size-6 shrink-0" />
                                   <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
                                     {t('navigation:continuous_screening')}
@@ -207,8 +207,8 @@ function Builder() {
                     </ul>
                   </nav>
                   {/* Secondary Navigation - Bottom */}
-                  <nav className="p-2 pb-4">
-                    <ul className="flex flex-col gap-2">
+                  <nav className="p-sm pb-md">
+                    <ul className="flex flex-col gap-sm">
                       {/* Your Data */}
                       {!isAnalyst(user) && (
                         <li>

@@ -113,7 +113,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
                 {t('cases:snooze_case.title')}
               </Button>
             </MenuCommand.Trigger>
-            <MenuCommand.Content className="mt-2 min-w-[264px]">
+            <MenuCommand.Content className="mt-sm min-w-[264px]">
               <MenuCommand.List>
                 {getDurations().map(({ duration, date }) => (
                   <MenuCommand.Item
@@ -123,7 +123,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
                     }}
                     key={duration}
                   >
-                    <span className="text-r inline-flex items-center gap-1">
+                    <span className="text-r inline-flex items-center gap-xs">
                       <span>
                         {match(duration)
                           .with('tomorrow', () => t('common:snooze.tomorrow'))
@@ -141,7 +141,7 @@ export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'cas
                   hover={false}
                   trigger={
                     <>
-                      <span className="text-r inline-flex h-full items-center gap-1">
+                      <span className="text-r inline-flex h-full items-center gap-xs">
                         <span>{t('common:snooze.custom')}</span>
                       </span>
                     </>
