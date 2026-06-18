@@ -37,9 +37,11 @@ export const shortUUIDRedirectMiddleware = createMiddleware().server(async ({ ne
         .join('/');
 
       if (changed) {
+        // Collapse leading slashes so the redirect can't become protocol-relative (`//host`) and escape the origin.
+        const safePathname = '/' + rewritten.replace(/^\/+/, '');
         return new Response(null, {
           status: 302,
-          headers: { Location: rewritten + url.search + url.hash },
+          headers: { Location: safePathname + url.search + url.hash },
         });
       }
     }
