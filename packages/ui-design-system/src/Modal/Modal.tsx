@@ -18,10 +18,10 @@ const modalContentClassnames = cva(
   {
     variants: {
       size: {
-        small: 'max-w-lg',
-        medium: 'max-w-2xl',
-        large: 'max-w-5xl',
-        xlarge: 'max-w-7xl',
+        small: 'max-w-[32rem]',
+        medium: 'max-w-[42rem]',
+        large: 'max-w-[64rem]',
+        xlarge: 'max-w-[80rem]',
         full: 'max-w-[90vw]',
       },
       fixedHeight: {
