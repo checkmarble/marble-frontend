@@ -165,6 +165,30 @@
 }
 
 /* ========================================
+ * WIDTH-CONSTRAINT UTILITIES - container scale guard
+ *
+ * Our spacing scale (--spacing-xs … --spacing-4xl) reuses the same
+ * t-shirt names as Tailwind's built-in container scale. Tailwind
+ * resolves `max-w-*` / `min-w-*` against the spacing scale *before*
+ * the container scale, so defining e.g. `--spacing-3xl: 3rem`
+ * silently turns `max-w-3xl` into 3rem instead of the container's
+ * 48rem (this collapsed page layouts, see PR #1656).
+ *
+ * Re-declaring these utilities adds a container-scale declaration
+ * that wins the cascade for t-shirt names, so `max-w-3xl` stays a
+ * content-width constraint while gap/padding/margin keep using the
+ * spacing scale. Numeric (`max-w-96`), keyword (`max-w-full`) and
+ * arbitrary (`max-w-[48rem]`) values are untouched — the core
+ * utility still handles them.
+ * ======================================== */
+@utility max-w-* {
+  max-width: --value(--container);
+}
+@utility min-w-* {
+  min-width: --value(--container);
+}
+
+/* ========================================
  * DARK MODE - Manual toggle via .dark class
  * https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually
  * ======================================== */

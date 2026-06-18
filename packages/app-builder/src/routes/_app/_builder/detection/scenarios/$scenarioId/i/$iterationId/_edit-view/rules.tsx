@@ -289,7 +289,7 @@ function Rules() {
         <div className="flex flex-row items-center justify-between gap-md">
           <form className="flex grow items-center">
             <Input
-              className="w-full max-w-[36rem]"
+              className="w-full max-w-xl"
               disabled={!hasItems}
               type="search"
               aria-label={t('common:search')}

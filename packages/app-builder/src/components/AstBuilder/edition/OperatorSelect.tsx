@@ -34,7 +34,7 @@ function OperatorTooltip({ tooltipKey }: { tooltipKey: string }) {
   return (
     <Tooltip.Default
       className="max-h-none overflow-visible"
-      content={<div className="text-s max-w-[20rem] whitespace-pre-wrap">{t(tooltipKey)}</div>}
+      content={<div className="text-s max-w-xs whitespace-pre-wrap">{t(tooltipKey)}</div>}
     >
       <span className="text-purple-primary">
         <Icon icon="tip" className="size-4" />
