@@ -79,7 +79,7 @@ function Trigger() {
         <Collapsible.Title>{t('scenarios:trigger.run_scenario.title')}</Collapsible.Title>
         <Collapsible.Content>
           <div className="flex flex-col">
-            <div className="space-y-2">
+            <div className="space-y-sm">
               <p>
                 <Trans
                   t={t}
@@ -89,7 +89,7 @@ function Trigger() {
                   }}
                 />
               </p>
-              <ol className="list-outside list-decimal space-y-4 ps-lg">
+              <ol className="list-outside list-decimal space-y-md ps-lg">
                 <li>
                   <Trans
                     t={t}
@@ -98,7 +98,7 @@ function Trigger() {
                       DocLink: <ExternalLink href={createDecisionDocHref} />,
                     }}
                   />
-                  <ul className="list-outside space-y-1 ps-md">
+                  <ul className="list-outside space-y-xs ps-md">
                     <li>
                       <Trans
                         t={t}
@@ -118,7 +118,7 @@ function Trigger() {
                 </li>
                 <li>
                   <Trans t={t} i18nKey="scenarios:trigger.run_scenario.description.batch_execution" />
-                  <ul className="list-outside space-y-1 ps-md">
+                  <ul className="list-outside space-y-xs ps-md">
                     <li>
                       <ScheduleOption schedule={schedule} setSchedule={setSchedule} viewOnly={editorMode === 'view'} />
                     </li>
