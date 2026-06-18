@@ -83,7 +83,7 @@ export function AggregationEditContent({ onChange }: { onChange?: () => void } =
               <Tooltip.Default
                 className="max-h-none overflow-visible"
                 content={
-                  <div className="text-s max-w-xs whitespace-pre-wrap">
+                  <div className="text-s max-w-[20rem] whitespace-pre-wrap">
                     {t('scenarios:edit_aggregation.percentile_value_tooltip')}
                   </div>
                 }

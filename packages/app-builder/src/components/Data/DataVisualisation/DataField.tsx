@@ -671,7 +671,7 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
                 table={linkedTo}
                 object={data}
                 options={{ mapHeight: 200, showHeader: options?.showHeader }}
-                className="max-w-3xl"
+                className="max-w-[48rem]"
               />
             ))
             .otherwise(() => (

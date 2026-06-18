@@ -75,7 +75,7 @@ function Trigger() {
 
   return (
     <>
-      <Collapsible.Container className="bg-surface-card max-w-3xl">
+      <Collapsible.Container className="bg-surface-card max-w-[48rem]">
         <Collapsible.Title>{t('scenarios:trigger.run_scenario.title')}</Collapsible.Title>
         <Collapsible.Content>
           <div className="flex flex-col">
@@ -130,7 +130,7 @@ function Trigger() {
         </Collapsible.Content>
       </Collapsible.Container>
 
-      <Collapsible.Container className="bg-surface-card max-w-3xl">
+      <Collapsible.Container className="bg-surface-card max-w-[48rem]">
         <Collapsible.Title>{t('scenarios:trigger.trigger_object.title')}</Collapsible.Title>
         <Collapsible.Content>
           <Callout variant="outlined" className="mb-md lg:mb-lg">

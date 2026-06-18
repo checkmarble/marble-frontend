@@ -210,7 +210,7 @@ function DetectionScenariosPage() {
           <Callout variant="outlined">{t('scenarios:list.callout')}</Callout>
           <div className="flex flex-col gap-md">
             {isEmpty ? (
-              <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-md">
+              <div className="bg-surface-card border-grey-border flex h-28 max-w-[48rem] flex-col items-center justify-center rounded-lg border border-solid p-md">
                 <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
               </div>
             ) : (

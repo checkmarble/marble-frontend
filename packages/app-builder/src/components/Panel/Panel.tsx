@@ -8,14 +8,14 @@ import { PanelOverlay } from './PanelOverlay';
 export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl' | '4xl' | '5xl' | 'max';
 
 const sizeClasses: Record<PanelSize, string> = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
-  xxl: 'max-w-2xl',
-  xxxl: 'max-w-3xl',
-  '4xl': 'max-w-4xl',
-  '5xl': 'max-w-5xl',
+  sm: 'max-w-[24rem]',
+  md: 'max-w-[28rem]',
+  lg: 'max-w-[32rem]',
+  xl: 'max-w-[36rem]',
+  xxl: 'max-w-[42rem]',
+  xxxl: 'max-w-[48rem]',
+  '4xl': 'max-w-[56rem]',
+  '5xl': 'max-w-[64rem]',
   max: 'max-w-[1000px]',
 };
 
