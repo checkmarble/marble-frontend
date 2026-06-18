@@ -54,11 +54,7 @@ export function WorkflowList({ scenario }: WorkflowListProps) {
       <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <Droppable droppableId="workflow-rules" direction="vertical">
           {(provided) => (
-            <div
-              className="flex flex-col py-xl max-w-[80rem] ms-xl"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
+            <div className="flex flex-col py-xl max-w-7xl ms-xl" {...provided.droppableProps} ref={provided.innerRef}>
               {!isLoading && rules.length === 0 ? (
                 <div className="w-[min(800px,60vw)] text-center text-grey-60 italic py-xl">
                   {t('workflows:empty_state.no_rule_yet')}

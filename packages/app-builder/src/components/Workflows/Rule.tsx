@@ -65,7 +65,7 @@ export function WorkflowRule({ scenario, rule, provided, snapshot }: RuleProps) 
     <div className="flex flex-col items-stretch gap-md w-full">
       {/* Rule Container */}
       <div
-        className={`w-full max-w-[80rem] mx-auto relative transition-all duration-200 ${
+        className={`w-full max-w-7xl mx-auto relative transition-all duration-200 ${
           snapshot.isDragging ? 'rotate-1 scale-105 z-50' : ''
         } ${isRuleModified ? 'drop-shadow-2xl' : ''}`}
       >

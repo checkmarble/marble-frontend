@@ -52,7 +52,7 @@ function DesignPage() {
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   const [dark, setDark] = useState(false);
   return (
-    <section className="flex flex-col gap-md max-w-[64rem]">
+    <section className="flex flex-col gap-md max-w-5xl">
       <header className="flex items-center justify-between">
         <div>
           <Typo variant="title2">{title}</Typo>
