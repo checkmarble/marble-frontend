@@ -10,7 +10,7 @@ export const DistributionOfDecisionChartSkeleton = () => {
       <Collapsible.Content>
         <div className="flex flex-col gap-xl">
           <div className="bg-grey-background w-48 animate-pulse rounded-lg p-xs">
-            <div className="flex space-x-1">
+            <div className="flex space-x-xs">
               <div className="h-8 w-24 rounded-md" />
               <div className="bg-grey-border h-8 w-24 animate-pulse rounded-md" />
             </div>

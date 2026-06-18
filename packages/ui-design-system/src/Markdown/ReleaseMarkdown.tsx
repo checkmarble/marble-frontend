@@ -64,7 +64,7 @@ const releaseMarkdownComponents: Components = {
       <div className="text-s text-grey-primary">{children}</div>
     </div>
   ),
-  ul: ({ children }) => <ul className="mb-sm list-disc ps-md space-y-1">{children}</ul>,
+  ul: ({ children }) => <ul className="mb-sm list-disc ps-md space-y-xs">{children}</ul>,
   li: ({ children }) => <li className="text-s">{children}</li>,
   p: ({ children }) => <p className="text-s mb-sm last:mb-0">{children}</p>,
   code: ({ children }) => (

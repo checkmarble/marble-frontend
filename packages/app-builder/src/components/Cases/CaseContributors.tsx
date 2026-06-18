@@ -30,7 +30,7 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
       }
     >
       <div className="flex w-fit flex-row items-center gap-xs">
-        <div className="isolate flex -space-x-4 overflow-hidden">
+        <div className="isolate flex -space-x-md overflow-hidden">
           {contributors.slice(0, 3).map((contributor, index) => {
             const user = getOrgUserById(contributor.userId);
             return (
