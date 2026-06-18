@@ -16,7 +16,7 @@ export const TestRunPeriod = ({
   const formatDateTime = useFormatDateTime();
 
   return (
-    <span className={clsx('text-s inline-flex h-10 flex-row items-center gap-1', className)} {...props}>
+    <span className={clsx('text-s inline-flex h-10 flex-row items-center gap-xs', className)} {...props}>
       <Trans
         t={t}
         i18nKey={'common:from_to'}

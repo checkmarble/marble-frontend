@@ -29,9 +29,9 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
   const isRefinable = !isScreeningReviewCompleted(screening);
 
   return (
-    <div className="flex h-fit flex-2 flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
+    <div className="flex h-fit flex-2 flex-col gap-lg">
+      <div className="flex flex-col gap-md">
+        <div className="flex items-center gap-sm">
           <span className="text-m font-semibold">{t('screenings:potential_matches')}</span>
           <span className="text-grey-secondary text-s">
             {t('screenings:callout.needs_review', {
@@ -40,7 +40,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
             })}
           </span>
           {isRefinable ? (
-            <Button className="ml-auto" variant="secondary" onClick={() => setIsRefining(true)}>
+            <Button className="ms-auto" variant="secondary" onClick={() => setIsRefining(true)}>
               <Icon icon="restart-alt" className="size-5" />
               {t('screenings:refine_search')}
             </Button>
@@ -51,7 +51,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
           .when(
             (sc) => sc.status === 'in_review' && sc.partial,
             (sc: ScreeningSuccess) => (
-              <div className="text-s bg-red-background text-red-primary flex items-center gap-2 rounded-sm p-2">
+              <div className="text-s bg-red-background text-red-primary flex items-center gap-sm rounded-sm p-sm">
                 <Icon icon="error" className="size-5 shrink-0" />
                 {t('screenings:callout.needs_refine', {
                   matchCount: sc.request.limit,
@@ -65,7 +65,7 @@ export function ScreeningReviewSection({ screening, onRefineSuccess }: Screening
           )
           .otherwise(() => null)}
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         {screening.matches.map((screeningMatch) => (
           <MatchCard
             key={screeningMatch.id}

@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { type ReactNode } from 'react';
 import { Typo } from 'ui-design-system';
 
-const titleVariants = cva('text-s px-2 py-3 font-semibold flex justify-between items-center', {
+const titleVariants = cva('text-s px-xs py-sm font-semibold flex justify-between items-center', {
   variants: {
     borderless: {
       true: null,

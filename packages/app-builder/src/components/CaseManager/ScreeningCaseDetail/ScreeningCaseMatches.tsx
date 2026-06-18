@@ -48,15 +48,15 @@ export const ScreeningCaseMatches = ({
   };
 
   return (
-    <div className="flex flex-col gap-v2-sm">
-      <div className="flex items-center justify-between gap-v2-sm">
+    <div className="flex flex-col gap-sm">
+      <div className="flex items-center justify-between gap-sm">
         <div className="text-h2 font-semibold">{t('continuousScreening:review.matches.title')}</div>
         {isUserAdmin ? <DismissAlertButton screening={screening} /> : null}
       </div>
-      <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_52)] border border-grey-border rounded-v2-md bg-surface-card">
+      <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_52)] border border-grey-border rounded-md bg-surface-card">
         <div className="grid grid-cols-subgrid col-span-full border-b border-grey-border text-tiny text-grey-secondary">
-          <div className="p-v2-sm">{t('continuousScreening:review.matches.match_label')}</div>
-          <div className="p-v2-sm">{t('continuousScreening:review.matches.status_label')}</div>
+          <div className="p-sm">{t('continuousScreening:review.matches.match_label')}</div>
+          <div className="p-sm">{t('continuousScreening:review.matches.status_label')}</div>
         </div>
         {screening.matches.map((screeningMatch) => {
           return (
@@ -67,10 +67,10 @@ export const ScreeningCaseMatches = ({
               <div className="grid grid-cols-subgrid col-span-full">
                 <Collapsible.Root
                   defaultOpen={screening.matches.length === 1}
-                  className="border-r border-grey-border p-v2-md flex flex-col gap-v2-md overflow-hidden group/collapsible"
+                  className="border-r border-grey-border p-md flex flex-col gap-md overflow-hidden group/collapsible"
                 >
                   <Collapsible.Trigger asChild>
-                    <div className="flex items-center gap-v2-sm">
+                    <div className="flex items-center gap-sm">
                       <Icon
                         icon="caret-down"
                         className="size-4 group-radix-state-open/collapsible:rotate-180 transition-transform duration-200"
@@ -88,7 +88,7 @@ export const ScreeningCaseMatches = ({
                   <Collapsible.Content className="radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
                     {match(screeningMatch)
                       .when(isDirectContinuousScreeningMatch, (directMatch) => (
-                        <div className="p-v2-sm bg-grey-background-light rounded-v2-md">
+                        <div className="p-sm bg-grey-background-light rounded-md">
                           <MatchDetails
                             entity={directMatch.payload}
                             before={
@@ -102,7 +102,7 @@ export const ScreeningCaseMatches = ({
                                       <Fragment key={dataset}>
                                         <span>{dataset}</span>
                                         {index < directMatch.payload.datasets.length - 1 ? (
-                                          <span className="mx-1">·</span>
+                                          <span className="mx-xs">·</span>
                                         ) : null}
                                       </Fragment>
                                     );
@@ -114,11 +114,11 @@ export const ScreeningCaseMatches = ({
                         </div>
                       ))
                       .when(isIndirectContinuousScreeningMatch, (indirectMatch) => (
-                        <div className="flex flex-col gap-v2-md">
+                        <div className="flex flex-col gap-md">
                           <ScreeningObjectDetails
                             objectType={indirectMatch.objectType}
                             objectId={indirectMatch.objectId}
-                            className="bg-grey-background-light rounded-v2-md"
+                            className="bg-grey-background-light rounded-md"
                           />
                           <ObjectRelatedCases
                             objectType={indirectMatch.objectType}
@@ -131,7 +131,7 @@ export const ScreeningCaseMatches = ({
                       .exhaustive()}
                   </Collapsible.Content>
                 </Collapsible.Root>
-                <div className="p-v2-sm">
+                <div className="p-sm">
                   {match(screeningMatch.status)
                     .with('confirmed_hit', () => <Tag color="red">{t('screenings:match.status.confirmed_hit')}</Tag>)
                     .with('no_hit', () => <Tag color="green">{t('screenings:match.status.no_hit')}</Tag>)
@@ -140,7 +140,7 @@ export const ScreeningCaseMatches = ({
                         screeningMatch={screeningMatch}
                         automaticallyConfirmScreening={isDirectContinuousScreening(screening)}
                       >
-                        <button className="px-v2-sm py-v2-xs cursor-pointer bg-orange-primary text-white dark:bg-transparent dark:border dark:border-orange-primary dark:text-orange-primary rounded-v2-md inline-flex items-center">
+                        <button className="px-sm py-xs cursor-pointer bg-orange-primary text-white dark:bg-transparent dark:border dark:border-orange-primary dark:text-orange-primary rounded-md inline-flex items-center">
                           <span>{t('screenings:match.status.pending')}</span>
                           <Icon icon="caret-down" className="size-4" />
                         </button>
@@ -154,7 +154,7 @@ export const ScreeningCaseMatches = ({
           );
         })}
         {screening.partial ? (
-          <div className="grid grid-cols-subgrid col-span-full p-v2-md">
+          <div className="grid grid-cols-subgrid col-span-full p-md">
             <Button variant="primary" onClick={() => handleLoadMore()} disabled={loadMoreMatchesMutation.isPending}>
               {loadMoreMatchesMutation.isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
               {t('continuousScreening:review.matches.partial_search_button')}
@@ -204,7 +204,7 @@ const DismissAlertButton = ({ screening }: { screening: ContinuousScreening }) =
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('continuousScreening:review.dismiss_alert')}</Modal.Title>
-        <div className="flex flex-col gap-v2-lg p-v2-lg">
+        <div className="flex flex-col gap-lg p-lg">
           <div>{t('continuousScreening:review.dismiss_alert_modal.warning_text')}</div>
           {screening.partial ? (
             <Callout color="red">{t('continuousScreening:review.dismiss_alert_modal.partial_search_warning')}</Callout>

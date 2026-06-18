@@ -12,11 +12,11 @@ export const getTableSelectColumn = (columnHelper: ColumnHelper<any>, selectable
                 table.getIsAllPageRowsSelected() ? true : table.getIsSomeRowsSelected() ? 'indeterminate' : false
               }
               onClick={table.getToggleAllRowsSelectedHandler()}
-              className="ml-v2-sm"
+              className="ms-sm"
             />
           ),
           cell: ({ row }) => (
-            <label onClick={(e) => e.stopPropagation()} className="block h-10 w-10 p-v2-sm">
+            <label onClick={(e) => e.stopPropagation()} className="block h-10 w-10 p-sm">
               <Checkbox
                 checked={row.getIsSelected()}
                 onClick={(e) => {

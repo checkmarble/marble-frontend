@@ -18,7 +18,7 @@ export function ViewingAstBuilderOrWithAndRoot(props: ViewingAstBuilderOrWithAnd
   const validation = useMemo(() => props.validation ?? { errors: [], evaluation: [] }, [props.validation]);
 
   return (
-    <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
+    <div className="grid grid-cols-[40px_1fr_max-content] gap-sm">
       {props.node.children.map((child, i) => {
         return (
           <ViewingRootOrGroup
@@ -117,7 +117,7 @@ function ViewingRootOrWithAndLine({ isFirst, path, node, validation }: ViewingRo
     <>
       <LogicalOperatorLabel operator={isFirst ? 'if' : 'and'} type="text" />
 
-      <div className={clsx('flex flex-col gap-2', rightComponent === null && 'col-span-2')}>
+      <div className={clsx('flex flex-col gap-sm', rightComponent === null && 'col-span-2')}>
         <ViewingAstBuilderNode root path={path} node={node} validation={validation} />
         <ViewingEvaluationErrors id={node.id} evaluation={validation.evaluation} />
       </div>

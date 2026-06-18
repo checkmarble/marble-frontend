@@ -43,7 +43,7 @@ function AuthLayout() {
 
   return (
     <div className={layoutClassName({ alignment })}>
-      <div className="flex flex-col grow gap-20 justify-center items-center p-[120px]">
+      <div className="flex flex-col grow gap-4xl justify-center items-center p-[120px]">
         <Logo
           logo="logo-standard"
           className="text-grey-white size-full h-16"

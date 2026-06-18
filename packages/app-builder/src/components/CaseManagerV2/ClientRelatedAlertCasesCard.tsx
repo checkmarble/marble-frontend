@@ -22,7 +22,7 @@ export function ClientRelatedAlertCasesCard({ caseId, pivotValue }: ClientRelate
       {match(casesQuery)
         .with({ isError: true }, () => {
           return (
-            <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border">
+            <div className="border-red-disabled bg-red-background text-red-primary mt-md rounded-sm border">
               {t('common:global_error')}
             </div>
           );
@@ -37,14 +37,14 @@ export function ClientRelatedAlertCasesCard({ caseId, pivotValue }: ClientRelate
           }
 
           return (
-            <div className="grid w-full grid-cols-[minmax(8rem,_auto)_1fr_auto] gap-v2-sm">
+            <div className="grid w-full grid-cols-[minmax(8rem,_auto)_1fr_auto] gap-sm">
               {cases.map((caseObj, idx) => {
                 return (
                   <div className="grid grid-cols-subgrid col-span-full items-center" key={caseObj.id}>
                     <span className="text-grey-secondary">
                       {formatDateTime(caseObj.createdAt, { dateStyle: 'short' })}
                     </span>
-                    <div className="flex items-center gap-v2-xs">
+                    <div className="flex items-center gap-xs">
                       <span>{caseObj.name}</span>
                       <CaseStatusBadgeV2 status={caseObj.status} variant="icon-only" />
                     </div>

@@ -46,8 +46,8 @@ function SignUp() {
   const { t } = useTranslation(['common', 'auth']);
 
   return (
-    <div className="flex w-full flex-col gap-10 items-center text-s">
-      <Link className="absolute top-[60px] left-[60px] flex gap-2 text-s items-center" to="/sign-in-email">
+    <div className="flex w-full flex-col gap-2xl items-center text-s">
+      <Link className="absolute top-[60px] left-[60px] flex gap-sm text-s items-center" to="/sign-in-email">
         <Icon icon="arrow-left" className="size-4" />
         {t('common:back')}
       </Link>
@@ -55,7 +55,7 @@ function SignUp() {
         {t('auth:email-verification.title')}
       </Typo>
 
-      <div className="flex flex-col gap-6 items-center">
+      <div className="flex flex-col gap-lg items-center">
         <p>{t('auth:email-verification.email_sent')}</p>
         <ClientOnly>
           <UserEmail />
@@ -63,7 +63,7 @@ function SignUp() {
         <p>{t('auth:email-verification.click_on_link')}</p>
       </div>
 
-      <div className="flex flex-col gap-4 items-center">
+      <div className="flex flex-col gap-md items-center">
         <p>{t('auth:email-verification.not_received')}</p>
         <SendEmailVerification />
       </div>

@@ -14,11 +14,11 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
   return (
     <Tooltip.Default
       content={
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-xs">
           {contributors.map((contributor) => {
             const user = getOrgUserById(contributor.userId);
             return (
-              <div key={contributor.id} className="flex flex-row items-center gap-1">
+              <div key={contributor.id} className="flex flex-row items-center gap-xs">
                 <Avatar key={contributor.id} size="xs" firstName={user?.firstName} lastName={user?.lastName} />
                 <div className="text-grey-primary text-xs font-normal capitalize">
                   {getFullName(user) || t('cases:case_detail.unknown_user')}
@@ -29,7 +29,7 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
         </div>
       }
     >
-      <div className="flex w-fit flex-row items-center gap-1">
+      <div className="flex w-fit flex-row items-center gap-xs">
         <div className="isolate flex -space-x-4 overflow-hidden">
           {contributors.slice(0, 3).map((contributor, index) => {
             const user = getOrgUserById(contributor.userId);

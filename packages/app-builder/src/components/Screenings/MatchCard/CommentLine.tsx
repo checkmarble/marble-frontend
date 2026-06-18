@@ -11,10 +11,10 @@ export const CommentLine = ({ comment }: { comment: ScreeningMatch['comments'][n
   const fullName = getFullName(user);
 
   return (
-    <div key={comment.id} className="flex flex-col gap-2">
-      <div className="flex items-center gap-1">
+    <div key={comment.id} className="flex flex-col gap-sm">
+      <div className="flex items-center gap-xs">
         <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />
-        <span className="flex items-baseline gap-1">
+        <span className="flex items-baseline gap-xs">
           {fullName}
           <time className="text-grey-secondary text-xs" dateTime={comment.createdAt}>
             {formatDateTime(comment.createdAt, { dateStyle: 'short', timeStyle: 'short' })}

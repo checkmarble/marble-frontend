@@ -30,8 +30,8 @@ export function EditIpHasFlag(props: Omit<OperandEditModalProps, 'node'>) {
           {t('scenarios:edit_ip_has_flag.description')}
         </Modal.Description>
       </Callout>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-sm">
+        <div className="flex items-center gap-sm">
           <span className="first-letter:uppercase">{t('scenarios:edit_ip_has_flag.extract')}</span>
           <OperatorSelect
             options={validIpFlags}

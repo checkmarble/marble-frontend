@@ -21,14 +21,14 @@ export function CasePivotValues({
   const { i18n } = useTranslation(casesI18n);
 
   return (
-    <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-2">
+    <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-sm">
       {pivotValues.map(({ pivot, value }) => {
         return (
           <React.Fragment key={pivot.id}>
             <Tag
               size="big"
               color={pivot.type === 'field' ? 'grey' : 'purple'}
-              className="col-start-1 flex flex-row gap-2"
+              className="col-start-1 flex flex-row gap-sm"
             >
               <span className="flex-1">{pivot.type}</span>
               <Ariakit.HovercardProvider
@@ -49,7 +49,7 @@ export function CasePivotValues({
                 <Ariakit.Hovercard
                   portal
                   gutter={16}
-                  className="bg-surface-card border-grey-border flex w-fit rounded-sm border p-2 shadow-md"
+                  className="bg-surface-card border-grey-border flex w-fit rounded-sm border p-sm shadow-md"
                 >
                   <PivotDetails pivot={pivot} />
                 </Ariakit.Hovercard>

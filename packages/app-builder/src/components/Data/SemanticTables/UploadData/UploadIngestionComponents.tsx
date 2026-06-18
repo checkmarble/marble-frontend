@@ -80,7 +80,7 @@ export const ResultModal = ({
   return (
     <Modal.Root open={isOpen} onOpenChange={onOpenChange}>
       <Modal.Content>
-        <div className="bg-surface-card text-s flex flex-col items-center gap-6 p-6">
+        <div className="bg-surface-card text-s flex flex-col items-center gap-lg p-lg">
           <Icon
             icon={icon}
             className={clsx(
@@ -90,13 +90,13 @@ export const ResultModal = ({
                 : 'bg-red-background border-transparent text-red-primary',
             )}
           />
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-sm">
             <p className="text-l font-semibold">{t('upload:results')}</p>
             <p>{modalContent.message}</p>
             {!modalContent.success ? (
               <>
                 <p className="first-letter:capitalize">{errorMessage(modalContent.error)}</p>
-                <p className="mt-6">
+                <p className="mt-lg">
                   {t('upload:failure_additional_message', {
                     replace: { objectType },
                   })}
@@ -215,7 +215,7 @@ export const UploadForm = ({
       <div
         {...getRootProps()}
         className={clsx(
-          'text-s flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+          'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
           isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
         )}
       >
@@ -248,7 +248,7 @@ export const UploadFormLoading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
       )}
     >
       {t('common:loading')}
@@ -303,7 +303,7 @@ export const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
       columnHelper.accessor((row) => row.status, {
         id: 'upload.status',
         cell: ({ getValue }) => (
-          <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-sm">
             {getStatusIcon(getValue())}
             <p className="capitalize">{t(getStatusTKey(getValue()))}</p>
           </div>

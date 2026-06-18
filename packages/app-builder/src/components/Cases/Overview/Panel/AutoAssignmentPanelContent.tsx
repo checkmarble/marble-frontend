@@ -109,22 +109,22 @@ export const AutoAssignmentPanelContent = ({
   return (
     <PanelContainer size="xxl">
       <PanelHeader>
-        <div className="flex items-center gap-v2-sm">
+        <div className="flex items-center gap-sm">
           <span>{t('cases:overview.panel.auto_assignment.title')}</span>
         </div>
       </PanelHeader>
       <PanelContent>
         {match(inboxesQuery)
           .with({ isPending: true }, () => (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-xl">
               <Spinner className="size-8" />
             </div>
           ))
           .with({ isError: true }, () => (
-            <div className="text-s text-grey-secondary py-4">{t('cases:overview.config.error_loading')}</div>
+            <div className="text-s text-grey-secondary py-sm">{t('cases:overview.config.error_loading')}</div>
           ))
           .with({ isSuccess: true }, () => (
-            <div className="flex flex-col gap-v2-md">
+            <div className="flex flex-col gap-md">
               {inboxes.map((inbox) => (
                 <InboxCard
                   key={inbox.id}

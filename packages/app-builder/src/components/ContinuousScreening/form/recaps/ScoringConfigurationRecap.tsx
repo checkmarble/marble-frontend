@@ -23,7 +23,7 @@ export const ScoringConfigurationRecap = () => {
   return (
     <RecapRow>
       <span>{t('continuousScreening:creation.scoringConfiguration.recap.title')}</span>
-      <div className="flex flex-row items-center gap-v2-xs h-[25px]">
+      <div className="flex flex-row items-center gap-xs h-[25px]">
         {!isNaN(matchThreshold) ? (
           <RecapCapsule>
             {t('continuousScreening:creation.scoringConfiguration.recap.matchThreshold', { score: matchThreshold })}

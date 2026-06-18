@@ -173,7 +173,7 @@ export const EditMonitoringListCheck = (props: Omit<OperandEditModalProps, 'node
       <Modal.Content size="medium">
         <Modal.Title>{t('scenarios:monitoring_list_check.title')}</Modal.Title>
 
-        <div className="flex max-h-[70dvh] flex-col gap-6 overflow-auto p-4">
+        <div className="flex max-h-[70dvh] flex-col gap-lg overflow-auto p-md">
           {/* Stepper */}
           <Stepper steps={steps} currentStep={currentStep - 1} />
 

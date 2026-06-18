@@ -25,18 +25,18 @@ export function SetMyselfUnavailable() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <div className="flex items-center gap-2 cursor-pointer p-2 rounded-sm hover:bg-green-34 text-grey-white font-semibold bg-green-primary transition-all duration-100">
+        <div className="flex items-center gap-sm cursor-pointer p-sm rounded-sm hover:bg-green-34 text-grey-white font-semibold bg-green-primary transition-all duration-100">
           <Icon icon="account-circle" className="size-5" />
           {t('settings:current_state_available')}
         </div>
       </Modal.Trigger>
-      <Modal.Content className="gap-4">
+      <Modal.Content className="gap-md">
         <Modal.Title>{t('settings:set_myself_unavailable.title')}</Modal.Title>
-        <Callout variant="outlined" className="m-4">
+        <Callout variant="outlined" className="m-md">
           {t('settings:offline_mode_description')}
         </Callout>
 
-        <div className="flex flex-row items-center justify-center gap-2">
+        <div className="flex flex-row items-center justify-center gap-sm">
           <Calendar
             mode="single"
             disabled={{ before: endOfToday() }}

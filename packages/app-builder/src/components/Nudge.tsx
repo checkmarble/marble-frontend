@@ -48,7 +48,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
           sideOffset={8}
           alignOffset={-8}
           className={cn(
-            'bg-surface-card z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 pointer-events-auto shadow-lg',
+            'bg-surface-card z-50 flex w-60 flex-col items-center gap-lg rounded-sm border p-md pointer-events-auto shadow-lg',
             {
               'border-purple-disabled': kind !== 'missing_configuration',
               'border-yellow-primary': kind === 'missing_configuration',
@@ -61,7 +61,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
               .with('missing_configuration', () => t('common:missing_configuration_title'))
               .otherwise(() => t('common:premium'))}
           </span>
-          <div className="flex w-full flex-col items-center gap-2">
+          <div className="flex w-full flex-col items-center gap-sm">
             <p className="text-s w-full text-center font-medium">
               {match<typeof kind, string>(kind)
                 .with('missing_configuration', () => t('common:missing_configuration'))
@@ -83,7 +83,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
               className={CtaV2ClassName({
                 variant: 'primary',
                 color: 'primary',
-                className: 'mt-4 text-center',
+                className: 'mt-md text-center',
               })}
               href="https://checkmarble.com/upgrade"
               target="_blank"

@@ -41,7 +41,7 @@ export function Sanctions({ sanctions }: { sanctions: ScreeningSanctionEntity[] 
   if (rows.length === 0) return null;
 
   return (
-    <ul className="grid grid-cols-[146px_1fr] gap-2">
+    <ul className="grid grid-cols-[146px_1fr] gap-sm">
       {visibleRows.map((sanction, rowIndex) => {
         const isFirstElement = rowIndex === 0;
         const label = getSanctionLabel(sanction);
@@ -56,11 +56,11 @@ export function Sanctions({ sanctions }: { sanctions: ScreeningSanctionEntity[] 
         return (
           <li key={sanction.id} className="contents">
             <div className="font-semibold">
-              {isFirstElement && <div className="font-bold mb-2">{t('screenings:entity.property.sanctions')}</div>}
+              {isFirstElement && <div className="font-bold mb-sm">{t('screenings:entity.property.sanctions')}</div>}
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-v2-sm">
-                <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" overflowTagWidth={60} />
+              <div className="flex items-center gap-sm">
+                <ExpandableGroupTagLine items={expandableItems} classname="gap-sm" overflowTagWidth={60} />
                 <ModalSanction sanction={sanction} />
               </div>
             </div>

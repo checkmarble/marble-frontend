@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { CtaV2ClassName, cn } from 'ui-design-system';
 
-const cellVariants = cva('border-grey-border border-t p-2', {
+const cellVariants = cva('border-grey-border border-t p-sm', {
   variants: {
     isLast: {
       true: 'border-b',
@@ -41,7 +41,7 @@ export function ObjectRelatedCases({
   return match(casesQuery)
     .with({ isError: true }, () => {
       return (
-        <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-2">
+        <div className="border-red-disabled bg-red-background text-red-primary mt-md rounded-sm border p-sm">
           {t('common:global_error')}
         </div>
       );
@@ -56,8 +56,8 @@ export function ObjectRelatedCases({
       }
 
       return (
-        <div className={cn('p-v2-md rounded-v2-md', className)}>
-          <div className="flex flex-col gap-v2-md">
+        <div className={cn('p-md rounded-md', className)}>
+          <div className="flex flex-col gap-md">
             <div className="font-medium">{t('cases:case_detail.pivot_panel.case_history')}</div>
             <div className="grid w-full grid-cols-[auto_1fr_auto_auto]">
               {cases.map((caseObj, idx) => {

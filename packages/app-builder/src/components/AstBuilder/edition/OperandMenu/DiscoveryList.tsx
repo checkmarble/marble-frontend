@@ -37,7 +37,7 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
 
   return (
     <MenuCommand.List>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         {enumOptions.length > 0 ? (
           <SubMenu
             onSelect={onSelect}
@@ -53,7 +53,7 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
               <MenuTitle
                 operandType="Field"
                 count={fieldOptions.reduce((acc, [_, subOpts]) => acc + subOpts.length, 0)}
-                className="min-h-10 p-2"
+                className="min-h-10 p-sm"
               />
             }
           >
@@ -96,12 +96,12 @@ type SubMenuFieldTriggerProps = {
 };
 function SubMenuFieldTrigger(props: SubMenuFieldTriggerProps) {
   const { t } = useTranslation('scenarios');
-  const padding = 24 + Math.max(props.depth - 1, 0) * 20 + (props.depth > 0 ? 8 : 0); // p-6 + (p-5 * depth) + p-2
+  const padding = 24 + Math.max(props.depth - 1, 0) * 20 + (props.depth > 0 ? 8 : 0); // p-lg + (p-5 * depth) + p-sm
 
   return (
     <>
       <span
-        className="text-grey-primary text-s flex select-none flex-row items-baseline gap-1 break-all"
+        className="text-grey-primary text-s flex select-none flex-row items-baseline gap-xs break-all"
         style={{ paddingLeft: `${padding}px` }}
       >
         {props.depth === 0 ? (
@@ -116,7 +116,7 @@ function SubMenuFieldTrigger(props: SubMenuFieldTriggerProps) {
             />
           </span>
         ) : (
-          <span className="flex items-baseline gap-1">
+          <span className="flex items-baseline gap-xs">
             <Icon
               icon="subdirectory-arrow-right"
               className="text-grey-disabled group-aria-selected/menu-item:text-grey-primary size-4 shrink-0 self-center"
@@ -141,10 +141,10 @@ function MenuTitle({ operandType, count, className }: MenuTitleProps) {
   const tKey = getOperandTypeTKey(operandType);
 
   return (
-    <div className={clsx('flex grow select-none flex-row items-center gap-1', className)}>
+    <div className={clsx('flex grow select-none flex-row items-center gap-xs', className)}>
       {icon ? <Icon aria-hidden="true" className="text-purple-primary size-5 shrink-0" icon={icon} /> : null}
       {tKey ? (
-        <span className="text-grey-primary text-m flex flex-1 flex-row items-baseline gap-1 break-all">
+        <span className="text-grey-primary text-m flex flex-1 flex-row items-baseline gap-xs break-all">
           <span className="font-semibold">{t(tKey, { count: count })}</span>
           <span className="text-grey-disabled text-xs font-medium">{count}</span>
         </span>

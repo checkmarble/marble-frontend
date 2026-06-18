@@ -77,10 +77,10 @@ export function FieldNodeConcat({
 
   return (
     <DragDropContext onDragEnd={onDragEnd} autoScrollerOptions={{ disabled: true }}>
-      <div onBlur={onBlur} className="flex flex-col gap-2">
+      <div onBlur={onBlur} className="flex flex-col gap-sm">
         <Droppable isDropDisabled={viewOnly} droppableId="NODES" direction="vertical">
           {(dropProvided) => (
-            <div className="flex flex-col gap-2" ref={dropProvided.innerRef}>
+            <div className="flex flex-col gap-sm" ref={dropProvided.innerRef}>
               {nodes.map((node, index) => (
                 <Draggable isDragDisabled={viewOnly} key={node.id} draggableId={node.id} index={index}>
                   {(dragProvided) => (
@@ -88,7 +88,7 @@ export function FieldNodeConcat({
                       key={node.id}
                       ref={dragProvided.innerRef}
                       {...dragProvided.draggableProps}
-                      className="flex items-center gap-0.5"
+                      className="flex items-center gap-2xs"
                     >
                       {!viewOnly ? (
                         <div className="flex flex-row">

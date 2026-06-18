@@ -17,7 +17,7 @@ export function CreatorsFilter() {
   );
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-sm p-sm">
       <SelectWithCombobox.Root
         open
         onSearchValueChange={setSearchValue}
@@ -29,7 +29,7 @@ export function CreatorsFilter() {
           {matches.map((user) => {
             return (
               <SelectWithCombobox.ComboboxItem key={user.userId} value={user.userId} className="align-baseline">
-                <div className="flex flex-row items-center gap-4">
+                <div className="flex flex-row items-center gap-md">
                   <Avatar firstName={user.firstName} lastName={user.lastName} size="m" />
                   <span className="text-grey-primary text-s">
                     {user.firstName} {user.lastName}

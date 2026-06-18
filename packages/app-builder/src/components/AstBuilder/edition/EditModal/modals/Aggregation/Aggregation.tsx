@@ -59,8 +59,8 @@ export function AggregationEditContent({ onChange }: { onChange?: () => void } =
 
   return (
     <>
-      <div className="flex flex-1 flex-col gap-4">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-1 flex-col gap-md">
+        <div className="flex flex-col gap-sm">
           <label htmlFor="aggregation.label">{t('scenarios:edit_aggregation.label_title')}</label>
           <Input
             type="text"
@@ -74,11 +74,11 @@ export function AggregationEditContent({ onChange }: { onChange?: () => void } =
           />
         </div>
         <div
-          className={`grid ${aggregatorHasParams(currentAggregator) ? 'grid-cols-[240px_120px_1fr]' : 'grid-cols-[240px_1fr]'} gap-2`}
+          className={`grid ${aggregatorHasParams(currentAggregator) ? 'grid-cols-[240px_120px_1fr]' : 'grid-cols-[240px_1fr]'} gap-sm`}
         >
           <div>{t('scenarios:edit_aggregation.function_title')}</div>
           {aggregatorHasParams(currentAggregator) ? (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-xs">
               <span>{t('scenarios:edit_aggregation.percentile_value')}</span>
               <Tooltip.Default
                 className="max-h-none overflow-visible"
@@ -95,7 +95,7 @@ export function AggregationEditContent({ onChange }: { onChange?: () => void } =
             </div>
           ) : null}
           <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <OperatorSelect
               options={aggregatorOptions}
               operator={node.namedChildren.aggregator.constant}
@@ -134,7 +134,7 @@ export function AggregationEditContent({ onChange }: { onChange?: () => void } =
               }}
             />
           ) : null}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <EditDataModelField
               placeholder={t('scenarios:edit_aggregation.select_a_field')}
               value={aggregatedField.value}
@@ -179,16 +179,16 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
       {...props}
       saveDisabled={isCurrentRestricted && !hasValidLicense}
       title={
-        <div className="flex flex-row items-center justify-center gap-3">
+        <div className="flex flex-row items-center justify-center gap-md">
           {t('scenarios:edit_aggregation.title')}
-          <div className="flex flex-row items-center justify-center gap-1">
+          <div className="flex flex-row items-center justify-center gap-xs">
             <Logo logo="logo" className="size-4" />
             <span className="text-grey-secondary text-xs font-light">{t('scenarios:edit_aggregation.subtitle')}</span>
           </div>
         </div>
       }
       size="large"
-      className="max-h-[70dvh] gap-10 overflow-auto"
+      className="max-h-[70dvh] gap-2xl overflow-auto"
     >
       <Callout variant="outlined">
         <Modal.Description className="whitespace-pre-wrap">

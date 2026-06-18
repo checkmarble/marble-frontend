@@ -87,7 +87,7 @@ export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseB
       </TooltipV2.Tooltip>
       <Modal.Content>
         <Modal.Title>Escalate Case</Modal.Title>
-        <div className="flex flex-col gap-8 p-8">
+        <div className="flex flex-col gap-xl p-xl">
           <Callout className="text-balance">
             <Trans i18nKey="cases:escalate-case.modal.callout" />
           </Callout>

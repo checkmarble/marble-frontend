@@ -91,11 +91,11 @@ export function ClientDocumentsPopover({
           }}
         >
           {(field) => (
-            <div className="flex flex-col gap-2 px-4 py-3">
+            <div className="flex flex-col gap-sm px-md py-md">
               <input {...getInputProps()} />
-              <button type="button" className="flex items-center justify-between gap-9 text-left" {...getRootProps()}>
+              <button type="button" className="flex items-center justify-between gap-xl text-left" {...getRootProps()}>
                 <div className="flex flex-col">
-                  <div className="text-r flex items-center gap-2">{t('cases:annotations.documents.add_file')}</div>
+                  <div className="text-r flex items-center gap-sm">{t('cases:annotations.documents.add_file')}</div>
                   <span className="text-grey-secondary">
                     {t('cases:annotations.documents.upload_file')}: jpg, png, pdf, zip, doc, docx, xls, xlsx
                   </span>
@@ -103,12 +103,12 @@ export function ClientDocumentsPopover({
                 <Icon icon="upload" className="size-5 shrink-0" />
               </button>
               {field.state.value.length > 0 ? (
-                <div className="flex items-center justify-between gap-9">
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center justify-between gap-xl">
+                  <div className="flex items-center gap-xs">
                     {field.state.value.map((file) => (
                       <div
                         key={file.name}
-                        className="border-grey-border flex max-w-24 items-center gap-1 rounded-sm border px-1.5 py-0.5"
+                        className="border-grey-border flex max-w-24 items-center gap-xs rounded-sm border px-sm py-2xs"
                       >
                         <span className="truncate text-xs font-medium">{file.name}</span>
                         <Icon
@@ -142,7 +142,7 @@ export function ClientDocumentsPopover({
       {documents && documents.length > 0 ? (
         <>
           <div className="bg-grey-border h-px w-full" />
-          <div className="flex flex-col gap-1 overflow-y-scroll px-2 py-1">
+          <div className="flex flex-col gap-xs overflow-y-scroll px-sm py-xs">
             {documents.map((document) => {
               const files = document.payload.files;
 
@@ -150,7 +150,7 @@ export function ClientDocumentsPopover({
                 <div key={document.id} className="flex flex-col">
                   <div className="has-[button[data-delete]:hover]:bg-red-background relative z-0 flex flex-col rounded-sm">
                     {files.map((file, idx) => (
-                      <div key={file.id} className="z-10 grid grid-cols-[auto_1fr_auto_20px] gap-2 p-2">
+                      <div key={file.id} className="z-10 grid grid-cols-[auto_1fr_auto_20px] gap-sm p-sm">
                         <Icon icon="attachment" className="text-grey-secondary size-5" />
                         <span className="truncate">{file.filename}</span>
                         <AnnotationFileDownload annotationId={document.id} fileId={file.id} />

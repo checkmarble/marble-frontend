@@ -64,7 +64,7 @@ function CreateWebhookSecretContent({ webhookId, onSuccess }: { webhookId: strin
       }}
     >
       <Modal.Title>{t('settings:webhooks.create_secret.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <form.Field
           name="expireExistingInDays"
           validators={{
@@ -72,7 +72,7 @@ function CreateWebhookSecretContent({ webhookId, onSuccess }: { webhookId: strin
           }}
         >
           {(field) => (
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col items-start gap-sm">
               <FormLabel name={field.name}>{t('settings:webhooks.create_secret.expire_existing_in_days')}</FormLabel>
               <FormInput
                 type="number"

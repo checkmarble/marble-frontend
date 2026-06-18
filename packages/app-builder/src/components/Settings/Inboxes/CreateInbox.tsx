@@ -83,11 +83,11 @@ export function CreateInboxContent({
       }}
     >
       <Modal.Title>{t('settings:inboxes.new_inbox.explain')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <HiddenInputs redirectRoute={redirectRoutePath} />
         <form.Field name="name">
           {(field) => (
-            <div className="group flex flex-col gap-2">
+            <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>{t('settings:inboxes.new_inbox.name')}</FormLabel>
               <FormInput
                 name={field.name}

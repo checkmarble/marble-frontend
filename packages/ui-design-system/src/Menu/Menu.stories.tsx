@@ -34,7 +34,7 @@ function renderItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem name={group} className="data-active-item:bg-purple-background-light rounded-sm p-2 outline-hidden">
+        <MenuItem name={group} className="data-active-item:bg-purple-background-light rounded-sm p-sm outline-hidden">
           {item}
         </MenuItem>
       ) : (
@@ -75,7 +75,7 @@ function MenuWithCombobox({ items }: { items: typeof groceries }) {
   return (
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
       <MenuButton render={<Button />}>Open</MenuButton>
-      <MenuPopover className="flex flex-col gap-2 p-2">
+      <MenuPopover className="flex flex-col gap-sm p-sm">
         <MenuCombobox render={<Input className="shrink-0" />} />
         <MenuContent>
           <ScrollAreaV2 type="auto">{renderMatches(matches) || renderItems(items)}</ScrollAreaV2>
@@ -96,7 +96,7 @@ export const Default: StoryFn = () => <MenuWithCombobox items={groceries} />;
 export const WithoutCombobox: StoryFn = () => (
   <MenuRoot>
     <MenuButton render={<Button />}>Open</MenuButton>
-    <MenuPopover className="flex flex-col gap-2 p-2">
+    <MenuPopover className="flex flex-col gap-sm p-sm">
       <ScrollAreaV2 type="auto">{renderItems(groceries)}</ScrollAreaV2>
     </MenuPopover>
   </MenuRoot>
@@ -108,18 +108,18 @@ function renderNestedItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem name={group} className="data-active-item:bg-purple-background-light rounded-sm p-2 outline-hidden">
+        <MenuItem name={group} className="data-active-item:bg-purple-background-light rounded-sm p-sm outline-hidden">
           {item}
         </MenuItem>
       ) : (
         <Fragment>
-          <MenuSeparator className="my-2" />
+          <MenuSeparator className="my-sm" />
           <SubMenuRoot>
-            <SubMenuButton className="data-active-item:bg-purple-background-light flex flex-row justify-between gap-2 rounded-sm p-2 outline-hidden">
+            <SubMenuButton className="data-active-item:bg-purple-background-light flex flex-row justify-between gap-sm rounded-sm p-sm outline-hidden">
               <span>{item.label}</span>
               <span>{'>'}</span>
             </SubMenuButton>
-            <MenuPopover className="flex flex-col gap-2 p-2" gutter={16}>
+            <MenuPopover className="flex flex-col gap-sm p-sm" gutter={16}>
               <MenuContent>
                 <ScrollAreaV2 type="auto">{renderItems(item.items, item.label)}</ScrollAreaV2>
               </MenuContent>
@@ -166,7 +166,7 @@ function NestedMenuWithCombobox({ items }: { items: typeof groceries }) {
   return (
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
       <MenuButton render={<Button />}>Open</MenuButton>
-      <MenuPopover className="flex flex-col gap-2 p-2">
+      <MenuPopover className="flex flex-col gap-sm p-sm">
         <MenuCombobox render={<Input className="shrink-0" />} />
         <MenuContent>
           <ScrollAreaV2 type="auto">{renderMatches(matches) || renderNestedItems(items)}</ScrollAreaV2>
@@ -181,7 +181,7 @@ export const Nested: StoryFn = () => <NestedMenuWithCombobox items={groceries} /
 export const NestedWithoutCombobox: StoryFn = () => (
   <MenuRoot>
     <MenuButton render={<Button />}>Open</MenuButton>
-    <MenuPopover className="flex flex-col gap-2 p-2">
+    <MenuPopover className="flex flex-col gap-sm p-sm">
       <ScrollAreaV2 type="auto">{renderNestedItems(groceries)}</ScrollAreaV2>
     </MenuPopover>
   </MenuRoot>

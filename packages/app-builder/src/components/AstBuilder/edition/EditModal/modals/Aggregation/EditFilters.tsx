@@ -60,7 +60,7 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
   }, [tableName, dataModel]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <div className="text-m">
         <Trans
           t={t}
@@ -69,7 +69,7 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
         />
       </div>
       {filters.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           {filters.map((filter, filterIndex) => {
             const binaryFilter = isBinaryAggregationFilter(filter);
             const complexFilter = isComplexAggregationFilter(filter);
@@ -101,9 +101,9 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
 
             return (
               <Fragment key={filterIndex}>
-                <div className="border-grey-border flex flex-col gap-4 rounded-md border-[0.5px] p-4">
+                <div className="border-grey-border flex flex-col gap-md rounded-md border-[0.5px] p-md">
                   <div className="flex items-center justify-between">
-                    <div className="text-grey-secondary flex items-center gap-2 pl-2 text-xs">
+                    <div className="text-grey-secondary flex items-center gap-sm ps-sm text-xs">
                       <span>{t('scenarios:edit_aggregation.filter_field_label')}</span>
                       <FieldSelect
                         tableName={tableName}
@@ -111,7 +111,7 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
                         trigger={
                           <div
                             className={clsx(
-                              'text-s aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-2',
+                              'text-s aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-xs',
                               {
                                 'border-grey-border': filteredFieldErrors.length === 0,
                                 'border-red-primary': filteredFieldErrors.length > 0,
@@ -256,7 +256,7 @@ export function EditFilters({ aggregatedField, dataModel, onChange }: EditFilter
           })}
         </div>
       ) : null}
-      <div className="flex flex-row justify-start gap-2">
+      <div className="flex flex-row justify-start gap-sm">
         <FieldSelect
           tableName={tableName}
           options={options}

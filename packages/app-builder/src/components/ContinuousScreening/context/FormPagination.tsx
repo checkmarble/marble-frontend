@@ -26,7 +26,7 @@ export const FormPagination = ({ finalButtonText }: { finalButtonText?: string }
   });
 
   return (
-    <div className="shrink-0 sticky bottom-0 p-v2-lg pt-v2-sm flex justify-end gap-v2-md bg-surface-page border-t border-grey-border shadow-sticky-top">
+    <div className="shrink-0 sticky bottom-0 p-lg pt-sm flex justify-end gap-md bg-surface-page border-t border-grey-border shadow-sticky-top">
       {creationStepper.computed.hasPrevious.value ? (
         <Button variant="primary" appearance="stroked" onClick={handlePrevious}>
           <Icon icon="arrow-left" className="size-4" />

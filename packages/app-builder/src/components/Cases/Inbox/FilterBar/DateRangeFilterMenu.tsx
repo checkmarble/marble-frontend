@@ -23,7 +23,7 @@ export const DateRangeFilterMenu = ({ onSelect }: DateRangeFilterMenuProps) => {
           <DateRangeFilter.Summary className="col-span-3 row-span-1" />
         </DateRangeFilter.Root>
       </MenuCommand.List>
-      <div className="border-grey-border flex gap-2 overflow-x-auto border-t p-2 justify-center">
+      <div className="border-grey-border flex gap-sm overflow-x-auto border-t p-sm justify-center">
         <MenuCommand.HeadlessItem
           onSelect={() => {
             if (value) {

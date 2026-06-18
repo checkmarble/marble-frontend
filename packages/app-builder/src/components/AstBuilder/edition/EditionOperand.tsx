@@ -30,7 +30,7 @@ export const editionOperandLabelClassnames = cva(
   [
     'group',
     'size-fit min-h-10 min-w-10 rounded-sm outline-hidden',
-    'flex flex-row items-center justify-between gap-2 px-2',
+    'flex flex-row items-center justify-between gap-sm px-xs',
     'bg-surface-card aria-expanded:bg-purple-background-light aria-expanded:border-purple-primary',
   ],
   {
@@ -181,7 +181,7 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
 
   return (
     <EditionOperandSharpFactory.Provider value={operandSharp}>
-      <div className="inline-flex flex-col gap-2 self-start">
+      <div className="inline-flex flex-col gap-sm self-start">
         <AstBuilderOperandMenu onSelect={onCreateSelect} bottomActions={bottomActions}>
           <MenuCommand.Trigger>
             <button type="button" className={editionOperandLabelClassnames({ validationStatus })}>

@@ -8,7 +8,7 @@ const viewingOperandLabelClassnames = cva(
   [
     'group',
     'size-fit min-h-[40px] min-w-[40px] rounded-sm outline-hidden',
-    'flex flex-row items-center justify-between gap-2 px-2',
+    'flex flex-row items-center justify-between gap-sm px-xs',
     'bg-grey-background-light',
   ],
   {

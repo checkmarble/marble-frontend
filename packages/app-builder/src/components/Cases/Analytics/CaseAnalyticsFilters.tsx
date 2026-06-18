@@ -61,7 +61,7 @@ export function CaseAnalyticsFilters({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-v2-md">
+    <div className="flex flex-wrap items-center gap-md">
       <CaseAnalyticsDateRangeMenu value={dateRange} onChange={onDateRangeChange} />
 
       <SelectV2

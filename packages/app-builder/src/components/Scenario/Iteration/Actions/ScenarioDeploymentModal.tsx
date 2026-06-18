@@ -274,14 +274,14 @@ export function ScenarioDeploymentModal({
           }}
         >
           <Modal.Title>{title}</Modal.Title>
-          <div className="flex flex-col gap-6 p-6">
+          <div className="flex flex-col gap-lg p-lg">
             <StepProgressBar steps={steps} value={currentStep} isPending={isPending} />
-            <div className="text-s flex flex-col gap-4 font-medium">
+            <div className="text-s flex flex-col gap-md font-medium">
               <p className="font-semibold">{confirm}</p>
-              <ul className="flex list-disc flex-col gap-4 ps-5">
+              <ul className="flex list-disc flex-col gap-md ps-lg">
                 {bullets.map((bullet) => (
                   <li key={bullet.text}>
-                    <span className="inline-flex items-center gap-2">
+                    <span className="inline-flex items-center gap-sm">
                       {bullet.text}
                       {bullet.tooltip ? (
                         <Tooltip.Default content={<p className="max-w-60">{bullet.tooltip}</p>}>

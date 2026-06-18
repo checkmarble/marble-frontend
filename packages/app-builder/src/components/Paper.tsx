@@ -7,7 +7,7 @@ function PaperContainer({ children, className }: { children: React.ReactNode; cl
     <div
       className={clsx(
         'border-grey-border w-full rounded-lg border',
-        'flex flex-col gap-4 p-4 lg:gap-6 lg:p-6',
+        'flex flex-col gap-md p-md lg:gap-lg lg:p-lg',
         className,
       )}
     >
@@ -41,7 +41,7 @@ const CollapsiblePaperTitle = forwardRef<HTMLButtonElement, React.ComponentProps
       <Collapsible.Title ref={ref} className="bg-surface-card" {...props}>
         <div
           className={clsx(
-            'flex min-w-0 max-w-full flex-1 flex-row items-center gap-2 overflow-hidden text-start font-bold',
+            'flex min-w-0 max-w-full flex-1 flex-row items-center gap-sm overflow-hidden text-start font-bold',
             className,
           )}
         >

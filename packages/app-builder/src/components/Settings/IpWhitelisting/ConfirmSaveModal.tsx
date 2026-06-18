@@ -20,8 +20,8 @@ export const ConfirmSaveModal = ({ onConfirm, children }: ConfirmSaveModalProps)
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <Modal.Title>{t('settings:ip_whitelisting.save')}</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <div className="text-s flex flex-1 flex-col gap-4">
+        <div className="flex flex-col gap-lg p-lg">
+          <div className="text-s flex flex-1 flex-col gap-md">
             <p className="text-center">{t('settings:ip_whitelisting.save_confirm.content')}</p>
           </div>
         </div>

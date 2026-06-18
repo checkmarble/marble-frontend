@@ -203,12 +203,12 @@ export function ThresholdRange({
   };
 
   return (
-    <div className={cn('flex flex-col gap-3', className)}>
+    <div className={cn('flex flex-col gap-md', className)}>
       {name ? <input type="hidden" name={name} value={value ?? ''} /> : null}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-md">
         {title ? (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-xs">
             <span className="text-grey-primary text-s font-medium">{title}</span>
             {learnMoreUrl ? (
               <a
@@ -232,14 +232,14 @@ export function ThresholdRange({
           aria-valuenow={value}
           aria-valuetext={activeStep?.value.toString() ?? ''}
           className={cn(
-            'rounded-lg px-2 pb-2 pt-3 focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-purple-primary',
+            'rounded-lg px-xs pb-sm pt-md focus-visible:outline-2 focus-visible:outline-offset-6 focus-visible:outline-purple-primary',
             disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
             isDragging && 'select-none',
           )}
           onKeyDown={handleKeyDown}
           onBlur={onBlur}
         >
-          <div className="relative px-3 pb-2">
+          <div className="relative px-md pb-sm">
             <div
               ref={railRef}
               data-testid="threshold-range-rail"

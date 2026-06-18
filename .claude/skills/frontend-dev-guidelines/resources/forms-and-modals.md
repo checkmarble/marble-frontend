@@ -44,7 +44,7 @@ export function CreateItemForm({ closeModal }: { closeModal: () => void }) {
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>Create Item</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <form.Field
           name="name"
           validators={{
@@ -53,7 +53,7 @@ export function CreateItemForm({ closeModal }: { closeModal: () => void }) {
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
+            <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>Name</FormLabel>
               <FormInput
                 type="text"
@@ -144,26 +144,14 @@ export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>Delete Item</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-col gap-lg p-lg">
           <p className="text-s text-center text-grey-primary">
             Are you sure you want to delete this item?
           </p>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">Cancel</Button>
-          </Modal.Close>
-          <Button
-            color="red"
-            variant="primary"
-            onClick={() => {
-              onDelete();
-              setOpen(false);
-            }}
-          >
-            <Icon icon="delete" className="size-5" />
-            Delete
-          </Button>
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} onClick={onClose} />
+          <Modal.FooterButton variant="destructive" label={t('common:delete')} onClick={handleDelete} leadingIcon='delete' />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
@@ -180,7 +168,7 @@ export function DeleteConfirmModal({ onDelete }: { onDelete: () => void }) {
 | `Modal.Content` | Dialog container. Props: `size` (`small`/`medium`/`large`/`xlarge`) |
 | `Modal.Title` | Dialog title (required for accessibility) |
 | `Modal.Close` | Closes on click. Use `asChild` to wrap custom button |
-| `Modal.Footer` | Sticky footer for action buttons |
+| `Modal.Footer` | Standard buttons in the footer, asClosed for the buttons that close the modal, with optional icon and isLoading state |
 
 ### Modal with Form
 
@@ -190,14 +178,12 @@ Wrap `<form>` around `Modal.Title`, content, and `Modal.Footer`:
 <Modal.Content>
   <form onSubmit={handleSubmit(form)}>
     <Modal.Title>Create Item</Modal.Title>
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-lg p-lg">
       {/* form fields */}
     </div>
     <Modal.Footer>
-      <Modal.Close asChild>
-        <Button variant="secondary" appearance="stroked" type="button">Cancel</Button>
-      </Modal.Close>
-      <Button variant="primary" type="submit">Save</Button>
+      <Modal.FooterButton isCloseButton label={t('common:cancel')} onClick={onClose} />
+      <Modal.FooterButton variant="destructive" label={t('common:delete')} onClick={handleDelete} leadingIcon='delete' />
     </Modal.Footer>
   </form>
 </Modal.Content>
@@ -243,8 +229,8 @@ export function DetailPanel({ open, onOpenChange }: { open: boolean; onOpenChang
 | `md` | 28rem |
 | `lg` | 32rem |
 | `xl` | 36rem |
-| `xxl` | 42rem |
-| `xxxl` | 48rem |
+| `2xl` | 42rem |
+| `3xl` | 48rem |
 | `max` | 1000px |
 
 Features: slide animation, focus trapping, Escape to close, portal rendering.

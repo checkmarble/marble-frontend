@@ -22,7 +22,7 @@ export function MapView({ latitude, longitude, mapHeight }: MapViewProps) {
   }, [latitude, longitude]);
 
   return (
-    <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+    <div className="isolate overflow-hidden rounded-lg border border-grey-border bg-surface-card">
       <MapLibre
         ref={mapRef}
         initialViewState={{ latitude, longitude, zoom: 5 }}

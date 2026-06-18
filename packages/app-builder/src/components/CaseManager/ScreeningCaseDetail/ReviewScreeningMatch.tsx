@@ -58,12 +58,12 @@ export const ReviewScreeningMatch = ({
       <Modal.Content size="small">
         <Modal.Title>{t('screenings:review_modal.title')}</Modal.Title>
         <form onSubmit={handleSubmit(form)} id="review-screening-match">
-          <div className="flex flex-col gap-8 p-8">
+          <div className="flex flex-col gap-xl p-xl">
             <input name="matchId" type="hidden" value={screeningMatch.id} />
             <form.Field name="status">
               {(field) => {
                 return (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-sm">
                     <div className="text-m">{t('screenings:review_modal.status_label')}</div>
                     <StatusRadioGroup value={field.state.value} onChange={field.handleChange} />
                     {currentStatus === 'confirmed_hit' && automaticallyConfirmScreening ? (
@@ -76,7 +76,7 @@ export const ReviewScreeningMatch = ({
             <form.Field name="comment">
               {(field) => {
                 return (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-sm">
                     <div className="text-m">{t('screenings:review_modal.comment_label')}</div>
                     <TextArea
                       name={field.name}

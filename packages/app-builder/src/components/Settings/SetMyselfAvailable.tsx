@@ -19,7 +19,7 @@ export function SetMyselfAvailable() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <div className="flex items-center gap-2 cursor-pointer p-2 rounded-sm hover:bg-red-hover text-grey-primary font-semibold bg-red-primary transition-all duration-100">
+        <div className="flex items-center gap-sm cursor-pointer p-sm rounded-sm hover:bg-red-hover text-grey-primary font-semibold bg-red-primary transition-all duration-100">
           <Icon icon="account-circle-off" className="size-5" />
           {t('settings:current_state_unavailable')}
         </div>
@@ -32,7 +32,7 @@ export function SetMyselfAvailable() {
               : null,
           })}
         </Modal.Title>
-        <Callout variant="outlined" className="m-8">
+        <Callout variant="outlined" className="m-xl">
           {t('settings:set_myself_available.description.callout')}
         </Callout>
 

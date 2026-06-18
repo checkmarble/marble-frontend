@@ -54,9 +54,9 @@ export function WorkflowList({ scenario }: WorkflowListProps) {
       <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <Droppable droppableId="workflow-rules" direction="vertical">
           {(provided) => (
-            <div className="flex flex-col py-8 max-w-7xl ml-8" {...provided.droppableProps} ref={provided.innerRef}>
+            <div className="flex flex-col py-xl max-w-7xl ms-xl" {...provided.droppableProps} ref={provided.innerRef}>
               {!isLoading && rules.length === 0 ? (
-                <div className="w-[min(800px,60vw)] text-center text-grey-60 italic py-8">
+                <div className="w-[min(800px,60vw)] text-center text-grey-60 italic py-xl">
                   {t('workflows:empty_state.no_rule_yet')}
                 </div>
               ) : null}
@@ -87,7 +87,7 @@ export function WorkflowList({ scenario }: WorkflowListProps) {
                             <div className="w-full flex justify-center items-center relative">
                               <div className="w-0.5 h-16 bg-grey-disabled relative">
                                 <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-grey-disabled"></div>
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-border px-3 py-1 rounded-sm z-10">
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-border px-md py-2xs rounded-sm z-10">
                                   <span className="text-sm font-bold text-white uppercase tracking-wide">
                                     {t('workflows:else_arrow.label')}
                                   </span>
@@ -108,7 +108,7 @@ export function WorkflowList({ scenario }: WorkflowListProps) {
       </DragDropContext>
 
       <div
-        className={`flex flex-col items-center w-[min(800px,60vw)] ml-8 pb-8 transition-all duration-300 ${
+        className={`flex flex-col items-center w-[min(800px,60vw)] ms-xl pb-xl transition-all duration-300 ${
           hasModifiedRules ? 'opacity-40 pointer-events-none blur-xs' : ''
         }`}
       >

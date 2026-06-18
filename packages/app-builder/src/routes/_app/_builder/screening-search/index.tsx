@@ -67,10 +67,10 @@ function ScreeningSearchIndexPage() {
   return (
     <Page.Main>
       <Page.Container>
-        <Page.ContentV2 className="h-full gap-v2-md">
+        <Page.ContentV2 className="h-full gap-md">
           <div className="flex items-center justify-between">
             <Typo variant="title1">{t('navigation:screening_search')}</Typo>
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               {hasResults && (
                 <PrintView
                   title={t('screenings:print.title')}

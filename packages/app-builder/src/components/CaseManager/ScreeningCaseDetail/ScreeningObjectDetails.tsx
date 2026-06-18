@@ -18,7 +18,7 @@ export const ScreeningObjectDetails = ({ objectType, objectId, className }: Scre
   const objectDetailsQuery = useObjectDetailsQuery(objectType, objectId);
 
   return (
-    <div className={cn('p-v2-md rounded-v2-lg flex flex-col gap-v2-sm', className)}>
+    <div className={cn('p-md rounded-lg flex flex-col gap-sm', className)}>
       <div className="font-medium">{t('continuousScreening:review.object_details_subtitle')}</div>
       {match([dataModelQuery, objectDetailsQuery])
         .with([{ isPending: true }, P.any], () => {

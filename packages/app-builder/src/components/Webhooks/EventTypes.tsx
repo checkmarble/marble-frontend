@@ -45,7 +45,7 @@ export function SelectEvents({
         )}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-sm p-sm">
         <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
           {matches.map((event) => (
@@ -60,7 +60,7 @@ export function SelectEvents({
             </SelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
-            <p className="text-grey-secondary flex items-center justify-center p-2">
+            <p className="text-grey-secondary flex items-center justify-center p-sm">
               {t('settings:webhooks.event_types.empty_matches')}
             </p>
           ) : null}
@@ -74,19 +74,19 @@ export function EventTypes({ className, eventTypes }: { eventTypes: string[]; cl
   return (
     <Tooltip.Default
       content={
-        <div className="flex max-w-sm flex-wrap gap-1">
+        <div className="flex max-w-sm flex-wrap gap-xs">
           {eventTypes.map((event) => (
             <EventType key={event}>{event}</EventType>
           ))}
         </div>
       }
     >
-      <div className={clsx('flex w-fit flex-wrap items-center gap-1', className)}>
+      <div className={clsx('flex w-fit flex-wrap items-center gap-xs', className)}>
         {eventTypes.slice(0, 3).map((event) => (
           <EventType key={event}>{event}</EventType>
         ))}
         {eventTypes.length > 3 ? (
-          <div className="text-grey-primary bg-grey-background flex h-6 items-center rounded-full px-2 text-xs font-normal">
+          <div className="text-grey-primary bg-grey-background flex h-6 items-center rounded-full px-xs text-xs font-normal">
             {`+${eventTypes.length - 3}`}
           </div>
         ) : null}
@@ -97,7 +97,7 @@ export function EventTypes({ className, eventTypes }: { eventTypes: string[]; cl
 
 function EventType({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-grey-background flex h-6 items-center rounded-sm px-2">
+    <div className="bg-grey-background flex h-6 items-center rounded-sm px-xs">
       <span className="text-grey-primary line-clamp-1 text-xs font-normal">{children}</span>
     </div>
   );

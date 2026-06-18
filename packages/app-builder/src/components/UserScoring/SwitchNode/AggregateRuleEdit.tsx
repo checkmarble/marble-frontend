@@ -83,9 +83,9 @@ export function AggregateRuleEdit({
 
   return (
     <>
-      <div className="flex flex-col gap-v2-sm">
+      <div className="flex flex-col gap-sm">
         <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
-        <div className="p-v2-md bg-grey-background-light border border-grey-border rounded-v2-md flex flex-col gap-v2-lg">
+        <div className="p-md bg-grey-background-light border border-grey-border rounded-md flex flex-col gap-lg">
           <InlineAggregationEditor
             node={aggregationNode ?? NewAggregatorAstNode('SUM')}
             onChange={handleAggregationChange}

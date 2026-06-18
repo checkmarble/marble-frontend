@@ -27,9 +27,9 @@ export const InboxCard = ({
   const isInboxChecked = inboxChecked ?? inbox.autoAssignEnabled;
 
   return (
-    <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light dark:bg-surface-card flex flex-col gap-v2-md">
+    <div className="border border-grey-border rounded-lg p-md bg-grey-background-light dark:bg-surface-card flex flex-col gap-md">
       <div className="flex items-center justify-between">
-        <div className="flex-1 flex items-center gap-v2-sm">
+        <div className="flex-1 flex items-center gap-sm">
           <span className="text-s font-medium">{inbox.name}</span>
           <Tag color="purple" size="small">
             {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
@@ -42,7 +42,7 @@ export const InboxCard = ({
         />
       </div>
       {hasUsers && (
-        <div className="flex flex-col gap-v2-sm">
+        <div className="flex flex-col gap-sm">
           {inbox.users.map((user) => (
             <InboxUserRow
               key={user.id}

@@ -27,7 +27,7 @@ export const defaultMarkdownComponents: Components = {
           align="start"
           alignOffset={-16}
           sideOffset={12}
-          className="bg-surface-card p-4 flex flex-col gap-2 items-center border border-grey-border rounded-sm shadow-md z-50"
+          className="bg-surface-card p-md flex flex-col gap-sm items-center border border-grey-border rounded-sm shadow-md z-50"
         >
           <HoverCardArrow className="fill-grey-white" />
 
@@ -39,14 +39,14 @@ export const defaultMarkdownComponents: Components = {
       </HoverCardPortal>
     </HoverCard>
   ),
-  h1: ({ children }) => <div className="text-h1 font-bold mb-2">{children}</div>,
-  h2: ({ children }) => <div className="text-h2 font-bold mb-2">{children}</div>,
-  h3: ({ children }) => <div className="text-default font-bold mb-2">{children}</div>,
-  p: ({ children }) => <p className="not-last:mb-2">{children}</p>,
-  ul: ({ children }) => <ul className="mb-2 list-disc pl-4">{children}</ul>,
-  ol: ({ children }) => <ul className="mb-2 list-decimal pl-4">{children}</ul>,
+  h1: ({ children }) => <div className="text-h1 font-bold mb-sm">{children}</div>,
+  h2: ({ children }) => <div className="text-h2 font-bold mb-sm">{children}</div>,
+  h3: ({ children }) => <div className="text-default font-bold mb-sm">{children}</div>,
+  p: ({ children }) => <p className="not-last:mb-sm">{children}</p>,
+  ul: ({ children }) => <ul className="mb-sm list-disc ps-md">{children}</ul>,
+  ol: ({ children }) => <ul className="mb-sm list-decimal ps-md">{children}</ul>,
   code: ({ children }) => <Code className="font-mono">{children}</Code>,
-  hr: () => <hr className="mb-2 bg-grey-border h-px border-0" />,
+  hr: () => <hr className="mb-sm bg-grey-border h-px border-0" />,
 };
 
 interface MarkdownProps {

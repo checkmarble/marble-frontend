@@ -27,7 +27,7 @@ export const MonitoringHitsList = ({ monitoringHitsQuery, showAll = false }: Mon
       {match(monitoringHitsQuery)
         .with({ isError: true }, () => {
           return (
-            <div className="flex flex-col gap-v2-sm items-center justify-center h-full">
+            <div className="flex flex-col gap-sm items-center justify-center h-full">
               <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
               <Button variant="secondary" onClick={() => monitoringHitsQuery.refetch()}>
                 {t('common:retry')}
@@ -41,18 +41,18 @@ export const MonitoringHitsList = ({ monitoringHitsQuery, showAll = false }: Mon
         .with({ isSuccess: true }, ({ data: { cases } = { cases: [] } }) => {
           if (cases.length === 0) {
             return (
-              <div className="flex flex-col gap-v2-sm text-small">
+              <div className="flex flex-col gap-sm text-small">
                 <span className="text-grey-secondary">{t('common:no_data_to_display')}</span>
               </div>
             );
           }
 
           return (
-            <div className="flex flex-col gap-v2-md">
+            <div className="flex flex-col gap-md">
               {(showAll ? cases : cases.slice(0, MAX_ROWS)).map((caseItem) => (
-                <div key={caseItem.id} className="grid grid-cols-[auto_1fr_auto] gap-v2-sm items-center">
-                  <span className="text-grey-secondary pr-4">{formatDateTime(caseItem.createdAt)}</span>
-                  <div className="flex items-center gap-v2-sm truncate">
+                <div key={caseItem.id} className="grid grid-cols-[auto_1fr_auto] gap-sm items-center">
+                  <span className="text-grey-secondary pe-md">{formatDateTime(caseItem.createdAt)}</span>
+                  <div className="flex items-center gap-sm truncate">
                     <span className="truncate">{caseItem.name}</span>
                     <CaseStatusBadgeV2 status={caseItem.status} outcome={caseItem.outcome} variant="icon-only" />
                     <AsyncMonitoringReviewState caseId={caseItem.id} />

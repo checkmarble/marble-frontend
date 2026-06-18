@@ -18,10 +18,10 @@ export const ScoringConfigurationSection = ({ updatedConfig, baseConfig }: Editi
     <Collapsible.Container>
       <Collapsible.Title>{t('continuousScreening:edition.validation.scoringConfiguration.title')}</Collapsible.Title>
       <Collapsible.Content>
-        <div className="flex flex-col gap-v2-sm">
-          <div className="grid grid-cols-[140px_1fr] gap-v2-sm items-center">
+        <div className="flex flex-col gap-sm">
+          <div className="grid grid-cols-[140px_1fr] gap-sm items-center">
             <span>{t('screenings:match_threshold')}</span>
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               {hasMatchThresholdChanged ? (
                 <>
                   <span className="line-through text-grey-secondary">{baseConfig.matchThreshold}</span>
@@ -31,9 +31,9 @@ export const ScoringConfigurationSection = ({ updatedConfig, baseConfig }: Editi
               <span>{updatedConfig.matchThreshold}</span>
             </div>
           </div>
-          <div className="grid grid-cols-[140px_1fr] gap-v2-sm items-center">
+          <div className="grid grid-cols-[140px_1fr] gap-sm items-center">
             <span>{t('screenings:match_limit')}</span>
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               {hasMatchLimitChanged ? (
                 <>
                   <span className="line-through text-grey-secondary">{baseConfig.matchLimit}</span>
@@ -62,9 +62,9 @@ const InboxDiff = ({
   const hasInboxChanged = updatedConfig.inboxId !== baseConfig.inboxId;
 
   return (
-    <div className="grid grid-cols-[140px_1fr] gap-v2-sm items-center">
+    <div className="grid grid-cols-[140px_1fr] gap-sm items-center">
       <span>{t('continuousScreening:field.inbox.label')}</span>
-      <div className="flex items-center gap-v2-sm">
+      <div className="flex items-center gap-sm">
         {match(inboxesQuery)
           .with({ isPending: true }, () => <Spinner className="size-4" />)
           .with({ isError: true }, () => <div>{t('common:generic_fetch_data_error')}</div>)

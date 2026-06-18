@@ -164,21 +164,21 @@ export function ScreeningHitsPanel({
     <PanelRoot open={open} onOpenChange={handleOpenChange}>
       <PanelContainer size="max" className="!max-w-[80vw]">
         {/* Header: X | Name + Status Badge | Bulk action buttons */}
-        <div className="flex items-center gap-4 pb-v2-lg">
+        <div className="flex items-center gap-md pb-lg">
           <Icon
             icon="cross"
             className="size-6 shrink-0 cursor-pointer text-grey-secondary hover:text-grey-primary"
             onClick={() => handleOpenChange(false)}
             aria-label="Close panel"
           />
-          <div className="flex flex-1 items-center gap-2">
+          <div className="flex flex-1 items-center gap-sm">
             <Typo variant="title2">{currentName}</Typo>
             <ScreeningStatusTag
               status={currentStatus}
               pendingHitCount={screeningQuery.data?.matches.filter((m) => m.status === 'pending').length}
             />
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-sm shrink-0">
             {showBulkButton ? (
               <Button
                 variant="primary"
@@ -208,17 +208,17 @@ export function ScreeningHitsPanel({
         <PanelContent>
           {match(screeningQuery)
             .with({ isPending: true }, () => (
-              <div className="flex items-center justify-center p-8">
+              <div className="flex items-center justify-center p-xl">
                 <Spinner />
               </div>
             ))
             .with({ isError: true }, () => (
-              <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>
+              <div className="text-grey-secondary p-xl text-center text-s">{t('common:global_error')}</div>
             ))
             .otherwise((query) => {
               const screeningData = query.data;
               if (!screeningData) {
-                return <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>;
+                return <div className="text-grey-secondary p-xl text-center text-s">{t('common:global_error')}</div>;
               }
 
               return (
@@ -329,7 +329,7 @@ function PanelMatchList({
   const matches = previewMatches ?? screening.matches;
 
   return (
-    <div className="flex flex-1 flex-col gap-2 pr-4">
+    <div className="flex flex-1 flex-col gap-sm pe-md">
       <span className="text-m font-medium">{t('screenings:potential_matches')}</span>
       <span className="text-s opacity-50">
         {t('screenings:callout.needs_review', {
@@ -351,9 +351,9 @@ function PanelMatchList({
 
       {previewMatches ? (
         <CalloutV2>
-          <div className="flex flex-1 items-center justify-between gap-4">
+          <div className="flex flex-1 items-center justify-between gap-md">
             <span className="text-s">{t('screenings:refine_inline.new_results_callout')}</span>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-sm shrink-0">
               <Button variant="secondary" appearance="stroked" size="small" onClick={onCancel}>
                 {t('screenings:refine_inline.cancel')}
               </Button>
@@ -365,15 +365,15 @@ function PanelMatchList({
         </CalloutV2>
       ) : null}
 
-      <div className="flex flex-col gap-2 mt-2">
+      <div className="flex flex-col gap-sm mt-sm">
         {[...matches].sort(sortScreeningMatchesByTopics).map((screeningMatch) => {
           const isPending = screeningMatch.status === 'pending';
           const showCheckbox = showSelectControls && isPending;
 
           return (
-            <div key={screeningMatch.id} className="flex items-start gap-2">
+            <div key={screeningMatch.id} className="flex items-start gap-sm">
               {showCheckbox ? (
-                <div className="flex shrink-0 items-start pt-5 w-4">
+                <div className="flex shrink-0 items-start pt-md w-4">
                   <Checkbox
                     size="small"
                     checked={selectedMatchIdsSet.has(screeningMatch.id)}

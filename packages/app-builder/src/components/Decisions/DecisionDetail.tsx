@@ -51,7 +51,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
 
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
-            <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
+            <div className="flex w-fit flex-row items-center justify-center gap-xs align-baseline">
               <CaseStatusBadgeV2 status={caseDetail.status} variant="semi-full" />
               <Link
                 to="/cases/$caseId"

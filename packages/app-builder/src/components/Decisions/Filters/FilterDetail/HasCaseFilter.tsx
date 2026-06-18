@@ -31,7 +31,7 @@ export function HasCaseFilter() {
   const { selectedHasCase, setSelectedHasCase } = useDefaultHasCase();
 
   return (
-    <div className="flex flex-row justify-between gap-2 p-2">
+    <div className="flex flex-row justify-between gap-sm p-sm">
       <label htmlFor="hasCase" className="">
         {t('decisions:filters.has_case')}
       </label>

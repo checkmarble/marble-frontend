@@ -41,7 +41,7 @@ export function EditionAstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWith
 
   return (
     <AstBuilderNodeSharpFactory.Provider value={nodeStore}>
-      <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
+      <div className="grid grid-cols-[40px_1fr_max-content] gap-sm">
         {nodeStore.value.node.children.map((child, i) => {
           return (
             <EditionRootOrGroup
@@ -55,7 +55,7 @@ export function EditionAstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWith
             />
           );
         })}
-        <div className="col-span-3 flex flex-row flex-wrap gap-2">
+        <div className="col-span-3 flex flex-row flex-wrap gap-sm">
           <AddLogicalOperatorButton onClick={appendChild} operator="or" />
           <EditionEvaluationErrors direct id={nodeStore.value.node.id} />
         </div>
@@ -118,7 +118,7 @@ function EditionRootOrGroup({ isFirst, path, removeNode }: EditionRootOrGroupPro
           />
         );
       })}
-      <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-2">
+      <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-sm">
         <AddLogicalOperatorButton onClick={appendChild} operator="and" />
         <EditionEvaluationErrors direct id={node.value.id} filterOut={['ARGUMENT_MUST_BE_BOOLEAN']} />
       </div>
@@ -137,7 +137,7 @@ function EditionRootOrWithAndLine({ isFirst, path, nodeId, removeNode }: Edition
     <>
       <LogicalOperatorLabel operator={isFirst ? 'if' : 'and'} type="contained" />
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <EditionAstBuilderNode path={path} root />
         <EditionEvaluationErrors id={nodeId} />
       </div>

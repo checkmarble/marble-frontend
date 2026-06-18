@@ -15,7 +15,7 @@ export function UpsellCard({ title, description, benefits = [], className }: Ups
   return (
     <div
       className={cn(
-        'bg-surface-card border-purple-border flex flex-col items-center gap-v2-md rounded-v2-lg border-2 border-dashed p-v2-lg text-center',
+        'bg-surface-card border-purple-border flex flex-col items-center gap-md rounded-lg border-2 border-dashed p-lg text-center',
         className,
       )}
     >
@@ -23,15 +23,15 @@ export function UpsellCard({ title, description, benefits = [], className }: Ups
         <Icon icon="lock" className="size-6" />
       </div>
 
-      <div className="flex flex-col items-center gap-v2-xs">
+      <div className="flex flex-col items-center gap-xs">
         <Typo variant="subtitle1">{title}</Typo>
         <p className="text-s text-grey-secondary max-w-md">{description}</p>
       </div>
 
       {benefits.length > 0 ? (
-        <ul className="text-s text-grey-primary flex flex-col items-start gap-v2-xs">
+        <ul className="text-s text-grey-primary flex flex-col items-start gap-xs">
           {benefits.map((benefit) => (
-            <li key={benefit} className="flex items-center gap-v2-xs">
+            <li key={benefit} className="flex items-center gap-xs">
               <Icon icon="tick" className="text-purple-primary size-4 shrink-0" />
               <span>{benefit}</span>
             </li>

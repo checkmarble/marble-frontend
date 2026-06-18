@@ -37,14 +37,14 @@ function ForgotPassword() {
   const { t } = useTranslation(authI18n);
 
   return (
-    <div className="flex flex-col gap-10 w-full">
+    <div className="flex flex-col gap-2xl w-full">
       <Typo variant="title2" className="text-center">
         {t('auth:reset-password.title')}
       </Typo>
       <ClientOnly fallback={<StaticResetPassword prefilledEmail={prefilledEmail} />}>
         <ResetPassword prefilledEmail={prefilledEmail} />
       </ClientOnly>
-      <p className="mt-2 text-xs">
+      <p className="mt-sm text-xs">
         <Trans
           t={t}
           i18nKey="auth:reset-password.wrong_place"

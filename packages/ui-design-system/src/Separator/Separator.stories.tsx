@@ -9,11 +9,11 @@ const Story: Meta<typeof Separator> = {
 export default Story;
 
 export const Default: StoryFn<typeof Separator> = () => (
-  <div className="flex w-fit flex-col gap-2">
+  <div className="flex w-fit flex-col gap-sm">
     <h1>Title</h1>
     <p>Et consectetur et eaque at in quas libero qui.</p>
     <Separator className="bg-grey-primary" />
-    <div className="flex h-5 items-center gap-2">
+    <div className="flex h-5 items-center gap-sm">
       <div>Blog</div>
       <Separator className="bg-grey-primary" decorative orientation="vertical" />
       <div>Docs</div>

@@ -45,10 +45,10 @@ function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenari
   return (
     <>
       <Modal.Title>{t('scenarios:deployment_modal.deactivate.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="text-s flex flex-col gap-4 font-medium">
+      <div className="flex flex-col gap-lg p-lg">
+        <div className="text-s flex flex-col gap-md font-medium">
           <p className="font-semibold">{t('scenarios:deployment_modal.deactivate.confirm')}</p>
-          <ul className="flex list-disc flex-col gap-4 ps-5">
+          <ul className="flex list-disc flex-col gap-md ps-lg">
             <li>{t('scenarios:deployment_modal.deactivate.stop_operating')}</li>
             <li>{t('scenarios:deployment_modal.deactivate.change_is_immediate')}</li>
           </ul>

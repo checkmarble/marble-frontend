@@ -85,12 +85,12 @@ export function CaseManagerPrincipalPage({
 
   return (
     <>
-      <div className="flex flex-col gap-v2-lg">
-        <div className="flex flex-col gap-v2-sm">
+      <div className="flex flex-col gap-lg">
+        <div className="flex flex-col gap-sm">
           <div className="text-default font-medium">{t('cases:case_detail.pivot_panel.informations')}</div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-v2-lg">
-            <Card className="flex flex-col gap-v2-sm text-small self-start">
-              <div className="flex items-center gap-v2-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+            <Card className="flex flex-col gap-sm text-small self-start">
+              <div className="flex items-center gap-xs">
                 <CaseStatusBadgeV2 status={caseDetail.status} outcome={caseDetail.outcome} variant="semi-full" />
                 <tagsForm.Field name="tagIds">
                   {(field) => (
@@ -107,13 +107,13 @@ export function CaseManagerPrincipalPage({
                   )}
                 </tagsForm.Field>
                 {caseDetail.status !== 'closed' ? (
-                  <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ml-auto" />
+                  <EscalateCaseButton caseId={caseDetail.id} inboxId={caseDetail.inboxId} className="ms-auto" />
                 ) : null}
               </div>
-              <div className="grid grid-cols-2 gap-v2-sm">
-                <div className="flex flex-col gap-v2-sm">
+              <div className="grid grid-cols-2 gap-sm">
+                <div className="flex flex-col gap-sm">
                   <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
-                  <div className="flex items-center gap-v2-xs">
+                  <div className="flex items-center gap-xs">
                     {/* Make it a select */}
                     <Avatar
                       color="transparent"
@@ -139,7 +139,7 @@ export function CaseManagerPrincipalPage({
                 userScoringAccess={userScoringAccess}
               />
             ) : (
-              <Card className="flex flex-col items-center justify-center gap-v2-sm text-small text-center">
+              <Card className="flex flex-col items-center justify-center gap-sm text-small text-center">
                 <span className="text-grey-secondary">
                   {isAdmin(currentUser)
                     ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
@@ -154,12 +154,12 @@ export function CaseManagerPrincipalPage({
             )}
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_minmax(500px,_1fr)] gap-v2-lg">
-          <div className="flex flex-col gap-v2-md">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_minmax(500px,_1fr)] gap-lg">
+          <div className="flex flex-col gap-md">
             <AiReviewCard caseId={caseDetail.id} canManuallyReview={caseInbox?.caseReviewManual ?? false} />
 
-            <div className="flex flex-col justify-start gap-1.5">
-              <div className="text-default text-grey-primary flex items-center justify-between px-1 font-medium">
+            <div className="flex flex-col justify-start gap-xs.5">
+              <div className="text-default text-grey-primary flex items-center justify-between px-2xs font-medium">
                 <span>{t('cases:alerts')}</span>
                 {hasRuleHits ? (
                   <Button variant="secondary" onClick={() => handleDisplaySnoozePanel()}>
@@ -171,7 +171,7 @@ export function CaseManagerPrincipalPage({
               <CaseAlerts caseDecisionsQuery={caseDecisionsQuery} dataModel={dataModel} />
             </div>
           </div>
-          <div className="flex flex-col gap-v2-md">
+          <div className="flex flex-col gap-md">
             <CaseInvestigation root={rootRef} caseId={caseDetail.id} events={caseDetail.events} />
           </div>
         </div>
@@ -209,10 +209,10 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
   const [explorationOpen, setExplorationOpen] = useState(false);
 
   return (
-    <Card className="flex flex-col gap-v2-sm text-small">
+    <Card className="flex flex-col gap-sm text-small">
       <div className="flex justify-between items-center">
         <span className="font-medium">{clientName}</span>
-        <div className="flex items-center gap-v2-sm">
+        <div className="flex items-center gap-sm">
           {pivotObject.pivotObjectId ? (
             <UserScoreBadge
               objectType={pivotObject.pivotObjectName}
@@ -232,7 +232,7 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
           ) : null}
         </div>
       </div>
-      <div className="flex gap-v2-xs items-center">
+      <div className="flex gap-xs items-center">
         <Tag color="grey" className="capitalize">
           {entityName}
         </Tag>

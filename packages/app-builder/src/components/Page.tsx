@@ -34,12 +34,12 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(fu
 });
 
 const pageDescriptionClassName = cva(
-  'bg-grey-white text-s text-grey-secondary flex flex-row gap-2 p-v2-md font-normal border-grey-border dark:bg-grey-background',
+  'bg-grey-white text-s text-grey-secondary flex flex-row gap-sm p-md font-normal border-grey-border dark:bg-grey-background',
   {
     variants: {
       headerBanner: {
         true: 'border-b',
-        false: 'border rounded-v2-md ',
+        false: 'border rounded-md ',
       },
     },
     defaultVariants: {
@@ -67,7 +67,7 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex flex-1 flex-col gap-4 p-4 pe-[calc(1rem-var(--scrollbar-width))] lg:gap-8 lg:p-8 lg:pe-[calc(2rem-var(--scrollbar-width))]',
+        'flex flex-1 flex-col gap-md p-md pe-[calc(1rem-var(--scrollbar-width))] lg:gap-xl lg:p-xl lg:pe-[calc(2rem-var(--scrollbar-width))]',
         className,
       )}
       {...props}
@@ -83,7 +83,7 @@ const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
     },
     paddingLess: {
       true: 'p-0',
-      false: 'p-v2-lg',
+      false: 'p-lg',
     },
   },
   defaultVariants: {
@@ -99,7 +99,7 @@ function PageContentV2({ className, centered, paddingLess, ...props }: PageConte
 }
 
 const pageBack = cva(
-  'border-grey-border hover:bg-grey-background-light flex items-center justify-center rounded-md border p-2 dark:border-grey-border dark:hover:bg-grey-background',
+  'border-grey-border hover:bg-grey-background-light flex items-center justify-center rounded-md border p-sm dark:border-grey-border dark:hover:bg-grey-background',
 );
 
 function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {

@@ -77,7 +77,7 @@ function WorkflowContent() {
     })
     .with({ isLoading: true }, () => {
       return (
-        <div className="flex items-center justify-center h-full w-full text-purple-hover gap-2">
+        <div className="flex items-center justify-center h-full w-full text-purple-hover gap-sm">
           <Icon icon="spinner" className="size-10 animate-spin" />
           {t('common:loading')}
         </div>
@@ -114,7 +114,7 @@ function WorkflowClientContent() {
       <WorkflowScrollHandler />
       <Page.Main className="h-screen overflow-auto">
         <Page.Header
-          className={`gap-4 sticky top-0 z-20 shadow-xs transition-shadow duration-2000 ease-in-out ${scrolled ? 'shadow-md' : ''}`}
+          className={`gap-md sticky top-0 z-20 shadow-xs transition-shadow duration-2000 ease-in-out ${scrolled ? 'shadow-md' : ''}`}
         >
           <BreadCrumbs />
         </Page.Header>
@@ -123,8 +123,8 @@ function WorkflowClientContent() {
       <Modal.Root open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
         <Modal.Content>
           <Modal.Title>{t('workflows:delete_rule.title')}</Modal.Title>
-          <div className="flex flex-col gap-6 p-6">
-            <div className="text-s flex flex-1 flex-col gap-4">
+          <div className="flex flex-col gap-lg p-lg">
+            <div className="text-s flex flex-1 flex-col gap-md">
               <p className="text-center">
                 {t('workflows:delete_rule.confirm_delete', {
                   ruleName: ruleToDelete?.name,

@@ -26,7 +26,7 @@ function ClientCommentsList({ annotationsQuery }: ClientCommentsListProps) {
     ))
     .with({ isError: true }, () => {
       return (
-        <div className="flex flex-col gap-v2-sm">
+        <div className="flex flex-col gap-sm">
           <span>{t('common:global_error')}</span>
         </div>
       );
@@ -39,7 +39,7 @@ function ClientCommentsList({ annotationsQuery }: ClientCommentsListProps) {
       }
 
       return (
-        <div className="grid grid-cols-[1.5rem_1fr_minmax(auto,max-content)] gap-v2-sm max-h-100 overflow-y-auto">
+        <div className="grid grid-cols-[1.5rem_1fr_minmax(auto,max-content)] gap-sm max-h-100 overflow-y-auto">
           {comments.map((comment) => {
             const user = getOrgUserById(comment.annotated_by);
 
@@ -78,11 +78,11 @@ export function ClientCommentForm({ annotationsQuery, objectId, objectType }: Co
   const queryClient = useQueryClient();
 
   return (
-    <div className="bg-surface-card border border-grey-border rounded-v2-md w-120 shadow-md">
-      <div className="p-v2-md">
+    <div className="bg-surface-card border border-grey-border rounded-md w-120 shadow-md">
+      <div className="p-md">
         <Collapsible.Root className="group/collapsible">
           <Collapsible.Trigger asChild>
-            <button type="button" className="flex items-center gap-v2-sm group-radix-state-open/collapsible:pb-v2-sm">
+            <button type="button" className="flex items-center gap-sm group-radix-state-open/collapsible:pb-sm">
               <Icon
                 icon="arrow-up-right"
                 className="size-4 transition-transform duration-200 rotate-270 group-radix-state-open/collapsible:rotate-90"

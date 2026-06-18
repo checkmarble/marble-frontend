@@ -27,11 +27,11 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
 
   return (
     <Collapsible.Root open={isOpen} onOpenChange={setIsOpen}>
-      <div className="border border-grey-border rounded-v2-lg bg-grey-background-light flex flex-col">
+      <div className="border border-grey-border rounded-lg bg-grey-background-light flex flex-col">
         <Collapsible.Trigger asChild>
           <button
             type="button"
-            className="flex items-center gap-v2-sm p-v2-md w-full text-left hover:bg-grey-background-light rounded-v2-lg transition-colors"
+            className="flex items-center gap-sm p-md w-full text-left hover:bg-grey-background-light rounded-lg transition-colors"
           >
             <Icon
               icon="caret-down"
@@ -45,8 +45,8 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
         </Collapsible.Trigger>
 
         <Collapsible.Content>
-          <div className="flex flex-col gap-v2-sm px-v2-md pb-v2-md">
-            <div className="flex items-center gap-v2-sm">
+          <div className="flex flex-col gap-sm px-md pb-md">
+            <div className="flex items-center gap-sm">
               <Switch
                 checked={settings.caseReviewOnCaseCreated}
                 onCheckedChange={(checked) => onToggle('caseReviewOnCaseCreated', checked)}
@@ -54,7 +54,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
               />
               <span className="text-s">{t('cases:overview.workflow.case_created')}</span>
             </div>
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               <Switch
                 checked={settings.caseReviewOnEscalate}
                 onCheckedChange={(checked) => onToggle('caseReviewOnEscalate', checked)}
@@ -62,7 +62,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
               />
               <span className="text-s">{t('cases:overview.workflow.case_escalated')}</span>
             </div>
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               <Switch
                 checked={settings.caseReviewManual}
                 onCheckedChange={(checked) => onToggle('caseReviewManual', checked)}

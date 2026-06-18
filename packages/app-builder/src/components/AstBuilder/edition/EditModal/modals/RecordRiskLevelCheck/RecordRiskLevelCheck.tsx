@@ -37,7 +37,7 @@ export function EditRecordRiskLevelCheck(props: Omit<OperandEditModalProps, 'nod
           return {
             value: level,
             label: () => (
-              <div className="flex gap-v2-sm items-center">
+              <div className="flex gap-sm items-center">
                 <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: color }} />
                 {label}
               </div>
@@ -58,8 +58,8 @@ export function EditRecordRiskLevelCheck(props: Omit<OperandEditModalProps, 'nod
           {t('scenarios:edit_record_risk_level_check.description')}
         </Modal.Description>
       </Callout>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-sm">
+        <div className="flex items-center gap-sm">
           <span className="first-letter:uppercase">{t('scenarios:edit_record_risk_level_check.match')}</span>
           <SelectV2<number>
             multiple

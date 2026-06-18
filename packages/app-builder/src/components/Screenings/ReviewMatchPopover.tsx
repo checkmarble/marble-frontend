@@ -68,13 +68,13 @@ export function ReviewMatchPopover({
         </Button>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="end" sideOffset={4} className="w-[420px]">
-        <form className="flex flex-col gap-2 p-4" onSubmit={handleSubmit(form)}>
+        <form className="flex flex-col gap-sm p-md" onSubmit={handleSubmit(form)}>
           <span className="text-s font-medium">{t('screenings:review_modal.status_label')}</span>
 
           <form.Field name="status">
             {(field) => (
               <RadioProvider>
-                <RadioGroup className="flex flex-col gap-2">
+                <RadioGroup className="flex flex-col gap-sm">
                   <RadioItem
                     value="confirmed_hit"
                     checked={field.state.value === 'confirmed_hit'}
@@ -110,12 +110,12 @@ export function ReviewMatchPopover({
             <form.Field name="whitelist">
               {(field) => {
                 return (
-                  <div className="flex flex-col gap-2">
-                    <span className="flex items-center gap-2">
+                  <div className="flex flex-col gap-sm">
+                    <span className="flex items-center gap-sm">
                       <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
                       {t('screenings:review_modal.whitelist_label')}
                     </span>
-                    <div className="border-grey-border bg-grey-background-light flex flex-col gap-2 rounded-sm border p-2">
+                    <div className="border-grey-border bg-grey-background-light flex flex-col gap-sm rounded-sm border p-sm">
                       <span className="font-semibold">{t('screenings:match.unique_counterparty_identifier')}</span>
                       <span>{screening.uniqueCounterpartyIdentifier}</span>
                     </div>

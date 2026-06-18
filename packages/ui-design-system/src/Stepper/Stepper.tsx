@@ -3,7 +3,7 @@ import { Fragment, forwardRef } from 'react';
 
 import { cn } from '../utils';
 
-const stepperRoot = cva(['flex flex-row items-center gap-2 text-s font-normal']);
+const stepperRoot = cva(['flex flex-row items-center gap-sm text-s font-normal']);
 
 const stepNumber = cva(['flex size-5 items-center justify-center rounded-full text-xs transition-colors'], {
   variants: {

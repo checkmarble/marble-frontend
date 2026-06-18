@@ -52,8 +52,8 @@ const DeleteTagContent = ({ tagId, onSuccess }: { tagId: string; onSuccess: () =
   return (
     <>
       <Modal.Title>{t('settings:tags.delete_tag.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="text-s flex flex-1 flex-col gap-4">
+      <div className="flex flex-col gap-lg p-lg">
+        <div className="text-s flex flex-1 flex-col gap-md">
           <input name="tagId" value={tagId} type="hidden" />
           <p className="text-center">{t('settings:tags.delete_tag.content')}</p>
         </div>

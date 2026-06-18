@@ -96,9 +96,9 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail/s/$caseId/old
 
     if (isNotFoundHttpError(error)) {
       return (
-        <div className="m-auto flex flex-col items-center gap-4">
+        <div className="m-auto flex flex-col items-center gap-md">
           {t('common:errors.not_found')}
-          <div className="mb-1">
+          <div className="mb-xs">
             <Button variant="primary" onClick={() => navigate(-1)}>
               {t('common:go_back')}
             </Button>
@@ -139,7 +139,7 @@ function CaseManagerIndexPage() {
     <Page.Main>
       <Page.Header className="justify-between">
         <BreadCrumbs back={`/cases/inboxes/${fromInbox ?? MY_INBOX_ID}`} />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-sm">
           <Modal.Root>
             {aiAssistEnabled === 'allowed' ? (
               <Modal.Trigger asChild>

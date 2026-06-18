@@ -199,7 +199,7 @@ export function ActionSelector({ action, onChange, scenario }: ActionSelectorPro
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <Button variant="secondary">
@@ -226,9 +226,9 @@ export function ActionSelector({ action, onChange, scenario }: ActionSelectorPro
                 key={option.value}
                 value={option.value}
                 onSelect={() => handleActionSelect(option.value)}
-                className="h-auto flex-col items-start gap-1 p-3"
+                className="h-auto flex-col items-start gap-xs p-md"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-sm">
                   <Icon icon={option.icon as any} className="size-4 text-grey-secondary" />
                   <span className="font-medium text-grey-primary">{option.label}</span>
                 </div>
@@ -240,9 +240,9 @@ export function ActionSelector({ action, onChange, scenario }: ActionSelectorPro
       </MenuCommand.Menu>
 
       {needsInbox ? (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-start gap-2">
-            <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
+        <div className="flex flex-col gap-md">
+          <div className="flex items-start gap-sm">
+            <div className="bg-grey-20 px-md py-2xs rounded-sm min-w-20 flex justify-center h-10 items-center">
               <span className="text-grey-60 font-bold text-sm">{t('workflows:action.in_inbox')}</span>
             </div>
             <div className="flex-1">
@@ -256,8 +256,8 @@ export function ActionSelector({ action, onChange, scenario }: ActionSelectorPro
               />
             </div>
           </div>
-          <div className="flex items-start gap-2">
-            <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
+          <div className="flex items-start gap-sm">
+            <div className="bg-grey-20 px-md py-2xs rounded-sm min-w-20 flex justify-center h-10 items-center">
               <span className="text-grey-60 font-bold text-sm text-nowrap">
                 {t('workflows:action.inbox.with_title')}
               </span>
@@ -271,8 +271,8 @@ export function ActionSelector({ action, onChange, scenario }: ActionSelectorPro
               />
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
+          <div className="flex items-center gap-sm">
+            <div className="bg-grey-20 px-md py-2xs rounded-sm min-w-20 flex justify-center h-10 items-center">
               <span className="text-grey-60 font-bold text-sm text-nowrap">{t('workflows:action.with_tags')}</span>
             </div>
             <div>

@@ -17,7 +17,7 @@ export interface SidebarLinkProps {
   className?: string;
 }
 
-export const sidebarLink = cva('text-s flex flex-row items-center gap-2 rounded-xs p-2 font-medium w-full', {
+export const sidebarLink = cva('text-s flex flex-row items-center gap-sm rounded-xs p-sm font-medium w-full', {
   variants: {
     isActive: {
       true: 'bg-purple-background text-purple-primary dark:bg-grey-background-light dark:text-purple-hover',
@@ -81,12 +81,12 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
   return (
     <Link
       className={clsx(
-        'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
+        'text-s flex flex-row items-center gap-sm rounded-sm px-md py-sm font-medium',
         'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:text-grey-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
       )}
       activeProps={{
         className: clsx(
-          'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
+          'text-s flex flex-row items-center gap-sm rounded-sm px-md py-sm font-medium',
           'bg-purple-background text-purple-primary dark:bg-grey-background-light dark:text-purple-hover',
         ),
       }}

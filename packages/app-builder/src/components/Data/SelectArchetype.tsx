@@ -49,13 +49,13 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('data:select_archetype.title')}</Modal.Title>
-        <div className="flex flex-col gap-4 p-6">
+        <div className="flex flex-col gap-md p-lg">
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-xl">
               <Icon icon="spinner" className="size-8 animate-spin" />
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               {archetypes?.map((archetype) => (
                 <ArchetypeCard
                   key={archetype.name}
@@ -95,7 +95,7 @@ function ArchetypeCard({
       type="button"
       onClick={onSelect}
       className={clsx(
-        'flex flex-col gap-1 rounded-lg border-2 p-4 text-left transition-colors',
+        'flex flex-col gap-xs rounded-lg border-2 p-md text-left transition-colors',
         isSelected
           ? 'border-purple-primary bg-purple-background dark:bg-purple-border'
           : 'border-grey-border hover:border-grey-placeholder',

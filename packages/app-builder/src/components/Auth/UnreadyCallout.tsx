@@ -5,7 +5,7 @@ export function UnreadyCallout({ didMigrationsRun }: { didMigrationsRun: boolean
   const { t } = useTranslation(['auth']);
 
   return (
-    <Callout variant="soft" color="red" className="mb-6 text-start">
+    <Callout variant="soft" color="red" className="mb-lg text-start">
       <div>
         {didMigrationsRun
           ? t('auth:sign_up.warning.instance_not_initialized')

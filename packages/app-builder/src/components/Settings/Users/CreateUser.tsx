@@ -110,9 +110,9 @@ function CreateUserContent({
       }}
     >
       <Modal.Title>{t('settings:users.new_user')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="flex flex-1 flex-col gap-4">
-          <div className="flex gap-2">
+      <div className="flex flex-col gap-lg p-lg">
+        <div className="flex flex-1 flex-col gap-md">
+          <div className="flex gap-sm">
             <form.Field
               name="firstName"
               validators={{
@@ -121,7 +121,7 @@ function CreateUserContent({
               }}
             >
               {(field) => (
-                <div className="group flex w-full flex-col gap-2">
+                <div className="group flex w-full flex-col gap-sm">
                   <FormLabel name={field.name}>{t('settings:users.first_name')}</FormLabel>
                   <FormInput
                     type="text"
@@ -136,7 +136,7 @@ function CreateUserContent({
             </form.Field>
             <form.Field name="lastName" validators={{ onChange: createUserPayloadSchema.shape.lastName }}>
               {(field) => (
-                <div className="group flex w-full flex-col gap-2">
+                <div className="group flex w-full flex-col gap-sm">
                   <FormLabel name={field.name}>{t('settings:users.last_name')}</FormLabel>
                   <FormInput
                     type="text"
@@ -152,7 +152,7 @@ function CreateUserContent({
           </div>
           <form.Field name="email" validators={{ onChange: createUserPayloadSchema.shape.email }}>
             {(field) => (
-              <div className="group flex flex-col gap-2">
+              <div className="group flex flex-col gap-sm">
                 <FormLabel name={field.name}>{t('settings:users.email')}</FormLabel>
                 <FormInput
                   type="email"
@@ -167,8 +167,8 @@ function CreateUserContent({
           </form.Field>
           <form.Field name="role" validators={{ onChange: createUserPayloadSchema.shape.role }}>
             {(field) => (
-              <div className="group flex flex-col gap-2">
-                <FormLabel name={field.name} className="flex flex-row gap-2">
+              <div className="group flex flex-col gap-sm">
+                <FormLabel name={field.name} className="flex flex-row gap-sm">
                   <span
                     className={clsx({
                       'text-grey-disabled': access === 'restricted',

@@ -214,7 +214,7 @@ function WebhookSecrets({
             secrets.filter((s) => !s.deletedAt && !s.expiresAt).length <= 1;
           const showRevoke = isWebhookSecretRotationAvailable && !row.original.deletedAt && !isLastActiveNonExpiring;
           return (
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-sm">
               <span>
                 {dateTime ? <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time> : '-'}
               </span>

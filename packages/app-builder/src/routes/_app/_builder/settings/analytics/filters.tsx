@@ -263,7 +263,7 @@ function Filters() {
             />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content className="flex flex-col h-full">
-            <div className="flex flex-col gap-4 flex-1 min-h-0">
+            <div className="flex flex-col gap-md flex-1 min-h-0">
               <Table.Container {...getContainerProps()} className="flex-1 min-h-0">
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
@@ -278,7 +278,7 @@ function Filters() {
         <Modal.Root open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
           <Modal.Content size="medium">
             <Modal.Title>{t('settings:filters.delete_filter.title')}</Modal.Title>
-            <Modal.Description className="p-6 text-left">
+            <Modal.Description className="p-lg text-left">
               {t('settings:filters.delete_filter.content')}
             </Modal.Description>
             <Modal.Footer>

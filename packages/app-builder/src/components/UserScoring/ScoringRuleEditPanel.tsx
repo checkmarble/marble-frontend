@@ -111,7 +111,7 @@ export function ScoringRuleEditPanel({
   return (
     <AstBuilder.StaticProvider data={builderOptionsData} mode="edit">
       <PanelContainer size="xxxl" className="flex flex-col">
-        <div className="flex items-center gap-v2-md pb-v2-md">
+        <div className="flex items-center gap-md pb-md">
           <Icon
             icon="cross"
             className="size-6 shrink-0 cursor-pointer text-grey-secondary hover:text-grey-primary"
@@ -131,7 +131,7 @@ export function ScoringRuleEditPanel({
               placeholder={t('user-scoring:rule_edit.name_placeholder')}
             />
             {nameTouched && !name.trim() ? (
-              <span className="text-xs text-red-primary mt-1">{t('user-scoring:rule_edit.name_required')}</span>
+              <span className="text-xs text-red-primary mt-xs">{t('user-scoring:rule_edit.name_required')}</span>
             ) : null}
           </div>
           {onDelete ? (
@@ -144,7 +144,7 @@ export function ScoringRuleEditPanel({
             </button>
           ) : null}
         </div>
-        <div className="flex flex-wrap items-center gap-2 pb-v2-md">
+        <div className="flex flex-wrap items-center gap-sm pb-md">
           <Tag color="grey">{entityType}</Tag>
           {currentModel ? (
             <Tag color="grey">
@@ -167,7 +167,7 @@ export function ScoringRuleEditPanel({
           />
         </div>
         <PanelContent>
-          <div className="flex flex-col gap-v2-md p-v2-md border border-grey-border rounded-v2-md">
+          <div className="flex flex-col gap-md p-md border border-grey-border rounded-md">
             <SwitchNode
               mode="edit"
               node={rule.ast}
@@ -180,7 +180,7 @@ export function ScoringRuleEditPanel({
           </div>
         </PanelContent>
         <PanelFooter>
-          <div className="flex justify-end gap-v2-sm">
+          <div className="flex justify-end gap-sm">
             <Button variant="secondary" onClick={sharp.actions.close}>
               {t('user-scoring:rule_edit.cancel')}
             </Button>

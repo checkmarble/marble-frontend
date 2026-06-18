@@ -8,7 +8,7 @@ export function InboxEmptyState({ canManageInboxes }: { canManageInboxes: boolea
   const { t } = useTranslation(['cases']);
 
   return (
-    <div className="border-grey-border bg-surface-card flex flex-col items-center gap-4 rounded-lg border p-8">
+    <div className="border-grey-border bg-surface-card flex flex-col items-center gap-md rounded-lg border p-xl">
       <div className="bg-purple-background-light flex size-12 items-center justify-center rounded-full">
         <Icon icon="inbox" className="text-purple-primary size-6" />
       </div>

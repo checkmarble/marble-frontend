@@ -10,7 +10,7 @@ interface NumberSwitchDescriptionProps {
 export function NumberSwitchDescription({ conditions, maxRiskLevel }: NumberSwitchDescriptionProps) {
   const { t } = useTranslation(['user-scoring']);
   return (
-    <ul className="flex flex-col gap-v2-sm">
+    <ul className="flex flex-col gap-sm">
       {conditions.branches.map((branch, idx) => {
         const label =
           idx === 0

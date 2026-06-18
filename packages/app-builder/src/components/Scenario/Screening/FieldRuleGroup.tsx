@@ -40,7 +40,7 @@ export const FieldRuleGroup = ({
         }
       }}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-sm">
         {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} /> : null}
         <Trigger asChild>
           <Button
@@ -54,9 +54,9 @@ export const FieldRuleGroup = ({
           </Button>
         </Trigger>
       </div>
-      <Content className="mt-1 min-w-[280px] shadow-md" align="start">
-        <Command className="flex flex-col gap-2 p-2">
-          <div className="border-grey-border flex items-center gap-2 border-b p-2 pb-3">
+      <Content className="mt-xs min-w-[280px] shadow-md" align="start">
+        <Command className="flex flex-col gap-sm p-sm">
+          <div className="border-grey-border flex items-center gap-sm border-b p-sm pb-md">
             {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} onClear={() => onChange?.('')} /> : null}
             <CommandInput
               placeholder={t('scenarios:rules.new_group')}
@@ -85,7 +85,7 @@ export const FieldRuleGroup = ({
                 ))}
               </CommandGroup>
             ) : (
-              <CommandEmpty className="flex items-center gap-2 p-2">
+              <CommandEmpty className="flex items-center gap-sm p-sm">
                 <Icon icon="plus" className="text-grey-disabled size-4" />
                 <span className="text-grey-disabled">{t('scenarios:rules.empty_groups')}</span>
               </CommandEmpty>
@@ -102,7 +102,7 @@ export const FieldRuleGroup = ({
                   }}
                 >
                   <Icon icon="plus" className="text-grey-primary size-4" />
-                  <span className="text-grey-primary text-s inline-flex items-center gap-2">
+                  <span className="text-grey-primary text-s inline-flex items-center gap-sm">
                     {t('scenarios:rules.create')}
                     {value ? <RuleGroup ruleGroup={value} /> : null}
                   </span>

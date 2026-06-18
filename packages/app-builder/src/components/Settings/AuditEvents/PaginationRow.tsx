@@ -27,11 +27,11 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-between sticky bottom-0 bg-surface-card -mx-v2-lg -mb-v2-lg pt-v2-md px-v2-lg pb-v2-lg border-t border-transparent',
+        'flex items-center justify-between sticky bottom-0 bg-surface-card -mx-lg -mb-lg pt-md px-lg pb-lg border-t border-transparent',
         className,
       )}
     >
-      <div className="flex items-center gap-v2-xs">
+      <div className="flex items-center gap-xs">
         <span>{t('settings:audit.pagination.per_page')}</span>
         {[25, 50, 100].map((limit) => {
           const isActive = limit === currentLimit;
@@ -54,7 +54,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
           );
         })}
       </div>
-      <div className="flex items-center gap-v2-xs">
+      <div className="flex items-center gap-xs">
         <Button
           mode="icon"
           size="medium"

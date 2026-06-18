@@ -38,13 +38,13 @@ export function ConfigRow({
 
   return (
     <div
-      className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
+      className={cn('border rounded-lg p-md flex flex-col gap-md', {
         'border-purple-secondary bg-purple-background-light': isRestricted,
         'border-grey-border bg-surface-card': !isRestricted,
       })}
     >
       <div className="flex items-center justify-between">
-        <div className="flex-1 flex items-center gap-v2-xs">
+        <div className="flex-1 flex items-center gap-xs">
           <span className="text-s font-medium">{label}</span>
           {match({ isRestricted, canEdit })
             .with({ isRestricted: true }, () => null)

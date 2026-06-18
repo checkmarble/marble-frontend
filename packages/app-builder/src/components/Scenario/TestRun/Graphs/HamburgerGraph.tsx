@@ -52,14 +52,14 @@ export function Hamburger<T extends string>({
   }, [summary, legend]);
 
   return (
-    <div className="flex size-full flex-col items-center gap-4">
-      <Tag size="big" color="grey" className="border-grey-border gap-1 border px-4 py-2">
+    <div className="flex size-full flex-col items-center gap-md">
+      <Tag size="big" color="grey" className="border-grey-border gap-xs border px-sm py-xs">
         <span className="text-grey-primary font-semibold">{`V${version.value}`}</span>
         {version.type === 'live version' ? (
           <span className="text-purple-primary font-semibold">{t('common:live')}</span>
         ) : null}
       </Tag>
-      <div className="flex size-full flex-col gap-1">
+      <div className="flex size-full flex-col gap-xs">
         {pairs.length === 0 ? (
           <div className="border-grey-border size-full rounded-lg border-2" />
         ) : (
@@ -147,12 +147,12 @@ export function HamburgerChart<T extends string>({
   }, [items, ref, test]);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-xl">
       <RadioGroup onValueChange={(type) => setType(type as Type)} value={type}>
         <RadioGroupItem value="absolute">{t('scenarios:testrun.distribution.absolute')}</RadioGroupItem>
         <RadioGroupItem value="percentage">{t('scenarios:testrun.distribution.percentage')}</RadioGroupItem>
       </RadioGroup>
-      <div className="flex h-60 w-full flex-row items-center justify-center gap-4 px-8">
+      <div className="flex h-60 w-full flex-row items-center justify-center gap-md px-xl">
         <Hamburger
           type={type}
           legend={legend}
@@ -169,13 +169,13 @@ export function HamburgerChart<T extends string>({
           mapping={mapping}
         />
       </div>
-      <div className="flex flex-row justify-center gap-2 px-24">
+      <div className="flex flex-row justify-center gap-sm px-xs4">
         {options.map((option) => (
           <Button
             variant="secondary"
             appearance="link"
             key={option}
-            className="gap-3"
+            className="gap-md"
             onClick={() =>
               updateLegend((prev) => {
                 const newLegend = toggle(prev, option);

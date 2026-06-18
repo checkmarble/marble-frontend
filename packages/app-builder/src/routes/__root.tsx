@@ -164,7 +164,7 @@ function RootErrorBoundaryBody({ error }: { error: unknown }) {
   useTranslation();
   return (
     <div className="bg-surface-page flex size-full flex-col items-center">
-      <div className="bg-surface-card mt-20 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
+      <div className="bg-surface-card mt-sm0 flex shrink-0 rounded-2xl p-2xl text-center shadow-md">
         <ErrorComponent error={error} />
       </div>
     </div>

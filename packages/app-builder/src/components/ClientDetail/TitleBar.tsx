@@ -28,12 +28,12 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
   const entityName = metadata?.alias || metadata.name;
 
   return (
-    <div className="flex gap-v2-md items-center min-w-0">
-      <div className="flex gap-v2-xs items-center shrink-0">
+    <div className="flex gap-md items-center min-w-0">
+      <div className="flex gap-xs items-center shrink-0">
         <Typo variant="title1">{objectDetails.data[metadata.caption_field] as string}</Typo>
         <Tag color="grey">{entityName}</Tag>
       </div>
-      <div className="flex gap-v2-xs items-center font-normal">
+      <div className="flex gap-xs items-center font-normal">
         {match(annotationsQuery)
           .with({ isPending: true }, () => <Spinner className="size-4" />)
           .with({ isError: true }, () => (
@@ -91,7 +91,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
           .exhaustive()}
       </div>
       <div className="w-px self-stretch bg-grey-border" />
-      <div className="flex gap-v2-xs items-center font-normal">
+      <div className="flex gap-xs items-center font-normal">
         {match(annotationsQuery)
           .with({ isPending: true }, () => <Spinner className="size-4" />)
           .with({ isError: true }, () => (
@@ -108,7 +108,7 @@ export const TitleBar = ({ objectType, objectId, objectDetails, annotationsQuery
             return (
               <>
                 {riskTopicsAnnotations.length > 0 ? (
-                  <div className="flex items-center gap-v2-sm">
+                  <div className="flex items-center gap-sm">
                     {riskTopicsAnnotations.map((annotation) => (
                       <Tag key={annotation.id} color={SCREENING_CATEGORY_COLORS[annotation.payload.tag]}>
                         {annotation.payload.tag}

@@ -34,7 +34,9 @@ export function OutcomeFilter({
   };
 
   return (
-    <div className={cn('flex flex-row gap-6 select-none', { 'opacity-50': disabled, 'pointer-events-none': disabled })}>
+    <div
+      className={cn('flex flex-row gap-lg select-none', { 'opacity-50': disabled, 'pointer-events-none': disabled })}
+    >
       {outcomes.map((outcome: Outcome) => (
         <FilterItem
           key={outcome}
@@ -66,7 +68,7 @@ const FilterItem = ({
   hasHighlightedRef: MutableRefObject<boolean>;
 }) => (
   <div
-    className={cn('flex items-center gap-2 cursor-pointer flex-1 min-w-fit', { 'opacity-50': !checked })}
+    className={cn('flex items-center gap-sm cursor-pointer flex-1 min-w-fit', { 'opacity-50': !checked })}
     onClick={() => handleToggle(outcome)}
   >
     <button
@@ -77,7 +79,7 @@ const FilterItem = ({
     ></button>
     <div className="flex items-center flex-1 whitespace-nowrap min-w-0">
       <span className="text-xs">{label}</span>
-      <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 lg-analytics:ml-4 ml-0 relative">
+      <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 lg-analytics:ms-md ms-0 relative">
         {highlight && !hasHighlightedRef.current ? (
           <Icon
             icon={checked ? 'eye' : 'eye-slash'}

@@ -14,7 +14,7 @@ export const Default: StoryFn<typeof Tabs> = () => {
   const tabs = ['account', 'password', 'settings'];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <Tabs>
         {tabs.map((tab) => (
           <button
@@ -28,9 +28,9 @@ export const Default: StoryFn<typeof Tabs> = () => {
           </button>
         ))}
       </Tabs>
-      <div className="p-4">
+      <div className="p-md">
         {activeTab === 'account' && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <h3 className="text-l font-semibold">Account</h3>
             <p className="text-s text-grey-placeholder">
               Make changes to your account here. Click save when you&apos;re done.
@@ -38,7 +38,7 @@ export const Default: StoryFn<typeof Tabs> = () => {
           </div>
         )}
         {activeTab === 'password' && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <h3 className="text-l font-semibold">Password</h3>
             <p className="text-s text-grey-placeholder">
               Change your password here. After saving, you&apos;ll be logged out.
@@ -46,7 +46,7 @@ export const Default: StoryFn<typeof Tabs> = () => {
           </div>
         )}
         {activeTab === 'settings' && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <h3 className="text-l font-semibold">Settings</h3>
             <p className="text-s text-grey-placeholder">Manage your application settings.</p>
           </div>

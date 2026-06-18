@@ -5,9 +5,9 @@ import { cn } from '../utils';
 export const tagClassName = cva('inline-flex items-center justify-center border text-nowrap', {
   variants: {
     size: {
-      small: 'h-6 px-v2-sm rounded-full text-small',
-      medium: 'h-8 px-v2-sm rounded-v2-s text-default font-medium',
-      big: 'h-10 px-v2-sm rounded-v2-s text-default font-medium',
+      small: 'h-6 px-sm rounded-full text-small',
+      medium: 'h-8 px-sm rounded-sm text-default font-medium',
+      big: 'h-10 px-sm rounded-sm text-default font-medium',
     },
     color: {
       purple: 'text-purple-primary border-purple-primary',

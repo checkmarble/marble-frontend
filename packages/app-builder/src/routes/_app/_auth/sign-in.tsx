@@ -97,13 +97,13 @@ function Login() {
   const type = signInMutation.variables?.type;
 
   return (
-    <div className="flex flex-col gap-10 w-full">
-      <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-2xl w-full">
+      <div className="flex flex-col gap-xl">
         <Typo variant="title2" className="text-center">
           {t('auth:sign_in')}
         </Typo>
         {!isSignupReady ? <UnreadyCallout didMigrationsRun={didMigrationsRun} /> : null}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           {authProvider == 'oidc' ? (
             <>
               <button
@@ -116,9 +116,9 @@ function Login() {
                 <span className="text-s text-grey-white w-full whitespace-nowrap text-center align-middle font-medium">
                   Sign in with OpenID Connect
                 </span>
-                <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
+                <span className="absolute end-0 mx-sm size-4">{loading ? <Spinner className="size-4" /> : null}</span>
               </button>
-              <AuthError error={authError as AuthErrors} className="mt-8" />
+              <AuthError error={authError as AuthErrors} className="mt-xl" />
             </>
           ) : (
             <>
@@ -141,16 +141,16 @@ function Login() {
       </div>
       {authProvider == 'firebase' ? (
         <>
-          <div className="flex items-center gap-4 self-stretch">
+          <div className="flex items-center gap-md self-stretch">
             <div className="h-px bg-grey-border grow" />
             <span>{t('common:or')}</span>
             <div className="h-px bg-grey-border grow" />
           </div>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-xl">
             <Typo variant="title2" className="text-center">
               {t('auth:sign_in.first_connection')}
             </Typo>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               <SignInFirstConnection isSignInHomepage showAskDemoButton={isManagedMarble} />
             </div>
           </div>

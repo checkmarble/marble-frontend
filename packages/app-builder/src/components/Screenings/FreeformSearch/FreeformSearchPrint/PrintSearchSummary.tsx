@@ -29,8 +29,8 @@ export const PrintSearchSummary: FunctionComponent<PrintSearchSummaryProps> = ({
 
   return (
     <PrintSection title={t('screenings:print.search_summary')}>
-      <div className="border border-grey-border rounded-md p-3">
-        <div className="grid grid-cols-2 gap-3 text-s">
+      <div className="border border-grey-border rounded-md p-md">
+        <div className="grid grid-cols-2 gap-md text-s">
           {/* Entity Type */}
           <div>
             <span className="font-medium text-grey-placeholder">
@@ -53,7 +53,7 @@ export const PrintSearchSummary: FunctionComponent<PrintSearchSummaryProps> = ({
           {activeFields.length > 0 && (
             <div className="col-span-2">
               <span className="font-medium text-grey-placeholder">{t('screenings:print.search_fields')}</span>
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-sm mt-sm">
                 {activeFields.map(([field, value]) => (
                   <Tag key={field} color="grey">
                     <span className="font-medium">{t(`screenings:entity.property.${field}`)}:</span> {value}
@@ -69,7 +69,7 @@ export const PrintSearchSummary: FunctionComponent<PrintSearchSummaryProps> = ({
               <span className="font-medium text-grey-placeholder">
                 {t('screenings:freeform_search.datasets_label')}
               </span>
-              <p className="text-s text-grey-primary mt-1">{searchInputs.datasets.join(', ')}</p>
+              <p className="text-s text-grey-primary mt-xs">{searchInputs.datasets.join(', ')}</p>
             </div>
           )}
         </div>

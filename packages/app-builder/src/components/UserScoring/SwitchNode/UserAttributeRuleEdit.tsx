@@ -74,7 +74,7 @@ export function UserAttributeRuleEdit({
       .filter((f) => isAllowedScoringRuleType(f.dataType))
       .map((f) => ({
         label: (
-          <span className="flex items-center gap-v2-xs">
+          <span className="flex items-center gap-xs">
             {getDataTypeIcon(f.dataType) ? (
               <Icon icon={getDataTypeIcon(f.dataType)!} className="size-4 shrink-0" />
             ) : null}
@@ -87,7 +87,7 @@ export function UserAttributeRuleEdit({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-v2-sm">
+      <div className="flex flex-wrap items-center gap-sm">
         <span className="font-medium">{t('user-scoring:switch.depending_on')}</span>
         <SelectV2
           value={selectedField}

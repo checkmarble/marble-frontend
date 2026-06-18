@@ -11,11 +11,11 @@ export const SearchInputDisplay = ({ searchInput }: SearchInputProps) => {
   const searchInfos = R.map(searchInput, (input) => R.entries(input.properties));
 
   return (
-    <div className="bg-surface-card border-grey-border text-s flex flex-col gap-2 rounded-sm border p-2">
+    <div className="bg-surface-card border-grey-border text-s flex flex-col gap-sm rounded-sm border p-sm">
       {searchInfos.map((value, i) => {
         return (
           <Fragment key={i}>
-            <div className="flex flex-col gap-1" key={i}>
+            <div className="flex flex-col gap-xs" key={i}>
               {value.map(([property, propValue]) => {
                 return <span key={property}>{propValue.join(', ')}</span>;
               })}

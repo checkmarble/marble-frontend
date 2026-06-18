@@ -48,19 +48,19 @@ export const SearchForm = ({ table }: SearchFormProps) => {
   });
 
   return (
-    <form className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
-      <label htmlFor={`search_${table.id}`} className="flex items-center gap-v2-sm">
+    <form className="flex flex-col gap-sm" onSubmit={handleSubmit(form)}>
+      <label htmlFor={`search_${table.id}`} className="flex items-center gap-sm">
         <span className="font-medium">
           {t('client360:client_detail.search_form.search_by', { name: tableName.toLowerCase() })}
         </span>
         {!table.ready ? (
-          <span className="text-grey-text text-small flex items-center gap-v2-xs">
+          <span className="text-grey-text text-small flex items-center gap-xs">
             <Icon icon="warning" className="size-4 text-yellow-primary" />{' '}
             {t('client360:client_detail.search_form.table_not_ready')}
           </span>
         ) : null}
       </label>
-      <div className="flex items-center gap-v2-sm">
+      <div className="flex items-center gap-sm">
         <form.Field name="value">
           {(field) => (
             <Input

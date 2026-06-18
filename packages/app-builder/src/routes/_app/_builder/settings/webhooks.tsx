@@ -99,7 +99,7 @@ function Webhooks() {
             ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <Callout className="mb-4 lg:mb-6" variant="outlined">
+            <Callout className="mb-md lg:mb-lg" variant="outlined">
               <p className="whitespace-pre-wrap">
                 <Trans
                   t={t}
@@ -163,12 +163,12 @@ function WebhooksError({ error }: { error: unknown }) {
   return (
     <Page.Container>
       <Page.Content className="relative max-w-(--breakpoint-xl)">
-        <div className="bg-grey-primary/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
+        <div className="bg-grey-primary/20 absolute z-50 flex size-full items-center justify-center p-md backdrop-blur-[2px] transition-all">
           <div className="bg-surface-card border-grey-border flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
-            <Typo variant="title1" className="bg-grey-background w-full p-8 text-center">
+            <Typo variant="title1" className="bg-grey-background w-full p-xl text-center">
               {t('settings:webhooks.configuration_error')}
             </Typo>
-            <div className="w-full p-12">
+            <div className="w-full p-3xl">
               <Callout variant="outlined">
                 <p className="whitespace-pre-wrap">
                   <Trans
@@ -192,7 +192,7 @@ function WebhooksError({ error }: { error: unknown }) {
             </Button>
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
-            <Callout className="mb-4 lg:mb-6" variant="outlined">
+            <Callout className="mb-md lg:mb-lg" variant="outlined">
               <p className="whitespace-pre-wrap">
                 <Trans
                   t={t}

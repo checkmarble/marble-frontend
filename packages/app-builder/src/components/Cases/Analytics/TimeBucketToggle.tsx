@@ -13,7 +13,7 @@ export function TimeBucketToggle({ value, onChange }: TimeBucketToggleProps) {
   const { t } = useTranslation(['cases']);
 
   return (
-    <div className="flex gap-v2-xs">
+    <div className="flex gap-xs">
       {timeBuckets.map((bucket) => (
         <Button
           key={bucket}

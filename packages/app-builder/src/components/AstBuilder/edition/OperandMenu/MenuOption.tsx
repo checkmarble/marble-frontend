@@ -58,9 +58,9 @@ export function MenuOption({
       value={value}
       onSelect={() => onSelect(injectIdToNode(option.astNode))}
     >
-      <div className="grid w-full grid-cols-[20px_1fr] gap-1">
+      <div className="grid w-full grid-cols-[20px_1fr] gap-xs">
         {leftIcon ? <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} /> : null}
-        <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
+        <div className="col-start-2 flex flex-row gap-xs overflow-hidden">
           <div className="text-s w-full break-all text-start font-normal">
             <span className="text-grey-primary">
               {searchValue && highlightSearch ? (
@@ -69,9 +69,9 @@ export function MenuOption({
                 option.displayName
               )}
             </span>
-            {fieldPath ? <span className="text-grey-secondary ml-1">({fieldPath})</span> : null}
+            {fieldPath ? <span className="text-grey-secondary ms-xs">({fieldPath})</span> : null}
           </div>
-          <div className="ml-auto flex shrink-0 items-center gap-1">
+          <div className="ms-auto flex shrink-0 items-center gap-xs">
             {rightElement ?? (
               <OperandInfos
                 node={option.astNode}

@@ -78,11 +78,11 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
       }}
     >
       {(field) => (
-        <div className="flex w-full gap-1">
-          <div className="flex items-center gap-2">
+        <div className="flex w-full gap-xs">
+          <div className="flex items-center gap-sm">
             {match(field.state.value)
               .with('none', () => (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-sm">
                   <span>{t('cases:sar.action.mark_as')}</span>
                   <Button
                     variant="secondary"
@@ -108,8 +108,8 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                 </div>
               ))
               .with('pending', () => (
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1">
+                <div className="flex items-center gap-sm">
+                  <span className="flex items-center gap-xs">
                     <Icon icon="half-flag" className="size-3.5 text-orange-primary" />
                     <span className="text-xs font-medium">{t('cases:sar.status.pending')}</span>
                   </span>
@@ -137,8 +137,8 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                 </div>
               ))
               .with('completed', () => (
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1">
+                <div className="flex items-center gap-sm">
+                  <span className="flex items-center gap-xs">
                     <Icon icon="full-flag" className="text-red-primary size-3.5" />
                     <span className="text-xs font-medium">{t('cases:sar.status.completed')}</span>
                   </span>
@@ -161,17 +161,17 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
               <Modal.Title>
                 {!isCompleted ? t('cases:sar.modale.title') : t('cases:sar.modale.title_choose_file')}
               </Modal.Title>
-              <div className="flex flex-col gap-8 p-8">
+              <div className="flex flex-col gap-xl p-xl">
                 {isCompleted ? <Callout>{t('cases:sar.modale.callout')}</Callout> : null}
                 <div
                   {...getRootProps()}
                   className={cn(
-                    'flex flex-col items-center justify-center gap-6 rounded-sm border-2 border-dashed p-6',
+                    'flex flex-col items-center justify-center gap-lg rounded-sm border-2 border-dashed p-lg',
                     isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
                   )}
                 >
                   <input {...getInputProps()} />
-                  <p className="text-r flex flex-col gap-1 text-center">
+                  <p className="text-r flex flex-col gap-xs text-center">
                     <span className="text-grey-primary">{t('cases:sar.modale.heading')}</span>
                     <span className="text-grey-secondary inline-flex flex-col">
                       <span>{t('cases:sar.modale.supported_extensions')}</span>
@@ -184,7 +184,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                     {t('cases:sar.modale.cta_choose_file')}
                   </Button>
                   {reportFile ? (
-                    <span className="border-grey-border flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                    <span className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs.5 py-0.5 text-xs font-medium">
                       {reportFile.name}
                       <Button
                         variant="secondary"

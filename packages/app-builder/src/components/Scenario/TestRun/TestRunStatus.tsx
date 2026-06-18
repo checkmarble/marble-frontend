@@ -9,7 +9,7 @@ export const TestRunStatus = ({ status }: { status: TestRStatus }) => {
 
   return match(status)
     .with('up', () => (
-      <Tag size="big" color="purple" className="bg-purple-primary gap-2">
+      <Tag size="big" color="purple" className="bg-purple-primary gap-sm">
         <Spinner className="text-grey-white size-3" />
         <span className="text-s text-grey-white font-semibold">{t('scenarios:testrun.status.up')}</span>
       </Tag>

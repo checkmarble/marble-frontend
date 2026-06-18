@@ -102,10 +102,10 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
   return (
     <Page.Main>
       <Page.Container>
-        <Page.ContentV2 className="gap-v2-md">
+        <Page.ContentV2 className="gap-md">
           <CasesNavigationTabs />
 
-          <div className="flex flex-wrap items-center justify-between gap-v2-md">
+          <div className="flex flex-wrap items-center justify-between gap-md">
             <CaseAnalyticsFilters
               dateRange={dateRange}
               onDateRangeChange={setDateRange}
@@ -127,7 +127,7 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
             ))
             .with({ isError: true }, () => (
               <div className="grid h-96 place-items-center">
-                <div className="flex flex-col items-center gap-v2-sm">
+                <div className="flex flex-col items-center gap-sm">
                   <span className="text-s text-center text-grey-secondary">{t('common:generic_fetch_data_error')}</span>
                   <Button variant="secondary" onClick={() => query.refetch()}>
                     {t('common:retry')}
@@ -147,8 +147,8 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
               }
 
               return (
-                <div className="flex flex-col gap-v2-md">
-                  <div className="grid grid-cols-1 gap-v2-md xl:grid-cols-3">
+                <div className="flex flex-col gap-md">
+                  <div className="grid grid-cols-1 gap-md xl:grid-cols-3">
                     <SarReportsGauge total={aggregated.sarTotalCompleted} />
                     <div className="xl:col-span-2">
                       {isAnalyticsAvailable ? (

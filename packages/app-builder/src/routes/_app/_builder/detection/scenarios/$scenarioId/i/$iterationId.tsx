@@ -86,7 +86,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
                 iterationId: fromUUIDtoSUUID(currentIteration.id),
               }}
             >
-              <p className="text-s flex flex-row gap-1 font-semibold">
+              <p className="text-s flex flex-row gap-xs font-semibold">
                 <span className="capitalize">{currentFormattedVersion}</span>
                 {currentFormattedLive ? (
                   <span className="text-purple-primary capitalize">{currentFormattedLive}</span>
@@ -152,8 +152,8 @@ export function VersionSelect({
 
   return (
     <ScenarioIterationMenu labelledScenarioIteration={labelledScenarioIteration} scenario={currentScenario}>
-      <MenuButton className="text-s text-purple-primary border-purple-border focus:border-purple-primary flex items-center rounded-full border py-v2-xs px-v2-sm gap-v2-xs outline-hidden font-normal">
-        <p className="flex gap-1">
+      <MenuButton className="text-s text-purple-primary border-purple-border focus:border-purple-primary flex items-center rounded-full border py-xs px-sm gap-xs outline-hidden font-normal">
+        <p className="flex gap-xs">
           <span className="capitalize">{currentFormattedVersion}</span>
           {currentFormattedLive ? (
             <span className="text-purple-primary capitalize font-bold">{currentFormattedLive}</span>

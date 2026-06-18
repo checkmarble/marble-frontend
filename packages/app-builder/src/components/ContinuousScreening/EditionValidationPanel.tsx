@@ -56,14 +56,14 @@ export const EditionValidationPanel = ({
 
   return (
     <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col">
-      <div className="flex items-center justify-between gap-v2-md bg-surface-card h-16 px-v2-md border-b border-grey-border shrink-0 sticky top-0">
+      <div className="flex items-center justify-between gap-md bg-surface-card h-16 px-md border-b border-grey-border shrink-0 sticky top-0">
         <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
           <Icon icon="arrow-left" className="size-4" />
         </Button>
-        <span className="text-h1 mr-auto font-bold">{t('continuousScreening:edition.validation.title')}</span>
+        <span className="text-h1 me-auto font-bold">{t('continuousScreening:edition.validation.title')}</span>
       </div>
-      <div className="p-v2-lg grow flex flex-col gap-v2-md">
-        <Callout bordered className="bg-surface-card mx-v2-md">
+      <div className="p-lg grow flex flex-col gap-md">
+        <Callout bordered className="bg-surface-card mx-md">
           {t('continuousScreening:edition.validation.validation_callout')}
         </Callout>
         <GeneralInfoSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
@@ -71,7 +71,7 @@ export const EditionValidationPanel = ({
         <ScoringConfigurationSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
         <ObjectMappingSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
       </div>
-      <div className="shrink-0 sticky bottom-0 p-v2-lg pt-v2-sm flex justify-end bg-purple-99 gap-v2-md bg-surface-page border-t border-grey-border">
+      <div className="shrink-0 sticky bottom-0 p-lg pt-sm flex justify-end bg-purple-99 gap-md bg-surface-page border-t border-grey-border">
         <Button variant="secondary" onClick={() => onCancel(updatedConfig)}>
           {t('common:cancel')}
         </Button>

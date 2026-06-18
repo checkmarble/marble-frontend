@@ -17,9 +17,9 @@ const Template: StoryFn<typeof Modal> = (args) => (
     </Modal.Trigger>
     <Modal.Content>
       <Modal.Title>Modal title</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <Modal.Description>This is the the modal description</Modal.Description>
-        <div className="flex flex-1 flex-row gap-2">
+        <div className="flex flex-1 flex-row gap-sm">
           <Modal.Close asChild>
             <Button variant="secondary" className="flex-1">
               Cancel

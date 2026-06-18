@@ -157,7 +157,7 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
   }, [entity]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <EntityProperties entity={entity} before={before} highlightText={highlightText} />
       <Sanctions sanctions={entity.properties?.sanctions} />
       {entity.schema === 'Person' &&

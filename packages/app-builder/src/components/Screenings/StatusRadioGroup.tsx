@@ -14,7 +14,7 @@ export type StatusRadioGroupProps = {
 export function StatusRadioGroup({ value, onChange }: StatusRadioGroupProps) {
   return (
     <RadioProvider>
-      <RadioGroup className="flex flex-col gap-2">
+      <RadioGroup className="flex flex-col gap-sm">
         <RadioItem value="confirmed_hit" checked={value === 'confirmed_hit'} onCheck={() => onChange('confirmed_hit')}>
           <StatusTag disabled status="confirmed_hit" />
         </RadioItem>
@@ -33,7 +33,7 @@ type RadioItemProps = {
   onCheck: () => void;
 };
 
-const radio = cva('transition-colors flex items-center gap-2 rounded-sm', {
+const radio = cva('transition-colors flex items-center gap-sm rounded-sm', {
   variants: {
     checked: {
       true: 'text-purple-primary',

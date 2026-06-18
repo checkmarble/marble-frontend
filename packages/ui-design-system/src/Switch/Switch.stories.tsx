@@ -18,7 +18,7 @@ export const Default: StoryFn<typeof Switch> = (args) => <Switch {...args} />;
 
 export const WithLabel: StoryFn<typeof Switch> = (args) => (
   <form>
-    <div className="flex flex-row items-center gap-2">
+    <div className="flex flex-row items-center gap-sm">
       <Label.Root htmlFor="s1">On/off</Label.Root>
       <Switch {...args} id="s1" />
     </div>

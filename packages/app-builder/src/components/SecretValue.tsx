@@ -18,7 +18,7 @@ export function SecretValue({ value, alwaysVisible, className }: SecretValueProp
   const getCopyToClipboardProps = useGetCopyToClipboard();
 
   return (
-    <div className="flex min-w-0 items-center gap-2">
+    <div className="flex min-w-0 items-center gap-sm">
       {!alwaysVisible ? (
         <button className="shrink-0" onClick={() => setShow((prev) => !prev)}>
           <Icon icon={visible ? 'visibility' : 'visibility_off'} className="size-4" />

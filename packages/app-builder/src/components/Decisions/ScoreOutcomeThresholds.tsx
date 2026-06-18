@@ -18,7 +18,7 @@ export function ScoreOutcomeThresholds({
 
   return (
     <div className="relative flex h-[70px] w-full flex-row">
-      <div className="bg-green-background-light border-b-green-primary isolate flex h-10 flex-1 items-center justify-center rounded-s-md border-b-4">
+      <div className="bg-green-background-light border-b-green-primary isolate flex h-10 flex-1 items-center justify-center rounded-sm-md border-b-4">
         <span className="text-s text-green-primary font-semibold">{t('decisions:outcome.approve')}</span>
       </div>
 

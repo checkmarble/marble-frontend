@@ -60,7 +60,7 @@ export function CreateCase({ inboxId }: { inboxId: string | null }) {
           }}
         >
           {(field) => (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
                 {t('cases:case.name')}
               </FormLabel>
@@ -84,7 +84,7 @@ export function CreateCase({ inboxId }: { inboxId: string | null }) {
           }}
         >
           {(field) => (
-            <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-sm">
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
                 {t('cases:case.new_case.select_inbox')}
               </FormLabel>

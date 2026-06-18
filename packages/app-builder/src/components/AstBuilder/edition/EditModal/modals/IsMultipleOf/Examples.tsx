@@ -10,10 +10,10 @@ export function Examples({ divider }: { divider: number }) {
       <caption className="sr-only">{t('scenarios:edit_is_multiple_of.examples.caption')}</caption>
       <thead>
         <tr>
-          <th className="text-grey-primary bg-grey-background-light border-grey-border border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-primary bg-grey-background-light border-grey-border border px-xs text-start text-xs font-normal capitalize">
             {t('scenarios:edit_is_multiple_of.examples.value')}
           </th>
-          <th className="text-grey-primary bg-grey-background-light border-grey-border border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-primary bg-grey-background-light border-grey-border border px-xs text-start text-xs font-normal capitalize">
             {t('scenarios:edit_is_multiple_of.examples.result')}
           </th>
         </tr>
@@ -43,13 +43,13 @@ export function Examples({ divider }: { divider: number }) {
           },
         ].map(({ left }) => (
           <tr key={`${left}`}>
-            <td className="text-grey-primary border-grey-border border px-2 text-xs font-normal">
+            <td className="text-grey-primary border-grey-border border px-xs text-xs font-normal">
               {formatNumber(left, {
                 language,
                 style: undefined,
               })}
             </td>
-            <td className="text-grey-primary border-grey-border border px-2 text-xs font-normal">
+            <td className="text-grey-primary border-grey-border border px-xs text-xs font-normal">
               {t(`common:${left % divider === 0}`)}
             </td>
           </tr>

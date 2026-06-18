@@ -29,7 +29,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
   return (
     <div
       className={clsx(
-        'flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-transparent p-2',
+        'flex flex-1 flex-col items-center justify-center gap-sm rounded-lg border border-transparent p-sm',
         {
           'bg-green-background-light dark:bg-transparent dark:border-green-primary': color === 'green',
           'bg-yellow-background dark:bg-transparent dark:border-yellow-primary': color === 'yellow',
@@ -65,9 +65,9 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
 export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
   variants: {
     size: {
-      sm: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
-      md: 'gap-1.5 rounded-sm px-2 py-1.5 text-r font-medium',
-      lg: 'gap-2 rounded-sm px-2 py-2.5 text-r font-medium',
+      sm: 'gap-xs rounded-full px-xs py-2xs text-xs font-normal',
+      md: 'gap-xs.5 rounded-sm px-xs py-2xs.5 text-r font-medium',
+      lg: 'gap-sm rounded-sm px-xs py-xs.5 text-r font-medium',
     },
   },
   defaultVariants: {

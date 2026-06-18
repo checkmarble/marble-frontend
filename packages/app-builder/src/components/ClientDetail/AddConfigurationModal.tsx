@@ -111,19 +111,19 @@ export const AddConfigurationModal = ({
       <Modal.Content size="medium">
         <Modal.Title>{t('client360:client_detail.add_configuration_modal.title')}</Modal.Title>
         <Modal.Description>
-          <p className="text-grey-secondary text-small text-center pt-2">
+          <p className="text-grey-secondary text-small text-center pt-sm">
             {t('client360:client_detail.add_configuration_modal.description')}
           </p>
         </Modal.Description>
-        <div className="p-v2-md">
+        <div className="p-md">
           <form
             id="add-configuration-form"
-            className="grid grid-cols-2 gap-y-v2-sm gap-x-v2-md p-v2-sm bg-surface-card rounded-lg border border-grey-border text-small"
+            className="grid grid-cols-2 gap-y-sm gap-x-md p-sm bg-surface-card rounded-lg border border-grey-border text-small"
             onSubmit={handleSubmit(form)}
           >
             <form.Field name="tableId">
               {(field) => (
-                <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm">
+                <div className="grid grid-cols-[40px_1fr] items-center gap-sm">
                   <span>{t('client360:client_detail.add_configuration_modal.table_label')}</span>
                   <SelectV2
                     value={field.state.value}
@@ -141,7 +141,7 @@ export const AddConfigurationModal = ({
             </form.Field>
             <form.Field name="semanticType">
               {(field) => (
-                <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm col-start-1">
+                <div className="grid grid-cols-[40px_1fr] items-center gap-sm col-start-1">
                   <span>{t('client360:client_detail.add_configuration_modal.type_label')}</span>
                   <SelectV2
                     value={field.state.value}
@@ -158,7 +158,7 @@ export const AddConfigurationModal = ({
             </form.Field>
             <form.Field name="captionField">
               {(field) => (
-                <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm">
+                <div className="grid grid-cols-[40px_1fr] items-center gap-sm">
                   <span>{t('client360:client_detail.add_configuration_modal.name_label')}</span>
                   <SelectV2
                     disabled={!selectedTable}
@@ -173,7 +173,7 @@ export const AddConfigurationModal = ({
             </form.Field>
             <form.Field name="alias">
               {(field) => (
-                <div className="grid grid-cols-[40px_1fr] items-center gap-v2-sm col-start-2">
+                <div className="grid grid-cols-[40px_1fr] items-center gap-sm col-start-2">
                   <span>{t('client360:client_detail.add_configuration_modal.alias_label')}</span>
                   <span>
                     <Input

@@ -150,7 +150,7 @@ export function PanelContainer({ children, className, size = 'md' }: PanelContai
     <div
       ref={panelRef}
       className={cn(
-        'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
+        'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border p-lg w-full flex flex-col animate-slideRightAndFadeIn',
         sizeClasses[size],
         className,
       )}
@@ -171,7 +171,7 @@ export function PanelHeader({ children, className }: PanelHeaderProps) {
   const sharp = PanelSharpFactory.useSharp();
 
   return (
-    <div className={cn('flex items-center justify-between pb-v2-md', className)}>
+    <div className={cn('flex items-center justify-between pb-md', className)}>
       <Typo variant="title2">{children}</Typo>
       <Icon
         icon="cross"
@@ -189,7 +189,7 @@ interface PanelContentProps {
 }
 
 export function PanelContent({ children, className }: PanelContentProps) {
-  return <div className={cn('flex-1 overflow-y-auto pb-v2-md', className)}>{children}</div>;
+  return <div className={cn('flex-1 overflow-y-auto pb-md', className)}>{children}</div>;
 }
 
 interface PanelFooterProps {
@@ -198,5 +198,5 @@ interface PanelFooterProps {
 }
 
 export function PanelFooter({ children, className }: PanelFooterProps) {
-  return <div className={cn('pt-v2-md border-t border-grey-border mt-auto', className)}>{children}</div>;
+  return <div className={cn('pt-md border-t border-grey-border mt-auto', className)}>{children}</div>;
 }

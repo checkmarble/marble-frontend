@@ -109,7 +109,7 @@ export function UpdateInboxContent({
       }}
     >
       <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <form.Field
           name="name"
           validators={{
@@ -117,7 +117,7 @@ export function UpdateInboxContent({
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
+            <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>{t('settings:inboxes.name')}</FormLabel>
               <FormInput
                 type="text"
@@ -141,7 +141,7 @@ export function UpdateInboxContent({
             const selectedInbox = escalationInboxes.find((inbox) => inbox.id === field.state.value);
 
             return (
-              <div className="group flex flex-col gap-2">
+              <div className="group flex flex-col gap-sm">
                 <FormLabel name={field.name}>{t('settings:inboxes.escalation_inbox')}</FormLabel>
                 <MenuCommand.Menu open={isEscalationInboxOpen} onOpenChange={setEscalationOpen}>
                   <MenuCommand.Trigger>
@@ -176,7 +176,7 @@ export function UpdateInboxContent({
         >
           {(field) => (
             <div className="group flex justify-between">
-              <div className="flex gap-2">
+              <div className="flex gap-sm">
                 <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.auto_assign_enabled.label')}</FormLabel>
                 {!isAutoAssignmentAvailable ? (
                   <Nudge

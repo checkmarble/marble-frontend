@@ -261,7 +261,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   return (
     <div
-      className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
+      className="bg-surface-card border border-grey-border rounded-lg p-md flex flex-col gap-sm"
       onMouseEnter={() => {
         setIsHovered(true);
       }}
@@ -270,7 +270,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
         <Typo variant="title2">{t('analytics:decisions.title')}</Typo>
         <Button
           variant="secondary"
-          className="flex items-center gap-v2-sm"
+          className="flex items-center gap-sm"
           disabled={
             isLoading ||
             !currentDataGroup ||
@@ -285,13 +285,13 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
         </Button>
       </div>
 
-      <div ref={divRef} className="bg-surface-card border border-grey-border rounded-lg p-v2-md mt-v2-sm relative">
+      <div ref={divRef} className="bg-surface-card border border-grey-border rounded-lg p-md mt-sm relative">
         {isLoading ? <GraphSpinnerOverlay /> : null}
-        <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">
+        <div className="flex w-full h-[500px] flex-col items-start gap-md">
           <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               <span className="text-s">{t('analytics:decisions.count.label')}:</span>
-              <div className="flex gap-v2-sm">
+              <div className="flex gap-sm">
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -320,9 +320,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
             </div>
 
             {SYMLOG_SCALE_MIN_ENABLED ? (
-              <div className="flex items-center gap-v2-sm">
+              <div className="flex items-center gap-sm">
                 <span className="text-s">{t('analytics:decisions.scale.label')}:</span>
-                <div className="flex gap-v2-sm">
+                <div className="flex gap-sm">
                   <Button
                     variant="secondary"
                     onClick={() => {
@@ -424,15 +424,15 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 const outcomes: Outcome[] = ['approve', 'decline', 'review', 'blockAndReview'];
                 const totalValue = !percentage && typeof data.total === 'number' ? data.total : undefined;
                 return (
-                  <div className="flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
+                  <div className="flex flex-col gap-xs bg-surface-card px-md py-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
                     <span className="text-s text-grey-primary font-semibold">{getTootlipDateFormat(data?.date)}</span>
-                    <div className="flex flex-col gap-v2-xs">
+                    <div className="flex flex-col gap-xs">
                       {outcomes.map((outcome) => {
                         const outcomeValue = data?.[outcome] ?? 0;
                         const displayValue = percentage ? `${outcomeValue.toFixed(1)}%` : outcomeValue;
                         return (
-                          <div key={outcome} className="flex items-center justify-between gap-v2-md">
-                            <div className="flex items-center gap-v2-xs">
+                          <div key={outcome} className="flex items-center justify-between gap-md">
+                            <div className="flex items-center gap-xs">
                               <div
                                 className="size-2.5 rounded-full flex-shrink-0"
                                 style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
@@ -445,7 +445,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                       })}
                     </div>
                     {!percentage && totalValue !== undefined && (
-                      <div className="flex items-center justify-between gap-v2-md pt-v2-xs border-t border-grey-border mt-v2-xs">
+                      <div className="flex items-center justify-between gap-md pt-xs border-t border-grey-border mt-xs">
                         <span className="text-s text-grey-secondary">
                           {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}
                         </span>
@@ -473,8 +473,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
               //   markers={currentDataGroup?.scenarioVersionsXMarkers}
             />
           </div>
-          <div className="flex w-full justify-end mt-v2-sm">
-            <div className="flex gap-v2-sm">
+          <div className="flex w-full justify-end mt-sm">
+            <div className="flex gap-sm">
               <Button
                 disabled={!isDailyViewAvailable || !data?.metadata.totalDecisions}
                 variant="secondary"

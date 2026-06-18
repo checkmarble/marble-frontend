@@ -18,9 +18,9 @@ export const CaseByInboxGraph = () => {
   const [hovering, setHovering] = useState<string | null>(null);
 
   return (
-    <div className="h-100 bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="h-100 bg-surface-card rounded-lg p-md flex flex-col gap-sm">
       <span className="font-medium text-s">{t('cases:overview.graph.cases_by_inbox.title')}</span>
-      <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-surface-card h-full flex flex-col gap-v2-xs">
+      <div className="border border-grey-border rounded-lg p-sm bg-surface-card h-full flex flex-col gap-xs">
         {match(caseStatusByInboxQuery)
           .with({ isPending: true }, () => (
             <div className="grid place-items-center h-full">
@@ -29,7 +29,7 @@ export const CaseByInboxGraph = () => {
           ))
           .with({ isError: true }, () => (
             <div className="grid place-items-center h-full">
-              <div className="flex flex-col items-center gap-v2-sm">
+              <div className="flex flex-col items-center gap-sm">
                 <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
                 <Button variant="secondary" onClick={() => caseStatusByInboxQuery.refetch()}>
                   {t('common:retry')}
@@ -121,9 +121,9 @@ export const CaseByInboxGraph = () => {
                       },
                     ]}
                     tooltip={({ id, value, data }) => (
-                      <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
+                      <div className="flex flex-col gap-sm w-auto max-w-max bg-surface-card p-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
                         <div className="text-s text-grey-60">{data.inbox}</div>
-                        <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-v2-xs">
+                        <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-xs">
                           {graphCaseStatuses.map((caseStatus) => (
                             <Fragment key={caseStatus}>
                               <div>{data[caseStatus]}</div>

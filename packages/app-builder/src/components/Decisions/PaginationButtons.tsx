@@ -324,7 +324,7 @@ export function CursorPaginationButtons({
   const nextDisabled = !hasNextPage;
 
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex items-center justify-end gap-sm">
       {boundariesDisplay === 'ranks' ? (
         <RankNumberRange
           pageNumber={paginationState.pageNb}

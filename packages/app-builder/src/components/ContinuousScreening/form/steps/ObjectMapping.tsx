@@ -65,8 +65,8 @@ export const ObjectMapping = ({ baseConfig }: { baseConfig?: ContinuousScreening
   }, [dataModelQuery]);
 
   return (
-    <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-surface-card mx-v2-md">
+    <div className="flex flex-col gap-md">
+      <Callout bordered className="bg-surface-card mx-md">
         {t(`continuousScreening:${tKey}.objectMapping.callout`)}
       </Callout>
       {mappingConfigs.value.map((mappingConfig, index) => (
@@ -131,10 +131,10 @@ const ObjectMappingConfigurator = ({
   return (
     <Collapsible.Root
       defaultOpen={true}
-      className="bg-surface-card rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm"
+      className="bg-surface-card rounded-lg border border-grey-border p-md flex flex-col gap-sm"
     >
       <Collapsible.Trigger asChild>
-        <div className="flex items-center gap-v2-md">
+        <div className="flex items-center gap-md">
           <Icon
             icon="caret-down"
             className="size-6 group-radix-state-open:rotate-180 transition-transform duration-200"
@@ -148,7 +148,7 @@ const ObjectMappingConfigurator = ({
           ) : null}
         </div>
       </Collapsible.Trigger>
-      <Collapsible.Content className="flex flex-col gap-v2-sm mt-v2-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+      <Collapsible.Content className="flex flex-col gap-sm mt-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         <MenuCommand.Menu open={isTableOpen} onOpenChange={setIsTableOpen}>
           <MenuCommand.Trigger>
             {mode === 'view' ? null : (
@@ -235,8 +235,8 @@ const ObjectMappingFtmContent = ({
         table={table}
       />
       {ftmEntity ? (
-        <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-lg bg-surface-card">
-          <div className="flex items-center gap-4 p-v2-md border-b border-grey-border">
+        <div className="flex flex-col gap-sm border border-grey-border rounded-lg bg-surface-card">
+          <div className="flex items-center gap-md p-md border-b border-grey-border">
             <Typo variant="subtitle1" className="text-h3 font-semibold">
               {t('continuousScreening:creation.objectMapping.configurator.fieldMapping.title')}
             </Typo>
@@ -246,7 +246,7 @@ const ObjectMappingFtmContent = ({
               </Button>
             )}
           </div>
-          <div className="grid grid-cols-[auto_40px_1fr] gap-v2-sm p-v2-md">
+          <div className="grid grid-cols-[auto_40px_1fr] gap-sm p-md">
             {table.fields
               .filter((f) => f.dataType === 'String')
               .map((field) => {
@@ -257,10 +257,10 @@ const ObjectMappingFtmContent = ({
 
                 return (
                   <div key={field.id} className="grid grid-cols-subgrid col-span-full items-center">
-                    <div className="flex items-center px-v2-sm h-10">
+                    <div className="flex items-center px-sm h-10">
                       {mappingConfig.objectType}.{field.name}
                     </div>
-                    <div className={cn('p-v2-sm', { 'opacity-50': hasSavedMapping })}>
+                    <div className={cn('p-sm', { 'opacity-50': hasSavedMapping })}>
                       <Icon icon="arrow-forward" className="size-6 text-purple-primary" />
                     </div>
                     <FtmFieldSelector

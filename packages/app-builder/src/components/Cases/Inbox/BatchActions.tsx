@@ -57,7 +57,7 @@ export const BatchActions = ({ onMassUpdateCases, assignableUsers, inboxes, sele
                     key={userId}
                     onSelect={() => onMassUpdateCases(selectedCases, { action: 'assign', assigneeId: userId })}
                   >
-                    <span className="flex items-center gap-v2-sm">
+                    <span className="flex items-center gap-sm">
                       <Avatar size="xs" firstName={firstName} lastName={lastName} />
                       <span>{`${R.capitalize(firstName)} ${R.capitalize(lastName)}`}</span>
                     </span>

@@ -55,7 +55,7 @@ export function ParseAlias({ value, highlightText }: { value: string; highlightT
   const script = detectNativeScript(value, language);
 
   return (
-    <li className="flex items-center gap-v2-sm">
+    <li className="flex items-center gap-sm">
       {script ? (
         <Tag color="white" size="small" appearance="monospace">
           {t('screenings:entity.property.native_script', { script })}
@@ -88,7 +88,7 @@ export function ParseAddress({ address }: { address: AddressEntity }) {
     <li className="flex items-center">
       <IconDot dark spaced />
       {segments.map((segment, index) => (
-        <div key={index} className="flex items-center gap-v2-sm me-v2-sm">
+        <div key={index} className="flex items-center gap-sm me-sm">
           {segment}
           {index < segments.length - 1 ? <IconDot /> : null}
         </div>
@@ -104,7 +104,7 @@ export function IconDot({ dark, spaced }: { dark?: boolean; spaced?: boolean }) 
       className={cn(
         'text-grey-border size-4 shrink-0 inline-block',
         dark && 'text-grey-secondary opacity-100',
-        spaced && 'mx-v2-sm',
+        spaced && 'mx-sm',
         dark && spaced && 'ms-0',
       )}
     />
@@ -121,7 +121,7 @@ function ApproximativeAge({ ageYears, range }: { ageYears: number; range: BirthD
   const rangeLabel = range ? formatBirthDateRange(range, language, t) : null;
 
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex items-center gap-xs">
       <span className="text-grey-secondary text-xs">
         ~{formatted}
         {rangeLabel ? ` ${rangeLabel}` : null}

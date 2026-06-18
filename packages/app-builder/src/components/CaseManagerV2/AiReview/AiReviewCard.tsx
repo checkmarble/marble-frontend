@@ -31,7 +31,7 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
 
   return (
     <>
-      <Card color="purple" className="flex flex-col gap-v2-sm">
+      <Card color="purple" className="flex flex-col gap-sm">
         <Header
           showSeeAll={!!latestReview && latestReview.status === 'completed'}
           onSeeAll={() => setPanelOpen(true)}
@@ -73,7 +73,7 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
 function Header({ showSeeAll, onSeeAll }: { showSeeAll: boolean; onSeeAll: () => void }) {
   const { t } = useTranslation(['cases']);
   return (
-    <div className="flex items-center gap-v2-xs">
+    <div className="flex items-center gap-xs">
       <Icon icon="ai-review" className="size-4 text-purple-primary shrink-0" />
       <span className="flex-1 text-default font-medium text-purple-primary">
         {t('cases:case.ai_reviews.extract_title')}
@@ -99,7 +99,7 @@ function EmptyBody({
 }) {
   const { t } = useTranslation(['cases']);
   return (
-    <div className="flex items-center justify-between gap-v2-sm">
+    <div className="flex items-center justify-between gap-sm">
       <span className="text-small text-grey-secondary">{t('cases:case.ai_reviews.empty')}</span>
       {canManuallyReview ? (
         <Button variant="secondary" size="small" onClick={onGenerate} disabled={isGenerating}>
@@ -114,7 +114,7 @@ function EmptyBody({
 function PendingBody() {
   const { t } = useTranslation(['cases']);
   return (
-    <div className="flex items-center gap-v2-xs text-small text-grey-secondary">
+    <div className="flex items-center gap-xs text-small text-grey-secondary">
       <Icon icon="spinner" className="size-4 animate-spin" />
       <span>{t('cases:case.ai_reviews.generating')}</span>
     </div>
@@ -123,7 +123,7 @@ function PendingBody() {
 
 function LoadingBody() {
   return (
-    <div className="flex items-center gap-v2-xs text-small text-grey-secondary">
+    <div className="flex items-center gap-xs text-small text-grey-secondary">
       <Icon icon="spinner" className="size-4 animate-spin" />
     </div>
   );

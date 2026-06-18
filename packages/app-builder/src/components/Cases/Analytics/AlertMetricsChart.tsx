@@ -40,11 +40,11 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
   const fpXTickValues = useMemo(() => getXTickValues(falsePositiveRateByPeriod, 'period'), [falsePositiveRateByPeriod]);
 
   return (
-    <div className="bg-surface-card border-grey-border flex flex-col gap-v2-md rounded-v2-lg border p-v2-md">
+    <div className="bg-surface-card border-grey-border flex flex-col gap-md rounded-lg border p-md">
       <span className="text-s font-medium">{t('cases:analytics.alerts.title')}</span>
 
-      <div className="flex flex-col gap-v2-lg xl:flex-row">
-        <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
+      <div className="flex flex-col gap-lg xl:flex-row">
+        <div className="flex min-h-64 flex-1 flex-col gap-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.alerts.count_by_period')}</span>
           <div className="flex-1">
             {alertCountByPeriod.length === 0 ? (
@@ -78,7 +78,7 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                     <span className="text-s text-grey-primary font-semibold">
                       {formatPeriodTooltip(String(indexValue), language)}
                     </span>
-                    <div className="flex items-center justify-between gap-v2-md">
+                    <div className="flex items-center justify-between gap-md">
                       <span className="text-s text-grey-secondary">{t('cases:analytics.alerts.count_label')}</span>
                       <span className="text-s text-grey-primary font-semibold">
                         {formatChartNumber(value, language)}
@@ -92,7 +92,7 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
           </div>
         </div>
 
-        <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
+        <div className="flex min-h-64 flex-1 flex-col gap-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.alerts.fp_rate_by_period')}</span>
           <div className="flex-1">
             {falsePositiveRateByPeriod.length === 0 ? (
@@ -127,7 +127,7 @@ export function AlertMetricsChart({ alertCountByPeriod, falsePositiveRateByPerio
                     <span className="text-s text-grey-primary font-semibold">
                       {formatPeriodTooltip(data.period, language)}
                     </span>
-                    <div className="flex items-center justify-between gap-v2-md">
+                    <div className="flex items-center justify-between gap-md">
                       <span className="text-s text-grey-secondary">{t('cases:analytics.alerts.fp_rate')}</span>
                       <span className="text-s text-grey-primary font-semibold">
                         {formatChartNumber(data.rate, language)}%

@@ -60,7 +60,7 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
   );
 
   return (
-    <div className="flex flex-row items-center gap-4">
+    <div className="flex flex-row items-center gap-md">
       {back ? <Page.BackLink to={back} /> : links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
       <div className="flex gap-v2-sm items-center">
         {links.map(({ Elements, pathname, data }, linkIndex) => {
@@ -104,7 +104,7 @@ export const BackButton = ({ back }: { back?: string }) => {
     [matches],
   );
   return (
-    <div className="flex flex-row items-center gap-4">
+    <div className="flex flex-row items-center gap-md">
       {back ? <Page.BackLink to={back} /> : links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
     </div>
   );

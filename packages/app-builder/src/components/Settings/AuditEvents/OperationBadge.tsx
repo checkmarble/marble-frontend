@@ -27,7 +27,7 @@ export const OperationBadge: FunctionComponent<OperationBadgeProps> = ({ operati
   }[operation];
 
   return (
-    <span className={clsx('rounded-sm px-2 py-0.5 text-xs font-medium dark:border', colorClass)}>
+    <span className={clsx('rounded-sm px-xs py-0.5 text-xs font-medium dark:border', colorClass)}>
       {t(operationToTranslationKey[operation])}
     </span>
   );

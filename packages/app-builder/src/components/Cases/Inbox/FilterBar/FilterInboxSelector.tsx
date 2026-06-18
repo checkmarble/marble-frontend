@@ -22,7 +22,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
             {t('cases:case.inbox')}: {selectedInbox.name}
           </span>
           {selectedInbox.casesCount !== undefined ? (
-            <div className="px-v2-xs py-v2-xxs rounded-full bg-surface-card border border-grey-border text-purple-primary dark:text-grey-primary text-small">
+            <div className="px-xs py-2xs rounded-full bg-surface-card border border-grey-border text-purple-primary dark:text-grey-primary text-small">
               {selectedInbox.casesCount} cases
             </div>
           ) : null}
@@ -33,7 +33,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
         <MenuCommand.List>
           {inboxes.map((inbox) => (
             <MenuCommand.Item key={inbox.id} value={`${inbox.id} ${inbox.name}`} onSelect={() => onSelectInbox(inbox)}>
-              <div className="grid grid-cols-[20px_1fr] items-center gap-v2-xs">
+              <div className="grid grid-cols-[20px_1fr] items-center gap-xs">
                 {inbox.id === selectedInbox.id ? <Icon icon="tick" className="size-4 text-purple-primary" /> : null}
                 <span className="col-start-2">{inbox.name}</span>
               </div>

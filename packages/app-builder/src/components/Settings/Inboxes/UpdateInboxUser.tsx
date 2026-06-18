@@ -97,7 +97,7 @@ export function UpdateInboxUserContent({
       }}
     >
       <Modal.Title>{t('settings:inboxes.inbox_user.update')}</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <form.Field
           name="role"
           validators={{
@@ -105,8 +105,8 @@ export function UpdateInboxUserContent({
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
-              <FormLabel name={field.name} className="flex gap-2">
+            <div className="group flex flex-col gap-sm">
+              <FormLabel name={field.name} className="flex gap-sm">
                 <span
                   className={clsx({
                     'text-grey-disabled': access === 'restricted',

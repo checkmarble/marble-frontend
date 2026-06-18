@@ -41,7 +41,7 @@ export const ActivatedFilterItem = ({ filter, onUpdate, onClear }: ActivatedFilt
   });
 
   const button = (
-    <span className="h-10 bg-purple-background-light border border-purple-border rounded-v2-md p-v2-sm text-default flex items-center gap-v2-xs">
+    <span className="h-10 bg-purple-background-light border border-purple-border rounded-md p-sm text-default flex items-center gap-xs">
       <span>
         <DisplayFilterValue filter={filter} />
       </span>
@@ -65,7 +65,7 @@ export const ActivatedFilterItem = ({ filter, onUpdate, onClear }: ActivatedFilt
   }
 
   return (
-    <span className="h-10 bg-purple-background-light border border-purple-border rounded-v2-md p-v2-sm text-default flex items-center gap-v2-xs">
+    <span className="h-10 bg-purple-background-light border border-purple-border rounded-md p-sm text-default flex items-center gap-xs">
       <span>
         <DisplayFilterValue filter={filter} />
       </span>
@@ -131,12 +131,12 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps) => {
       );
     })
     .with(['tagId', P.string], ([name, tagId]) => (
-      <span className="inline-flex items-center gap-v2-xs">
+      <span className="inline-flex items-center gap-xs">
         <InboxFilterLabel name={name} />: <TagFilterValue tagId={tagId} />
       </span>
     ))
     .with(['qualification', P.string], ([name, level]) => (
-      <span className="inline-flex items-center gap-v2-xs">
+      <span className="inline-flex items-center gap-xs">
         <InboxFilterLabel name={name} />: <QualificationLevelLabel level={level as qualification} />
       </span>
     ))
@@ -150,7 +150,7 @@ const AssigneeFilterValue = ({ value }: { value: string }) => {
   const user = orgUsers.find((user) => user.userId === value);
 
   return (
-    <span className="inline-flex items-center gap-v2-xs">
+    <span className="inline-flex items-center gap-xs">
       <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />
       {user ? (
         <span>{`${R.capitalize(user.firstName)} ${R.capitalize(user.lastName)}`}</span>

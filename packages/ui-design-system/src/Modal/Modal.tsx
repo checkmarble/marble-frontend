@@ -43,7 +43,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 ) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs" />
+      <Dialog.Overlay className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-md backdrop-blur-xs" />
       <Dialog.Content
         ref={ref}
         {...props}
@@ -71,7 +71,7 @@ const ModalTitle = forwardRef<HTMLHeadingElement, Dialog.DialogTitleProps>(funct
         className={typoClassName({
           variant: 'title2',
           className: cn(
-            'sticky top-0 z-10 border-b border-transparent p-4 bg-surface-card sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
+            'sticky top-0 z-10 border-b border-transparent p-md bg-surface-card sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
             className,
           ),
         })}
@@ -99,7 +99,7 @@ const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(function ModalF
       <div
         ref={ref}
         className={cn(
-          'sticky bottom-0 z-10 border-t border-transparent bg-surface-card flex justify-end gap-v2-sm p-v2-md sentinel-intersect:border-t-grey-border sentinel-intersect:shadow-sticky-bottom',
+          'sticky bottom-0 z-10 border-t border-transparent bg-surface-card flex justify-end gap-sm p-md sentinel-intersect:border-t-grey-border sentinel-intersect:shadow-sticky-bottom',
           className,
         )}
       >

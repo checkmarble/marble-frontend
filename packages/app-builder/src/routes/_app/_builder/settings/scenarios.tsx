@@ -84,7 +84,7 @@ function Scenarios() {
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
         <form
-          className="flex flex-col gap-8"
+          className="flex flex-col gap-xl"
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -125,10 +125,10 @@ function Scenarios() {
                 <span className="flex-1">{t('settings:scenario_sanction_settings')}</span>
               </CollapsiblePaper.Title>
               <CollapsiblePaper.Content>
-                <div className="flex flex-col gap-6 lg:gap-8">
+                <div className="flex flex-col gap-lg lg:gap-xl">
                   <form.Field name="sanctionLimit">
                     {(field) => (
-                      <div className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-md">
                         <FormLabel name={field.name} className="text-m" valid={field.state.meta.errors.length === 0}>
                           {t('settings:scenario_sanction_limit')}
                         </FormLabel>
@@ -147,7 +147,7 @@ function Scenarios() {
                   </form.Field>
                   <form.Field name="sanctionThreshold">
                     {(field) => (
-                      <div className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-md">
                         <ScreeningThreshold
                           threshold={field.state.value}
                           onChange={(value) => form.setFieldValue(field.name, value)}

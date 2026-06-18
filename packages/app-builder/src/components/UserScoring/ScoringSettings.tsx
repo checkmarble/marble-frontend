@@ -21,11 +21,11 @@ export function ScoringSettings({ settings }: { settings: ScoringSettingsModel |
 function ScoringSettingsDisplay({ settings }: { settings: ScoringSettingsModel }) {
   const { t } = useTranslation(['user-scoring']);
   return (
-    <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex gap-v2-md items-center">
+    <div className="bg-surface-card border border-grey-border rounded-md p-md flex gap-md items-center">
       <span>{t('user-scoring:settings.scale_used')}</span>
-      <div className="flex gap-v2-md items-center py-v2-sm px-v2-md bg-grey-background-light border border-grey-border rounded-full">
+      <div className="flex gap-md items-center py-sm px-md bg-grey-background-light border border-grey-border rounded-full">
         <span>{t('user-scoring:settings.risk_levels_count', { count: settings.maxRiskLevel })}</span>
-        <ScoringLevels maxLevel={settings.maxRiskLevel} className="flex items-center gap-v2-md" />
+        <ScoringLevels maxLevel={settings.maxRiskLevel} className="flex items-center gap-md" />
       </div>
     </div>
   );
@@ -49,14 +49,14 @@ function ScoringSettingsForm() {
   };
 
   return (
-    <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md">
+    <div className="bg-surface-card border border-grey-border rounded-md p-md flex flex-col gap-md">
       <div className="flex justify-between items-center">
         <span>{t('user-scoring:settings.define_scale')}</span>
         <Button appearance="stroked" onClick={handleValidateScale} disabled={updateScoringSettingsMutation.isPending}>
           {t('user-scoring:settings.validate_scale')}
         </Button>
       </div>
-      <div className="grid grid-cols-4 gap-v2-md">
+      <div className="grid grid-cols-4 gap-md">
         {MAX_RISK_LEVELS.map((v) => (
           <ScoringScaleCard key={v} maxLevel={v} selected={maxRiskLevel === v} onSelect={() => setMaxRiskLevel(v)} />
         ))}
@@ -77,7 +77,7 @@ function ScoringScaleCard({ maxLevel, selected, onSelect }: ScoringScaleCardProp
     <button
       type="button"
       className={cn(
-        'bg-grey-background-light border border-grey-border p-v2-md rounded-v2-md flex flex-col gap-v2-md text-left',
+        'bg-grey-background-light border border-grey-border p-md rounded-md flex flex-col gap-md text-left',
         {
           'bg-purple-background-light border-purple-primary': selected,
         },
@@ -85,7 +85,7 @@ function ScoringScaleCard({ maxLevel, selected, onSelect }: ScoringScaleCardProp
       onClick={onSelect}
     >
       <div>{t('user-scoring:settings.levels', { count: maxLevel })}</div>
-      <ScoringLevels maxLevel={maxLevel} className="flex flex-col gap-v2-md" />
+      <ScoringLevels maxLevel={maxLevel} className="flex flex-col gap-md" />
     </button>
   );
 }
@@ -102,7 +102,7 @@ function ScoringLevels({ maxLevel, className }: { maxLevel: number; className?: 
   return (
     <div className={cn(className)}>
       {colorEntries.map(([level, color]) => (
-        <div key={level} className="flex gap-v2-sm items-center">
+        <div key={level} className="flex gap-sm items-center">
           <div className="size-4 rounded-full" style={{ backgroundColor: color }} />
           <span>{t(labelKeys[level] ?? '')}</span>
         </div>

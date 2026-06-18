@@ -164,7 +164,7 @@ function Inbox() {
               size: 100,
               cell: ({ cell }) => {
                 return (
-                  <div className="flex gap-2">
+                  <div className="flex gap-sm">
                     {isEditInboxUserAvailable ? (
                       <div className="group-hover/row:text-grey-primary focus-within:text-grey-primary text-transparent cursor-pointer">
                         <UpdateInboxUser
@@ -221,7 +221,7 @@ function Inbox() {
               {caseCount}
               <span className="font-bold">{t('settings:inboxes.inbox_details.escalation_inbox')}</span>
               {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
-              <span className="font-bold flex items-center gap-2">
+              <span className="font-bold flex items-center gap-sm">
                 {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
                 {!isAutoAssignmentAvailable ? (
                   <Nudge
@@ -272,7 +272,7 @@ function Inbox() {
             <DeleteInbox inbox={inbox} />
           ) : (
             <Tooltip.Default
-              content={<p className="p-2">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>}
+              content={<p className="p-sm">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>}
             >
               <span className="w-fit">
                 <DeleteInbox inbox={inbox} disabled />

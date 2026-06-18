@@ -8,7 +8,7 @@ export const OutcomeUpdatedDetail = ({ event }: { event: CaseOutcomeUpdatedEvent
   const { t } = useTranslation(casesI18n);
 
   return (
-    <div key={event.id} className="flex w-full items-center gap-2">
+    <div key={event.id} className="flex w-full items-center gap-sm">
       <div className="bg-surface-card border-grey-border flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="edit" className="text-grey-primary size-3" />
       </div>

@@ -5,7 +5,7 @@ export function ClientTagsList({ tagsIds }: { tagsIds: string[] }) {
   const { orgObjectTags } = useOrganizationObjectTags();
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-sm">
       {tagsIds.map((tagId) => {
         const tag = orgObjectTags.find((t) => t.id === tagId);
         if (!tag) return null;

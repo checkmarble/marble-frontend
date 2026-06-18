@@ -44,16 +44,16 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
   return (
     <PanelRoot open={open} onOpenChange={onOpenChange}>
       <PanelContainer size="4xl" className="z-50 p-0">
-        <PanelHeader className="border-b border-grey-border px-v2-lg py-v2-md">
+        <PanelHeader className="border-b border-grey-border px-lg py-md">
           {t('data:viewer.view_ingested_data')}
         </PanelHeader>
-        <PanelContent className="flex flex-col gap-v2-lg px-v2-lg py-v2-lg">
-          <div className="flex items-center gap-v2-sm">
+        <PanelContent className="flex flex-col gap-lg px-lg py-lg">
+          <div className="flex items-center gap-sm">
             <Tag color="grey">{tableName}</Tag>
           </div>
 
-          <form className="flex items-end gap-v2-sm" onSubmit={handleSubmit}>
-            <div className="flex flex-1 flex-col gap-1">
+          <form className="flex items-end gap-sm" onSubmit={handleSubmit}>
+            <div className="flex flex-1 flex-col gap-xs">
               <label htmlFor={`objectIdField-${tableName}`} className="text-s">
                 {t('data:viewer.object_id')}
               </label>
@@ -78,11 +78,11 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
               </div>
             ) : searchedObjectId && query.data !== undefined ? (
               query.data ? (
-                <div className="rounded-md border border-grey-border bg-grey-background-light p-4">
+                <div className="rounded-md border border-grey-border bg-grey-background-light p-md">
                   <DataFields table={tableName} object={query.data} options={{ showHeader: true }} />
                 </div>
               ) : (
-                <div className="rounded-sm border border-grey-border bg-surface-card p-4 text-center">
+                <div className="rounded-sm border border-grey-border bg-surface-card p-md text-center">
                   {t('data:viewer.no_object_found', { tableName, objectId: searchedObjectId })}
                 </div>
               )

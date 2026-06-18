@@ -59,15 +59,15 @@ export function DecisionPanel({ decision, dataModel, onClose, onScreeningSelect 
   }, [detailDecisionQuery.data, showHitOnly]);
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-lg p-lg">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-md">
         <Button variant="secondary" mode="icon" size="small" onClick={() => onClose()}>
           <Icon icon="cross" className="size-5" />
         </Button>
-        <div className="flex flex-1 flex-col gap-1">
+        <div className="flex flex-1 flex-col gap-xs">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-sm">
               <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} showLabel={false} />
               <span className="text-l text-grey-primary font-semibold">{decision.scenario.name}</span>
               <ScoreModifier
@@ -93,11 +93,11 @@ export function DecisionPanel({ decision, dataModel, onClose, onScreeningSelect 
 
       {/* Screenings Rules */}
       {screenings.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           <span className="text-m text-grey-primary font-medium">{t('cases:decisions.screenings_rules')}</span>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             {screenings.map((screening) => (
-              <div key={screening.id} className="flex items-center gap-2">
+              <div key={screening.id} className="flex items-center gap-sm">
                 <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
                 <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
                 <div
@@ -130,22 +130,22 @@ export function DecisionPanel({ decision, dataModel, onClose, onScreeningSelect 
       {/* Rules */}
       {match(detailDecisionQuery)
         .with({ isPending: true }, () => (
-          <div className="flex items-center justify-center p-4">
+          <div className="flex items-center justify-center p-md">
             <Spinner className="size-8" />
           </div>
         ))
         .with({ isError: true }, () => (
-          <div className="text-grey-secondary p-4 text-center text-xs">{t('common:global_error')}</div>
+          <div className="text-grey-secondary p-md text-center text-xs">{t('common:global_error')}</div>
         ))
         .otherwise(() => {
           const allRules = detailDecisionQuery.data?.decision.rules ?? [];
           if (allRules.length === 0) return null;
 
           return (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               <div className="flex items-center justify-between">
                 <span className="text-m text-grey-primary font-medium">{t('cases:decisions.rules')}</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-sm">
                   <label htmlFor="showHitOnly" className="text-grey-primary cursor-pointer select-none text-xs">
                     {t('cases:case_detail.rules_execution.show_hit_only')}
                   </label>
@@ -178,7 +178,7 @@ export function DecisionPanel({ decision, dataModel, onClose, onScreeningSelect 
 
       {/* Trigger Object */}
       {detailDecisionQuery.data ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           <span className="text-m text-grey-primary font-medium">{t('cases:case_detail.trigger_object')}</span>
           <CaseDetailTriggerObject
             className="max-h-[50dvh] overflow-auto"

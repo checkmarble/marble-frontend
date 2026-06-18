@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import { cn } from '../utils';
 
 export const CtaV2ClassName = cva(
-  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer transition-colors border border-solid disabled:cursor-default focus-visible:outline-2 outline-offset-2',
+  'text-default font-medium w-fit rounded-md inline-flex items-center gap-xs cursor-pointer transition-colors border border-solid disabled:cursor-default focus-visible:outline-2 outline-offset-2',
   {
     variants: {
       variant: {
@@ -45,32 +45,32 @@ export const CtaV2ClassName = cva(
       {
         size: 'small',
         mode: 'normal',
-        class: 'h-6 px-v2-sm py-v2-xs',
+        class: 'h-6 px-sm py-xs',
       },
       {
         size: 'small',
         mode: 'icon',
-        class: 'size-6 p-v2-xs',
+        class: 'size-6 p-xs',
       },
       {
         size: 'medium',
         mode: 'normal',
-        class: 'h-8 p-v2-sm',
+        class: 'h-8 p-sm',
       },
       {
         size: 'medium',
         mode: 'icon',
-        class: 'size-8 p-v2-sm',
+        class: 'size-8 p-sm',
       },
       {
         size: 'large',
         mode: 'normal',
-        class: 'h-10 p-v2-sm',
+        class: 'h-10 p-sm',
       },
       {
         size: 'large',
         mode: 'icon',
-        class: 'size-10 p-v2-sm',
+        class: 'size-10 p-sm',
       },
       // Subtle elevation on filled + stroked (Figma "Shadow/light"); not on link
       {

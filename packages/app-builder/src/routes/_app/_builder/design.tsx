@@ -29,7 +29,7 @@ function DesignPage() {
       </Page.Header>
       <Page.Container>
         <Page.Content>
-          <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-3xl">
             <Section title="Radio" description="Figma node 1206-800">
               <RadioMatrix />
             </Section>
@@ -52,7 +52,7 @@ function DesignPage() {
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   const [dark, setDark] = useState(false);
   return (
-    <section className="flex flex-col gap-4 max-w-5xl">
+    <section className="flex flex-col gap-md max-w-5xl">
       <header className="flex items-center justify-between">
         <div>
           <Typo variant="title2">{title}</Typo>
@@ -62,7 +62,7 @@ function Section({ title, description, children }: { title: string; description?
           {dark ? 'Light preview' : 'Dark preview'}
         </Button>
       </header>
-      <div className={cn('border-grey-border bg-grey-white rounded-lg border p-6', dark && 'dark bg-grey-background')}>
+      <div className={cn('border-grey-border bg-grey-white rounded-lg border p-lg', dark && 'dark bg-grey-background')}>
         <div className={dark ? 'text-grey-white' : undefined}>{children}</div>
       </div>
     </section>
@@ -71,7 +71,7 @@ function Section({ title, description, children }: { title: string; description?
 
 function VariantCell({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex w-32 flex-col items-center gap-2">
+    <div className="flex w-32 flex-col items-center gap-sm">
       <div className="flex h-10 items-center justify-center">{children}</div>
       <span className="text-grey-secondary text-center text-xs">{label}</span>
     </div>
@@ -80,16 +80,16 @@ function VariantCell({ label, children }: { label: string; children: React.React
 
 function MatrixRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-sm">
       <span className="w-20 shrink-0 text-xs font-medium">{label}</span>
-      <div className="flex flex-wrap gap-2">{children}</div>
+      <div className="flex flex-wrap gap-sm">{children}</div>
     </div>
   );
 }
 
 function RadioMatrix() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-lg">
       {SIZES.map((size) => (
         <MatrixRow key={size} label={size}>
           <VariantCell label="unselected">
@@ -114,7 +114,7 @@ function RadioMatrix() {
           </VariantCell>
         </MatrixRow>
       ))}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-md">
         <InteractiveRadio size="regular" />
         <InteractiveRadio size="small" />
       </div>
@@ -125,18 +125,18 @@ function RadioMatrix() {
 function InteractiveRadio({ size }: { size: Size }) {
   const [value, setValue] = useState('option1');
   return (
-    <div className="border-grey-border mt-2 flex flex-col gap-2 border-t pt-4">
+    <div className="border-grey-border mt-sm flex flex-col gap-sm border-t pt-md">
       <span className="text-s font-medium">Interactive {size}</span>
       <Radio.Root value={value} onValueChange={setValue} size={size}>
-        <label className="text-s flex items-center gap-2">
+        <label className="text-s flex items-center gap-sm">
           <Radio.Item value="option1" />
           Option 1
         </label>
-        <label className="text-s flex items-center gap-2">
+        <label className="text-s flex items-center gap-sm">
           <Radio.Item value="option2" />
           Option 2
         </label>
-        <label className="text-s text-grey-disabled flex items-center gap-2">
+        <label className="text-s text-grey-disabled flex items-center gap-sm">
           <Radio.Item value="option3" disabled />
           Option 3 (disabled)
         </label>
@@ -147,7 +147,7 @@ function InteractiveRadio({ size }: { size: Size }) {
 
 function CheckboxMatrix() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-lg">
       {SIZES.map((size) => (
         <MatrixRow key={size} label={size}>
           <VariantCell label="unselected">
@@ -170,7 +170,7 @@ function CheckboxMatrix() {
           </VariantCell>
         </MatrixRow>
       ))}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-md">
         <InteractiveCheckbox size="regular" />
         <InteractiveCheckbox size="small" />
       </div>
@@ -180,8 +180,8 @@ function CheckboxMatrix() {
 
 function SwitchMatrix() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap gap-6">
+    <div className="flex flex-col gap-lg">
+      <div className="flex flex-wrap gap-lg">
         <VariantCell label="off">
           <Switch checked={false} />
         </VariantCell>
@@ -203,9 +203,9 @@ function SwitchMatrix() {
 function InteractiveSwitch() {
   const [on, setOn] = useState(false);
   return (
-    <div className="border-grey-border mt-2 flex flex-col gap-2 border-t pt-4">
+    <div className="border-grey-border mt-sm flex flex-col gap-sm border-t pt-md">
       <span className="text-s font-medium">Interactive</span>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-md">
         <Switch checked={on} onCheckedChange={setOn} id="design-switch" />
         <label htmlFor="design-switch" className="text-s">
           Click me — current: {String(on)}
@@ -224,7 +224,7 @@ const BUTTON_ICON_GLYPH = { small: 'size-4', medium: 'size-5', large: 'size-6' }
 
 function ButtonMatrix() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-xl">
       {/* variant × appearance, medium (size="medium") */}
       {BUTTON_APPEARANCES.map((appearance) => (
         <MatrixRow key={appearance} label={appearance}>
@@ -244,9 +244,9 @@ function ButtonMatrix() {
       ))}
 
       {/* sizes — small / medium / large */}
-      <div className="border-grey-border flex flex-col gap-3 border-t pt-4">
+      <div className="border-grey-border flex flex-col gap-md border-t pt-md">
         <span className="text-s font-medium">Sizes</span>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-md">
           {BUTTON_SIZES.map((size) => (
             <VariantCell key={size} label={size}>
               <Button variant="primary" size={size}>
@@ -259,7 +259,7 @@ function ButtonMatrix() {
       </div>
 
       {/* Icon button (mode="icon") — Figma node 4-554 */}
-      <div className="border-grey-border flex flex-col gap-4 border-t pt-4">
+      <div className="border-grey-border flex flex-col gap-md border-t pt-md">
         <span className="text-s font-medium">Icon button (Figma 4-554)</span>
         {/* filled, color axis × sizes */}
         {BUTTON_ICON_COLORS.map((color) => (
@@ -301,9 +301,9 @@ function ButtonMatrix() {
 function InteractiveCheckbox({ size }: { size: Size }) {
   const [checked, setChecked] = useState<CheckedState>(false);
   return (
-    <div className="border-grey-border mt-2 flex flex-col gap-2 border-t pt-4">
+    <div className="border-grey-border mt-sm flex flex-col gap-sm border-t pt-md">
       <span className="text-s font-medium">Interactive {size}</span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-sm">
         <Checkbox id={`design-cb-${size}`} checked={checked} onCheckedChange={setChecked} size={size} />
         <label htmlFor={`design-cb-${size}`} className="text-s">
           Click me — current: {String(checked)}

@@ -21,7 +21,7 @@ export const ObjectMappingSection = ({ updatedConfig, baseConfig }: EditionValid
             </div>
           ))
           .with({ isError: true }, () => (
-            <div className="flex flex-col gap-v2-md items-center justify-center h-50">
+            <div className="flex flex-col gap-md items-center justify-center h-50">
               <div className="">{t('common:generic_fetch_data_error')}</div>
               <Button variant="secondary" onClick={() => dataModelQuery.refetch()}>
                 {t('common:retry')}
@@ -47,14 +47,14 @@ export const ObjectMappingSection = ({ updatedConfig, baseConfig }: EditionValid
 
             if (!hasChanges) {
               return (
-                <div className="flex flex-col gap-v2-sm">
+                <div className="flex flex-col gap-sm">
                   <span>{t('continuousScreening:edition.validation.objectMapping.no_changes')}</span>
                 </div>
               );
             }
 
             return (
-              <div className="grid grid-cols-2 gap-v2-md">
+              <div className="grid grid-cols-2 gap-md">
                 {updatedConfig.mappingConfigs.map((mappingConfig) => {
                   const table = dataModel.find((table) => table.name === mappingConfig.objectType);
                   return table ? (
@@ -85,13 +85,13 @@ const TableValidation = ({ table, objectMapping }: { table: TableModel; objectMa
   if (fieldsAdded.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       <span>
         {t(`continuousScreening:edition.validation.objectMapping.${isAddedTable ? 'table_added' : 'table_modified'}`, {
           tableName: table.name,
         })}
       </span>
-      <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md max-h-50 overflow-y-auto">
+      <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md max-h-50 overflow-y-auto">
         {fieldsAdded.map(({ field, ftmProperty }) => {
           return (
             <span key={field?.id}>

@@ -73,7 +73,7 @@ function getMessage(message: string) {
   }
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-xs">
       <p className="text-s text-grey-primary">{message}</p>
       <p className="text-grey-secondary text-xs">In dev, toast may be displayed twice due to strict mode</p>
     </div>

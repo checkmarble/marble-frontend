@@ -72,19 +72,19 @@ text-2xs    # 10px / 12px  (tiny labels)
 
 ---
 
-## Spacing (v2 scale)
+## Spacing (custom scale)
 
 ```
-gap-v2-xs    # 0.25rem (4px)
-gap-v2-sm    # 0.5rem  (8px)
-gap-v2-md    # 1rem    (16px)
-gap-v2-lg    # 1.5rem  (24px)
-gap-v2-xl    # 2rem    (32px)
-gap-v2-xxl   # 2.5rem  (40px)
-gap-v2-xxxl  # 3rem    (48px)
+gap-xs    # 0.25rem (4px)
+gap-sm    # 0.5rem  (8px)
+gap-md    # 1rem    (16px)
+gap-lg    # 1.5rem  (24px)
+gap-xl    # 2rem    (32px)
+gap-2xl   # 2.5rem  (40px)
+gap-3xl  # 3rem    (48px)
 ```
 
-Standard Tailwind spacing (`p-4`, `gap-2`, `m-6`) is also widely used.
+Standard Tailwind spacing (`p-4`, `gap-2`, `m-4`) should be avoided.
 
 ---
 
@@ -92,21 +92,21 @@ Standard Tailwind spacing (`p-4`, `gap-2`, `m-6`) is also widely used.
 
 ```typescript
 // Flexbox row with gap
-<div className="flex items-center gap-4">
+<div className="flex items-center gap-md">
 
 // Flexbox column
-<div className="flex flex-col gap-2">
+<div className="flex flex-col gap-sm">
 
 // Space between
 <div className="flex justify-between items-center">
 
 // Card container
-<div className="bg-surface-card border-grey-border rounded-lg border p-4">
+<div className="bg-surface-card border-grey-border rounded-lg border p-md">
 
 // Conditional classes — prefer cn over clsx (cn resolves Tailwind conflicts)
 import { cn } from 'ui-design-system';
 <div className={cn(
-  'rounded-lg border p-4 transition-colors',
+  'rounded-lg border p-md transition-colors',
   isActive
     ? 'border-purple-primary bg-purple-background'
     : 'border-grey-border hover:bg-grey-background-light',

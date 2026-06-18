@@ -44,7 +44,7 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
     <Modal.Root>
       <Tooltip.Default
         content={
-          <div className="pb-2">
+          <div className="pb-sm">
             <div>
               {canEscalate
                 ? t('cases:escalate-button.hint', { inboxName: targetInbox?.name })
@@ -73,7 +73,7 @@ export const EscalateCase = ({ id, inboxId, isAdminUser }: { id: string; inboxId
       </Tooltip.Default>
       <Modal.Content>
         <Modal.Title>Escalate Case</Modal.Title>
-        <div className="flex flex-col gap-8 p-8">
+        <div className="flex flex-col gap-xl p-xl">
           <Callout className="text-balance">
             <Trans i18nKey="cases:escalate-case.modal.callout" />
           </Callout>

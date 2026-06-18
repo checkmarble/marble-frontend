@@ -92,7 +92,7 @@ function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
 
   return (
     <>
-      <div className="flex gap-4">
+      <div className="flex gap-md">
         <Typo variant="title1" className="flex-1">
           {t('data:data-model')}
         </Typo>
@@ -107,14 +107,14 @@ function EmptyHeader({ onCreateTable }: { onCreateTable: () => void }) {
             <MenuCommand.List>
               <MenuCommand.Item>
                 <ImportOrg>
-                  <div className="flex items-center gap-2 cursor-pointer">
+                  <div className="flex items-center gap-sm cursor-pointer">
                     <Icon icon="upload" className="size-4" />
                     {t('data:create_new_table.from_file')}
                   </div>
                 </ImportOrg>
               </MenuCommand.Item>
               <MenuCommand.Item>
-                <button className="flex items-center gap-2" onClick={onCreateTable}>
+                <button className="flex items-center gap-sm" onClick={onCreateTable}>
                   <Icon icon="edit" className="size-4" />
                   {t('data:create_new_table.manually')}
                 </button>
@@ -131,13 +131,13 @@ function DataListEmptyState({ onCreateTable }: { onCreateTable: () => void }) {
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <section className="px-v2-lg py-v2-xxl grid gap-4">
-      <div className="grid py-xl w-full place-items-center gap-v2-lg">
+    <section className="px-lg py-2xl grid gap-md">
+      <div className="grid py-xl w-full place-items-center gap-lg">
         <header className="text-center">
           <p className="font-semibold">{t('data:empty_state.title')}</p>
           <p className="text-sm text-grey-secondary">{t('data:empty_state.description')}</p>
         </header>
-        <div className="grid grid-cols-3 gap-v2-sm">
+        <div className="grid grid-cols-3 gap-sm">
           <SelectArchetype>
             <Button type="button" appearance="stroked" size="medium" className="w-full justify-center">
               <span>{t('data:empty_state.select_archetype.title')}</span>

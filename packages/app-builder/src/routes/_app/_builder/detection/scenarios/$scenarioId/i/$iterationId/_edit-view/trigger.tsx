@@ -89,7 +89,7 @@ function Trigger() {
                   }}
                 />
               </p>
-              <ol className="list-outside list-decimal space-y-4 pl-6">
+              <ol className="list-outside list-decimal space-y-4 ps-lg">
                 <li>
                   <Trans
                     t={t}
@@ -98,7 +98,7 @@ function Trigger() {
                       DocLink: <ExternalLink href={createDecisionDocHref} />,
                     }}
                   />
-                  <ul className="list-outside space-y-1 pl-4">
+                  <ul className="list-outside space-y-1 ps-md">
                     <li>
                       <Trans
                         t={t}
@@ -118,7 +118,7 @@ function Trigger() {
                 </li>
                 <li>
                   <Trans t={t} i18nKey="scenarios:trigger.run_scenario.description.batch_execution" />
-                  <ul className="list-outside space-y-1 pl-4">
+                  <ul className="list-outside space-y-1 ps-md">
                     <li>
                       <ScheduleOption schedule={schedule} setSchedule={setSchedule} viewOnly={editorMode === 'view'} />
                     </li>
@@ -133,7 +133,7 @@ function Trigger() {
       <Collapsible.Container className="bg-surface-card max-w-3xl">
         <Collapsible.Title>{t('scenarios:trigger.trigger_object.title')}</Collapsible.Title>
         <Collapsible.Content>
-          <Callout variant="outlined" className="mb-4 lg:mb-6">
+          <Callout variant="outlined" className="mb-md lg:mb-lg">
             <p className="whitespace-pre-wrap">
               <Trans
                 t={t}
@@ -144,9 +144,9 @@ function Trigger() {
               />
             </p>
           </Callout>
-          <div className="flex flex-col gap-2 lg:gap-4">
+          <div className="flex flex-col gap-sm lg:gap-md">
             {isTriggerNull ? (
-              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded-sm border p-2 dark:bg-transparent">
+              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded-sm border p-sm dark:bg-transparent">
                 <span>
                   <Trans
                     t={t}
@@ -175,8 +175,8 @@ function Trigger() {
             )}
 
             {editorMode === 'edit' ? (
-              <div className="flex flex-row-reverse items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-row-reverse items-center justify-between gap-sm">
+                <div className="flex items-center gap-sm">
                   {isTriggerNull ? (
                     <Button type="button" variant="secondary" onClick={handleAddTrigger}>
                       {t('scenarios:trigger.trigger_object.add_trigger')}
