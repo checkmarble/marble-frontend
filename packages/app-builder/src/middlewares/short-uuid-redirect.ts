@@ -1,8 +1,9 @@
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createMiddleware } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
+import { z } from 'zod/v4';
 
-const LONG_FORM_UUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+const isLongUUID = (value: string) => z.uuid().safeParse(value).success;
 
 // `/client-detail` objectId is a raw ingested id, not short-uuid encoded; the rest are fetch/RPC endpoints.
 const SKIP_PREFIXES = ['/client-detail/', '/ressources/', '/oidc/'];
@@ -25,7 +26,7 @@ export const shortUUIDRedirectMiddleware = createMiddleware().server(async ({ ne
       let changed = false;
       const rewritten = segments
         .map((segment, index) => {
-          if (index === protectedIndex || !LONG_FORM_UUID.test(segment)) return segment;
+          if (index === protectedIndex || !isLongUUID(segment)) return segment;
           try {
             const short = fromUUIDtoSUUID(segment);
             changed = true;
