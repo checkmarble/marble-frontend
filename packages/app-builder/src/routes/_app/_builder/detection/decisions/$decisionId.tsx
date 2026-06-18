@@ -20,7 +20,6 @@ import { DataModel, isNotFoundHttpError } from '@app-builder/models';
 import { Screening } from '@app-builder/models/screening';
 import { ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { setToast } from '@app-builder/services/toast.server';
-import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -75,7 +74,7 @@ const decisionLoader = createServerFn()
 
     const parsedParam = await parseParamsSafe(data?.params ?? {}, z.object({ decisionId: shortUUIDSchema }));
     if (!parsedParam.success) {
-      throw handleParseParamError(request, parsedParam.error);
+      throw new Response(null, { status: 404, statusText: 'Not Found' });
     }
 
     const t = await getFixedT(request, ['decisions']);

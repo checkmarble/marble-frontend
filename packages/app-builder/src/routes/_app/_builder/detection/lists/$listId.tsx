@@ -15,14 +15,12 @@ import {
   isEditListAvailable,
 } from '@app-builder/services/feature-access';
 import useAsync from '@app-builder/utils/hooks/use-async';
-import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Sentry from '@sentry/react';
 import { ClientOnly, createFileRoute, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { getRequest } from '@tanstack/react-start/server';
 import { createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -37,12 +35,11 @@ const listLoader = createServerFn()
   .middleware([authMiddleware])
   .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function listLoader({ context, data }) {
-    const request = getRequest();
     const { user, customListsRepository } = context.authInfo;
 
     const parsedParams = await parseIdParamSafe(data?.params ?? {}, 'listId');
     if (!parsedParams.success) {
-      throw handleParseParamError(request, parsedParams.error!);
+      throw new Response(null, { status: 404, statusText: 'Not Found' });
     }
     const customList = await customListsRepository.getCustomList(parsedParams.data.listId);
 
