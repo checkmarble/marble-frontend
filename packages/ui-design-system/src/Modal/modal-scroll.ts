@@ -51,7 +51,12 @@ export function useScrollBorders(rootElement: HTMLElement | null) {
     const updateScrollBorders = (scrollElement = getModalScrollElement(rootElement)) => {
       const { scrollTop, scrollHeight, clientHeight } = scrollElement;
       const nextBorders = getModalScrollBorders(scrollTop, scrollHeight, clientHeight);
-      setScrollBorders(nextBorders);
+      setScrollBorders((prevBorders) =>
+        prevBorders.showTitleBorder === nextBorders.showTitleBorder &&
+        prevBorders.showFooterBorder === nextBorders.showFooterBorder
+          ? prevBorders
+          : nextBorders,
+      );
     };
 
     const handleScroll = (event: Event) => {

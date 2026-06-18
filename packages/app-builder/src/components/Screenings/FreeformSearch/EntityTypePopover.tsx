@@ -253,11 +253,11 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
         </div>
         <Popover.Footer>
           {/* Actions */}
-          <Button type="button" variant="primary" size="large" onClick={handleApply}>
-            {t('screenings:freeform_search.apply')}
-          </Button>
           <Button type="button" variant="secondary" size="large" onClick={handleCancel}>
             {t('common:cancel')}
+          </Button>
+          <Button type="button" variant="primary" size="large" onClick={handleApply}>
+            {t('screenings:freeform_search.apply')}
           </Button>
         </Popover.Footer>
       </Popover.Content>
