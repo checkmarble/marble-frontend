@@ -1,28 +1,13 @@
-import { useComposedRefs } from '@radix-ui/react-compose-refs';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import { createContext, forwardRef, type ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 import { Button, CtaV2ClassName } from '../Button/Button';
+import { StickyComponent } from '../StickyComponent/StickyComponent';
 import { typoClassName } from '../Typography/Typo';
 import { cn } from '../utils';
-import { useScrollBorders } from './modal-scroll';
-
-type ModalScrollState = {
-  showTitleBorder: boolean;
-  showFooterBorder: boolean;
-};
-
-const ModalScrollContext = createContext<ModalScrollState>({
-  showTitleBorder: false,
-  showFooterBorder: false,
-});
-
-function useModalScroll() {
-  return useContext(ModalScrollContext);
-}
 
 function ModalRoot(props: Dialog.DialogProps) {
   return <Dialog.Root {...props} />;
@@ -56,19 +41,11 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
   { className, size, fixedHeight, children, ...props },
   ref,
 ) {
-  const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
-  const scrollState = useScrollBorders(contentElement);
-  const handleContentRef = useCallback((node: HTMLDivElement | null) => {
-    setContentElement((prev) => (prev === node ? prev : node));
-  }, []);
-  const composedRef = useComposedRefs(ref, handleContentRef);
-  const scrollContextValue = useMemo(() => scrollState, [scrollState.showTitleBorder, scrollState.showFooterBorder]);
-
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs" />
       <Dialog.Content
-        ref={composedRef}
+        ref={ref}
         {...props}
         className={modalContentClassnames({
           size,
@@ -76,7 +53,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
           className: cn('fixed left-1/2 z-50 -translate-x-1/2', className),
         })}
       >
-        <ModalScrollContext.Provider value={scrollContextValue}>{children}</ModalScrollContext.Provider>
+        {children}
       </Dialog.Content>
     </Dialog.Portal>
   );
@@ -87,21 +64,20 @@ const ModalTitle = forwardRef<HTMLHeadingElement, Dialog.DialogTitleProps>(funct
   { className, ...props },
   ref,
 ) {
-  const { showTitleBorder } = useModalScroll();
-
   return (
-    <Dialog.Title
-      ref={ref}
-      className={typoClassName({
-        variant: 'title2',
-        className: cn(
-          'sticky top-0 z-10 border-b  p-4 bg-surface-card',
-          showTitleBorder ? 'border-b-grey-border shadow-sticky-top' : 'border-transparent',
-          className,
-        ),
-      })}
-      {...props}
-    />
+    <StickyComponent inFlow>
+      <Dialog.Title
+        ref={ref}
+        className={typoClassName({
+          variant: 'title2',
+          className: cn(
+            'sticky top-0 z-10 border-b border-transparent p-4 bg-surface-card sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
+            className,
+          ),
+        })}
+        {...props}
+      />
+    </StickyComponent>
   );
 });
 ModalTitle.displayName = 'ModalTitle';
@@ -118,19 +94,18 @@ interface ModalFooterProps {
 }
 
 const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(function ModalFooter({ children, className }, ref) {
-  const { showFooterBorder } = useModalScroll();
-
   return (
-    <div
-      ref={ref}
-      className={cn(
-        'sticky bottom-0 z-10 border-t bg-surface-card flex justify-end gap-v2-sm p-v2-md',
-        showFooterBorder ? 'border-t-grey-border shadow-sticky-bottom' : 'border-transparent',
-        className,
-      )}
-    >
-      {children}
-    </div>
+    <StickyComponent inFlow>
+      <div
+        ref={ref}
+        className={cn(
+          'sticky bottom-0 z-10 border-t border-transparent bg-surface-card flex justify-end gap-v2-sm p-v2-md sentinel-intersect:border-t-grey-border sentinel-intersect:shadow-sticky-bottom',
+          className,
+        )}
+      >
+        {children}
+      </div>
+    </StickyComponent>
   );
 });
 ModalFooter.displayName = 'ModalFooter';

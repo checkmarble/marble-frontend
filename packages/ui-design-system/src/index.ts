@@ -31,6 +31,7 @@ export * from './SelectWithCombobox/SelectWithCombobox';
 export * from './Separator/Separator';
 export * from './StepProgressBar/StepProgressBar';
 export * from './Stepper/Stepper';
+export * from './StickyComponent/StickyComponent';
 export * from './Switch/Switch';
 export * from './Table/Table';
 export * from './Tabs/Tabs';

@@ -1,6 +1,5 @@
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
-import { StickyComponent } from '@app-builder/components/ui/StickyComponent';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -8,7 +7,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@tanstack/react-router';
 import { KeyboardEventHandler, MouseEventHandler, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, cn, Tooltip } from 'ui-design-system';
+import { Checkbox, cn, StickyComponent, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseStatusBadgeV2 } from '../CaseStatus';
 import { AssignedContributors } from './AssignedContributors';
