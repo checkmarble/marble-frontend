@@ -108,141 +108,143 @@ function Builder() {
         <OrganizationUsersContextProvider orgUsers={orgUsers}>
           <OrganizationTagsContextProvider orgTags={orgTags}>
             <OrganizationObjectTagsContextProvider tags={orgObjectTags}>
-              {/*<DatasetFreshnessBanner />*/}
-              <div className="relative flex min-h-screen">
-                <LeftSidebar>
-                  <div className="h-24 px-xs pt-md">
-                    <UserInfo isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable} />
-                  </div>
-                  <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
-                    <ul className="flex flex-col gap-sm">
-                      {/* Detection - flat link (tabs are inside the page) */}
-                      {!isAnalyst(user) && (
+              <div className="flex min-h-screen flex-col">
+                {/* <DatasetFreshnessBanner /> */}
+                <div className="relative flex min-h-0 flex-1">
+                  <LeftSidebar>
+                    <div className="h-24 px-xs pt-md">
+                      <UserInfo isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable} />
+                    </div>
+                    <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
+                      <ul className="flex flex-col gap-sm">
+                        {/* Detection - flat link (tabs are inside the page) */}
+                        {!isAnalyst(user) && (
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:detection"
+                              to="/detection"
+                              Icon={(props) => <Icon icon="scenarios" {...props} />}
+                            />
+                          </li>
+                        )}
+                        {/* User Scoring */}
+                        {!isAnalyst(user) && (
+                          <li>
+                            {match(featuresAccess.userScoring)
+                              .with(P.union('allowed', 'test'), () => {
+                                return (
+                                  <SidebarLink
+                                    labelTKey="navigation:user_scoring"
+                                    to="/user-scoring"
+                                    Icon={(props) => <Icon icon="123" {...props} />}
+                                  />
+                                );
+                              })
+                              .otherwise((value) => {
+                                return (
+                                  <div className="text-grey-disabled relative flex gap-sm p-sm">
+                                    <Icon icon="123" className="size-6 shrink-0" />
+                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
+                                      {t('navigation:user_scoring')}
+                                    </span>
+                                    <SidebarNudge kind={value} content={t('navigation:user_scoring.nudge')} />
+                                  </div>
+                                );
+                              })}
+                          </li>
+                        )}
+                        {/* Monitoring (Continuous Screening) */}
+                        {!isAnalyst(user) && (
+                          <li>
+                            {match(featuresAccess.continuousScreening)
+                              .with(P.union('allowed', 'test'), () => {
+                                return (
+                                  <SidebarLink
+                                    labelTKey="navigation:continuous_screening"
+                                    to="/continuous-screening"
+                                    Icon={(props) => <Icon icon="scan-eye" {...props} />}
+                                  />
+                                );
+                              })
+                              .otherwise((value) => {
+                                return (
+                                  <div className="text-grey-disabled relative flex gap-sm p-sm">
+                                    <Icon icon="scan-eye" className="size-6 shrink-0" />
+                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
+                                      {t('navigation:continuous_screening')}
+                                    </span>
+                                    <SidebarNudge kind={value} content={t('navigation:continuous_screening.nudge')} />
+                                  </div>
+                                );
+                              })}
+                          </li>
+                        )}
+                        {/* Investigations (Cases) */}
                         <li>
                           <SidebarLink
-                            labelTKey="navigation:detection"
-                            to="/detection"
-                            Icon={(props) => <Icon icon="scenarios" {...props} />}
+                            labelTKey="navigation:case_manager"
+                            to="/cases"
+                            Icon={(props) => <Icon icon="case-manager" {...props} />}
                           />
                         </li>
-                      )}
-                      {/* User Scoring */}
-                      {!isAnalyst(user) && (
-                        <li>
-                          {match(featuresAccess.userScoring)
-                            .with(P.union('allowed', 'test'), () => {
-                              return (
-                                <SidebarLink
-                                  labelTKey="navigation:user_scoring"
-                                  to="/user-scoring"
-                                  Icon={(props) => <Icon icon="123" {...props} />}
-                                />
-                              );
-                            })
-                            .otherwise((value) => {
-                              return (
-                                <div className="text-grey-disabled relative flex gap-sm p-sm">
-                                  <Icon icon="123" className="size-6 shrink-0" />
-                                  <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
-                                    {t('navigation:user_scoring')}
-                                  </span>
-                                  <SidebarNudge kind={value} content={t('navigation:user_scoring.nudge')} />
-                                </div>
-                              );
-                            })}
-                        </li>
-                      )}
-                      {/* Monitoring (Continuous Screening) */}
-                      {!isAnalyst(user) && (
-                        <li>
-                          {match(featuresAccess.continuousScreening)
-                            .with(P.union('allowed', 'test'), () => {
-                              return (
-                                <SidebarLink
-                                  labelTKey="navigation:continuous_screening"
-                                  to="/continuous-screening"
-                                  Icon={(props) => <Icon icon="scan-eye" {...props} />}
-                                />
-                              );
-                            })
-                            .otherwise((value) => {
-                              return (
-                                <div className="text-grey-disabled relative flex gap-sm p-sm">
-                                  <Icon icon="scan-eye" className="size-6 shrink-0" />
-                                  <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
-                                    {t('navigation:continuous_screening')}
-                                  </span>
-                                  <SidebarNudge kind={value} content={t('navigation:continuous_screening.nudge')} />
-                                </div>
-                              );
-                            })}
-                        </li>
-                      )}
-                      {/* Investigations (Cases) */}
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:case_manager"
-                          to="/cases"
-                          Icon={(props) => <Icon icon="case-manager" {...props} />}
-                        />
-                      </li>
-                      {/* Global Search (Screening Search) */}
-                      {featuresAccess.isScreeningSearchAvailable ? (
+                        {/* Global Search (Screening Search) */}
+                        {featuresAccess.isScreeningSearchAvailable ? (
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:screening_search"
+                              to="/screening-search"
+                              Icon={(props) => <Icon icon="search" {...props} />}
+                            />
+                          </li>
+                        ) : null}
+                        {/* Client detail */}
                         <li>
                           <SidebarLink
-                            labelTKey="navigation:screening_search"
-                            to="/screening-search"
-                            Icon={(props) => <Icon icon="search" {...props} />}
+                            labelTKey="navigation:client_detail"
+                            to="/client-detail"
+                            Icon={(props) => <Icon icon="users" {...props} />}
                           />
                         </li>
-                      ) : null}
-                      {/* Client detail */}
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:client_detail"
-                          to="/client-detail"
-                          Icon={(props) => <Icon icon="users" {...props} />}
-                        />
-                      </li>
-                    </ul>
-                  </nav>
-                  {/* Secondary Navigation - Bottom */}
-                  <nav className="p-sm pb-md">
-                    <ul className="flex flex-col gap-sm">
-                      {/* Your Data */}
-                      {!isAnalyst(user) && (
+                      </ul>
+                    </nav>
+                    {/* Secondary Navigation - Bottom */}
+                    <nav className="p-sm pb-md">
+                      <ul className="flex flex-col gap-sm">
+                        {/* Your Data */}
+                        {!isAnalyst(user) && (
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:data"
+                              to="/data"
+                              Icon={(props) => <Icon icon="harddrive" {...props} />}
+                            />
+                          </li>
+                        )}
+                        {/* Settings */}
+                        {featuresAccess.settings.isAvailable ? (
+                          <li>
+                            <SidebarLink
+                              labelTKey="navigation:settings"
+                              to={featuresAccess.settings.to}
+                              Icon={(props) => <Icon icon="settings" {...props} />}
+                            />
+                          </li>
+                        ) : null}
+                        {/* My Account */}
                         <li>
                           <SidebarLink
-                            labelTKey="navigation:data"
-                            to="/data"
-                            Icon={(props) => <Icon icon="harddrive" {...props} />}
+                            labelTKey="navigation:my_account"
+                            to="/account"
+                            Icon={(props) => <Icon icon="user" {...props} />}
                           />
                         </li>
-                      )}
-                      {/* Settings */}
-                      {featuresAccess.settings.isAvailable ? (
-                        <li>
-                          <SidebarLink
-                            labelTKey="navigation:settings"
-                            to={featuresAccess.settings.to}
-                            Icon={(props) => <Icon icon="settings" {...props} />}
-                          />
-                        </li>
-                      ) : null}
-                      {/* My Account */}
-                      <li>
-                        <SidebarLink
-                          labelTKey="navigation:my_account"
-                          to="/account"
-                          Icon={(props) => <Icon icon="user" {...props} />}
-                        />
-                      </li>
-                    </ul>
-                  </nav>
-                </LeftSidebar>
+                      </ul>
+                    </nav>
+                  </LeftSidebar>
 
-                <Outlet />
-                {featuresAccess.isAutoAssignmentAvailable ? <UnavailableBanner /> : null}
+                  <Outlet />
+                  {featuresAccess.isAutoAssignmentAvailable ? <UnavailableBanner /> : null}
+                </div>
               </div>
             </OrganizationObjectTagsContextProvider>
           </OrganizationTagsContextProvider>

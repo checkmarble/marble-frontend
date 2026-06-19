@@ -30,7 +30,11 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(fu
   { className, children, ...props },
   ref,
 ) {
-  return <div>{children}</div>;
+  return (
+    <div ref={ref} className={cn('flex min-w-0 flex-1 flex-col', className)} {...props}>
+      {children}
+    </div>
+  );
 });
 
 const pageDescriptionClassName = cva(
@@ -130,7 +134,7 @@ function PageBackLink({ className: _className, ...props }: React.ComponentProps<
  *     <Page.Header> // Fixed header
  *       ...
  *     </Page.Header>
- *     <Page.Container> // Scrollable container
+ *     <Page.Container> // Content region below the sticky header
  *         <Page.Description> // Optional
  *           ...
  *         </Page.Description>
