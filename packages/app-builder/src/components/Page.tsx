@@ -81,25 +81,42 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
 
 const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
   variants: {
+    padding: {
+      default: 'p-md md:p-lg lg:px-2xl lg:py-lg',
+      compact: 'p-md',
+      none: 'p-0',
+    },
+    width: {
+      fluid: null,
+      readable: 'mx-auto w-full max-w-(--breakpoint-xl)',
+      form: 'mx-auto w-full max-w-(--breakpoint-lg)',
+      table: 'min-w-0 w-full',
+    },
     centered: {
       true: 'mx-auto',
       false: null,
     },
-    paddingLess: {
-      true: 'p-0',
-      false: 'p-lg',
-    },
   },
   defaultVariants: {
-    paddingLess: false,
+    padding: 'default',
+    width: 'fluid',
     centered: false,
   },
 });
 
-type PageContentV2Props = React.ComponentProps<'div'> & VariantProps<typeof PageContentV2ClassName>;
+type PageContentV2Props = React.ComponentProps<'div'> &
+  Omit<VariantProps<typeof PageContentV2ClassName>, 'padding'> & {
+    /** @deprecated Use `padding="none"` instead. */
+    paddingLess?: boolean;
+    padding?: VariantProps<typeof PageContentV2ClassName>['padding'];
+  };
 
-function PageContentV2({ className, centered, paddingLess, ...props }: PageContentV2Props) {
-  return <div className={PageContentV2ClassName({ centered, paddingLess, className })} {...props} />;
+function PageContentV2({ className, centered, paddingLess, padding, width, ...props }: PageContentV2Props) {
+  const resolvedPadding = paddingLess === true ? 'none' : padding;
+
+  return (
+    <div className={PageContentV2ClassName({ centered, padding: resolvedPadding, width, className })} {...props} />
+  );
 }
 
 const pageBack = cva(
@@ -131,18 +148,24 @@ function PageBackLink({ className: _className, ...props }: React.ComponentProps<
  * Example:
  * ```tsx
  * <Page.Main>
- *     <Page.Header> // Fixed header
+ *     <Page.Header> // Sticky header
  *       ...
  *     </Page.Header>
  *     <Page.Container> // Content region below the sticky header
  *         <Page.Description> // Optional
  *           ...
  *         </Page.Description>
- *         <Page.Content> // Main content of the page
+ *         <Page.ContentV2 padding="default" width="readable"> // Main content
  *           ...
- *         </Page.Content>
+ *         </Page.ContentV2>
  *     </Page.Container>
  * </Page.Main>
+ * ```
+ *
+ * `Page.ContentV2` layout variants:
+ * - `padding`: `default` (responsive md/lg/2xl gutters), `compact` (md), `none`
+ * - `width`: `fluid`, `readable` (xl max-width), `form` (lg max-width), `table` (full-width tables)
+ * - `paddingLess` is deprecated; use `padding="none"` instead.
  */
 export const Page = {
   Main: PageMain,
