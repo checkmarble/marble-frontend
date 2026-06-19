@@ -88,8 +88,8 @@ const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
     },
     width: {
       fluid: null,
-      readable: 'mx-auto w-full max-w-(--breakpoint-xl)',
-      form: 'mx-auto w-full max-w-(--breakpoint-lg)',
+      readable: 'w-full max-w-(--breakpoint-xl)',
+      form: 'w-full max-w-(--breakpoint-lg)',
       table: 'min-w-0 w-full',
     },
     centered: {
