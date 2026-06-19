@@ -184,7 +184,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                     {t('cases:sar.modale.cta_choose_file')}
                   </Button>
                   {reportFile ? (
-                    <span className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs.5 py-0.5 text-xs font-medium">
+                    <span className="border-grey-border flex items-center gap-xs rounded-sm border px-xs py-2xs text-xs font-medium">
                       {reportFile.name}
                       <Button
                         variant="secondary"

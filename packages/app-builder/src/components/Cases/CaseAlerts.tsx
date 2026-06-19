@@ -163,7 +163,7 @@ export const AlertCard = ({
                 map((r) => (
                   <span
                     key={r.ruleId || r.name}
-                    className="border-grey-border truncate rounded-sm border px-2xs.5 py-0.5 text-xs font-normal"
+                    className="border-grey-border truncate rounded-sm border px-xs py-2xs text-xs font-normal"
                   >
                     {r.scoreModifier > 0 ? '+' : ''}
                     {r.scoreModifier} {r.name}
@@ -171,7 +171,7 @@ export const AlertCard = ({
                 )),
               )}
               {hitRules.length > MAX_RULES_DISPLAYED ? (
-                <span className="border-grey-border rounded-sm border px-2xs.5 py-0.5 text-xs font-medium">
+                <span className="border-grey-border rounded-sm border px-xs py-2xs text-xs font-medium">
                   +{hitRules.length - MAX_RULES_DISPLAYED}
                 </span>
               ) : null}
@@ -277,7 +277,7 @@ const TriggerFieldsRow = ({
           items={fields.map(renderField)}
           moreButton={(overflow) => (
             <Tooltip.Default content={<div className="flex flex-wrap w-min text-xs">{fields.map(renderField)}</div>}>
-              <span className="border-grey-border ms-xs inline-flex shrink-0 rounded-sm border px-2xs.5 py-2xs text-xs font-medium">
+              <span className="border-grey-border ms-xs inline-flex shrink-0 rounded-sm border px-xs py-2xs text-xs font-medium">
                 +{overflow}
               </span>
             </Tooltip.Default>

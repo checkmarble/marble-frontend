@@ -68,7 +68,7 @@ const releaseMarkdownComponents: Components = {
   li: ({ children }) => <li className="text-s">{children}</li>,
   p: ({ children }) => <p className="text-s mb-sm last:mb-0">{children}</p>,
   code: ({ children }) => (
-    <code className="bg-grey-background [.group\/code-block_&]:bg-transparent text-s font-mono rounded px-2xs py-2xs">
+    <code className="bg-grey-background [.group\/code-block_&]:bg-transparent text-s font-mono rounded px-xs py-2xs">
       {children}
     </code>
   ),

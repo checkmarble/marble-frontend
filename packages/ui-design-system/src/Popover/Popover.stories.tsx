@@ -12,7 +12,7 @@ export default Story;
 export const Primary: StoryFn<typeof Popover.Content> = () => (
   <Popover.Root>
     <Popover.Trigger asChild>
-      <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-md py-2xs text-s">
+      <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-md py-xs text-s">
         Open popover
       </button>
     </Popover.Trigger>
@@ -36,7 +36,7 @@ export const WithAnchor: StoryFn<typeof Popover.Content> = () => (
     </Popover.Anchor>
     <div className="mt-md">
       <Popover.Trigger asChild>
-        <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-md py-2xs text-s">
+        <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-md py-xs text-s">
           Toggle (anchored above)
         </button>
       </Popover.Trigger>
@@ -50,12 +50,12 @@ export const WithAnchor: StoryFn<typeof Popover.Content> = () => (
 export const WithFooter: StoryFn<typeof Popover.Content> = () => (
   <Popover.Root>
     <Popover.Trigger asChild>
-      <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-3 py-1 text-s">
+      <button type="button" className="rounded-sm border border-grey-border bg-surface-elevated px-md py-xs text-s">
         Open scrollable popover
       </button>
     </Popover.Trigger>
     <Popover.Content side="bottom" sideOffset={4} className="w-72 p-0">
-      <div className="flex flex-col gap-2 p-3">
+      <div className="flex flex-col gap-sm p-lg">
         {Array.from({ length: 20 }, (_, index) => (
           <span key={index}>Item {index + 1}</span>
         ))}

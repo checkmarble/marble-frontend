@@ -278,7 +278,7 @@ function SarReportModal({ open, onOpenChange, caseId, report }: SarReportModalPr
                 <div className="text-tiny text-grey-secondary">{t('cases:drop_file_accepted_types')}</div>
               </div>
               {reportFile ? (
-                <span className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs.5 py-0.5 text-xs font-medium">
+                <span className="border-grey-border flex items-center gap-xs rounded-sm border px-xs py-2xs text-xs font-medium">
                   {reportFile.name}
                   <Button
                     variant="secondary"

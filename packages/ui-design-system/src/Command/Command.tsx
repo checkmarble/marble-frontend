@@ -67,7 +67,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={clsx(
-      'text-grey-secondary [&_[cmdk-group-heading]]:text-grey-secondary overflow-hidden p-xs [&_[cmdk-group-heading]]:px-xs [&_[cmdk-group-heading]]:py-2xs.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+      'text-grey-secondary [&_[cmdk-group-heading]]:text-grey-secondary overflow-hidden p-xs [&_[cmdk-group-heading]]:px-xs [&_[cmdk-group-heading]]:py-xs [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       className,
     )}
     {...props}
@@ -92,7 +92,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={clsx(
-      'text-s relative flex cursor-pointer select-none items-center gap-sm rounded-xs px-xs py-2xs.5 outline-hidden data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
+      'text-s relative flex cursor-pointer select-none items-center gap-sm rounded-xs px-xs py-xs outline-hidden data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
       className,
     )}
     {...props}

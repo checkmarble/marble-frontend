@@ -63,7 +63,7 @@ export function BooleanValueFilter({
           </div>
           <div className="flex justify-end">
             <button
-              className={cn('text-s bg-purple-primary text-white rounded-sm px-md py-2xs.5 outline-hidden')}
+              className={cn('text-s bg-purple-primary text-white rounded-sm px-md py-xs outline-hidden')}
               onClick={() => {
                 if (localChecked === 'indeterminate') {
                   emitSet(filter.name, null);

@@ -42,7 +42,7 @@ function PopoverFooter({ children, className }: PopoverFooterProps) {
     <StickyComponent inFlow>
       <div
         className={cn(
-          'sticky bottom-0 z-10 border-t border-transparent bg-surface-card flex justify-end gap-v2-sm p-v2-md sentinel-intersect:border-t-grey-border sentinel-intersect:shadow-sticky-bottom',
+          'sticky bottom-0 z-10 border-t border-transparent bg-surface-card flex justify-end gap-sm p-md sentinel-intersect:border-t-grey-border sentinel-intersect:shadow-sticky-bottom',
           className,
         )}
       >

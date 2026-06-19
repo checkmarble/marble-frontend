@@ -51,7 +51,7 @@ export function CreateCase({ inboxId }: { inboxId: string | null }) {
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-md">
         <form.Field
           name="name"
           validators={{
