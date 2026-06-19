@@ -11,6 +11,8 @@ export type DestinationTableOption = {
 
 export type LinksEditorContextValue = {
   links: LinkValue[];
+  /** Display name of the table whose links are being edited (alias, falling back to name). */
+  sourceTableName: string;
   sourceTableFields: TableField[];
   destinationTableOptions: DestinationTableOption[];
   updateLink: (linkId: string, values: Partial<LinkValue>) => void;

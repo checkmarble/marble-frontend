@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components/Callout';
 import { LinksEditorContext } from '@app-builder/components/Data/shared/LinksEditorContext';
 import { linkRelationTypes } from '@app-builder/models';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
@@ -16,12 +17,38 @@ export function LinkForm({
   errorLinkIds?: ReadonlySet<string>;
   hasError?: boolean;
 }) {
-  const { links, addLink, destinationTableOptions } = LinksEditorContext.useValue();
+  const { links, sourceTableName, addLink, destinationTableOptions } = LinksEditorContext.useValue();
   const { t } = useTranslation(['data']);
   const { isCreateDataModelLinkAvailable } = useDataModelFeatureAccess();
+
+  const tableLabel = sourceTableName.trim() || t('data:upload_data.table_name_fallback');
+
+  // A table can hold several belongs_to links to different parent tables, but a given
+  // record may only belong to one of them. Warn about the arbitrary tie-break when more
+  // than one is configured, listing the fields the owner is looked up from.
+  const belongsToLinks = links.filter((link) => link.relationType === 'belongs_to');
+  const belongsToFieldNames = belongsToLinks.map((link) => link.tableFieldId).filter(Boolean);
+
   return (
     <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'bg-red-primary/5 p-v2-sm')}>
-      <Typo variant="subtitle2">{t('data:upload_data.links_settings')}</Typo>
+      <div className="flex flex-col gap-v2-xs">
+        <Typo variant="subtitle2">{t('data:upload_data.links_title')}</Typo>
+        <p className="text-s text-grey-secondary">
+          {t('data:upload_data.links_description', { tableName: tableLabel })}
+        </p>
+      </div>
+      {belongsToLinks.length > 1 ? (
+        <Callout color="orange" icon="warning" iconColor="orange">
+          <span>
+            {t('data:upload_data.multiple_belongs_to_warning', { tableName: tableLabel })}
+            {belongsToFieldNames.length > 0
+              ? ` ${t('data:upload_data.multiple_belongs_to_warning_fields', {
+                  fields: belongsToFieldNames.join(', '),
+                })}`
+              : null}
+          </span>
+        </Callout>
+      ) : null}
       <div className="flex flex-col gap-v2-md">
         {links.map((link) => (
           <LinkRow key={link.linkId} linkId={link.linkId} compact={compact} hasError={errorLinkIds?.has(link.linkId)} />

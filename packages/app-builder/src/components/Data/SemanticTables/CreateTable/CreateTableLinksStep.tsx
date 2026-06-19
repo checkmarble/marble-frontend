@@ -86,7 +86,15 @@ export function CreateTableLinksStep({
     [form],
   );
 
-  const editorValue = { links, sourceTableFields: fields, destinationTableOptions, updateLink, addLink, removeLink };
+  const editorValue = {
+    links,
+    sourceTableName: tableAlias.trim() || tableName.trim(),
+    sourceTableFields: fields,
+    destinationTableOptions,
+    updateLink,
+    addLink,
+    removeLink,
+  };
 
   return (
     <LinksEditorContext.Provider value={editorValue}>
