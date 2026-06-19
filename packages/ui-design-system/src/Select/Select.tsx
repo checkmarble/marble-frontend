@@ -305,7 +305,7 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
     <MenuCommand.Menu open={open} onOpenChange={handleOpenChange}>
       <MenuCommand.Trigger>
         {variant === 'default' ? (
-          <MenuCommand.SelectButton ref={ref} disabled={disabled} className={className}>
+          <MenuCommand.SelectButton role="combobox" ref={ref} disabled={disabled} className={className}>
             {renderTriggerContent()}
           </MenuCommand.SelectButton>
         ) : (
@@ -346,6 +346,7 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
 
             return (
               <MenuCommand.Item
+                role="option"
                 key={idx}
                 onSelect={() => handleSelect(option.value)}
                 className="group-[[data-size='small']]/menu-command-content:h-6"

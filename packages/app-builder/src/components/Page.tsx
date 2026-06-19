@@ -3,46 +3,27 @@ import { Link } from '@tanstack/react-router';
 import { cva, VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cn, Tooltip } from 'ui-design-system';
+import { CtaV2ClassName, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { StickyComponent } from './ui/StickyComponent';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
-  return <main className={cn('bg-surface-page flex flex-1 flex-col overflow-hidden', className)} {...props} />;
+  return <main className={cn('relative bg-surface-page flex flex-1 flex-col', className)} {...props} />;
 }
 
-/**
- * Used to set the height of the header and the margin-top of the toast
- *
- * They are heavilly linked together, thus the use of the same function
- */
-export const headerHeight = cva(undefined, {
-  variants: {
-    type: {
-      height: 'h-16',
-      mt: 'mt-16',
-    },
-  },
-});
-
-export const headerClassname = cva('text-l relative flex shrink-0 flex-row items-center font-bold px-v2-md', {
-  variants: {
-    color: {
-      white: 'border-b border-b-grey-border bg-surface-card',
-      page: 'bg-surface-page',
-    },
-  },
-  defaultVariants: {
-    color: 'white',
-  },
-});
-
-type PageHeaderProps = React.ComponentProps<'div'> & VariantProps<typeof headerClassname>;
-
-function PageHeader({ className, children, color, ...props }: PageHeaderProps) {
+function PageHeader({ className, children, color, ...props }: React.ComponentProps<'div'>) {
   return (
-    <div className={cn(headerClassname({ color }), headerHeight({ type: 'height' }), className)} {...props}>
-      {children}
-    </div>
+    <StickyComponent sentinelClassName="top-0">
+      <div
+        className={cn(
+          'sticky top-0 z-1 h-12 text-l flex shrink-0 flex-row items-center font-semibold px-v2-md bg-surface-page border-y border-transparent sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    </StickyComponent>
   );
 }
 
@@ -50,15 +31,7 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(fu
   { className, children, ...props },
   ref,
 ) {
-  return (
-    <div
-      ref={ref}
-      className={cn('scrollbar-gutter-stable flex size-full flex-col overflow-y-scroll', className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 });
 
 const pageDescriptionClassName = cva(
@@ -143,10 +116,10 @@ function PageBackButton({ className, ...props }: React.ComponentProps<'button'>)
   );
 }
 
-function PageBackLink({ className, ...props }: React.ComponentProps<typeof Link>) {
+function PageBackLink({ className: _className, ...props }: React.ComponentProps<typeof Link>) {
   return (
-    <Link className={pageBack({ className })} {...props}>
-      <Icon icon="arrow-left" className="size-5 rtl:rotate-180" aria-hidden />
+    <Link className={CtaV2ClassName({ variant: 'secondary', appearance: 'stroked', mode: 'icon' })} {...props}>
+      <Icon icon="arrow-left" className="size-4 rtl:rotate-180" aria-hidden />
     </Link>
   );
 }

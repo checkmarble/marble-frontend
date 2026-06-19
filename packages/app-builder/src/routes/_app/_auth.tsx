@@ -10,7 +10,7 @@ export type AuthPageHandle = {
   alignment?: 'reverse' | 'default';
 };
 
-const layoutClassName = cva('flex size-full bg-[#080525]', {
+const layoutClassName = cva('flex h-screen bg-[#080525]', {
   variants: {
     alignment: {
       reverse: 'flex-row-reverse',

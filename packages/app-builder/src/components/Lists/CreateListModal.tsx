@@ -45,7 +45,7 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
   return (
     <Modal.Root>
       <Modal.Trigger asChild>
-        <Button size="large">
+        <Button size="medium">
           <Icon icon="plus" className="size-5" />
           {t('lists:create_list.title')}
         </Button>

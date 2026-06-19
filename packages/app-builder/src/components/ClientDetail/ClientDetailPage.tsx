@@ -86,7 +86,7 @@ export const ClientDetailPage = ({
   return (
     <DataModelExplorerProvider>
       <Page.Main>
-        <Page.Header className="border-b-0 bg-transparent gap-4">
+        <Page.Header className="gap-4">
           <BackButton back="/client-detail" />
           <TitleBar
             objectType={objectType}

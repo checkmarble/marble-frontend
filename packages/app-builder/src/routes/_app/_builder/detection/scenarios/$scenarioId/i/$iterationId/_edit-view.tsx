@@ -90,7 +90,7 @@ function ScenarioEditLayout() {
           {withEditTag ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
       </Page.Header>
-      <Page.Container className="px-v2-xxxxl py-v2-lg max-w-(--breakpoint-xl) mx-auto">
+      <Page.ContentV2 className="flex flex-col gap-v2-lg max-w-(--breakpoint-xl)">
         {scenarioIteration.archived ? (
           <Callout color="red" icon="warning" className="mb-4">
             {t('scenarios:iteration.archived_message')}
@@ -134,53 +134,47 @@ function ScenarioEditLayout() {
           </section>
         )}
 
-        <Page.ContentV2 paddingLess className="flex flex-col gap-v2-lg my-v2-xxl">
-          {scenarioIteration.archived ? (
-            <ArchivedIterationView rulesMetadata={rulesMetadata} scenarioIteration={scenarioIteration} />
-          ) : (
-            <>
-              <Tabs>
-                <Link
-                  from="/detection/scenarios/$scenarioId/i/$iterationId"
-                  to="./trigger"
-                  className={cn(tabClassName, 'gap-2')}
-                  aria-invalid={hasTriggerErrors(scenarioValidation)}
-                >
-                  <ScenariosLinkIcon
-                    icon="trigger"
-                    withPing={hasTriggerErrors(scenarioValidation)}
-                    className="size-5"
-                  />
-                  <span className="first-letter:capitalize">{t('navigation:scenario.trigger')}</span>
-                </Link>
-                <Link
-                  from="/detection/scenarios/$scenarioId/i/$iterationId"
-                  to="./rules"
-                  className={cn(tabClassName, 'gap-2')}
-                  aria-invalid={hasRulesErrors(scenarioValidation)}
-                >
-                  <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
-                  <span className="first-letter:capitalize">{t('navigation:scenario.rules')}</span>
-                </Link>
-                <Link
-                  from="/detection/scenarios/$scenarioId/i/$iterationId"
-                  to="./decision"
-                  className={cn(tabClassName, 'gap-2')}
-                  aria-invalid={hasDecisionErrors(scenarioValidation)}
-                >
-                  <ScenariosLinkIcon
-                    icon="decision"
-                    withPing={hasDecisionErrors(scenarioValidation)}
-                    className="size-5"
-                  />
-                  <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
-                </Link>
-              </Tabs>
-              <Outlet />
-            </>
-          )}
-        </Page.ContentV2>
-      </Page.Container>
+        {scenarioIteration.archived ? (
+          <ArchivedIterationView rulesMetadata={rulesMetadata} scenarioIteration={scenarioIteration} />
+        ) : (
+          <>
+            <Tabs>
+              <Link
+                from="/detection/scenarios/$scenarioId/i/$iterationId"
+                to="./trigger"
+                className={cn(tabClassName, 'gap-2')}
+                aria-invalid={hasTriggerErrors(scenarioValidation)}
+              >
+                <ScenariosLinkIcon icon="trigger" withPing={hasTriggerErrors(scenarioValidation)} className="size-5" />
+                <span className="first-letter:capitalize">{t('navigation:scenario.trigger')}</span>
+              </Link>
+              <Link
+                from="/detection/scenarios/$scenarioId/i/$iterationId"
+                to="./rules"
+                className={cn(tabClassName, 'gap-2')}
+                aria-invalid={hasRulesErrors(scenarioValidation)}
+              >
+                <ScenariosLinkIcon icon="rules" withPing={hasRulesErrors(scenarioValidation)} className="size-5" />
+                <span className="first-letter:capitalize">{t('navigation:scenario.rules')}</span>
+              </Link>
+              <Link
+                from="/detection/scenarios/$scenarioId/i/$iterationId"
+                to="./decision"
+                className={cn(tabClassName, 'gap-2')}
+                aria-invalid={hasDecisionErrors(scenarioValidation)}
+              >
+                <ScenariosLinkIcon
+                  icon="decision"
+                  withPing={hasDecisionErrors(scenarioValidation)}
+                  className="size-5"
+                />
+                <span className="first-letter:capitalize">{t('navigation:scenario.decision')}</span>
+              </Link>
+            </Tabs>
+            <Outlet />
+          </>
+        )}
+      </Page.ContentV2>
     </Page.Main>
   );
 }

@@ -117,7 +117,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
           </Table.Container>
         </div>
         {!isLoading && !data.length ? (
-          <div className="flex items-center justify-center h-full min-h-40">
+          <div className="flex items-center justify-center py-v2-xl">
             <span className="text-v2-md text-grey-disabled">{t('analytics:no_data')}</span>
           </div>
         ) : null}

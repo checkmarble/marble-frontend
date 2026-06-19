@@ -3,8 +3,8 @@ import { Client360SearchPayload } from '@app-builder/schemas/client360';
 import { Client360Table } from 'marble-api';
 import { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { BreadCrumbs } from '../Breadcrumbs';
 import { Page } from '../Page';
 import { AddConfigurationModal } from './AddConfigurationModal';
 import { SearchForm } from './SearchForm';
@@ -27,39 +27,38 @@ export const ClientDetailSearchPage = ({
 
   return (
     <Page.Main>
-      <Page.Header className="justify-between">
-        <BreadCrumbs />
-        <AddConfigurationModal
-          disabled={!dataModelQuery.isSuccess}
-          tables={tables}
-          dataModel={dataModelQuery.data?.dataModel ?? []}
-        />
-      </Page.Header>
-      <Page.Container>
-        <Page.ContentV2 paddingLess={tables.length === 0}>
-          {/* TODO: Must change to Callout when new component is done */}
-          {tables.length === 0 ? (
-            <div className="bg-background-light border-b border-grey-border px-v2-xl py-v2-md flex items-center gap-v2-sm">
-              <Icon icon="tip" className="size-5" />
-              <span>{t('client360:client_detail.search_page.no_configuration')}</span>
-            </div>
-          ) : (
-            <div className="grid grid-cols-[1fr_40px_1fr] gap-v2-lg border border-grey-border rounded-lg p-v2-md bg-surface-card">
-              {tables.map((table, idx) => {
-                return (
-                  <Fragment key={table.id}>
-                    <SearchForm table={table} />
-                    {idx < tables.length - 1 && idx % 2 === 0 ? (
-                      <div className="text-center self-center pt-6">{t('common:or')}</div>
-                    ) : null}
-                  </Fragment>
-                );
-              })}
-            </div>
-          )}
-          {currentSearchPayload ? <SearchResults payload={currentSearchPayload} tables={tables} /> : null}
-        </Page.ContentV2>
-      </Page.Container>
+      <Page.ContentV2>
+        <div className="flex justify-between mb-v2-md">
+          <div className="text-h1 font-semibold">{t('client360:client_detail.search_page.breadcrumb')}</div>
+          <AddConfigurationModal
+            disabled={!dataModelQuery.isSuccess}
+            tables={tables}
+            dataModel={dataModelQuery.data?.dataModel ?? []}
+          />
+        </div>
+
+        {/* TODO: Must change to Callout when new component is done */}
+        {tables.length === 0 ? (
+          <Card className="flex items-center gap-v2-sm">
+            <Icon icon="tip" className="size-5" />
+            <span>{t('client360:client_detail.search_page.no_configuration')}</span>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-[1fr_40px_1fr] gap-v2-lg border border-grey-border rounded-lg p-v2-md bg-surface-card">
+            {tables.map((table, idx) => {
+              return (
+                <Fragment key={table.id}>
+                  <SearchForm table={table} />
+                  {idx < tables.length - 1 && idx % 2 === 0 ? (
+                    <div className="text-center self-center pt-6">{t('common:or')}</div>
+                  ) : null}
+                </Fragment>
+              );
+            })}
+          </div>
+        )}
+        {currentSearchPayload ? <SearchResults payload={currentSearchPayload} tables={tables} /> : null}
+      </Page.ContentV2>
     </Page.Main>
   );
 };

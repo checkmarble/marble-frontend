@@ -4,7 +4,6 @@ import { isAnalyst } from '@app-builder/models';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
-import { Icon } from 'ui-icons';
 
 const detectionLayoutLoader = createServerFn()
   .middleware([authMiddleware])
@@ -23,7 +22,6 @@ export const Route = createFileRoute('/_app/_builder/detection')({
         const { t } = useTranslation(['navigation']);
         return (
           <BreadCrumbLink to="/detection" isLast={isLast}>
-            <Icon icon="scenarios" className="me-2 size-6" />
             {t('navigation:detection')}
           </BreadCrumbLink>
         );

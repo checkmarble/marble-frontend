@@ -40,7 +40,7 @@ export function EditListModal({ listId, name, description }: { listId: string; n
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
         <Button variant="secondary" appearance="stroked">
-          <Icon icon="edit-square" className="size-5" />
+          <Icon icon="edit-square" className="size-4" />
           <p>{t('lists:edit_list.button')}</p>
         </Button>
       </Modal.Trigger>

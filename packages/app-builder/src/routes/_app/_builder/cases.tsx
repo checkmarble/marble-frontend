@@ -5,7 +5,6 @@ import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-mo
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
-import { Icon } from 'ui-icons';
 
 const casesLayoutLoader = createServerFn()
   .middleware([authMiddleware])
@@ -25,7 +24,6 @@ export const Route = createFileRoute('/_app/_builder/cases')({
         const { t } = useTranslation(['navigation']);
         return (
           <BreadCrumbLink to="/cases" isLast={isLast}>
-            <Icon icon="case-manager" className="me-2 size-6" />
             {t('navigation:case_manager')}
           </BreadCrumbLink>
         );
