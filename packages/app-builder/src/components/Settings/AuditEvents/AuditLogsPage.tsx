@@ -72,56 +72,54 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
   );
 
   return (
-    <Page.Container>
-      <Page.ContentV2 className="gap-md bg-surface-page">
-        <div className="flex flex-col gap-md relative">
-          {/* Title Row */}
-          <div className="flex justify-between items-center">
-            <Typo variant="title1">{t('settings:audit.audit_logs_section')}</Typo>
-          </div>
+    <Page.ContentV2 width="table" className="gap-md bg-surface-page">
+      <div className="flex flex-col gap-md relative">
+        {/* Title Row */}
+        <div className="flex justify-between items-center">
+          <Typo variant="title1">{t('settings:audit.audit_logs_section')}</Typo>
+        </div>
 
-          {/* Filters Row */}
-          <div className="flex items-center gap-sm">
-            <AuditEventsFiltersBar
-              filters={activeFilters}
-              availableFilters={availableFilters}
-              updateFilters={parsedQuery.update}
-              apiKeys={apiKeys}
-            />
-          </div>
-
-          {/* Table */}
-          {match(auditEventsQuery)
-            .with({ isPending: true }, () => (
-              <div className="border border-grey-border rounded-md">
-                <div className="h-13 border-b border-grey-border"></div>
-                <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
-                  <Spinner className="size-12" />
-                </div>
-              </div>
-            ))
-            .with({ isError: true }, () => (
-              <div className="border-red-disabled bg-red-background text-red-primary mt-md rounded-sm border p-lg flex flex-col gap-sm items-center">
-                <span>{t('common:errors.unknown')}</span>
-                <Button variant="secondary" onClick={() => auditEventsQuery.refetch()}>
-                  {t('common:retry')}
-                </Button>
-              </div>
-            ))
-            .with({ isSuccess: true }, () => <AuditEventsTable auditEvents={auditEvents} apiKeys={apiKeys} />)
-            .exhaustive()}
-
-          {/* Pagination */}
-          <PaginationRow
-            hasNextPage={auditEventsQuery.hasNextPage ?? false}
-            hasPreviousPage={false}
-            currentLimit={limit}
-            onNextPage={() => auditEventsQuery.fetchNextPage()}
-            onPreviousPage={() => undefined}
-            setLimit={handleSetLimit}
+        {/* Filters Row */}
+        <div className="flex items-center gap-sm">
+          <AuditEventsFiltersBar
+            filters={activeFilters}
+            availableFilters={availableFilters}
+            updateFilters={parsedQuery.update}
+            apiKeys={apiKeys}
           />
         </div>
-      </Page.ContentV2>
-    </Page.Container>
+
+        {/* Table */}
+        {match(auditEventsQuery)
+          .with({ isPending: true }, () => (
+            <div className="border border-grey-border rounded-md">
+              <div className="h-13 border-b border-grey-border"></div>
+              <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
+                <Spinner className="size-12" />
+              </div>
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="border-red-disabled bg-red-background text-red-primary mt-md rounded-sm border p-lg flex flex-col gap-sm items-center">
+              <span>{t('common:errors.unknown')}</span>
+              <Button variant="secondary" onClick={() => auditEventsQuery.refetch()}>
+                {t('common:retry')}
+              </Button>
+            </div>
+          ))
+          .with({ isSuccess: true }, () => <AuditEventsTable auditEvents={auditEvents} apiKeys={apiKeys} />)
+          .exhaustive()}
+
+        {/* Pagination */}
+        <PaginationRow
+          hasNextPage={auditEventsQuery.hasNextPage ?? false}
+          hasPreviousPage={false}
+          currentLimit={limit}
+          onNextPage={() => auditEventsQuery.fetchNextPage()}
+          onPreviousPage={() => undefined}
+          setLimit={handleSetLimit}
+        />
+      </div>
+    </Page.ContentV2>
   );
 };

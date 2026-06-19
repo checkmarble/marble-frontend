@@ -415,7 +415,7 @@ function Upload() {
             {t('upload:upload_callout_2')}
           </p>
         </Page.Description>
-        <Page.Content>
+        <Page.ContentV2>
           <div className="flex">
             <ClientOnly fallback={<LoadingButton />}>
               <a
@@ -437,7 +437,7 @@ function Upload() {
           {uploadLogs.length > 0 ? (
             <PastUploads uploadLogs={uploadLogs} onRefresh={handleRefresh} isFetching={isFetching} />
           ) : null}
-        </Page.Content>
+        </Page.ContentV2>
       </Page.Container>
     </Page.Main>
   );

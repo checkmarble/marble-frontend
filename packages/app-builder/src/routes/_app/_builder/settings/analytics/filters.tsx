@@ -251,54 +251,52 @@ function Filters() {
   };
 
   return (
-    <Page.Container>
-      <Page.Content>
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:filters-settings')}</span>
-            <CreateFilter
-              dataModel={dataModel}
-              triggerFieldItems={triggerFieldItems}
-              linkedFieldItems={linkedFieldItems}
+    <Page.ContentV2 width="readable">
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:filters-settings')}</span>
+          <CreateFilter
+            dataModel={dataModel}
+            triggerFieldItems={triggerFieldItems}
+            linkedFieldItems={linkedFieldItems}
+          />
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content className="flex flex-col h-full">
+          <div className="flex flex-col gap-md flex-1 min-h-0">
+            <Table.Container {...getContainerProps()} className="flex-1 min-h-0">
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {tableRows.map((row) => (
+                  <Table.Row key={row.id} row={row} className="hover:bg-purple-background-light group" />
+                ))}
+              </Table.Body>
+            </Table.Container>
+          </div>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+      <Modal.Root open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <Modal.Content size="medium">
+          <Modal.Title>{t('settings:filters.delete_filter.title')}</Modal.Title>
+          <Modal.Description className="p-lg text-left">
+            {t('settings:filters.delete_filter.content')}
+          </Modal.Description>
+          <Modal.Footer>
+            <Modal.FooterButton
+              isCloseButton
+              variant="secondary"
+              label={t('common:cancel')}
+              onClick={() => setIsConfirmOpen(false)}
             />
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content className="flex flex-col h-full">
-            <div className="flex flex-col gap-md flex-1 min-h-0">
-              <Table.Container {...getContainerProps()} className="flex-1 min-h-0">
-                <Table.Header headerGroups={table.getHeaderGroups()} />
-                <Table.Body {...getBodyProps()}>
-                  {tableRows.map((row) => (
-                    <Table.Row key={row.id} row={row} className="hover:bg-purple-background-light group" />
-                  ))}
-                </Table.Body>
-              </Table.Container>
-            </div>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-        <Modal.Root open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-          <Modal.Content size="medium">
-            <Modal.Title>{t('settings:filters.delete_filter.title')}</Modal.Title>
-            <Modal.Description className="p-lg text-left">
-              {t('settings:filters.delete_filter.content')}
-            </Modal.Description>
-            <Modal.Footer>
-              <Modal.FooterButton
-                isCloseButton
-                variant="secondary"
-                label={t('common:cancel')}
-                onClick={() => setIsConfirmOpen(false)}
-              />
-              <Modal.FooterButton
-                variant="destructive"
-                label={t('settings:filters.delete_filter')}
-                onClick={handleDeleteFilter}
-                leadingIcon="delete"
-                isLoading={deleteFilterMutation.isPending}
-              />
-            </Modal.Footer>
-          </Modal.Content>
-        </Modal.Root>
-      </Page.Content>
-    </Page.Container>
+            <Modal.FooterButton
+              variant="destructive"
+              label={t('settings:filters.delete_filter')}
+              onClick={handleDeleteFilter}
+              leadingIcon="delete"
+              isLoading={deleteFilterMutation.isPending}
+            />
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
+    </Page.ContentV2>
   );
 }

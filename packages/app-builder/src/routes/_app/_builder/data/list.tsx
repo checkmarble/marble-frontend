@@ -44,7 +44,7 @@ function DataList() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
-      <Page.Content className="min-h-0 flex-1">
+      <Page.ContentV2 width="fluid" className="min-h-0 flex-1">
         {isEmpty ? (
           <EmptyHeader onCreateTable={handleOpenCreateDrawer} />
         ) : (
@@ -67,7 +67,7 @@ function DataList() {
             </ClientOnly>
           </div>
         )}
-      </Page.Content>
+      </Page.ContentV2>
 
       <CreateTableDrawer
         open={isCreateDrawerOpen}

@@ -74,60 +74,53 @@ export const ScreeningProvidersSettingsPage = ({
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:screening_providers')}</span>
-            <Button
-              variant="secondary"
-              appearance="stroked"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSubmitError(null);
-                form.reset();
-              }}
-            >
-              {t('settings:screening_providers.reset')}
-            </Button>
-            <Button
-              variant="primary"
-              type="submit"
-              form="screening-providers-form"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {t('settings:screening_providers.save')}
-            </Button>
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Callout color="red" icon="error" iconColor="red" className="mb-md">
-              {submitError}
-            </Callout>
-            <form
-              onSubmit={handleSubmit(form)}
-              className="grid grid-cols-[300px_1fr] gap-sm items-center"
-              id="screening-providers-form"
-            >
-              {SCREENING_FEATURES.map((feature) => (
-                <form.Field key={feature.name} name={feature.name}>
-                  {(field) => (
-                    <>
-                      <span className="text-s text-grey-primary">{t(feature.labelKey)}</span>
-                      <SelectV2
-                        value={field.state.value}
-                        onChange={field.handleChange}
-                        options={providerOptions}
-                        placeholder={t('settings:screening_providers.provider.opensanctions')}
-                        className="w-fit"
-                      />
-                    </>
-                  )}
-                </form.Field>
-              ))}
-            </form>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-      </Page.Content>
-    </Page.Container>
+    <Page.ContentV2 width="readable">
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:screening_providers')}</span>
+          <Button
+            variant="secondary"
+            appearance="stroked"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSubmitError(null);
+              form.reset();
+            }}
+          >
+            {t('settings:screening_providers.reset')}
+          </Button>
+          <Button variant="primary" type="submit" form="screening-providers-form" onClick={(e) => e.stopPropagation()}>
+            {t('settings:screening_providers.save')}
+          </Button>
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Callout color="red" icon="error" iconColor="red" className="mb-md">
+            {submitError}
+          </Callout>
+          <form
+            onSubmit={handleSubmit(form)}
+            className="grid grid-cols-[300px_1fr] gap-sm items-center"
+            id="screening-providers-form"
+          >
+            {SCREENING_FEATURES.map((feature) => (
+              <form.Field key={feature.name} name={feature.name}>
+                {(field) => (
+                  <>
+                    <span className="text-s text-grey-primary">{t(feature.labelKey)}</span>
+                    <SelectV2
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      options={providerOptions}
+                      placeholder={t('settings:screening_providers.provider.opensanctions')}
+                      className="w-fit"
+                    />
+                  </>
+                )}
+              </form.Field>
+            ))}
+          </form>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+    </Page.ContentV2>
   );
 };

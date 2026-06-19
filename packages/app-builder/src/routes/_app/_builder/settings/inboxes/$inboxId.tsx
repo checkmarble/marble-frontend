@@ -199,88 +199,84 @@ function Inbox() {
   const nonInboxUsers = orgUsers.filter((user) => !inbox.users?.some((u) => u.userId === user.userId));
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:inboxes.inbox_details.title')}</span>
-            {isEditInboxAvailable ? (
-              <UpdateInbox
-                inbox={inbox}
-                escalationInboxes={escalationInboxes}
-                redirectRoutePath="/settings/inboxes/$inboxId"
-                isAutoAssignmentAvailable={isAutoAssignmentAvailable}
-              />
-            ) : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-4">
-              <span className="font-bold">{t('settings:inboxes.name')}</span>
-              {inbox.name}
-              <span className="font-bold">{t('settings:inboxes.inbox_details.case_count')}</span>
-              {caseCount}
-              <span className="font-bold">{t('settings:inboxes.inbox_details.escalation_inbox')}</span>
-              {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
-              <span className="font-bold flex items-center gap-sm">
-                {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
-                {!isAutoAssignmentAvailable ? (
-                  <Nudge
-                    className="size-5"
-                    kind="restricted"
-                    content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
-                      defaultValue: 'N/A',
-                    })}
-                  />
-                ) : null}
-              </span>
-              <span className={cn({ 'blur-xs': !isAutoAssignmentAvailable })}>
-                {inbox.autoAssignEnabled
-                  ? t('settings:inboxes.inbox_details.auto_assign_enabled')
-                  : t('settings:inboxes.inbox_details.auto_assign_disabled')}
-              </span>
-            </div>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
+    <Page.ContentV2 width="readable">
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:inboxes.inbox_details.title')}</span>
+          {isEditInboxAvailable ? (
+            <UpdateInbox
+              inbox={inbox}
+              escalationInboxes={escalationInboxes}
+              redirectRoutePath="/settings/inboxes/$inboxId"
+              isAutoAssignmentAvailable={isAutoAssignmentAvailable}
+            />
+          ) : null}
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-4">
+            <span className="font-bold">{t('settings:inboxes.name')}</span>
+            {inbox.name}
+            <span className="font-bold">{t('settings:inboxes.inbox_details.case_count')}</span>
+            {caseCount}
+            <span className="font-bold">{t('settings:inboxes.inbox_details.escalation_inbox')}</span>
+            {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
+            <span className="font-bold flex items-center gap-sm">
+              {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+              {!isAutoAssignmentAvailable ? (
+                <Nudge
+                  className="size-5"
+                  kind="restricted"
+                  content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
+                    defaultValue: 'N/A',
+                  })}
+                />
+              ) : null}
+            </span>
+            <span className={cn({ 'blur-xs': !isAutoAssignmentAvailable })}>
+              {inbox.autoAssignEnabled
+                ? t('settings:inboxes.inbox_details.auto_assign_enabled')
+                : t('settings:inboxes.inbox_details.auto_assign_disabled')}
+            </span>
+          </div>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
 
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:inboxes.inbox_details.members')}</span>
-            {isCreateInboxUserAvailable ? (
-              <CreateInboxUser
-                inboxId={inbox.id}
-                users={nonInboxUsers}
-                inboxUserRoles={inboxUserRoles}
-                access={entitlements.userRoles}
-                isAutoAssignmentAvailable={isAutoAssignmentAvailable}
-              />
-            ) : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Table.Container {...getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={table.getHeaderGroups()} />
-              <Table.Body {...getBodyProps()}>
-                {rows.map((row) => {
-                  return <Table.Row key={row.id} row={row} />;
-                })}
-              </Table.Body>
-            </Table.Container>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:inboxes.inbox_details.members')}</span>
+          {isCreateInboxUserAvailable ? (
+            <CreateInboxUser
+              inboxId={inbox.id}
+              users={nonInboxUsers}
+              inboxUserRoles={inboxUserRoles}
+              access={entitlements.userRoles}
+              isAutoAssignmentAvailable={isAutoAssignmentAvailable}
+            />
+          ) : null}
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Table.Container {...getContainerProps()} className="max-h-96">
+            <Table.Header headerGroups={table.getHeaderGroups()} />
+            <Table.Body {...getBodyProps()}>
+              {rows.map((row) => {
+                return <Table.Row key={row.id} row={row} />;
+              })}
+            </Table.Body>
+          </Table.Container>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
 
-        {isDeleteInboxAvailable ? (
-          caseCount === 0 ? (
-            <DeleteInbox inbox={inbox} />
-          ) : (
-            <Tooltip.Default
-              content={<p className="p-sm">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>}
-            >
-              <span className="w-fit">
-                <DeleteInbox inbox={inbox} disabled />
-              </span>
-            </Tooltip.Default>
-          )
-        ) : null}
-      </Page.Content>
-    </Page.Container>
+      {isDeleteInboxAvailable ? (
+        caseCount === 0 ? (
+          <DeleteInbox inbox={inbox} />
+        ) : (
+          <Tooltip.Default content={<p className="p-sm">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>}>
+            <span className="w-fit">
+              <DeleteInbox inbox={inbox} disabled />
+            </span>
+          </Tooltip.Default>
+        )
+      ) : null}
+    </Page.ContentV2>
   );
 }

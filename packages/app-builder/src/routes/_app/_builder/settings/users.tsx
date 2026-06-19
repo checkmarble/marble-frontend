@@ -154,28 +154,26 @@ function Users() {
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:users')}</span>
-            {isCreateUserAvailable ? (
-              <CreateUser orgId={user.organizationId} access={entitlements.userRoles} userRoles={userRoles} />
-            ) : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Table.Container {...getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={table.getHeaderGroups()} />
-              <Table.Body {...getBodyProps()}>
-                {rows.map((row) => {
-                  return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
-                })}
-              </Table.Body>
-            </Table.Container>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-      </Page.Content>
-    </Page.Container>
+    <Page.ContentV2 width="readable">
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:users')}</span>
+          {isCreateUserAvailable ? (
+            <CreateUser orgId={user.organizationId} access={entitlements.userRoles} userRoles={userRoles} />
+          ) : null}
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Table.Container {...getContainerProps()} className="max-h-96">
+            <Table.Header headerGroups={table.getHeaderGroups()} />
+            <Table.Body {...getBodyProps()}>
+              {rows.map((row) => {
+                return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
+              })}
+            </Table.Body>
+          </Table.Container>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+    </Page.ContentV2>
   );
 }
 
