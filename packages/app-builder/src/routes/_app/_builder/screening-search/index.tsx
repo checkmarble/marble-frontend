@@ -66,38 +66,36 @@ function ScreeningSearchIndexPage() {
 
   return (
     <Page.Main>
-      <Page.Container>
-        <Page.ContentV2 className="h-full gap-md">
-          <div className="flex items-center justify-between">
-            <Typo variant="title1">{t('navigation:screening_search')}</Typo>
-            <div className="flex items-center gap-sm">
-              {hasResults && (
-                <PrintView
-                  title={t('screenings:print.title')}
-                  trigger={
-                    <Button variant="secondary">
-                      <Icon icon="download" className="size-4" />
-                      {t('screenings:print.open_print_view')}
-                    </Button>
-                  }
-                >
-                  <PrintHeader title={t('screenings:print.title')} userName={userName} />
-                  <PrintSearchSummary searchInputs={searchState.inputs} />
-                  <PrintResults results={searchState.results} />
-                </PrintView>
-              )}
-              {searchState?.searchId && (
-                <Button variant="secondary" onClick={handleSaveSearch} disabled={saveSearchMutation.isPending}>
-                  <Icon icon="save" className="size-4" />
-                  {t('screenings:freeform_search.save.button')}
-                </Button>
-              )}
-              <ViewSavedResults />
-            </div>
+      <Page.ContentV2 className="h-full gap-md">
+        <div className="flex items-center justify-between">
+          <Typo variant="title1">{t('navigation:screening_search')}</Typo>
+          <div className="flex items-center gap-sm">
+            {hasResults && (
+              <PrintView
+                title={t('screenings:print.title')}
+                trigger={
+                  <Button variant="secondary">
+                    <Icon icon="download" className="size-4" />
+                    {t('screenings:print.open_print_view')}
+                  </Button>
+                }
+              >
+                <PrintHeader title={t('screenings:print.title')} userName={userName} />
+                <PrintSearchSummary searchInputs={searchState.inputs} />
+                <PrintResults results={searchState.results} />
+              </PrintView>
+            )}
+            {searchState?.searchId && (
+              <Button variant="secondary" onClick={handleSaveSearch} disabled={saveSearchMutation.isPending}>
+                <Icon icon="save" className="size-4" />
+                {t('screenings:freeform_search.save.button')}
+              </Button>
+            )}
+            <ViewSavedResults />
           </div>
-          <FreeformSearchPage onSearchComplete={handleSearchComplete} listConfig={listConfig.filters} />
-        </Page.ContentV2>
-      </Page.Container>
+        </div>
+        <FreeformSearchPage onSearchComplete={handleSearchComplete} listConfig={listConfig.filters} />
+      </Page.ContentV2>
     </Page.Main>
   );
 }

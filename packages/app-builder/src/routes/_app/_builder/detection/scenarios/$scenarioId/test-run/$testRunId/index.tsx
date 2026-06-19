@@ -107,17 +107,15 @@ function TestRun() {
         ) : null}
       </Page.Header>
 
-      <Page.Container>
-        <Page.Content className="flex max-w-(--breakpoint-lg) flex-col gap-xl">
-          <TestRunDetails {...run} iterations={iterations} creator={creator} />
-          <Await promise={decisionsPromise} fallback={<DistributionOfDecisionChartSkeleton />}>
-            {(decisions) => <DistributionOfDecisionChart versions={versions} decisions={decisions} />}
-          </Await>
-          <Await promise={rulesPromise} fallback={<FilterTransactionByDecisionSkeleton />}>
-            {(rules) => <FilterTransactionByDecision versions={versions} rules={rules} />}
-          </Await>
-        </Page.Content>
-      </Page.Container>
+      <Page.ContentV2 width="form" className="flex flex-col gap-xl">
+        <TestRunDetails {...run} iterations={iterations} creator={creator} />
+        <Await promise={decisionsPromise} fallback={<DistributionOfDecisionChartSkeleton />}>
+          {(decisions) => <DistributionOfDecisionChart versions={versions} decisions={decisions} />}
+        </Await>
+        <Await promise={rulesPromise} fallback={<FilterTransactionByDecisionSkeleton />}>
+          {(rules) => <FilterTransactionByDecision versions={versions} rules={rules} />}
+        </Await>
+      </Page.ContentV2>
     </Page.Main>
   );
 }

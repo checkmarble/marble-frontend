@@ -50,7 +50,7 @@ export const CreationPage = ({ name, description }: { name: string; description:
             <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:creation.stepper.${stepName}`)} />
           </Page.Header>
           <Page.Container>
-            <Page.ContentV2 paddingLess>
+            <Page.ContentV2 padding="none">
               <CreationContent />
             </Page.ContentV2>
           </Page.Container>

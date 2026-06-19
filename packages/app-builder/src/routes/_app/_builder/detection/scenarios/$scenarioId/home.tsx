@@ -114,7 +114,7 @@ function ScenarioHome() {
           <ScenarioHeader isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} scenario={currentScenario} />
         </div>
       </Page.Header>
-      <Page.ContentV2 className="flex flex-col gap-lg max-w-(--breakpoint-xl)">
+      <Page.ContentV2 width="readable" className="flex flex-col gap-lg">
         {currentScenario.archived ? (
           <Callout color="red" icon="warning" className="mb-md">
             {t('scenarios:archived_scenario_banner')}
