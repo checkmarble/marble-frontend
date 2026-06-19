@@ -19,7 +19,7 @@ import {
 } from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { forwardRef, type ReactElement, ReactNode, useRef, useState } from 'react';
+import { forwardRef, isValidElement, type ReactElement, ReactNode, useRef, useState } from 'react';
 import { Icon, IconName } from 'ui-icons';
 import { MenuCommand } from '../MenuCommand/MenuCommand';
 import Tag from '../Tag/Tag';
@@ -204,6 +204,7 @@ export type SelectOption<T> = {
 type SelectV2BaseProps<T, O extends SelectOption<T>> = {
   options: O[];
   placeholder: string;
+  'aria-label'?: string;
   disabled?: boolean;
   className?: string;
   displayedValue?: (option: O) => string;
@@ -233,6 +234,16 @@ function renderOptionLabel<T, O extends SelectOption<T>>(option: O, displayedVal
   return typeof option.label === 'function' ? option.label() : option.label;
 }
 
+function getNodeText(node: ReactNode): string | null {
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) {
+    const text = node.map(getNodeText).filter(Boolean).join('');
+    return text.length > 0 ? text : null;
+  }
+  if (isValidElement<{ children?: ReactNode }>(node)) return getNodeText(node.props.children);
+  return null;
+}
+
 function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
   props: SelectV2Props<T, O>,
   ref: React.ForwardedRef<HTMLButtonElement>,
@@ -246,6 +257,7 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
     selectedIcon,
     variant = 'default',
     menuClassName,
+    'aria-label': ariaLabel,
   } = props;
 
   const [open, setOpen] = useState(false);
@@ -301,15 +313,37 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
     return <span>{singleValueLabel ?? placeholder}</span>;
   };
 
+  const triggerAccessibleName =
+    ariaLabel ??
+    (props.multiple
+      ? (selectedOptions
+          ?.map((option) => getNodeText(renderOptionLabel(option, displayedValue)))
+          .filter(Boolean)
+          .join(', ') ??
+          '') ||
+        placeholder
+      : (getNodeText(singleValueLabel) ?? placeholder));
+
   return (
     <MenuCommand.Menu open={open} onOpenChange={handleOpenChange}>
       <MenuCommand.Trigger>
         {variant === 'default' ? (
-          <MenuCommand.SelectButton role="combobox" ref={ref} disabled={disabled} className={className}>
+          <MenuCommand.SelectButton
+            role="combobox"
+            aria-label={triggerAccessibleName}
+            ref={ref}
+            disabled={disabled}
+            className={className}
+          >
             {renderTriggerContent()}
           </MenuCommand.SelectButton>
         ) : (
-          <button ref={ref} disabled={disabled} className={cn('flex gap-v2-xxs items-center', className)}>
+          <button
+            ref={ref}
+            aria-label={triggerAccessibleName}
+            disabled={disabled}
+            className={cn('flex gap-v2-xxs items-center', className)}
+          >
             {props.multiple && selectedOptions && selectedOptions.length > 0 ? (
               <Tag color="purple">
                 <span className="flex items-center">

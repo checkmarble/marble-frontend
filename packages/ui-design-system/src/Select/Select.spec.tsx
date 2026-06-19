@@ -34,7 +34,7 @@ describe('Select', () => {
 
     render(<TestSelect />);
 
-    const combobox = screen.getByRole('button', { name: 'Select a value...' });
+    const combobox = screen.getByRole('combobox', { name: 'Select a value...' });
 
     expect(within(combobox).getByText('Select a value...')).toBeInTheDocument();
 
@@ -43,7 +43,7 @@ describe('Select', () => {
     fruits.forEach((fruit) => expect(screen.getByText(fruit)).toBeInTheDocument());
     await userEvent.click(screen.getByText('apple'));
 
-    expect(screen.getByText('apple')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'apple' })).toBeInTheDocument();
     expect(mockedOnValueChanged).toHaveBeenCalledWith('apple');
   });
 });
