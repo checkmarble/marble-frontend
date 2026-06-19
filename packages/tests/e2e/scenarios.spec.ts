@@ -15,7 +15,7 @@ async function createScenarioAndGoToRules(page: import('@playwright/test').Page)
   await dialog.getByRole('textbox', { name: 'Description' }).fill('DESC');
   await waitForThen(
     page,
-    dialog.getByRole('button', { name: 'Select a trigger object' }),
+    dialog.getByRole('combobox', { name: 'Select a trigger object' }),
     async (box) => await box.click(),
   );
   await waitForThen(page, page.getByRole('option', { name: 'transactions' }), async (option) => await option.click());
@@ -81,7 +81,7 @@ test('Create a simple scenario', async ({ page }) => {
 
   await waitForThen(
     page,
-    dialog.getByRole('button', { name: 'Select a trigger object' }),
+    dialog.getByRole('combobox', { name: 'Select a trigger object' }),
     async (box) => await box.click(),
   );
 

@@ -30,11 +30,11 @@ async function createCase(page: import('@playwright/test').Page, inboxName: stri
   await panel.waitFor();
   await panel.getByPlaceholder('Enter a name').fill(caseName);
 
-  // Opened from /cases/inboxes/:id, CaseRightPanel pre-fills inboxId — SelectV2
-  // then shows the inbox name on the trigger, not the "Select an Inbox" placeholder.
-  const preselectedInbox = panel.getByRole('button', { name: inboxName });
+  // Opened from /cases/inboxes/:id, CreateCase pre-fills inboxId — SelectV2 then
+  // exposes the inbox name as the combobox accessible name (placeholder is empty).
+  const preselectedInbox = panel.getByRole('combobox', { name: inboxName });
   if ((await preselectedInbox.count()) === 0) {
-    await panel.getByRole('button', { name: 'Select an Inbox' }).click();
+    await panel.getByRole('combobox').click();
     await page.getByRole('option', { name: inboxName }).first().click();
   }
 
