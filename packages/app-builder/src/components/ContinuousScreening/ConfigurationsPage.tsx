@@ -85,7 +85,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
             .with(P.nullish, () => null)
             .with(P.array(), (configurations) =>
               configurations.length === 0 ? (
-                <div className="flex flex-col gap-sm items-center justify-center py-2xs0 border border-grey-border rounded-lg bg-surface-card">
+                <div className="flex flex-col gap-sm items-center justify-center py-2xl border border-grey-border rounded-lg bg-surface-card">
                   <Icon icon="scan-eye" className="size-10 text-purple-primary" />
                   <span>{t('continuousScreening:configurations.list.empty')}</span>
                   {canEdit ? (

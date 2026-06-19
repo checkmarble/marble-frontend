@@ -45,10 +45,10 @@ const ScrollableTemplate: StoryFn<typeof Modal> = (args) => (
     </Modal.Trigger>
     <Modal.Content>
       <Modal.Title>Scrollable modal</Modal.Title>
-      <Modal.Description className="text-grey-secondary text-small px-6 pb-4 text-center">
+      <Modal.Description className="text-grey-secondary text-small px-lg pb-mf text-center">
         Scroll the content to see sticky header and footer borders appear and disappear.
       </Modal.Description>
-      <div className="flex flex-col gap-4 p-6">
+      <div className="flex flex-col gap-md p-lg">
         {Array.from({ length: 30 }, (_, index) => (
           <p key={index}>Content line {index + 1}</p>
         ))}
@@ -71,7 +71,7 @@ const LoadingFooterTemplate: StoryFn<typeof Modal> = (args) => (
     </Modal.Trigger>
     <Modal.Content>
       <Modal.Title>Delete item</Modal.Title>
-      <Modal.Description className="text-grey-secondary text-small px-6 pb-4">
+      <Modal.Description className="text-grey-secondary text-small px-lg pb-md">
         Footer buttons with loading spinners keep enabled colors for contrast.
       </Modal.Description>
       <Modal.Footer>

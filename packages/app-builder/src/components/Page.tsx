@@ -15,7 +15,7 @@ function PageHeader({ className, children, color, ...props }: React.ComponentPro
     <StickyComponent sentinelClassName="top-0">
       <div
         className={cn(
-          'sticky top-0 z-1 h-12 text-l flex shrink-0 flex-row items-center font-semibold px-v2-md bg-surface-page border-y border-transparent sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
+          'sticky top-0 z-1 h-12 text-l flex shrink-0 flex-row items-center font-semibold px-md bg-surface-page border-y border-transparent sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
           className,
         )}
         {...props}

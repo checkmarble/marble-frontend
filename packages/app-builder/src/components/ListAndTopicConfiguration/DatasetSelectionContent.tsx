@@ -150,7 +150,7 @@ export function DatasetSelectionContent({ useCase, onApply, onCancel }: DatasetS
                 className="w-fit min-w-[500px] max-w-[60vw] p-0"
               >
                 <SectionPanel sectionKey={activeSectionKey} section={activeSection} sectionCount={sections.length} />
-                <Popover.Footer className="flex gap-2 p-4">
+                <Popover.Footer className="flex gap-sm p-md">
                   <Button
                     type="button"
                     variant="secondary"

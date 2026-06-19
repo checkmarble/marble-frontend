@@ -98,7 +98,7 @@ export function DeleteTableModal({ table, onDeleted, children, open, onOpenChang
       <Modal.Content>
         <Modal.Title>{t('data:delete_table.title', { name: table.name })}</Modal.Title>
         {report ? (
-          <div className="flex flex-col gap-4 overflow-y-auto p-6">
+          <div className="flex flex-col gap-md overflow-y-auto p-lg">
             {isBlocked ? (
               <BlockedDeletionContent report={report} entityType={'table'} entityName={table.name} t={t} />
             ) : hasArchivedIterations ? (
@@ -108,7 +108,7 @@ export function DeleteTableModal({ table, onDeleted, children, open, onOpenChang
             )}
 
             {!isBlocked ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-sm">
                 <label htmlFor="delete-confirmation" className="text-s text-grey-primary">
                   {t('data:delete.type_to_confirm', { text: table.name })}
                 </label>
@@ -171,10 +171,10 @@ function DraftDeletionContent({
   t: TFunction;
 }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <p className="text-s text-grey-primary">{t('data:delete.drafts_linked', { name: entityName })}</p>
 
-      <ul className="text-s text-grey-primary list-disc pl-4">
+      <ul className="text-s text-grey-primary list-disc ps-md">
         {report.archivedIterations.map((iteration) => (
           <li key={iteration.id}>{iteration.label}</li>
         ))}
@@ -205,27 +205,27 @@ function BlockedDeletionContent({
   const activeScenarioIterations = allScenarioIterations.filter(([, iteration]) => !iteration.draft);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <p className="text-s text-grey-primary">{t('data:delete.active_scenarios_linked', { name: entityName })}</p>
 
       {/* Draft scenario iterations that need modification */}
       {draftScenarioIterations.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           <Callout color="purple" icon="lightbulb">
             {t('data:delete.draft_scenarios_need_modification', {
               count: draftScenarioIterations.length,
             })}
           </Callout>
-          <ul className="text-s text-grey-primary list-disc pl-4">
+          <ul className="text-s text-grey-primary list-disc ps-md">
             {draftScenarioIterations.map(([iterationId, iteration]) => {
               const shortId = fromUUIDtoSUUID(iteration.scenarioId);
               return (
-                <li key={iterationId} className="flex items-center gap-2">
+                <li key={iterationId} className="flex items-center gap-sm">
                   <span>{iteration.name}</span>
                   <Link
                     to="/detection/scenarios/$scenarioId"
                     params={{ scenarioId: shortId }}
-                    className="text-purple-primary text-s flex items-center gap-1 hover:underline"
+                    className="text-purple-primary text-s flex items-center gap-xs hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -241,22 +241,22 @@ function BlockedDeletionContent({
 
       {/* Active scenario iterations that need modification */}
       {activeScenarioIterations.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           <Callout color="purple" icon="lightbulb">
             {t('data:delete.active_scenarios_need_modification', {
               count: activeScenarioIterations.length,
             })}
           </Callout>
-          <ul className="text-s text-grey-primary list-disc pl-4">
+          <ul className="text-s text-grey-primary list-disc ps-md">
             {activeScenarioIterations.map(([iterationId, iteration]) => {
               const shortId = fromUUIDtoSUUID(iteration.scenarioId);
               return (
-                <li key={iterationId} className="flex items-center gap-2">
+                <li key={iterationId} className="flex items-center gap-sm">
                   <span>{iteration.name}</span>
                   <Link
                     to="/detection/scenarios/$scenarioId"
                     params={{ scenarioId: shortId }}
-                    className="text-purple-primary text-s flex items-center gap-1 hover:underline"
+                    className="text-purple-primary text-s flex items-center gap-xs hover:underline"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -272,13 +272,13 @@ function BlockedDeletionContent({
 
       {/* Archived iterations (will be archived on deletion) */}
       {hasArchivedIterations ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           <Callout color="purple" icon="lightbulb">
             {t('data:delete.drafts_will_be_archived', {
               count: archivedIterations.length,
             })}
           </Callout>
-          <ul className="text-s text-grey-primary list-disc pl-4">
+          <ul className="text-s text-grey-primary list-disc ps-md">
             {archivedIterations.map((iteration) => (
               <li key={iteration.id}>{iteration.label}</li>
             ))}
@@ -288,11 +288,11 @@ function BlockedDeletionContent({
 
       {/* Scenarios using this as trigger object */}
       {conflicts.scenarios.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           <p className="text-s text-grey-primary font-medium">{t('data:delete.scenarios_using_trigger')}</p>
-          <ul className="text-s text-grey-primary list-disc pl-4">
+          <ul className="text-s text-grey-primary list-disc ps-md">
             {conflicts.scenarios.map((scenario) => (
-              <li key={scenario.id} className="flex items-center gap-2">
+              <li key={scenario.id} className="flex items-center gap-sm">
                 <span>{scenario.label}</span>
                 <ScenarioLink item={scenario} />
               </li>
@@ -303,11 +303,11 @@ function BlockedDeletionContent({
 
       {/* Workflows using this resource */}
       {conflicts.workflows.length > 0 ? (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-sm">
           <p className="text-s text-grey-primary font-medium">{t('data:delete.workflows_affected')}</p>
-          <ul className="text-s text-grey-primary list-disc pl-4">
+          <ul className="text-s text-grey-primary list-disc ps-md">
             {conflicts.workflows.map((workflow) => (
-              <li key={workflow.id} className="flex items-center gap-2">
+              <li key={workflow.id} className="flex items-center gap-sm">
                 <span>{workflow.label}</span>
                 <ScenarioLink item={workflow} />
               </li>
@@ -367,7 +367,7 @@ function ScenarioLink({ item }: { item: DestroyDataModelReportRef }) {
     <Link
       to="/detection/scenarios/$scenarioId"
       params={{ scenarioId: shortId }}
-      className="text-purple-primary text-s flex items-center gap-1 hover:underline"
+      className="text-purple-primary text-s flex items-center gap-xs hover:underline"
       target="_blank"
       rel="noopener noreferrer"
     >
