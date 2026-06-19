@@ -83,7 +83,7 @@ function Scenarios() {
   return (
     <Page.Content width="readable">
       <form
-        className="flex flex-col gap-xl"
+        className="flex flex-col gap-md"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
