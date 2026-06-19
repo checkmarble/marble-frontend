@@ -27,7 +27,7 @@ export const ClientDetailSearchPage = ({
 
   return (
     <Page.Main>
-      <Page.ContentV2>
+      <Page.ContentV2 className="gap-md">
         <div className="flex justify-between mb-md">
           <div className="text-h1 font-semibold">{t('client360:client_detail.search_page.breadcrumb')}</div>
           <AddConfigurationModal

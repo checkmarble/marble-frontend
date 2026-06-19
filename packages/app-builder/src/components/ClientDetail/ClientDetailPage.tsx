@@ -97,7 +97,7 @@ export const ClientDetailPage = ({
           />
         </Page.Header>
         <Page.Container ref={containerRef}>
-          <Page.ContentV2 className="gap-lg">
+          <Page.ContentV2 width="table" className="gap-lg">
             {/* Client details */}
             <div className="flex gap-md">
               {/* Score card */}

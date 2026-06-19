@@ -54,7 +54,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
       <div
         ref={ref}
         className={cn(
-          'flex items-center justify-between sticky bottom-0 bg-surface-page -mx-lg -mb-lg pt-md px-lg pb-lg border-t border-transparent',
+          'flex items-center justify-between sticky bottom-0 bg-surface-page -mx-md md:-mx-lg lg:-mx-2xl -mb-md md:-mb-lg lg:-mb-lg pt-md px-md md:px-lg lg:px-2xl pb-md md:pb-lg lg:pb-lg border-t border-transparent',
           className,
         )}
       >

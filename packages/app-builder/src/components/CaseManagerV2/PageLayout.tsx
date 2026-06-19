@@ -124,7 +124,7 @@ export function CaseManagerPageLayout({
         </div>
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 className="px-lg relative">
+        <Page.ContentV2 className="relative">
           <div className="flex justify-between mb-lg">
             <Tabs>
               <Link className={tabClassName} from="/cases/s/$caseId" to="./principal">
