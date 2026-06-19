@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Select } from 'ui-design-system';
+import { SelectV2 } from 'ui-design-system';
 
 const options = ['seconds', 'minutes', 'hours', 'days'] as const;
 export type DurationUnit = (typeof options)[number];
@@ -13,23 +13,19 @@ export function DurationUnitSelect({ value, disabled, onChange }: DurationUnitSe
   const { t } = useTranslation(['scenarios']);
 
   return (
-    <Select.Default
+    <SelectV2<DurationUnit | undefined>
       disabled={disabled}
       value={value ?? undefined}
-      onValueChange={(selectedValue: DurationUnit) => {
-        if (selectedValue === null) return;
+      onChange={(selectedValue) => {
+        if (selectedValue === undefined) return;
         onChange(selectedValue);
       }}
       placeholder="..."
       className="min-w-fit"
-    >
-      {options.map((option) => (
-        <Select.Item key={option} value={option}>
-          <Select.ItemText>
-            <span className="text-s text-grey-primary">{t(`scenarios:edit_date.duration_unit_${option}`)}</span>
-          </Select.ItemText>
-        </Select.Item>
-      ))}
-    </Select.Default>
+      options={options.map((option) => ({
+        label: <span className="text-s text-grey-primary">{t(`scenarios:edit_date.duration_unit_${option}`)}</span>,
+        value: option,
+      }))}
+    />
   );
 }

@@ -1,10 +1,9 @@
-import { LoadingIcon } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useRevokeWebhookSecretMutation } from '@app-builder/queries/settings/webhooks/revoke-webhook-secret';
 import { type ReactElement, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 export function RevokeWebhookSecret({
   webhookId,
@@ -61,15 +60,14 @@ function RevokeWebhookSecretContent({
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="destructive" type="submit" onClick={handleRevoke} disabled={revokeMutation.isPending}>
-          <LoadingIcon icon="delete" className="size-5" loading={revokeMutation.isPending} />
-          {t('settings:webhooks.revoke_secret')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('settings:webhooks.revoke_secret')}
+          type="submit"
+          onClick={handleRevoke}
+          disabled={revokeMutation.isPending}
+          leadingIcon="delete"
+        />
       </Modal.Footer>
     </>
   );

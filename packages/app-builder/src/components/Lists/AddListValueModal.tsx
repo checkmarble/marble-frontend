@@ -95,23 +95,20 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
             </form.Field>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button
-                type="button"
-                variant="secondary"
-                appearance="stroked"
-                key="cancel"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsOpen(false);
-                }}
-              >
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="primary" type="submit" key="create">
-              {t('common:save')}
-            </Button>
+            <Modal.FooterButton
+              isCloseButton
+              label={t('common:cancel')}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsOpen(false);
+              }}
+            />
+            <Modal.FooterButton
+              variant="primary"
+              type="submit"
+              label={t('common:save')}
+              isLoading={addListValueMutation.isPending}
+            />
           </Modal.Footer>
         </form>
       </Modal.Content>

@@ -63,19 +63,13 @@ function ArchiveScenarioContent({
         </p>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button className="flex-1" variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button
-          className="flex-1"
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('scenarios:archive_scenario.button')}
           variant="destructive"
-          disabled={archiveScenarioMutation.isPending}
           onClick={handleArchiveScenario}
-        >
-          {t('scenarios:archive_scenario.button')}
-        </Button>
+          isLoading={archiveScenarioMutation.isPending}
+        />
       </Modal.Footer>
     </>
   );

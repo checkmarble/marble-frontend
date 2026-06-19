@@ -1,7 +1,6 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { LoadingIcon } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   type CreateWebhookSecretPayload,
@@ -13,7 +12,7 @@ import { useForm } from '@tanstack/react-form';
 import { type ReactElement, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 export function CreateWebhookSecret({ webhookId, children }: { webhookId: string; children: ReactElement }) {
   const [open, setOpen] = useState(false);
@@ -93,15 +92,13 @@ function CreateWebhookSecretContent({ webhookId, onSuccess }: { webhookId: strin
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" disabled={createMutation.isPending}>
-          <LoadingIcon icon="plus" className="size-5" loading={createMutation.isPending} />
-          {t('settings:webhooks.create_secret')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('settings:webhooks.create_secret')}
+          type="submit"
+          isLoading={createMutation.isPending}
+          leadingIcon="plus"
+        />
       </Modal.Footer>
     </form>
   );

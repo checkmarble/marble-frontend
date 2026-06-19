@@ -7,7 +7,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Nudge } from '../Nudge';
 
@@ -100,23 +100,27 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
                 {(field) => (
                   <div className="flex flex-1 flex-col gap-2">
                     <FormLabel name={field.name}>{t('lists:kind')}</FormLabel>
-                    <Select.Default
+                    <SelectV2
                       className="w-full overflow-hidden"
-                      defaultValue={field.state.value}
-                      onValueChange={(e) => {
-                        field.handleChange(e as 'text' | 'cidrs');
-                      }}
-                    >
-                      <Select.DefaultItem key="text" value="text">
-                        {t('lists:kind.text')}
-                      </Select.DefaultItem>
-                      <Select.Item key="cidrs" value="cidrs" className="min-h-10" disabled={!isIpGpsAvailable}>
-                        <div className="flex w-full items-center gap-2">
-                          <Select.ItemText>{t('lists:kind.cidrs')}</Select.ItemText>
-                          {!isIpGpsAvailable ? <Nudge kind="restricted" content={t('common:premium')} /> : null}
-                        </div>
-                      </Select.Item>
-                    </Select.Default>
+                      value={field.state.value}
+                      onChange={(value) => field.handleChange(value)}
+                      placeholder={t('lists:kind')}
+                      options={[
+                        {
+                          label: t('lists:kind.text'),
+                          value: 'text' as const,
+                        },
+                        {
+                          label: (
+                            <span className="flex w-full items-center gap-2">
+                              <span>{t('lists:kind.cidrs')}</span>
+                              {!isIpGpsAvailable ? <Nudge kind="restricted" content={t('common:premium')} /> : null}
+                            </span>
+                          ),
+                          value: 'cidrs' as const,
+                        },
+                      ].filter((option) => isIpGpsAvailable || option.value !== 'cidrs')}
+                    />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
@@ -124,14 +128,13 @@ export function CreateListModal({ isIpGpsAvailable }: { isIpGpsAvailable: boolea
             </div>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button type="button" variant="secondary" appearance="stroked">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="primary" type="submit" name="create">
-              {t('lists:create_list.button_accept')}
-            </Button>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            <Modal.FooterButton
+              label={t('lists:create_list.button_accept')}
+              type="submit"
+              name="create"
+              isLoading={createListMutation.isPending}
+            />
           </Modal.Footer>
         </form>
       </Modal.Content>

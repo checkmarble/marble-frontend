@@ -397,6 +397,8 @@
   "overview.workflow.case_escalated": "Investigation escaladée vers cette boîte de réception",
   "overview.workflow.manual_request": "Revue manuelle",
   "pick_file_cta": "Sélectionner un fichier",
+  "reopen-case.modal.callout": "Êtes-vous sûr de vouloir rouvrir l'investigation ?",
+  "reopen-case.modal.submit-button.label": "Rouvrir",
   "required_actions.decide_final_status": "Définir le statut final",
   "required_actions.review_screening_hits": "Examiner les filtrages de listes ({{count}})",
   "required_actions.see_screening_hits": "Voir les filtrages de listes ({{count}})",

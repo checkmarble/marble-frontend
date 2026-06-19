@@ -1,9 +1,8 @@
-import { LoadingIcon } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteWebhookMutation } from '@app-builder/queries/settings/webhooks/delete-webhook';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 
 export function DeleteWebhook({ webhookId, children }: { webhookId: string; children: React.ReactElement }) {
   const [open, setOpen] = React.useState(false);
@@ -42,21 +41,16 @@ function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onS
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('common:delete')}
           variant="destructive"
           type="submit"
           name="create"
           onClick={handleDeleteWebhook}
           disabled={deleteWebhookMutation.isPending}
-        >
-          <LoadingIcon icon="delete" className="size-5" loading={deleteWebhookMutation.isPending} />
-          {t('common:delete')}
-        </Button>
+          leadingIcon="delete"
+        />
       </Modal.Footer>
     </>
   );

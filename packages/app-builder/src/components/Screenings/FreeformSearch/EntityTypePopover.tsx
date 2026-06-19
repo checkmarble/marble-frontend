@@ -1,11 +1,19 @@
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { tryCatch } from '@app-builder/utils/tryCatch';
-import * as Popover from '@radix-ui/react-popover';
 import CountryFlag from 'country-flag-emojis';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, cn, formatCountryName, Input, SelectCountry, SelectCountryValue, Tag } from 'ui-design-system';
+import {
+  Button,
+  cn,
+  formatCountryName,
+  Input,
+  Popover,
+  SelectCountry,
+  SelectCountryValue,
+  Tag,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { setAdditionalFields } from '../set-additional-fields';
@@ -51,43 +59,41 @@ export const EntityTypePopover = ({ disabled }: EntityTypePopoverProps) => {
             </Tag>
           </div>
         </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Content
-            className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
-            sideOffset={4}
-            align="start"
-          >
-            {/* Entity type list */}
-            <div className="max-h-[300px] overflow-y-auto p-2">
-              {schemas.map((schema) => {
-                const schemaKey = schema.toLowerCase();
-                const fieldForSchema = SEARCH_ENTITIES[schema].fields;
-                const isSelected = value === schema;
+        <Popover.Content
+          className="bg-surface-card border-grey-border z-50 flex w-[400px] flex-col rounded-lg border shadow-lg"
+          sideOffset={4}
+          align="start"
+        >
+          {/* Entity type list */}
+          <div className="max-h-[300px] overflow-y-auto p-2">
+            {schemas.map((schema) => {
+              const schemaKey = schema.toLowerCase();
+              const fieldForSchema = SEARCH_ENTITIES[schema].fields;
+              const isSelected = value === schema;
 
-                return (
-                  <button
-                    key={schema}
-                    type="button"
-                    onClick={() => handleSelect(schema)}
-                    className={cn(
-                      'text-s flex w-full items-center gap-2 rounded px-3 py-2 text-left',
-                      isSelected ? 'bg-purple-background-light text-purple-primary' : 'hover:bg-grey-background-light',
-                    )}
-                  >
-                    <div className="flex flex-1 flex-col">
-                      <span className="font-medium">{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
-                      <span className="text-grey-placeholder text-xs">
-                        {t('screenings:refine_modal.search_by')}{' '}
-                        {fieldForSchema.map((f) => t(`screenings:entity.property.${f}`)).join(', ')}
-                      </span>
-                    </div>
-                    {isSelected && <Icon icon="tick" className="text-purple-primary size-4" />}
-                  </button>
-                );
-              })}
-            </div>
-          </Popover.Content>
-        </Popover.Portal>
+              return (
+                <button
+                  key={schema}
+                  type="button"
+                  onClick={() => handleSelect(schema)}
+                  className={cn(
+                    'text-s flex w-full items-center gap-2 rounded px-3 py-2 text-left',
+                    isSelected ? 'bg-purple-background-light text-purple-primary' : 'hover:bg-grey-background-light',
+                  )}
+                >
+                  <div className="flex flex-1 flex-col">
+                    <span className="font-medium">{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
+                    <span className="text-grey-placeholder text-xs">
+                      {t('screenings:refine_modal.search_by')}{' '}
+                      {fieldForSchema.map((f) => t(`screenings:entity.property.${f}`)).join(', ')}
+                    </span>
+                  </div>
+                  {isSelected && <Icon icon="tick" className="text-purple-primary size-4" />}
+                </button>
+              );
+            })}
+          </div>
+        </Popover.Content>
       </Popover.Root>
       {hasSelection && <AdditionalEntityTypePopover disabled={disabled} openRequest={additionalFieldsOpenRequest} />}
     </div>
@@ -244,28 +250,16 @@ function AdditionalEntityTypePopover({ disabled, openRequest }: { disabled: bool
               />
             );
           })}
-          {/* Actions */}
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="primary"
-              size="medium"
-              className="w-full justify-center"
-              onClick={handleApply}
-            >
-              {t('screenings:freeform_search.apply')}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="medium"
-              className="w-full justify-center"
-              onClick={handleCancel}
-            >
-              {t('common:cancel')}
-            </Button>
-          </div>
         </div>
+        <Popover.Footer>
+          {/* Actions */}
+          <Button type="button" variant="secondary" size="large" onClick={handleCancel}>
+            {t('common:cancel')}
+          </Button>
+          <Button type="button" variant="primary" size="large" onClick={handleApply}>
+            {t('screenings:freeform_search.apply')}
+          </Button>
+        </Popover.Footer>
       </Popover.Content>
     </Popover.Root>
   );

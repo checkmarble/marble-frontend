@@ -247,12 +247,7 @@ const ResultModal = ({
           </div>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="primary">
-              <Icon icon="tick" className="size-5" />
-              {t('common:understand')}
-            </Button>
-          </Modal.Close>
+          <Modal.FooterButton isCloseButton variant="secondary" label={t('common:understand')} leadingIcon="tick" />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

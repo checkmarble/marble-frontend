@@ -170,6 +170,8 @@
  * ======================================== */
 @variant dark (&:where(.dark, .dark *));
 
+@custom-variant sentinel-intersect ([data-sentinel][data-intersect] + &);
+
 .dark {
   /* ========================================
    * SEMANTIC SURFACE TOKENS - Dark mode

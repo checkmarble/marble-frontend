@@ -1,7 +1,6 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
   UpdateScenarioPayload,
@@ -121,15 +120,8 @@ function UpdateScenarioContent({
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button className="flex-1" variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? <Spinner className="size-4" /> : null}
-          {t('common:save')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton label={t('common:save')} type="submit" isLoading={isSubmitting} />
       </Modal.Footer>
     </form>
   );

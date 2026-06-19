@@ -3,7 +3,6 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { DataModel } from '@app-builder/models';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
@@ -20,7 +19,7 @@ import { useHydrated } from '@tanstack/react-router';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateScenario({ children }: { children: React.ReactElement }) {
@@ -156,23 +155,19 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
                     </Ariakit.Hovercard>
                   </Ariakit.HovercardProvider>
                 </FormLabel>
-                <Select.Default
+                <SelectV2
                   placeholder={t('scenarios:create_scenario.trigger_object_placeholder')}
-                  defaultValue={field.state.value}
-                  onValueChange={(value) => {
+                  value={field.state.value}
+                  onChange={(value) => {
                     field.handleChange(value);
                     field.handleBlur();
                   }}
-                >
-                  {dataModel.map((tableName) => {
-                    return (
-                      <Select.DefaultItem key={tableName.name} value={tableName.name}>
-                        {tableName.name}
-                      </Select.DefaultItem>
-                    );
-                  })}
-                  {dataModel.length === 0 ? <p>{t('scenarios:create_scenario.no_trigger_object')}</p> : null}
-                </Select.Default>
+                  options={dataModel.map((tableName) => ({
+                    label: tableName.name,
+                    value: tableName.name,
+                  }))}
+                />
+                {dataModel.length === 0 ? <p>{t('scenarios:create_scenario.no_trigger_object')}</p> : null}
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
@@ -180,15 +175,8 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? <Spinner className="size-4" /> : null}
-          {t('common:save')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton label={t('common:save')} type="submit" isLoading={isSubmitting} />
       </Modal.Footer>
     </form>
   );

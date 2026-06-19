@@ -8,11 +8,10 @@ import {
   syncSharpDatasets,
 } from '@app-builder/components/ListAndTopicConfiguration';
 import { useListConfigQuery } from '@app-builder/queries/screening/lists-config';
-import * as Popover from '@radix-ui/react-popover';
 import { useStore } from '@tanstack/react-form';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Switch, Tag, ThresholdRange } from 'ui-design-system';
+import { Button, Popover, Switch, Tag, ThresholdRange } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { useFormManuallSearch } from './FreeformSearchForm';
@@ -116,51 +115,37 @@ export const LimitPopover = ({
           </span>
         </button>
       </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content
-          className="bg-surface-card border-grey-border z-50 flex w-[300px] flex-col rounded-lg border shadow-lg"
-          sideOffset={4}
-          align="start"
-        >
-          <div className="flex flex-col gap-2 p-4">
-            {availableGlobalTopicConfigs.map((config) => (
-              <GlobalTopicSwitch key={config.groupKey} config={config} />
-            ))}
-            <ThresholdRange
-              defaultDescription={t('screenings:freeform_search.limit_description')}
-              value={value}
-              onChange={(nextValue) => setDraftLimit(nextValue)}
-              values={LIMIT_OPTIONS.map((option) => ({
-                value: option,
-                color: 'var(--color-purple-primary)',
-              }))}
-              initialColor="var(--color-purple-primary)"
-              max={LIMIT_OPTIONS.at(-1)}
-            />
-          </div>
-          <div className="border-grey-border flex gap-2 border-t p-4">
-            <Button
-              type="button"
-              variant="secondary"
-              size="medium"
-              className="flex-1 justify-center"
-              onClick={handleCancel}
-            >
-              {t('common:cancel')}
-            </Button>
+      <Popover.Content
+        className="bg-surface-card border-grey-border z-50 flex w-[300px] flex-col rounded-lg border shadow-lg"
+        sideOffset={4}
+        align="start"
+      >
+        <div className="flex flex-col gap-2 p-4">
+          {availableGlobalTopicConfigs.map((config) => (
+            <GlobalTopicSwitch key={config.groupKey} config={config} />
+          ))}
+          <ThresholdRange
+            defaultDescription={t('screenings:freeform_search.limit_description')}
+            value={value}
+            onChange={(nextValue) => setDraftLimit(nextValue)}
+            values={LIMIT_OPTIONS.map((option) => ({
+              value: option,
+              color: 'var(--color-purple-primary)',
+            }))}
+            initialColor="var(--color-purple-primary)"
+            max={LIMIT_OPTIONS.at(-1)}
+          />
+        </div>
+        <Popover.Footer>
+          <Button type="button" variant="secondary" size="large" onClick={handleCancel}>
+            {t('common:cancel')}
+          </Button>
 
-            <Button
-              type="button"
-              variant="primary"
-              size="medium"
-              className="flex-1 justify-center"
-              onClick={handleApply}
-            >
-              {t('screenings:freeform_search.apply')}
-            </Button>
-          </div>
-        </Popover.Content>
-      </Popover.Portal>
+          <Button type="button" variant="primary" size="large" onClick={handleApply}>
+            {t('screenings:freeform_search.apply')}
+          </Button>
+        </Popover.Footer>
+      </Popover.Content>
     </Popover.Root>
   );
 };

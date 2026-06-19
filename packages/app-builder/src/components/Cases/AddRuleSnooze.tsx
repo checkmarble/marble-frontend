@@ -3,7 +3,6 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { LoadingIcon } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { adaptDateTimeFieldCodes, type DurationUnit } from '@app-builder/models/duration';
 import {
@@ -20,7 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal, Select, TextArea } from 'ui-design-system';
+import { Modal, SelectV2, TextArea } from 'ui-design-system';
 
 export function AddRuleSnooze({
   decisionId,
@@ -180,19 +179,18 @@ function AddRuleSnoozeContent({
             {(field) => (
               <div className="row-span-full grid grid-rows-subgrid gap-2">
                 <FormLabel name={field.name}>{t('cases:case_detail.add_rule_snooze.duration_unit')}</FormLabel>
-                <Select.Default
+                <SelectV2
                   className="h-10 w-full"
-                  defaultValue={field.state.value}
-                  onValueChange={(unit) =>
+                  value={field.state.value}
+                  onChange={(unit) =>
                     field.handleChange(unit as Exclude<DurationUnit, 'seconds' | 'years' | 'minutes' | 'months'>)
                   }
-                >
-                  {durationUnitOptions.map((unit) => (
-                    <Select.DefaultItem key={unit} value={unit}>
-                      {dateTimeFieldNames.of(adaptDateTimeFieldCodes(unit))}
-                    </Select.DefaultItem>
-                  ))}
-                </Select.Default>
+                  placeholder={t('cases:case_detail.add_rule_snooze.duration_unit')}
+                  options={durationUnitOptions.map((unit) => ({
+                    label: dateTimeFieldNames.of(adaptDateTimeFieldCodes(unit)),
+                    value: unit,
+                  }))}
+                />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
@@ -200,15 +198,13 @@ function AddRuleSnoozeContent({
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" name="update">
-          <LoadingIcon icon="snooze" className="size-5" loading={addRuleSnoozeMutation.isPending} />
-          {t('cases:decisions.rule.snooze')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('cases:decisions.rule.snooze')}
+          type="submit"
+          name="update"
+          isLoading={addRuleSnoozeMutation.isPending}
+        />
       </Modal.Footer>
     </form>
   );

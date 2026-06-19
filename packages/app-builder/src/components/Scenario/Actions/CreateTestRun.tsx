@@ -229,14 +229,8 @@ function CreateTestRunToContent({
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button className="flex-1" type="button" variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button className="flex-1" variant="primary" type="submit">
-          {t('common:save')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton label={t('common:save')} type="submit" isLoading={createTestRunMutation.isPending} />
       </Modal.Footer>
     </form>
   );

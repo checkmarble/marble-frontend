@@ -48,7 +48,7 @@ export const OpenCase = ({ id }: { id: string }) => {
         <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
         <form onSubmit={handleSubmit(form)}>
           <div className="flex flex-col gap-8 p-8">
-            <Callout>Are you sure you want to re-open the case ?</Callout>
+            <Callout>{t('cases:reopen-case.modal.callout')}</Callout>
             <form.Field
               name="comment"
               validators={{
@@ -73,12 +73,8 @@ export const OpenCase = ({ id }: { id: string }) => {
             </form.Field>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button type="submit">Re-Open</Button>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            <Modal.FooterButton label={t('cases:reopen-case.modal.submit-button.label')} type="submit" />
           </Modal.Footer>
         </form>
       </Modal.Content>

@@ -14,7 +14,7 @@ export function Spinner({ className }: SpinnerProps) {
       <span
         aria-hidden
         className={clsx(
-          'border-purple-background border-r-purple-primary box-border shrink-0 animate-spin rounded-full border-2 border-solid',
+          'border-purple-background border-r-purple-primary box-border shrink-0 animate-spin rounded-full border-2 border-solid inline-block',
           className,
         )}
       />

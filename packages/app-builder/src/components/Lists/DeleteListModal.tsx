@@ -49,15 +49,14 @@ export function DeleteListModal({ listId }: { listId: string }) {
             </div>
           </div>
           <Modal.Footer>
-            <Modal.Close asChild>
-              <Button variant="secondary" appearance="stroked">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button variant="destructive" type="submit" name="delete">
-              <Icon icon="delete" className="size-5" />
-              {t('common:delete')}
-            </Button>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            <Modal.FooterButton
+              label={t('common:delete')}
+              type="submit"
+              name="delete"
+              variant="destructive"
+              leadingIcon="delete"
+            />
           </Modal.Footer>
         </form>
       </Modal.Content>

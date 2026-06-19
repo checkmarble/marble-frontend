@@ -2,7 +2,7 @@ import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorCon
 import { useDeleteUserMutation } from '@app-builder/queries/settings/users/delete-user';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DeleteUser({ userId, currentUserId }: { userId: string; currentUserId?: string }) {
@@ -58,21 +58,14 @@ const DeleteUserContent = ({ userId, onSuccess }: { userId: string; onSuccess: (
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('common:delete')}
           variant="destructive"
-          type="submit"
-          name="delete"
           onClick={handleDeleteUser}
           disabled={deleteUserMutation.isPending}
-        >
-          <Icon icon="delete" className="size-5" />
-          {t('common:delete')}
-        </Button>
+          leadingIcon="delete"
+        />
       </Modal.Footer>
     </>
   );

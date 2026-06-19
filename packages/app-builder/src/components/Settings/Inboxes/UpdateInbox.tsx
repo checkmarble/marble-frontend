@@ -199,14 +199,13 @@ export function UpdateInboxContent({
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" type="button">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" name="update" disabled={updateInboxMutation.isPending}>
-          {t('common:save')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('common:save')}
+          type="submit"
+          name="update"
+          disabled={updateInboxMutation.isPending}
+        />
       </Modal.Footer>
     </form>
   );

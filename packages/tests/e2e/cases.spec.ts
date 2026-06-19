@@ -25,12 +25,19 @@ async function createCase(page: import('@playwright/test').Page, inboxName: stri
   await page.locator('[data-test="create-case-trigger"]').click();
 
   // Scope all form interactions to the right panel (Radix Dialog) — the inbox
-  // page also has a top-level inbox filter combobox we'd otherwise collide with.
+  // page also has a top-level inbox filter select we'd otherwise collide with.
   const panel = page.getByRole('dialog');
   await panel.waitFor();
   await panel.getByPlaceholder('Enter a name').fill(caseName);
-  await panel.getByRole('combobox').click();
-  await page.getByRole('option', { name: inboxName }).first().click();
+
+  // Opened from /cases/inboxes/:id, CreateCase pre-fills inboxId — SelectV2 then
+  // exposes the inbox name as the combobox accessible name (placeholder is empty).
+  const preselectedInbox = panel.getByRole('combobox', { name: inboxName });
+  if ((await preselectedInbox.count()) === 0) {
+    await panel.getByRole('combobox').click();
+    await page.getByRole('option', { name: inboxName }).first().click();
+  }
+
   await panel.getByRole('button', { name: 'Create a new case' }).click();
 
   // Create-case redirects to /cases/s/:caseId (scenario case detail)

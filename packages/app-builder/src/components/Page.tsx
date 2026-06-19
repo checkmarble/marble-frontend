@@ -3,9 +3,8 @@ import { Link } from '@tanstack/react-router';
 import { cva, VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CtaV2ClassName, cn, Tooltip } from 'ui-design-system';
+import { CtaV2ClassName, cn, StickyComponent, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { StickyComponent } from './ui/StickyComponent';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return <main className={cn('relative bg-surface-page flex flex-1 flex-col', className)} {...props} />;

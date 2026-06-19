@@ -53,20 +53,14 @@ const DeleteInboxContent = ({ inboxId, onSuccess }: { inboxId: string; onSuccess
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" name="cancel">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('common:delete')}
           variant="destructive"
-          name="delete"
           onClick={handleDeleteInbox}
           disabled={deleteInboxMutation.isPending}
-        >
-          <Icon icon="delete" className="size-5" />
-          {t('common:delete')}
-        </Button>
+          leadingIcon="delete"
+        />
       </Modal.Footer>
     </>
   );

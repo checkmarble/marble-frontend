@@ -15,7 +15,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateApiKey() {
@@ -86,32 +86,24 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name}>{t('settings:api_keys.role')}</FormLabel>
-              <Select.Default
-                name={field.name}
+              <SelectV2
                 disabled={apiKeyRoleOptions.length === 1}
-                defaultValue={field.state.value}
-                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-              >
-                {apiKeyRoleOptions.map((role) => (
-                  <Select.DefaultItem key={role} value={role}>
-                    {t(tKeyForApiKeyRole(role))}
-                  </Select.DefaultItem>
-                ))}
-              </Select.Default>
+                value={field.state.value}
+                onChange={(role) => field.handleChange(role)}
+                placeholder={t('settings:api_keys.role')}
+                options={apiKeyRoleOptions.map((role) => ({
+                  label: t(tKeyForApiKeyRole(role)),
+                  value: role,
+                }))}
+              />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button type="button" variant="secondary" appearance="stroked">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit">
-          {t('settings:api_keys.create')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton label={t('settings:api_keys.create')} type="submit" />
       </Modal.Footer>
     </form>
   );

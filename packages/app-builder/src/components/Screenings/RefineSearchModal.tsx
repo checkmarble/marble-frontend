@@ -12,7 +12,7 @@ import { type ReactNode, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Input, Modal, Select } from 'ui-design-system';
+import { Input, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
 import { MatchResult } from './MatchResult';
@@ -133,23 +133,17 @@ export function RefineSearchModal({
               )}
             </div>
             <Modal.Footer>
-              <Button
-                className="flex-1"
+              <Modal.FooterButton
                 variant="secondary"
-                appearance="stroked"
-                name="cancel"
+                label={t('screenings:refine_modal.back_search')}
                 onClick={handleBackToSearch}
-              >
-                {t('screenings:refine_modal.back_search')}
-              </Button>
-              <Button
-                className="flex-1"
-                variant="primary"
+              />
+              <Modal.FooterButton
+                label={t('screenings:refine_modal.apply_search')}
                 onClick={handleRefine}
                 disabled={searchResults.length > (screening.request?.limit ?? Infinity)}
-              >
-                {t('screenings:refine_modal.apply_search')}
-              </Button>
+                isLoading={refineMutation.isPending}
+              />
             </Modal.Footer>
           </>
         ) : (
@@ -179,16 +173,15 @@ export function RefineSearchModal({
               ))}
             </div>
             <Modal.Footer>
-              <Modal.Close asChild>
-                <Button variant="secondary" appearance="stroked" name="cancel">
-                  {t('common:cancel')}
-                </Button>
-              </Modal.Close>
+              <Modal.FooterButton isCloseButton label={t('common:cancel')} />
               <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
                 {([isPristine, canSubmit, isSubmitting]) => (
-                  <Button type="submit" disabled={isPristine || !canSubmit} variant="primary">
-                    {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
-                  </Button>
+                  <Modal.FooterButton
+                    label={isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
+                    type="submit"
+                    disabled={isPristine || !canSubmit}
+                    isLoading={isSubmitting}
+                  />
                 )}
               </form.Subscribe>
             </Modal.Footer>

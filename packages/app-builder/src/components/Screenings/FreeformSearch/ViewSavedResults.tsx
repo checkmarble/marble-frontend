@@ -373,11 +373,11 @@ function PeriodFilter({
             <DateRangeFilter.Summary className="col-span-3 row-span-1" />
           </DateRangeFilter.Root>
         </MenuCommand.List>
-        <div className="border-grey-border flex justify-between gap-2 border-t p-2">
+        <div className="border-grey-border flex justify-end gap-2 border-t p-2">
           <Button
             variant="secondary"
             appearance="stroked"
-            size="medium"
+            size="large"
             onClick={() => {
               setDraft(null);
               onChange(null);
@@ -387,7 +387,7 @@ function PeriodFilter({
             {t('screenings:freeform_search.clear')}
           </Button>
           <Button
-            size="medium"
+            size="large"
             onClick={() => {
               onChange(draft);
               setOpen(false);

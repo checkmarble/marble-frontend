@@ -54,5 +54,3 @@
 @utility animate-ping-once {
   animation: ping-once 1s cubic-bezier(0, 0, 0.2, 1);
 }
-
-@custom-variant sentinel-intersect ([data-sentinel][data-intersect] + &);

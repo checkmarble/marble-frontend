@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDuplicateRuleMutation } from '@app-builder/queries/scenarios/duplicate-rule';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Typo } from 'ui-design-system';
+import { Modal, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function DuplicateRule({
@@ -43,21 +43,13 @@ export function DuplicateRule({
           </div>
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" appearance="stroked">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="button"
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton
+            label={t('scenarios:clone_rule.confirmation_button')}
             onClick={handleDuplicateRule}
-            disabled={duplicateRuleMutation.isPending}
-          >
-            <Icon icon="copy" className="size-5" />
-            {t('scenarios:clone_rule.confirmation_button')}
-          </Button>
+            isLoading={duplicateRuleMutation.isPending}
+            leadingIcon="copy"
+          />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

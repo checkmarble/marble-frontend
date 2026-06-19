@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SelectArchetype({ children }: { children: React.ReactNode }) {
@@ -68,19 +68,13 @@ export function SelectArchetype({ children }: { children: React.ReactNode }) {
           )}
         </div>
         <Modal.Footer>
-          <Modal.Close asChild>
-            <Button variant="secondary" appearance="stroked">
-              {t('common:cancel')}
-            </Button>
-          </Modal.Close>
-          <Button
-            variant="primary"
+          <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          <Modal.FooterButton
+            label={t('data:select_archetype.button_accept')}
             disabled={!selectedArchetype || applyArchetypeMutation.isPending}
             onClick={handleApply}
-          >
-            {applyArchetypeMutation.isPending ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
-            {t('data:select_archetype.button_accept')}
-          </Button>
+            isLoading={applyArchetypeMutation.isPending}
+          />
         </Modal.Footer>
       </Modal.Content>
     </Modal.Root>

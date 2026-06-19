@@ -14,7 +14,7 @@ import { type Tag } from 'marble-api';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateTag({ tag }: { tag: Tag }) {
@@ -111,14 +111,13 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
         </div>
       </div>
       <Modal.Footer>
-        <Modal.Close asChild>
-          <Button variant="secondary" appearance="stroked" type="button" name="cancel">
-            {t('common:cancel')}
-          </Button>
-        </Modal.Close>
-        <Button variant="primary" type="submit" name="update" disabled={updateTagMutation.isPending}>
-          {t('common:save')}
-        </Button>
+        <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+        <Modal.FooterButton
+          label={t('common:save')}
+          type="submit"
+          name="update"
+          disabled={updateTagMutation.isPending}
+        />
       </Modal.Footer>
     </form>
   );

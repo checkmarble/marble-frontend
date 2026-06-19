@@ -2,7 +2,7 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { Label } from '@radix-ui/react-label';
 import { type ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
-import { Checkbox, Select } from 'ui-design-system';
+import { Checkbox, SelectV2 } from 'ui-design-system';
 
 import { scenarioI18n } from '../../scenario-i18n';
 import { type ScheduleOption } from './models';
@@ -106,13 +106,15 @@ const ScheduleFrequencySelect = ({
   const { t } = useTranslation(scenarioI18n);
 
   return (
-    <Select.Default value={value} onValueChange={onChange}>
-      {scheduleFrequencyOptions.map(({ value, labelTKey }) => (
-        <Select.DefaultItem className="min-w-[110px]" key={value} value={value}>
-          <span className="text-s text-grey-primary">{t(labelTKey)}</span>
-        </Select.DefaultItem>
-      ))}
-    </Select.Default>
+    <SelectV2
+      value={value}
+      onChange={onChange}
+      placeholder="..."
+      options={scheduleFrequencyOptions.map(({ value, labelTKey }) => ({
+        label: <span className="text-s text-grey-primary">{t(labelTKey)}</span>,
+        value,
+      }))}
+    />
   );
 };
 
@@ -143,13 +145,15 @@ const ScheduleDetailSelect = ({
   const displayName = displayNameForFrequency(frequency);
 
   return (
-    <Select.Default value={value} onValueChange={onChange}>
-      {scheduleDetailOptions.map((option) => (
-        <Select.DefaultItem className="min-w-[110px]" key={option} value={option}>
-          <span className="text-s text-grey-primary">{displayName(option)}</span>
-        </Select.DefaultItem>
-      ))}
-    </Select.Default>
+    <SelectV2
+      value={value}
+      onChange={onChange}
+      placeholder="..."
+      options={scheduleDetailOptions.map((option) => ({
+        label: <span className="text-s text-grey-primary">{displayName(option)}</span>,
+        value: option,
+      }))}
+    />
   );
 };
 
