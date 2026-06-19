@@ -106,17 +106,11 @@ const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
 
 type PageContentV2Props = React.ComponentProps<'div'> &
   Omit<VariantProps<typeof PageContentV2ClassName>, 'padding'> & {
-    /** @deprecated Use `padding="none"` instead. */
-    paddingLess?: boolean;
     padding?: VariantProps<typeof PageContentV2ClassName>['padding'];
   };
 
-function PageContentV2({ className, centered, paddingLess, padding, width, ...props }: PageContentV2Props) {
-  const resolvedPadding = paddingLess === true ? 'none' : padding;
-
-  return (
-    <div className={PageContentV2ClassName({ centered, padding: resolvedPadding, width, className })} {...props} />
-  );
+function PageContentV2({ className, centered, padding, width, ...props }: PageContentV2Props) {
+  return <div className={PageContentV2ClassName({ centered, padding, width, className })} {...props} />;
 }
 
 const pageBack = cva(
@@ -165,7 +159,6 @@ function PageBackLink({ className: _className, ...props }: React.ComponentProps<
  * `Page.ContentV2` layout variants:
  * - `padding`: `default` (responsive md/lg/2xl gutters), `compact` (md), `none`
  * - `width`: `fluid`, `readable` (xl max-width), `form` (lg max-width), `table` (full-width tables)
- * - `paddingLess` is deprecated; use `padding="none"` instead.
  */
 export const Page = {
   Main: PageMain,
