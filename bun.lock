@@ -124,7 +124,7 @@
         "@tanstack/react-devtools": "^0.10.5",
         "@tanstack/react-form-devtools": "^0.2.29",
         "@tanstack/react-query-devtools": "5.83.1",
-        "@tanstack/react-router-devtools": "1.166.13",
+        "@tanstack/react-router-devtools": "1.167.0",
         "@tanstack/router-plugin": "1.167.35",
         "@types/autosuggest-highlight": "^3.2.3",
         "@types/js-cookie": "^3.0.6",
