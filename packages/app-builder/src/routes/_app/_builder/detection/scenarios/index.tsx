@@ -195,7 +195,7 @@ function DetectionScenariosPage() {
 
   return (
     <Page.Main>
-      <Page.ContentV2 width="table" className="gap-md">
+      <Page.Content width="table" className="gap-md">
         <DetectionNavigationTabs
           actions={
             <CreateScenario>
@@ -223,7 +223,7 @@ function DetectionScenariosPage() {
             </Table.Container>
           )}
         </div>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

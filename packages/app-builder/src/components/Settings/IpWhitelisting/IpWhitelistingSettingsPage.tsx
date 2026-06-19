@@ -57,7 +57,7 @@ export const IpWhitelistingSettingsPage = ({
   const removedNetworks = useStore(form.store, (state) => R.difference(allowedNetworks, state.values.allowedNetworks));
 
   return (
-    <Page.ContentV2 width="readable">
+    <Page.Content width="readable">
       <CollapsiblePaper.Container>
         <CollapsiblePaper.Title>
           <span className="flex-1">{t('settings:ip_whitelisting')}</span>
@@ -137,6 +137,6 @@ export const IpWhitelistingSettingsPage = ({
           </form>
         </CollapsiblePaper.Content>
       </CollapsiblePaper.Container>
-    </Page.ContentV2>
+    </Page.Content>
   );
 };

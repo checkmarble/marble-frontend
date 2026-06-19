@@ -97,7 +97,7 @@ export const ClientDetailPage = ({
           />
         </Page.Header>
         <Page.Container ref={containerRef}>
-          <Page.ContentV2 width="table" className="gap-lg">
+          <Page.Content width="table" className="gap-lg">
             {/* Client details */}
             <div className="flex gap-md">
               {/* Score card */}
@@ -274,7 +274,7 @@ export const ClientDetailPage = ({
                 root={containerRef}
               />
             </div>
-          </Page.ContentV2>
+          </Page.Content>
         </Page.Container>
       </Page.Main>
       <PanelRoot open={showAlertHitsPanel} onOpenChange={setShowAlertHitsPanel}>

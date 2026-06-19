@@ -103,7 +103,7 @@ function TestRuns() {
         <BreadCrumbs />
       </Page.Header>
 
-      <Page.ContentV2 width="form" className="flex flex-col gap-md">
+      <Page.Content width="form" className="flex flex-col gap-md">
         <TestRunsFiltersProvider submitTestRunsFilters={setFilters} filterValues={filters}>
           <div className="flex flex-row items-center justify-between">
             <span className="text-grey-primary text-l font-semibold">{t('scenarios:testrun.home')}</span>
@@ -136,7 +136,7 @@ function TestRuns() {
             ))}
           </div>
         </TestRunsFiltersProvider>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

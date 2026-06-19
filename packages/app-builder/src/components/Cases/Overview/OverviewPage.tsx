@@ -32,7 +32,7 @@ export const OverviewPage = ({
 
   return (
     <Page.Main>
-      <Page.ContentV2 className="gap-md">
+      <Page.Content className="gap-md">
         <div className="grid grid-cols-[1fr_calc(var(--spacing-xs)_*_90)] gap-lg">
           <div className="flex flex-col gap-md">
             <CasesNavigationTabs />
@@ -62,7 +62,7 @@ export const OverviewPage = ({
             ) : null}
           </div>
         </div>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 };

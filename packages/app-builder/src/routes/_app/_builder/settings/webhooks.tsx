@@ -82,7 +82,7 @@ function Webhooks() {
   });
 
   return (
-    <Page.ContentV2 width="readable">
+    <Page.Content width="readable">
       <CollapsiblePaper.Container>
         <CollapsiblePaper.Title>
           <span className="flex-1">{t('settings:webhooks')}</span>
@@ -120,7 +120,7 @@ function Webhooks() {
           </Table.Container>
         </CollapsiblePaper.Content>
       </CollapsiblePaper.Container>
-    </Page.ContentV2>
+    </Page.Content>
   );
 }
 
@@ -159,7 +159,7 @@ function WebhooksError({ error }: { error: unknown }) {
   });
 
   return (
-    <Page.ContentV2 width="readable" className="relative">
+    <Page.Content width="readable" className="relative">
       <div className="bg-grey-primary/20 absolute z-50 flex size-full items-center justify-center p-md backdrop-blur-[2px] transition-all">
         <div className="bg-surface-card border-grey-border flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
           <Typo variant="title1" className="bg-grey-background w-full p-xl text-center">
@@ -211,6 +211,6 @@ function WebhooksError({ error }: { error: unknown }) {
           </Table.Container>
         </CollapsiblePaper.Content>
       </CollapsiblePaper.Container>
-    </Page.ContentV2>
+    </Page.Content>
   );
 }

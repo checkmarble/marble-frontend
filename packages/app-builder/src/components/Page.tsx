@@ -5,6 +5,8 @@ import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, cn, StickyComponent, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { pageLayoutGutter } from './Page/page-layout';
+import { PageStickyFooter } from './Page/StickyFooter';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return <main className={cn('relative bg-surface-page flex flex-1 flex-col', className)} {...props} />;
@@ -66,23 +68,10 @@ function PageDescription({
   );
 }
 
-// @deprecated
-function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn(
-        'flex flex-1 flex-col gap-md p-md pe-[calc(1rem-var(--scrollbar-width))] lg:gap-xl lg:p-xl lg:pe-[calc(2rem-var(--scrollbar-width))]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
+const PageContentClassName = cva('flex flex-1 flex-col text-default', {
   variants: {
     padding: {
-      default: 'p-md md:p-lg lg:px-2xl lg:py-lg',
+      default: pageLayoutGutter.padding,
       compact: 'p-md',
       none: 'p-0',
     },
@@ -104,13 +93,13 @@ const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
   },
 });
 
-type PageContentV2Props = React.ComponentProps<'div'> &
-  Omit<VariantProps<typeof PageContentV2ClassName>, 'padding'> & {
-    padding?: VariantProps<typeof PageContentV2ClassName>['padding'];
+type PageContentProps = React.ComponentProps<'div'> &
+  Omit<VariantProps<typeof PageContentClassName>, 'padding'> & {
+    padding?: VariantProps<typeof PageContentClassName>['padding'];
   };
 
-function PageContentV2({ className, centered, padding, width, ...props }: PageContentV2Props) {
-  return <div className={PageContentV2ClassName({ centered, padding, width, className })} {...props} />;
+function PageContent({ className, centered, padding, width, ...props }: PageContentProps) {
+  return <div className={PageContentClassName({ centered, padding, width, className })} {...props} />;
 }
 
 const pageBack = cva(
@@ -149,14 +138,14 @@ function PageBackLink({ className: _className, ...props }: React.ComponentProps<
  *         <Page.Description> // Optional
  *           ...
  *         </Page.Description>
- *         <Page.ContentV2 padding="default" width="readable"> // Main content
+ *         <Page.Content padding="default" width="readable"> // Main content
  *           ...
- *         </Page.ContentV2>
+ *         </Page.Content>
  *     </Page.Container>
  * </Page.Main>
  * ```
  *
- * `Page.ContentV2` layout variants:
+ * `Page.Content` layout variants:
  * - `padding`: `default` (responsive md/lg/2xl gutters), `compact` (md), `none`
  * - `width`: `fluid`, `readable` (xl max-width), `form` (lg max-width), `table` (full-width tables)
  */
@@ -167,6 +156,6 @@ export const Page = {
   BackLink: PageBackLink,
   Container: PageContainer,
   Content: PageContent,
-  ContentV2: PageContentV2,
+  StickyFooter: PageStickyFooter,
   Description: PageDescription,
 };

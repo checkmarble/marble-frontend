@@ -61,7 +61,7 @@ function AccountPage() {
         </Button>
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 width="form" className="gap-lg">
+        <Page.Content width="form" className="gap-lg">
           <div className="flex flex-col items-center gap-lg">
             <div className="flex flex-col items-center gap-md">
               <Avatar size="xl" firstName={firstName} lastName={lastName} />
@@ -109,7 +109,7 @@ function AccountPage() {
               </span>
             </div>
           </div>
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Container>
     </Page.Main>
   );

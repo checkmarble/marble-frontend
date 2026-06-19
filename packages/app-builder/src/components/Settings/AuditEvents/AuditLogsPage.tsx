@@ -11,7 +11,7 @@ import { auditEventsFiltersSchema } from '@app-builder/schemas/settings';
 import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Typo } from 'ui-design-system';
+import { Button, StickyComponent, Typo } from 'ui-design-system';
 import { AuditEventsTable } from './AuditEventsTable';
 import { type FilterEntry } from './Filters/ActivatedAuditFilterItem';
 import { AuditEventsFiltersBar } from './Filters/AuditEventsFiltersBar';
@@ -72,7 +72,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
   );
 
   return (
-    <Page.ContentV2 width="table" className="gap-md bg-surface-page">
+    <Page.Content width="table" className="gap-md bg-surface-page">
       <div className="flex flex-col gap-md relative">
         {/* Title Row */}
         <div className="flex justify-between items-center">
@@ -111,15 +111,18 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
           .exhaustive()}
 
         {/* Pagination */}
-        <PaginationRow
-          hasNextPage={auditEventsQuery.hasNextPage ?? false}
-          hasPreviousPage={false}
-          currentLimit={limit}
-          onNextPage={() => auditEventsQuery.fetchNextPage()}
-          onPreviousPage={() => undefined}
-          setLimit={handleSetLimit}
-        />
+        <StickyComponent sentinelClassName="bottom-0 h-px">
+          <PaginationRow
+            hasNextPage={auditEventsQuery.hasNextPage ?? false}
+            hasPreviousPage={false}
+            currentLimit={limit}
+            onNextPage={() => auditEventsQuery.fetchNextPage()}
+            onPreviousPage={() => undefined}
+            setLimit={handleSetLimit}
+            className="sentinel-intersect:shadow-sticky-bottom sentinel-intersect:border-grey-border"
+          />
+        </StickyComponent>
       </div>
-    </Page.ContentV2>
+    </Page.Content>
   );
 };

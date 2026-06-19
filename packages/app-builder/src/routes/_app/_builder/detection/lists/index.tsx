@@ -94,7 +94,7 @@ function DetectionListsPage() {
 
   return (
     <Page.Main>
-      <Page.ContentV2 width="table" className="gap-md">
+      <Page.Content width="table" className="gap-md">
         <DetectionNavigationTabs
           actions={isCreateListAvailable ? <CreateListModal isIpGpsAvailable={isIpGpsAvailable} /> : undefined}
         />
@@ -114,7 +114,7 @@ function DetectionListsPage() {
             </Table.Container>
           )}
         </div>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

@@ -251,7 +251,7 @@ function Filters() {
   };
 
   return (
-    <Page.ContentV2 width="readable">
+    <Page.Content width="readable">
       <CollapsiblePaper.Container>
         <CollapsiblePaper.Title>
           <span className="flex-1">{t('settings:filters-settings')}</span>
@@ -297,6 +297,6 @@ function Filters() {
           </Modal.Footer>
         </Modal.Content>
       </Modal.Root>
-    </Page.ContentV2>
+    </Page.Content>
   );
 }

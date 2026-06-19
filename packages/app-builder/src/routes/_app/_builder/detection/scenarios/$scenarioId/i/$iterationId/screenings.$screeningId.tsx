@@ -433,7 +433,7 @@ function ScreeningDetail() {
         <BreadCrumbs back={rulesRoute.href} />
       </Page.Header>
       <Page.Container ref={containerRef}>
-        <Page.ContentV2 width="form" className="pt-0 lg:pt-0">
+        <Page.Content width="form" className="pt-0 lg:pt-0">
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
             <div className="sticky top-0 z-40 flex flex-col gap-md bg-surface-page py-sm">
               <div
@@ -1015,7 +1015,7 @@ function ScreeningDetail() {
               </form.Field>
             </div>
           </form>
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Container>
     </Page.Main>
   );

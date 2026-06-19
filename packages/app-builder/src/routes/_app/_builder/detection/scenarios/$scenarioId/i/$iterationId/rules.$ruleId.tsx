@@ -268,7 +268,7 @@ function RuleDetail() {
         />
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 width="form">
+        <Page.Content width="form">
           <form className="relative flex flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn(
@@ -468,7 +468,7 @@ function RuleDetail() {
               </div>
             </div>
           </form>
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Container>
     </Page.Main>
   );

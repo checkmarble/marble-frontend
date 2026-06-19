@@ -202,7 +202,7 @@ function DecisionPage() {
           {!decision.case ? <AddToCase decisionIds={[decision.id]} /> : null}
         </Page.Header>
         <Page.Container>
-          <Page.ContentV2>
+          <Page.Content>
             <div className="grid grid-cols-[2fr_1fr] gap-md lg:gap-xl">
               <div className="flex flex-col gap-md lg:gap-xl">
                 <DecisionDetail decision={decision} />
@@ -228,7 +228,7 @@ function DecisionPage() {
                 />
               </div>
             </div>
-          </Page.ContentV2>
+          </Page.Content>
         </Page.Container>
       </Page.Main>
     </DecisionRightPanel.Root>

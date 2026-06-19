@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { SettingsNavigationTabs } from '@app-builder/components/Settings/Navigation/Tabs';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models/user';
@@ -56,7 +57,7 @@ function Settings() {
   return (
     <Page.Main>
       {hideTabs ? null : (
-        <div className="px-md md:px-lg lg:px-2xl pt-md md:pt-lg lg:pt-lg pb-0">
+        <div className={cn(pageLayoutGutter.paddingX, pageLayoutGutter.paddingTop, 'pb-0')}>
           <SettingsNavigationTabs sections={sections} />
         </div>
       )}

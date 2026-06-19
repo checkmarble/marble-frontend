@@ -66,7 +66,7 @@ function ScreeningSearchIndexPage() {
 
   return (
     <Page.Main>
-      <Page.ContentV2 className="h-full gap-md">
+      <Page.Content className="h-full gap-md">
         <div className="flex items-center justify-between">
           <Typo variant="title1">{t('navigation:screening_search')}</Typo>
           <div className="flex items-center gap-sm">
@@ -95,7 +95,7 @@ function ScreeningSearchIndexPage() {
           </div>
         </div>
         <FreeformSearchPage onSearchComplete={handleSearchComplete} listConfig={listConfig.filters} />
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

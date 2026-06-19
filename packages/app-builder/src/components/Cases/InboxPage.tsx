@@ -129,10 +129,10 @@ export const InboxPage = ({
   if (inboxes.length === 0 && inboxId === MY_INBOX_ID) {
     return (
       <Page.Main className="flex flex-col">
-        <Page.ContentV2 className="gap-md">
+        <Page.Content className="gap-md">
           {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
           <InboxEmptyState canManageInboxes={canViewNavigationTabs} />
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Main>
     );
   }
@@ -147,7 +147,7 @@ export const InboxPage = ({
           },
         )}
       />
-      <Page.ContentV2 width="table" className="gap-md">
+      <Page.Content width="table" className="gap-md">
         {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
         <div className="flex flex-col gap-md relative">
           <MultiSelect.Root id={inboxId}>
@@ -258,7 +258,7 @@ export const InboxPage = ({
               .exhaustive()}
           </MultiSelect.Root>
         </div>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 };

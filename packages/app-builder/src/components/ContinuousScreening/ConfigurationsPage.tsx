@@ -71,7 +71,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
 
   return (
     <Page.Main>
-      <Page.ContentV2 width="table" className="gap-md">
+      <Page.Content width="table" className="gap-md">
         <div className="flex items-center justify-between">
           <Typo variant="title1">{t('navigation:continuous-screening.configurations')}</Typo>
           {canEdit ? (
@@ -170,7 +170,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
             ) : null}
           </PanelRoot>
         ) : null}
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 };

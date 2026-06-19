@@ -154,7 +154,7 @@ function Users() {
   });
 
   return (
-    <Page.ContentV2 width="readable">
+    <Page.Content width="readable">
       <CollapsiblePaper.Container>
         <CollapsiblePaper.Title>
           <span className="flex-1">{t('settings:users')}</span>
@@ -173,7 +173,7 @@ function Users() {
           </Table.Container>
         </CollapsiblePaper.Content>
       </CollapsiblePaper.Container>
-    </Page.ContentV2>
+    </Page.Content>
   );
 }
 

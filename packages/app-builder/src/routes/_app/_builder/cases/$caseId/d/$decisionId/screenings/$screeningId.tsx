@@ -134,7 +134,7 @@ function CaseSanctionReviewPage() {
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
         <Page.Container>
-          <Page.ContentV2 width="readable">
+          <Page.Content width="readable">
             <nav>
               <ul className="bg-surface-card border-grey-border inline-flex flex-row gap-sm rounded-lg border p-xs">
                 <li>
@@ -154,7 +154,7 @@ function CaseSanctionReviewPage() {
               </ul>
             </nav>
             <Outlet />
-          </Page.ContentV2>
+          </Page.Content>
         </Page.Container>
         <div className="bg-surface-card border-t-grey-border flex shrink-0 flex-row items-center justify-end gap-md border-t p-md">
           <UploadFile uploadFileEndpoint={uploadScreeningFile}>

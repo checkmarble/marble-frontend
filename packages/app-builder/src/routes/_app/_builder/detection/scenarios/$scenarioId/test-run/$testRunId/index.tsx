@@ -107,7 +107,7 @@ function TestRun() {
         ) : null}
       </Page.Header>
 
-      <Page.ContentV2 width="form" className="flex flex-col gap-xl">
+      <Page.Content width="form" className="flex flex-col gap-xl">
         <TestRunDetails {...run} iterations={iterations} creator={creator} />
         <Await promise={decisionsPromise} fallback={<DistributionOfDecisionChartSkeleton />}>
           {(decisions) => <DistributionOfDecisionChart versions={versions} decisions={decisions} />}
@@ -115,7 +115,7 @@ function TestRun() {
         <Await promise={rulesPromise} fallback={<FilterTransactionByDecisionSkeleton />}>
           {(rules) => <FilterTransactionByDecision versions={versions} rules={rules} />}
         </Await>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

@@ -143,7 +143,7 @@ function ApiKeys() {
   });
 
   return (
-    <Page.ContentV2 width="readable">
+    <Page.Content width="readable">
       <div className="flex flex-col items-start gap-sm">
         <Button
           variant="secondary"
@@ -188,7 +188,7 @@ function ApiKeys() {
           webhooksStatus={webhooksStatus}
         />
       ) : null}
-    </Page.ContentV2>
+    </Page.Content>
   );
 }
 

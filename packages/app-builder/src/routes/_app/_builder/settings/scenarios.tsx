@@ -81,7 +81,7 @@ function Scenarios() {
   });
 
   return (
-    <Page.ContentV2 width="readable">
+    <Page.Content width="readable">
       <form
         className="flex flex-col gap-xl"
         onSubmit={(e) => {
@@ -161,6 +161,6 @@ function Scenarios() {
           </CollapsiblePaper.Container>
         ) : null}
       </form>
-    </Page.ContentV2>
+    </Page.Content>
   );
 }

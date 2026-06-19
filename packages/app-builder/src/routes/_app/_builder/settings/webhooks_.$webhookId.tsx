@@ -67,7 +67,7 @@ function WebhookDetail() {
   return (
     <>
       <Page.Header>{/* BreadCrumbs rendered by parent layout */}</Page.Header>
-      <Page.ContentV2 width="readable">
+      <Page.Content width="readable">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhook_details')}</span>
@@ -135,7 +135,7 @@ function WebhookDetail() {
             </Button>
           </DeleteWebhook>
         ) : null}
-      </Page.ContentV2>
+      </Page.Content>
     </>
   );
 }

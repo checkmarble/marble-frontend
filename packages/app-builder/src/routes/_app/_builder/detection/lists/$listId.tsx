@@ -143,7 +143,7 @@ function Lists() {
       </Page.Header>
       <Page.Container>
         {customList.description ? <Page.Description headerBanner>{customList.description}</Page.Description> : null}
-        <Page.ContentV2 width="table">
+        <Page.Content width="table">
           {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
           <div className="flex flex-col gap-sm overflow-hidden lg:gap-md">
@@ -178,7 +178,7 @@ function Lists() {
             )}
           </div>
           {listFeatureAccess.isDeleteListAvailable ? <DeleteListModal listId={customList.id} /> : null}
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Container>
     </Page.Main>
   );

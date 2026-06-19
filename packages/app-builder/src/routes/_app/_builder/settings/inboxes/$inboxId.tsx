@@ -199,7 +199,7 @@ function Inbox() {
   const nonInboxUsers = orgUsers.filter((user) => !inbox.users?.some((u) => u.userId === user.userId));
 
   return (
-    <Page.ContentV2 width="readable">
+    <Page.Content width="readable">
       <CollapsiblePaper.Container>
         <CollapsiblePaper.Title>
           <span className="flex-1">{t('settings:inboxes.inbox_details.title')}</span>
@@ -277,6 +277,6 @@ function Inbox() {
           </Tooltip.Default>
         )
       ) : null}
-    </Page.ContentV2>
+    </Page.Content>
   );
 }

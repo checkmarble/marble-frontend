@@ -58,14 +58,14 @@ function ScheduledExecutions() {
         <BreadCrumbs />
       </Page.Header>
 
-      <Page.ContentV2 width="form" className="flex flex-col gap-md">
+      <Page.Content width="form" className="flex flex-col gap-md">
         <Typo variant="title1" className="text-grey-primary text-m">
           {t('scenarios:home.execution.batch.scheduled_execution', {
             count: scheduledExecutions.length,
           })}
         </Typo>
         <ScheduledExecutionsList scheduledExecutions={scheduledExecutions} />
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

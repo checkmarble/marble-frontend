@@ -101,7 +101,7 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
 
   return (
     <Page.Main>
-      <Page.ContentV2 className="gap-md">
+      <Page.Content className="gap-md">
         <CasesNavigationTabs />
 
         <div className="flex flex-wrap items-center justify-between gap-md">
@@ -187,7 +187,7 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
             );
           })
           .exhaustive()}
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

@@ -27,7 +27,7 @@ function DesignPage() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
       </Page.Header>
-      <Page.ContentV2 width="readable" className="gap-3xl">
+      <Page.Content width="readable" className="gap-3xl">
         <Section title="Radio" description="Figma node 1206-800">
           <RadioMatrix />
         </Section>
@@ -40,7 +40,7 @@ function DesignPage() {
         <Section title="Button" description="Figma node 881-9199">
           <ButtonMatrix />
         </Section>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }
