@@ -1,3 +1,4 @@
+import { Page } from '@app-builder/components';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAnalyst } from '@app-builder/models';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
@@ -31,8 +32,10 @@ function DataLayout() {
   const { dataModel, dataModelFeatureAccess } = Route.useLoaderData();
 
   return (
-    <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
-      <Outlet />
-    </DataModelContextProvider>
+    <Page.Main className="min-h-0 overflow-hidden">
+      <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
+        <Outlet />
+      </DataModelContextProvider>
+    </Page.Main>
   );
 }
