@@ -197,12 +197,6 @@ export function makeAuthenticationServerService({
     const authSession = await useAuthSession();
     const storedRefreshToken = authSession.data.refreshToken;
 
-    // TEMP(manual-test): trace the SSR refresh path.
-    console.log('[refreshMarbleToken]', {
-      provider: appConfig.auth.provider,
-      hasRefreshToken: Boolean(storedRefreshToken),
-    });
-
     if (!storedRefreshToken) {
       return { status: false, marbleToken: null, refreshToken: null };
     }
@@ -233,9 +227,6 @@ export function makeAuthenticationServerService({
         { authorization: `Bearer ${idToken}` },
         { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
-
-      // TEMP(manual-test): confirm the Firebase refresh succeeded.
-      console.log('[refreshMarbleToken] firebase refresh ok, new expires_at', marbleToken.expires_at);
 
       return { status: true, marbleToken, refreshToken };
     }
@@ -415,9 +406,7 @@ export function makeAuthenticationServerService({
     // The browser can't see the Marble token expiry under SSR, so an expired
     // token would otherwise log the user out after inactivity. If we hold a
     // provider refresh token, mint a fresh Marble token server-side first.
-    // TEMP(manual-test): FORCE_TOKEN_REFRESH=true forces the refresh path on every SSR load.
-    const forceRefresh = process.env['FORCE_TOKEN_REFRESH'] === 'true';
-    if (marbleToken && (forceRefresh || marbleToken.expires_at < new Date().toISOString())) {
+    if (marbleToken && marbleToken.expires_at < new Date().toISOString()) {
       const refreshed = await refreshMarbleToken().catch(() => null);
       if (refreshed?.status) {
         await authSession.update({
