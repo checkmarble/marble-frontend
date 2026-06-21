@@ -110,6 +110,12 @@ export interface AuthenticationServerService {
   logout(request: Request, options: { redirectTo: string }): Promise<{ redirectTo: string }>;
 }
 
+// Sliding idle timeout: a session is logged out after this much inactivity,
+// independently of the absolute lifetime enforced by the session cookie maxAge.
+const DEFAULT_SESSION_IDLE_TIMEOUT = 60 * 60 * 24; // 24h, in seconds
+// Throttle activity writes so we don't re-issue the session cookie on every request.
+const SESSION_ACTIVITY_WRITE_THROTTLE_MS = 60 * 1000; // 1 min
+
 const schema = z.object({
   type: z.enum(['google', 'microsoft', 'email']),
   idToken: z.string(),
@@ -403,6 +409,18 @@ export function makeAuthenticationServerService({
 
     let marbleToken = authSession.data.authToken;
 
+    const now = Date.now();
+    const lastActivityAt = authSession.data.lastActivityAt;
+
+    // Sliding idle timeout: log out after a period of inactivity, regardless of
+    // the absolute session lifetime enforced by the cookie maxAge.
+    const idleTimeoutMs = (Number(getServerEnv('SESSION_IDLE_TIMEOUT')) || DEFAULT_SESSION_IDLE_TIMEOUT) * 1000;
+    if (marbleToken && lastActivityAt && now - lastActivityAt > idleTimeoutMs) {
+      await authSession.clear();
+      if (options.failureRedirect) throw redirect(options.failureRedirect);
+      else return null;
+    }
+
     // The browser can't see the Marble token expiry under SSR, so an expired
     // token would otherwise log the user out after inactivity. If we hold a
     // provider refresh token, mint a fresh Marble token server-side first.
@@ -420,6 +438,12 @@ export function makeAuthenticationServerService({
     if (!marbleToken || marbleToken.expires_at < new Date().toISOString()) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
+    }
+
+    // Record activity for the idle timeout, throttled to avoid re-issuing the
+    // session cookie on every request.
+    if (!lastActivityAt || now - lastActivityAt > SESSION_ACTIVITY_WRITE_THROTTLE_MS) {
+      await authSession.update({ lastActivityAt: now });
     }
 
     const tokenService = getTokenService(marbleToken.access_token, request);

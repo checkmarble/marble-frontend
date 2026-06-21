@@ -22,6 +22,7 @@ const PublicEnvVarsSchema = z.object({
   APP_VERSION: z.string().optional(),
 
   SESSION_MAX_AGE: z.string().optional(),
+  SESSION_IDLE_TIMEOUT: z.string().optional(),
   MARBLE_API_URL: z.string(),
 
   METABASE_URL: z.string().optional(),
@@ -84,6 +85,7 @@ interface ServerEnvVars {
   NODE_ENV: string;
   APP_VERSION?: string;
   SESSION_MAX_AGE?: string;
+  SESSION_IDLE_TIMEOUT?: string;
   MARBLE_API_URL: string;
   METABASE_URL?: string;
   TEST_FIREBASE_AUTH_EMULATOR_HOST?: string;
