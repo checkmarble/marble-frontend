@@ -302,6 +302,12 @@ export function makeAuthenticationServerService({
       await authSession.update({ authError: { message: adaptAuthErrors(error) } });
       redirectUrl = options.failureRedirect;
 
+      // Sign-in failures otherwise bounce the user back silently. Expected errors
+      // (CSRF, validation) aren't reported to Sentry, so log the cause for observability.
+      console.warn('[auth] sign-in failed', {
+        cause: error instanceof Error ? `${error.constructor.name}: ${error.message}` : String(error),
+      });
+
       if (!expectedErrors(error)) {
         captureUnexpectedError(error, 'auth.server@authenticate', request);
       }
