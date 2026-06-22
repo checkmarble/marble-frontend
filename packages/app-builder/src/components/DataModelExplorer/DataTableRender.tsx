@@ -554,11 +554,12 @@ function DataTableActionsButton({
                       {navigationOptions.map((navigationOption) => (
                         <MenuCommand.Item
                           forceMount
-                          key={navigationOption.targetTableId}
+                          key={navigationOption.id}
                           onSelect={() => {
                             navigateTo({
                               pivotObject,
                               sourceObject: sourceObject.data,
+                              navigationOptionId: navigationOption.id,
                               sourceTableName: tableName,
                               sourceFieldName: navigationOption.sourceFieldName,
                               filterFieldName: navigationOption.filterFieldName,

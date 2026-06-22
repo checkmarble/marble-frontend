@@ -187,6 +187,10 @@ function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto):
 }
 
 export type NavigationOption = {
+  /** Stable identifier for a navigation option. Several options can share a target
+   * table (one per belongs_to / link), so target table name is NOT unique; use this
+   * for React keys and lookups instead. */
+  id: string;
   sourceTableName: string;
   sourceTableId: string;
   sourceFieldName: string;
@@ -200,8 +204,21 @@ export type NavigationOption = {
   status: 'pending' | 'valid' | 'invalid';
 };
 
+/** Build a stable id from the fields that uniquely identify a navigation option. */
+export function getNavigationOptionId(
+  o: Pick<NavigationOption, 'sourceFieldId' | 'targetTableId' | 'filterFieldId' | 'orderingFieldId'>,
+): string {
+  return [o.sourceFieldId, o.targetTableId, o.filterFieldId, o.orderingFieldId].join('|');
+}
+
 function adaptNavigationOptions(dto: NavigationOptionDto): NavigationOption {
   return {
+    id: getNavigationOptionId({
+      sourceFieldId: dto.source_field_id,
+      targetTableId: dto.target_table_id,
+      filterFieldId: dto.filter_field_id,
+      orderingFieldId: dto.ordering_field_id,
+    }),
     sourceTableName: dto.source_table_name,
     sourceTableId: dto.source_table_id,
     sourceFieldName: dto.source_field_name,

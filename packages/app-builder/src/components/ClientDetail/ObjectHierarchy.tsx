@@ -39,9 +39,15 @@ export const ObjectHierarchy = ({
 
   const handleExplore = (parent: HierarchyNode, child: HierarchyLeaf) => {
     if (!dataModelQuery.isSuccess) return;
-    const navigationOption = dataModelQuery.data.dataModel
-      .find((table) => table.name === parent.objectType)
-      ?.navigationOptions?.find((option) => option.targetTableName === child.objectType);
+    const navigationOptions = dataModelQuery.data.dataModel.find(
+      (table) => table.name === parent.objectType,
+    )?.navigationOptions;
+    // Prefer the exact option that produced this leaf (several options can target the
+    // same table); fall back to the first option matching the target table name.
+    const navigationOption =
+      (child.navigationOptionId
+        ? navigationOptions?.find((option) => option.id === child.navigationOptionId)
+        : undefined) ?? navigationOptions?.find((option) => option.targetTableName === child.objectType);
     if (!navigationOption) return;
     dataModelExplorerContext.startNavigation({
       pivotObject: {

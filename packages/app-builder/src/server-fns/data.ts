@@ -30,6 +30,9 @@ import { z } from 'zod/v4';
 
 export type HierarchyLeaf = {
   objectType: string;
+  /** Stable id of the navigation option that produced this leaf. Several options can
+   * target the same table, so objectType alone does not identify the option. */
+  navigationOptionId?: string;
   data: Record<string, DataModelObjectValue>[];
 };
 
@@ -485,7 +488,13 @@ async function retrieveChildren(
   objectType: string,
   object: { data: Record<string, DataModelObjectValue> },
   navigationOptions:
-    | { filterFieldName: string; sourceFieldName: string; orderingFieldName: string; targetTableName: string }[]
+    | {
+        id: string;
+        filterFieldName: string;
+        sourceFieldName: string;
+        orderingFieldName: string;
+        targetTableName: string;
+      }[]
     | undefined,
   dataModelRepository: {
     listClientObjects(args: {
@@ -525,6 +534,7 @@ async function retrieveChildren(
 
     hierarchyNode.children.push({
       objectType: navigationOption.targetTableName,
+      navigationOptionId: navigationOption.id,
       data: data.data.map((item) => item.data),
     });
   }

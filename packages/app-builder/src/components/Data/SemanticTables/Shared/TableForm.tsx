@@ -105,13 +105,24 @@ export function FormTable({
   const linksEditorValue = useMemo(
     () => ({
       links,
+      sourceTableName: tableState.alias || tableState.name,
       sourceTableFields: tableState.fields,
       destinationTableOptions,
       updateLink: (linkId: string, values: Partial<LinkValue>) => updateLinkState(linkId, values),
       addLink: () => ctxAddLink(tableId),
       removeLink,
     }),
-    [links, tableState.fields, destinationTableOptions, updateLinkState, ctxAddLink, tableId, removeLink],
+    [
+      links,
+      tableState.alias,
+      tableState.name,
+      tableState.fields,
+      destinationTableOptions,
+      updateLinkState,
+      ctxAddLink,
+      tableId,
+      removeLink,
+    ],
   );
 
   return (

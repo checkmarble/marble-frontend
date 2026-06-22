@@ -47,6 +47,36 @@ type LinkedTableOption = {
   link?: LinkToSingle;
 };
 
+/** Child-table FK field of a "down" relationship (empty string for "up"). */
+const downFkField = (o: Pick<LinkedTableOption, 'navigationOptionRef' | 'baseNavRef'>): string =>
+  o.navigationOptionRef?.targetFieldName ?? o.baseNavRef?.targetFieldName ?? '';
+
+/**
+ * Stable React key for a linked-table option. Several links can point at the same table,
+ * so tableName alone is not unique; combine direction, table, link name and FK field.
+ */
+const getOptionKey = (o: LinkedTableOption): string =>
+  [o.direction, o.tableName, o.fieldPath[0]?.linkName ?? '', downFkField(o)].join('::');
+
+/**
+ * Whether a (possibly persisted) check corresponds to this option. Several links can share
+ * a tableName, so we match on the link identity: the link name — carried by options and by
+ * in-session checks — or, for persisted "down" checks that drop the link name, the child FK
+ * field from the navigation option.
+ */
+const checkMatchesOption = (check: LinkedObjectCheck, option: LinkedTableOption): boolean => {
+  if (check.tableName !== option.tableName || check.direction !== option.direction) {
+    return false;
+  }
+  const optionLinkName = option.fieldPath[0]?.linkName ?? '';
+  const checkLinkName = check.fieldPath[0]?.linkName ?? '';
+  if (optionLinkName && checkLinkName) {
+    return optionLinkName === checkLinkName;
+  }
+  const optionFkField = downFkField(option);
+  return optionFkField !== '' && optionFkField === (check.navigationOptionRef?.targetFieldName ?? '');
+};
+
 type AdvancedSetupsSectionProps = {
   dataModel: DataModel;
   selectedTable: TableModel;
@@ -103,8 +133,14 @@ export const AdvancedSetupsSection = ({
         if (link.parentTableName === selectedTable.name && monitoredTableNames.has(table.name)) {
           // Check if selectedTable (source/parent) has navigationOptions configured for this relationship
           // NavigationOptions are stored on the SOURCE table, not the TARGET table
+          // Match the option to THIS specific link (several links can point at the same
+          // child table): a down-navigation option filters the child on its FK field,
+          // which is the link's child field.
           const navOption = selectedTable.navigationOptions?.find(
-            (nav) => nav.sourceTableName === selectedTable.name && nav.targetTableName === table.name,
+            (nav) =>
+              nav.sourceTableName === selectedTable.name &&
+              nav.targetTableName === table.name &&
+              nav.filterFieldName === link.childFieldName,
           );
           const hasNavOptions = !!navOption;
 
@@ -155,19 +191,20 @@ export const AdvancedSetupsSection = ({
     return options;
   }, [dataModel, selectedTable, monitoredTableNames, t]);
 
-  // Initialize checks from linkedObjectChecks or create defaults
-  const getCheckForTable = (tableName: string): LinkedObjectCheck | undefined => {
-    return linkedObjectChecks.find((c) => c.tableName === tableName);
+  // Find the check matching a given option. Several links can point at the same table, so
+  // we match on the link identity rather than tableName alone.
+  const getCheckForOption = (option: LinkedTableOption): LinkedObjectCheck | undefined => {
+    return linkedObjectChecks.find((c) => checkMatchesOption(c, option));
   };
 
   const handleToggleCheck = (option: LinkedTableOption, enabled: boolean) => {
-    const existingCheck = getCheckForTable(option.tableName);
+    const existingCheck = getCheckForOption(option);
 
     if (enabled) {
       if (existingCheck) {
         // Update existing
         onLinkedObjectChecksChange(
-          linkedObjectChecks.map((c) => (c.tableName === option.tableName ? { ...c, enabled: true } : c)),
+          linkedObjectChecks.map((c) => (checkMatchesOption(c, option) ? { ...c, enabled: true } : c)),
         );
       } else {
         // Add new check
@@ -186,12 +223,12 @@ export const AdvancedSetupsSection = ({
     } else {
       // Disable
       onLinkedObjectChecksChange(
-        linkedObjectChecks.map((c) => (c.tableName === option.tableName ? { ...c, enabled: false } : c)),
+        linkedObjectChecks.map((c) => (checkMatchesOption(c, option) ? { ...c, enabled: false } : c)),
       );
     }
   };
 
-  const handleNavigationFieldChange = (tableName: string, orderingFieldName: string, option: LinkedTableOption) => {
+  const handleNavigationFieldChange = (orderingFieldName: string, option: LinkedTableOption) => {
     // Build complete NavigationOptionRef with the selected ordering field
     const navigationOptionRef: NavigationOptionRef | undefined = option.baseNavRef
       ? { ...option.baseNavRef, orderingFieldName }
@@ -199,7 +236,7 @@ export const AdvancedSetupsSection = ({
 
     onLinkedObjectChecksChange(
       linkedObjectChecks.map((check) => {
-        if (check.tableName !== tableName) {
+        if (!checkMatchesOption(check, option)) {
           return check;
         }
 
@@ -224,17 +261,17 @@ export const AdvancedSetupsSection = ({
       </div>
 
       {linkedTableOptions.map((option) => {
-        const check = getCheckForTable(option.tableName);
+        const check = getCheckForOption(option);
         const isEnabled = check?.enabled ?? false;
 
         return (
           <LinkedObjectCheckItem
-            key={option.tableName}
+            key={getOptionKey(option)}
             option={option}
             check={check}
             isEnabled={isEnabled}
             onToggle={(enabled) => handleToggleCheck(option, enabled)}
-            onNavigationFieldChange={(fieldName) => handleNavigationFieldChange(option.tableName, fieldName, option)}
+            onNavigationFieldChange={(fieldName) => handleNavigationFieldChange(fieldName, option)}
             onPendingNavigationOptionAdd={onPendingNavigationOptionAdd}
           />
         );
