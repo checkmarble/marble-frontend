@@ -55,13 +55,14 @@ export function CaseDetailTriggerObject({
   );
 
   return (
-    <Card className={className}>
+    <Card>
       {dataModelTable?.name ? (
         <DataFields
           // use the fancy display if possible
           table={dataModelTable.name}
           object={{ data: triggerObject }}
           options={{ hideLinks: true, withOptionalHidden: true }}
+          className={className}
         />
       ) : (
         <div className={cn('grid grid-cols-[max-content_1fr] gap-md ', className)}>
