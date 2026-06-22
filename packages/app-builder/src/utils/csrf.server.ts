@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import { getCsrfCookie } from '@app-builder/repositories/SessionStorageRepositories/CsrfStorageRepository';
 import { sign } from '@app-builder/repositories/SessionStorageRepositories/signed-cookie';
+import { DEFAULT_SESSION_MAX_AGE } from '@app-builder/services/auth/auth-session.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { setCookie } from '@tanstack/react-start/server';
 
@@ -15,7 +16,7 @@ function isSecureRequest(request: Request): boolean {
 
 function getCsrfCookieForRequest(request: Request) {
   return getCsrfCookie({
-    maxAge: Number(getServerEnv('SESSION_MAX_AGE')) || 43200,
+    maxAge: Number(getServerEnv('SESSION_MAX_AGE')) || DEFAULT_SESSION_MAX_AGE,
     secrets: [getServerEnv('SESSION_SECRET')],
     secure: isSecureRequest(request),
   });
@@ -30,7 +31,7 @@ export async function commitCsrfToken(request: Request): Promise<string> {
 
   const token = crypto.randomUUID();
   const secret = getServerEnv('SESSION_SECRET');
-  const maxAge = Number(getServerEnv('SESSION_MAX_AGE')) || 43200;
+  const maxAge = Number(getServerEnv('SESSION_MAX_AGE')) || DEFAULT_SESSION_MAX_AGE;
 
   setCookie('csrf', sign(token, secret), {
     maxAge,
@@ -49,6 +50,9 @@ export async function validateCsrf(request: Request, formToken: string): Promise
   const a = Buffer.from(formToken);
   const b = Buffer.from(cookieToken);
   if (!a.length || a.length !== b.length || !timingSafeEqual(a, b)) {
+    // CSRF failures are swallowed upstream; log token presence (never the values) so we can
+    // tell a missing cookie (delivery) from a present-but-different one (token mismatch).
+    console.warn('[csrf] validation failed', { hasFormToken: a.length > 0, hasCookieToken: b.length > 0 });
     throw new CsrfError();
   }
 }

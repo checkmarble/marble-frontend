@@ -16,7 +16,7 @@ export type AuthSessionData = {
 
 // Absolute session lifetime (cookie maxAge). The idle timeout is enforced
 // in-app via `lastActivityAt`; see `isAuthenticated`.
-const DEFAULT_SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+export const DEFAULT_SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
 export function useAuthSession() {
   return useSession<AuthSessionData>({
