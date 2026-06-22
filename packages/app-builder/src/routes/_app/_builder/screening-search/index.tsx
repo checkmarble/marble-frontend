@@ -66,7 +66,7 @@ function ScreeningSearchIndexPage() {
 
   return (
     <Page.Main>
-      <Page.Content className="h-full gap-md">
+      <Page.Content className="h-full">
         <div className="flex items-center justify-between">
           <Typo variant="title1">{t('navigation:screening_search')}</Typo>
           <div className="flex items-center gap-sm">

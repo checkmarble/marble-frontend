@@ -138,7 +138,7 @@ function CaseManagerSettings() {
   });
 
   return (
-    <Page.Content width="readable" className="gap-md">
+    <Page.Content width="readable">
       <CollapsiblePaper.Container>
         <CollapsiblePaper.Title>
           <span className="flex-1">{t('settings:inboxes')}</span>

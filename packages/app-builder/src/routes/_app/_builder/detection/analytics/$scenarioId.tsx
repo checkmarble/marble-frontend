@@ -313,7 +313,7 @@ function Analytics() {
 
   return (
     <Page.Main>
-      <Page.Content className="gap-md">
+      <Page.Content>
         <DetectionNavigationTabs
         // actions={
         //   <Link

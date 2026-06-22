@@ -72,7 +72,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
   );
 
   return (
-    <Page.Content width="table" className="gap-md bg-surface-page">
+    <Page.Content width="table" className="bg-surface-page">
       <div className="flex flex-col gap-md relative">
         {/* Title Row */}
         <div className="flex justify-between items-center">

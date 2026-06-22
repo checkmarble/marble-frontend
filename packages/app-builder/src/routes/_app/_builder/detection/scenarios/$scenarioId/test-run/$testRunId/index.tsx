@@ -107,7 +107,7 @@ function TestRun() {
         ) : null}
       </Page.Header>
 
-      <Page.Content width="form" className="flex flex-col gap-xl">
+      <Page.Content width="form">
         <TestRunDetails {...run} iterations={iterations} creator={creator} />
         <Await promise={decisionsPromise} fallback={<DistributionOfDecisionChartSkeleton />}>
           {(decisions) => <DistributionOfDecisionChart versions={versions} decisions={decisions} />}

@@ -72,7 +72,7 @@ const PageContentClassName = cva('flex flex-1 flex-col text-default', {
   variants: {
     padding: {
       default: pageLayoutGutter.padding,
-      compact: 'p-md',
+      compact: 'p-md gap-md',
       none: 'p-0',
     },
     width: {

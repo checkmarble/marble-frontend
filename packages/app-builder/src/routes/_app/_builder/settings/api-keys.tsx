@@ -143,7 +143,7 @@ function ApiKeys() {
   });
 
   return (
-    <Page.Content width="readable" className="gap-md">
+    <Page.Content width="readable">
       <div className="flex flex-col items-start gap-sm">
         <Button
           variant="secondary"

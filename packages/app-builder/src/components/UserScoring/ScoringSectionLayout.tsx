@@ -35,7 +35,7 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   return (
     <CreateRulesetPanelContext.Provider value={{ open: panelOpen, setOpen: setPanelOpen }}>
       <Page.Main>
-        <Page.Content width="readable" className="flex flex-col gap-md">
+        <Page.Content width="readable">
           <div className="flex items-center justify-between">
             <Typo variant="title1">{t('user-scoring:section.title')}</Typo>
             {showCreateButton ? (

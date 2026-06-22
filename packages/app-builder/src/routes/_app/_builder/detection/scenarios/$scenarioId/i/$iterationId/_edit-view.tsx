@@ -90,7 +90,7 @@ function ScenarioEditLayout() {
           {withEditTag ? <Tag size="big">{t('common:edit')}</Tag> : null}
         </div>
       </Page.Header>
-      <Page.Content width="readable" className="flex flex-col gap-lg">
+      <Page.Content width="readable">
         {scenarioIteration.archived ? (
           <Callout color="red" icon="warning" className="mb-md">
             {t('scenarios:iteration.archived_message')}

@@ -160,7 +160,7 @@ function DetectionDecisions() {
   return (
     <DecisionRightPanel.Root content={<AddToCaseForm />}>
       <Page.Main>
-        <Page.Content width="table" className="gap-md">
+        <Page.Content width="table">
           <DetectionNavigationTabs />
           <div className="flex flex-col gap-md">
             <DecisionFiltersProvider

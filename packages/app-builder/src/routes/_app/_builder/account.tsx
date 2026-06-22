@@ -61,7 +61,7 @@ function AccountPage() {
         </Button>
       </Page.Header>
       <Page.Container>
-        <Page.Content width="fluid" centered className="gap-lg">
+        <Page.Content width="fluid" centered>
           <div className="flex flex-col items-center gap-lg">
             <div className="flex flex-col items-center gap-md">
               <Avatar size="xl" firstName={firstName} lastName={lastName} />

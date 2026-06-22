@@ -58,7 +58,7 @@ function ScheduledExecutions() {
         <BreadCrumbs />
       </Page.Header>
 
-      <Page.Content width="form" className="flex flex-col gap-md">
+      <Page.Content width="form">
         <Typo variant="title1" className="text-grey-primary text-m">
           {t('scenarios:home.execution.batch.scheduled_execution', {
             count: scheduledExecutions.length,

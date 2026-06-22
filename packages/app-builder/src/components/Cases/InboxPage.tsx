@@ -129,7 +129,7 @@ export const InboxPage = ({
   if (inboxes.length === 0 && inboxId === MY_INBOX_ID) {
     return (
       <Page.Main className="flex flex-col">
-        <Page.Content className="gap-md">
+        <Page.Content>
           {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
           <InboxEmptyState canManageInboxes={canViewNavigationTabs} />
         </Page.Content>
@@ -147,7 +147,7 @@ export const InboxPage = ({
           },
         )}
       />
-      <Page.Content width="table" className="gap-md">
+      <Page.Content width="table">
         {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
         <div className="flex flex-col gap-md relative">
           <MultiSelect.Root id={inboxId}>
