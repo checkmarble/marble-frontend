@@ -317,10 +317,12 @@ function DataModelFlowImpl({ dataModel, children }: TableFlowProps) {
     });
   }, [containerHeight, containerWidth, fitView, isInitialLayoutSettled, nodes]);
 
-  const isLoading = nodes.length > 0 && (!isInitialLayoutSettled || nodes.some((nd) => nd.data.state !== 'visible'));
+  const isLoading =
+    dataModel.length > 0 &&
+    (nodes.length === 0 || !isInitialLayoutSettled || nodes.some((nd) => nd.data.state !== 'visible'));
 
   return (
-    <div ref={containerRef} className="relative size-full">
+    <div ref={containerRef} className="relative h-full min-h-[min(600px,75vh)] w-full">
       {isLoading ? (
         <div className="bg-surface-page/80 absolute inset-0 z-10 flex items-center justify-center rounded-lg backdrop-blur-[1px]">
           <Spinner className="size-8" />

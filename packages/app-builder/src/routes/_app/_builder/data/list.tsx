@@ -6,10 +6,11 @@ import { CreateTableDrawer } from '@app-builder/components/Data/SemanticTables/C
 import { adaptCreateTableValue } from '@app-builder/components/Data/SemanticTables/CreateTable/createTable-types';
 import { dataModelFlowStyles, TableFlow } from '@app-builder/components/Data/SemanticTables/Flow/TableFlow';
 import { DataPageHeader } from '@app-builder/components/Data/SemanticTables/Shared/DataPageHeader';
+import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateTableMutation } from '@app-builder/queries/data/create-table';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { createFileRoute } from '@tanstack/react-router';
+import { ClientOnly, createFileRoute } from '@tanstack/react-router';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,24 +44,30 @@ function DataList() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
-      <Page.Container>
-        <Page.Content>
-          {isEmpty ? (
-            <EmptyHeader onCreateTable={handleOpenCreateDrawer} />
-          ) : (
-            <DataPageHeader handleOpenCreateDrawer={handleOpenCreateDrawer} />
-          )}
-          <CalloutV2>{t('data:callout')}</CalloutV2>
+      <Page.Content className="min-h-0 flex-1">
+        {isEmpty ? (
+          <EmptyHeader onCreateTable={handleOpenCreateDrawer} />
+        ) : (
+          <DataPageHeader handleOpenCreateDrawer={handleOpenCreateDrawer} />
+        )}
+        <CalloutV2>{t('data:callout')}</CalloutV2>
 
-          {isEmpty ? (
-            <DataListEmptyState onCreateTable={handleOpenCreateDrawer} />
-          ) : (
-            <div className="flex w-full min-h-[min(600px,75vh)] flex-1 flex-col">
+        {isEmpty ? (
+          <DataListEmptyState onCreateTable={handleOpenCreateDrawer} />
+        ) : (
+          <div className="flex h-[min(600px,75vh)] w-full min-h-[min(600px,75vh)] flex-1 flex-col">
+            <ClientOnly
+              fallback={
+                <div className="flex size-full items-center justify-center">
+                  <Spinner className="size-8" />
+                </div>
+              }
+            >
               <TableFlow dataModel={dataModel} />
-            </div>
-          )}
-        </Page.Content>
-      </Page.Container>
+            </ClientOnly>
+          </div>
+        )}
+      </Page.Content>
 
       <CreateTableDrawer
         open={isCreateDrawerOpen}
