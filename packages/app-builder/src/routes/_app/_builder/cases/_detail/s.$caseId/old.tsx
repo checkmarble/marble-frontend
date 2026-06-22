@@ -172,7 +172,7 @@ function CaseManagerIndexPage() {
           </a>
         </div>
       </Page.Header>
-      <Page.Container className="text-default relative h-full flex-row p-0 lg:p-0">
+      <div className="relative text-default h-full flex flex-row p-0 lg:p-0 z-0">
         <CaseDetails
           key={details.id}
           caseDetail={details}
@@ -213,7 +213,7 @@ function CaseManagerIndexPage() {
               .exhaustive()}
           </CaseManagerDrawer>
         </DataModelExplorerProvider>
-      </Page.Container>
+      </div>
     </Page.Main>
   );
 }
