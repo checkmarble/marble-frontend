@@ -35,36 +35,34 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   return (
     <CreateRulesetPanelContext.Provider value={{ open: panelOpen, setOpen: setPanelOpen }}>
       <Page.Main>
-        <Page.Container>
-          <Page.ContentV2 className="flex flex-col gap-md container mx-auto">
-            <div className="flex items-center justify-between">
-              <Typo variant="title1">{t('user-scoring:section.title')}</Typo>
-              {showCreateButton ? (
-                <Button variant="secondary" onClick={() => setPanelOpen(true)}>
-                  {t('user-scoring:section.configure_button')}
-                </Button>
-              ) : null}
-            </div>
-            <Tabs>
-              <Link to="/user-scoring/overview" className={tabClassName}>
-                {t('user-scoring:section.tab_overview')}
-              </Link>
-              {isPending ? (
-                <div className="h-full flex items-center px-sm">
-                  <Spinner className="size-4" />
-                </div>
-              ) : (
-                rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
-              )}
-            </Tabs>
-            <Outlet />
-            {maxRiskLevel ? (
-              <PanelRoot open={panelOpen} onOpenChange={setPanelOpen}>
-                <ScoringRulesetCreationPanel maxRiskLevel={maxRiskLevel} />
-              </PanelRoot>
+        <Page.Content width="readable">
+          <div className="flex items-center justify-between">
+            <Typo variant="title1">{t('user-scoring:section.title')}</Typo>
+            {showCreateButton ? (
+              <Button variant="secondary" onClick={() => setPanelOpen(true)}>
+                {t('user-scoring:section.configure_button')}
+              </Button>
             ) : null}
-          </Page.ContentV2>
-        </Page.Container>
+          </div>
+          <Tabs>
+            <Link to="/user-scoring/overview" className={tabClassName}>
+              {t('user-scoring:section.tab_overview')}
+            </Link>
+            {isPending ? (
+              <div className="h-full flex items-center px-sm">
+                <Spinner className="size-4" />
+              </div>
+            ) : (
+              rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
+            )}
+          </Tabs>
+          <Outlet />
+          {maxRiskLevel ? (
+            <PanelRoot open={panelOpen} onOpenChange={setPanelOpen}>
+              <ScoringRulesetCreationPanel maxRiskLevel={maxRiskLevel} />
+            </PanelRoot>
+          ) : null}
+        </Page.Content>
       </Page.Main>
     </CreateRulesetPanelContext.Provider>
   );

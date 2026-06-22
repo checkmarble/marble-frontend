@@ -81,88 +81,86 @@ function Scenarios() {
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <form
-          className="flex flex-col gap-xl"
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <CalloutV2>{t('settings:scenario_sanction_callout')}</CalloutV2>
-            <Button type="submit" variant="primary">
-              {t('common:save')}
-            </Button>
-          </div>
+    <Page.Content width="readable">
+      <form
+        className="flex flex-col gap-md"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          form.handleSubmit();
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <CalloutV2>{t('settings:scenario_sanction_callout')}</CalloutV2>
+          <Button type="submit" variant="primary">
+            {t('common:save')}
+          </Button>
+        </div>
+        <CollapsiblePaper.Container>
+          <CollapsiblePaper.Title>
+            <span className="flex-1">{t('settings:scenenario_execution')}</span>
+          </CollapsiblePaper.Title>
+          <CollapsiblePaper.Content>
+            <form.Field name="defaultScenarioTimezone">
+              {(field) => (
+                <div className="flex w-full items-center justify-between">
+                  <FormLabel name={field.name}>{t('settings:scenario_default_timezone.label')}</FormLabel>
+                  <FormSelectTimezone
+                    name={field.name}
+                    disabled={!isAdmin(user)}
+                    selectedTimezone={field.state.value}
+                    validTimezones={validTimezones}
+                    onBlur={field.handleBlur}
+                    onSelectedValueChange={field.handleChange}
+                  />
+                </div>
+              )}
+            </form.Field>
+          </CollapsiblePaper.Content>
+        </CollapsiblePaper.Container>
+        {entitlements.sanctions !== 'restricted' ? (
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>
-              <span className="flex-1">{t('settings:scenenario_execution')}</span>
+              <span className="flex-1">{t('settings:scenario_sanction_settings')}</span>
             </CollapsiblePaper.Title>
             <CollapsiblePaper.Content>
-              <form.Field name="defaultScenarioTimezone">
-                {(field) => (
-                  <div className="flex w-full items-center justify-between">
-                    <FormLabel name={field.name}>{t('settings:scenario_default_timezone.label')}</FormLabel>
-                    <FormSelectTimezone
-                      name={field.name}
-                      disabled={!isAdmin(user)}
-                      selectedTimezone={field.state.value}
-                      validTimezones={validTimezones}
-                      onBlur={field.handleBlur}
-                      onSelectedValueChange={field.handleChange}
-                    />
-                  </div>
-                )}
-              </form.Field>
+              <div className="flex flex-col gap-lg lg:gap-xl">
+                <form.Field name="sanctionLimit">
+                  {(field) => (
+                    <div className="flex flex-col gap-md">
+                      <FormLabel name={field.name} className="text-m" valid={field.state.meta.errors.length === 0}>
+                        {t('settings:scenario_sanction_limit')}
+                      </FormLabel>
+                      <FormInput
+                        defaultValue={field.state.value}
+                        type="number"
+                        name={field.name}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                        placeholder={t('settings:scenario_sanction_limit_placeholder')}
+                        valid={field.state.meta.errors.length === 0}
+                      />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                    </div>
+                  )}
+                </form.Field>
+                <form.Field name="sanctionThreshold">
+                  {(field) => (
+                    <div className="flex flex-col gap-md">
+                      <ScreeningThreshold
+                        threshold={field.state.value}
+                        onChange={(value) => form.setFieldValue(field.name, value)}
+                        title={t('settings:scenario_sanction_threshold')}
+                      />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                    </div>
+                  )}
+                </form.Field>
+              </div>
             </CollapsiblePaper.Content>
           </CollapsiblePaper.Container>
-          {entitlements.sanctions !== 'restricted' ? (
-            <CollapsiblePaper.Container>
-              <CollapsiblePaper.Title>
-                <span className="flex-1">{t('settings:scenario_sanction_settings')}</span>
-              </CollapsiblePaper.Title>
-              <CollapsiblePaper.Content>
-                <div className="flex flex-col gap-lg lg:gap-xl">
-                  <form.Field name="sanctionLimit">
-                    {(field) => (
-                      <div className="flex flex-col gap-md">
-                        <FormLabel name={field.name} className="text-m" valid={field.state.meta.errors.length === 0}>
-                          {t('settings:scenario_sanction_limit')}
-                        </FormLabel>
-                        <FormInput
-                          defaultValue={field.state.value}
-                          type="number"
-                          name={field.name}
-                          onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                          placeholder={t('settings:scenario_sanction_limit_placeholder')}
-                          valid={field.state.meta.errors.length === 0}
-                        />
-                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                      </div>
-                    )}
-                  </form.Field>
-                  <form.Field name="sanctionThreshold">
-                    {(field) => (
-                      <div className="flex flex-col gap-md">
-                        <ScreeningThreshold
-                          threshold={field.state.value}
-                          onChange={(value) => form.setFieldValue(field.name, value)}
-                          title={t('settings:scenario_sanction_threshold')}
-                        />
-                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                      </div>
-                    )}
-                  </form.Field>
-                </div>
-              </CollapsiblePaper.Content>
-            </CollapsiblePaper.Container>
-          ) : null}
-        </form>
-      </Page.Content>
-    </Page.Container>
+        ) : null}
+      </form>
+    </Page.Content>
   );
 }

@@ -1,3 +1,4 @@
+import { Page } from '@app-builder/components';
 import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -51,13 +52,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
     }, [casesQuery.data?.pages]);
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          'flex items-center justify-between sticky bottom-0 bg-surface-page -mx-lg -mb-lg pt-md px-lg pb-lg border-t border-transparent',
-          className,
-        )}
-      >
+      <Page.StickyFooter ref={ref} surface="page" className={className}>
         <div className="flex items-center gap-xs">
           <span>{t('cases:list.results_per_page')}</span>
           {[25, 50, 100].map((limit) => {
@@ -120,7 +115,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
             <Icon icon="arrow-right" className="size-5" />
           </Button>
         </div>
-      </div>
+      </Page.StickyFooter>
     );
   },
 );

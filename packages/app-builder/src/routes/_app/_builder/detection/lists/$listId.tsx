@@ -143,7 +143,7 @@ function Lists() {
       </Page.Header>
       <Page.Container>
         {customList.description ? <Page.Description headerBanner>{customList.description}</Page.Description> : null}
-        <Page.Content className="max-w-(--breakpoint-xl)">
+        <Page.Content width="table">
           {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
           <div className="flex flex-col gap-sm overflow-hidden lg:gap-md">

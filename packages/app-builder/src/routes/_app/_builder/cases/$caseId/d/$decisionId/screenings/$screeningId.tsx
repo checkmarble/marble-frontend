@@ -134,7 +134,7 @@ function CaseSanctionReviewPage() {
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
         <Page.Container>
-          <Page.Content className="max-w-(--breakpoint-xl)">
+          <Page.Content width="readable">
             <nav>
               <ul className="bg-surface-card border-grey-border inline-flex flex-row gap-sm rounded-lg border p-xs">
                 <li>

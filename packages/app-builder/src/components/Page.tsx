@@ -5,6 +5,8 @@ import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, cn, StickyComponent, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { pageLayoutGutter } from './Page/page-layout';
+import { PageStickyFooter } from './Page/StickyFooter';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return <main className={cn('relative bg-surface-page flex flex-1 flex-col', className)} {...props} />;
@@ -30,7 +32,11 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(fu
   { className, children, ...props },
   ref,
 ) {
-  return <div>{children}</div>;
+  return (
+    <div ref={ref} className={cn('flex min-w-0 flex-1 flex-col', className)} {...props}>
+      {children}
+    </div>
+  );
 });
 
 const pageDescriptionClassName = cva(
@@ -62,40 +68,38 @@ function PageDescription({
   );
 }
 
-// @deprecated
-function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn(
-        'flex flex-1 flex-col gap-md p-md pe-[calc(1rem-var(--scrollbar-width))] lg:gap-xl lg:p-xl lg:pe-[calc(2rem-var(--scrollbar-width))]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
+const PageContentClassName = cva('flex flex-1 flex-col text-default', {
   variants: {
+    padding: {
+      default: pageLayoutGutter.padding,
+      compact: 'p-md gap-md',
+      none: 'p-0',
+    },
+    width: {
+      fluid: null,
+      readable: 'w-full max-w-(--breakpoint-xl)',
+      form: 'w-full max-w-(--breakpoint-lg)',
+      table: 'min-w-0 w-full',
+    },
     centered: {
       true: 'mx-auto',
       false: null,
     },
-    paddingLess: {
-      true: 'p-0',
-      false: 'p-lg',
-    },
   },
   defaultVariants: {
-    paddingLess: false,
+    padding: 'default',
+    width: 'fluid',
     centered: false,
   },
 });
 
-type PageContentV2Props = React.ComponentProps<'div'> & VariantProps<typeof PageContentV2ClassName>;
+type PageContentProps = React.ComponentProps<'div'> &
+  Omit<VariantProps<typeof PageContentClassName>, 'padding'> & {
+    padding?: VariantProps<typeof PageContentClassName>['padding'];
+  };
 
-function PageContentV2({ className, centered, paddingLess, ...props }: PageContentV2Props) {
-  return <div className={PageContentV2ClassName({ centered, paddingLess, className })} {...props} />;
+function PageContent({ className, centered, padding, width, ...props }: PageContentProps) {
+  return <div className={PageContentClassName({ centered, padding, width, className })} {...props} />;
 }
 
 const pageBack = cva(
@@ -127,18 +131,33 @@ function PageBackLink({ className: _className, ...props }: React.ComponentProps<
  * Example:
  * ```tsx
  * <Page.Main>
- *     <Page.Header> // Fixed header
+ *     <Page.Header> // Sticky header
  *       ...
  *     </Page.Header>
- *     <Page.Container> // Scrollable container
- *         <Page.Description> // Optional
- *           ...
- *         </Page.Description>
- *         <Page.Content> // Main content of the page
- *           ...
- *         </Page.Content>
- *     </Page.Container>
+ *        <Page.Description> // Optional
+ *          ...
+ *        </Page.Description>
+ *        <Page.Content width="readable"> // Main content
+ *          ...
+ *        </Page.Content>
  * </Page.Main>
+ * ```
+ *
+ * Content is by default `flex, flex-col`
+ *
+ * padding
+ * - default: standard responsive (padding and gap)
+ * - compact: forced to p-md/gap-md
+ * - none
+ *
+ * width
+ * - fluid: free width
+ * - readable: max width large for most pages with card content
+ * - form: max width narrow for forms display
+ * - table: full width for table display
+ *
+ * centered
+ * - default is not centered
  */
 export const Page = {
   Main: PageMain,
@@ -147,6 +166,6 @@ export const Page = {
   BackLink: PageBackLink,
   Container: PageContainer,
   Content: PageContent,
-  ContentV2: PageContentV2,
+  StickyFooter: PageStickyFooter,
   Description: PageDescription,
 };

@@ -116,25 +116,23 @@ function Tags() {
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:tags')}</span>
-            {isCreateTagAvailable ? <CreateTag /> : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Table.Container {...getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={table.getHeaderGroups()} />
-              <Table.Body {...getBodyProps()}>
-                {rows.map((row) => {
-                  return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
-                })}
-              </Table.Body>
-            </Table.Container>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-      </Page.Content>
-    </Page.Container>
+    <Page.Content width="readable">
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:tags')}</span>
+          {isCreateTagAvailable ? <CreateTag /> : null}
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Table.Container {...getContainerProps()} className="max-h-96">
+            <Table.Header headerGroups={table.getHeaderGroups()} />
+            <Table.Body {...getBodyProps()}>
+              {rows.map((row) => {
+                return <Table.Row key={row.id} className="hover:bg-surface-row-hover group" row={row} />;
+              })}
+            </Table.Body>
+          </Table.Container>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+    </Page.Content>
   );
 }

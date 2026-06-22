@@ -52,7 +52,7 @@ export const ScreeningCaseDetailPage = ({
         <BreadCrumbs />
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 paddingLess>
+        <Page.Content padding="none">
           <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_130)] h-full relative">
             <div className="flex flex-col gap-lg p-lg">
               <CaseDetailInfo caseDetail={caseDetail} caseInbox={caseInbox} isUserAdmin={isUserAdmin} />
@@ -89,7 +89,7 @@ export const ScreeningCaseDetailPage = ({
               </div>
             </div>
           </div>
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Container>
     </Page.Main>
   );

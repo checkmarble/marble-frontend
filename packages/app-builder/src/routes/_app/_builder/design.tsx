@@ -27,24 +27,20 @@ function DesignPage() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
       </Page.Header>
-      <Page.Container>
-        <Page.Content>
-          <div className="flex flex-col gap-3xl">
-            <Section title="Radio" description="Figma node 1206-800">
-              <RadioMatrix />
-            </Section>
-            <Section title="Checkbox" description="Figma node 2-472">
-              <CheckboxMatrix />
-            </Section>
-            <Section title="Switch" description="Figma node 2-580">
-              <SwitchMatrix />
-            </Section>
-            <Section title="Button" description="Figma node 881-9199">
-              <ButtonMatrix />
-            </Section>
-          </div>
-        </Page.Content>
-      </Page.Container>
+      <Page.Content width="readable" className="gap-3xl">
+        <Section title="Radio" description="Figma node 1206-800">
+          <RadioMatrix />
+        </Section>
+        <Section title="Checkbox" description="Figma node 2-472">
+          <CheckboxMatrix />
+        </Section>
+        <Section title="Switch" description="Figma node 2-580">
+          <SwitchMatrix />
+        </Section>
+        <Section title="Button" description="Figma node 881-9199">
+          <ButtonMatrix />
+        </Section>
+      </Page.Content>
     </Page.Main>
   );
 }

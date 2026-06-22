@@ -1,3 +1,4 @@
+import { Page } from '@app-builder/components';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
@@ -25,12 +26,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
   const { t } = useTranslation(['settings']);
 
   return (
-    <div
-      className={cn(
-        'flex items-center justify-between sticky bottom-0 bg-surface-card -mx-lg -mb-lg pt-md px-lg pb-lg border-t border-transparent',
-        className,
-      )}
-    >
+    <Page.StickyFooter surface="card" className={className}>
       <div className="flex items-center gap-xs">
         <span>{t('settings:audit.pagination.per_page')}</span>
         {[25, 50, 100].map((limit) => {
@@ -76,6 +72,6 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
           <Icon icon="arrow-right" className="size-5" />
         </Button>
       </div>
-    </div>
+    </Page.StickyFooter>
   );
 };

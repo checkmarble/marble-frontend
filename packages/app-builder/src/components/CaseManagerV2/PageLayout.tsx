@@ -124,7 +124,7 @@ export function CaseManagerPageLayout({
         </div>
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 className="px-lg relative">
+        <Page.Content className="relative">
           <div className="flex justify-between mb-lg">
             <Tabs>
               <Link className={tabClassName} from="/cases/s/$caseId" to="./principal">
@@ -159,7 +159,7 @@ export function CaseManagerPageLayout({
             onOpenChange={setKycEnrichmentPanelOpen}
           />
           {info ? <StickyCommentForm {...info} /> : null}
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Container>
     </Page.Main>
   );
