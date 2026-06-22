@@ -118,6 +118,20 @@ export function EntityProperties<T extends OpenSanctionEntity>({
     setDisplayAll((prev) => ({ ...prev, [prop]: true }));
   };
 
+  function deduplicationKey(value: string) {
+    return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  }
+
+  function deduplicatedStrings(values: string[]) {
+    const seen = new Set<string>();
+    return values.filter((value) => {
+      const normalized = deduplicationKey(value);
+      if (seen.has(normalized)) return false;
+      seen.add(normalized);
+      return true;
+    });
+  }
+
   return (
     <div className="grid grid-cols-[146px_1fr] gap-md text-xs">
       {before}
@@ -154,7 +168,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                 </PropertyContainer>
               ) : isScriptTaggedProperty(property) ? (
                 <PropertyContainer property={property}>
-                  {(values as string[]).map((value, index) => (
+                  {deduplicatedStrings(values as string[]).map((value, index) => (
                     <ParseAlias key={index} value={value} highlightText={highlightText} />
                   ))}
                   {restItemsCount > 0 ? (
@@ -174,10 +188,10 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                 </PropertyContainer>
               ) : values.length > 0 ? (
                 <PropertyContainer property={property}>
-                  {(values as string[]).map((v, i) => (
+                  {deduplicatedStrings(values as string[]).map((v, i, deduplicatedValues) => (
                     <Fragment key={i}>
                       <TransformProperty property={property} value={v} />
-                      {i === values.length - 1 || isPropertyListed(property) ? null : <IconDot spaced />}
+                      {i === deduplicatedValues.length - 1 || isPropertyListed(property) ? null : <IconDot spaced />}
                     </Fragment>
                   ))}
                   {restItemsCount > 0 ? (

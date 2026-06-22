@@ -14,9 +14,16 @@ interface FreeformMatchCardProps {
   defaultOpen?: boolean;
   searchTerm?: string;
   background?: 'card' | 'grey';
+  withExploreButton?: boolean;
 }
 
-export function FreeformMatchCard({ entity, defaultOpen, searchTerm, background }: FreeformMatchCardProps) {
+export function FreeformMatchCard({
+  entity,
+  defaultOpen,
+  searchTerm,
+  background,
+  withExploreButton,
+}: FreeformMatchCardProps) {
   const { t } = useTranslation(screeningsI18n);
   const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
 
@@ -57,7 +64,12 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm, background 
               </div>
             </div>
           ) : null}
-          <FreeFormMatchCardDataContent entityId={entity.id} searchTerm={searchTerm} isOpen={isOpen} />
+          <FreeFormMatchCardDataContent
+            entityId={entity.id}
+            searchTerm={searchTerm}
+            isOpen={isOpen}
+            withExploreButton={withExploreButton}
+          />
         </div>
       </Collapsible.Content>
     </Collapsible.Container>
@@ -71,11 +83,13 @@ export function FreeFormMatchCardDataContent({
   searchTerm,
   isOpen,
   withTopics = false,
+  withExploreButton = true,
 }: {
   entityId: string;
   searchTerm?: string;
   isOpen: boolean;
   withTopics?: boolean;
+  withExploreButton?: boolean;
 }) {
   const { t } = useTranslation(screeningsI18n);
   const enrichedData = useGetEnrichedDataQuery({ entityId }, isOpen);
@@ -86,7 +100,7 @@ export function FreeFormMatchCardDataContent({
   return (
     <div className="text-s flex flex-col gap-lg p-md">
       {withTopics && <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-xs font-normal" />}
-      <MatchDetails entity={entity} highlightText={searchTerm} />
+      <MatchDetails entity={entity} highlightText={searchTerm} withExploreButton={withExploreButton} />
     </div>
   );
 }

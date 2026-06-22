@@ -16,6 +16,7 @@ export type MatchDetailsProps = {
   entity: ScreeningMatch['payload'];
   before?: ReactNode;
   highlightText?: string;
+  withExploreButton?: boolean;
 };
 
 function relationshipKey({ source, value }: FamilyRelationshipEntry) {
@@ -32,7 +33,7 @@ function dedupeRelationships(entries: FamilyRelationshipEntry[]) {
   });
 }
 
-export function MatchDetails({ entity, before, highlightText }: MatchDetailsProps) {
+export function MatchDetails({ entity, before, highlightText, withExploreButton }: MatchDetailsProps) {
   const deduplicatedEntity = useMemo(() => {
     if (entity.schema !== 'Person') return entity;
 
@@ -166,14 +167,25 @@ export function MatchDetails({ entity, before, highlightText }: MatchDetailsProp
         <MemberShip membershipMember={entity.properties['membershipMember']} />
       ) : null}
 
-      <Associations associations={deduplicatedEntity.properties['associations']} />
+      <Associations
+        associations={deduplicatedEntity.properties['associations']}
+        withExploreButton={withExploreButton}
+      />
 
       {entity.schema === 'Person' && deduplicatedEntity.properties?.['familyPerson']?.length ? (
-        <FamilyDetail relation="familyPerson" familyMembers={deduplicatedEntity.properties['familyPerson']} />
+        <FamilyDetail
+          relation="familyPerson"
+          familyMembers={deduplicatedEntity.properties['familyPerson']}
+          withExploreButton={withExploreButton}
+        />
       ) : null}
 
       {entity.schema === 'Person' && deduplicatedEntity.properties?.['familyRelative']?.length ? (
-        <FamilyDetail relation="familyRelative" familyMembers={deduplicatedEntity.properties['familyRelative']} />
+        <FamilyDetail
+          relation="familyRelative"
+          familyMembers={deduplicatedEntity.properties['familyRelative']}
+          withExploreButton={withExploreButton}
+        />
       ) : null}
     </div>
   );
