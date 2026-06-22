@@ -134,6 +134,8 @@
   "field_name": "الاسم",
   "field_required": "إلزامي",
   "field_type": "النوع",
+  "fields_show_less": "عرض أقل",
+  "fields_show_more": "عرض المزيد (+{{count}})",
   "foreign_key": "مفتاح خارجي",
   "hide_hidden_fields": "إخفاء الحقول المخفية",
   "import_org.button": "استيراد البيانات",

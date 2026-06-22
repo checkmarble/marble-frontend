@@ -39,6 +39,8 @@ export const Route = createFileRoute('/_app/_builder/cases/_detail')({
       ({ isLast, data }: BreadCrumbProps<Awaited<ReturnType<typeof caseDetailLayoutLoader>>>) => {
         const caseDetail = data.caseDetail;
 
+        console.log(caseDetail);
+
         return (
           <BreadCrumbLink to="/cases/$caseId" params={{ caseId: fromUUIDtoSUUID(caseDetail.id) }} isLast={isLast}>
             <span className="line-clamp-2 text-start">{caseDetail.name}</span>

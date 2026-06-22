@@ -35,9 +35,12 @@ export type DataFieldsProps = (
   };
 };
 
+const MAX_VISIBLE_FIELDS = 20;
+
 export function DataFields({ table, object, preset, customFields, className, options }: DataFieldsProps) {
   const dataModel = useDataModel();
   const [showHidden, setShowHidden] = useState(false);
+  const [showAllFields, setShowAllFields] = useState(false);
   const tableModel = dataModel.find((tbl) => tbl.name === table);
   const { t } = useTranslation(['data']);
 
@@ -99,47 +102,62 @@ export function DataFields({ table, object, preset, customFields, className, opt
     return metadataByField;
   }, [object.data]);
 
+  const visibleFields = useMemo(() => {
+    if (!Array.isArray(fields)) return [];
+    return fields.filter((field): field is DataModelField => Boolean(field && (!field.hidden || showHidden)));
+  }, [fields, showHidden]);
+
+  const hasMoreFields = visibleFields.length > MAX_VISIBLE_FIELDS;
+  const displayedFields = showAllFields || !hasMoreFields ? visibleFields : visibleFields.slice(0, MAX_VISIBLE_FIELDS);
+
   return (
     <DataVisualisationProvider value={contextValue}>
       {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
-      <div
-        className={cn(
-          'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-4 gap-y-2 break-all',
-          options?.layout === '2-columns' && 'grid-cols-[repeat(2,max-content_minmax(0,1fr))]',
-          options?.layout === '3-columns' && 'grid-cols-[repeat(3,max-content_minmax(0,1fr))]',
-          (options?.layout === '1-column' || !options?.layout) && 'grid-cols-[max-content_minmax(0,1fr)]',
-          className,
-        )}
-      >
-        {Array.isArray(fields)
-          ? fields.map((field) => {
-              const linkedTo = field ? links?.[field.name] : undefined;
-              const metaDataValue =
-                field && hasMetadataContent(metaData?.[field?.name]) ? metaData?.[field?.name] : undefined;
-              const fieldCurrency = resolveFieldCurrency(field, tableModel?.fields, object.data);
-              const isHidden = field?.hidden && !showHidden;
-              if (isHidden) return null;
-              return field ? (
-                <DataField
-                  key={field?.id}
-                  field={field}
-                  value={formatValue(object.data?.[field.name])}
-                  linkedTo={linkedTo}
-                  metaData={metaDataValue}
-                  currency={fieldCurrency}
-                />
-              ) : null;
-            })
-          : null}
-        {fields.some((field) => field?.hidden) && options?.withOptionalHidden ? (
-          <div className="flex justify-start col-span-full">
-            <Button variant="secondary" size="small" onClick={() => setShowHidden(!showHidden)}>
-              {showHidden
-                ? t('data:hide_hidden_fields')
-                : t('data:show_hidden_fields', { count: fields.filter((field) => field?.hidden).length })}
-            </Button>
-          </div>
-        ) : null}
+      <div className="@container">
+        <div
+          className={cn(
+            'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-md gap-y-sm break-all',
+            'grid-cols-[minmax(0,20ch)_minmax(0,1fr)]',
+            options?.layout === '2-columns' && '@[700px]:grid-cols-[repeat(2,minmax(0,20ch)_minmax(0,1fr))]',
+            options?.layout === '3-columns' && '@[700px]:grid-cols-[repeat(3,minmax(0,20ch)_minmax(0,1fr))]',
+            className,
+          )}
+        >
+          {displayedFields.map((field) => {
+            const linkedTo = links?.[field.name];
+            const metaDataValue = hasMetadataContent(metaData?.[field.name]) ? metaData?.[field.name] : undefined;
+            const fieldCurrency = resolveFieldCurrency(field, tableModel?.fields, object.data);
+
+            return (
+              <DataField
+                key={field.id}
+                field={field}
+                value={formatValue(object.data?.[field.name])}
+                linkedTo={linkedTo}
+                metaData={metaDataValue}
+                currency={fieldCurrency}
+              />
+            );
+          })}
+          {hasMoreFields ? (
+            <div className="col-span-full flex justify-start">
+              <Button variant="secondary" size="small" onClick={() => setShowAllFields(!showAllFields)}>
+                {showAllFields
+                  ? t('data:fields_show_less')
+                  : t('data:fields_show_more', { count: visibleFields.length - MAX_VISIBLE_FIELDS })}
+              </Button>
+            </div>
+          ) : null}
+          {fields.some((field) => field?.hidden) && options?.withOptionalHidden ? (
+            <div className="col-span-full flex justify-start">
+              <Button variant="secondary" size="small" onClick={() => setShowHidden(!showHidden)}>
+                {showHidden
+                  ? t('data:hide_hidden_fields')
+                  : t('data:show_hidden_fields', { count: fields.filter((field) => field?.hidden).length })}
+              </Button>
+            </div>
+          ) : null}
+        </div>
       </div>
     </DataVisualisationProvider>
   );

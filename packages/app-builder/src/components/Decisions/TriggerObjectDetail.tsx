@@ -1,10 +1,9 @@
 import { DataModelObjectValue, type TableModel } from '@app-builder/models';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import clsx from 'clsx';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Collapsible } from 'ui-design-system';
+import { Card, Collapsible, cn } from 'ui-design-system';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { FormatData } from '../FormatData';
 import { decisionsI18n } from './decisions-i18n';
@@ -56,12 +55,7 @@ export function CaseDetailTriggerObject({
   );
 
   return (
-    <div
-      className={clsx(
-        'text-s text-grey-primary border-grey-border grid grid-cols-[max-content_1fr] gap-md gap-x-4 break-all rounded-lg border bg-surface-card p-md',
-        className,
-      )}
-    >
+    <Card className={className}>
       {dataModelTable?.name ? (
         <DataFields
           // use the fancy display if possible
@@ -70,27 +64,29 @@ export function CaseDetailTriggerObject({
           options={{ hideLinks: true, withOptionalHidden: true }}
         />
       ) : (
-        parsedTriggerObject.map(([property, data]) => {
-          const fieldType = dataModelTable?.fields?.find((f) => f.name === property)?.dataType;
-          return (
-            <Fragment key={property}>
-              <span className="font-semibold">{property}</span>
-              <div className="inline-flex items-center gap-sm">
-                {links[property] && data.value ? (
-                  <button
-                    className="text-purple-primary group flex items-center gap-xs text-left"
-                    onClick={() => onLinkClicked(links[property] as string, data.value as string)}
-                  >
+        <div className={cn('grid grid-cols-[max-content_1fr] gap-md ', className)}>
+          {parsedTriggerObject.map(([property, data]) => {
+            const fieldType = dataModelTable?.fields?.find((f) => f.name === property)?.dataType;
+            return (
+              <Fragment key={property}>
+                <span className="font-semibold">{property}</span>
+                <div className="inline-flex items-center gap-sm">
+                  {links[property] && data.value ? (
+                    <button
+                      className="text-purple-primary group flex items-center gap-xs text-left"
+                      onClick={() => onLinkClicked(links[property] as string, data.value as string)}
+                    >
+                      <FormatData type={fieldType} data={data} mapHeight={200} />
+                    </button>
+                  ) : (
                     <FormatData type={fieldType} data={data} mapHeight={200} />
-                  </button>
-                ) : (
-                  <FormatData type={fieldType} data={data} mapHeight={200} />
-                )}
-              </div>
-            </Fragment>
-          );
-        })
+                  )}
+                </div>
+              </Fragment>
+            );
+          })}
+        </div>
       )}
-    </div>
+    </Card>
   );
 }
