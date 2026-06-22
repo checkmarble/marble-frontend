@@ -86,9 +86,9 @@ test('Delete an inbox', async ({ page }) => {
   const deleteDialog = page.getByRole('dialog');
   await deleteDialog.waitFor();
   await deleteDialog.getByRole('button', { name: 'Delete' }).click();
-  await waitForHydration(page);
-
-  await page.goto('/settings/inboxes');
+  // Deleting redirects back to the list once the server-side delete commits.
+  // Wait for that redirect instead of racing it with a manual goto.
+  await page.waitForURL(/\/settings\/inboxes$/);
   await waitForHydration(page);
   await expect(page.locator('body')).not.toContainText(inboxName);
 });
