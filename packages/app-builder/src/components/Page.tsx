@@ -134,20 +134,30 @@ function PageBackLink({ className: _className, ...props }: React.ComponentProps<
  *     <Page.Header> // Sticky header
  *       ...
  *     </Page.Header>
- *     <Page.Container> // Content region below the sticky header
- *         <Page.Description> // Optional
- *           ...
- *         </Page.Description>
- *         <Page.Content padding="default" width="readable"> // Main content
- *           ...
- *         </Page.Content>
- *     </Page.Container>
+ *        <Page.Description> // Optional
+ *          ...
+ *        </Page.Description>
+ *        <Page.Content width="readable"> // Main content
+ *          ...
+ *        </Page.Content>
  * </Page.Main>
  * ```
  *
- * `Page.Content` layout variants:
- * - `padding`: `default` (responsive md/lg/2xl gutters), `compact` (md), `none`
- * - `width`: `fluid`, `readable` (xl max-width), `form` (lg max-width), `table` (full-width tables)
+ * Content is by default `flex, flex-col`
+ *
+ * padding
+ * - default: standard responsive (padding and gap)
+ * - compact: forced to p-md/gap-md
+ * - none
+ *
+ * width
+ * - fluid: free width
+ * - readable: max width large for most pages with card content
+ * - form: max width narrow for forms display
+ * - table: full width for table display
+ *
+ * centered
+ * - default is not centered
  */
 export const Page = {
   Main: PageMain,
