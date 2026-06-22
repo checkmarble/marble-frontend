@@ -73,13 +73,13 @@ export function StringSwitchEdit({ conditions, maxRiskLevel, onChange, customLis
   };
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       {branches.map((branch, idx) => {
         const op = branch.value.op;
         const isListOp = op === 'IsInList' || op === 'IsNotInList';
         return (
-          <div key={idx} className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
+          <div key={idx} className="flex flex-col gap-sm">
+            <div className="flex items-center gap-sm">
               <SelectV2
                 value={op}
                 placeholder="="
@@ -108,7 +108,7 @@ export function StringSwitchEdit({ conditions, maxRiskLevel, onChange, customLis
                 <Icon icon="delete" className="size-5" />
               </button>
             </div>
-            <div className="grid grid-cols-[200px_minmax(auto,_40px)_70px_auto] items-center gap-2">
+            <div className="grid grid-cols-[200px_minmax(auto,_40px)_70px_auto] items-center gap-sm">
               <div />
               <span className="text-center text-grey-secondary">{t('user-scoring:switch.string.then')}</span>
               <NumberInput
@@ -124,7 +124,7 @@ export function StringSwitchEdit({ conditions, maxRiskLevel, onChange, customLis
           </div>
         );
       })}
-      <div className="grid grid-cols-[200px_minmax(auto,_40px)_70px_auto] items-center gap-2">
+      <div className="grid grid-cols-[200px_minmax(auto,_40px)_70px_auto] items-center gap-sm">
         <span className="text-right text-purple-primary">{t('user-scoring:switch.string.else')}</span>
         <div />
         <NumberInput

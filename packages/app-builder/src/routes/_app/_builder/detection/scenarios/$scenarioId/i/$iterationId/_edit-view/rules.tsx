@@ -75,7 +75,7 @@ const AddRuleOrScreening = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
         align="end"
-        className="bg-surface-card border-grey-border z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
+        className="bg-surface-card border-grey-border z-10 mt-sm flex flex-col gap-sm rounded-sm border p-sm"
       >
         <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
         <CreateScreeningButton
@@ -145,7 +145,7 @@ function Rules() {
     () => [
       columnHelper.accessor((row) => row.name, {
         id: 'name',
-        header: () => <span className="ml-4">{t('scenarios:rules.name')}</span>,
+        header: () => <span className="ms-md">{t('scenarios:rules.name')}</span>,
         size: 200,
         cell: ({ getValue, row, table }) => {
           const tableState = table.getState();
@@ -163,7 +163,7 @@ function Rules() {
                 : false;
 
           return (
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-sm">
               <span className="flex w-2 items-center justify-center">
                 {hasErrors ? (
                   <Ping className="text-red-primary relative box-content size-[6px] border border-transparent" />
@@ -282,11 +282,11 @@ function Rules() {
   const columnLength = table.getHeaderGroups()[0]?.headers.length ?? 1;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <EvaluationErrors errors={scenarioValidation.rules.errors.map(getScenarioErrorMessage)} />
 
       <RulesFiltersProvider filterValues={filterValues} submitRulesFilters={submitRulesFilters} ruleGroups={ruleGroups}>
-        <div className="flex flex-row items-center justify-between gap-4">
+        <div className="flex flex-row items-center justify-between gap-md">
           <form className="flex grow items-center">
             <Input
               className="w-full max-w-xl"
@@ -301,7 +301,7 @@ function Rules() {
             />
           </form>
 
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-md">
             <RulesFiltersMenu filterNames={rulesFilterNames}>
               <FiltersButton />
             </RulesFiltersMenu>

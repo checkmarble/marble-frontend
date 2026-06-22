@@ -11,7 +11,7 @@ export function MatchResult({ entity }: { entity: ScreeningMatchPayload }) {
 
   return (
     <div className="text-s bg-grey-background-light flex items-center rounded-sm">
-      <div className="flex items-center gap-2 p-4">
+      <div className="flex items-center gap-sm p-md">
         <span className="max-w-60 truncate font-semibold">{entity.caption}</span>
         <span>{t(`screenings:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}</span>
         <Tag color="grey" className="shrink-0">

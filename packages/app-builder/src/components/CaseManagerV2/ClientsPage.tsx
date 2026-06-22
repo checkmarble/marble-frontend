@@ -53,11 +53,11 @@ export function CaseManagerClientsPage({
   const clientName = metadata ? (pivotObject.pivotObjectData.data[metadata.caption_field] as string) : '';
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-v2-lg">
-      <div className="flex flex-col gap-v2-sm">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+      <div className="flex flex-col gap-sm">
         <div className="flex justify-between items-center">
           <span className="font-medium">{clientName}</span>
-          <div className="flex items-center gap-v2-sm">
+          <div className="flex items-center gap-sm">
             {ingestedInfo ? <UserScoreBadge userScoringAccess={userScoringAccess} {...ingestedInfo} /> : null}
             {metadata && ingestedInfo ? (
               <Link
@@ -71,7 +71,7 @@ export function CaseManagerClientsPage({
             ) : null}
           </div>
         </div>
-        <div className="flex gap-v2-xs items-center">
+        <div className="flex gap-xs items-center">
           <Tag color="grey" className="capitalize">
             {entityName}
           </Tag>
@@ -85,13 +85,13 @@ export function CaseManagerClientsPage({
             />
           ) : null}
         </div>
-        <Card className="flex flex-col gap-v2-sm text-small">
+        <Card className="flex flex-col gap-sm text-small">
           <div>
             <DataFields object={pivotObject.pivotObjectData as DataModelObject} table={pivotObject.pivotObjectName} />
             {currentTable ? (
               <DataModelExplorerProvider>
                 <PivotNavigationOptions
-                  className="mt-8"
+                  className="mt-xl"
                   currentUser={currentUser}
                   pivotObject={pivotObject}
                   table={currentTable}
@@ -104,9 +104,9 @@ export function CaseManagerClientsPage({
           </div>
         </Card>
       </div>
-      <div className="flex flex-col gap-v2-lg">
+      <div className="flex flex-col gap-lg">
         {ingestedInfo ? (
-          <div className="flex flex-col gap-v2-sm">
+          <div className="flex flex-col gap-sm">
             <div className="flex justify-between items-center">
               <span className="font-medium">{t('cases:manager.clients.last_comments_title')}</span>
               <Button variant="secondary" onClick={() => set(ingestedInfo)}>
@@ -118,13 +118,13 @@ export function CaseManagerClientsPage({
           </div>
         ) : null}
 
-        <div className="flex flex-col gap-v2-sm">
+        <div className="flex flex-col gap-sm">
           <div className="font-medium">{t('cases:case_detail.pivot_panel.case_history')}</div>
           <ClientRelatedAlertCasesCard pivotValue={pivotObject.pivotValue} caseId={caseDetail.id} />
         </div>
 
         {ingestedInfo ? (
-          <div className="flex flex-col gap-v2-sm">
+          <div className="flex flex-col gap-sm">
             <div className="flex justify-between items-center">
               <div className="font-medium">{t('client360:client_detail.documents.title')}</div>
               <div>
@@ -150,7 +150,7 @@ export function CaseManagerClientsPage({
                 </Popover.Root>
               </div>
             </div>
-            <Card className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-v2-md">
+            <Card className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <DocumentsList objectType={ingestedInfo.objectType} objectId={ingestedInfo.objectId} />
             </Card>
           </div>

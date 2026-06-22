@@ -160,50 +160,48 @@ function DetectionDecisions() {
   return (
     <DecisionRightPanel.Root content={<AddToCaseForm />}>
       <Page.Main>
-        <Page.Container>
-          <Page.ContentV2 className="gap-v2-md">
-            <DetectionNavigationTabs />
-            <div className="flex flex-col gap-4">
-              <DecisionFiltersProvider
-                scenarios={scenarios}
-                submitDecisionFilters={navigateDecisionList}
-                filterValues={decisionFilters}
-                hasPivots={hasPivots}
-                inboxes={inboxes}
-              >
-                <div className="flex justify-between gap-4">
-                  <SearchById />
-                  <div className="flex gap-4">
-                    <DecisionFiltersMenu filterNames={decisionFilterNames}>
-                      <FiltersButton />
-                    </DecisionFiltersMenu>
-                    <AddToCase hasSelection={hasSelectedRows} getSelectedDecisions={getSelectedRows} />
-                  </div>
+        <Page.Content width="table">
+          <DetectionNavigationTabs />
+          <div className="flex flex-col gap-md">
+            <DecisionFiltersProvider
+              scenarios={scenarios}
+              submitDecisionFilters={navigateDecisionList}
+              filterValues={decisionFilters}
+              hasPivots={hasPivots}
+              inboxes={inboxes}
+            >
+              <div className="flex justify-between gap-md">
+                <SearchById />
+                <div className="flex gap-md">
+                  <DecisionFiltersMenu filterNames={decisionFilterNames}>
+                    <FiltersButton />
+                  </DecisionFiltersMenu>
+                  <AddToCase hasSelection={hasSelectedRows} getSelectedDecisions={getSelectedRows} />
                 </div>
-                <DecisionFiltersBar />
-                <DecisionsList
-                  className="max-h-[60dvh]"
-                  decisions={decisions}
-                  selectable
-                  selectionProps={selectionProps}
-                  tableProps={tableProps}
-                  columnVisibility={{
-                    pivot_value: false,
-                  }}
-                />
-                <CursorPaginationButtons
-                  items={decisions}
-                  onPaginationChange={(paginationParams: PaginationParams) =>
-                    navigateDecisionList(decisionFilters, paginationParams)
-                  }
-                  paginationState={paginationState}
-                  boundariesDisplay="dates"
-                  {...pagination}
-                />
-              </DecisionFiltersProvider>
-            </div>
-          </Page.ContentV2>
-        </Page.Container>
+              </div>
+              <DecisionFiltersBar />
+              <DecisionsList
+                className="max-h-[60dvh]"
+                decisions={decisions}
+                selectable
+                selectionProps={selectionProps}
+                tableProps={tableProps}
+                columnVisibility={{
+                  pivot_value: false,
+                }}
+              />
+              <CursorPaginationButtons
+                items={decisions}
+                onPaginationChange={(paginationParams: PaginationParams) =>
+                  navigateDecisionList(decisionFilters, paginationParams)
+                }
+                paginationState={paginationState}
+                boundariesDisplay="dates"
+                {...pagination}
+              />
+            </DecisionFiltersProvider>
+          </div>
+        </Page.Content>
       </Page.Main>
     </DecisionRightPanel.Root>
   );
@@ -269,7 +267,7 @@ function SearchById() {
   });
 
   return (
-    <form className="flex gap-1" onSubmit={handleSubmit(form)}>
+    <form className="flex gap-xs" onSubmit={handleSubmit(form)}>
       <form.Field name="decisionId">
         {(field) => (
           <Input

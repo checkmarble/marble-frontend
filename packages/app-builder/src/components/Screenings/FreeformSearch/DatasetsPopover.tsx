@@ -78,10 +78,10 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
   }, [listConfigQuery.data, selectionMap, hasSelection]);
 
   return (
-    <div className="flex items-center gap-2 relative">
+    <div className="flex items-center gap-sm relative">
       <MenuCommand.Menu open={open} onOpenChange={handleOpenChange}>
         <MenuCommand.Trigger>
-          <button type="button" disabled={disabled} className="flex items-center gap-2 flex-wrap" ref={tagRef}>
+          <button type="button" disabled={disabled} className="flex items-center gap-sm flex-wrap" ref={tagRef}>
             {hasSelection ? (
               <>
                 {sectionTags.map(({ key, count, isEmpty }) => (
@@ -99,7 +99,7 @@ export const DatasetsPopover = ({ selectedDatasets, onApply, disabled }: Dataset
                 <Icon icon="plus" className="size-4 text-grey-secondary" />
               </>
             ) : (
-              <span className="flex items-center gap-1 text-grey-placeholder cursor-pointer">
+              <span className="flex items-center gap-xs text-grey-placeholder cursor-pointer">
                 <Icon icon="plus" className="size-4  " />
                 <span>{t('screenings:freeform_search.filter_by_list')}</span>
               </span>

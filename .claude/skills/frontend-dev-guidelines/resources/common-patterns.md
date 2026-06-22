@@ -15,7 +15,7 @@ import { match } from 'ts-pattern';
 
 {match(dataListQuery)
   .with({ isError: true }, () => (
-    <div className="border-red-primary bg-red-background text-red-primary mt-3 rounded-sm border p-2">
+    <div className="border-red-primary bg-red-background text-red-primary mt-md rounded-sm border p-sm">
       {t('common:global_error')}
     </div>
   ))
@@ -137,7 +137,7 @@ import { Icon } from 'ui-icons';
 <Icon icon="delete" className="size-6 shrink-0" />
 <Icon icon="plus" className="size-5" />
 <Icon icon="category" className="text-purple-primary size-10" />
-<Icon icon="case-manager" className="me-2 size-6" />
+<Icon icon="case-manager" className="me-sm size-6" />
 <Icon icon="scan-eye" className="size-5" />
 ```
 

@@ -98,7 +98,7 @@ function DerivedDataDetails({ value }: { value: object }) {
   const { t } = useTranslation(['scenarios']);
 
   return (
-    <div className="col-start-2 grid w-full grid-cols-[auto_1fr] gap-x-4 rounded-v2-lg border border-grey-border bg-surface-card p-v2-md">
+    <div className="col-start-2 grid w-full grid-cols-[auto_1fr] gap-x-4 rounded-lg border border-grey-border bg-surface-card p-md">
       {Object.entries(value).map(([k, v]) => (
         <Fragment key={k}>
           <span className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</span>
@@ -121,7 +121,7 @@ function CompactDerivedDataField({ value }: { value: object }) {
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title className="sr-only">{t('scenarios:enriched_metadata.title')}</Modal.Title>
-        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-6">
+        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-lg">
           {Object.entries(value).map(([k, v]) => (
             <Fragment key={k}>
               <span className="text-grey-secondary">{t(`scenarios:enriched_metadata.${k}`)}</span>
@@ -146,7 +146,7 @@ function CompactCoordsField({
   const { theme } = useTheme();
 
   return (
-    <div className={cn('inline-flex items-center gap-1', className)}>
+    <div className={cn('inline-flex items-center gap-xs', className)}>
       <span className="truncate">
         {latitude}, {longitude}
       </span>
@@ -164,8 +164,8 @@ function CompactCoordsField({
               </span>
             </CopyToClipboardButton>
           </Modal.Title>
-          <div className="p-4">
-            <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border">
+          <div className="p-md">
+            <div className="isolate overflow-hidden rounded-lg border border-grey-border">
               <MapLibre
                 initialViewState={{ latitude, longitude, zoom: 5 }}
                 style={{ width: '100%', height: 400 }}
@@ -192,14 +192,14 @@ function CoordsMap({ value, height = 400 }: { value: string; height?: number }) 
   }
 
   return (
-    <div className="col-start-2 flex w-full min-w-0 flex-col gap-2">
+    <div className="col-start-2 flex w-full min-w-0 flex-col gap-sm">
       <CopyToClipboardButton toCopy={`${opts.latitude},${opts.longitude}`}>
         <span className="text-s line-clamp-1 font-semibold">
           {opts.latitude}, {opts.longitude}
         </span>
       </CopyToClipboardButton>
 
-      <div className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card">
+      <div className="isolate overflow-hidden rounded-lg border border-grey-border bg-surface-card">
         <MapLibre initialViewState={opts} style={{ width: '100%', height }} mapStyle={CARTO_BASEMAP[theme]}>
           <Marker longitude={opts.longitude} latitude={opts.latitude} anchor="bottom">
             <Icon icon="map-pin" className="size-4" />

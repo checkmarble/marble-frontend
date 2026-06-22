@@ -33,9 +33,9 @@ export function TagsSwitchEdit({ options, conditions, maxRiskLevel, onChange, no
   };
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       {branches.map((branch, idx) => (
-        <div key={idx} className="grid grid-cols-[1fr_minmax(auto,_40px)_70px_auto_auto] items-center gap-2">
+        <div key={idx} className="grid grid-cols-[1fr_minmax(auto,_40px)_70px_auto_auto] items-center gap-sm">
           <SelectV2<string>
             multiple
             options={options}
@@ -63,7 +63,7 @@ export function TagsSwitchEdit({ options, conditions, maxRiskLevel, onChange, no
           </button>
         </div>
       ))}
-      <div className="grid grid-cols-[1fr_minmax(auto,_40px)_70px_auto_auto] items-center gap-2">
+      <div className="grid grid-cols-[1fr_minmax(auto,_40px)_70px_auto_auto] items-center gap-sm">
         <span className="text-right text-purple-primary">{t('user-scoring:switch.else')}</span>
         <div />
         <NumberInput

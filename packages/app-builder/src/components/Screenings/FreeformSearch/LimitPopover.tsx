@@ -92,7 +92,7 @@ export const LimitPopover = ({
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
-        <button type="button" className="flex items-center gap-v2-sm cursor-pointer" disabled={disabled}>
+        <button type="button" className="flex items-center gap-sm cursor-pointer" disabled={disabled}>
           {includeDeceasedSelected && (
             <Tag color={disabled ? 'grey' : 'purple'}>
               <span className="font-medium">{t('screenings:freeform_search.global.liveness')}</span>
@@ -109,7 +109,7 @@ export const LimitPopover = ({
               </span>
             </Tag>
           )}
-          <span className="flex items-center gap-1 text-grey-placeholder">
+          <span className="flex items-center gap-xs text-grey-placeholder">
             <Icon icon="plus" className="size-4  " />
             {!hasCustomValue && <span>{t('screenings:freeform_search.advanced_filters')}</span>}
           </span>
@@ -120,7 +120,7 @@ export const LimitPopover = ({
         sideOffset={4}
         align="start"
       >
-        <div className="flex flex-col gap-2 p-4">
+        <div className="flex flex-col gap-sm p-md">
           {availableGlobalTopicConfigs.map((config) => (
             <GlobalTopicSwitch key={config.groupKey} config={config} />
           ))}
@@ -159,7 +159,7 @@ function GlobalTopicSwitch({ config }: { config: GlobalTopicConfig }) {
   );
 
   return (
-    <div className="flex items-center gap-v2-sm">
+    <div className="flex items-center gap-sm">
       <Switch
         id={switchId}
         checked={isSelected}

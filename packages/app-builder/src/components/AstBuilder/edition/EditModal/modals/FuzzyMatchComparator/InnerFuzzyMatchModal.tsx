@@ -65,8 +65,8 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
           />
         </Modal.Description>
       </Callout>
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-row gap-4">
+      <div className="flex flex-col gap-md">
+        <div className="flex flex-row gap-md">
           <EditAlgorithm
             fuzzyMatchConfig={props.fuzzMatchConfig}
             algorithm={props.algorithm}
@@ -93,11 +93,11 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
         </div>
         <Examples config={props.fuzzMatchConfig} algorithm={props.algorithm} threshold={props.threshold.value} />
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <p id="level" className="text-m text-grey-primary font-normal">
           {t('scenarios:edit_fuzzy_match.operands.label')}
         </p>
-        <div className="flex gap-2">
+        <div className="flex gap-sm">
           {props.left ? (
             <>
               <EditionAstBuilderOperand
@@ -109,7 +109,7 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
                 }}
                 validationStatus={getValidationStatus(evaluation, props.left.id)}
               />
-              <div className="border-grey-border bg-grey-background-light flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-2 text-center">
+              <div className="border-grey-border bg-grey-background-light flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-sm text-center">
                 <span className="text-s text-grey-primary font-medium">{props.operatorDisplay}</span>
               </div>
             </>

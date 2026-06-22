@@ -35,36 +35,34 @@ export function ScoringSectionLayout({ maxRiskLevel }: { maxRiskLevel: number | 
   return (
     <CreateRulesetPanelContext.Provider value={{ open: panelOpen, setOpen: setPanelOpen }}>
       <Page.Main>
-        <Page.Container>
-          <Page.ContentV2 className="flex flex-col gap-v2-md container mx-auto">
-            <div className="flex items-center justify-between">
-              <Typo variant="title1">{t('user-scoring:section.title')}</Typo>
-              {showCreateButton ? (
-                <Button variant="secondary" onClick={() => setPanelOpen(true)}>
-                  {t('user-scoring:section.configure_button')}
-                </Button>
-              ) : null}
-            </div>
-            <Tabs>
-              <Link to="/user-scoring/overview" className={tabClassName}>
-                {t('user-scoring:section.tab_overview')}
-              </Link>
-              {isPending ? (
-                <div className="h-full flex items-center px-v2-sm">
-                  <Spinner className="size-4" />
-                </div>
-              ) : (
-                rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
-              )}
-            </Tabs>
-            <Outlet />
-            {maxRiskLevel ? (
-              <PanelRoot open={panelOpen} onOpenChange={setPanelOpen}>
-                <ScoringRulesetCreationPanel maxRiskLevel={maxRiskLevel} />
-              </PanelRoot>
+        <Page.Content width="readable">
+          <div className="flex items-center justify-between">
+            <Typo variant="title1">{t('user-scoring:section.title')}</Typo>
+            {showCreateButton ? (
+              <Button variant="secondary" onClick={() => setPanelOpen(true)}>
+                {t('user-scoring:section.configure_button')}
+              </Button>
             ) : null}
-          </Page.ContentV2>
-        </Page.Container>
+          </div>
+          <Tabs>
+            <Link to="/user-scoring/overview" className={tabClassName}>
+              {t('user-scoring:section.tab_overview')}
+            </Link>
+            {isPending ? (
+              <div className="h-full flex items-center px-sm">
+                <Spinner className="size-4" />
+              </div>
+            ) : (
+              rulesets.map((ruleset) => <RulesetTab key={ruleset.recordType} ruleset={ruleset} />)
+            )}
+          </Tabs>
+          <Outlet />
+          {maxRiskLevel ? (
+            <PanelRoot open={panelOpen} onOpenChange={setPanelOpen}>
+              <ScoringRulesetCreationPanel maxRiskLevel={maxRiskLevel} />
+            </PanelRoot>
+          ) : null}
+        </Page.Content>
       </Page.Main>
     </CreateRulesetPanelContext.Provider>
   );
@@ -168,9 +166,9 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
   }));
 
   return (
-    <PanelContainer size="lg" className="flex-col gap-v2-md">
+    <PanelContainer size="lg" className="flex-col gap-md">
       <form className="contents" onSubmit={handleSubmit(form)}>
-        <div className="flex items-center gap-v2-md">
+        <div className="flex items-center gap-md">
           <button type="button" onClick={() => panelSharp.actions.close()}>
             <Icon icon="x" className="size-6" />
           </button>
@@ -189,9 +187,9 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
             )}
           </form.Field>
         </div>
-        <div className="flex flex-col gap-v2-sm">
+        <div className="flex flex-col gap-sm">
           {t('user-scoring:section.create_panel.general_settings')}
-          <div className="border border-grey-border rounded-v2-md p-v2-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-v2-sm gap-y-v2-md">
+          <div className="border border-grey-border rounded-md p-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-sm gap-y-md">
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <form.Field name="cooldownSeconds">
@@ -221,7 +219,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
             />
           )}
         </form.Field>
-        <div className="flex gap-v2-sm justify-end mt-auto">
+        <div className="flex gap-sm justify-end mt-auto">
           <Button
             appearance="stroked"
             onClick={() => {

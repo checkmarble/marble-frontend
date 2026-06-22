@@ -50,7 +50,7 @@ function TableTH<TData extends RowData, TValue>({
       colSpan={header.colSpan}
       style={{ width: header.getSize() }}
       className={clsx(
-        'border-grey-border bg-surface-card relative h-12 w-full border-b border-r px-4 last:border-r-0',
+        'border-grey-border bg-surface-card relative h-12 w-full border-b border-r px-md last:border-r-0',
         {
           'cursor-pointer select-none': header.column.getCanSort(),
         },
@@ -270,7 +270,7 @@ function Row<TData extends RowData>({
           return <td key={`${cell.id}-${index}`}>{flexRender(cell.column.columnDef.cell, context)}</td>;
         }
         return (
-          <td key={`${cell.id}-${index}`} className="text-s w-full truncate px-4 font-normal">
+          <td key={`${cell.id}-${index}`} className="text-s w-full truncate px-md font-normal">
             {flexRender(cell.column.columnDef.cell, context)}
           </td>
         );

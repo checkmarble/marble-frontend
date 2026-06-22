@@ -53,8 +53,8 @@ export function EditListModal({ listId, name, description }: { listId: string; n
           }}
         >
           <Modal.Title>{t('lists:edit_list.title')}</Modal.Title>
-          <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-1 flex-col gap-4">
+          <div className="flex flex-col gap-lg p-lg">
+            <div className="flex flex-1 flex-col gap-md">
               <form.Field
                 name="name"
                 validators={{
@@ -63,7 +63,7 @@ export function EditListModal({ listId, name, description }: { listId: string; n
                 }}
               >
                 {(field) => (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-sm">
                     <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
                     <FormInput
                       type="text"
@@ -86,7 +86,7 @@ export function EditListModal({ listId, name, description }: { listId: string; n
                 }}
               >
                 {(field) => (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-sm">
                     <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
                     <FormInput
                       type="text"

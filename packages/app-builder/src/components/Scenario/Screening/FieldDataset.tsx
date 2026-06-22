@@ -28,9 +28,9 @@ export const FieldDataset = ({ value, onChange, readOnly = false }: FieldDataset
   const listConfigQuery = useListConfigQuery('transaction_monitoring');
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-sm">
       <span className="text-s font-semibold">{t('scenarios:sanction.lists.title')}</span>
-      <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
+      <div className="bg-surface-card border-grey-border flex flex-col gap-md rounded-sm border p-md">
         <Callout variant="outlined">
           <p className="whitespace-pre-wrap">{t('scenarios:sanction.lists.callout')}</p>
         </Callout>
@@ -41,7 +41,7 @@ export const FieldDataset = ({ value, onChange, readOnly = false }: FieldDataset
             </div>
           ))
           .with({ isError: true }, () => (
-            <div className="flex flex-col gap-v2-md items-center justify-center h-50">
+            <div className="flex flex-col gap-md items-center justify-center h-50">
               <div className="">{t('common:generic_fetch_data_error')}</div>
             </div>
           ))

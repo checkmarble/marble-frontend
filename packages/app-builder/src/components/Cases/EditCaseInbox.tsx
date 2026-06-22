@@ -40,8 +40,8 @@ export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) 
       }}
     >
       {(field) => (
-        <div className="flex w-full gap-1">
-          <div className="flex items-center gap-2">
+        <div className="flex w-full gap-xs">
+          <div className="flex items-center gap-sm">
             {selectedInbox ? <span>{selectedInbox.name}</span> : null}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
@@ -49,7 +49,7 @@ export const EditCaseInbox = ({ inboxId, id }: { inboxId: string; id: string }) 
                   <Icon icon="edit-square" className="text-grey-secondary size-4" />
                 </Button>
               </MenuCommand.Trigger>
-              <MenuCommand.Content className="mt-2 min-w-[250px]">
+              <MenuCommand.Content className="mt-sm min-w-[250px]">
                 {match(inboxesQuery)
                   .with({ isPending: true }, () => <Spinner className="size-4" />)
                   .with({ isError: true }, () => <div>Error...</div>)

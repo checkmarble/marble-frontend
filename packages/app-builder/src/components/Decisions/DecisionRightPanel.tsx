@@ -90,7 +90,7 @@ function DecisionRightPanelContent({ content }: { content: ReactNode }) {
   const { t } = useTranslation(decisionsI18n);
 
   return (
-    <RightPanel.Content className="flex max-w-md flex-col gap-4">
+    <RightPanel.Content className="flex max-w-md flex-col gap-md">
       <RightPanel.Title>
         <span className="w-full first-letter:capitalize">{t('decisions:add_to_case')}</span>
         <RightPanel.Close />

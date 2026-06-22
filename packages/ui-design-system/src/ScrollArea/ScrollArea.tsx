@@ -23,7 +23,7 @@ const ScrollAreaScrollbar = forwardRef<HTMLDivElement, ScrollAreaScrollbarProps 
     <Scrollbar
       ref={ref}
       className={clsx(
-        'bg-grey-background-light radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-background radix-orientation-horizontal:flex-col flex touch-none select-none p-0.5 transition',
+        'bg-grey-background-light radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-background radix-orientation-horizontal:flex-col flex touch-none select-none p-2xs transition',
         className,
       )}
       orientation={orientation}

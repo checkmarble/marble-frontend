@@ -30,8 +30,8 @@ export function LinkForm({
   const belongsToFieldNames = belongsToLinks.map((link) => link.tableFieldId).filter(Boolean);
 
   return (
-    <section className={cn('flex flex-col gap-v2-md rounded-lg', hasError && 'bg-red-primary/5 p-v2-sm')}>
-      <div className="flex flex-col gap-v2-xs">
+    <section className={cn('flex flex-col gap-md rounded-lg', hasError && 'bg-red-primary/5 p-sm')}>
+      <div className="flex flex-col gap-xs">
         <Typo variant="subtitle2">{t('data:upload_data.links_title')}</Typo>
         <p className="text-s text-grey-secondary">
           {t('data:upload_data.links_description', { tableName: tableLabel })}
@@ -49,13 +49,13 @@ export function LinkForm({
           </span>
         </Callout>
       ) : null}
-      <div className="flex flex-col gap-v2-md">
+      <div className="flex flex-col gap-md">
         {links.map((link) => (
           <LinkRow key={link.linkId} linkId={link.linkId} compact={compact} hasError={errorLinkIds?.has(link.linkId)} />
         ))}
       </div>
       {isCreateDataModelLinkAvailable && (
-        <div className="flex items-center gap-v2-sm">
+        <div className="flex items-center gap-sm">
           <Button
             variant="primary"
             appearance="stroked"
@@ -87,7 +87,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         .filter((field) => field.dataType === 'String' && field.name !== 'object_id')
         .map((field) => ({
           label: (
-            <span className="flex items-center gap-v2-sm" title={field.alias !== field.name ? field.name : undefined}>
+            <span className="flex items-center gap-sm" title={field.alias !== field.name ? field.name : undefined}>
               <DatatypeIcon dataType={field.dataType} />
               <span>{field.alias || field.name}</span>
             </span>
@@ -103,7 +103,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
     () =>
       linkRelationTypes.map((rel) => ({
         label: (
-          <span className="flex items-center gap-v2-sm">
+          <span className="flex items-center gap-sm">
             <Icon
               icon={rel === 'belongs_to' ? 'arrow-forward' : 'arrow-range'}
               className="size-4 text-purple-primary"
@@ -128,9 +128,9 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
   return (
     <div
       className={cn(
-        'flex gap-x-v2-md gap-y-v2-sm rounded-lg',
+        'flex gap-x-md gap-y-sm rounded-lg',
         compact ? 'flex-wrap items-start' : 'items-center',
-        hasError && 'border border-red-primary/40 bg-red-primary/5 p-v2-sm',
+        hasError && 'border border-red-primary/40 bg-red-primary/5 p-sm',
       )}
     >
       <Input
@@ -167,7 +167,7 @@ function LinkRow({ linkId, compact, hasError }: { linkId: string; compact?: bool
         <button
           type="button"
           onClick={() => removeLink(linkId)}
-          className="shrink-0 rounded-lg p-2 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+          className="shrink-0 rounded-lg p-sm text-grey-secondary hover:bg-grey-border hover:text-red-primary"
           title={t('data:upload_data.link_delete')}
         >
           <Icon icon="delete" className="size-4" />

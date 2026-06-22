@@ -66,7 +66,7 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
 
   return (
     <>
-      <div className="border-grey-border flex shrink-0 items-center gap-2 border-b p-4">
+      <div className="border-grey-border flex shrink-0 items-center gap-sm border-b p-md">
         <Button
           variant="secondary"
           size="small"
@@ -82,7 +82,7 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
         ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-4">
+      <div className="min-h-0 flex-1 overflow-y-auto p-md">
         {reviewQuery.isLoading ? (
           <div className="flex h-full items-center justify-center">
             <Icon icon="spinner" className="size-6 animate-spin text-grey-secondary" />
@@ -94,14 +94,14 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
         ) : review ? (
           <>
             {!review.review.ok ? (
-              <div className="mb-3 flex items-center gap-2 rounded-lg border border-red-primary bg-red-primary/10 p-3">
+              <div className="mb-md flex items-center gap-sm rounded-lg border border-red-primary bg-red-primary/10 p-md">
                 <Icon icon="warning" className="size-4 shrink-0 text-red-primary" />
                 <span className="text-s font-medium text-red-primary">
                   {t('cases:case_detail.ai_review.consistency_warning')}
                 </span>
               </div>
             ) : null}
-            <div className="rounded-lg border border-grey-border bg-surface-card p-4">
+            <div className="rounded-lg border border-grey-border bg-surface-card p-md">
               <Markdown>{review.review.output}</Markdown>
             </div>
           </>
@@ -171,17 +171,17 @@ export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string
   return (
     <div className="flex min-h-0 flex-col">
       {/* Header */}
-      <div className="border-grey-border flex shrink-0 items-center justify-between border-b p-4">
-        <div className="flex items-center gap-2">
+      <div className="border-grey-border flex shrink-0 items-center justify-between border-b p-md">
+        <div className="flex items-center gap-sm">
           <Icon icon="ai-review" className="size-5 text-purple-primary" />
           <span className="text-l font-semibold text-grey-primary">{t('cases:case.ai_reviews.title')}</span>
           {reviews.length > 0 ? (
-            <span className="rounded-full bg-purple-background px-2 py-0.5 text-xs font-medium text-purple-primary">
+            <span className="rounded-full bg-purple-background px-xs py-0.5 text-xs font-medium text-purple-primary">
               {reviews.length}
             </span>
           ) : null}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-sm">
           {canManuallyReview ? (
             <Button
               variant="secondary"
@@ -232,7 +232,7 @@ export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string
           ))
           .otherwise(() =>
             reviews.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-s text-grey-secondary p-4">
+              <div className="flex h-full items-center justify-center text-s text-grey-secondary p-md">
                 {t('cases:case.ai_reviews.empty')}
               </div>
             ) : (
@@ -242,7 +242,7 @@ export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string
                     <button
                       type="button"
                       className={cn(
-                        'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors',
+                        'flex w-full items-center gap-md px-sm py-sm text-left transition-colors',
                         review.status === 'completed'
                           ? 'cursor-pointer hover:bg-grey-background-light'
                           : 'cursor-default',
@@ -252,7 +252,7 @@ export function CaseReviewsModal({ caseId, canManuallyReview }: { caseId: string
                     >
                       <ReviewStatusIcon status={review.status} />
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-sm">
                           <ReviewStatusBadge status={review.status} />
                           <time className="text-xs text-grey-secondary" dateTime={review.createdAt}>
                             {formatDateTime(review.createdAt, { dateStyle: 'short', timeStyle: 'short' })}

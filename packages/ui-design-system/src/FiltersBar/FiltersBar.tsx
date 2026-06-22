@@ -260,10 +260,10 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
   };
   return (
     <FiltersBarContext.Provider value={contextValue}>
-      <div className="flex flex-row gap-v2-md w-full">
-        <div className="flex flex-col gap-v2-md">
+      <div className="flex flex-row gap-md w-full">
+        <div className="flex flex-col gap-md">
           {filtersByPriority.map((filters, priorityIndex) => (
-            <div key={priorityIndex} className="flex flex-row items-center w-full gap-v2-xl h-v2-xl">
+            <div key={priorityIndex} className="flex flex-row items-center w-full gap-xl h-xl">
               {priorityIndex === 1 ? (
                 <Button
                   className="min-w-[110px] justify-center"
@@ -276,7 +276,7 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
                 </Button>
               ) : null}
               {/* {priorityIndex === 1 && filters.length === 0 ? (
-                <div className="flex flex-row justify-start items-center gap-v2-sm">
+                <div className="flex flex-row justify-start items-center gap-sm">
                   <Icon icon="settings" className="size-4" />
                   <a href={'/settings/analytics/filters'}>{t('filters:ds.add_filter_button.label')}</a>
                 </div>

@@ -45,19 +45,19 @@ export const CaseAlerts = ({ caseDecisionsQuery, dataModel }: CaseAlertsProps) =
 
   return match(caseDecisionsQuery)
     .with({ isPending: true }, () => (
-      <div className="flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-md">
         <Spinner />
       </div>
     ))
     .with({ isError: true }, () => (
-      <div className="text-grey-secondary p-4 text-center text-xs">{t('common:global_error')}</div>
+      <div className="text-grey-secondary p-md text-center text-xs">{t('common:global_error')}</div>
     ))
     .otherwise((query) => {
       const decisions = query.data.pages.flatMap((page) => page.decisions);
 
       return (
         <>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             {decisions.map((decision) => {
               const triggerObjectFields = getTriggerObjectFields(dataModel, decision.triggerObjectType);
 
@@ -112,7 +112,7 @@ export const AlertCard = ({
         tabIndex={0}
         role="button"
         className={cn(
-          'border-grey-border bg-surface-card grid grid-cols-[80px_1fr] gap-2 rounded-lg border p-4 transition-colors cursor-pointer hover:bg-purple-background-light',
+          'border-grey-border bg-surface-card grid grid-cols-[80px_1fr] gap-sm rounded-lg border p-md transition-colors cursor-pointer hover:bg-purple-background-light',
           { 'bg-purple-background-light': openDetails },
         )}
         onClick={() => {
@@ -127,20 +127,20 @@ export const AlertCard = ({
         </div>
 
         {/* Right column: Vertical content */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-xs">
           {/* Row 1: Header — outcome, scenario, score, actions */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 overflow-hidden">
+          <div className="flex items-center justify-between gap-sm">
+            <div className="flex items-center gap-sm overflow-hidden">
               <AlertOutcomeIcon outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
               <span className="truncate text-xs font-normal">{decision.scenario.name}</span>
               {decision.rules.length > 0 ? (
-                <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-normal">
+                <span className="border-grey-placeholder text-grey-placeholder inline-flex shrink-0 items-center gap-xs rounded-full border px-xs py-0.5 text-xs font-normal">
                   {decision.score >= 0 ? '+' : ''}
                   {decision.score}
                 </span>
               ) : null}
             </div>
-            <div className="flex gap-v2-sm">
+            <div className="flex gap-sm">
               {decision.reviewStatus === 'approve' ? <ReviewStatusTag reviewStatus={decision.reviewStatus} /> : null}
               <Button variant="secondary" size="small" appearance="stroked" mode="icon" onClick={onSelect}>
                 <Icon icon="eye" className="size-4" />
@@ -155,7 +155,7 @@ export const AlertCard = ({
 
           {/* Row 3: Rules hit */}
           {hitRules.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-1 text-xs">
+            <div className="flex flex-wrap items-center gap-xs text-xs">
               <span className="text-grey-secondary shrink-0">{t('cases:decisions.rule_hits')}</span>
               {pipe(
                 hitRules,
@@ -163,7 +163,7 @@ export const AlertCard = ({
                 map((r) => (
                   <span
                     key={r.ruleId || r.name}
-                    className="border-grey-border truncate rounded-sm border px-1.5 py-0.5 text-xs font-normal"
+                    className="border-grey-border truncate rounded-sm border px-xs py-2xs text-xs font-normal"
                   >
                     {r.scoreModifier > 0 ? '+' : ''}
                     {r.scoreModifier} {r.name}
@@ -171,7 +171,7 @@ export const AlertCard = ({
                 )),
               )}
               {hitRules.length > MAX_RULES_DISPLAYED ? (
-                <span className="border-grey-border rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                <span className="border-grey-border rounded-sm border px-xs py-2xs text-xs font-medium">
                   +{hitRules.length - MAX_RULES_DISPLAYED}
                 </span>
               ) : null}
@@ -180,12 +180,12 @@ export const AlertCard = ({
 
           {/* Row 4: Status on hits (screenings) */}
           {screenings.length > 0 ? (
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-xs">
               <span className="text-grey-secondary text-xs">{t('cases:decisions.status_on_hits')}</span>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-sm">
                 {screenings.map((screening) => {
                   return (
-                    <div key={screening.id} className="flex items-center gap-2">
+                    <div key={screening.id} className="flex items-center gap-sm">
                       <span className="text-grey-placeholder text-xs font-medium">&bull;</span>
                       <span className="text-grey-placeholder text-xs font-medium">{screening.name}</span>
                       <div
@@ -260,7 +260,7 @@ const TriggerFieldsRow = ({
 }) => {
   const { t } = useTranslation(casesI18n);
   const renderField = (field: { id: string; name: string }, index: number) => (
-    <span key={field.id} data-field-item className="inline-flex shrink-0 items-baseline gap-v2-xs">
+    <span key={field.id} data-field-item className="inline-flex shrink-0 items-baseline gap-xs">
       {index > 0 ? <span className="text-grey-placeholder">&middot;</span> : null}
       <span className="font-medium">{field.name}:</span>
       <span className="max-w-[120px] truncate">
@@ -271,19 +271,19 @@ const TriggerFieldsRow = ({
 
   return (
     <div className="relative text-xs">
-      <div className="flex items-baseline gap-v2-sm">
+      <div className="flex items-baseline gap-sm">
         <span className="text-grey-secondary shrink-0">{t('cases:decisions.trigger_objects')}</span>
         <ExpandableGroupTagLine
           items={fields.map(renderField)}
           moreButton={(overflow) => (
             <Tooltip.Default content={<div className="flex flex-wrap w-min text-xs">{fields.map(renderField)}</div>}>
-              <span className="border-grey-border ms-1 inline-flex shrink-0 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+              <span className="border-grey-border ms-xs inline-flex shrink-0 rounded-sm border px-xs py-2xs text-xs font-medium">
                 +{overflow}
               </span>
             </Tooltip.Default>
           )}
           overflowTagWidth={40}
-          classname="gap-v2-xs"
+          classname="gap-xs"
         />
       </div>
     </div>
@@ -328,7 +328,7 @@ export const AlertOutcomeIcon = ({
     .exhaustive();
 
   return (
-    <span className="inline-flex shrink-0 items-center gap-1">
+    <span className="inline-flex shrink-0 items-center gap-xs">
       {icon}
       {showLabel ? <span className="text-xs font-medium">{label}</span> : null}
     </span>
@@ -362,7 +362,7 @@ export const ScreeningStatusBadge = ({
   // confirmed_hit and no_hit render as borderless inline labels with eye icon
   if (status === 'confirmed_hit' || status === 'no_hit') {
     return (
-      <span className={cn('inline-flex items-center gap-1 text-xs font-medium', screeningLabelColors[status])}>
+      <span className={cn('inline-flex items-center gap-xs text-xs font-medium', screeningLabelColors[status])}>
         {t(`screenings:status.${status}`)}
         <Icon icon="eye" className="size-4 shrink-0" />
       </span>
@@ -376,12 +376,12 @@ export const ScreeningStatusBadge = ({
       {match(screeningQuery)
         .with({ isPending: true }, () => <Spinner className="size-4" />)
         .with({ isError: true }, () => (
-          <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>
+          <div className="text-grey-secondary p-xl text-center text-s">{t('common:global_error')}</div>
         ))
         .otherwise((query) => {
           const screeningData = query.data;
           if (!screeningData) {
-            return <div className="text-grey-secondary p-8 text-center text-s">{t('common:global_error')}</div>;
+            return <div className="text-grey-secondary p-xl text-center text-s">{t('common:global_error')}</div>;
           }
 
           return (

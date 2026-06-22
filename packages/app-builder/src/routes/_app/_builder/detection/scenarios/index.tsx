@@ -141,7 +141,7 @@ function DetectionScenariosPage() {
 
           if (row.original.archived) {
             return (
-              <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+              <div className="flex items-center justify-end gap-sm" onClick={(event) => event.stopPropagation()}>
                 <UpdateScenarioButton
                   defaultValue={{
                     name: row.original.name,
@@ -155,7 +155,7 @@ function DetectionScenariosPage() {
           }
 
           return (
-            <div className="flex items-center justify-end gap-2" onClick={(event) => event.stopPropagation()}>
+            <div className="flex items-center justify-end gap-sm" onClick={(event) => event.stopPropagation()}>
               <UpdateScenarioButton
                 defaultValue={{
                   name: row.original.name,
@@ -195,37 +195,35 @@ function DetectionScenariosPage() {
 
   return (
     <Page.Main>
-      <Page.Container>
-        <Page.ContentV2 className="gap-v2-md max-w-(--breakpoint-xl)">
-          <DetectionNavigationTabs
-            actions={
-              <CreateScenario>
-                <Button size="medium">
-                  <Icon icon="plus" className="size-6" aria-hidden />
-                  {t('scenarios:create_scenario.title')}
-                </Button>
-              </CreateScenario>
-            }
-          />
-          <Callout variant="outlined">{t('scenarios:list.callout')}</Callout>
-          <div className="flex flex-col gap-4">
-            {isEmpty ? (
-              <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-                <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
-              </div>
-            ) : (
-              <Table.Container {...getContainerProps()} className="bg-surface-card max-h-[70dvh]">
-                <Table.Header headerGroups={table.getHeaderGroups()} />
-                <Table.Body {...getBodyProps()}>
-                  {rows.map((row) => (
-                    <Table.Row key={row.id} row={row} className={clsx(row.original.archived && 'opacity-50')} />
-                  ))}
-                </Table.Body>
-              </Table.Container>
-            )}
-          </div>
-        </Page.ContentV2>
-      </Page.Container>
+      <Page.Content width="table">
+        <DetectionNavigationTabs
+          actions={
+            <CreateScenario>
+              <Button size="medium">
+                <Icon icon="plus" className="size-6" aria-hidden />
+                {t('scenarios:create_scenario.title')}
+              </Button>
+            </CreateScenario>
+          }
+        />
+        <Callout variant="outlined">{t('scenarios:list.callout')}</Callout>
+        <div className="flex flex-col gap-md">
+          {isEmpty ? (
+            <div className="bg-surface-card border-grey-border flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-md">
+              <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
+            </div>
+          ) : (
+            <Table.Container {...getContainerProps()} className="bg-surface-card max-h-[70dvh]">
+              <Table.Header headerGroups={table.getHeaderGroups()} />
+              <Table.Body {...getBodyProps()}>
+                {rows.map((row) => (
+                  <Table.Row key={row.id} row={row} className={clsx(row.original.archived && 'opacity-50')} />
+                ))}
+              </Table.Body>
+            </Table.Container>
+          )}
+        </div>
+      </Page.Content>
     </Page.Main>
   );
 }

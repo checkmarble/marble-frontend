@@ -108,7 +108,7 @@ export function UpdateOrganizationSettingsContents({
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>{t('settings:global_settings.title')}</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <form.Field
           name="autoAssignQueueLimit"
           validators={{
@@ -117,7 +117,7 @@ export function UpdateOrganizationSettingsContents({
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
+            <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>{t('settings:global_settings.auto_assign_queue_limit')}</FormLabel>
               <FormInput
                 type="number"

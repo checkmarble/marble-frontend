@@ -11,10 +11,10 @@ export const GeneralInfoSection = ({ updatedConfig, baseConfig }: EditionValidat
     <Collapsible.Container>
       <Collapsible.Title>{t('continuousScreening:edition.validation.generalInfo.title')}</Collapsible.Title>
       <Collapsible.Content>
-        <div className="flex flex-col gap-v2-sm">
-          <div className="grid grid-cols-[140px_1fr] gap-v2-sm items-center">
+        <div className="flex flex-col gap-sm">
+          <div className="grid grid-cols-[140px_1fr] gap-sm items-center">
             <span>{t('continuousScreening:field.name.label')}</span>
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               {hasNameChanged ? (
                 <>
                   <span className="line-through text-grey-secondary">{baseConfig.name}</span>
@@ -24,9 +24,9 @@ export const GeneralInfoSection = ({ updatedConfig, baseConfig }: EditionValidat
               <span>{updatedConfig.name}</span>
             </div>
           </div>
-          <div className="grid grid-cols-[140px_1fr] gap-v2-sm items-center">
+          <div className="grid grid-cols-[140px_1fr] gap-sm items-center">
             <span>{t('continuousScreening:field.description.label')}</span>
-            <div className="flex items-center gap-v2-sm">
+            <div className="flex items-center gap-sm">
               {hasDescriptionChanged ? (
                 <>
                   <span className="line-through text-grey-secondary">

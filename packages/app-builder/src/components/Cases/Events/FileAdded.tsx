@@ -13,7 +13,7 @@ export const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
   const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   return (
-    <div key={event.id} className="flex w-full items-center gap-2">
+    <div key={event.id} className="flex w-full items-center gap-sm">
       <div className="bg-surface-card border-grey-border flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="decision" className="text-grey-primary size-3" />
       </div>
@@ -24,7 +24,7 @@ export const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
           components={{
             Actor: <span className="font-bold capitalize" />,
             File: (
-              <span className="border-grey-border flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium" />
+              <span className="border-grey-border flex items-center gap-xs rounded-sm border px-xs py-2xs text-xs font-medium" />
             ),
           }}
           values={{

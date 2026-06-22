@@ -19,13 +19,13 @@ export const PrintResults: FunctionComponent<PrintResultsProps> = ({ results }) 
 
   return match(results)
     .with([], () => (
-      <div className="border-grey-border rounded-md border p-8 text-center">
+      <div className="border-grey-border rounded-md border p-xl text-center">
         <p className="text-s text-grey-placeholder">{t('screenings:freeform_search.no_results_title')}</p>
       </div>
     ))
     .with(P.array(), (data) => (
       <div className="flex flex-col">
-        <Typo variant="title2" className="  mb-2">
+        <Typo variant="title2" className="  mb-sm">
           {t('screenings:freeform_search.results_title')} (
           {t('screenings:freeform_search.results_count', { count: data.length })})
         </Typo>

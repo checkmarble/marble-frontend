@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Icon } from 'ui-icons';
 
-const operandTypeInfosClassnames = cva('flex items-center justify-center rounded-xs p-1 text-grey-primary', {
+const operandTypeInfosClassnames = cva('flex items-center justify-center rounded-xs p-xs text-grey-primary', {
   variants: {
     interactionMode: {
       viewer: 'bg-grey-border',
@@ -39,7 +39,7 @@ export function OperandTypeInfos({ t, operandType, dataType, interactionMode }: 
   if (typeInfos.filter(({ icon }) => icon !== undefined).length === 0) return null;
 
   return (
-    <div className="flex flex-row gap-1">
+    <div className="flex flex-row gap-xs">
       {typeInfos.map(({ icon, tKey }) => {
         if (!icon) return null;
         return (

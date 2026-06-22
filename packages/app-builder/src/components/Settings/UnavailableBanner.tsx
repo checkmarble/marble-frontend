@@ -19,10 +19,10 @@ export function UnavailableBanner() {
   }
 
   return (
-    <div className="fixed z-10 bottom-0 start-0 flex justify-between w-full p-2 border-t bg-red-hover border-grey-border shadow-sticky-top">
+    <div className="fixed z-10 bottom-0 start-0 flex justify-between w-full p-sm border-t bg-red-hover border-grey-border shadow-sticky-top">
       <div className="flex items-center mx-auto">
         <p className="flex items-center text-md text-grey-white dark:text-grey-secondary">
-          <span className="inline-flex p-1 me-3 text-grey-white rounded-full w-6 h-6 items-center justify-center">
+          <span className="inline-flex p-xs me-md text-grey-white rounded-full w-6 h-6 items-center justify-center">
             <Icon icon="account-circle-off" className="size-5" />
           </span>
           <span className="font-semibold text-grey-white">
@@ -39,7 +39,7 @@ export function UnavailableBanner() {
           onClick={() => setIsOpen(false)}
           data-dismiss-target="#bottom-banner"
           type="button"
-          className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 dark:hover:bg-gray-600 dark:hover:text-white"
+          className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-xs.5 dark:hover:bg-gray-600 dark:hover:text-white"
         >
           <Icon icon="cross" className="size-6 text-grey-white" />
         </button>

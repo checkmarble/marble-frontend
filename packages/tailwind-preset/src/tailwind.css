@@ -107,22 +107,22 @@
   --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
   --color-orange-background-light: oklch(0.9456 0.0322 55.36); /* #FFE8D9 */
 
-  --spacing-v2-xxxxl: 5rem;
-  --spacing-v2-xxxl: 3rem;
-  --spacing-v2-xxl: 2.5rem;
-  --spacing-v2-xl: 2rem;
-  --spacing-v2-lg: 1.5rem;
-  --spacing-v2-md: 1rem;
-  --spacing-v2-sm: 0.5rem;
-  --spacing-v2-xs: 0.25rem;
-  --spacing-v2-xxs: 0.125rem;
+  --spacing-4xl: 5rem;
+  --spacing-3xl: 3rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-xl: 2rem;
+  --spacing-lg: 1.5rem;
+  --spacing-md: 1rem;
+  --spacing-sm: 0.5rem;
+  --spacing-xs: 0.25rem;
+  --spacing-2xs: 0.125rem;
 
-  --radius-v2-xxl: 1.5rem;
-  --radius-v2-xl: 1rem;
-  --radius-v2-lg: 0.75rem;
-  --radius-v2-md: 0.5rem;
-  --radius-v2-s: 0.25rem;
-  --radius-v2-xs: 0.125rem;
+  --radius-2xl: 1.5rem;
+  --radius-xl: 1rem;
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-xs: 0.125rem;
 
   /* Font sizes */
   --text-2xl: 28px;
@@ -162,6 +162,30 @@
 
   --animate-slide-down: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
   --animate-slide-up: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+/* ========================================
+ * WIDTH-CONSTRAINT UTILITIES - container scale guard
+ *
+ * Our spacing scale (--spacing-xs … --spacing-4xl) reuses the same
+ * t-shirt names as Tailwind's built-in container scale. Tailwind
+ * resolves `max-w-*` / `min-w-*` against the spacing scale *before*
+ * the container scale, so defining e.g. `--spacing-3xl: 3rem`
+ * silently turns `max-w-3xl` into 3rem instead of the container's
+ * 48rem (this collapsed page layouts, see PR #1656).
+ *
+ * Re-declaring these utilities adds a container-scale declaration
+ * that wins the cascade for t-shirt names, so `max-w-3xl` stays a
+ * content-width constraint while gap/padding/margin keep using the
+ * spacing scale. Numeric (`max-w-96`), keyword (`max-w-full`) and
+ * arbitrary (`max-w-[48rem]`) values are untouched — the core
+ * utility still handles them.
+ * ======================================== */
+@utility max-w-* {
+  max-width: --value(--container);
+}
+@utility min-w-* {
+  min-width: --value(--container);
 }
 
 /* ========================================

@@ -21,7 +21,7 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
 
   if (fuzzyMatchConfig.isEditableAlgorithm(algorithm)) {
     return (
-      <div className="flex flex-1 flex-col gap-2">
+      <div className="flex flex-1 flex-col gap-sm">
         <label htmlFor="algorithm" className="text-m text-grey-primary font-normal">
           {t('scenarios:edit_fuzzy_match.algorithm.label')}
         </label>
@@ -42,7 +42,7 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
               {Array.from(fuzzyMatchConfig.editablesAlgorithms).map((fuzzyMatchAlgorithm) => {
                 return (
                   <Select.Item
-                    className="flex min-w-[110px] flex-col gap-1"
+                    className="flex min-w-[110px] flex-col gap-xs"
                     key={fuzzyMatchAlgorithm}
                     value={fuzzyMatchAlgorithm}
                   >
@@ -66,9 +66,9 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-2">
+    <div className="flex flex-1 flex-col gap-sm">
       <span className="text-m text-grey-primary font-normal">{t('scenarios:edit_fuzzy_match.threshold.label')}</span>
-      <div className="bg-grey-background-light border-grey-border flex h-10 items-center justify-center rounded-sm border p-2 text-center">
+      <div className="bg-grey-background-light border-grey-border flex h-10 items-center justify-center rounded-sm border p-sm text-center">
         <FuzzyMatchAlgorithmLabel fuzzyMatchConfig={fuzzyMatchConfig} fuzzyMatchAlgorithm={algorithm} />
       </div>
     </div>

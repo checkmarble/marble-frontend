@@ -26,13 +26,13 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
       color="grey"
       size="large"
       appearance="stroked"
-      className="w-full justify-center gap-2 relative"
+      className="w-full justify-center gap-sm relative"
       onClick={onClick}
       disabled={loading}
     >
       <Logo logo="google-logo" className="size-6" />
       <span className="text-s whitespace-nowrap text-center font-medium">{t('auth:sign_in.google')}</span>
-      <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
+      <span className="absolute end-0 mx-sm size-4">{loading ? <Spinner className="size-4" /> : null}</span>
     </Button>
   );
 }

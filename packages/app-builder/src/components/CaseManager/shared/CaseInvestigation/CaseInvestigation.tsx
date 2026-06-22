@@ -14,10 +14,10 @@ export const CaseInvestigation = ({ caseId, events, root }: CaseInvestigationPro
   const { t } = useTranslation(['cases']);
 
   return (
-    <div className="flex flex-col justify-start gap-1.5">
-      <span className="text-default text-grey-primary px-1 font-medium">{t('cases:investigation')}</span>
-      <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border overflow-hidden">
-        <div className="p-4">
+    <div className="flex flex-col justify-start gap-xs.5">
+      <span className="text-default text-grey-primary px-2xs font-medium">{t('cases:investigation')}</span>
+      <div className="border-grey-border bg-surface-card flex flex-col rounded-lg border overflow-hidden">
+        <div className="p-md">
           <CaseEvents events={events} root={root} />
         </div>
         <AddComment caseId={caseId} />

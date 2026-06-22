@@ -55,9 +55,9 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
   }
 
   return (
-    <div className="flex flex-col gap-v2-lg">
+    <div className="flex flex-col gap-lg">
       {/* Name + Alias */}
-      <div className="flex gap-v2-md">
+      <div className="flex gap-md">
         <form.Field
           name="name"
           validators={{
@@ -70,7 +70,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
           }}
         >
           {(field) => (
-            <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-sm">
               <FormLabel name={field.name}>{t('data:create_table.name_label')}</FormLabel>
               <FormInput
                 type="text"
@@ -87,7 +87,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
         </form.Field>
         <form.Field name="alias">
           {(field) => (
-            <div className="flex flex-1 flex-col gap-2">
+            <div className="flex flex-1 flex-col gap-sm">
               <FormLabel name={field.name}>{t('data:create_table.alias_label')}</FormLabel>
               <FormInput
                 type="text"
@@ -105,11 +105,9 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
       </div>
 
       {/* Entity type selection */}
-      <div
-        className={cn('flex flex-col gap-v2-md rounded-lg', hasEntityTypeError && 'border border-red-primary p-v2-md')}
-      >
+      <div className={cn('flex flex-col gap-md rounded-lg', hasEntityTypeError && 'border border-red-primary p-md')}>
         <span className="text-s font-medium">{t('data:create_table.choose_entity')}</span>
-        <div className="flex flex-col gap-v2-sm">
+        <div className="flex flex-col gap-sm">
           {ftmEntities.map((entity) => {
             const isSelected = selectedEntityType === entity;
             const disabled = isEntityDisabled(entity);
@@ -121,7 +119,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
                   onClick={() => !disabled && handleEntitySelect(entity)}
                   disabled={disabled}
                   className={cn(
-                    'flex items-center gap-v2-sm rounded-md px-3 py-2 text-left text-s transition-colors',
+                    'flex items-center gap-sm rounded-md px-md py-xs text-left text-s transition-colors',
                     isSelected && 'text-purple-primary font-medium',
                     !isSelected && !disabled && 'text-grey-primary hover:bg-grey-bg',
                     disabled && 'cursor-not-allowed opacity-50',
@@ -140,7 +138,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
 
                 {/* Disabled hint for transaction/event */}
                 {disabled ? (
-                  <span className="ml-7 text-xs text-grey-secondary">
+                  <span className="ms-3xl text-xs text-grey-secondary">
                     {t('data:create_table.entity_disabled_hint')}
                   </span>
                 ) : null}
@@ -158,7 +156,7 @@ export function CreateTableEntityStep({ errorFields }: { errorFields?: ReadonlyS
 
                 {/* Belongs-to link for transaction/event */}
                 {isSelected && requiresLink(entity) ? (
-                  <div className="ml-7 mt-1 flex items-center gap-v2-sm">
+                  <div className="ms-3xl mt-xs flex items-center gap-sm">
                     <span className="text-xs text-grey-secondary">{t('data:create_table.belongs_to')}</span>
                     <SelectV2
                       value={selectedBelongsToTableId}
@@ -195,7 +193,7 @@ function SubEntityOptions({
 
   return (
     <div
-      className={cn('ml-7 flex flex-col gap-v2-xs rounded-md bg-grey-bg p-2', hasError && 'border border-red-primary')}
+      className={cn('ms-3xl flex flex-col gap-xs rounded-md bg-grey-bg p-sm', hasError && 'border border-red-primary')}
     >
       {options.map((option) => {
         const isSelected = selected === option;
@@ -205,7 +203,7 @@ function SubEntityOptions({
             type="button"
             onClick={() => onSelect(option)}
             className={cn(
-              'flex items-center gap-v2-sm rounded px-2 py-1 text-left text-s transition-colors',
+              'flex items-center gap-sm rounded px-xs py-2xs text-left text-s transition-colors',
               isSelected && 'text-purple-primary font-medium',
               !isSelected && 'text-grey-primary hover:bg-grey-border',
             )}

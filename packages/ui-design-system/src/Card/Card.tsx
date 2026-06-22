@@ -2,7 +2,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 import { ReactNode } from 'react';
 import { cn } from 'ui-design-system';
 
-const cardClassName = cva('border rounded-v2-md p-v2-md', {
+const cardClassName = cva('border rounded-md p-md', {
   variants: {
     color: {
       default: 'border-grey-border bg-surface-card',

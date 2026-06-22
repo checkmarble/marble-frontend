@@ -18,7 +18,7 @@ export function SettingsNavigationTabs({ sections }: { sections: Sections }) {
   const { t } = useTranslation(['navigation', 'settings']);
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       <Typo variant="title1">{t('navigation:settings')}</Typo>
       <Tabs>
         {(Object.keys(sections) as Array<keyof Sections>).map((sectionKey) => {

@@ -51,7 +51,7 @@ function FamilyRelationshipTag({ value, source }: FamilyRelationshipEntry) {
     : t('screenings:match.family.unknown_relationship');
 
   return (
-    <span className="inline-flex shrink-0 items-center gap-1 rounded-sm border border-grey-border bg-surface-card p-1 font-mono">
+    <span className="inline-flex shrink-0 items-center gap-xs rounded-sm border border-grey-border bg-surface-card p-xs font-mono">
       <Icon icon="arrow-forward" className={cn('size-4', source === 'familyRelative' && 'rotate-180')} />
       <span>{label}</span>
     </span>
@@ -95,7 +95,7 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
   const visibleRows = showAll ? rows : rows.slice(0, MAX_FAMILY_MEMBERS);
 
   return (
-    <ul className="grid grid-cols-[146px_1fr] gap-2">
+    <ul className="grid grid-cols-[146px_1fr] gap-sm">
       {visibleRows.map((row, rowIndex) => {
         const { key, member, id, properties, relationshipEntries } = row;
         const isFirstElement = rowIndex === 0;
@@ -129,19 +129,19 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
         return (
           <li key={key} className="contents">
             <div className="font-semibold">
-              {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.family-members.title')}</div>}
+              {isFirstElement && <div className="font-bold mb-sm">{t('screenings:match.family-members.title')}</div>}
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-v2-sm">
-                <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" overflowTagWidth={60} />
+              <div className="flex items-center gap-sm">
+                <ExpandableGroupTagLine items={expandableItems} classname="gap-sm" overflowTagWidth={60} />
                 <ModalPerson personId={id} personName={getPersonName(row)} />
               </div>
               {member.properties.sourceUrl && member.properties.sourceUrl.length > 0 && (
-                <span className="col-span-full flex w-full flex-col gap-1">
+                <span className="col-span-full flex w-full flex-col gap-xs">
                   <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
-                  <ul className="list-inside pl-2">
+                  <ul className="list-inside ps-sm">
                     {member.properties.sourceUrl.map((url, urlIdx) => (
-                      <li key={`source-${id}-${urlIdx}`} className="flex items-center gap-v2-xs">
+                      <li key={`source-${id}-${urlIdx}`} className="flex items-center gap-xs">
                         <Icon icon="external-link" className="size-4 shrink-0" />
                         <a
                           href={url}

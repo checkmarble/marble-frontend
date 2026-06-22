@@ -14,7 +14,7 @@ export function UnsavedChangesDialog({ open, onOpenChange, onConfirm }: UnsavedC
     <Modal.Root open={open} onOpenChange={onOpenChange}>
       <Modal.Content onClick={(event) => event.stopPropagation()}>
         <Modal.Title>{t('data:unsaved_changes.title')}</Modal.Title>
-        <div className="p-6">
+        <div className="p-lg">
           <p className="text-s text-grey-primary">{t('data:unsaved_changes.description')}</p>
         </div>
         <Modal.Footer>

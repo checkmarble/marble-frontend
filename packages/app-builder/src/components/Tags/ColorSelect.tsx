@@ -10,12 +10,12 @@ export const ColorSelect = ({ onChange, value }: { onChange: (color: TagColor) =
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary" className="h-10 gap-4">
+        <Button variant="secondary" className="h-10 gap-md">
           <ColorPreview color={value} />
           <MenuCommand.Arrow />
         </Button>
       </MenuCommand.Trigger>
-      <MenuCommand.Content className="mt-2" sameWidth>
+      <MenuCommand.Content className="mt-sm" sameWidth>
         <MenuCommand.List>
           {tagColors.map((color) => (
             <MenuCommand.Item

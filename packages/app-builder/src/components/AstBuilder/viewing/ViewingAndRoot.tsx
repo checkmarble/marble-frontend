@@ -17,9 +17,9 @@ export function ViewingAstBuilderAndRoot(props: ViewingAstBuilderAndRootProps) {
   const validation = useMemo(() => props.validation ?? { errors: [], evaluation: [] }, [props.validation]);
 
   return (
-    <div className="flex flex-col gap-2 lg:gap-4">
+    <div className="flex flex-col gap-sm lg:gap-md">
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
-        <div className="text-s bg-grey-background-light text-purple-primary col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded-sm p-2 font-semibold">
+        <div className="text-s bg-grey-background-light text-purple-primary col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-xs rounded-sm p-sm font-semibold">
           {dataSharp.value.data.$triggerObjectType}
         </div>
         {props.node.children.map((child, i, children) => {
@@ -35,7 +35,7 @@ export function ViewingAstBuilderAndRoot(props: ViewingAstBuilderAndRootProps) {
           );
         })}
       </div>
-      <div className="flex flex-row flex-wrap gap-2">
+      <div className="flex flex-row flex-wrap gap-sm">
         <ViewingEvaluationErrors direct id={props.node.id} evaluation={validation.evaluation} />
       </div>
     </div>
@@ -61,7 +61,7 @@ function ViewingRootAndLine({ isFirst, isLast, path, validation, node }: Viewing
 
       <LogicalOperatorLabel operator={isFirst ? 'where' : 'and'} className="col-start-3" type="contained" />
 
-      <div className={clsx('col-span-2 col-start-4 flex flex-col gap-2 px-2')}>
+      <div className={clsx('col-span-2 col-start-4 flex flex-col gap-sm px-xs')}>
         <ViewingAstBuilderNode path={path} node={node} validation={validation} root />
         <ViewingEvaluationErrors id={node.id} evaluation={validation.evaluation} />
       </div>

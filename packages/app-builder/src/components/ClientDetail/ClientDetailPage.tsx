@@ -86,7 +86,7 @@ export const ClientDetailPage = ({
   return (
     <DataModelExplorerProvider>
       <Page.Main>
-        <Page.Header className="gap-4">
+        <Page.Header className="gap-md">
           <BackButton back="/client-detail" />
           <TitleBar
             objectType={objectType}
@@ -97,46 +97,46 @@ export const ClientDetailPage = ({
           />
         </Page.Header>
         <Page.Container ref={containerRef}>
-          <Page.ContentV2 className="gap-v2-lg">
+          <Page.Content width="table">
             {/* Client details */}
-            <div className="flex gap-v2-md">
+            <div className="flex gap-md">
               {/* Score card */}
               {isAccessible(userScoringAccess) ? (
                 scoringSettings && activeScore ? (
                   <button
                     type="button"
-                    className="flex flex-col gap-v2-sm border rounded-lg p-v2-md py-v2-sm w-[180px] self-start shrink-0 items-start"
+                    className="flex flex-col gap-sm border rounded-lg p-md py-sm w-[180px] self-start shrink-0 items-start"
                     style={{ borderColor: scoreColor, backgroundColor: `${scoreColor}20` }}
                     onClick={handleScoreClick}
                   >
                     <span className="text-small">{t('client360:client_detail.risk_level')}</span>
-                    <div className="flex gap-v2-xs items-center">
+                    <div className="flex gap-xs items-center">
                       <div className="size-4 rounded-full" style={{ backgroundColor: scoreColor }} />
                       <span className="font-semibold">{scoreLabel}</span>
                       <Icon icon="eye" className="size-4" />
                     </div>
                   </button>
                 ) : canConfigureUserScoring ? (
-                  <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-v2-sm rounded-lg border p-v2-md py-v2-sm w-[180px] self-start shrink-0 text-center">
+                  <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-sm rounded-lg border p-md py-sm w-[180px] self-start shrink-0 text-center">
                     <Icon icon="comet" className="size-10 shrink-0" />
                     <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
                     <Link
                       to="/user-scoring"
-                      className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
+                      className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-xs text-center hover:bg-purple-primary/10 transition-colors"
                     >
                       {t('client360:client_detail.risk_level.configure')}
                     </Link>
                   </div>
                 ) : null
               ) : (
-                <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-v2-sm rounded-lg border p-v2-md py-v2-sm w-[180px] self-start shrink-0 text-center">
+                <div className="border-purple-border bg-purple-background-light flex flex-col items-center gap-sm rounded-lg border p-md py-sm w-[180px] self-start shrink-0 text-center">
                   <Icon icon="comet" className="size-10 shrink-0" />
                   <span className="text-xs">{t('client360:client_detail.risk_level')}</span>
                   <a
                     href="https://checkmarble.com/upgrade"
                     target="_blank"
                     rel="noreferrer"
-                    className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-v2-xs text-center hover:bg-purple-primary/10 transition-colors"
+                    className="border-purple-primary text-purple-primary text-xs font-medium w-full rounded-lg border py-xs text-center hover:bg-purple-primary/10 transition-colors"
                   >
                     {t('client360:client_detail.risk_level.upgrade')}
                   </a>
@@ -176,15 +176,15 @@ export const ClientDetailPage = ({
             </div>
 
             {/* Client timeline */}
-            {/* <Card className="flex flex-col gap-v2-sm">
+            {/* <Card className="flex flex-col gap-sm">
               <div className="font-medium">User's history</div>
               <ClientTimeline />
             </Card> */}
 
             {/* Client relationships */}
-            <div className="grid grid-cols-1 lg:grid-cols-[7fr_5fr] gap-v2-md">
-              <div className="flex flex-col gap-v2-md">
-                <Card className="flex flex-col gap-v2-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-[7fr_5fr] gap-md">
+              <div className="flex flex-col gap-md">
+                <Card className="flex flex-col gap-sm">
                   <div className="flex justify-between items-center">
                     <div className="font-medium">{t('client360:client_detail.monitoring_hits.title')}</div>
                     {monitoringHitsCount > 3 ? (
@@ -196,7 +196,7 @@ export const ClientDetailPage = ({
                   </div>
                   <MonitoringHitsList monitoringHitsQuery={monitoringHitsQuery} />
                 </Card>
-                <Card className="flex flex-col gap-v2-sm">
+                <Card className="flex flex-col gap-sm">
                   <div className="flex justify-between items-center">
                     <div className="font-medium">{t('client360:client_detail.alert_hits.title')}</div>
                     {alertHitsCount > 3 ? (
@@ -209,7 +209,7 @@ export const ClientDetailPage = ({
                   <AlertHitsList alertHitsQuery={alertHitsQuery} />
                 </Card>
               </div>
-              <Card className="flex flex-col gap-v2-sm">
+              <Card className="flex flex-col gap-sm">
                 <div className="flex justify-between items-center">
                   <div className="font-medium">{t('client360:client_detail.hierarchy.title')}</div>
                   <Button appearance="link" onClick={() => setShowHierarchyPanel(true)}>
@@ -229,7 +229,7 @@ export const ClientDetailPage = ({
             </div>
 
             {/* Client documents */}
-            <div className="flex flex-col gap-v2-sm">
+            <div className="flex flex-col gap-sm">
               <div className="flex justify-between items-center">
                 <div className="font-medium">{t('client360:client_detail.documents.title')}</div>
                 <div>
@@ -259,13 +259,13 @@ export const ClientDetailPage = ({
                   </Popover.Root>
                 </div>
               </div>
-              <Card className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-v2-md">
+              <Card className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
                 <DocumentsList objectType={objectType} objectId={objectId} />
               </Card>
             </div>
 
             {/* Client comments */}
-            <div className="flex flex-col gap-v2-sm">
+            <div className="flex flex-col gap-sm">
               <div className="font-medium">{t('client360:client_detail.comments.title')}</div>
               <ClientComments
                 objectType={objectType}
@@ -274,7 +274,7 @@ export const ClientDetailPage = ({
                 root={containerRef}
               />
             </div>
-          </Page.ContentV2>
+          </Page.Content>
         </Page.Container>
       </Page.Main>
       <PanelRoot open={showAlertHitsPanel} onOpenChange={setShowAlertHitsPanel}>
@@ -329,7 +329,5 @@ export const ClientDetailPage = ({
 };
 
 const Card = ({ children, className }: { children?: React.ReactNode; className?: string }) => {
-  return (
-    <div className={cn('p-v2-lg border border-grey-border rounded-v2-md bg-surface-card', className)}>{children}</div>
-  );
+  return <div className={cn('p-lg border border-grey-border rounded-md bg-surface-card', className)}>{children}</div>;
 };

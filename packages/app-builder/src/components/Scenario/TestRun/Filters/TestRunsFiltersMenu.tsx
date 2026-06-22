@@ -70,7 +70,7 @@ function FilterContent({
   }
 
   return (
-    <div className="flex flex-col gap-1 p-2">
+    <div className="flex flex-col gap-xs p-sm">
       {filterNames.map((filterName) => (
         <FiltersMenuItem
           key={filterName}

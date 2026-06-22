@@ -18,7 +18,7 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
   }
 
   return (
-    <div className="bg-grey-background-light border-grey-border overflow-auto rounded-sm border p-3 font-mono text-xs">
+    <div className="bg-grey-background-light border-grey-border overflow-auto rounded-sm border p-md font-mono text-xs">
       {allKeys.map((key) => {
         const oldValue = oldData?.[key];
         const newValue = newData?.[key];
@@ -38,21 +38,21 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
               </div>
             )}
             {isAdded && (
-              <div className="bg-green-background-light text-green-primary dark:border-l-2 dark:border-green-primary dark:bg-transparent dark:pl-2">
+              <div className="bg-green-background-light text-green-primary dark:border-l-2 dark:border-green-primary dark:bg-transparent dark:ps-sm">
                 <span className="font-semibold">+ {key}:</span> {newStr}
               </div>
             )}
             {isRemoved && (
-              <div className="bg-red-background text-red-primary line-through dark:border-l-2 dark:border-red-primary dark:bg-transparent dark:pl-2">
+              <div className="bg-red-background text-red-primary line-through dark:border-l-2 dark:border-red-primary dark:bg-transparent dark:ps-sm">
                 <span className="font-semibold">- {key}:</span> {oldStr}
               </div>
             )}
             {isChanged && (
               <>
-                <div className="bg-red-background text-red-primary line-through dark:border-l-2 dark:border-red-primary dark:bg-transparent dark:pl-2">
+                <div className="bg-red-background text-red-primary line-through dark:border-l-2 dark:border-red-primary dark:bg-transparent dark:ps-sm">
                   <span className="font-semibold">- {key}:</span> {oldStr}
                 </div>
-                <div className="bg-green-background-light text-green-primary dark:border-l-2 dark:border-green-primary dark:bg-transparent dark:pl-2">
+                <div className="bg-green-background-light text-green-primary dark:border-l-2 dark:border-green-primary dark:bg-transparent dark:ps-sm">
                   <span className="font-semibold">+ {key}:</span> {newStr}
                 </div>
               </>

@@ -47,8 +47,8 @@ export function UploadTableDrawer({
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(900px,50vw)] border-l border-grey-border shadow-lg">
         <div className="bg-surface-card flex h-full flex-col overflow-hidden">
-          <header className="flex shrink-0 items-center gap-v2-md border-b border-grey-border p-v2-lg">
-            <button type="button" onClick={onClose} className="rounded-lg p-2 hover:bg-grey-border">
+          <header className="flex shrink-0 items-center gap-md border-b border-grey-border p-lg">
+            <button type="button" onClick={onClose} className="rounded-lg p-sm hover:bg-grey-border">
               <Icon icon="x" className="size-5" />
             </button>
             <Icon icon="upload" className="size-5" />
@@ -56,8 +56,8 @@ export function UploadTableDrawer({
             <Tag color="grey">{tableName}</Tag>
           </header>
 
-          <div className="flex-1 overflow-y-auto p-v2-lg">
-            <div className="flex flex-col gap-v2-lg">
+          <div className="flex-1 overflow-y-auto p-lg">
+            <div className="flex flex-col gap-lg">
               <p className="text-s whitespace-pre-wrap text-grey-secondary">
                 <Trans
                   t={t}
@@ -75,9 +75,9 @@ export function UploadTableDrawer({
                 <a
                   href={generateCsvTemplateLink(tableModel)}
                   download={`${tableName}_template.csv`}
-                  className="text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-secondary disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary"
+                  className="text-s flex flex-row items-center justify-center gap-xs rounded-sm border border-solid px-sm py-xs font-semibold outline-hidden hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-secondary disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary"
                 >
-                  <Icon icon="download" className="me-2 size-6" />
+                  <Icon icon="download" className="me-sm size-6" />
                   {t('upload:download_template_cta')}
                 </a>
               </div>
@@ -85,7 +85,7 @@ export function UploadTableDrawer({
               <UploadForm objectType={tableName} onSuccess={handleUploadSuccess} />
 
               {uploadLogs.length > 0 ? (
-                <div className="flex flex-col gap-v2-sm">
+                <div className="flex flex-col gap-sm">
                   <div className="flex items-center justify-between">
                     <Typo variant="subtitle2">{t('upload:past_uploads')}</Typo>
                     <Button

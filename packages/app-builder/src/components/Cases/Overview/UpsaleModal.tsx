@@ -26,11 +26,11 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <div className="flex items-center gap-v2-xs cursor-pointer">
+        <div className="flex items-center gap-xs cursor-pointer">
           <Tag
             color="yellow"
             size="small"
-            className="border border-[#fde9af] bg-[#fef6df] text-[#eea200] rounded-full flex items-center gap-1"
+            className="border border-[#fde9af] bg-[#fef6df] text-[#eea200] rounded-full flex items-center gap-xs"
           >
             {t('cases:overview.upsale.discover')}
             {showWand && <Icon icon="wand" className="size-3" />}
@@ -39,20 +39,20 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
         </div>
       </Modal.Trigger>
       <Modal.Content size="small">
-        <div className="flex flex-col gap-4 p-4">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-md p-md">
+          <div className="flex items-center gap-sm">
             <TypoComponent variant="title2">{displayTitle}</TypoComponent>
             <Tag
               color="yellow"
               size="small"
-              className="border border-[#fde9af] bg-[#fef6df] text-[#eea200] rounded-full flex items-center gap-1"
+              className="border border-[#fde9af] bg-[#fef6df] text-[#eea200] rounded-full flex items-center gap-xs"
             >
               {t('cases:overview.upsale.discover')}
               {showWand && <Icon icon="wand" className="size-3" />}
             </Tag>
           </div>
           <div className="text-s text-grey-secondary">
-            <p className="mb-2">{displayDescription}</p>
+            <p className="mb-sm">{displayDescription}</p>
             {benefits.length > 0 && (
               <ul className="list-disc list-inside">
                 {benefits.map((benefit) => (
@@ -63,7 +63,7 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
           </div>
         </div>
 
-        <div className="border-t border-grey-border flex items-center justify-end gap-2 p-4">
+        <div className="border-t border-grey-border flex items-center justify-end gap-sm p-md">
           <Modal.Close asChild>
             <Button variant="secondary" type="button">
               {t('common:cancel')}

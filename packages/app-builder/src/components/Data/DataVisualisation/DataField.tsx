@@ -37,8 +37,8 @@ import {
 const MapView = lazy(() => import('./MapView').then((m) => ({ default: m.MapView })));
 
 const codeClassName = (className?: string) =>
-  cn('font-mono border border-grey-border rounded-sm p-1 bg-surface-card', className);
-const subClassName = 'grid gap-1 px-2 py-1 border border-grey-border bg-grey-background-light rounded-lg';
+  cn('font-mono border border-grey-border rounded-sm p-xs bg-surface-card', className);
+const subClassName = 'grid gap-xs px-xs py-2xs border border-grey-border bg-grey-background-light rounded-lg';
 
 type DataFieldProps = {
   field?: DataModelField;
@@ -331,7 +331,7 @@ export function StringCountryComponent({
   if (!result.ok) return <span>{value}</span>;
   const country = result.value;
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex items-center gap-xs">
       <span>{country.flag}</span>
       {withCountryName && <span>{formatCountryName(country.isoAlpha2, language)}</span>}
     </span>
@@ -349,7 +349,7 @@ export function StringLinkComponent({ value }: { value: string }) {
   if (!result.ok || !['http:', 'https:'].includes(result.value.protocol)) return <span>{value}</span>;
   return (
     <a
-      className="text-purple-primary inline-flex items-center gap-0.5"
+      className="text-purple-primary inline-flex items-center gap-2xs"
       href={result.value.href}
       target="_blank"
       rel="noopener noreferrer"
@@ -365,7 +365,7 @@ function StringVpn() {
   const value = useStringValue();
   if (!value) return <span>{t('data:no_vpn')}</span>;
   return (
-    <span className={codeClassName('flex gap-2 items-center')}>
+    <span className={codeClassName('flex gap-sm items-center')}>
       <span>{t('data:vpn')}</span>
       <span>{'-'}</span>
       <span>{value}</span>
@@ -389,7 +389,7 @@ function StringForeignKey() {
   if (!value) return <EmptyValue />;
   return (
     <CopyToClipboardButton toCopy={value}>
-      <span className="inline-flex items-center gap-1" title={value}>
+      <span className="inline-flex items-center gap-xs" title={value}>
         <Icon icon="arrow-forward" className="size-4 text-purple-primary" />
         <span>{field?.foreignkeyTable ?? value ?? '-'}</span>
       </span>
@@ -415,7 +415,7 @@ export function DateBirthdateComponent({ value }: { value: string }) {
   const date = new Date(value);
   const age = formatAge(date, language);
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex items-center gap-xs">
       <span className="text-grey-secondary text-xs">{age}</span>
       <span className={codeClassName('text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
     </span>
@@ -436,7 +436,7 @@ function StringCurrency() {
   const currency = cc.code(value);
   if (!currency) return <span>{value}</span>;
   return (
-    <span className={codeClassName('inline-flex items-center gap-1')}>
+    <span className={codeClassName('inline-flex items-center gap-xs')}>
       <span>{currency?.code}</span>
       <span>{'-'}</span>
       <span>{currency?.currency}</span>
@@ -480,7 +480,7 @@ function DataGpsCoords() {
   if (!value || !opts) return <span className={codeClassName()}>-</span>;
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-sm">
       <CopyToClipboardButton toCopy={`${opts.latitude},${opts.longitude}`} className="w-fit">
         <span className="text-s line-clamp-1 font-semibold">
           {opts.latitude}, {opts.longitude}
@@ -490,7 +490,7 @@ function DataGpsCoords() {
       <Suspense
         fallback={
           <div
-            className="isolate overflow-hidden rounded-v2-lg border border-grey-border bg-surface-card flex items-center justify-center"
+            className="isolate overflow-hidden rounded-lg border border-grey-border bg-surface-card flex items-center justify-center"
             style={{ height: mapHeight }}
           >
             <Spinner className="size-4" />
@@ -544,7 +544,7 @@ function NumberCurrency() {
 
   if (value === undefined || isNaN(value)) return <EmptyValue />;
   return (
-    <span className="inline-flex items-baseline gap-2">
+    <span className="inline-flex items-baseline gap-sm">
       {currency ? (
         <span className="text-xs text-grey-secondary border border-grey-border rounded-sm">{currency}</span>
       ) : null}
@@ -593,9 +593,9 @@ function DataIpAddress() {
   if (!metaData) return <span className={codeClassName()}>{value}</span>;
 
   return (
-    <div className="grid gap-1">
+    <div className="grid gap-xs">
       <button
-        className={codeClassName('w-fit flex gap-2 items-center cursor-pointer')}
+        className={codeClassName('w-fit flex gap-sm items-center cursor-pointer')}
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{value}</span>
@@ -621,7 +621,7 @@ function DataDerivedData({ metaData }: { metaData?: Record<string, unknown> }) {
   if (!metaData) return null;
 
   return (
-    <div className={cn(subClassName, 'grid-cols-[max-content_1fr] gap-2')}>
+    <div className={cn(subClassName, 'grid-cols-[max-content_1fr] gap-sm')}>
       {Object.entries(metaData).map(([key, value]) => {
         let node: React.ReactNode;
         if (typeof value === 'number') {
@@ -654,9 +654,9 @@ function LinkToValue({ value, linkedTo }: { value?: string; linkedTo?: string })
   }
 
   return (
-    <div className="grid gap-1">
+    <div className="grid gap-xs">
       <button
-        className={codeClassName('w-fit flex gap-2 items-center cursor-pointer')}
+        className={codeClassName('w-fit flex gap-sm items-center cursor-pointer')}
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <span>{value}</span>

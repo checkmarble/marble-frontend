@@ -9,7 +9,7 @@ export const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
   const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   return (
-    <div key={event.id} className="flex items-start gap-2">
+    <div key={event.id} className="flex items-start gap-sm">
       <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xxs" color="grey" />
       <span className="text-grey-primary whitespace-pre-wrap text-xs">
         <Markdown>{event.comment}</Markdown>

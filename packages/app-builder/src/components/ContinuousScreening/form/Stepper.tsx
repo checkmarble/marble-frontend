@@ -50,7 +50,7 @@ export const StepperComponent = ({
   fromZero = false,
 }: StepperComponentProps) => {
   return (
-    <div className="flex flex-row gap-v2-sm text-default font-normal items-center">
+    <div className="flex flex-row gap-sm text-default font-normal items-center">
       {steps.map((step, index) => {
         if (index < startAt) return null;
 

@@ -39,9 +39,9 @@ export function DeleteListModal({ listId }: { listId: string }) {
       <Modal.Content>
         <form onSubmit={handleSubmit(form)}>
           <HiddenInputs listId={listId} />
-          <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-1 flex-col items-center justify-center gap-2">
-              <div className="bg-red-background mb-6 box-border rounded-[90px] p-4">
+          <div className="flex flex-col gap-lg p-lg">
+            <div className="flex flex-1 flex-col items-center justify-center gap-sm">
+              <div className="bg-red-background mb-lg box-border rounded-[90px] p-md">
                 <Icon icon="delete" className="text-red-primary size-16" />
               </div>
               <Typo variant="title1">{t('lists:delete_list.title')}</Typo>

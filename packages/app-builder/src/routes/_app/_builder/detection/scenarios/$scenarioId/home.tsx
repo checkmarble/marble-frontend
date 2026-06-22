@@ -110,17 +110,17 @@ function ScenarioHome() {
   return (
     <Page.Main>
       <Page.Header className="justify-between">
-        <div className="flex flex-row items-center gap-v2-xs">
+        <div className="flex flex-row items-center gap-xs">
           <ScenarioHeader isEditScenarioAvailable={featureAccess.isEditScenarioAvailable} scenario={currentScenario} />
         </div>
       </Page.Header>
-      <Page.ContentV2 className="flex flex-col gap-v2-lg max-w-(--breakpoint-xl)">
+      <Page.Content width="readable">
         {currentScenario.archived ? (
-          <Callout color="red" icon="warning" className="mb-4">
+          <Callout color="red" icon="warning" className="mb-md">
             {t('scenarios:archived_scenario_banner')}
           </Callout>
         ) : null}
-        <section className="flex flex-row gap-6 items-center">
+        <section className="flex flex-row gap-lg items-center">
           {currentScenario.description || featureAccess.isEditScenarioAvailable ? (
             <Page.Description withIcon={false} className="flex-1">
               <ScenarioDescriptionEditable
@@ -129,7 +129,7 @@ function ScenarioHome() {
               />
             </Page.Description>
           ) : null}
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-md">
             {scenarioToWatch ? (
               <Link
                 to="/detection/scenarios/$scenarioId/i/$iterationId"
@@ -164,11 +164,11 @@ function ScenarioHome() {
             ) : null}
           </div>
         </section>
-        <section className="flex flex-col gap-v2-sm">
+        <section className="flex flex-col gap-sm">
           <Typo variant="title2" className="text-grey-primary">
             {t('scenarios:home.execution')}
           </Typo>
-          <div className="grid grid-cols-2 gap-v2-sm">
+          <div className="grid grid-cols-2 gap-sm">
             <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
             <BatchSection
               scenarioId={currentScenario.id}
@@ -192,7 +192,7 @@ function ScenarioHome() {
           </div>
         </section>
         <ResourcesSection />
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }
@@ -211,7 +211,7 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
       <TabHeader title={t('scenarios:home.testrun')} spinner={isExecutionOngoing} />
       <section
         className={clsx(
-          'bg-surface-card border-grey-border relative flex flex-col gap-4 rounded-v2-lg border p-v2-md rounded-tl-none flex-1',
+          'bg-surface-card border-grey-border relative flex flex-col gap-md rounded-lg border p-md rounded-tl-none flex-1',
           isExecutionOngoing && 'border-purple-primary',
         )}
       >
@@ -221,7 +221,7 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
 
         <p>{t('scenarios:testrun.description')}</p>
 
-        <div className="flex flex-row gap-4 mt-auto">
+        <div className="flex flex-row gap-md mt-auto">
           <CreateTestRun
             currentScenario={currentScenario}
             scenarioIterations={scenarioIterations}
@@ -273,8 +273,8 @@ function RealTimeSection({
   return (
     <article className="flex flex-col">
       <TabHeader title={t('scenarios:home.execution.real_time')} spinner={false} />
-      <div className="bg-surface-card border-grey-border flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md rounded-tl-none">
-        <p className="flex flex-col gap-4">
+      <div className="bg-surface-card border-grey-border flex flex-1 flex-col gap-md rounded-lg border p-md rounded-tl-none">
+        <p className="flex flex-col gap-md">
           <span>
             <Trans
               t={t}
@@ -295,7 +295,7 @@ function RealTimeSection({
                 i18nKey="scenarios:home.execution.real_time.callout.scenario_id"
                 components={{
                   CopyScenarioId: (
-                    <CopyToClipboardButton toCopy={scenarioId} className="ml-1">
+                    <CopyToClipboardButton toCopy={scenarioId} className="ms-xs">
                       <code>{`ID ${scenarioId.slice(0, 15)}...`}</code>
                     </CopyToClipboardButton>
                   ),
@@ -313,7 +313,7 @@ function RealTimeSection({
 
 function TabHeader({ title, spinner }: { title: string; spinner: boolean }) {
   return (
-    <div className="flex items-center gap-v2-md border-l border-t border-r bg-surface-card border-grey-border rounded-t-v2-md py-v2-xs px-2 w-fit">
+    <div className="flex items-center gap-md border-l border-t border-r bg-surface-card border-grey-border rounded-t-md py-xs px-xs w-fit">
       <Typo variant="subtitle1" className="text-grey-secondary">
         {title}
       </Typo>
@@ -364,11 +364,11 @@ function BatchSection({
       <TabHeader title={t('scenarios:home.execution.batch')} spinner={isExecutionOngoing} />
       <div
         className={clsx(
-          'bg-surface-card border-grey-border relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md rounded-tl-none',
+          'bg-surface-card border-grey-border relative flex flex-1 flex-col gap-md rounded-lg border p-md rounded-tl-none',
           isExecutionOngoing && 'border-purple-primary',
         )}
       >
-        <p className="flex flex-col gap-4">
+        <p className="flex flex-col gap-md">
           <span>{t('scenarios:home.execution.batch.callout')}</span>
           {formattedSchedule ? (
             <span className="text-grey-primary text-s text-balance font-semibold">
@@ -386,7 +386,7 @@ function BatchSection({
           ) : null}
         </p>
 
-        <div className="flex flex-row gap-v2-md mt-auto">
+        <div className="flex flex-row gap-md mt-auto">
           {isManualTriggerScenarioAvailable && isLive && liveIterationId ? (
             <ManualTriggerScenarioExecutionForm iterationId={liveIterationId} disabled={isExecutionOngoing} />
           ) : null}
@@ -455,7 +455,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
   return (
     <article className="flex flex-col">
       <TabHeader title={t('scenarios:home.workflow')} spinner={false} />
-      <section className="bg-surface-card border-grey-border relative flex flex-col gap-4 rounded-v2-lg border p-v2-md rounded-tl-none flex-1">
+      <section className="bg-surface-card border-grey-border relative flex flex-col gap-md rounded-lg border p-md rounded-tl-none flex-1">
         {access === 'test' ? (
           <Nudge
             className="absolute -right-3 -top-3 size-6"
@@ -467,9 +467,9 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
 
         <p>{t('scenarios:home.workflow_description')}</p>
 
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-row gap-md">
           {tag ? (
-            <div className="bg-purple-background-light text-s text-purple-primary flex h-10 flex-row items-center gap-2 rounded-sm px-2 uppercase">
+            <div className="bg-purple-background-light text-s text-purple-primary flex h-10 flex-row items-center gap-sm rounded-sm px-xs uppercase">
               {tag}
               {tooltip ? (
                 <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
@@ -482,7 +482,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
                   <Ariakit.Hovercard
                     portal
                     gutter={8}
-                    className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
+                    className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm shadow-md"
                   >
                     {tooltip}
                   </Ariakit.Hovercard>
@@ -492,7 +492,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
           ) : null}
 
           {rulesQuery.isLoading ? (
-            <div className="bg-grey-border h-7 w-30 animate-pulse rounded-v2-md flex items-center gap-v2-xs px-v2-sm">
+            <div className="bg-grey-border h-7 w-30 animate-pulse rounded-md flex items-center gap-xs px-sm">
               <div className="bg-grey-disabled size-3.5 animate-pulse rounded-sm" />
               <div className="bg-grey-disabled h-4 w-16 animate-pulse rounded-sm" />
             </div>
@@ -537,21 +537,21 @@ const resources = [
 function ResourcesSection() {
   const { t } = useTranslation(['common', 'scenarios']);
   return (
-    <section className="flex flex-col gap-v2-sm mx-auto">
+    <section className="flex flex-col gap-sm mx-auto">
       <Typo variant="title2" className="text-grey-primary">
         {t('scenarios:home.resources')}
       </Typo>
-      <div className="flex flex-row gap-v2-sm">
+      <div className="flex flex-row gap-sm">
         {resources.map(({ tKey, href, src }) => (
           <a
             key={tKey}
             href={href}
-            className="border-grey-border hover:border-purple-primary focus:border-purple-primary group flex flex-col overflow-hidden rounded-v2-lg border outline-hidden transition-colors"
+            className="border-grey-border hover:border-purple-primary focus:border-purple-primary group flex flex-col overflow-hidden rounded-lg border outline-hidden transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
             <img src={src} alt="" className="aspect-[21/9] object-cover" />
-            <span className="border-grey-border bg-surface-card text-s group-hover:border-purple-primary group-focus:border-purple-primary flex flex-row items-center justify-between border-t p-v2-sm font-medium transition-colors">
+            <span className="border-grey-border bg-surface-card text-s group-hover:border-purple-primary group-focus:border-purple-primary flex flex-row items-center justify-between border-t p-sm font-medium transition-colors">
               {t(tKey)}
               <Icon aria-hidden icon="arrow-right" className="size-3.5" />
             </span>

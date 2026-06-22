@@ -57,7 +57,7 @@ function ArchiveScenarioContent({
   return (
     <>
       <Modal.Title>{t('scenarios:archive_scenario.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <p className="text-s text-grey-secondary">
           {t('scenarios:archive_scenario.description', { name: scenarioName })}
         </p>

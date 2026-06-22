@@ -73,7 +73,7 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>{t('scenarios:create_scenario.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <Modal.Description asChild>
           <Callout variant="outlined">
             <p className="whitespace-pre-wrap">
@@ -87,7 +87,7 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
             </p>
           </Callout>
         </Modal.Description>
-        <div className="flex flex-1 flex-col gap-4">
+        <div className="flex flex-1 flex-col gap-md">
           <form.Field
             name="name"
             validators={{
@@ -95,7 +95,7 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
             }}
           >
             {(field) => (
-              <div className="group flex w-full flex-col gap-2">
+              <div className="group flex w-full flex-col gap-sm">
                 <FormLabel name={field.name}>{t('scenarios:create_scenario.name')}</FormLabel>
                 <FormInput
                   type="text"
@@ -111,7 +111,7 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
           </form.Field>
           <form.Field name="description">
             {(field) => (
-              <div className="group flex w-full flex-col gap-2">
+              <div className="group flex w-full flex-col gap-sm">
                 <FormLabel name={field.name}>{t('scenarios:create_scenario.description')}</FormLabel>
                 <FormInput
                   type="text"
@@ -132,8 +132,8 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
             }}
           >
             {(field) => (
-              <div className="group flex w-full flex-col gap-2">
-                <FormLabel name={field.name} className="flex flex-row items-center gap-1">
+              <div className="group flex w-full flex-col gap-sm">
+                <FormLabel name={field.name} className="flex flex-row items-center gap-xs">
                   {t('scenarios:create_scenario.trigger_object_title')}
                   <Ariakit.HovercardProvider
                     showTimeout={0}
@@ -149,7 +149,7 @@ function CreateScenarioContent({ dataModel, onCreateSuccess }: { dataModel: Data
                     <Ariakit.Hovercard
                       portal
                       gutter={4}
-                      className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
+                      className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm shadow-md"
                     >
                       {t('scenarios:trigger_object.description')}
                     </Ariakit.Hovercard>

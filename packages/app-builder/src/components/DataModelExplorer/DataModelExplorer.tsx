@@ -112,9 +112,9 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
   const { currentTab, lastActiveTab, closedTabsHistory, tabs } = explorerContext.explorerState;
 
   return (
-    <div className="flex min-h-0 min-w-[80vw] flex-1 flex-col overflow-y-auto p-14 py-2">
-      <div className="flex min-h-0 flex-1 flex-col gap-3">
-        <div className="before:bg-grey-border relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
+    <div className="flex min-h-0 min-w-[80vw] flex-1 flex-col overflow-y-auto p-2xl py-xs">
+      <div className="flex min-h-0 flex-1 flex-col gap-md">
+        <div className="before:bg-grey-border relative py-xs pe-md0 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
           {tabs.map((tab) => {
             const tabUniqValue = getTabUniqValue(tab);
             return (
@@ -168,7 +168,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
 
 function DataModelExplorerTab(props: { current: boolean; label: string; onClick: () => void; onClose: () => void }) {
   return (
-    <Tag color={props.current ? 'purple' : 'grey'} size="big" className="cursor-pointer gap-2" onClick={props.onClick}>
+    <Tag color={props.current ? 'purple' : 'grey'} size="big" className="cursor-pointer gap-sm" onClick={props.onClick}>
       {props.label}
       {props.current && (
         <Icon

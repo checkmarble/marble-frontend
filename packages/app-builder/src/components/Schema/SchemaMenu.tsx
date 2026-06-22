@@ -16,7 +16,7 @@ export const SchemaMenuMenuButton = React.forwardRef<HTMLDivElement, Omit<MenuBu
       <MenuButton
         ref={ref}
         className={clsx(
-          'hover:bg-purple-hover active:bg-purple-hover text-grey-white bg-purple-primary flex size-fit flex-row gap-1 rounded-sm p-2',
+          'hover:bg-purple-hover active:bg-purple-hover text-grey-white bg-purple-primary flex size-fit flex-row gap-xs rounded-sm p-sm',
           className,
         )}
         {...props}
@@ -32,7 +32,7 @@ export const SchemaMenuMenuPopover = React.forwardRef<HTMLDivElement, Omit<MenuP
         ref={ref}
         modal
         unmountOnHide={false}
-        className={clsx('flex flex-col gap-2 p-2', className)}
+        className={clsx('flex flex-col gap-sm p-sm', className)}
         {...props}
       />
     );
@@ -45,7 +45,7 @@ export const SchemaMenuMenuItem = React.forwardRef<HTMLDivElement, Omit<MenuItem
       <MenuItem
         ref={ref}
         className={clsx(
-          'data-active-item:bg-purple-background-light flex flex-row gap-2 rounded-sm p-2 outline-hidden',
+          'data-active-item:bg-purple-background-light flex flex-row gap-sm rounded-sm p-sm outline-hidden',
           className,
         )}
         {...props}

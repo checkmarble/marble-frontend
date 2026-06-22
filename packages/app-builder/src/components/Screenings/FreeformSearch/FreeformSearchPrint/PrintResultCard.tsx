@@ -20,9 +20,9 @@ export const PrintResultCard: FunctionComponent<PrintResultCardProps> = ({ entit
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
 
   return (
-    <div className="border border-grey-border rounded-md break-inside-avoid mb-2">
+    <div className="border border-grey-border rounded-md break-inside-avoid mb-sm">
       {/* Header */}
-      <div className="flex flex-wrap items-center gap-2 px-3 py-2 border-b border-grey-border bg-grey-background-light/30">
+      <div className="flex flex-wrap items-center gap-sm px-md py-xs border-b border-grey-border bg-grey-background-light/30">
         <span className="text-s font-semibold text-grey-primary">{entity.caption}</span>
         <span className="text-s text-grey-placeholder">
           {t(`screenings:entity.schema.${entitySchema}`, {
@@ -38,16 +38,16 @@ export const PrintResultCard: FunctionComponent<PrintResultCardProps> = ({ entit
 
       {/* Topics */}
       {entity.properties?.['topics']?.length ? (
-        <div className="border-b border-grey-border px-3 py-1">
-          <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-1" />
+        <div className="border-b border-grey-border px-md py-2xs">
+          <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-xs" />
         </div>
       ) : null}
 
       {/* Content - Always expanded */}
-      <div className="text-s p-3">
+      <div className="text-s p-md">
         {/* Datasets */}
         {entitySchema === 'person' && entity.datasets?.length ? (
-          <div className="grid grid-cols-[140px_1fr] gap-2 mb-2">
+          <div className="grid grid-cols-[140px_1fr] gap-sm mb-sm">
             <div className="font-bold">{t('screenings:match.datasets.title')}</div>
             <div>
               <EntityDatasetsList

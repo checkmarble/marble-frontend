@@ -43,8 +43,8 @@ export function TestRunsFiltersBar({ scenarioIterations }: TestRunsFiltersBarPro
   return (
     <>
       <Separator className="bg-grey-border" decorative />
-      <div className="flex flex-row items-center justify-between gap-2">
-        <div className="flex flex-row flex-wrap gap-2">
+      <div className="flex flex-row items-center justify-between gap-sm">
+        <div className="flex flex-row flex-wrap gap-sm">
           {definedTestRunsFilterNames.map((filterName) => {
             const icon = getFilterIcon(filterName);
             const tKey = getFilterTKey(filterName);

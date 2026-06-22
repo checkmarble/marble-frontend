@@ -20,10 +20,10 @@ export function CreateRule({ scenarioId, iterationId }: { scenarioId: string; it
       variant="secondary"
       appearance="link"
       disabled={createRuleMutation.isPending}
-      className="w-full gap-2"
+      className="w-full gap-sm"
       onClick={handleCreateRule}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-md">
         <Icon icon="plus" className="size-5" />
         <span className="font-normal">{t('scenarios:create_rule.title')}</span>
       </div>

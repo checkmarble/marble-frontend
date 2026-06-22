@@ -94,11 +94,11 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
         ) : null}
       </FilterItem.Root>
       <FilterPopover.Content>
-        <div className="p-4 flex flex-col gap-3 w-80">
-          <div className="flex gap-2">
+        <div className="p-md flex flex-col gap-md w-80">
+          <div className="flex gap-sm">
             <MenuCommand.Menu open={opSelectIsOpen} onOpenChange={setOpSelectIsOpen}>
               <MenuCommand.Trigger>
-                <MenuCommand.SelectButton className="w-v2-s">{localValue.op}</MenuCommand.SelectButton>
+                <MenuCommand.SelectButton className="w-s">{localValue.op}</MenuCommand.SelectButton>
               </MenuCommand.Trigger>
               <MenuCommand.Content sameWidth>
                 <MenuCommand.List>
@@ -135,7 +135,7 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
               }}
             />
           </div>
-          <div className="flex justify-end gap-v2-xs">
+          <div className="flex justify-end gap-xs">
             <Button variant="secondary" size="medium" onClick={clear}>
               {t('filters:ds.clear_button.label')}
             </Button>

@@ -47,7 +47,7 @@ export const OpenCase = ({ id }: { id: string }) => {
       <Modal.Content>
         <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
         <form onSubmit={handleSubmit(form)}>
-          <div className="flex flex-col gap-8 p-8">
+          <div className="flex flex-col gap-xl p-xl">
             <Callout>{t('cases:reopen-case.modal.callout')}</Callout>
             <form.Field
               name="comment"
@@ -57,7 +57,7 @@ export const OpenCase = ({ id }: { id: string }) => {
               }}
             >
               {(field) => (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-sm">
                   <FormLabel name={field.name}>Add a comment</FormLabel>
                   <FormTextArea
                     name={field.name}

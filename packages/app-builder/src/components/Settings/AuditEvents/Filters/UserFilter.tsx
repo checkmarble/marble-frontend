@@ -21,7 +21,7 @@ export const UserFilterMenu = ({ onSelect }: UserFilterMenuProps) => {
   );
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-sm p-sm">
       <MenuCommand.Combobox placeholder={t('common:search')} onValueChange={setSearchValue} />
       <MenuCommand.List className="max-h-40">
         {matches.map((user) => (

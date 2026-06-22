@@ -129,12 +129,10 @@ export const InboxPage = ({
   if (inboxes.length === 0 && inboxId === MY_INBOX_ID) {
     return (
       <Page.Main className="flex flex-col">
-        <Page.Container>
-          <Page.ContentV2 className="gap-v2-md">
-            {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
-            <InboxEmptyState canManageInboxes={canViewNavigationTabs} />
-          </Page.ContentV2>
-        </Page.Container>
+        <Page.Content>
+          {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
+          <InboxEmptyState canManageInboxes={canViewNavigationTabs} />
+        </Page.Content>
       </Page.Main>
     );
   }
@@ -149,12 +147,12 @@ export const InboxPage = ({
           },
         )}
       />
-      <Page.ContentV2 className="gap-v2-md">
+      <Page.Content width="table">
         {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
-        <div className="flex flex-col gap-v2-md relative">
+        <div className="flex flex-col gap-md relative">
           <MultiSelect.Root id={inboxId}>
             <div className="flex justify-between">
-              <div className="flex gap-v2-sm items-center">
+              <div className="flex gap-sm items-center">
                 <MultiSelect.Subscribe<Case>>
                   {(count, items) => {
                     if (count === 0 || !casesQuery.isSuccess) return null;
@@ -178,7 +176,7 @@ export const InboxPage = ({
                   onInboxSelect={onInboxSelect}
                 />
               </div>
-              <div className="flex gap-v2-sm items-center">
+              <div className="flex gap-sm items-center">
                 <FavoriteInboxButton
                   inboxId={inboxId}
                   isFavorite={favoriteInboxId === (inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId))}
@@ -224,7 +222,7 @@ export const InboxPage = ({
             {match(casesQuery)
               .with({ isPending: true }, () => {
                 return (
-                  <div className=" border border-grey-border rounded-v2-md">
+                  <div className=" border border-grey-border rounded-md">
                     <div className="h-13 border-b border-grey-border"></div>
                     <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
                       <Spinner className="size-12" />
@@ -234,7 +232,7 @@ export const InboxPage = ({
               })
               .with({ isError: true }, () => {
                 return (
-                  <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
+                  <div className="border-red-disabled bg-red-background text-red-primary mt-md rounded-sm border p-lg flex flex-col gap-sm items-center">
                     <span>{t('cases:errors.fetching_cases')}</span>
                     <Button variant="secondary" onClick={() => casesQuery.refetch()}>
                       {t('common:retry')}
@@ -260,7 +258,7 @@ export const InboxPage = ({
               .exhaustive()}
           </MultiSelect.Root>
         </div>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 };

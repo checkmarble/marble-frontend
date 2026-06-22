@@ -101,7 +101,7 @@ export function ClientRiskCategoriesEditSelect({
       >
         {([isDefaultValue, isSubmitting]) =>
           !isDefaultValue ? (
-            <div className="border-grey-border flex justify-end gap-2 overflow-x-auto border-t p-2">
+            <div className="border-grey-border flex justify-end gap-sm overflow-x-auto border-t p-sm">
               <MenuCommand.HeadlessItem>
                 {isSubmitting ? (
                   <Button mode="icon" type="submit" disabled>

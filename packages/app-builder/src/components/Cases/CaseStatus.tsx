@@ -11,8 +11,8 @@ import { casesI18n } from './cases-i18n';
 export const caseStatusBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
   variants: {
     size: {
-      large: 'justify-center rounded-sm p-2 gap-2 text-r font-medium',
-      small: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
+      large: 'justify-center rounded-sm p-sm gap-sm text-r font-medium',
+      small: 'gap-xs rounded-full px-xs py-2xs text-xs font-normal',
     },
   },
   defaultVariants: {
@@ -45,7 +45,7 @@ export const CaseStatusBadge = ({
   const { t } = useTranslation(casesI18n);
 
   return (
-    <span {...rest} className="inline-flex items-center gap-2">
+    <span {...rest} className="inline-flex items-center gap-sm">
       <span
         className={caseStatusBadgeVariants({
           size,
@@ -82,7 +82,7 @@ export const CaseStatusBadge = ({
       </span>
       {outcome && outcome !== 'unset' ? (
         <span
-          className={cn('rounded-full border px-2 py-0.5 text-xs', {
+          className={cn('rounded-full border px-xs py-0.5 text-xs', {
             'border-red-primary text-red-primary': outcome === 'confirmed_risk',
             'border-green-primary text-green-primary': outcome === 'valuable_alert',
             'border-grey-placeholder text-grey-secondary': outcome === 'false_positive',
@@ -133,7 +133,7 @@ const badgeBorderVariants = cva('border', {
   },
 });
 
-const outcomeVariants = cva('border rounded-full px-v2-sm h-6 flex items-center', {
+const outcomeVariants = cva('border rounded-full px-sm h-6 flex items-center', {
   variants: {
     outcome: {
       false_positive: 'text-green-secondary border-green-secondary',
@@ -158,9 +158,9 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
   if (variant === 'full' || variant === 'icon-only') {
     return (
       <div
-        className={cn(badgeTextVariants({ status }), 'inline-flex items-center gap-v2-sm text-small whitespace-nowrap')}
+        className={cn(badgeTextVariants({ status }), 'inline-flex items-center gap-sm text-small whitespace-nowrap')}
       >
-        <div className="inline-flex items-center gap-v2-xs shrink-0">
+        <div className="inline-flex items-center gap-xs shrink-0">
           <Icon icon={statusIconMap[status]} className="size-5 shrink-0" />
           {variant === 'full' ? <span className="font-medium">{t(`cases:case.status.${status}`)}</span> : null}
         </div>
@@ -180,7 +180,7 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
           className={cn(
             badgeTextVariants({ status }),
             badgeBorderVariants({ status }),
-            'inline-flex items-center gap-v2-xs h-6 rounded-full px-v2-sm text-small whitespace-nowrap',
+            'inline-flex items-center gap-xs h-6 rounded-full px-sm text-small whitespace-nowrap',
           )}
         >
           <Icon icon={statusIconMap[status]} className="size-4 shrink-0" />
@@ -190,7 +190,7 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
     }
 
     return (
-      <div className="flex items-center gap-v2-xs text-small whitespace-nowrap">
+      <div className="flex items-center gap-xs text-small whitespace-nowrap">
         <Icon icon={statusIconMap[status]} className={cn(badgeTextVariants({ status }), 'size-5 shrink-0')} />
         {resolvedOutcome !== 'unset' ? (
           <div className={cn(outcomeVariants({ outcome: resolvedOutcome }), 'shrink-0 whitespace-nowrap')}>
@@ -206,7 +206,7 @@ export const CaseStatusBadgeV2 = ({ status, outcome, variant }: CaseStatusBadgeV
       className={cn(
         badgeTextVariants({ status }),
         badgeBorderVariants({ status }),
-        'flex items-center gap-v2-sm h-10 rounded-v2-s px-v2-sm text-default font-medium whitespace-nowrap',
+        'flex items-center gap-sm h-10 rounded-sm px-sm text-default font-medium whitespace-nowrap',
       )}
     >
       <Icon icon={statusIconMap[status]} className="size-5" />

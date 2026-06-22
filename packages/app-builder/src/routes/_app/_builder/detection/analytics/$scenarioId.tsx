@@ -313,13 +313,13 @@ function Analytics() {
 
   return (
     <Page.Main>
-      <Page.ContentV2 className="gap-v2-md">
+      <Page.Content>
         <DetectionNavigationTabs
         // actions={
         //   <Link
         //     to="/analytics-legacy"
         //     target="_blank"
-        //     className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-v2-xs"
+        //     className="text-s text-grey-secondary flex flex-row items-center font-semibold gap-xs"
         //   >
         //     <Icon icon="openinnew" className="size-4" />
         //     <span>{t('analytics:legacy-analytics-link')}</span>
@@ -334,9 +334,9 @@ function Analytics() {
             formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
           }}
         >
-          <div className="bg-surface-page min-[2000px]:px-40 flex flex-col gap-v2-md">
-            <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
-              <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
+          <div className="bg-surface-page min-[2000px]:px-sm0 flex flex-col gap-md">
+            <div className="flex flex-row gap-md mb-lg w-full">
+              <div className="flex flex-row gap-sm items-start min-h-[88px] w-full">
                 <FiltersBar
                   descriptors={descriptors}
                   dynamicDescriptors={dynamicDescriptors}
@@ -346,7 +346,7 @@ function Analytics() {
                 />
               </div>
             </div>
-            <div className="flex flex-col lg-analytics:flex-row gap-v2-md w-full items-stretch h-auto">
+            <div className="flex flex-col lg-analytics:flex-row gap-md w-full items-stretch h-auto">
               <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
                 <Decisions
                   data={decisionsOutcomesPerDayQuery.data ?? null}
@@ -390,7 +390,7 @@ function Analytics() {
             )}
           </div>
         </FormattingProvider>
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 }

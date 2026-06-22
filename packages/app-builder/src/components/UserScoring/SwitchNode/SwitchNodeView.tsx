@@ -36,8 +36,8 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
   const hasChildren = isSwitchAstNode(node) ? node.children.length > 0 : true;
 
   return (
-    <div className="flex flex-col gap-v2-sm pl-10 text-xs text-grey-secondary">
-      <div className="flex flex-wrap items-center gap-v2-sm">
+    <div className="flex flex-col gap-sm ps-2xl text-xs text-grey-secondary">
+      <div className="flex flex-wrap items-center gap-sm">
         {model
           ? match(model)
               .with({ type: 'user_attribute' }, (m) =>
@@ -53,7 +53,7 @@ export function SwitchNodeView({ node, dataModel, entityType, maxRiskLevel, cust
                 isCompleteRule(m) ? (
                   <>
                     <span>{t('user-scoring:switch.depending_on')}</span>
-                    <Tag color="grey" className="gap-v2-sm">
+                    <Tag color="grey" className="gap-sm">
                       <span>
                         {getAstNodeDisplayName(m.field, {
                           customLists: [],

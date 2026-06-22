@@ -51,7 +51,7 @@ export function NumberSwitchEdit({ conditions, maxRiskLevel, onChange }: NumberS
   };
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       {branches[0] && (
         <BranchRow
           variant="first"
@@ -141,7 +141,7 @@ function BranchRow({
   let conditionRow: ReactNode;
   if (variant === 'middle') {
     conditionRow = (
-      <div className="grid grid-cols-[24px_164px_70px_minmax(auto,_40px)_70px_1fr_24px] items-center gap-2">
+      <div className="grid grid-cols-[24px_164px_70px_minmax(auto,_40px)_70px_1fr_24px] items-center gap-sm">
         <div className="flex flex-col">{reorderButtons}</div>
         <span className="text-right text-purple-primary">{label}</span>
         <Input readOnly value={rangeStart ?? ''} />
@@ -155,7 +155,7 @@ function BranchRow({
     );
   } else {
     conditionRow = (
-      <div className="grid grid-cols-[24px_164px_70px] items-center gap-2">
+      <div className="grid grid-cols-[24px_164px_70px] items-center gap-sm">
         <div className="invisible flex flex-col">{reorderButtons}</div>
         <span className="text-right text-purple-primary">{label}</span>
         {variant === 'first' ? (
@@ -168,7 +168,7 @@ function BranchRow({
   }
 
   const impactRow = (
-    <div className="grid grid-cols-[24px_164px_minmax(auto,_40px)_70px_auto] items-center gap-2">
+    <div className="grid grid-cols-[24px_164px_minmax(auto,_40px)_70px_auto] items-center gap-sm">
       <div />
       <div />
       <span className="text-center text-grey-secondary">{t('user-scoring:switch.number.then')}</span>
@@ -182,7 +182,7 @@ function BranchRow({
   );
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-sm">
       {conditionRow}
       {impactRow}
     </div>

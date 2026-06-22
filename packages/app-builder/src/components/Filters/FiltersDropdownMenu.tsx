@@ -30,7 +30,7 @@ const FiltersDropdownMenuItem = forwardRef<HTMLDivElement, React.ComponentProps<
       <DropdownMenu.Item
         ref={ref}
         className={clsx(
-          'radix-highlighted:bg-purple-background-light flex flex-row gap-2 rounded-sm p-2 outline-hidden transition-colors',
+          'radix-highlighted:bg-purple-background-light flex flex-row gap-sm rounded-sm p-sm outline-hidden transition-colors',
           className,
         )}
         {...props}

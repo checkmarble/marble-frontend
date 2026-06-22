@@ -140,12 +140,12 @@ const FileItem = ({
     <>
       <button
         key={file.id}
-        className="flex gap-v2-sm items-center text-left cursor-pointer"
+        className="flex gap-sm items-center text-left cursor-pointer"
         onClick={() => onClickFile(document, file)}
         disabled={downloadingCaseFile}
       >
         <div
-          className="size-20 border border-grey-border rounded-v2-s bg-cover shrink-0 relative bg-grey-background-light grid place-items-center"
+          className="size-20 border border-grey-border rounded-sm bg-cover shrink-0 relative bg-grey-background-light grid place-items-center"
           style={{ backgroundImage: file.thumbnail_url ? `url(${file.thumbnail_url})` : 'none' }}
         >
           {file.thumbnail_url && file.content_type !== 'text/plain' ? null : (
@@ -155,13 +155,13 @@ const FileItem = ({
             className={CtaV2ClassName({
               variant: 'secondary',
               mode: 'icon',
-              className: 'absolute top-v2-xs right-v2-xs',
+              className: 'absolute top-xs right-xs',
             })}
           >
             <Icon icon={file.content_type?.startsWith('image/') ? 'eye' : 'download'} className="size-3.5" />
           </div>
         </div>
-        <div className="flex flex-col gap-v2-xs text-tiny text-grey-secondary truncate">
+        <div className="flex flex-col gap-xs text-tiny text-grey-secondary truncate">
           <div className="font-medium text-default text-grey-primary truncate">{file.filename}</div>
           {document.case_id ? <CaseLink caseId={document.case_id} /> : null}
           <span>
@@ -181,9 +181,9 @@ const FileItem = ({
         <PanelRoot open onOpenChange={() => setPreviewUrl(null)}>
           <PanelContainer size="xxl">
             <PanelHeader>
-              <div className="flex items-baseline gap-v2-md">
+              <div className="flex items-baseline gap-md">
                 <div>{file.filename}</div>
-                <span className="text-default text-grey-secondary font-normal flex gap-v2-sm">
+                <span className="text-default text-grey-secondary font-normal flex gap-sm">
                   <span>
                     {formatDistanceToNow(new Date(document.created_at), {
                       locale: getDateFnsLocale(language),

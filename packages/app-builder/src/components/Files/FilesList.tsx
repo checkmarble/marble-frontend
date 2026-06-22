@@ -28,7 +28,7 @@ export function FilesList({ files, downloadEndpoint, uploadEndpoint }: FilesList
 
   if (files.length === 0) {
     return (
-      <div className="bg-surface-card border-grey-border rounded-lg border p-4">
+      <div className="bg-surface-card border-grey-border rounded-lg border p-md">
         <span className="text-grey-secondary text-s whitespace-pre">
           <Trans
             t={t}

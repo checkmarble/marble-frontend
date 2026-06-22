@@ -44,13 +44,13 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
   }, [selectedTopics, t]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-md">
       <p className="text-s font-medium text-grey-primary">{t('scenarios:monitoring_list_check.filter_question')}</p>
 
       {/* Horizontal layout: Checkbox + label on left, dropdown on right */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-sm">
         {/* Left side: Checkbox + Hit types label + info icon */}
-        <label className="flex shrink-0 cursor-pointer items-center gap-2">
+        <label className="flex shrink-0 cursor-pointer items-center gap-sm">
           <Checkbox checked={filterEnabled} onCheckedChange={handleFilterToggle} />
           <span className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.hit_types_label')}</span>
           <Icon icon="tip" className="size-5 text-purple-primary" />
@@ -64,11 +64,11 @@ export function FilterSection({ selectedTopics, onTopicsChange }: FilterSectionP
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
           <MenuCommand.Content className="min-w-[250px]">
-            <div className="flex flex-col gap-1 p-2">
+            <div className="flex flex-col gap-xs p-sm">
               {SCREENING_CATEGORIES.map((topic) => (
                 <label
                   key={topic}
-                  className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-grey-02"
+                  className="flex cursor-pointer items-center gap-sm rounded p-sm hover:bg-grey-02"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Checkbox

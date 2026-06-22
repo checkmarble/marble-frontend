@@ -4,7 +4,7 @@ import { cn } from '../utils';
 // - NavLink: uses aria-current="page" (set automatically when active)
 // - Button: uses data-status="active" (set manually)
 export const tabClassName = cn(
-  'flex items-center h-8 px-v2-sm text-s font-medium rounded-v2-s',
+  'flex items-center h-8 px-sm text-s font-medium rounded-sm',
   'bg-purple-background text-purple-primary',
   'dark:bg-transparent dark:text-grey-placeholder',
   // Active state via aria-current (NavLink)
@@ -25,7 +25,7 @@ export function Tabs({ children }: { children: React.ReactNode }) {
   return (
     <div
       role="tablist"
-      className="flex p-v2-xs gap-v2-xs rounded-v2-md bg-purple-background self-start justify-self-start dark:bg-grey-background"
+      className="flex p-xs gap-xs rounded-md bg-purple-background self-start justify-self-start dark:bg-grey-background"
     >
       {children}
     </div>

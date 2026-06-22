@@ -302,8 +302,8 @@ export function EditTableDrawer({
       {/* Drawer panel */}
       <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
         <div ref={containerRef} className="bg-surface-card flex h-full flex-col overflow-y-auto">
-          <header className="flex shrink-0 items-center gap-v2-md border-b border-grey-border p-v2-lg">
-            <button type="button" onClick={requestClose} className="rounded-lg p-2 hover:bg-grey-border">
+          <header className="flex shrink-0 items-center gap-md border-b border-grey-border p-lg">
+            <button type="button" onClick={requestClose} className="rounded-lg p-sm hover:bg-grey-border">
               <Icon icon="x" className="size-5" />
             </button>
             <span className="text-l">{t('data:edit_table.header_prefix')}</span>
@@ -327,7 +327,7 @@ export function EditTableDrawer({
             />
           </header>
 
-          <div className="flex-1 overflow-hidden flex flex-col px-v2-lg py-v2-lg">
+          <div className="flex-1 overflow-hidden flex flex-col px-lg py-lg">
             <FormTable
               tableId={tableModel.id}
               errorFieldIds={fieldErrorIds}
@@ -336,10 +336,10 @@ export function EditTableDrawer({
             />
           </div>
 
-          <footer className="flex shrink-0 items-start justify-between gap-v2-md border-t border-grey-border p-v2-lg">
+          <footer className="flex shrink-0 items-start justify-between gap-md border-t border-grey-border p-lg">
             {validationErrors.length > 0 || isSemanticTypeChanged ? (
               <Callout color="red" icon="lightbulb" iconColor="red" className="min-w-0 flex-1">
-                <ul className="flex flex-col gap-v2-xs pl-3">
+                <ul className="flex flex-col gap-xs ps-md">
                   {validationErrors.map((error, index) => (
                     <li key={`${error.kind}-${index}`}>{error.message}</li>
                   ))}
@@ -350,7 +350,7 @@ export function EditTableDrawer({
               <div className="min-w-0 flex-1" />
             )}
 
-            <div className="flex shrink-0 items-center gap-v2-md self-center">
+            <div className="flex shrink-0 items-center gap-md self-center">
               <Button variant="secondary" appearance="stroked" onClick={requestClose}>
                 {t('common:cancel')}
               </Button>
@@ -382,7 +382,7 @@ function EditableAlias({ alias, onChange }: EditableAliasProps) {
     onClose();
   };
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-sm">
       {isEditing ? (
         <input
           value={editedAlias}
@@ -395,7 +395,7 @@ function EditableAlias({ alias, onChange }: EditableAliasProps) {
               onClose();
             }
           }}
-          className="text-l font-semibold bg-transparent border-b border-transparent hover:border-grey-border focus:border-purple-primary focus:outline-none px-1 min-w-0"
+          className="text-l font-semibold bg-transparent border-b border-transparent hover:border-grey-border focus:border-purple-primary focus:outline-none px-2xs min-w-0"
         />
       ) : (
         <>

@@ -9,7 +9,7 @@ export function StartedAfterFilter() {
   const language = useFormatLanguage();
 
   return (
-    <div className="p-4">
+    <div className="p-md">
       <Calendar mode="single" selected={startedAfter} onSelect={setStartedAfter} locale={getDateFnsLocale(language)} />
     </div>
   );

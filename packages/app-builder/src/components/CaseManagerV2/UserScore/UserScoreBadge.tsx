@@ -35,7 +35,7 @@ export function UserScoreBadge({ objectType, objectId, userScoringAccess }: User
       <button
         type="button"
         onClick={() => setPanelOpen(true)}
-        className="inline-flex items-center gap-v2-xs rounded-v2-md border px-v2-sm py-v2-xs text-small cursor-pointer"
+        className="inline-flex items-center gap-xs rounded-md border px-sm py-xs text-small cursor-pointer"
         style={{ backgroundColor: `${scoreColor}20`, borderColor: scoreColor }}
       >
         <span className="size-3 rounded-full shrink-0" style={{ backgroundColor: scoreColor }} />

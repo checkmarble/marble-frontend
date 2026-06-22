@@ -15,7 +15,7 @@ function Menu() {
   return (
     <MenuRoot>
       <MenuButton>Open</MenuButton>
-      <MenuPopover className="flex flex-col gap-2 p-2">
+      <MenuPopover className="flex flex-col gap-sm p-sm">
         {fruits.map((item) => (
           <MenuItem key={item}>{item}</MenuItem>
         ))}
@@ -56,7 +56,7 @@ function MenuWithCombobox() {
   return (
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
       <MenuButton>Open</MenuButton>
-      <MenuPopover className="flex flex-col gap-2 p-2">
+      <MenuPopover className="flex flex-col gap-sm p-sm">
         <MenuCombobox render={<Input className="shrink-0" placeholder="Search..." />} />
         <MenuContent>
           {items.map((item) => (

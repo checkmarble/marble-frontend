@@ -83,7 +83,7 @@ function CreateWebhookContent({
       }}
     >
       <Modal.Title>{t('settings:webhooks.new_webhook')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <form.Field
           name="url"
           validators={{
@@ -91,7 +91,7 @@ function CreateWebhookContent({
           }}
         >
           {(field) => (
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col items-start gap-sm">
               <FormLabel name={field.name}>{t('settings:webhooks.url')}</FormLabel>
               <FormInput
                 type="url"
@@ -114,8 +114,8 @@ function CreateWebhookContent({
           }}
         >
           {(field) => (
-            <div className="flex flex-col items-start gap-2">
-              <FormLabel name={field.name} className="flex items-center gap-2">
+            <div className="flex flex-col items-start gap-sm">
+              <FormLabel name={field.name} className="flex items-center gap-sm">
                 {t('settings:webhooks.event_types')}
                 {match(webhookStatus)
                   .with('allowed', () => null)
@@ -156,7 +156,7 @@ function CreateWebhookContent({
           }}
         >
           {(field) => (
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col items-start gap-sm">
               <FormLabel name={field.name}>{t('settings:webhooks.http_timeout')}</FormLabel>
               <FormInput
                 type="number"

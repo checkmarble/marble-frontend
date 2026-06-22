@@ -86,7 +86,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
       <div
         key={field.id}
         className={cn(
-          'bg-surface-card relative rounded-md px-v2-md py-v2-sm text-s',
+          'bg-surface-card relative rounded-md px-md py-sm text-s',
           belongsToField(field.name)
             ? 'border-purple-primary border-2 text-purple-primary'
             : 'border-grey-secondary border text-grey-secondary',
@@ -98,10 +98,10 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             id={`related:${field.name}`}
             position={Position.Left}
             isConnectable={false}
-            style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-v2-md))' }}
+            style={{ background: 'transparent', border: 'none', left: 'calc(-1 * var(--spacing-md))' }}
           />
         )}
-        <div className="flex items-center gap-v2-xs justify-between">
+        <div className="flex items-center gap-xs justify-between">
           <span title={field.name}>{field.alias || field.name}</span>
           {extended && field.dataType !== 'String' && <DatatypeIcon dataType={field.dataType as PrimitiveTypes} />}
         </div>
@@ -111,7 +111,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             id={`related:${field.name}`}
             position={Position.Right}
             isConnectable={false}
-            style={{ background: 'transparent', border: 'none', right: 'calc(-1 * var(--spacing-v2-md))' }}
+            style={{ background: 'transparent', border: 'none', right: 'calc(-1 * var(--spacing-md))' }}
           />
         )}
       </div>
@@ -166,8 +166,8 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
 
   return (
     <>
-      <div className="relative border border-purple-border-light bg-purple-background-light rounded-lg px-v2-md py-v2-xl">
-        <div className="relative flex items-center gap-v2-sm">
+      <div className="relative border border-purple-border-light bg-purple-background-light rounded-lg px-md py-xl">
+        <div className="relative flex items-center gap-sm">
           <Handle
             type="target"
             id="belongs_to:header"
@@ -176,14 +176,14 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             style={{
               background: 'transparent',
               border: 'none',
-              left: 'calc(-1 * var(--spacing-v2-md))',
+              left: 'calc(-1 * var(--spacing-md))',
             }}
           />
-          <div className="flex-1 flex flex-col gap-v2-xs">
+          <div className="flex-1 flex flex-col gap-xs">
             <Typo variant="subtitle2" className="text-purple-primary" title={data.tableModel.name}>
               {data.tableModel.alias || data.tableModel.name}
             </Typo>
-            <div className="flex gap-v2-xs">
+            <div className="flex gap-xs">
               {data.tableModel.semanticType == null ? (
                 <Tag color="red">{t('data:table_details.other_table')}</Tag>
               ) : (
@@ -215,26 +215,26 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             <MenuCommand.Content align="end" sideOffset={4} size="small">
               <MenuCommand.List>
                 <MenuCommand.Item onSelect={() => setIsEditOpen(true)}>
-                  <div className="flex items-center gap-v2-xs">
+                  <div className="flex items-center gap-xs">
                     <Icon icon="edit-square" className="size-4" />
                     {t('data:edit_table.menu_label')}
                   </div>
                 </MenuCommand.Item>
                 <MenuCommand.Item onSelect={() => setIsDeleteOpen(true)}>
-                  <div className="flex items-center gap-v2-xs">
+                  <div className="flex items-center gap-xs">
                     <Icon icon="delete" className="size-4" />
                     {t('data:delete_table.menu_label')}
                   </div>
                 </MenuCommand.Item>
                 <MenuCommand.Separator />
                 <MenuCommand.Item disabled={!isIngestDataAvailable} onSelect={() => setIsUploadOpen(true)}>
-                  <div className="flex items-center gap-v2-xs">
+                  <div className="flex items-center gap-xs">
                     <Icon icon="upload" className="size-4" />
                     {t('data:upload_data.title')}
                   </div>
                 </MenuCommand.Item>
                 <MenuCommand.Item onSelect={() => setIsPreviewOpen(true)}>
-                  <div className="flex items-center gap-v2-xs">
+                  <div className="flex items-center gap-xs">
                     <Icon icon="visibility" className="size-4" />
                     {t('data:viewer.view_ingested_data')}
                   </div>
@@ -250,11 +250,11 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
             style={{
               background: 'transparent',
               border: 'none',
-              right: 'calc(-1 * var(--spacing-v2-md))',
+              right: 'calc(-1 * var(--spacing-md))',
             }}
           />
         </div>
-        <div className="mt-v2-md flex flex-col gap-v2-sm">
+        <div className="mt-md flex flex-col gap-sm">
           {isNumberOfFieldsOpen ? (
             data.tableModel.fields.map((field) => renderField(field, true))
           ) : relationFields.length > 0 ? (
@@ -262,10 +262,7 @@ export function TableDetails({ data }: NodeProps<TableDetailsFlowNode>) {
               {fieldGroups.map((group) => {
                 if (group.type === 'pair') {
                   return (
-                    <div
-                      key={`${group.fields[0].id}-${group.fields[1].id}`}
-                      className="relative flex flex-col gap-v2-sm"
-                    >
+                    <div key={`${group.fields[0].id}-${group.fields[1].id}`} className="relative flex flex-col gap-sm">
                       <div
                         className={cn(
                           'absolute -left-2 top-5 bottom-5 w-2 border-l-2 border-t-2 border-b-2 rounded-l ',

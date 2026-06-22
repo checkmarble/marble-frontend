@@ -86,7 +86,7 @@ export function SignInWithEmailAndPassword({
 
   return (
     <form className="contents" onSubmit={handleSubmit(form)}>
-      <div className="flex w-full flex-col gap-4">
+      <div className="flex w-full flex-col gap-md">
         <form.Field
           name="credentials.email"
           validators={{
@@ -94,7 +94,7 @@ export function SignInWithEmailAndPassword({
           }}
         >
           {(field) => (
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col items-start gap-sm">
               <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
                 {t('auth:sign_in.email')}
               </FormLabel>
@@ -119,7 +119,7 @@ export function SignInWithEmailAndPassword({
           }}
         >
           {(field) => (
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col items-start gap-sm">
               <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
                 {t('auth:sign_in.password')}
               </FormLabel>
@@ -142,7 +142,7 @@ export function SignInWithEmailAndPassword({
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <Button type="submit" size="large" className="w-full justify-center" disabled={!hydrated}>
           {loading || form.state.isSubmitting ? <Spinner className="size-4" /> : t('auth:sign_in')}
         </Button>
@@ -164,8 +164,8 @@ export const StaticSignInWithEmailAndPassword = ({
 
   return (
     <form className="contents">
-      <div className="flex w-full flex-col gap-4">
-        <div className="flex flex-col items-start gap-2">
+      <div className="flex w-full flex-col gap-md">
+        <div className="flex flex-col items-start gap-sm">
           <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
           <FormInput
             type="email"
@@ -177,7 +177,7 @@ export const StaticSignInWithEmailAndPassword = ({
             enablePasswordManagers
           />
         </div>
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex flex-col items-start gap-sm">
           <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
           <FormInput
             type="password"
@@ -193,7 +193,7 @@ export const StaticSignInWithEmailAndPassword = ({
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <Button type="submit" size="large" className="w-full justify-center" disabled={!hydrated}>
           {t('auth:sign_in')}
         </Button>

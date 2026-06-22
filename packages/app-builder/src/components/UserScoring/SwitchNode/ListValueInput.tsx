@@ -58,7 +58,7 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
     const listName = list?.name ?? value.listId;
     return (
       <div
-        className="flex flex-1 items-center gap-2 rounded-v2-md border border-grey-border px-2 h-10 cursor-pointer hover:bg-grey-bg"
+        className="flex flex-1 items-center gap-sm rounded-md border border-grey-border px-xs h-10 cursor-pointer hover:bg-grey-bg"
         onClick={() => {
           onChange({ type: 'customList', listId: '' });
           setInputText(listName);
@@ -73,13 +73,13 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
   return (
     <div ref={containerRef} className="relative flex-1">
       <div
-        className="flex flex-wrap items-center gap-1 rounded-md border border-grey-border px-2 py-1 min-h-10 cursor-text"
+        className="flex flex-wrap items-center gap-xs rounded-md border border-grey-border px-xs py-2xs min-h-10 cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
         {stringValues.map((v, i) => (
           <span
             key={i}
-            className="flex items-center gap-1 rounded-full border border-grey-border bg-grey-bg px-2 py-0.5 text-xs text-grey-primary"
+            className="flex items-center gap-xs rounded-full border border-grey-border bg-grey-bg px-xs py-0.5 text-xs text-grey-primary"
           >
             {v}
             <button
@@ -108,12 +108,12 @@ export function ListValueInput({ value, customLists, onChange }: ListValueInputP
         />
       </div>
       {shouldShowDropdown && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border border-grey-border bg-white shadow-md max-h-48 overflow-y-auto">
+        <div className="absolute z-50 mt-xs w-full rounded-md border border-grey-border bg-white shadow-md max-h-48 overflow-y-auto">
           {filteredLists.map((list) => (
             <button
               key={list.id}
               type="button"
-              className="w-full px-3 py-2 text-left text-s text-grey-primary hover:bg-grey-bg flex items-center gap-v2-sm"
+              className="w-full px-md py-xs text-left text-s text-grey-primary hover:bg-grey-bg flex items-center gap-sm"
               onMouseDown={(e) => {
                 e.preventDefault();
                 onChange({ type: 'customList', listId: list.id });

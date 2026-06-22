@@ -33,9 +33,9 @@ export function DuplicateRule({
     <Modal.Root open={open} onOpenChange={onOpenChange}>
       {children ? <Modal.Trigger asChild>{children}</Modal.Trigger> : null}
       <Modal.Content>
-        <div className="flex flex-col gap-6 p-6">
-          <div className="flex flex-1 flex-col items-center justify-center gap-2">
-            <div className="bg-purple-background mb-8 box-border rounded-[90px] p-4">
+        <div className="flex flex-col gap-lg p-lg">
+          <div className="flex flex-1 flex-col items-center justify-center gap-sm">
+            <div className="bg-purple-background mb-xl box-border rounded-[90px] p-md">
               <Icon icon="copy" className="text-purple-primary size-16" />
             </div>
             <Typo variant="title1">{t('scenarios:clone_rule.title')}</Typo>

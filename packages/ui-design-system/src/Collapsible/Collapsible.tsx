@@ -28,11 +28,11 @@ const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(functi
   );
 });
 
-const collapsibleTitle = cva('group flex cursor-pointer items-center justify-between gap-4 font-semibold', {
+const collapsibleTitle = cva('group flex cursor-pointer items-center justify-between gap-md font-semibold', {
   variants: {
     size: {
-      default: 'p-4 lg:p-6',
-      small: 'p-4',
+      default: 'p-md lg:p-lg',
+      small: 'p-md',
       null: 'p-0',
     },
   },
@@ -88,7 +88,7 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(f
 ) {
   return (
     <Content className={clsx(content, className)} {...props} ref={ref}>
-      <div className="text-s p-4 lg:p-6">{children}</div>
+      <div className="text-s p-md lg:p-lg">{children}</div>
     </Content>
   );
 });

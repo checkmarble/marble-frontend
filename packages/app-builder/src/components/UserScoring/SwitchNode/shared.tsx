@@ -23,7 +23,7 @@ export function FieldPill({ field, fieldType }: FieldPillProps) {
   const typeIcon = isAllowedScoringRuleType(fieldType) ? getDataTypeIcon(fieldType) : null;
 
   return (
-    <Tag color="grey" className="gap-v2-sm">
+    <Tag color="grey" className="gap-sm">
       {getFieldLabel(field)}
       {typeIcon ? <Icon icon={typeIcon} className="size-4" /> : null}
     </Tag>
@@ -48,10 +48,10 @@ export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowP
   const colors = isMaxRiskLevelInRange(maxRiskLevel) ? SCORING_LEVELS_COLORS[maxRiskLevel] : {};
 
   return (
-    <li className="flex items-center gap-v2-sm">
-      <div className="ml-v2-md list-item list-disc whitespace-nowrap">
-        <div className="flex items-center gap-v2-sm">
-          <span className="inline-flex items-center gap-v2-sm">
+    <li className="flex items-center gap-sm">
+      <div className="ms-md list-item list-disc whitespace-nowrap">
+        <div className="flex items-center gap-sm">
+          <span className="inline-flex items-center gap-sm">
             {children} {t('user-scoring:switch.then')}
           </span>
           <Tag color="grey">
@@ -61,7 +61,7 @@ export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowP
           {impact.floor !== undefined ? (
             <>
               <span>{t('user-scoring:switch.and')}</span>
-              <Tag color="grey" className="gap-v2-xs">
+              <Tag color="grey" className="gap-xs">
                 <span>{t('user-scoring:switch.floor_label')}</span>
                 <div className="rounded-full size-3" style={{ backgroundColor: colors[impact.floor] }} />
               </Tag>
@@ -75,7 +75,7 @@ export function SwitchCaseRow({ impact, children, maxRiskLevel }: SwitchCaseRowP
 
 export function FieldPlaceholder() {
   return (
-    <div className="flex h-10 flex-1 items-center gap-2 rounded border border-grey-border bg-white px-2">
+    <div className="flex h-10 flex-1 items-center gap-sm rounded border border-grey-border bg-white px-xs">
       <div className="flex size-6 items-center justify-center rounded-xs bg-grey-light">
         <Icon icon="field" className="size-4" />
       </div>
@@ -101,7 +101,7 @@ export function RiskLevelSelect({ floor, maxRiskLevel, onChange }: RiskLevelSele
     { label: t('user-scoring:switch.add_floor'), value: null },
     ...levelEntries.map(([level, color]) => ({
       label: (
-        <span className="flex gap-v2-xs items-center">
+        <span className="flex gap-xs items-center">
           <span>{t('user-scoring:switch.floor_label')} </span>
           <div className="size-4 rounded-full shrink-0" style={{ backgroundColor: color }}></div>
         </span>

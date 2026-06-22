@@ -41,16 +41,16 @@ export function FreeformMatchCard({ entity, defaultOpen, searchTerm, background 
               percent: Math.round(entity.score * 100),
             })}
           </Tag>
-          <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-1 font-normal" />
+          <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-xs font-normal" />
         </div>
       </Collapsible.Title>
 
       <Collapsible.Content
         className={cn(background === 'grey' && 'bg-grey-background-light', background === 'card' && 'bg-surface-card')}
       >
-        <div className="text-s flex flex-col gap-6 p-4">
+        <div className="text-s flex flex-col gap-lg p-md">
           {entitySchema === 'person' && entity.datasets?.length ? (
-            <div className="grid grid-cols-[146px_1fr] gap-2">
+            <div className="grid grid-cols-[146px_1fr] gap-sm">
               <div className="font-bold">{t('screenings:match.datasets.title')}</div>
               <div>
                 <EntityDatasetsList datasets={entity.datasets} useCase="manual_search" itemClassName="break-all" />
@@ -84,8 +84,8 @@ export function FreeFormMatchCardDataContent({
   const entity = enrichedData.data;
   if (!entity) return <div>{t('screenings:match.enriched_data_error')}</div>;
   return (
-    <div className="text-s flex flex-col gap-6 p-4">
-      {withTopics && <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-1 font-normal" />}
+    <div className="text-s flex flex-col gap-lg p-md">
+      {withTopics && <TopicsDisplay entity={entity} containerClassName="flex w-full flex-wrap gap-xs font-normal" />}
       <MatchDetails entity={entity} highlightText={searchTerm} />
     </div>
   );

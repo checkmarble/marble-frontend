@@ -18,9 +18,9 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   const isHit = isRuleExecutionHit(ruleExecution);
 
   return (
-    <div className="inline-flex h-6 gap-1">
+    <div className="inline-flex h-6 gap-xs">
       {isHit ? (
-        <span className="text-s text-purple-primary flex h-6 items-center justify-center rounded-full border border-purple-primary px-2 font-normal leading-none">
+        <span className="text-s text-purple-primary flex h-6 items-center justify-center rounded-full border border-purple-primary px-xs font-normal leading-none">
           {formatNumber(ruleExecution.scoreModifier, {
             language,
             signDisplay: 'exceptZero',
@@ -29,7 +29,7 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
       ) : null}
       <span
         className={clsx(
-          'text-s flex h-6 flex-1 items-center justify-center rounded-sm border px-2 font-medium capitalize leading-none shadow-sm',
+          'text-s flex h-6 flex-1 items-center justify-center rounded-sm border px-xs font-medium capitalize leading-none shadow-sm',
           getRuleExecutionBadgeColor(ruleExecution),
         )}
       >

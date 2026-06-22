@@ -82,47 +82,45 @@ function Webhooks() {
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:webhooks')}</span>
-            {isCreateWebhookAvailable ? (
-              <span onClick={(e) => e.stopPropagation()}>
-                <CreateWebhook webhookStatus={webhooksStatus}>
-                  <Button variant="primary">
-                    <Icon icon="plus" className="size-5" />
-                    {t('settings:webhooks.new_webhook')}
-                  </Button>
-                </CreateWebhook>
-              </span>
-            ) : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Callout className="mb-4 lg:mb-6" variant="outlined">
-              <p className="whitespace-pre-wrap">
-                <Trans
-                  t={t}
-                  i18nKey="settings:webhooks.setup_documentation"
-                  components={{
-                    DocLink: <ExternalLink href={webhooksSetupDocHref} />,
-                  }}
-                />
-              </p>
-            </Callout>
+    <Page.Content width="readable">
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:webhooks')}</span>
+          {isCreateWebhookAvailable ? (
+            <span onClick={(e) => e.stopPropagation()}>
+              <CreateWebhook webhookStatus={webhooksStatus}>
+                <Button variant="primary">
+                  <Icon icon="plus" className="size-5" />
+                  {t('settings:webhooks.new_webhook')}
+                </Button>
+              </CreateWebhook>
+            </span>
+          ) : null}
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Callout className="mb-md lg:mb-lg" variant="outlined">
+            <p className="whitespace-pre-wrap">
+              <Trans
+                t={t}
+                i18nKey="settings:webhooks.setup_documentation"
+                components={{
+                  DocLink: <ExternalLink href={webhooksSetupDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
 
-            <Table.Container {...getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={table.getHeaderGroups()} />
-              <Table.Body {...getBodyProps()}>
-                {rows.map((row) => {
-                  return <Table.Row key={row.id} row={row} />;
-                })}
-              </Table.Body>
-            </Table.Container>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-      </Page.Content>
-    </Page.Container>
+          <Table.Container {...getContainerProps()} className="max-h-96">
+            <Table.Header headerGroups={table.getHeaderGroups()} />
+            <Table.Body {...getBodyProps()}>
+              {rows.map((row) => {
+                return <Table.Row key={row.id} row={row} />;
+              })}
+            </Table.Body>
+          </Table.Container>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+    </Page.Content>
   );
 }
 
@@ -161,60 +159,58 @@ function WebhooksError({ error }: { error: unknown }) {
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="relative max-w-(--breakpoint-xl)">
-        <div className="bg-grey-primary/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
-          <div className="bg-surface-card border-grey-border flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
-            <Typo variant="title1" className="bg-grey-background w-full p-8 text-center">
-              {t('settings:webhooks.configuration_error')}
-            </Typo>
-            <div className="w-full p-12">
-              <Callout variant="outlined">
-                <p className="whitespace-pre-wrap">
-                  <Trans
-                    t={t}
-                    i18nKey="settings:webhooks.convoy_error"
-                    components={{
-                      DocLink: <ExternalLink href={webhooksSetupDocHref} />,
-                    }}
-                  />
-                </p>
-              </Callout>
-            </div>
-          </div>
-        </div>
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:webhooks')}</span>
-            <Button variant="primary" disabled>
-              <Icon icon="plus" className="size-5" />
-              {t('settings:webhooks.new_webhook')}
-            </Button>
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Callout className="mb-4 lg:mb-6" variant="outlined">
+    <Page.Content width="readable" className="relative">
+      <div className="bg-grey-primary/20 absolute z-50 flex size-full items-center justify-center p-md backdrop-blur-[2px] transition-all">
+        <div className="bg-surface-card border-grey-border flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
+          <Typo variant="title1" className="bg-grey-background w-full p-xl text-center">
+            {t('settings:webhooks.configuration_error')}
+          </Typo>
+          <div className="w-full p-3xl">
+            <Callout variant="outlined">
               <p className="whitespace-pre-wrap">
                 <Trans
                   t={t}
-                  i18nKey="settings:webhooks.setup_documentation"
+                  i18nKey="settings:webhooks.convoy_error"
                   components={{
                     DocLink: <ExternalLink href={webhooksSetupDocHref} />,
                   }}
                 />
               </p>
             </Callout>
+          </div>
+        </div>
+      </div>
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:webhooks')}</span>
+          <Button variant="primary" disabled>
+            <Icon icon="plus" className="size-5" />
+            {t('settings:webhooks.new_webhook')}
+          </Button>
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Callout className="mb-md lg:mb-lg" variant="outlined">
+            <p className="whitespace-pre-wrap">
+              <Trans
+                t={t}
+                i18nKey="settings:webhooks.setup_documentation"
+                components={{
+                  DocLink: <ExternalLink href={webhooksSetupDocHref} />,
+                }}
+              />
+            </p>
+          </Callout>
 
-            <Table.Container {...getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={table.getHeaderGroups()} />
-              <Table.Body {...getBodyProps()}>
-                {rows.map((row) => {
-                  return <Table.Row key={row.id} row={row} />;
-                })}
-              </Table.Body>
-            </Table.Container>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-      </Page.Content>
-    </Page.Container>
+          <Table.Container {...getContainerProps()} className="max-h-96">
+            <Table.Header headerGroups={table.getHeaderGroups()} />
+            <Table.Body {...getBodyProps()}>
+              {rows.map((row) => {
+                return <Table.Row key={row.id} row={row} />;
+              })}
+            </Table.Body>
+          </Table.Container>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+    </Page.Content>
   );
 }

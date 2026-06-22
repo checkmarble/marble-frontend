@@ -126,12 +126,12 @@ export function FormTable({
   );
 
   return (
-    <div className="flex flex-1 min-h-0 gap-v2-lg">
-      <div className="flex flex-1 min-w-0 min-h-0 flex-col gap-v2-lg">
+    <div className="flex flex-1 min-h-0 gap-lg">
+      <div className="flex flex-1 min-w-0 min-h-0 flex-col gap-lg">
         {!tableState.tableId ? (
-          <section className="flex flex-col gap-v2-md">
+          <section className="flex flex-col gap-md">
             <Typo variant="subtitle2">{t('data:upload_data.general_settings')}</Typo>
-            <div className="flex items-center gap-v2-md">
+            <div className="flex items-center gap-md">
               <Input
                 value={tableState.alias}
                 onChange={(e) => updateTableState(tableId, { alias: e.currentTarget.value })}
@@ -194,9 +194,9 @@ export function SummaryView() {
   const { t } = useTranslation(['data']);
 
   return (
-    <div className="flex flex-col gap-v2-md">
+    <div className="flex flex-col gap-md">
       <Typo variant="subtitle2">{t('data:upload_data.tables_label')}</Typo>
-      <div className="flex flex-col gap-v2-md">
+      <div className="flex flex-col gap-md">
         {tableIds.map((tableId) => (
           <SummaryTableRow key={tableId} tableId={tableId} />
         ))}
@@ -232,10 +232,10 @@ function SummaryTableRow({ tableId }: { tableId: string }) {
   }, [hasSubEntity, t]);
 
   return (
-    <div className="flex items-center gap-v2-md">
+    <div className="flex items-center gap-md">
       <div
         className={cn(
-          'grid grid-cols-3 w-full items-center gap-v2-md rounded-lg border border-grey-border p-v2-md',
+          'grid grid-cols-3 w-full items-center gap-md rounded-lg border border-grey-border p-md',
           tableState.isCanceled && 'opacity-50',
         )}
       >

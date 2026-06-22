@@ -122,7 +122,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
         const editorMode = useEditorMode();
 
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-sm">
             <BreadCrumbLink
               isLast={isLast}
               to="/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId"
@@ -268,12 +268,15 @@ function RuleDetail() {
         />
       </Page.Header>
       <Page.Container>
-        <Page.Content>
+        <Page.Content width="form">
           <form className="relative flex flex-col" onSubmit={handleSubmit(form)}>
             <div
-              className={cn('bg-surface-page sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl', {
-                'border-b-grey-border border-b': !intersection?.isIntersecting,
-              })}
+              className={cn(
+                'bg-surface-page sticky top-0 flex h-[88px] items-center justify-between gap-md max-w-3xl',
+                {
+                  'border-b-grey-border border-b': !intersection?.isIntersecting,
+                },
+              )}
             >
               <form.Field
                 name="name"
@@ -283,7 +286,7 @@ function RuleDetail() {
                 }}
               >
                 {(field) => (
-                  <div className="flex w-full flex-col gap-1">
+                  <div className="flex w-full flex-col gap-xs">
                     <input
                       ref={nameInputRef}
                       type="text"
@@ -305,7 +308,7 @@ function RuleDetail() {
                 )}
               </form.Field>
               {editor === 'edit' ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-sm">
                   <DuplicateRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
                     <Button variant="secondary" size="small" type="button">
                       <Icon icon="copy" className="size-4" aria-hidden />
@@ -327,15 +330,15 @@ function RuleDetail() {
             </div>
             {serverValidationMessages.length > 0 ? (
               <Callout color="red" icon="lightbulb" iconColor="red" className="max-w-3xl">
-                <ul className="flex flex-col gap-v2-xs pl-3">
+                <ul className="flex flex-col gap-xs ps-md">
                   {serverValidationMessages.map((message) => (
                     <li key={message}>{message}</li>
                   ))}
                 </ul>
               </Callout>
             ) : null}
-            <div className="flex flex-col gap-8">
-              <div className="border-grey-border flex flex-col items-start gap-6 border-b pb-6 max-w-3xl">
+            <div className="flex flex-col gap-xl">
+              <div className="border-grey-border flex flex-col items-start gap-lg border-b pb-lg max-w-3xl">
                 <form.Field
                   name="description"
                   validators={{
@@ -344,7 +347,7 @@ function RuleDetail() {
                   }}
                 >
                   {(field) => (
-                    <div ref={descriptionRef} className="flex w-full flex-col gap-1">
+                    <div ref={descriptionRef} className="flex w-full flex-col gap-xs">
                       <textarea
                         name={field.name}
                         disabled={editor === 'view'}
@@ -366,7 +369,7 @@ function RuleDetail() {
                   }}
                 >
                   {(field) => (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-sm">
                       <FieldRuleGroup
                         disabled={editor === 'view'}
                         onChange={field.handleChange}
@@ -379,12 +382,12 @@ function RuleDetail() {
                   )}
                 </form.Field>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-sm">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
-                <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-v2-lg">
+                <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-lg">
                   <div
                     className={cn(
-                      'bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl',
+                      'bg-surface-card border-grey-border rounded-md border p-lg max-w-3xl',
                       hasFormulaValidationError && 'border-red-primary',
                     )}
                   >
@@ -433,9 +436,9 @@ function RuleDetail() {
                     />
                   ) : null}
                 </div>
-                <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-grey-background text-grey-secondary dark:text-grey-secondary text-s inline-flex rounded-sm p-2 font-medium">
+                <div className="bg-surface-card border-grey-border rounded-md border p-lg max-w-3xl">
+                  <div className="flex items-center gap-sm">
+                    <span className="bg-grey-background text-grey-secondary dark:text-grey-secondary text-s inline-flex rounded-sm p-sm font-medium">
                       {t('scenarios:edit_rule.score_heading')}
                     </span>
                     <form.Field
@@ -446,7 +449,7 @@ function RuleDetail() {
                       }}
                     >
                       {(field) => (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-xs">
                           <FormInput
                             type="number"
                             name={field.name}

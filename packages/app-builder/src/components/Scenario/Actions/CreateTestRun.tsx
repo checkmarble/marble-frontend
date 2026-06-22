@@ -122,7 +122,7 @@ function CreateTestRunToContent({
       }}
     >
       <Modal.Title>{t('scenarios:create_testrun.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-lg p-lg">
         <Modal.Description asChild>
           <Callout variant="outlined">
             <p className="whitespace-pre-wrap">
@@ -136,8 +136,8 @@ function CreateTestRunToContent({
             </p>
           </Callout>
         </Modal.Description>
-        <div className="flex flex-1 flex-col gap-4">
-          <div className="flex flex-row items-start gap-2">
+        <div className="flex flex-1 flex-col gap-md">
+          <div className="flex flex-row items-start gap-sm">
             <form.Field
               name="refIterationId"
               validators={{
@@ -148,7 +148,7 @@ function CreateTestRunToContent({
               {(field) => {
                 const selectedRefIteration = refIterations.find(({ id }) => id === field.state.value);
                 return (
-                  <div className="group flex w-full flex-col gap-2">
+                  <div className="group flex w-full flex-col gap-sm">
                     <FormLabel name={field.name}>{t('scenarios:create_testrun.ref')}</FormLabel>
                     <MenuCommand.SelectButton name={field.name} disabled>
                       {selectedRefIteration
@@ -170,7 +170,7 @@ function CreateTestRunToContent({
               {(field) => {
                 const selectedTestIteration = testIterations.find(({ id }) => id === field.state.value);
                 return (
-                  <div className="group flex w-full flex-col gap-2">
+                  <div className="group flex w-full flex-col gap-sm">
                     <FormLabel name={field.name}>{t('scenarios:create_testrun.phantom')}</FormLabel>
                     <MenuCommand.Menu open={testIterationMenuOpen} onOpenChange={setTestIterationMenuOpen}>
                       <MenuCommand.Trigger>
@@ -212,8 +212,8 @@ function CreateTestRunToContent({
             }}
           >
             {(field) => (
-              <div className="group flex w-full flex-col gap-2">
-                <FormLabel name={field.name} className="flex flex-row items-center gap-1">
+              <div className="group flex w-full flex-col gap-sm">
+                <FormLabel name={field.name} className="flex flex-row items-center gap-xs">
                   {t('scenarios:create_testrun.end_date')}
                 </FormLabel>
                 <DateSelector

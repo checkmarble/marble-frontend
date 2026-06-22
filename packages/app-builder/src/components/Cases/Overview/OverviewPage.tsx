@@ -32,39 +32,37 @@ export const OverviewPage = ({
 
   return (
     <Page.Main>
-      <Page.Container>
-        <Page.ContentV2 className="gap-v2-md">
-          <div className="grid grid-cols-[1fr_calc(var(--spacing-v2-xs)_*_90)] gap-v2-lg">
-            <div className="flex flex-col gap-v2-md">
-              <CasesNavigationTabs />
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-v2-md">
-                <CaseByDateGraph />
-                <CaseByInboxGraph />
-              </div>
-            </div>
-            <div className="flex flex-col gap-v2-lg">
-              <Typo variant="title2">{t('cases:overview.general_config.title')}</Typo>
-              {canViewAdminSections ? (
-                <AutoAssignmentSection
-                  currentUserId={currentUserId}
-                  isGlobalAdmin={isGlobalAdmin}
-                  access={entitlements.autoAssignment}
-                />
-              ) : null}
-              {canViewAdminSections ? (
-                <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} />
-              ) : null}
-              {canViewAdminSections ? (
-                <WorkflowConfigSection
-                  isGlobalAdmin={isGlobalAdmin}
-                  aiAssistAccess={entitlements.aiAssist}
-                  allInboxesMetadata={allInboxesMetadata}
-                />
-              ) : null}
+      <Page.Content>
+        <div className="grid grid-cols-[1fr_calc(var(--spacing-xs)_*_90)] gap-lg">
+          <div className="flex flex-col gap-md">
+            <CasesNavigationTabs />
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-md">
+              <CaseByDateGraph />
+              <CaseByInboxGraph />
             </div>
           </div>
-        </Page.ContentV2>
-      </Page.Container>
+          <div className="flex flex-col gap-lg">
+            <Typo variant="title2">{t('cases:overview.general_config.title')}</Typo>
+            {canViewAdminSections ? (
+              <AutoAssignmentSection
+                currentUserId={currentUserId}
+                isGlobalAdmin={isGlobalAdmin}
+                access={entitlements.autoAssignment}
+              />
+            ) : null}
+            {canViewAdminSections ? (
+              <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} />
+            ) : null}
+            {canViewAdminSections ? (
+              <WorkflowConfigSection
+                isGlobalAdmin={isGlobalAdmin}
+                aiAssistAccess={entitlements.aiAssist}
+                allInboxesMetadata={allInboxesMetadata}
+              />
+            ) : null}
+          </div>
+        </div>
+      </Page.Content>
     </Page.Main>
   );
 };

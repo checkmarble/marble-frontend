@@ -87,7 +87,7 @@ export function ArchivedIterationView({ rulesMetadata, scenarioIteration }: Arch
   const columnLength = table.getHeaderGroups()[0]?.headers.length ?? 1;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-lg">
       <Table.Container {...getContainerProps()} className="bg-surface-card">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>

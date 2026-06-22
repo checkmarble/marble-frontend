@@ -62,7 +62,7 @@ export const CloseCase = ({
       <Modal.Content>
         <Modal.Title>{t('cases:case.close')}</Modal.Title>
         <form onSubmit={handleSubmit(form)}>
-          <div className="flex flex-col gap-8 p-8">
+          <div className="flex flex-col gap-xl p-xl">
             {!withoutOutcome ? (
               <form.Field
                 name="outcome"
@@ -72,23 +72,23 @@ export const CloseCase = ({
                 }}
               >
                 {(field) => (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-sm">
                     <FormLabel name={field.name}>{t('cases:case.close.choose_outcome')}</FormLabel>
                     <RadioGroup
                       name={field.name}
                       onValueChange={(v) => field.handleChange(v as FinalOutcome)}
                       onBlur={field.handleBlur}
-                      className="flex items-center gap-1 rtl:flex-row-reverse"
+                      className="flex items-center gap-xs rtl:flex-row-reverse"
                     >
                       {finalOutcomes.map((s) => {
                         return (
                           <RadioGroupItem
                             key={s}
                             value={s}
-                            className="border-grey-border data-[state=checked]:border-purple-hover flex items-center justify-center rounded-[20px] border bg-transparent p-1.5"
+                            className="border-grey-border data-[state=checked]:border-purple-hover flex items-center justify-center rounded-[20px] border bg-transparent p-xs.5"
                           >
                             <span
-                              className={cn('rounded-full border px-v2-sm py-[3px] text-xs', {
+                              className={cn('rounded-full border px-sm py-2xs text-xs', {
                                 'border-red-primary text-red-primary': s === 'confirmed_risk',
                                 'border-green-secondary text-green-secondary': s === 'false_positive',
                                 'border-orange-primary text-orange-primary': s === 'valuable_alert',
@@ -117,7 +117,7 @@ export const CloseCase = ({
               }}
             >
               {(field) => (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-sm">
                   <FormTextArea
                     name={field.name}
                     defaultValue={field.state.value}

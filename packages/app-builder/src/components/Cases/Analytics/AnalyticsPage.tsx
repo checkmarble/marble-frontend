@@ -101,95 +101,93 @@ export function AnalyticsPage({ inboxes, users, isAnalyticsAvailable }: Analytic
 
   return (
     <Page.Main>
-      <Page.Container>
-        <Page.ContentV2 className="gap-v2-md">
-          <CasesNavigationTabs />
+      <Page.Content>
+        <CasesNavigationTabs />
 
-          <div className="flex flex-wrap items-center justify-between gap-v2-md">
-            <CaseAnalyticsFilters
-              dateRange={dateRange}
-              onDateRangeChange={setDateRange}
-              inboxId={inboxId}
-              onInboxIdChange={setInboxId}
-              inboxes={inboxes}
-              userId={userId}
-              onUserIdChange={setUserId}
-              users={users}
-            />
-            <TimeBucketToggle value={timeBucket} onChange={setTimeBucket} />
-          </div>
+        <div className="flex flex-wrap items-center justify-between gap-md">
+          <CaseAnalyticsFilters
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+            inboxId={inboxId}
+            onInboxIdChange={setInboxId}
+            inboxes={inboxes}
+            userId={userId}
+            onUserIdChange={setUserId}
+            users={users}
+          />
+          <TimeBucketToggle value={timeBucket} onChange={setTimeBucket} />
+        </div>
 
-          {match(query)
-            .with({ isPending: true }, () => (
-              <div className="grid h-96 place-items-center">
-                <Spinner className="size-12" />
+        {match(query)
+          .with({ isPending: true }, () => (
+            <div className="grid h-96 place-items-center">
+              <Spinner className="size-12" />
+            </div>
+          ))
+          .with({ isError: true }, () => (
+            <div className="grid h-96 place-items-center">
+              <div className="flex flex-col items-center gap-sm">
+                <span className="text-s text-center text-grey-secondary">{t('common:generic_fetch_data_error')}</span>
+                <Button variant="secondary" onClick={() => query.refetch()}>
+                  {t('common:retry')}
+                </Button>
               </div>
-            ))
-            .with({ isError: true }, () => (
-              <div className="grid h-96 place-items-center">
-                <div className="flex flex-col items-center gap-v2-sm">
-                  <span className="text-s text-center text-grey-secondary">{t('common:generic_fetch_data_error')}</span>
-                  <Button variant="secondary" onClick={() => query.refetch()}>
-                    {t('common:retry')}
-                  </Button>
-                </div>
-              </div>
-            ))
-            .with({ isSuccess: true }, () => {
-              // Query returned undefined (e.g. session expired → redirect in flight):
-              // show a spinner rather than a blank page while the navigation settles.
-              if (!aggregated) {
-                return (
-                  <div className="grid h-96 place-items-center">
-                    <Spinner className="size-12" />
-                  </div>
-                );
-              }
-
+            </div>
+          ))
+          .with({ isSuccess: true }, () => {
+            // Query returned undefined (e.g. session expired → redirect in flight):
+            // show a spinner rather than a blank page while the navigation settles.
+            if (!aggregated) {
               return (
-                <div className="flex flex-col gap-v2-md">
-                  <div className="grid grid-cols-1 gap-v2-md xl:grid-cols-3">
-                    <SarReportsGauge total={aggregated.sarTotalCompleted} />
-                    <div className="xl:col-span-2">
-                      {isAnalyticsAvailable ? (
-                        <SarDelayChart
-                          delayByPeriod={aggregated.sarDelayByPeriod}
-                          delayDistribution={aggregated.sarDelayDistribution}
-                        />
-                      ) : (
-                        <UpsellCard
-                          className="h-full"
-                          title={t('cases:analytics.upsell.title')}
-                          description={t('cases:analytics.upsell.description')}
-                          benefits={[
-                            t('cases:analytics.upsell.benefit_1'),
-                            t('cases:analytics.upsell.benefit_2'),
-                            t('cases:analytics.upsell.benefit_3'),
-                          ]}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {isAnalyticsAvailable ? (
-                    <>
-                      <AlertMetricsChart
-                        alertCountByPeriod={aggregated.alertCountByPeriod}
-                        falsePositiveRateByPeriod={aggregated.falsePositiveRateByPeriod}
-                      />
-
-                      <AlertProcessingChart
-                        caseDurationByPeriod={aggregated.caseDurationByPeriod}
-                        openCasesByAge={aggregated.openCasesByAge}
-                      />
-                    </>
-                  ) : null}
+                <div className="grid h-96 place-items-center">
+                  <Spinner className="size-12" />
                 </div>
               );
-            })
-            .exhaustive()}
-        </Page.ContentV2>
-      </Page.Container>
+            }
+
+            return (
+              <div className="flex flex-col gap-md">
+                <div className="grid grid-cols-1 gap-md xl:grid-cols-3">
+                  <SarReportsGauge total={aggregated.sarTotalCompleted} />
+                  <div className="xl:col-span-2">
+                    {isAnalyticsAvailable ? (
+                      <SarDelayChart
+                        delayByPeriod={aggregated.sarDelayByPeriod}
+                        delayDistribution={aggregated.sarDelayDistribution}
+                      />
+                    ) : (
+                      <UpsellCard
+                        className="h-full"
+                        title={t('cases:analytics.upsell.title')}
+                        description={t('cases:analytics.upsell.description')}
+                        benefits={[
+                          t('cases:analytics.upsell.benefit_1'),
+                          t('cases:analytics.upsell.benefit_2'),
+                          t('cases:analytics.upsell.benefit_3'),
+                        ]}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {isAnalyticsAvailable ? (
+                  <>
+                    <AlertMetricsChart
+                      alertCountByPeriod={aggregated.alertCountByPeriod}
+                      falsePositiveRateByPeriod={aggregated.falsePositiveRateByPeriod}
+                    />
+
+                    <AlertProcessingChart
+                      caseDurationByPeriod={aggregated.caseDurationByPeriod}
+                      openCasesByAge={aggregated.openCasesByAge}
+                    />
+                  </>
+                ) : null}
+              </div>
+            );
+          })
+          .exhaustive()}
+      </Page.Content>
     </Page.Main>
   );
 }

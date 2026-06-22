@@ -52,17 +52,17 @@ export const ScreeningCaseDetailPage = ({
         <BreadCrumbs />
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 paddingLess>
+        <Page.Content padding="none">
           <div className="grid grid-cols-[1fr_calc(var(--spacing)_*_130)] h-full relative">
-            <div className="flex flex-col gap-v2-lg p-v2-lg">
+            <div className="flex flex-col gap-lg p-lg">
               <CaseDetailInfo caseDetail={caseDetail} caseInbox={caseInbox} isUserAdmin={isUserAdmin} />
               <ScreeningCaseMatches screening={screening} isUserAdmin={isUserAdmin} caseDetail={caseDetail} />
               <CaseInvestigation caseId={caseDetail.id} events={caseDetail.events} root={containerRef} />
               {caseDetail.files.length > 0 ? <CaseDocuments files={caseDetail.files} /> : null}
             </div>
             <div className="h-full bg-surface-card border-l border-grey-border">
-              <div className="p-v2-lg flex flex-col gap-v2-md top-0 sticky">
-                <div className="flex items-center gap-v2-sm">
+              <div className="p-lg flex flex-col gap-md top-0 sticky">
+                <div className="flex items-center gap-sm">
                   <Typo variant="title2">{t('continuousScreening:review.information_title')}</Typo>
                   {isDirectContinuousScreening(screening) ? (
                     <Tag>{t(`continuousScreening:review.search_tag.${screening.triggerType}`)}</Tag>
@@ -89,7 +89,7 @@ export const ScreeningCaseDetailPage = ({
               </div>
             </div>
           </div>
-        </Page.ContentV2>
+        </Page.Content>
       </Page.Container>
     </Page.Main>
   );
@@ -140,15 +140,15 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
         configStableId={screening.continuousScreeningConfigStableId}
         request={screening.request}
       />
-      <div className="flex flex-col gap-v2-sm p-v2-md bg-surface-card rounded-v2-lg border border-grey-border">
-        <div className="flex justify-between items-center gap-v2-sm">
+      <div className="flex flex-col gap-sm p-md bg-surface-card rounded-lg border border-grey-border">
+        <div className="flex justify-between items-center gap-sm">
           <span className="font-medium">{screening.opensanctionEntityPayload.caption}</span>
-          <span className="text-small text-grey-placeholder mr-auto">{screening.opensanctionEntityPayload.schema}</span>
+          <span className="text-small text-grey-placeholder me-auto">{screening.opensanctionEntityPayload.schema}</span>
           <Button variant="secondary" onClick={() => setOpen(true)}>
             {t('continuousScreening:review.entity_details.view_all')}
           </Button>
         </div>
-        <div className="flex flex-wrap items-center gap-v2-sm">
+        <div className="flex flex-wrap items-center gap-sm">
           {screening.opensanctionEntityPayload.properties['topics']?.map((topic) => {
             return <TopicTag key={topic} topic={topic} className="text-small" />;
           })}
@@ -157,7 +157,7 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
           <div className="text-grey-placeholder truncate leading-6">
             {t('screenings:dataset', { count: screening.opensanctionEntityPayload.datasets.length })}
           </div>
-          <div className="truncate flex flex-row flex-wrap gap-v2-sm">
+          <div className="truncate flex flex-row flex-wrap gap-sm">
             {screening.opensanctionEntityPayload.datasets.map((dataset) => {
               return <SquareTag key={dataset}>{dataset}</SquareTag>;
             })}
@@ -178,16 +178,16 @@ const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPay
   return (
     <PanelContainer size="xxxl">
       <PanelContent>
-        <div className="flex flex-col gap-v2-md">
+        <div className="flex flex-col gap-md">
           <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
             <Icon icon="left-panel-close" className="size-4" />
           </Button>
           <div className="text-h1">{t('continuousScreening:review.entity_details.title')}</div>
-          <div className="flex items-center gap-v2-sm">
+          <div className="flex items-center gap-sm">
             <span className="font-medium">{entity.caption}</span>
             <span className="text-small text-grey-placeholder">{entity.schema}</span>
           </div>
-          <div className="flex items-center gap-v2-sm">
+          <div className="flex items-center gap-sm">
             {entity.properties['topics']?.map((topic) => {
               return <TopicTag key={topic} topic={topic} className="text-small" />;
             })}

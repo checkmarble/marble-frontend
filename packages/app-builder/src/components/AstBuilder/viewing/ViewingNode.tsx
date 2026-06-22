@@ -51,7 +51,7 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
       const wrappedChildren = showBrackets ? <Brackets>{children}</Brackets> : children;
 
       return props.root ? (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">{wrappedChildren}</div>
+        <div className="inline-flex flex-row flex-wrap items-center gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );
@@ -73,7 +73,7 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
       const wrappedChildren = showBrackets ? <Brackets>{children}</Brackets> : children;
 
       return props.root ? (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">{wrappedChildren}</div>
+        <div className="inline-flex flex-row flex-wrap items-center gap-sm">{wrappedChildren}</div>
       ) : (
         wrappedChildren
       );
@@ -102,7 +102,7 @@ ViewingAstBuilderNode.displayName = 'ViewingAstBuilderNode';
 
 function Brackets({ children }: PropsWithChildren) {
   const className =
-    'text-grey-primary border-grey-border [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:bg-grey-background [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:border-grey-placeholder flex h-10 items-center justify-center rounded border px-2';
+    'text-grey-primary border-grey-border [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:bg-grey-background [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:border-grey-placeholder flex h-10 items-center justify-center rounded border px-xs';
   return (
     <div className="group/nest contents">
       <button type="button" className={className}>

@@ -23,7 +23,7 @@ export function PivotValueFilter() {
 
   if (hasPivots) {
     return (
-      <div className="flex w-72 flex-col gap-2 p-2">
+      <div className="flex w-72 flex-col gap-sm p-sm">
         <Callout>
           <span className="whitespace-pre-wrap text-balance">
             <Trans
@@ -35,7 +35,7 @@ export function PivotValueFilter() {
             />
           </span>
         </Callout>
-        <div className="flex gap-2">
+        <div className="flex gap-sm">
           <Input
             className="flex-1"
             value={selectedPivotValue ?? ''}
@@ -54,7 +54,7 @@ export function PivotValueFilter() {
   }
 
   return (
-    <div className="w-72 p-2">
+    <div className="w-72 p-sm">
       <Callout variant="outlined">
         <span className="whitespace-pre-wrap text-balance">
           <Trans

@@ -10,9 +10,9 @@ export function DataPageHeader({ handleOpenCreateDrawer }: { handleOpenCreateDra
   const exportOrgMutation = useExportOrgMutation();
 
   return (
-    <div className="flex items-center justify-between gap-v2-md">
+    <div className="flex items-center justify-between gap-md">
       <Typo variant="title1">{t('navigation:data')}</Typo>
-      <div className="flex gap-2">
+      <div className="flex gap-sm">
         <Button
           variant="secondary"
           appearance="stroked"

@@ -143,54 +143,52 @@ function ApiKeys() {
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <div className="flex flex-col items-start gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              try {
-                const blob = new Blob([JSON.stringify(openapiV1)], {
-                  type: 'application/json;charset=utf-8,',
-                });
-                const url = URL.createObjectURL(blob);
-                void downloadFile(url, 'openapi-v1.json');
-              } catch (_error) {
-                toast.error(t('common:errors.unknown'));
-              }
-            }}
-          >
-            <Icon icon="download" className="me-2 size-5" />
-            {t('api:download_openapi_spec_v1')}
-          </Button>
-        </div>
-        {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:api_keys')}</span>
-            {isCreateApiKeyAvailable ? <CreateApiKey /> : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Table.Container {...apiKeyTable.getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={apiKeyTable.table.getHeaderGroups()} />
-              <Table.Body {...apiKeyTable.getBodyProps()}>
-                {apiKeyTable.rows.map((row) => {
-                  return <Table.Row key={row.id} className="hover:bg-purple-background-light group" row={row} />;
-                })}
-              </Table.Body>
-            </Table.Container>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-        {canReadWebhooks ? (
-          <WebhooksSection
-            webhooks={webhooks}
-            webhooksError={webhooksError}
-            isCreateWebhookAvailable={isCreateWebhookAvailable}
-            webhooksStatus={webhooksStatus}
-          />
-        ) : null}
-      </Page.Content>
-    </Page.Container>
+    <Page.Content width="readable">
+      <div className="flex flex-col items-start gap-sm">
+        <Button
+          variant="secondary"
+          onClick={() => {
+            try {
+              const blob = new Blob([JSON.stringify(openapiV1)], {
+                type: 'application/json;charset=utf-8,',
+              });
+              const url = URL.createObjectURL(blob);
+              void downloadFile(url, 'openapi-v1.json');
+            } catch (_error) {
+              toast.error(t('common:errors.unknown'));
+            }
+          }}
+        >
+          <Icon icon="download" className="me-sm size-5" />
+          {t('api:download_openapi_spec_v1')}
+        </Button>
+      </div>
+      {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:api_keys')}</span>
+          {isCreateApiKeyAvailable ? <CreateApiKey /> : null}
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Table.Container {...apiKeyTable.getContainerProps()} className="max-h-96">
+            <Table.Header headerGroups={apiKeyTable.table.getHeaderGroups()} />
+            <Table.Body {...apiKeyTable.getBodyProps()}>
+              {apiKeyTable.rows.map((row) => {
+                return <Table.Row key={row.id} className="hover:bg-purple-background-light group" row={row} />;
+              })}
+            </Table.Body>
+          </Table.Container>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+      {canReadWebhooks ? (
+        <WebhooksSection
+          webhooks={webhooks}
+          webhooksError={webhooksError}
+          isCreateWebhookAvailable={isCreateWebhookAvailable}
+          webhooksStatus={webhooksStatus}
+        />
+      ) : null}
+    </Page.Content>
   );
 }
 
@@ -198,7 +196,7 @@ function CreatedAPIKey({ createdApiKey }: { createdApiKey: CreatedApiKey }) {
   const { t } = useTranslation(['settings']);
   return (
     <Callout variant="outlined">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-xs">
         <span className="font-bold">{t('settings:api_keys.new_api_key')}</span>
         <span>{t('settings:api_keys.copy_api_key')}</span>
         <CopyToClipboardButton toCopy={createdApiKey.key}>
@@ -254,7 +252,7 @@ function WebhooksSection({
   });
 
   const webhooksTitleContent = (
-    <span className="flex flex-1 items-center gap-2">
+    <span className="flex flex-1 items-center gap-sm">
       {t('settings:webhooks')}
       {webhooksStatus !== 'allowed' && !isAccessible(webhooksStatus) ? (
         <Nudge content="" kind={webhooksStatus} className="size-5" />
@@ -273,7 +271,7 @@ function WebhooksSection({
           </Button>
         </CollapsiblePaper.Title>
         <CollapsiblePaper.Content>
-          <div className="flex flex-col items-center gap-4 py-8">
+          <div className="flex flex-col items-center gap-md py-xl">
             <Typo variant="title2" className="text-grey-primary">
               {t('settings:webhooks.configuration_error')}
             </Typo>
@@ -310,7 +308,7 @@ function WebhooksSection({
         ) : null}
       </CollapsiblePaper.Title>
       <CollapsiblePaper.Content>
-        <Callout className="mb-4 lg:mb-6" variant="outlined">
+        <Callout className="mb-md lg:mb-lg" variant="outlined">
           <p className="whitespace-pre-wrap">
             <Trans
               t={t}

@@ -95,8 +95,8 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('data:import_org.title')}</Modal.Title>
-        <div className="flex flex-col gap-4 p-6">
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-md p-lg">
+          <div className="flex flex-col gap-sm">
             <p className="text-s font-medium text-grey-primary">{t('data:import_org.method_file')}</p>
             <input
               ref={fileInputRef}
@@ -117,16 +117,16 @@ export function ImportOrg({ children }: { children: React.ReactNode }) {
             </Button>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-md">
             <div className="bg-grey-border h-px flex-1" />
             <span className="text-xs text-grey-secondary">{t('common:or')}</span>
             <div className="bg-grey-border h-px flex-1" />
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <p className="text-s font-medium text-grey-primary">{t('data:import_org.method_body')}</p>
             <textarea
-              className="border-grey-border focus:border-purple-primary text-s min-h-[120px] w-full rounded-lg border p-3 font-mono outline-none disabled:opacity-50"
+              className="border-grey-border focus:border-purple-primary text-s min-h-[120px] w-full rounded-lg border p-md font-mono outline-none disabled:opacity-50"
               placeholder={t('data:import_org.json_placeholder')}
               disabled={hasFile}
               value={jsonContent}

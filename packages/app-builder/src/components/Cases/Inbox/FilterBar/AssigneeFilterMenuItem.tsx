@@ -19,7 +19,7 @@ export const AssigneeFilterMenuItem = ({ onSelect }: AssigneeFilterMenuItemProps
             value={`${user.userId} ${user.firstName} ${user.lastName}`}
             onSelect={() => onSelect(user.userId)}
           >
-            <div className="flex items-center gap-v2-xs">
+            <div className="flex items-center gap-xs">
               <Avatar size="xs" firstName={user.firstName} lastName={user.lastName} />
               <span>{`${R.capitalize(user.firstName)} ${R.capitalize(user.lastName)}`}</span>
             </div>

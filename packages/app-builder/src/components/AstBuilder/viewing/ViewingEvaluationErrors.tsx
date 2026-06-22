@@ -27,11 +27,11 @@ export const ViewingEvaluationErrors = memo(function ViewingEvaluationErrors({
   if (errorModels.length === 0) return null;
 
   return (
-    <div className={cn('flex flex-row flex-wrap gap-2', className)}>
+    <div className={cn('flex flex-row flex-wrap gap-sm', className)}>
       {errorModels.map((errorModel, i) => (
         <span
           key={i}
-          className="bg-red-background text-s text-red-primary flex h-8 items-center justify-center rounded-sm px-2 py-1 font-medium"
+          className="bg-red-background text-s text-red-primary flex h-8 items-center justify-center rounded-sm px-xs py-2xs font-medium"
         >
           {translateError(errorModel)}
         </span>

@@ -99,7 +99,7 @@ export const ViewSavedResults = () => {
       </Button>
       <PanelRoot open={open} onOpenChange={setOpen}>
         <PanelContainer size="5xl">
-          <div className="flex items-center gap-v2-sm pb-v2-md">
+          <div className="flex items-center gap-sm pb-md">
             <button
               type="button"
               aria-label={t('common:close')}
@@ -113,7 +113,7 @@ export const ViewSavedResults = () => {
             </Typo>
           </div>
 
-          <div className="grid grid-cols-3 gap-v2-md pb-v2-md">
+          <div className="grid grid-cols-3 gap-md pb-md">
             <PeriodFilter
               value={dateRange}
               onChange={(v) => {
@@ -128,7 +128,7 @@ export const ViewSavedResults = () => {
                 resetPagination();
               }}
             />
-            <div className="flex h-10 items-center gap-v2-sm">
+            <div className="flex h-10 items-center gap-sm">
               <Switch
                 id="saved-only"
                 checked={isSaved}
@@ -145,19 +145,17 @@ export const ViewSavedResults = () => {
 
           <PanelContent>
             {query.isLoading ? (
-              <div className="text-s text-grey-secondary p-v2-md">
+              <div className="text-s text-grey-secondary p-md">
                 {t('screenings:freeform_search.saved_results.loading')}
               </div>
             ) : query.isError ? (
-              <div className="text-s text-red-primary p-v2-md">
-                {t('screenings:freeform_search.saved_results.error')}
-              </div>
+              <div className="text-s text-red-primary p-md">{t('screenings:freeform_search.saved_results.error')}</div>
             ) : items.length === 0 ? (
-              <div className="text-s text-grey-secondary p-v2-md">
+              <div className="text-s text-grey-secondary p-md">
                 {t('screenings:freeform_search.saved_results.empty')}
               </div>
             ) : (
-              <ul className="flex flex-col gap-v2-sm">
+              <ul className="flex flex-col gap-sm">
                 {items.map((search) => (
                   <li key={search.id}>
                     <SavedSearchRow search={search} />
@@ -205,12 +203,12 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
   return (
     <Collapsible.Container defaultOpen={false} className="bg-grey-background-light">
       <Collapsible.Title size="small" iconPosition="left" className="grid">
-        <div className="flex flex-1 flex-wrap items-center gap-v2-sm">
+        <div className="flex flex-1 flex-wrap items-center gap-sm">
           <span className="text-grey-primary">{search.search_input.query?.['name']?.join(', ')}</span>
         </div>
-        <div className="flex items-center gap-v2-xs text-s text-grey-secondary font-normal">
+        <div className="flex items-center gap-xs text-s text-grey-secondary font-normal">
           {owner ? (
-            <span className="inline-flex items-center gap-v2-xs">
+            <span className="inline-flex items-center gap-xs">
               <Avatar size="xs" firstName={owner.firstName} lastName={owner.lastName} />
               <span className="text-grey-primary">
                 {`${owner.firstName} ${owner.lastName}`.trim()}
@@ -241,8 +239,8 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
 
 function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'] }) {
   return (
-    <div className="flex flex-wrap items-center gap-v2-xs">
-      <Tag color="white" appearance="monospace" className="gap-v2-xs">
+    <div className="flex flex-wrap items-center gap-xs">
+      <Tag color="white" appearance="monospace" className="gap-xs">
         {filter.provider}
       </Tag>
 
@@ -251,7 +249,7 @@ function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'
         .map(([key, value], index) => (
           <Fragment key={`filter-${key}-${index}`}>
             {value?.datasets?.length && (
-              <Tag color="white" appearance="monospace" className="gap-v2-xs">
+              <Tag color="white" appearance="monospace" className="gap-xs">
                 {key}:{value?.datasets?.length ?? 0}
               </Tag>
             )}
@@ -266,14 +264,14 @@ function TopicTag({ topics }: { topics: NonNullable<ScreeningConfigBodySectionDt
   const { t } = useTranslation(['screenings']);
   if (topics['livness'] && topics['livness'].length === 1)
     return (
-      <Tag color="white" appearance="monospace" className="gap-v2-xs">
+      <Tag color="white" appearance="monospace" className="gap-xs">
         {t('freeform_search.global.liveness')}
       </Tag>
     );
   return (
     <>
       {Object.entries(topics).map(([key, value]) => (
-        <Tag color="white" appearance="monospace" className="gap-v2-xs" key={key}>
+        <Tag color="white" appearance="monospace" className="gap-xs" key={key}>
           {key}:{value?.length ?? 0}
         </Tag>
       ))}
@@ -290,15 +288,15 @@ function QueryValues({ query, type }: { query: SavedScreeningSearch['search_inpu
       : [];
 
   return (
-    <div className="flex flex-wrap items-center gap-v2-xs">
+    <div className="flex flex-wrap items-center gap-xs">
       {type !== 'Thing' && (
-        <Tag color="white" appearance="monospace" className="gap-v2-xs">
+        <Tag color="white" appearance="monospace" className="gap-xs">
           {t(`screenings:entity.schema.${type.toLocaleLowerCase()}`)}
         </Tag>
       )}
       {entityTypeFields.map((field) =>
         query.query[field] ? (
-          <Tag color="white" appearance="monospace" className="gap-v2-xs" key={field}>
+          <Tag color="white" appearance="monospace" className="gap-xs" key={field}>
             <span>{t(`screenings:entity.property.${field}.short`)}</span>:<span>{query.query[field].join(', ')}</span>
           </Tag>
         ) : null,
@@ -350,7 +348,7 @@ function PeriodFilter({
     >
       <MenuCommand.Trigger>
         <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="medium">
-          <span className="inline-flex items-center gap-v2-xs">
+          <span className="inline-flex items-center gap-xs">
             <Icon icon="calendar-month" className="size-4" />
             <span className="truncate">{t('screenings:freeform_search.saved_results.select_period')}</span>
           </span>
@@ -373,7 +371,7 @@ function PeriodFilter({
             <DateRangeFilter.Summary className="col-span-3 row-span-1" />
           </DateRangeFilter.Root>
         </MenuCommand.List>
-        <div className="border-grey-border flex justify-end gap-2 border-t p-2">
+        <div className="border-grey-border flex justify-end gap-sm border-t p-sm">
           <Button
             variant="secondary"
             appearance="stroked"
@@ -435,7 +433,7 @@ function OwnerFilter({
           />
         </Button>
       </MenuCommand.Trigger>
-      <MenuCommand.Content sameWidth className="mt-2">
+      <MenuCommand.Content sameWidth className="mt-sm">
         <MenuCommand.Combobox placeholder={t('screenings:freeform_search.saved_results.select_owner')} />
         <MenuCommand.List>
           <MenuCommand.Item
@@ -478,7 +476,7 @@ function SavedResultsPageSizeSelector({
   const { t } = useTranslation(['screenings']);
 
   return (
-    <div className="flex items-center gap-v2-xs">
+    <div className="flex items-center gap-xs">
       <span className="text-s text-grey-secondary">
         {t('screenings:freeform_search.saved_results.results_per_page')}
       </span>
@@ -516,7 +514,7 @@ function FilterPill({
 }) {
   return (
     <Tag color="purple" size="big" className="w-full justify-between bg-purple-primary/20">
-      <span className="inline-flex items-center gap-v2-xs truncate">
+      <span className="inline-flex items-center gap-xs truncate">
         <Icon icon={icon} className="size-4 shrink-0" />
         <span className="truncate font-medium">{label}</span>
       </span>
@@ -536,7 +534,7 @@ function FilterPill({
 function SavedResults({ id }: { id: string }) {
   const query = useGetFreeformSearchQuery(id);
   return query.isSuccess && query.data && query.data.matches ? (
-    <div className="grid gap-v2-sm mt-v2-sm">
+    <div className="grid gap-sm mt-sm">
       {query.data.matches?.map((match) => {
         return <FreeformMatchCard key={match.id} entity={match} background="card" />;
       })}

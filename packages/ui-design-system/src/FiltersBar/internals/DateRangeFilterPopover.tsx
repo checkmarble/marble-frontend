@@ -95,16 +95,16 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
           setDateRangeFilter={(value) => setLocalDateRangeFilter(value as any)}
           locale={dateFnsLocale}
         >
-          <div className="flex flex-col md:flex-row gap-2">
+          <div className="flex flex-col md:flex-row gap-sm">
             <DateRangeFilter.FromNowPicker
               presetDurations={presetDurations}
               title="Quick ranges"
-              className="border-r-1 border-grey-border pr-v2-md"
+              className="border-r-1 border-grey-border pe-md"
             />
             <DateRangeFilter.Calendar locale={dateFnsLocale} />
           </div>
           <DateRangeFilter.Summary
-            className="border-t-1 border-grey-border pt-v2-sm mt-0"
+            className="border-t-1 border-grey-border pt-sm mt-0"
             presetDurations={presetDurations}
           />
         </DateRangeFilter.Root>

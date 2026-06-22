@@ -64,7 +64,7 @@ export const SnoozePanel = ({
   const rulesByPivot = rulesByPivotQuery.data.rulesByPivot;
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-lg p-md">
       <Button
         variant="secondary"
         size="small"
@@ -76,10 +76,10 @@ export const SnoozePanel = ({
         <Icon icon="cross" className="size-5" />
       </Button>
 
-      <div className="flex w-full flex-col gap-6 px-2">
+      <div className="flex w-full flex-col gap-lg px-xs">
         <span className="text-l font-semibold">Rules</span>
         {pivotKeys.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+          <div className="flex flex-col items-center justify-center gap-md py-xl text-center">
             <Icon icon="inbox" className="size-8 text-grey-secondary" />
             <p className="text-sm text-grey-secondary">{t('cases:case_detail.rules.no_rules')}</p>
           </div>
@@ -91,7 +91,7 @@ export const SnoozePanel = ({
                   <button
                     key={`trigger-${pivotValue}`}
                     type="button"
-                    className={cn(tabClassName, 'gap-2')}
+                    className={cn(tabClassName, 'gap-sm')}
                     data-status={effectiveActiveTab === pivotValue ? 'active' : undefined}
                     onClick={() => setActiveTab(pivotValue)}
                   >
@@ -106,16 +106,16 @@ export const SnoozePanel = ({
               const table = dataModel.find((t) => t.name === client?.pivotObjectName);
 
               return (
-                <div className="mt-6 flex w-full flex-col items-start gap-6" key={`content-${pivotValue}`}>
+                <div className="mt-lg flex w-full flex-col items-start gap-lg" key={`content-${pivotValue}`}>
                   {table && client ? (
-                    <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
+                    <div className="border-grey-border flex flex-col gap-md border p-md bg-grey-background-light rounded-lg">
                       <div className="capitalize font-semibold">{table.name}</div>
                       <PivotObjectDetails tableModel={table} dataModel={dataModel} pivotObject={client} />
                     </div>
                   ) : null}
                   <div className="border-grey-border bg-surface-card relative w-full rounded-lg border">
                     <div className="text-2xs text-grey-secondary relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
-                      <span className="inline-flex items-center gap-2 p-2">
+                      <span className="inline-flex items-center gap-sm p-sm">
                         <span>{t('cases:decisions.rule.snooze')}</span>
                         {entitlements.ruleSnoozes !== 'allowed' ? (
                           <Nudge
@@ -131,11 +131,11 @@ export const SnoozePanel = ({
                           />
                         ) : null}
                       </span>
-                      <span className="p-2">{t('cases:decisions.rule.last_hit_timestamp')}</span>
-                      <span className="p-2">{t('cases:decisions.rule.name_and_score')}</span>
-                      <span className="p-2">{t('cases:decisions.rule.description')}</span>
-                      <span className="p-2">{t('cases:decisions.rule.rule_group')}</span>
-                      <span className="p-2">{t('cases:decisions.rule.snooze_until')}</span>
+                      <span className="p-sm">{t('cases:decisions.rule.last_hit_timestamp')}</span>
+                      <span className="p-sm">{t('cases:decisions.rule.name_and_score')}</span>
+                      <span className="p-sm">{t('cases:decisions.rule.description')}</span>
+                      <span className="p-sm">{t('cases:decisions.rule.rule_group')}</span>
+                      <span className="p-sm">{t('cases:decisions.rule.snooze_until')}</span>
                     </div>
                     {rules.map((r) => {
                       const formattedHitAt = (
@@ -149,7 +149,7 @@ export const SnoozePanel = ({
                           key={r.ruleId}
                           className="border-grey-border hover:bg-purple-background-light grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] items-center border-t transition-colors"
                         >
-                          <div className="flex min-h-full items-center justify-center p-2">
+                          <div className="flex min-h-full items-center justify-center p-sm">
                             <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>
                               <Button
                                 variant="secondary"
@@ -165,10 +165,10 @@ export const SnoozePanel = ({
                               </Button>
                             </AddRuleSnooze>
                           </div>
-                          <div className="border-grey-border flex min-h-full items-center justify-center border-x p-2">
+                          <div className="border-grey-border flex min-h-full items-center justify-center border-x p-sm">
                             {formattedHitAt}
                           </div>
-                          <div className="border-grey-border flex min-h-full items-center justify-between border-r p-2">
+                          <div className="border-grey-border flex min-h-full items-center justify-between border-r p-sm">
                             <span
                               className={cn('text-grey-primary text-xs font-normal', {
                                 'opacity-30': r.isSnoozed,
@@ -181,15 +181,15 @@ export const SnoozePanel = ({
                               className={cn({ 'opacity-30': r.isSnoozed })}
                             />
                           </div>
-                          <div className="border-grey-border flex min-h-full items-center border-r p-2">
+                          <div className="border-grey-border flex min-h-full items-center border-r p-sm">
                             <span className={cn('text-xs', { 'opacity-30': r.isSnoozed })}>{r.description}</span>
                           </div>
-                          <div className="border-grey-border flex min-h-full items-center border-r p-2">
+                          <div className="border-grey-border flex min-h-full items-center border-r p-sm">
                             {r.ruleGroup ? (
                               <RuleGroup className={cn({ 'opacity-30': r.isSnoozed })} ruleGroup={r.ruleGroup} />
                             ) : null}
                           </div>
-                          <div className="flex min-h-full items-center p-2">
+                          <div className="flex min-h-full items-center p-sm">
                             {r.isSnoozed && r.end ? (
                               <span className="opacity-30">
                                 {formatRelative(r.end, new Date(), {

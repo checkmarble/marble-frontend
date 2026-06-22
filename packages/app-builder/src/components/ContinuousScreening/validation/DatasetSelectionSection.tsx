@@ -31,7 +31,7 @@ function DatasetChangeList({
 
     const category = getSectionFromKey(key);
     return (
-      <div key={key} className="flex items-center justify-between gap-v2-sm">
+      <div key={key} className="flex items-center justify-between gap-sm">
         <span className="truncate min-w-0">{formatItemName(item)}</span>
         {category ? <DatasetTag category={category} /> : null}
       </div>
@@ -60,10 +60,10 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig, datasets }:
     <Collapsible.Container>
       <Collapsible.Title>{t('continuousScreening:edition.validation.datasetSelection.title')}</Collapsible.Title>
       <Collapsible.Content>
-        <div className="grid grid-cols-2 gap-v2-md">
-          <div className="flex flex-col gap-v2-sm">
+        <div className="grid grid-cols-2 gap-md">
+          <div className="flex flex-col gap-sm">
             <span>{t('continuousScreening:edition.validation.datasetSelection.added.title')}</span>
-            <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md max-h-50 overflow-y-auto">
+            <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md max-h-50 overflow-y-auto">
               <DatasetChangeList
                 keys={addedDatasets}
                 catalog={datasets}
@@ -71,9 +71,9 @@ export const DatasetSelectionSection = ({ updatedConfig, baseConfig, datasets }:
               />
             </div>
           </div>
-          <div className="flex flex-col gap-v2-sm">
+          <div className="flex flex-col gap-sm">
             <span>{t('continuousScreening:edition.validation.datasetSelection.removed.title')}</span>
-            <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md max-h-50 overflow-y-auto">
+            <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md max-h-50 overflow-y-auto">
               <DatasetChangeList
                 keys={removedDatasets}
                 catalog={datasets}

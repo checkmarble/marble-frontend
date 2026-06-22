@@ -35,9 +35,9 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
 
   return (
     <AstBuilderNodeSharpFactory.Provider value={nodeStore}>
-      <div className="flex flex-col gap-2 lg:gap-4">
+      <div className="flex flex-col gap-sm lg:gap-md">
         <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
-          <div className="text-s bg-grey-background-light text-purple-primary col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded-sm p-2 font-semibold">
+          <div className="text-s bg-grey-background-light text-purple-primary col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-xs rounded-sm p-sm font-semibold">
             {dataSharp.value.data.$triggerObjectType}
           </div>
           {nodeStore.value.node.children.map((child, i, children) => {
@@ -55,7 +55,7 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
             );
           })}
         </div>
-        <div className="flex flex-row flex-wrap gap-2">
+        <div className="flex flex-row flex-wrap gap-sm">
           <AddLogicalOperatorButton onClick={appendChild} operator="and" />
           <EditionEvaluationErrors direct id={nodeStore.value.node.id} filterOut={['ARGUMENT_MUST_BE_BOOLEAN']} />
         </div>
@@ -83,7 +83,7 @@ function EditionRootAndLine({ isFirst, isLast, path, nodeId, removeNode }: Editi
 
       <LogicalOperatorLabel operator={isFirst ? 'where' : 'and'} className="col-start-3" type="contained" />
 
-      <div className={clsx('col-span-1 col-start-4 flex flex-col gap-2 px-2')}>
+      <div className={clsx('col-span-1 col-start-4 flex flex-col gap-sm px-sm')}>
         <EditionAstBuilderNode path={path} root />
         <EditionEvaluationErrors id={nodeId} />
       </div>

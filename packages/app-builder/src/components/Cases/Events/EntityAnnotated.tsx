@@ -34,11 +34,11 @@ export function EntityAnnotated({ event }: EntityAnnotatedProps) {
   const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   return (
-    <div key={event.id} className="flex w-full items-start gap-2">
+    <div key={event.id} className="flex w-full items-start gap-sm">
       <div className="bg-surface-card border-grey-border flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="comment" className="text-grey-primary size-3" />
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-xs">
         <span className="text-grey-primary inline-flex h-full items-center whitespace-pre text-xs">
           <Trans
             t={t}
@@ -59,17 +59,17 @@ export function EntityAnnotated({ event }: EntityAnnotatedProps) {
           {match(event.annotation)
             .with({ type: 'tag' }, (annotation) => {
               const tag = getTagById(annotation.payload.tag_id);
-              return tag ? <TagPreview name={tag.name} className="ms-2" /> : null;
+              return tag ? <TagPreview name={tag.name} className="ms-sm" /> : null;
             })
             .with({ type: 'file' }, (annotation) => {
               return (
-                <span className="border-grey-border ms-2 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                <span className="border-grey-border ms-sm flex items-center gap-xs rounded-sm border px-xs py-2xs text-xs font-medium">
                   {annotation.payload.files[0]?.filename}
                 </span>
               );
             })
             .with({ type: 'comment' }, (annotation) => {
-              return <span className="border-grey-border ms-2 border-l ps-2">{annotation.payload.text}</span>;
+              return <span className="border-grey-border ms-sm border-l ps-sm">{annotation.payload.text}</span>;
             })
             .exhaustive()}
         </span>

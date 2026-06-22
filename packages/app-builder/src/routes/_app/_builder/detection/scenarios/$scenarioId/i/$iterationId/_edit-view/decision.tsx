@@ -166,7 +166,7 @@ function Decision() {
     <Collapsible.Container className="bg-surface-card max-w-3xl">
       <Collapsible.Title>{t('scenarios:decision.score_based.title')}</Collapsible.Title>
       <Collapsible.Content>
-        <Callout variant="outlined" className="mb-4 lg:mb-6">
+        <Callout variant="outlined" className="mb-md lg:mb-lg">
           <p className="whitespace-pre-wrap">
             <Trans
               t={t}
@@ -297,7 +297,7 @@ function EditScoreThresholds() {
 
   return (
     <form
-      className="flex flex-col gap-2"
+      className="flex flex-col gap-sm"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -314,7 +314,7 @@ function EditScoreThresholds() {
           }}
         >
           {(field) => (
-            <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
+            <div className="flex flex-row flex-wrap items-center gap-xs lg:gap-sm">
               <FormLabel name={field.name} className="sr-only">
                 {t('scenarios:decision.score_based.score_review_threshold')}
               </FormLabel>
@@ -353,7 +353,7 @@ function EditScoreThresholds() {
           }}
         >
           {(field) => (
-            <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
+            <div className="flex flex-row flex-wrap items-center gap-xs lg:gap-sm">
               <FormLabel name={field.name} className="sr-only">
                 {t('scenarios:decision.score_based.score_block_and_review_threshold')}
               </FormLabel>
@@ -396,7 +396,7 @@ function EditScoreThresholds() {
           }}
         >
           {(field) => (
-            <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
+            <div className="flex flex-row flex-wrap items-center gap-xs lg:gap-sm">
               <FormLabel name={field.name} className="sr-only">
                 {t('scenarios:decision.score_based.score_decline_threshold')}
               </FormLabel>
@@ -439,7 +439,7 @@ function EditScoreThresholds() {
       </div>
 
       {editorMode === 'edit' ? (
-        <div className="flex flex-row-reverse items-center justify-between gap-2">
+        <div className="flex flex-row-reverse items-center justify-between gap-sm">
           <Button variant="primary" type="submit">
             {t('common:save')}
           </Button>
@@ -453,5 +453,5 @@ function EditScoreThresholds() {
 }
 
 const style = {
-  errorMessage: 'bg-red-background rounded-sm px-2 py-1 h-8 flex items-center justify-center',
+  errorMessage: 'bg-red-background rounded-sm px-xs py-2xs h-8 flex items-center justify-center',
 } as const;

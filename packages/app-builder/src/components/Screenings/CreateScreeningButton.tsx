@@ -34,15 +34,15 @@ export function CreateScreeningButton({
       variant="secondary"
       appearance={'link'}
       disabled={disabled}
-      className="w-full gap-2"
+      className="w-full gap-sm"
       onClick={handleCreateScreeningRule}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-md">
         <Icon icon="plus" className="size-5" />
         <span className="font-normal">{t('scenarios:create_sanction.title')}</span>
       </div>
       {isSanctionAvailable !== 'allowed' ? (
-        <Nudge kind={isSanctionAvailable} content={t('scenarios:sanction.nudge')} className="p-1" />
+        <Nudge kind={isSanctionAvailable} content={t('scenarios:sanction.nudge')} className="p-xs" />
       ) : null}
     </Button>
   );

@@ -58,7 +58,7 @@ export function CaseDetailTriggerObject({
   return (
     <div
       className={clsx(
-        'text-s text-grey-primary border-grey-border grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg border bg-surface-card p-4',
+        'text-s text-grey-primary border-grey-border grid grid-cols-[max-content_1fr] gap-md gap-x-4 break-all rounded-lg border bg-surface-card p-md',
         className,
       )}
     >
@@ -75,10 +75,10 @@ export function CaseDetailTriggerObject({
           return (
             <Fragment key={property}>
               <span className="font-semibold">{property}</span>
-              <div className="inline-flex items-center gap-2">
+              <div className="inline-flex items-center gap-sm">
                 {links[property] && data.value ? (
                   <button
-                    className="text-purple-primary group flex items-center gap-1 text-left"
+                    className="text-purple-primary group flex items-center gap-xs text-left"
                     onClick={() => onLinkClicked(links[property] as string, data.value as string)}
                   >
                     <FormatData type={fieldType} data={data} mapHeight={200} />

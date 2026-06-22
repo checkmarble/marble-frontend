@@ -15,8 +15,8 @@ export const CreationContent = () => {
   const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
 
   return (
-    <div className="flex flex-col gap-v2-sm h-full relative">
-      <div className="grow p-v2-lg pb-0 flex flex-col gap-v2-md">
+    <div className="flex flex-col gap-sm h-full relative">
+      <div className="grow p-lg pb-0 flex flex-col gap-md">
         {match(creationStepper.computed.currentStep.value)
           .with(1, () => <ObjectMapping />)
           .with(2, () => <DatasetSelection useCase="continuous_monitoring" />)
@@ -36,7 +36,7 @@ const CreationContentRecap = () => {
 
   return (
     <div
-      className={cn('bg-surface-card rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm', {
+      className={cn('bg-surface-card rounded-lg border border-grey-border p-md flex flex-col gap-sm', {
         'bg-green-background-light border-green-border dark:bg-transparent dark:border-green-primary text-green-primary group/recap-valid':
           isValid,
       })}

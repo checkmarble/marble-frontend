@@ -73,13 +73,10 @@ export function FieldsForm({
 
   return (
     <section
-      className={cn(
-        'flex flex-1 min-h-0 flex-col gap-v2-md rounded-lg',
-        hasError && 'border border-red-primary p-v2-md',
-      )}
+      className={cn('flex flex-1 min-h-0 flex-col gap-md rounded-lg', hasError && 'border border-red-primary p-md')}
     >
       <div className="flex shrink-0 items-center justify-between">
-        <div className="flex flex-col gap-v2-xs">
+        <div className="flex flex-col gap-xs">
           <Typo variant="subtitle2">{title ?? t('data:upload_data.fields_title')}</Typo>
           <p className="text-s text-grey-secondary">{description ?? t('data:upload_data.fields_description')}</p>
         </div>
@@ -94,11 +91,7 @@ export function FieldsForm({
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId={droppableId}>
             {(dropProvided) => (
-              <div
-                ref={dropProvided.innerRef}
-                {...dropProvided.droppableProps}
-                className="flex flex-col gap-v2-sm pr-v2-sm"
-              >
+              <div ref={dropProvided.innerRef} {...dropProvided.droppableProps} className="flex flex-col gap-sm pe-sm">
                 {fields.map((field, index) => (
                   <Draggable key={field.id} draggableId={field.id} index={index}>
                     {(dragProvided, snapshot) => (
@@ -155,7 +148,7 @@ function FieldRow({
   const semanticLabel = getSemanticLabel(field, t);
 
   return (
-    <div className="flex items-center gap-v2-md">
+    <div className="flex items-center gap-md">
       <div {...dragHandleProps} className="flex shrink-0 items-center">
         <Icon icon="drag" className="size-4 text-grey-secondary cursor-grab" />
       </div>
@@ -165,7 +158,7 @@ function FieldRow({
         onClick={onSelect}
         onKeyDown={onKeyDown}
         className={cn(
-          'flex flex-1 items-center gap-v2-md rounded-lg border p-v2-md transition-colors',
+          'flex flex-1 items-center gap-md rounded-lg border p-md transition-colors',
           hasError
             ? 'border-red-primary'
             : isSelected
@@ -177,9 +170,9 @@ function FieldRow({
       >
         <DatatypeIcon dataType={field.dataType} />
         <span className="text-s font-medium">{field.alias || field.name}</span>
-        <div className="ml-auto flex items-center gap-v2-sm">
+        <div className="ms-auto flex items-center gap-sm">
           {semanticLabel ? (
-            <span className="rounded-sm border border-grey-border bg-grey-98 px-v2-sm py-0.5 text-xs text-grey-secondary">
+            <span className="rounded-sm border border-grey-border bg-grey-98 px-sm py-0.5 text-xs text-grey-secondary">
               {semanticLabel}
             </span>
           ) : null}

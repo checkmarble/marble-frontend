@@ -66,10 +66,10 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>{t('settings:api_keys.new_api_key')}</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-lg p-lg">
         <form.Field name="description">
           {(field) => (
-            <div className="group flex flex-col gap-2">
+            <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>{t('settings:api_keys.description')}</FormLabel>
               <FormInput
                 name={field.name}
@@ -84,7 +84,7 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
         </form.Field>
         <form.Field name="role">
           {(field) => (
-            <div className="group flex flex-col gap-2">
+            <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>{t('settings:api_keys.role')}</FormLabel>
               <SelectV2
                 disabled={apiKeyRoleOptions.length === 1}

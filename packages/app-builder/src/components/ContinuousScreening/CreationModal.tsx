@@ -38,7 +38,7 @@ export const CreationModal = ({ open, onOpenChange, onSubmit }: CreationModalPro
       <Modal.Content>
         <Modal.Title>{t('continuousScreening:creation.modal.title')}</Modal.Title>
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-6 p-6">
+          <div className="flex flex-col gap-lg p-lg">
             <Input
               name="name"
               placeholder={t('continuousScreening:creation.modal.name_placeholder')}

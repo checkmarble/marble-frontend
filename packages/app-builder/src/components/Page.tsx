@@ -5,6 +5,8 @@ import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, cn, StickyComponent, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { pageLayoutGutter } from './Page/page-layout';
+import { PageStickyFooter } from './Page/StickyFooter';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return <main className={cn('relative bg-surface-page flex flex-1 flex-col', className)} {...props} />;
@@ -15,7 +17,7 @@ function PageHeader({ className, children, color, ...props }: React.ComponentPro
     <StickyComponent sentinelClassName="top-0">
       <div
         className={cn(
-          'sticky top-0 z-1 h-12 text-l flex shrink-0 flex-row items-center font-semibold px-v2-md bg-surface-page border-y border-transparent sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
+          'sticky top-0 z-1 h-12 text-l flex shrink-0 flex-row items-center font-semibold px-md bg-surface-page border-y border-transparent sentinel-intersect:border-b-grey-border sentinel-intersect:shadow-sticky-top',
           className,
         )}
         {...props}
@@ -30,16 +32,20 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(fu
   { className, children, ...props },
   ref,
 ) {
-  return <div>{children}</div>;
+  return (
+    <div ref={ref} className={cn('flex min-w-0 flex-1 flex-col', className)} {...props}>
+      {children}
+    </div>
+  );
 });
 
 const pageDescriptionClassName = cva(
-  'bg-grey-white text-s text-grey-secondary flex flex-row gap-2 p-v2-md font-normal border-grey-border dark:bg-grey-background',
+  'bg-grey-white text-s text-grey-secondary flex flex-row gap-sm p-md font-normal border-grey-border dark:bg-grey-background',
   {
     variants: {
       headerBanner: {
         true: 'border-b',
-        false: 'border rounded-v2-md ',
+        false: 'border rounded-md ',
       },
     },
     defaultVariants: {
@@ -62,44 +68,42 @@ function PageDescription({
   );
 }
 
-// @deprecated
-function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn(
-        'flex flex-1 flex-col gap-4 p-4 pe-[calc(1rem-var(--scrollbar-width))] lg:gap-8 lg:p-8 lg:pe-[calc(2rem-var(--scrollbar-width))]',
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
-const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
+const PageContentClassName = cva('flex flex-1 flex-col text-default', {
   variants: {
+    padding: {
+      default: pageLayoutGutter.padding,
+      compact: 'p-md gap-md',
+      none: 'p-0',
+    },
+    width: {
+      fluid: null,
+      readable: 'w-full max-w-(--breakpoint-xl)',
+      form: 'w-full max-w-(--breakpoint-lg)',
+      table: 'min-w-0 w-full',
+    },
     centered: {
       true: 'mx-auto',
       false: null,
     },
-    paddingLess: {
-      true: 'p-0',
-      false: 'p-v2-lg',
-    },
   },
   defaultVariants: {
-    paddingLess: false,
+    padding: 'default',
+    width: 'fluid',
     centered: false,
   },
 });
 
-type PageContentV2Props = React.ComponentProps<'div'> & VariantProps<typeof PageContentV2ClassName>;
+type PageContentProps = React.ComponentProps<'div'> &
+  Omit<VariantProps<typeof PageContentClassName>, 'padding'> & {
+    padding?: VariantProps<typeof PageContentClassName>['padding'];
+  };
 
-function PageContentV2({ className, centered, paddingLess, ...props }: PageContentV2Props) {
-  return <div className={PageContentV2ClassName({ centered, paddingLess, className })} {...props} />;
+function PageContent({ className, centered, padding, width, ...props }: PageContentProps) {
+  return <div className={PageContentClassName({ centered, padding, width, className })} {...props} />;
 }
 
 const pageBack = cva(
-  'border-grey-border hover:bg-grey-background-light flex items-center justify-center rounded-md border p-2 dark:border-grey-border dark:hover:bg-grey-background',
+  'border-grey-border hover:bg-grey-background-light flex items-center justify-center rounded-md border p-sm dark:border-grey-border dark:hover:bg-grey-background',
 );
 
 function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {
@@ -127,18 +131,33 @@ function PageBackLink({ className: _className, ...props }: React.ComponentProps<
  * Example:
  * ```tsx
  * <Page.Main>
- *     <Page.Header> // Fixed header
+ *     <Page.Header> // Sticky header
  *       ...
  *     </Page.Header>
- *     <Page.Container> // Scrollable container
- *         <Page.Description> // Optional
- *           ...
- *         </Page.Description>
- *         <Page.Content> // Main content of the page
- *           ...
- *         </Page.Content>
- *     </Page.Container>
+ *        <Page.Description> // Optional
+ *          ...
+ *        </Page.Description>
+ *        <Page.Content width="readable"> // Main content
+ *          ...
+ *        </Page.Content>
  * </Page.Main>
+ * ```
+ *
+ * Content is by default `flex, flex-col`
+ *
+ * padding
+ * - default: standard responsive (padding and gap)
+ * - compact: forced to p-md/gap-md
+ * - none
+ *
+ * width
+ * - fluid: free width
+ * - readable: max width large for most pages with card content
+ * - form: max width narrow for forms display
+ * - table: full width for table display
+ *
+ * centered
+ * - default is not centered
  */
 export const Page = {
   Main: PageMain,
@@ -147,6 +166,6 @@ export const Page = {
   BackLink: PageBackLink,
   Container: PageContainer,
   Content: PageContent,
-  ContentV2: PageContentV2,
+  StickyFooter: PageStickyFooter,
   Description: PageDescription,
 };

@@ -25,7 +25,7 @@ export function ScheduleOptionEditor({
 
   return (
     <>
-      <div className="text-s flex items-center gap-1">
+      <div className="text-s flex items-center gap-xs">
         <Checkbox
           id="scheduleScenario"
           name="scheduleScenario"
@@ -41,7 +41,7 @@ export function ScheduleOptionEditor({
       </div>
       {scheduleOption.isScenarioScheduled ? (
         <>
-          <div className="text-s flex items-center gap-2">
+          <div className="text-s flex items-center gap-sm">
             {t('scenarios:trigger.schedule_scenario.frequency_label')}
             <ScheduleFrequencySelect
               onChange={(frequency) => {

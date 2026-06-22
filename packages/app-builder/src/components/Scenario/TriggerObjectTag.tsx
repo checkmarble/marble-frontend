@@ -9,7 +9,7 @@ interface TriggerObjectTagProps {
 export function TriggerObjectTag({ children }: TriggerObjectTagProps) {
   const { t } = useTranslation(['scenarios']);
   return (
-    <Tag size="small" color="grey" className="flex items-center gap-2">
+    <Tag size="small" color="grey" className="flex items-center gap-sm">
       {children}
 
       <TooltipV2.Tooltip delayDuration={0}>
@@ -20,7 +20,7 @@ export function TriggerObjectTag({ children }: TriggerObjectTagProps) {
           side="bottom"
           align="start"
           sideOffset={8}
-          className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-2 z-50 shadow-md"
+          className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm z-50 shadow-md"
         >
           {t('scenarios:trigger_object.description')}
         </TooltipV2.TooltipContent>

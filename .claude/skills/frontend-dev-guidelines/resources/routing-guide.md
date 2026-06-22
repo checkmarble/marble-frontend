@@ -72,7 +72,7 @@ export const Route = createFileRoute('/_app/_builder/cases')({
         const { t } = useTranslation(['navigation']);
         return (
           <BreadCrumbLink to="/cases" isLast={isLast}>
-            <Icon icon="case-manager" className="me-2 size-6" />
+            <Icon icon="case-manager" className="me-sm size-6" />
             {t('navigation:case_manager')}
           </BreadCrumbLink>
         );
@@ -161,7 +161,7 @@ export const Route = createFileRoute('/_app/_builder/cases')({
         const { t } = useTranslation(['navigation']);
         return (
           <BreadCrumbLink to="/cases" isLast={isLast}>
-            <Icon icon="case-manager" className="me-2 size-6" />
+            <Icon icon="case-manager" className="me-sm size-6" />
             {t('navigation:case_manager')}
           </BreadCrumbLink>
         );

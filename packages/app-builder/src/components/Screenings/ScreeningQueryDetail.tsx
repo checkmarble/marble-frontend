@@ -16,7 +16,7 @@ const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
   );
 
   return (
-    <div className="text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4 mb-2">
+    <div className="text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] gap-md gap-x-4 break-all rounded-lg p-md mb-sm">
       <span className="font-semibold">type</span>
       <span>{getEntityName(query.schema as SearchableSchema)}</span>
       {parsed.map(([property, data]) => (
@@ -63,7 +63,7 @@ export function ScreeningQueryDetail({
           {!hasInitialQuery ? t('screenings:query') : t('screenings:processed_query')}
         </button>
       </Tabs>
-      <div className="mt-2">
+      <div className="mt-sm">
         {activeTab === 'initial' && hasInitialQuery && (
           <>
             {initialQuery.map((q, i) => (

@@ -51,7 +51,7 @@ export const FreeformSearchPage: FunctionComponent<FreeformSearchPageProps> = ({
   );
 
   return (
-    <div className="flex h-full flex-col gap-6 lg:flex-row">
+    <div className="flex h-full flex-col gap-lg lg:flex-row">
       {/* Left sidebar - filters */}
       <div className="w-full shrink-0 overflow-y-auto lg:w-1/4">
         <FreeformSearchForm onSearchComplete={handleSearchComplete} listConfig={listConfig} />

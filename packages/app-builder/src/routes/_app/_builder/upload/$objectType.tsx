@@ -165,7 +165,7 @@ const UploadForm = ({ objectType, onSuccess }: { objectType: string; onSuccess?:
       <div
         {...getRootProps()}
         className={clsx(
-          'text-s flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+          'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
           isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
         )}
       >
@@ -221,7 +221,7 @@ const ResultModal = ({
   return (
     <Modal.Root open={isOpen} onOpenChange={onOpenChange}>
       <Modal.Content>
-        <div className="bg-surface-card text-s flex flex-col items-center gap-6 p-6">
+        <div className="bg-surface-card text-s flex flex-col items-center gap-lg p-lg">
           <Icon
             icon={icon}
             className={clsx(
@@ -231,13 +231,13 @@ const ResultModal = ({
                 : 'bg-red-background border-transparent text-red-primary',
             )}
           />
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-sm">
             <p className="text-l font-semibold">{t('upload:results')}</p>
             <p>{modalContent.message}</p>
             {!modalContent.success ? (
               <>
                 <p className="first-letter:capitalize">{errorMessage(modalContent.error)}</p>
-                <p className="mt-6">
+                <p className="mt-lg">
                   {t('upload:failure_additional_message', {
                     replace: { objectType },
                   })}
@@ -309,7 +309,7 @@ const PastUploads = ({
       columnHelper.accessor((row) => row.status, {
         id: 'upload.status',
         cell: ({ getValue }) => (
-          <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-sm">
             {getStatusIcon(getValue())}
             <p className="capitalize">{t(getStatusTKey(getValue()))}</p>
           </div>
@@ -330,7 +330,7 @@ const PastUploads = ({
   });
 
   return (
-    <Paper.Container className="bg-surface-card mb-10 w-full">
+    <Paper.Container className="bg-surface-card mb-2xl w-full">
       <div className="flex items-center justify-between">
         <Paper.Title>{t('upload:past_uploads')}</Paper.Title>
         <Button
@@ -397,7 +397,7 @@ function Upload() {
   return (
     <Page.Main>
       <Page.Header>
-        <Icon icon="upload" className="me-2 size-6" />
+        <Icon icon="upload" className="me-sm size-6" />
         {t('upload:upload_cta', { replace: { objectType } })}
       </Page.Header>
       <Page.Container>
@@ -422,11 +422,11 @@ function Upload() {
                 href={generateCsvTemplateLink(table)}
                 download={`${objectType}_template.csv`}
                 className={clsx(
-                  'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden',
+                  'text-s flex flex-row items-center justify-center gap-xs rounded-sm border border-solid px-sm py-xs font-semibold outline-hidden',
                   'hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-secondary disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary',
                 )}
               >
-                <Icon icon="download" className="me-2 size-6" />
+                <Icon icon="download" className="me-sm size-6" />
                 {t('upload:download_template_cta')}
               </a>
             </ClientOnly>
@@ -449,7 +449,7 @@ const Loading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
       )}
     >
       {t('common:loading')}
@@ -461,7 +461,7 @@ const LoadingButton = () => {
   const { t } = useTranslation(['upload']);
   return (
     <Button variant="secondary" className="cursor-wait">
-      <Icon icon="helpcenter" className="me-2 size-5" />
+      <Icon icon="helpcenter" className="me-sm size-5" />
       {t('upload:download_template_cta')}
     </Button>
   );

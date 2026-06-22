@@ -34,23 +34,23 @@ export const TestRunSelector = ({
         testRunId: fromUUIDtoSUUID(id),
       }}
       className={clsx(
-        'grid cursor-pointer grid-cols-[30%_30%_8%_auto] items-center rounded-lg border py-4 transition-colors',
+        'grid cursor-pointer grid-cols-[30%_30%_8%_auto] items-center rounded-lg border py-sm transition-colors',
         {
           'bg-surface-card hover:bg-grey-background border-grey-border': status !== 'up',
           'bg-purple-background-light hover:bg-purple-background border-purple-primary': status === 'up',
         },
       )}
     >
-      <div className="px-4">
+      <div className="px-sm">
         <TestRunVersions iterations={iterations} refIterationId={refIterationId} testIterationId={testIterationId} />
       </div>
-      <div className="px-4">
+      <div className="px-sm">
         <TestRunPeriod startDate={startDate} endDate={endDate} />
       </div>
       <div className="flex flex-row items-center justify-center">
         <Avatar firstName={users[creatorId]?.firstName} lastName={users[creatorId]?.lastName} />
       </div>
-      <div className="px-4">
+      <div className="px-sm">
         <TestRunStatus status={status} />
       </div>
     </Link>

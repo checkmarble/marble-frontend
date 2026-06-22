@@ -9,15 +9,15 @@ export function PivotDetails({ pivot }: { pivot: Pivot }) {
   const { t } = useTranslation(dataI18n);
 
   return (
-    <div className="flex flex-col items-start gap-4">
+    <div className="flex flex-col items-start gap-md">
       <div className="text-wrap">
         <PivotDescription {...{ pivot }} />
       </div>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row items-center gap-md">
         <span className="text-grey-secondary text-s min-w-[90px]">{t('data:view_pivot.table')}</span>
         <span className="text-m text-grey-primary">{pivot.type === 'link' ? pivot.pivotTable : pivot.baseTable}</span>
       </div>
-      <div className="flex flex-row items-center gap-4">
+      <div className="flex flex-row items-center gap-md">
         <span className="text-grey-secondary text-s min-w-[90px]">{t('data:view_pivot.definition')}</span>
         <span>{getPivotDisplayValue(pivot)}</span>
       </div>

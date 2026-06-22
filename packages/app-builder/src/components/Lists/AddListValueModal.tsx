@@ -65,10 +65,10 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
           }}
         >
           <Modal.Title>{t('lists:create_value.title')}</Modal.Title>
-          <div className="flex flex-col gap-6 p-6">
+          <div className="flex flex-col gap-lg p-lg">
             <form.Field name="value">
               {(field) => (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-sm">
                   <FormLabel name={field.name}>{t('lists:detail.value.create.form.label')}</FormLabel>
                   <FormInput
                     type="text"

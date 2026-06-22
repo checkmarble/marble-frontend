@@ -28,7 +28,7 @@ function ConditionPrefix({ isFirst }: { isFirst: boolean }) {
   const { t } = useTranslation(['workflows']);
 
   return (
-    <div className="bg-grey-20 px-2 py-1 rounded-sm">
+    <div className="bg-grey-20 px-xs py-2xs rounded-sm">
       <span className="text-grey-60 font-bold text-sm">
         {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
       </span>
@@ -39,7 +39,7 @@ function ConditionPrefix({ isFirst }: { isFirst: boolean }) {
 // Common equals separator component
 function ConditionSeparator() {
   return (
-    <div className="bg-grey-20 px-2 py-1 rounded-sm">
+    <div className="bg-grey-20 px-xs py-2xs rounded-sm">
       <span className="text-grey-60 font-bold text-sm">=</span>
     </div>
   );
@@ -182,7 +182,7 @@ export function ConditionSelector({
                   key={option.value}
                   value={option.value}
                   onSelect={() => handleConditionSelect(option.value)}
-                  className="h-auto flex-col items-start gap-1 p-3"
+                  className="h-auto flex-col items-start gap-xs p-md"
                 >
                   <span className="font-medium text-grey-primary">{option.label}</span>
                   <span className="text-s text-grey-secondary">{option.description}</span>
@@ -218,5 +218,5 @@ export function ConditionSelector({
     );
   };
 
-  return <div className="flex items-center gap-2">{renderConditionLine()}</div>;
+  return <div className="flex items-center gap-sm">{renderConditionLine()}</div>;
 }

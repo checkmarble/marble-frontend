@@ -36,12 +36,12 @@ function AddRuleMenuContent({ onConfirm, onCancel }: AddRuleMenuContentProps) {
 
   return (
     <MenuCommand.Content align="end" sideOffset={4} className="min-w-80">
-      <MenuCommand.List className="p-v2-md">
-        <MenuCommand.Group heading={<div className="mb-v2-md">{t('user-scoring:ruleset.rule_type_heading')}</div>}>
-          <div className="flex flex-col gap-v2-sm">
+      <MenuCommand.List className="p-md">
+        <MenuCommand.Group heading={<div className="mb-md">{t('user-scoring:ruleset.rule_type_heading')}</div>}>
+          <div className="flex flex-col gap-sm">
             {RULE_TYPES.map((value) => (
               <MenuCommand.HeadlessItem key={value} value={value} onSelect={() => setSelectedType(value)}>
-                <div className="flex items-center gap-v2-sm">
+                <div className="flex items-center gap-sm">
                   <div
                     className={cn(
                       'border-purple-primary flex size-4 shrink-0 items-center justify-center rounded-full border',
@@ -61,7 +61,7 @@ function AddRuleMenuContent({ onConfirm, onCancel }: AddRuleMenuContentProps) {
           </div>
         </MenuCommand.Group>
       </MenuCommand.List>
-      <div className="border-grey-border flex items-center justify-end gap-v2-sm border-t p-v2-sm">
+      <div className="border-grey-border flex items-center justify-end gap-sm border-t p-sm">
         <Button variant="secondary" size="small" onClick={onCancel}>
           {t('user-scoring:ruleset.cancel')}
         </Button>
@@ -229,9 +229,9 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
 
   return (
     <>
-      <div className="bg-surface-card border-grey-border rounded-v2-md overflow-hidden border">
-        <div className="border-grey-border flex items-center justify-between border-b px-v2-md py-v2-sm">
-          <div className="text-s text-grey-secondary grid flex-1 grid-cols-[150px_1fr] gap-v2-md font-semibold">
+      <div className="bg-surface-card border-grey-border rounded-md overflow-hidden border">
+        <div className="border-grey-border flex items-center justify-between border-b px-md py-sm">
+          <div className="text-s text-grey-secondary grid flex-1 grid-cols-[150px_1fr] gap-md font-semibold">
             <span>{t('user-scoring:ruleset.risk_types_column')}</span>
             <span>{t('user-scoring:ruleset.rules_column')}</span>
           </div>
@@ -246,18 +246,18 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
           </MenuCommand.Menu>
         </div>
         {rules.length === 0 ? (
-          <div className="text-s text-grey-secondary flex items-center justify-center py-v2-xl">
+          <div className="text-s text-grey-secondary flex items-center justify-center py-xl">
             {t('user-scoring:ruleset.no_rules')}
           </div>
         ) : (
           match(dataModelQuery)
             .with({ isPending: true }, () => (
-              <div className="flex items-center justify-center py-v2-xl">
+              <div className="flex items-center justify-center py-xl">
                 <Spinner />
               </div>
             ))
             .with({ isError: true }, () => (
-              <div className="text-s text-red-primary flex items-center justify-center py-v2-xl">
+              <div className="text-s text-red-primary flex items-center justify-center py-xl">
                 {t('user-scoring:ruleset.error')}
               </div>
             ))
@@ -327,10 +327,10 @@ function RuleRow({
 
   return (
     <div className="border-grey-border flex border-b last:border-b-0">
-      <div className="flex w-[150px] shrink-0 items-center px-v2-md py-v2-sm">
+      <div className="flex w-[150px] shrink-0 items-center px-md py-sm">
         {rule.riskType ? <Tag color="grey">{t(`user-scoring:risk_type.${rule.riskType}`)}</Tag> : null}
       </div>
-      <div className="flex flex-1 flex-col gap-v2-sm px-v2-md py-v2-sm">
+      <div className="flex flex-1 flex-col gap-sm px-md py-sm">
         <span className="text-grey-primary text-s font-medium">{rule.name}</span>
         <SwitchNode
           node={rule.ast}
@@ -341,7 +341,7 @@ function RuleRow({
           customLists={customLists}
         />
       </div>
-      <div className="flex shrink-0 items-center justify-end px-v2-md py-v2-sm">
+      <div className="flex shrink-0 items-center justify-end px-md py-sm">
         <button
           type="button"
           className="border-purple-primary text-purple-primary flex size-6 items-center justify-center rounded-lg border shadow-sm"

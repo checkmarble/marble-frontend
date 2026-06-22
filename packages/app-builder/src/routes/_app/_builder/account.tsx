@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_app/_builder/account')({
         const { t } = useTranslation(['navigation']);
         return (
           <BreadCrumbLink to="/account" isLast={isLast}>
-            <Icon icon="user" className="me-2 size-6" />
+            <Icon icon="user" className="me-sm size-6" />
             {t('navigation:my_account')}
           </BreadCrumbLink>
         );
@@ -61,12 +61,12 @@ function AccountPage() {
         </Button>
       </Page.Header>
       <Page.Container>
-        <Page.Content>
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex flex-col items-center gap-4">
+        <Page.Content width="fluid" centered>
+          <div className="flex flex-col items-center gap-lg">
+            <div className="flex flex-col items-center gap-md">
               <Avatar size="xl" firstName={firstName} lastName={lastName} />
               {fullName ? <p className="text-xl font-semibold tracking-tight">{fullName}</p> : null}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-sm">
                 <Tag color="purple">{t(tKeyForUserRole(currentUser.role))}</Tag>
                 <Tag color="grey">{org.name}</Tag>
               </div>
@@ -77,19 +77,19 @@ function AccountPage() {
               ) : null}
             </div>
 
-            <div className="bg-surface-card border-grey-border flex flex-col gap-6 rounded-lg border p-4">
-              <div className="flex w-[272px] flex-col gap-2">
+            <div className="bg-surface-card border-grey-border flex flex-col gap-lg rounded-lg border p-md">
+              <div className="flex w-[272px] flex-col gap-sm">
                 <label className="text-s">{t('account:language')}</label>
                 <LanguagePicker />
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-sm">
                 <span className="text-s">{t('account:dark_mode')}</span>
                 <Radio.Root value={theme} onValueChange={(value) => setTheme(value as Theme)}>
-                  <label className="flex items-center gap-2">
+                  <label className="flex items-center gap-sm">
                     <Radio.Item value="light" />
                     <span className="text-s">{t('account:theme.light')}</span>
                   </label>
-                  <label className="flex items-center gap-2">
+                  <label className="flex items-center gap-sm">
                     <Radio.Item value="dark" />
                     <span className="text-s">{t('account:theme.dark')}</span>
                   </label>
@@ -98,12 +98,12 @@ function AccountPage() {
               <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
             </div>
 
-            <div className="text-grey-secondary flex items-center gap-4 text-xs">
-              <span className="flex items-center gap-1">
+            <div className="text-grey-secondary flex items-center gap-md text-xs">
+              <span className="flex items-center gap-xs">
                 <Icon icon="monitor" className="size-4" />
                 <span>{versions.appVersion}</span>
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-xs">
                 <Icon icon="dns" className="size-4" />
                 <span>{versions.apiVersion}</span>
               </span>

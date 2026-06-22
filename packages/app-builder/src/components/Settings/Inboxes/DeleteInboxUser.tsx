@@ -43,8 +43,8 @@ const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser
   return (
     <>
       <Modal.Title>{t('settings:inboxes.inbox_user.delete')}</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-6 p-6">
-        <div className="text-s flex flex-1 flex-col gap-4">
+      <div className="bg-surface-card flex flex-col gap-lg p-lg">
+        <div className="text-s flex flex-1 flex-col gap-md">
           <input name="inboxUserId" value={inboxUser.id} type="hidden" />
           <input name="inboxId" value={inboxUser.inboxId} type="hidden" />
           <p className="text-center">{t('settings:inboxes.inbox_user.delete.content')}</p>

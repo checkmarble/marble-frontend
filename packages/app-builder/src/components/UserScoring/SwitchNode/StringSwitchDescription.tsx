@@ -22,7 +22,7 @@ function StringOperationValue({ operation, customLists }: { operation: StringOpe
     if (listValue.type === 'customList') {
       const list = customLists.find((l) => l.id === listValue.listId);
       return (
-        <Tag color="grey" className="flex items-center gap-1">
+        <Tag color="grey" className="flex items-center gap-xs">
           <Icon icon="list" className="size-3" />
           {list?.name ?? listValue.listId}
         </Tag>
@@ -32,7 +32,7 @@ function StringOperationValue({ operation, customLists }: { operation: StringOpe
     const visible = listValue.values.slice(0, MAX_VISIBLE);
     const overflow = listValue.values.length - MAX_VISIBLE;
     return (
-      <span className="flex flex-wrap items-center gap-1">
+      <span className="flex flex-wrap items-center gap-xs">
         {visible.map((v, i) => (
           <Tag key={i} color="grey">
             {v}
@@ -60,10 +60,10 @@ export function StringSwitchDescription({ conditions, maxRiskLevel, customLists 
   };
 
   return (
-    <ul className="flex flex-col gap-v2-sm">
+    <ul className="flex flex-col gap-sm">
       {conditions.branches.map((branch, idx) => (
         <SwitchCaseRow key={idx} impact={branch.impact} maxRiskLevel={maxRiskLevel}>
-          <span className="flex items-center gap-v2-sm">
+          <span className="flex items-center gap-sm">
             {t('user-scoring:switch.description.if_value', { op: opLabels[branch.value.op] })}
             <StringOperationValue operation={branch.value} customLists={customLists} />
           </span>

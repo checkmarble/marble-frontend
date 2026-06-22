@@ -43,7 +43,7 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
 
   return (
     <PanelContainer size="max" className="max-w-[80vw]!">
-      <div className="flex items-center gap-v2-sm pb-v2-md border-b border-grey-border">
+      <div className="flex items-center gap-sm pb-md border-b border-grey-border">
         <Icon
           icon="cross"
           className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary shrink-0"
@@ -58,7 +58,7 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
         <time className="text-xs text-grey-secondary" dateTime={selectedListItem.createdAt}>
           {formatDateTime(selectedListItem.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
         </time>
-        <div className="ml-auto flex items-center gap-v2-xs">
+        <div className="ms-auto flex items-center gap-xs">
           <Button
             variant="secondary"
             size="small"
@@ -81,7 +81,7 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
         </div>
       </div>
 
-      <div className="flex gap-v2-md flex-1 overflow-y-auto py-v2-md">
+      <div className="flex gap-md flex-1 overflow-y-auto py-md">
         <div className="flex-1 min-w-0 text-small">
           {reviewQuery.isLoading ? (
             <div className="flex h-full items-center justify-center">
@@ -107,8 +107,8 @@ function SanityCheckWarning({ message }: { message: string }) {
   const { t } = useTranslation(['cases']);
   return (
     <aside className="w-[403px] shrink-0">
-      <div className="bg-red-background-light border border-red-border rounded-v2-md p-v2-md flex flex-col gap-v2-xs">
-        <div className="flex items-center gap-v2-xs">
+      <div className="bg-red-background-light border border-red-border rounded-md p-md flex flex-col gap-xs">
+        <div className="flex items-center gap-xs">
           <Icon icon="warning" className="size-4 text-red-primary shrink-0" />
           <span className="text-default font-medium text-red-primary">
             {t('cases:case_detail.ai_review.sanity_check_warning_title')}
@@ -134,7 +134,7 @@ function PanelFooter({
   const addCommentMutation = useAddReviewToCaseCommentsMutation(caseId, reviewId);
 
   return (
-    <div className="pt-v2-md border-t border-grey-border mt-auto flex items-center justify-end gap-v2-xs">
+    <div className="pt-md border-t border-grey-border mt-auto flex items-center justify-end gap-xs">
       <Button
         variant={reaction === 'ok' ? 'primary' : 'secondary'}
         size="small"

@@ -14,18 +14,18 @@ export function ClientDocumentsList({ documents }: ClientDocumentsListProps) {
   const displayedFiles = files.slice(0, 2);
 
   return (
-    <div className="flex items-center gap-1 text-xs">
+    <div className="flex items-center gap-xs text-xs">
       {displayedFiles.map((doc) => (
         <div
           key={doc.id}
-          className="border-grey-border bg-surface-card flex h-6 max-w-24 items-center gap-0.5 rounded-v2-md border px-1.5 font-medium"
+          className="border-grey-border bg-surface-card flex h-6 max-w-24 items-center gap-2xs rounded-md border px-sm font-medium"
         >
           <Icon icon="attachment" className="size-4 shrink-0" />
           <span className="truncate">{doc.filename}</span>
         </div>
       ))}
       {filesRest > 0 ? (
-        <div className="border-grey-border bg-surface-card flex h-6 items-center gap-0.5 rounded-v2-md border px-1.5 font-medium">
+        <div className="border-grey-border bg-surface-card flex h-6 items-center gap-2xs rounded-md border px-sm font-medium">
           {t('cases:annotations.documents.plus', { count: filesRest })}
         </div>
       ) : null}

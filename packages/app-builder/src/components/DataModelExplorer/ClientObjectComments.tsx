@@ -23,7 +23,7 @@ function CommentItem({ comment }: { comment: GroupedAnnotations['comments'][numb
       <div>
         <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xs" color="grey" />
       </div>
-      <div className="flex items-start justify-between gap-2 pt-1">
+      <div className="flex items-start justify-between gap-sm pt-xs">
         <div className="text-xs">{comment.payload.text}</div>
         <span className="text-2xs text-grey-secondary text-right">
           <EventTime time={comment.created_at} />
@@ -44,7 +44,7 @@ export function ClientObjectComments({ comments, className }: ClientObjectCommen
       <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
         <div className="bg-grey-border -z-10 h-full w-px" />
       </div>
-      <div className="grid grid-cols-[24px_1fr] gap-2">
+      <div className="grid grid-cols-[24px_1fr] gap-sm">
         {comments.length > 2 && !expanded ? (
           <>
             {firstComment ? <CommentItem comment={firstComment} /> : null}

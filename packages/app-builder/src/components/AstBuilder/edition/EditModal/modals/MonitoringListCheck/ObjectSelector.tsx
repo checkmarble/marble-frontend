@@ -98,7 +98,7 @@ export const ObjectSelector = ({
 
   if (objectOptions.length === 0) {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-sm">
         <label className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.object_label')}</label>
         <div className="text-s text-grey-secondary">
           {t('scenarios:monitoring_list_check.no_objects_under_monitoring')}
@@ -108,20 +108,20 @@ export const ObjectSelector = ({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-sm">
       <label className="text-s text-grey-primary">{t('scenarios:monitoring_list_check.object_label')}</label>
 
-      <Radio.Root value={currentValue} onValueChange={handleChange} className="flex flex-col gap-4">
+      <Radio.Root value={currentValue} onValueChange={handleChange} className="flex flex-col gap-md">
         {objectOptions.map((option, index) => {
           const value = String(index);
 
           return (
-            <label key={value} className="flex cursor-pointer items-center gap-4">
+            <label key={value} className="flex cursor-pointer items-center gap-md">
               <Radio.Item value={value} />
 
-              <div className="flex flex-col gap-0.5">
+              <div className="flex flex-col gap-2xs">
                 {/* Table name + info icon */}
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-xs">
                   <span className="text-s font-medium text-grey-primary">{option.displayLabel}</span>
                   <ActiveMonitoringsTooltip monitorings={option.activeMonitorings} />
                 </div>
@@ -145,9 +145,9 @@ const PathBreadcrumb = ({ segments }: PathBreadcrumbProps) => {
   if (segments.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-xs">
       {segments.map((segment, index) => (
-        <span key={index} className="flex items-center gap-1">
+        <span key={index} className="flex items-center gap-xs">
           <span className="text-xs text-grey-secondary">{segment}</span>
           {index < segments.length - 1 && <Icon icon="arrow-right" className="size-4 text-grey-secondary" />}
         </span>
@@ -175,9 +175,9 @@ const ActiveMonitoringsTooltip = ({ monitorings }: ActiveMonitoringsTooltipProps
   }
 
   const content = (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-xs">
       <span className="text-xs font-medium">{t('scenarios:monitoring_list_check.active_monitorings')}</span>
-      <ul className="list-disc pl-4">
+      <ul className="list-disc ps-md">
         {monitorings.map((config) => (
           <li key={config.id} className="text-xs">
             {config.name}

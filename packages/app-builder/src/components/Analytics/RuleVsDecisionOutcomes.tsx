@@ -71,16 +71,16 @@ export function RuleVsDecisionOutcomes({
       onMouseEnter={() => {
         setIsHovered(true);
       }}
-      className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
+      className="bg-surface-card border border-grey-border rounded-lg p-md flex flex-col gap-sm"
     >
       <div className="flex items-center justify-between">
-        <span className="flex items-center gap-v2-sm">
+        <span className="flex items-center gap-sm">
           <Typo variant="title2">{t('analytics:rule_vs_decision_outcomes.title')}</Typo>
           <AnalyticsTooltip className="size-5" content={t('analytics:rule_vs_decision_outcomes.tooltip')} />
         </span>
         <Button
           variant="secondary"
-          className="flex items-center gap-v2-sm"
+          className="flex items-center gap-sm"
           disabled={isLoading || !data?.length}
           onClick={() => data && handleExportCsv(data, decisions)}
         >
@@ -130,7 +130,7 @@ const RulesVsDecisionsOutcomesGraph = ({
   const language = useFormatLanguage();
 
   return data.length ? (
-    <div className="flex flex-col gap-v2-md h-full">
+    <div className="flex flex-col gap-md h-full">
       <div className="flex-1 w-full">
         <ResponsiveBar
           data={data ?? []}
@@ -186,9 +186,9 @@ const RulesVsDecisionsOutcomesGraph = ({
             tickValues: [0, 25, 50, 75, 100],
           }}
           tooltip={({ id, value, data }) => (
-            <div className="flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
+            <div className="flex flex-col gap-xs bg-surface-card px-md py-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap">
               <span className="text-s text-grey-primary font-semibold">{data.rule}</span>
-              <div className="flex items-center justify-between gap-v2-md">
+              <div className="flex items-center justify-between gap-md">
                 <span className="text-s text-grey-secondary">{String(id)}</span>
                 <span className="text-s text-grey-primary font-semibold">{Number(value).toFixed(1)}%</span>
               </div>
@@ -210,7 +210,7 @@ const RulesVsDecisionsOutcomesGraph = ({
     </div>
   ) : (
     <div className="flex items-center justify-center h-full">
-      <span className="text-v2-md text-grey-disabled">{t('analytics:no_data')}</span>
+      <span className="text-md text-grey-disabled">{t('analytics:no_data')}</span>
     </div>
   );
 };

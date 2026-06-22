@@ -24,9 +24,9 @@ export default Story;
 export const Default: StoryFn<TypoProps> = (args) => <Typo {...args} />;
 
 export const AllVariants: StoryFn<TypoProps> = ({ children }) => (
-  <div className="flex flex-col gap-4">
+  <div className="flex flex-col gap-md">
     {variants.map((variant) => (
-      <div key={variant} className="flex flex-col gap-1">
+      <div key={variant} className="flex flex-col gap-xs">
         <Typo variant="text" className="text-grey-secondary">
           {variant}
         </Typo>

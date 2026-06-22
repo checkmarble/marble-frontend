@@ -69,7 +69,7 @@ export const FreeformSearchForm: FunctionComponent<FreeformSearchFormProps> = ({
       </div>
     ))
     .with({ isError: true }, () => (
-      <div className="flex flex-col gap-v2-md items-center justify-center h-50">
+      <div className="flex flex-col gap-md items-center justify-center h-50">
         <div className="">{t('common:generic_fetch_data_error')}</div>
       </div>
     ))
@@ -151,11 +151,11 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
   return (
     <ManualSearchFormContext.Provider value={form}>
       <EntitySearchFormProvider form={form}>
-        <div className="flex flex-col gap-4">
-          <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
+        <div className="flex flex-col gap-md">
+          <div className="bg-surface-card border-grey-border rounded-lg border p-md space-y-md">
             <form onSubmit={handleSubmit}>
               {/* Search by name input with button */}
-              <div className="flex gap-2">
+              <div className="flex gap-sm">
                 <form.Field
                   name="fields.name"
                   validators={{
@@ -166,7 +166,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
                   }}
                 >
                   {(formField) => (
-                    <div className="flex flex-1 flex-col gap-1">
+                    <div className="flex flex-1 flex-col gap-xs">
                       <Input
                         name={formField.name}
                         value={(formField.state.value as string) ?? ''}
@@ -186,7 +186,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
             <EntityTypePopover disabled={searchMutation.isPending} />
           </div>
           <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
-            <div className="bg-surface-card border-grey-border rounded-lg border p-4 space-y-v2-md">
+            <div className="bg-surface-card border-grey-border rounded-lg border p-md space-y-md">
               <ScreeningThreshold
                 threshold={threshold}
                 onChange={(value) => {
@@ -210,9 +210,9 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
               />
             </div>
           </ListAndTopicDatasetConfiguration.Provider>
-          <div className="flex gap-2 justify-end">
+          <div className="flex gap-sm justify-end">
             {hasActiveFilters && (
-              <div className="flex gap-2">
+              <div className="flex gap-sm">
                 <Button variant="secondary" appearance="stroked" size="medium" onClick={handleClearFilters}>
                   {t('screenings:freeform_search.clear_filters')}
                 </Button>
@@ -227,7 +227,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
                     type="submit"
                     disabled={!canSubmit || isSubmitting}
                     onClick={handleSubmit}
-                    className="flex items-center gap-v2-xs"
+                    className="flex items-center gap-xs"
                   >
                     <span>{t('screenings:freeform_search.submit')}</span>
                     {isSubmitting && <Icon icon="spinner" className="size-5 animate-spin" />}

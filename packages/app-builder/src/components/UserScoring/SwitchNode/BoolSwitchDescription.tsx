@@ -10,7 +10,7 @@ interface BoolSwitchDescriptionProps {
 export function BoolSwitchDescription({ conditions, maxRiskLevel }: BoolSwitchDescriptionProps) {
   const { t } = useTranslation(['user-scoring']);
   return (
-    <ul className="flex flex-col gap-v2-sm">
+    <ul className="flex flex-col gap-sm">
       <SwitchCaseRow impact={conditions.ifTrue} maxRiskLevel={maxRiskLevel}>
         {t('user-scoring:switch.description.if_true')}
       </SwitchCaseRow>

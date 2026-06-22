@@ -29,7 +29,7 @@ function SelectFruitWithCombobox() {
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
 
-      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" fitViewport>
+      <SelectWithCombobox.Popover className="flex flex-col gap-sm p-sm" fitViewport>
         <SelectWithCombobox.Combobox render={<Input className="shrink-0" placeholder="Search..." />} />
 
         <SelectWithCombobox.ComboboxList>

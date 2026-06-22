@@ -29,8 +29,8 @@ export const ScreeningRequestDetail = ({ configStableId, request }: ScreeningReq
   );
 
   return (
-    <div className="flex flex-col gap-v2-lg p-v2-md bg-surface-card rounded-v2-lg border border-grey-border">
-      <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-lg p-md bg-surface-card rounded-lg border border-grey-border">
+      <div className="flex flex-col gap-sm">
         <div className="font-medium">{t('continuousScreening:review.request_detail_subtitle')}</div>
         <DataListGrid>
           <div className="text-grey-placeholder truncate leading-6">
@@ -47,7 +47,7 @@ export const ScreeningRequestDetail = ({ configStableId, request }: ScreeningReq
           ))}
         </DataListGrid>
       </div>
-      <div className="flex flex-col gap-v2-sm">
+      <div className="flex flex-col gap-sm">
         <div className="font-medium">{t('continuousScreening:review.search_parameters_subtitle')}</div>
         {match(configQuery)
           .with({ isPending: true }, () => {
@@ -67,7 +67,7 @@ export const ScreeningRequestDetail = ({ configStableId, request }: ScreeningReq
                 <div className="text-grey-secondary truncate leading-6 capitalize">
                   {t('screenings:dataset', { count: query.data.datasets.length })}
                 </div>
-                <div className="truncate flex flex-row flex-wrap gap-v2-sm">
+                <div className="truncate flex flex-row flex-wrap gap-sm">
                   {displayedDatasets.map((dataset) => (
                     <SquareTag key={dataset}>{dataset}</SquareTag>
                   ))}
@@ -80,7 +80,7 @@ export const ScreeningRequestDetail = ({ configStableId, request }: ScreeningReq
                       </HoverCardTrigger>
                       <HoverCardPortal>
                         <HoverCardContent side="left" sideOffset={4}>
-                          <div className="bg-surface-card p-v2-md flex flex-wrap gap-v2-sm max-w-200 border border-grey-border rounded-v2-sm">
+                          <div className="bg-surface-card p-md flex flex-wrap gap-sm max-w-200 border border-grey-border rounded-sm">
                             {query.data.datasets.slice(3).map((dataset) => (
                               <SquareTag key={dataset}>{dataset}</SquareTag>
                             ))}

@@ -160,7 +160,7 @@ const TreeWithParent = ({
           hideAction
           item={tree}
           metadata={metadata}
-          className="col-span-2 bg-purple-background-light my-v2-sm dark:bg-purple-primary/10"
+          className="col-span-2 bg-purple-background-light my-sm dark:bg-purple-primary/10"
         />
       </div>
       {tree.children.map((child, idx) => {
@@ -171,7 +171,7 @@ const TreeWithParent = ({
             <TreeItem
               item={child}
               metadata={allMetadata.find((m) => m.name === child.objectType) ?? null}
-              className="my-v2-sm"
+              className="my-sm"
               handleExplore={() => handleExplore(tree, child)}
             />
           </div>
@@ -184,7 +184,7 @@ const TreeWithParent = ({
             <TreeItem
               item={child}
               metadata={allMetadata.find((m) => m.name === child.objectType) ?? null}
-              className="my-v2-sm col-span-2"
+              className="my-sm col-span-2"
               handleExplore={() => handleExplore(parent, child)}
             />
           </div>
@@ -210,7 +210,7 @@ const TreeWithoutParent = ({ tree, metadata, allMetadata, handleExplore }: TreeP
             <TreeItem
               item={child}
               metadata={allMetadata.find((m) => m.name === child.objectType) ?? null}
-              className="my-v2-sm"
+              className="my-sm"
               handleExplore={() => handleExplore(tree, child)}
             />
           </div>
@@ -247,7 +247,7 @@ const TreeItem = ({
     <>
       <div
         className={cn(
-          'border border-purple-border-light rounded-md p-v2-sm h-10 flex items-center justify-between gap-v2-md',
+          'border border-purple-border-light rounded-md p-sm h-10 flex items-center justify-between gap-md',
           'dark:border-purple-border',
           isClickable &&
             'cursor-pointer hover:bg-purple-background-light dark:hover:bg-purple-primary/10 transition-colors',
@@ -295,7 +295,7 @@ const TreeItem = ({
             <Modal.Title>{item.objectType}</Modal.Title>
             <div className="overflow-y-auto max-h-[calc(100vh-140px)]">
               <DataFields
-                className="p-4"
+                className="p-md"
                 table={item.objectType}
                 object={{ data: item.data }}
                 options={{ hideLinks: true }}
@@ -335,7 +335,7 @@ const TreeItemData = ({
   }
 
   return (
-    <div className="flex items-center gap-v2-sm truncate">
+    <div className="flex items-center gap-sm truncate">
       <div className="truncate">
         {splicedItems.map((itemObject, idx) => (
           <Fragment key={itemObject['object_id'] as string}>
@@ -361,7 +361,7 @@ const TreeItemData = ({
             </button>
           </Popover.Trigger>
           <Popover.Content side="top" align="end">
-            <div className="flex flex-col gap-v2-sm min-w-[300px] max-h-[400px] p-v2-md">
+            <div className="flex flex-col gap-sm min-w-[300px] max-h-[400px] p-md">
               {item.data.map((itemObject) => {
                 return (
                   <Link
@@ -397,7 +397,7 @@ const TreeItemLabel = ({
   const entityName = metadata?.alias || metadata?.name;
 
   return metadata && !Array.isArray(item.data) ? (
-    <div className="flex items-center gap-10 shrink-0">
+    <div className="flex items-center gap-2xl shrink-0">
       <span>{entityName}</span>
       <span>{item.data[metadata.caption_field] as string}</span>
     </div>

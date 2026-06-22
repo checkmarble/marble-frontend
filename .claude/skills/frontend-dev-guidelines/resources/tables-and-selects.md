@@ -147,7 +147,7 @@ export function UserSelect({ users, selectedUserId, onSelect }: UserSelectProps)
           Select assignee
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
-      <MenuCommand.Content sameWidth className="mt-2">
+      <MenuCommand.Content sameWidth className="mt-sm">
         <MenuCommand.Combobox placeholder="Search..." />
         <MenuCommand.List>
           {users.map(({ userId, firstName, lastName }) => (

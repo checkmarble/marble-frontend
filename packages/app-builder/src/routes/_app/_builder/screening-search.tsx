@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_app/_builder/screening-search')({
 
         return (
           <BreadCrumbLink to="/screening-search" isLast={isLast}>
-            <Icon icon="search" className="me-2 size-6" />
+            <Icon icon="search" className="me-sm size-6" />
             <span>{t('navigation:screening_search')}</span>
           </BreadCrumbLink>
         );

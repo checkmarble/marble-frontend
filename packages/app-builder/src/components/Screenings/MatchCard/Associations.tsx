@@ -49,7 +49,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
   if (rows.length === 0) return null;
 
   return (
-    <ul className="grid grid-cols-[146px_1fr] gap-2">
+    <ul className="grid grid-cols-[146px_1fr] gap-sm">
       {visibleRows.map((row, rowIndex) => {
         const { key, association, id, properties } = row;
         const isFirstElement = rowIndex === 0;
@@ -97,20 +97,20 @@ export const Associations = ({ associations }: { associations: AssociationEntity
         return (
           <li key={key} className="contents">
             <div className="font-semibold">
-              {isFirstElement && <div className="font-bold mb-2">{t('screenings:match.associations.title')}</div>}
+              {isFirstElement && <div className="font-bold mb-sm">{t('screenings:match.associations.title')}</div>}
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-v2-sm">
-                <ExpandableGroupTagLine items={expandableItems} classname="gap-v2-sm" overflowTagWidth={60} />
+              <div className="flex items-center gap-sm">
+                <ExpandableGroupTagLine items={expandableItems} classname="gap-sm" overflowTagWidth={60} />
                 <ModalPerson personId={id} personName={getPersonName(row)} />
               </div>
 
               {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (
-                <span className="col-span-full flex w-full flex-col gap-1">
+                <span className="col-span-full flex w-full flex-col gap-xs">
                   <div className="font-semibold">{t('screenings:match.family.source.label')}</div>
-                  <ul className="list-inside pl-2">
+                  <ul className="list-inside ps-sm">
                     {association.properties.sourceUrl.map((url, urlIdx) => (
-                      <li key={`source-${id}-${urlIdx}`} className="flex items-center gap-v2-xs">
+                      <li key={`source-${id}-${urlIdx}`} className="flex items-center gap-xs">
                         <Icon icon="external-link" className="size-4 shrink-0" />
                         <a
                           href={url}

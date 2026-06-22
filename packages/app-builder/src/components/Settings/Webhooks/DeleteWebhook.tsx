@@ -34,8 +34,8 @@ function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onS
   return (
     <>
       <Modal.Title>{t('settings:webhooks.delete_webhook.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="text-s flex flex-1 flex-col gap-4">
+      <div className="flex flex-col gap-lg p-lg">
+        <div className="text-s flex flex-1 flex-col gap-md">
           <input name="webhookId" value={webhookId} type="hidden" />
           <p className="text-center">{t('settings:webhooks.delete_webhook.content')}</p>
         </div>

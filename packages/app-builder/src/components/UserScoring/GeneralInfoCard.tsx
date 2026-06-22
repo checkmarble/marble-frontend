@@ -60,12 +60,12 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
   };
 
   return (
-    <div className="bg-surface-card border border-grey-border rounded-v2-md p-v2-md flex flex-col gap-v2-md">
-      <div className="flex items-center justify-between gap-v2-sm">
+    <div className="bg-surface-card border border-grey-border rounded-md p-md flex flex-col gap-md">
+      <div className="flex items-center justify-between gap-sm">
         <div>
           <span className="text-h3 font-semibold text-grey-primary">{t('user-scoring:ruleset.title')}</span>
         </div>
-        <div className="flex items-center gap-v2-sm">
+        <div className="flex items-center gap-sm">
           <SelectV2
             options={versionOptions}
             placeholder={t('user-scoring:ruleset.version_placeholder')}
@@ -109,7 +109,7 @@ export function GeneralInfoCard({ ruleset, settings, preparationStatus }: Genera
         </div>
       </div>
 
-      <div className="flex items-center gap-v2-md text-s text-grey-secondary">
+      <div className="flex items-center gap-md text-s text-grey-secondary">
         <span>
           {t('user-scoring:ruleset.last_update')}{' '}
           <span className="text-grey-primary">
@@ -219,17 +219,17 @@ function EditGeneralSettingsPanel({
   });
 
   return (
-    <PanelContainer size="lg" className="flex-col gap-v2-md">
+    <PanelContainer size="lg" className="flex-col gap-md">
       <form className="contents" onSubmit={handleSubmit(form)}>
-        <div className="flex items-center gap-v2-md">
+        <div className="flex items-center gap-md">
           <button type="button" onClick={() => panelSharp.actions.close()}>
             <Icon icon="x" className="size-6" />
           </button>
           <Typo variant="title2">{t('user-scoring:ruleset.edit_settings_title')}</Typo>
         </div>
-        <div className="flex flex-col gap-v2-sm">
+        <div className="flex flex-col gap-sm">
           {t('user-scoring:section.create_panel.general_settings')}
-          <div className="border border-grey-border rounded-v2-md p-v2-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-v2-sm gap-y-v2-md">
+          <div className="border border-grey-border rounded-md p-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-sm gap-y-md">
             <div className="grid grid-cols-subgrid col-span-full items-center">
               <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
               <form.Field name="cooldownSeconds">
@@ -259,7 +259,7 @@ function EditGeneralSettingsPanel({
             />
           )}
         </form.Field>
-        <div className="flex gap-v2-sm justify-end mt-auto">
+        <div className="flex gap-sm justify-end mt-auto">
           <Button appearance="stroked" onClick={() => panelSharp.actions.close()}>
             {t('user-scoring:section.create_panel.cancel')}
           </Button>
@@ -286,14 +286,14 @@ function RiskLevelBadges({ maxRiskLevel, thresholds }: { maxRiskLevel: number; t
   const labelKeys = SCORING_LEVELS_LABEL_KEYS[maxRiskLevel];
 
   return (
-    <div className="flex flex-col gap-v2-sm">
+    <div className="flex flex-col gap-sm">
       <span className="text-s text-grey-secondary">{t('user-scoring:ruleset.risk_level')}</span>
-      <div className="flex items-center gap-v2-sm">
+      <div className="flex items-center gap-sm">
         {colorEntries.map(([level, color], i) => {
           const isLast = i === colorEntries.length - 1;
           return (
             <Fragment key={level}>
-              <div className="flex items-center gap-v2-xs h-6 px-2 rounded-full border" style={{ borderColor: color }}>
+              <div className="flex items-center gap-xs h-6 px-xs rounded-full border" style={{ borderColor: color }}>
                 <div className="size-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
                 <span className="text-xs text-grey-primary">{t(labelKeys[level] ?? '')}</span>
               </div>

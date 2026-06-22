@@ -70,9 +70,9 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
       : undefined;
 
   return (
-    <div className="flex flex-col gap-v2-xs">
+    <div className="flex flex-col gap-xs">
       <div className="relative h-6">
-        <div className="relative flex w-full overflow-hidden rounded-lg gap-px mt-2">
+        <div className="relative flex w-full overflow-hidden rounded-lg gap-px mt-sm">
           {colorEntries.map(([level, color], i) => (
             <div
               key={level}
@@ -98,10 +98,7 @@ function ScoreScale({ maxRiskLevel, currentLevel, thresholds }: ScoreScaleProps)
         ) : null}
       </div>
       {proportional ? (
-        <div
-          className="relative mt-v2-xs"
-          style={{ height: proportional.allLabels.some((l) => l.staggered) ? 32 : 16 }}
-        >
+        <div className="relative mt-xs" style={{ height: proportional.allLabels.some((l) => l.staggered) ? 32 : 16 }}>
           {proportional.allLabels.map((label) => (
             <div
               key={label.value}
@@ -143,7 +140,7 @@ export function ScoreDetailPanel({
     <PanelRoot open={open} onOpenChange={onOpenChange}>
       <PanelContainer size="lg" className="flex flex-col">
         <PanelHeader>{t('client360:client_detail.score_panel.title')}</PanelHeader>
-        <div className="flex flex-wrap gap-v2-xs pb-v2-md">
+        <div className="flex flex-wrap gap-xs pb-md">
           <Tag color="grey">{objectType}</Tag>
           <Tag color="grey">
             {t('client360:client_detail.score_panel.last_computed', {
@@ -151,10 +148,10 @@ export function ScoreDetailPanel({
             })}
           </Tag>
         </div>
-        <PanelContent className="flex flex-col gap-v2-lg">
+        <PanelContent className="flex flex-col gap-lg">
           {/* Risk level card */}
           <div
-            className="flex items-center gap-v2-sm rounded-lg border p-v2-md"
+            className="flex items-center gap-sm rounded-lg border p-md"
             style={{ borderColor: scoreColor, backgroundColor: `${scoreColor}20` }}
           >
             <div className="size-4 shrink-0 rounded-full" style={{ backgroundColor: scoreColor }} />
@@ -165,7 +162,7 @@ export function ScoreDetailPanel({
           </div>
 
           {/* Score scale */}
-          <div className="flex flex-col gap-v2-sm border border-grey-border rounded-v2-md p-v2-md">
+          <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md">
             <span className="text-s font-medium text-grey-primary">
               {t('client360:client_detail.score_panel.score_scale')}
             </span>

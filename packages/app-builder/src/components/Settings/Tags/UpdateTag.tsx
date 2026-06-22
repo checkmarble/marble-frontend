@@ -72,8 +72,8 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
       }}
     >
       <Modal.Title>{t('settings:tags.update_tag')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="flex gap-2">
+      <div className="flex flex-col gap-lg p-lg">
+        <div className="flex gap-sm">
           <form.Field
             name="name"
             validators={{
@@ -81,7 +81,7 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
             }}
           >
             {(field) => (
-              <div className="group flex w-full flex-col gap-2">
+              <div className="group flex w-full flex-col gap-sm">
                 <FormLabel name={field.name}>{t('settings:tags.name')}</FormLabel>
                 <FormInput
                   type="text"
@@ -101,7 +101,7 @@ const UpdateTagContent = ({ tag, onSuccess }: { tag: Tag; onSuccess: () => void 
             }}
           >
             {(field) => (
-              <div className="group flex flex-col gap-2">
+              <div className="group flex flex-col gap-sm">
                 <FormLabel name={field.name}>{t('settings:tags.color')}</FormLabel>
                 <ColorSelect onChange={field.handleChange} value={field.state.value} />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

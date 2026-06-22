@@ -95,11 +95,11 @@ export function DecisionsList({
         size: 200,
         minSize: 120,
         cell: ({ getValue, row }) => (
-          <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-sm">
             <Tooltip.Default content={getValue()}>
               <span className="text-grey-primary text-s line-clamp-2 font-normal">{getValue()}</span>
             </Tooltip.Default>
-            <div className="border-grey-border text-grey-primary rounded-full border px-3 py-1 font-semibold">
+            <div className="border-grey-border text-grey-primary rounded-full border px-md py-2xs font-semibold">
               {`V${row.original.scenario.version}`}
             </div>
           </div>
@@ -121,10 +121,10 @@ export function DecisionsList({
         minSize: 150,
         cell: ({ getValue, row }) =>
           row.original.case ? (
-            <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
+            <div className="flex w-fit flex-row items-center justify-center gap-sm align-baseline">
               <CaseStatusBadgeV2 status={row.original.case.status} variant="icon-only" />
               <Tooltip.Default content={getValue()}>
-                <div className="bg-grey-background-light flex h-8 items-center justify-center rounded-sm px-2">
+                <div className="bg-grey-background-light flex h-8 items-center justify-center rounded-sm px-xs">
                   <span className="text-grey-primary text-s line-clamp-1 font-normal">{getValue()}</span>
                 </div>
               </Tooltip.Default>
@@ -143,7 +143,7 @@ export function DecisionsList({
           const pivotValues = getValue() ?? [];
           if (pivotValues.length === 0) return null;
           return (
-            <div className="relative flex flex-col gap-1">
+            <div className="relative flex flex-col gap-xs">
               {pivotValues.map((pivotValue) => (
                 <Tooltip.Default key={pivotValue.id} content={pivotValue.value}>
                   <span className="text-grey-primary text-s line-clamp-1 text-ellipsis">{pivotValue.value}</span>

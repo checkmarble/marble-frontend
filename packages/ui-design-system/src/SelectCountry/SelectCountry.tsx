@@ -60,7 +60,7 @@ function FreeTextItem({ onSelect }: { onSelect: (name: string) => void }) {
   return (
     <button
       type="button"
-      className="text-s text-grey-primary hover:bg-purple-background-light flex h-10 w-full cursor-pointer items-center gap-2 rounded-xs px-2 font-medium"
+      className="text-s text-grey-primary hover:bg-purple-background-light flex h-10 w-full cursor-pointer items-center gap-sm rounded-xs px-xs font-medium"
       onClick={() => {
         onSelect(search);
         internalSharp.value.onSelect();
@@ -119,14 +119,14 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
   const displayTrigger = () => {
     if (value?.isManual) {
       return (
-        <span className="text-s text-grey-primary flex min-w-0 items-center gap-2 font-medium">
+        <span className="text-s text-grey-primary flex min-w-0 items-center gap-sm font-medium">
           <span className="truncate">{value.name}</span>
         </span>
       );
     }
     if (selectedFromList) {
       return (
-        <span className="text-s text-grey-primary flex min-w-0 items-center gap-2 font-medium">
+        <span className="text-s text-grey-primary flex min-w-0 items-center gap-sm font-medium">
           <span aria-hidden className="shrink-0">
             {selectedFromList.flag}
           </span>
@@ -160,7 +160,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
   };
 
   return (
-    <div className={cn('relative flex flex-col gap-2', rootClassName)}>
+    <div className={cn('relative flex flex-col gap-sm', rootClassName)}>
       <MenuCommand.Menu open={open} onOpenChange={handleOpenChange} defaultOpen={defaultOpen} {...restMenuRootProps}>
         <MenuCommand.Trigger>
           <MenuCommand.SelectButton
@@ -177,7 +177,7 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
                 backgroundColor: disabled ? 'disabled' : 'enabled',
               }),
               'min-w-0 w-full',
-              hasValue && !disabled && 'pr-14',
+              hasValue && !disabled && 'pe-3xl',
               className,
             )}
           >
@@ -234,8 +234,8 @@ export const SelectCountry = forwardRef<HTMLButtonElement, SelectCountryProps>(f
 export function CountryFlagItem({ country, selected }: { country: CountryFlag; selected: boolean }) {
   const { locale } = useI18n();
   return (
-    <span className="text-s text-grey-primary flex w-full min-w-0 items-center justify-between gap-2 font-medium">
-      <span className="flex min-w-0 items-center gap-2">
+    <span className="text-s text-grey-primary flex w-full min-w-0 items-center justify-between gap-sm font-medium">
+      <span className="flex min-w-0 items-center gap-sm">
         <span aria-hidden className="shrink-0">
           {country.flag}
         </span>

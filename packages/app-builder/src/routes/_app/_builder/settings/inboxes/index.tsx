@@ -138,39 +138,37 @@ function CaseManagerSettings() {
   });
 
   return (
-    <Page.Container>
-      <Page.Content className="max-w-(--breakpoint-xl)">
-        <CollapsiblePaper.Container>
-          <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:inboxes')}</span>
-            <UpdateOrganizationSettings
-              isAutoAssignmentAvailable={isAutoAssignmentAvailable}
-              organizationId={organizationId}
-              autoAssignQueueLimit={autoAssignQueueLimit}
-            />
-            {isCreateInboxAvailable ? <CreateInbox redirectRoutePath="/settings/inboxes/$inboxId" /> : null}
-          </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <Table.Container {...inboxTable.getContainerProps()} className="max-h-96">
-              <Table.Header headerGroups={inboxTable.table.getHeaderGroups()} />
-              <Table.Body {...inboxTable.getBodyProps()}>
-                {inboxTable.rows.map((row) => {
-                  return <Table.Row key={row.id} row={row} />;
-                })}
-              </Table.Body>
-            </Table.Container>
-          </CollapsiblePaper.Content>
-        </CollapsiblePaper.Container>
-        {canReadTags ? (
-          <TagsSection
-            tags={tags}
-            isCreateTagAvailable={isCreateTagAvailable}
-            isEditTagAvailable={isEditTagAvailable}
-            isDeleteTagAvailable={isDeleteTagAvailable}
+    <Page.Content width="readable">
+      <CollapsiblePaper.Container>
+        <CollapsiblePaper.Title>
+          <span className="flex-1">{t('settings:inboxes')}</span>
+          <UpdateOrganizationSettings
+            isAutoAssignmentAvailable={isAutoAssignmentAvailable}
+            organizationId={organizationId}
+            autoAssignQueueLimit={autoAssignQueueLimit}
           />
-        ) : null}
-      </Page.Content>
-    </Page.Container>
+          {isCreateInboxAvailable ? <CreateInbox redirectRoutePath="/settings/inboxes/$inboxId" /> : null}
+        </CollapsiblePaper.Title>
+        <CollapsiblePaper.Content>
+          <Table.Container {...inboxTable.getContainerProps()} className="max-h-96">
+            <Table.Header headerGroups={inboxTable.table.getHeaderGroups()} />
+            <Table.Body {...inboxTable.getBodyProps()}>
+              {inboxTable.rows.map((row) => {
+                return <Table.Row key={row.id} row={row} />;
+              })}
+            </Table.Body>
+          </Table.Container>
+        </CollapsiblePaper.Content>
+      </CollapsiblePaper.Container>
+      {canReadTags ? (
+        <TagsSection
+          tags={tags}
+          isCreateTagAvailable={isCreateTagAvailable}
+          isEditTagAvailable={isEditTagAvailable}
+          isDeleteTagAvailable={isDeleteTagAvailable}
+        />
+      ) : null}
+    </Page.Content>
   );
 }
 
@@ -220,7 +218,7 @@ function TagsSection({
               size: 100,
               cell: ({ cell }) => {
                 return (
-                  <div className="flex gap-2">
+                  <div className="flex gap-sm">
                     {isEditTagAvailable ? (
                       <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
                         <UpdateTag tag={cell.row.original} />

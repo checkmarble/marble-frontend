@@ -40,16 +40,16 @@ export function PanelSearchDetails({
   }
 
   return (
-    <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-4 pl-4">
+    <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-md ps-md">
       <span className="text-m font-medium">{t('screenings:panel.search_details')}</span>
 
       {request ? (
-        <div className="bg-grey-background-light border border-grey-border flex flex-col rounded-lg p-4">
-          <div className="flex flex-col gap-2">
+        <div className="bg-grey-background-light border border-grey-border flex flex-col rounded-lg p-md">
+          <div className="flex flex-col gap-sm">
             <span className="text-s font-medium">{t('screenings:panel.search_label')}</span>
 
             {/* Query properties */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               {queries.map((query, idx) => (
                 <QueryProperties key={idx} query={query} />
               ))}
@@ -57,10 +57,10 @@ export function PanelSearchDetails({
           </div>
 
           {/* Separator */}
-          <div className="border-t border-grey-border my-2" />
+          <div className="border-t border-grey-border my-sm" />
 
           {/* Config: threshold */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <SearchDetailRow label={t('screenings:match_threshold')}>
               <span>{`> ${request.threshold}%`}</span>
             </SearchDetailRow>
@@ -85,7 +85,7 @@ export function PanelSearchDetails({
 
 function SearchDetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex gap-3 items-start text-s">
+    <div className="flex gap-md items-start text-s">
       <span className="w-[133px] shrink-0 opacity-50">{label}</span>
       <div className="flex-1 min-w-0">{children}</div>
     </div>

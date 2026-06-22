@@ -95,16 +95,16 @@ export function InlineRefineSearch({
   });
 
   return (
-    <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-4 border-l border-grey-border pl-4">
+    <div className="sticky top-0 flex h-fit w-[360px] shrink-0 flex-col gap-md border-l border-grey-border ps-md">
       <span className="text-m font-medium">{t('screenings:panel.search_details')}</span>
 
-      <div className="flex flex-col gap-4 rounded-lg border border-purple-primary bg-purple-background-light p-4">
+      <div className="flex flex-col gap-md rounded-lg border border-purple-primary bg-purple-background-light p-md">
         <span className="text-s font-medium">{t('screenings:refine_inline.edit_search_label')}</span>
 
         <form onSubmit={handleSubmit(form)} className="contents">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-md">
             {/* Main fields section */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-sm">
               {searchName ? (
                 <div className="overflow-clip text-purple-primary">
                   <span className="truncate text-s font-medium">{searchName}</span>
@@ -117,7 +117,7 @@ export function InlineRefineSearch({
           </div>
 
           {/* Footer buttons */}
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-sm">
             <Button variant="secondary" appearance="stroked" size="small" onClick={onBack}>
               {t('screenings:refine_inline.back')}
             </Button>

@@ -41,13 +41,13 @@ export function InboxSelector({
       return <CreateInbox />;
     }
     if (inboxes.length === 0) {
-      return <p className="p-2">{t('workflows:detail_panel.inbox.need_inbox_contact_admin')}</p>;
+      return <p className="p-sm">{t('workflows:detail_panel.inbox.need_inbox_contact_admin')}</p>;
     }
     return null;
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-sm">
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <MenuCommand.SelectButton>
@@ -91,7 +91,7 @@ export function InboxSelector({
               </MenuCommand.Item>
             )}
           </MenuCommand.List>
-          <div className="p-2">{getCreateInbox()}</div>
+          <div className="p-sm">{getCreateInbox()}</div>
         </MenuCommand.Content>
       </MenuCommand.Menu>
     </div>

@@ -1,3 +1,4 @@
+import { Page } from '@app-builder/components';
 import { useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { forwardRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -51,14 +52,8 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
     }, [casesQuery.data?.pages]);
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          'flex items-center justify-between sticky bottom-0 bg-surface-page -mx-v2-lg -mb-v2-lg pt-v2-md px-v2-lg pb-v2-lg border-t border-transparent',
-          className,
-        )}
-      >
-        <div className="flex items-center gap-v2-xs">
+      <Page.StickyFooter ref={ref} surface="page" className={className}>
+        <div className="flex items-center gap-xs">
           <span>{t('cases:list.results_per_page')}</span>
           {[25, 50, 100].map((limit) => {
             const isActive = limit === currentLimit;
@@ -81,7 +76,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
             );
           })}
         </div>
-        <div className="flex items-center gap-v2-xs">
+        <div className="flex items-center gap-xs">
           {casesQuery.isFetchingNextPage ? (
             <span>Loading...</span>
           ) : pagesRanges[currentPage] ? (
@@ -120,7 +115,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
             <Icon icon="arrow-right" className="size-5" />
           </Button>
         </div>
-      </div>
+      </Page.StickyFooter>
     );
   },
 );

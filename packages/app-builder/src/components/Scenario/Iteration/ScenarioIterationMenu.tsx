@@ -67,7 +67,7 @@ export function ScenarioIterationMenu({
   return (
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       {children}
-      <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col min-w-48 rounded-xl py-2">
+      <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col min-w-48 rounded-xl py-xs">
         <ScenarioIterationContent
           searchValue={deferredSearchValue}
           labelledScenarioIteration={scenarioIterations}
@@ -99,20 +99,20 @@ function ScenarioIterationContent({ labelledScenarioIteration, searchValue, scen
   return (
     <>
       <MenuContent>
-        <MenuGroup className="flex flex-col gap-2 overflow-y-auto p-2">
+        <MenuGroup className="flex flex-col gap-sm overflow-y-auto p-sm">
           {!matches.length ? (
             <div className="text-grey-disabled w-full text-center">{t('common:help_center.no_results')}</div>
           ) : (
-            <MenuGroupLabel className="px-4">{t('scenarios:home.versions_label')}</MenuGroupLabel>
+            <MenuGroupLabel className="px-sm">{t('scenarios:home.versions_label')}</MenuGroupLabel>
           )}
 
           {matches.map((iteration) => (
             <MenuItem
               key={iteration.id}
-              className=" bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-2 flex-row items-center justify-between gap-2 py-2 px-4 outline-hidden"
+              className=" bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-primary flex scroll-my-sm flex-row items-center justify-between gap-sm py-xs px-sm outline-hidden"
               render={<Link to={iteration.linkTo} />}
             >
-              <span className="text-s flex flex-row gap-1">
+              <span className="text-s flex flex-row gap-xs">
                 <Highlight
                   className={cn('capitalize', { 'text-purple-primary': iteration.id === scenario.id })}
                   query={searchValue}
@@ -126,7 +126,7 @@ function ScenarioIterationContent({ labelledScenarioIteration, searchValue, scen
                 ) : null}
               </span>
               {iteration.id === scenario.id ? (
-                <span className="text-purple-primary ml-auto">
+                <span className="text-purple-primary ms-auto">
                   <Icon icon="tick" className="size-4" />
                 </span>
               ) : null}

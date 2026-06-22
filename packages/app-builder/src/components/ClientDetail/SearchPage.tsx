@@ -27,8 +27,8 @@ export const ClientDetailSearchPage = ({
 
   return (
     <Page.Main>
-      <Page.ContentV2>
-        <div className="flex justify-between mb-v2-md">
+      <Page.Content>
+        <div className="flex justify-between mb-md">
           <div className="text-h1 font-semibold">{t('client360:client_detail.search_page.breadcrumb')}</div>
           <AddConfigurationModal
             disabled={!dataModelQuery.isSuccess}
@@ -39,18 +39,18 @@ export const ClientDetailSearchPage = ({
 
         {/* TODO: Must change to Callout when new component is done */}
         {tables.length === 0 ? (
-          <Card className="flex items-center gap-v2-sm">
+          <Card className="flex items-center gap-sm">
             <Icon icon="tip" className="size-5" />
             <span>{t('client360:client_detail.search_page.no_configuration')}</span>
           </Card>
         ) : (
-          <div className="grid grid-cols-[1fr_40px_1fr] gap-v2-lg border border-grey-border rounded-lg p-v2-md bg-surface-card">
+          <div className="grid grid-cols-[1fr_40px_1fr] gap-lg border border-grey-border rounded-lg p-md bg-surface-card">
             {tables.map((table, idx) => {
               return (
                 <Fragment key={table.id}>
                   <SearchForm table={table} />
                   {idx < tables.length - 1 && idx % 2 === 0 ? (
-                    <div className="text-center self-center pt-6">{t('common:or')}</div>
+                    <div className="text-center self-center pt-lg">{t('common:or')}</div>
                   ) : null}
                 </Fragment>
               );
@@ -58,7 +58,7 @@ export const ClientDetailSearchPage = ({
           </div>
         )}
         {currentSearchPayload ? <SearchResults payload={currentSearchPayload} tables={tables} /> : null}
-      </Page.ContentV2>
+      </Page.Content>
     </Page.Main>
   );
 };

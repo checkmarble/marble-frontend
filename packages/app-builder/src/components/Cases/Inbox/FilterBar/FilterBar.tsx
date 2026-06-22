@@ -33,7 +33,7 @@ export const InboxFilterBar = ({
   const selectedInbox = allInboxes.find((inbox) => inbox.id === inboxId) ?? allInboxes[0]!;
 
   return (
-    <div className="flex items-center gap-v2-sm">
+    <div className="flex items-center gap-sm">
       <FilterInboxSelector
         inboxes={allInboxes}
         selectedInbox={selectedInbox}

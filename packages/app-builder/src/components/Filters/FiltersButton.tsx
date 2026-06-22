@@ -14,7 +14,7 @@ export const FiltersButton = forwardRef<HTMLButtonElement, FiltersButtonProps>(f
 ) {
   const { t } = useTranslation(filtersI18n);
   return (
-    <Button className={clsx('flex flex-row gap-2', className)} variant="secondary" ref={ref} {...props}>
+    <Button className={clsx('flex flex-row gap-sm', className)} variant="secondary" ref={ref} {...props}>
       <Icon icon="filters" className="size-5" />
       <span className="text-s font-semibold first-letter:capitalize">{t('filters:filters')}</span>
     </Button>

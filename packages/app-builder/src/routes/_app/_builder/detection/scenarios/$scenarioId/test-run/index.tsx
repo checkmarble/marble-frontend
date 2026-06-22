@@ -99,54 +99,44 @@ function TestRuns() {
 
   return (
     <Page.Main>
-      <Page.Header className="gap-4">
+      <Page.Header className="gap-md">
         <BreadCrumbs />
       </Page.Header>
 
-      <Page.Container>
-        <Page.Content className="max-w-(--breakpoint-lg)">
-          <div className="flex flex-col gap-4">
-            <TestRunsFiltersProvider submitTestRunsFilters={setFilters} filterValues={filters}>
-              <div className="flex flex-row items-center justify-between">
-                <span className="text-grey-primary text-l font-semibold">{t('scenarios:testrun.home')}</span>
-                <div className="flex flex-row gap-4">
-                  <TestRunsFiltersMenu filterNames={testRunsFilterNames} scenarioIterations={scenarioIterations}>
-                    <FiltersButton />
-                  </TestRunsFiltersMenu>
-                  <CreateTestRun
-                    currentScenario={currentScenario}
-                    scenarioIterations={scenarioIterations}
-                    atLeastOneActiveTestRun={atLeastOneActiveTestRun}
-                  >
-                    <Button variant="primary" className="isolate h-10 w-fit">
-                      <Icon icon="plus" className="size-5" aria-hidden />
-                      {t('scenarios:create_testrun.title')}
-                    </Button>
-                  </CreateTestRun>
-                </div>
-              </div>
-              <TestRunsFiltersBar scenarioIterations={scenarioIterations} />
-              <div className="flex flex-col gap-2">
-                <div className="text-s grid grid-cols-[30%_30%_8%_auto] font-semibold">
-                  <span className="px-4">{t('scenarios:testrun.filters.version')}</span>
-                  <span className="px-4">{t('scenarios:testrun.filters.started_after')}</span>
-                  <span className="text-center">{t('scenarios:testrun.filters.creator')}</span>
-                  <span className="px-4">{t('scenarios:testrun.filters.status')}</span>
-                </div>
-                {filteredRuns.map((run) => (
-                  <TestRunSelector
-                    {...run}
-                    key={run.id}
-                    users={users}
-                    iterations={iterations}
-                    scenario={currentScenario}
-                  />
-                ))}
-              </div>
-            </TestRunsFiltersProvider>
+      <Page.Content width="form">
+        <TestRunsFiltersProvider submitTestRunsFilters={setFilters} filterValues={filters}>
+          <div className="flex flex-row items-center justify-between">
+            <span className="text-grey-primary text-l font-semibold">{t('scenarios:testrun.home')}</span>
+            <div className="flex flex-row gap-md">
+              <TestRunsFiltersMenu filterNames={testRunsFilterNames} scenarioIterations={scenarioIterations}>
+                <FiltersButton />
+              </TestRunsFiltersMenu>
+              <CreateTestRun
+                currentScenario={currentScenario}
+                scenarioIterations={scenarioIterations}
+                atLeastOneActiveTestRun={atLeastOneActiveTestRun}
+              >
+                <Button variant="primary" className="isolate h-10 w-fit">
+                  <Icon icon="plus" className="size-5" aria-hidden />
+                  {t('scenarios:create_testrun.title')}
+                </Button>
+              </CreateTestRun>
+            </div>
           </div>
-        </Page.Content>
-      </Page.Container>
+          <TestRunsFiltersBar scenarioIterations={scenarioIterations} />
+          <div className="flex flex-col gap-sm">
+            <div className="text-s grid grid-cols-[30%_30%_8%_auto] font-semibold">
+              <span className="px-sm">{t('scenarios:testrun.filters.version')}</span>
+              <span className="px-sm">{t('scenarios:testrun.filters.started_after')}</span>
+              <span className="text-center">{t('scenarios:testrun.filters.creator')}</span>
+              <span className="px-sm">{t('scenarios:testrun.filters.status')}</span>
+            </div>
+            {filteredRuns.map((run) => (
+              <TestRunSelector {...run} key={run.id} users={users} iterations={iterations} scenario={currentScenario} />
+            ))}
+          </div>
+        </TestRunsFiltersProvider>
+      </Page.Content>
     </Page.Main>
   );
 }

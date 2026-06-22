@@ -9,9 +9,9 @@ const variances = cva(
   {
     variants: {
       size: {
-        sm: 'p-0.5 gap-2',
-        lg: 'min-h-8 gap-3 px-2',
-        chip: 'py-v2-xs px-v2-sm gap-v2-xs font-semibold text-small bg-surface-card',
+        sm: 'p-2xs gap-sm',
+        lg: 'min-h-8 gap-md px-sm',
+        chip: 'py-xs px-sm gap-xs font-semibold text-small bg-surface-card',
       },
       dimmed: {
         true: 'text-grey-secondary',

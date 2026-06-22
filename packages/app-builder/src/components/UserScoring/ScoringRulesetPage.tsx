@@ -20,7 +20,7 @@ export function ScoringRulesetPage({
   hasValidLicense,
 }: ScoringRulesetPageProps) {
   return (
-    <div className="flex flex-col gap-v2-md">
+    <div className="flex flex-col gap-md">
       <GeneralInfoCard ruleset={ruleset} settings={settings} preparationStatus={preparationStatus} />
       <RulesTable
         ruleset={ruleset}

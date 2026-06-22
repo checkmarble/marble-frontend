@@ -12,7 +12,7 @@ export const nivoTheme = {
 };
 
 export const tooltipStyle =
-  'flex flex-col gap-v2-xs bg-surface-card px-v2-md py-v2-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap';
+  'flex flex-col gap-xs bg-surface-card px-md py-sm rounded-lg border border-grey-border shadow-md min-w-52 w-max whitespace-nowrap';
 
 /**
  * Locale-aware formatter for numeric values in chart tooltips and axes.

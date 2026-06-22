@@ -51,7 +51,7 @@ export function ScheduledExecutionFilter() {
   );
 
   return (
-    <div className="flex flex-col gap-2 p-2">
+    <div className="flex flex-col gap-sm p-sm">
       <SelectWithCombobox.Root
         open
         onSearchValueChange={setSearchValue}
@@ -83,9 +83,9 @@ export function ScheduledExecutionFilter() {
             );
           })}
           {showSpinner ? (
-            <div className="text-grey-primary h-10 p-2 first-letter:capitalize">{t('common:loading')}</div>
+            <div className="text-grey-primary h-10 p-sm first-letter:capitalize">{t('common:loading')}</div>
           ) : matches.length === 0 ? (
-            <p className="text-grey-secondary flex items-center justify-center p-2">
+            <p className="text-grey-secondary flex items-center justify-center p-sm">
               {successfullScheduledExecutions?.length
                 ? t('decisions:filters.scheduled_execution.no_results')
                 : t('decisions:filters.scheduled_execution.no_schedule')}

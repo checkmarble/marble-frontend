@@ -143,11 +143,11 @@ function Lists() {
       </Page.Header>
       <Page.Container>
         {customList.description ? <Page.Description headerBanner>{customList.description}</Page.Description> : null}
-        <Page.Content className="max-w-(--breakpoint-xl)">
+        <Page.Content width="table">
           {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
-          <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
-            <div className="flex flex-row gap-2 lg:gap-4">
+          <div className="flex flex-col gap-sm overflow-hidden lg:gap-md">
+            <div className="flex flex-row gap-sm lg:gap-md">
               <form className="flex grow items-center">
                 <Input
                   className="w-full"
@@ -166,7 +166,7 @@ function Lists() {
               ) : null}
             </div>
             {virtualTable.isEmpty ? (
-              <div className="bg-surface-card border-grey-border flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-surface-card border-grey-border flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-md">
                 <p className="text-s font-medium">
                   {listValues.length > 0
                     ? t('lists:empty_custom_list_matches')
@@ -202,7 +202,7 @@ const UploadAsCsvDropzone = React.forwardRef<HTMLDivElement, React.ComponentProp
       <div
         ref={ref}
         className={clsx(
-          'text-s flex h-40 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+          'text-s flex h-40 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
           className,
         )}
         {...props}
@@ -374,7 +374,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
         }}
       >
         <Modal.Content onClick={(e) => e.stopPropagation()}>
-          <div className="bg-surface-card text-s flex flex-col items-center gap-6 p-6">
+          <div className="bg-surface-card text-s flex flex-col items-center gap-lg p-lg">
             <Icon
               icon={modalState.success ? 'tick' : 'cross'}
               className={clsx(
@@ -384,7 +384,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
                   : 'bg-red-background border-transparent text-red-primary',
               )}
             />
-            <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex flex-col items-center gap-sm text-center">
               <p className="text-l font-semibold">{t('lists:upload_csv.results')}</p>
               {modalState.success ? (
                 <div className="flex flex-col items-start">

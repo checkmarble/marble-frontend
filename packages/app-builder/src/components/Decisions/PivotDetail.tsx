@@ -27,7 +27,7 @@ export function PivotDetail({ pivotValues, existingPivotDefinition }: PivotDetai
   let content;
   if (pivotValues.length > 0) {
     content = (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-md">
         <Callout>
           <span className="whitespace-pre text-balance">
             <Trans
@@ -167,7 +167,7 @@ function PivotDetails({ value, table, object }: { value: string; table: string; 
       object={object}
       preset="essentials"
       options={{ withId: true }}
-      className="p-2 my-2 bg-surface-card rounded-v2-lg border-grey-border border cursor-pointer"
+      className="p-sm my-sm bg-surface-card rounded-lg border-grey-border border cursor-pointer"
     />
   );
 }

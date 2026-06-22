@@ -26,9 +26,9 @@ export function PivotAnnotations({ caseId, tableName, objectId, annotations }: P
   const tagsAnnotations = annotations?.tags ?? [];
 
   return (
-    <div className="flex flex-col gap-v2-md">
+    <div className="flex flex-col gap-md">
       <div className="text-h2 font-semibold">{t('cases:case_detail.pivot_panel.annotations')}</div>
-      <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-surface-card rounded-v2-lg">
+      <div className="border-grey-border flex flex-col gap-md border p-md bg-surface-card rounded-lg">
         <div className="grid grid-cols-[116px_1fr] gap-x-3 gap-y-2">
           <div>{t('cases:annotations.tags.title')}</div>
           <div className="flex items-start justify-between">
@@ -77,7 +77,7 @@ export function PivotAnnotations({ caseId, tableName, objectId, annotations }: P
           </div>
           <div
             data-open={commentSectionOpen}
-            className="group/comment data-[open=true]:border-grey-border col-span-full flex items-center justify-between pb-2 data-[open=true]:border-b"
+            className="group/comment data-[open=true]:border-grey-border col-span-full flex items-center justify-between pb-sm data-[open=true]:border-b"
           >
             {t('cases:annotations.comments.title')}
             <Button mode="icon" variant="secondary" onClick={() => setCommentSectionOpen((o) => !o)}>
@@ -85,8 +85,8 @@ export function PivotAnnotations({ caseId, tableName, objectId, annotations }: P
             </Button>
           </div>
           {commentSectionOpen ? (
-            <div className="col-span-full flex flex-col gap-4 pt-4">
-              {comments.length > 0 ? <ClientObjectComments comments={comments} className="mx-4" /> : null}
+            <div className="col-span-full flex flex-col gap-md pt-md">
+              {comments.length > 0 ? <ClientObjectComments comments={comments} className="mx-md" /> : null}
               <ClientCommentForm
                 caseId={caseId}
                 tableName={tableName}

@@ -45,11 +45,11 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
   const openCasesYTicks = useMemo(() => getNiceYAxisTicks(openCasesByAge.map((d) => d.count)), [openCasesByAge]);
 
   return (
-    <div className="bg-surface-card border-grey-border flex flex-col gap-v2-md rounded-v2-lg border p-v2-md">
+    <div className="bg-surface-card border-grey-border flex flex-col gap-md rounded-lg border p-md">
       <span className="text-s font-medium">{t('cases:analytics.processing.title')}</span>
 
-      <div className="flex flex-col gap-v2-lg xl:flex-row">
-        <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
+      <div className="flex flex-col gap-lg xl:flex-row">
+        <div className="flex min-h-64 flex-1 flex-col gap-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.processing.duration_by_period')}</span>
           <div className="flex-1">
             {chartData.length === 0 ? (
@@ -104,7 +104,7 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                     <span className="text-s text-grey-primary font-semibold">
                       {formatPeriodTooltip(String(indexValue), language)}
                     </span>
-                    <div className="flex items-center justify-between gap-v2-md">
+                    <div className="flex items-center justify-between gap-md">
                       <span className="text-s text-grey-secondary">{t(`cases:analytics.chart.${String(id)}`)}</span>
                       <span className="text-s text-grey-primary font-semibold">
                         {formatChartNumber(value, language)} {t('cases:analytics.chart.days')}
@@ -121,7 +121,7 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
           </div>
         </div>
 
-        <div className="flex min-h-64 flex-1 flex-col gap-v2-xs">
+        <div className="flex min-h-64 flex-1 flex-col gap-xs">
           <span className="text-xs text-grey-secondary">{t('cases:analytics.processing.open_by_age')}</span>
           <div className="flex-1">
             {openCasesByAge.length === 0 ? (
@@ -154,7 +154,7 @@ export function AlertProcessingChart({ caseDurationByPeriod, openCasesByAge }: A
                     <span className="text-s text-grey-primary font-semibold">
                       {formatBracket(String(indexValue), t)}
                     </span>
-                    <div className="flex items-center justify-between gap-v2-md">
+                    <div className="flex items-center justify-between gap-md">
                       <span className="text-s text-grey-secondary">{t('cases:analytics.chart.cases_lower')}</span>
                       <span className="text-s text-grey-primary font-semibold">
                         {formatChartNumber(value, language)}

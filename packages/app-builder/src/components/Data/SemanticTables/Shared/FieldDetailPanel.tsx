@@ -162,9 +162,9 @@ export function FieldDetailPanel({
   return (
     <>
       <div className="flex w-1/2 shrink-0 flex-col border-l border-grey-border overflow-y-auto">
-        <div className="flex items-center justify-between p-v2-md border-b border-grey-border">
-          <div className="flex items-center gap-v2-sm">
-            <button type="button" onClick={onClose} className="rounded-lg p-1 hover:bg-grey-border">
+        <div className="flex items-center justify-between p-md border-b border-grey-border">
+          <div className="flex items-center gap-sm">
+            <button type="button" onClick={onClose} className="rounded-lg p-xs hover:bg-grey-border">
               <Icon icon="x" className="size-4" />
             </button>
             <Typo variant="subtitle2">{title ?? t('data:upload_data.field_detail_title')}</Typo>
@@ -177,9 +177,9 @@ export function FieldDetailPanel({
           {hasLinks && <Icon icon="linked-services" className="size-4" />}
         </div>
 
-        <div className="flex flex-col gap-v2-lg p-v2-lg">
+        <div className="flex flex-col gap-lg p-lg">
           {/* Type of the field */}
-          <div className="flex flex-col gap-v2-xs">
+          <div className="flex flex-col gap-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_type_label')}</label>
             <SelectV2
               ref={typeSelectRef}
@@ -205,7 +205,7 @@ export function FieldDetailPanel({
           </div>
 
           {/* Name of the field */}
-          <div className="flex flex-col gap-v2-xs">
+          <div className="flex flex-col gap-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_name_label')}</label>
             <Input
               value={field.name}
@@ -225,17 +225,17 @@ export function FieldDetailPanel({
           </div>
 
           {/* Alias */}
-          <div className="flex flex-col gap-v2-xs">
+          <div className="flex flex-col gap-xs">
             <label className="text-s text-grey-secondary">{t('data:upload_data.field_alias')}</label>
             <Input ref={aliasInputRef} value={field.alias} onChange={(e) => update({ alias: e.currentTarget.value })} />
           </div>
 
           {/* Advanced settings */}
-          <div className="flex flex-col gap-v2-md">
+          <div className="flex flex-col gap-md">
             <h5 className="text-s font-medium text-grey-secondary">{t('data:upload_data.field_advanced_settings')}</h5>
 
             {/* Description */}
-            <div className="flex flex-col gap-v2-xs">
+            <div className="flex flex-col gap-xs">
               <label className="text-s text-grey-secondary">{t('data:upload_data.field_description_label')}</label>
               <Input
                 value={field.description}
@@ -245,7 +245,7 @@ export function FieldDetailPanel({
             </div>
 
             {/* Required */}
-            <label className="flex items-center gap-v2-sm cursor-pointer">
+            <label className="flex items-center gap-sm cursor-pointer">
               <Switch
                 checked={!field.nullable}
                 onCheckedChange={(checked) => update({ nullable: !checked })}
@@ -255,7 +255,7 @@ export function FieldDetailPanel({
             </label>
 
             {/* Hidden */}
-            <label className="flex items-center gap-v2-sm cursor-pointer">
+            <label className="flex items-center gap-sm cursor-pointer">
               <Switch checked={field.hidden} onCheckedChange={(checked) => update({ hidden: checked })} />
               <span className="text-s">{t('data:upload_data.field_hidden')}</span>
             </label>
@@ -263,7 +263,7 @@ export function FieldDetailPanel({
 
           {/* Semantic type */}
           {semanticOptions.length > 0 ? (
-            <div className="flex flex-col gap-v2-xs">
+            <div className="flex flex-col gap-xs">
               <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_type')}</label>
               <SelectV2
                 value={field.semanticType}
@@ -287,7 +287,7 @@ export function FieldDetailPanel({
 
           {/* Semantic sub-type */}
           {semanticSubOptions.length > 0 ? (
-            <div className="flex flex-col gap-v2-xs">
+            <div className="flex flex-col gap-xs">
               <label className="text-s text-grey-secondary">{t('data:upload_data.field_semantic_sub_type')}</label>
               <SelectV2
                 value={field.semanticSubType}
@@ -348,11 +348,11 @@ export function FieldDetailPanel({
           ) : null}
 
           {/* Example of visual in Marble */}
-          <div className="flex flex-col gap-v2-xs">
+          <div className="flex flex-col gap-xs">
             <label className="text-s text-grey-secondary italic">{t('data:upload_data.field_visual_example')}</label>
-            <div className="rounded-lg border border-grey-border bg-grey-98 p-v2-md">
-              <div className="flex flex-col gap-v2-md">
-                <div className="p-v2-xs rounded border border-grey-border font-mono w-full text-xs text-grey-secondary">
+            <div className="rounded-lg border border-grey-border bg-grey-98 p-md">
+              <div className="flex flex-col gap-md">
+                <div className="p-xs rounded border border-grey-border font-mono w-full text-xs text-grey-secondary">
                   <span>{`${t('data:upload_data.raw_data')} { "${field.name}": ${typeof mockedValue === 'string' ? '"' : ''}${mockedValue}${typeof mockedValue === 'string' ? '"' : ''}}`}</span>
                 </div>
                 <DataField
@@ -385,7 +385,7 @@ export function FieldDetailPanel({
       <Modal.Root open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
         <Modal.Content>
           <Modal.Title>{t('data:delete_field.title', { name: field.alias || field.name })}</Modal.Title>
-          <div className="p-6">
+          <div className="p-lg">
             <p className="text-s text-grey-primary">
               {t('data:delete_field.confirm_with_links', {
                 linkNames: linkedLinks.map((l) => l.name).join(', '),
@@ -420,10 +420,10 @@ function CurrencySettings({
 }) {
   const { t } = useTranslation(['data']);
   return (
-    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+    <div className="flex flex-col gap-sm rounded-lg border border-grey-border p-md">
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_currency_settings')}</span>
       {currencyFieldOptions.length > 0 ? (
-        <div className="flex flex-col gap-v2-xs">
+        <div className="flex flex-col gap-xs">
           <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_field')}</label>
           <SelectV2
             value={field.currencyFieldId}
@@ -434,7 +434,7 @@ function CurrencySettings({
           />
         </div>
       ) : null}
-      <div className="flex flex-col gap-v2-xs">
+      <div className="flex flex-col gap-xs">
         <label className="text-s text-grey-secondary">{t('data:upload_data.field_currency_exponent')}</label>
         <NumberInput
           min={0}
@@ -444,7 +444,7 @@ function CurrencySettings({
           disabled={disabled}
         />
       </div>
-      <div className="flex flex-col gap-v2-xs">
+      <div className="flex flex-col gap-xs">
         <label className="text-s text-grey-secondary">{t('data:upload_data.field_decimal_precision')}</label>
         <NumberInput
           min={0}
@@ -470,9 +470,9 @@ function NumberSettings({
   const { t } = useTranslation(['data']);
   const isInteger = field.isInteger ?? true;
   return (
-    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+    <div className="flex flex-col gap-sm rounded-lg border border-grey-border p-md">
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_number_settings')}</span>
-      <label className="flex items-center gap-v2-sm cursor-pointer">
+      <label className="flex items-center gap-sm cursor-pointer">
         <Switch
           checked={isInteger}
           onCheckedChange={(checked) => onChange({ isInteger: checked })}
@@ -481,7 +481,7 @@ function NumberSettings({
         <span className="text-s">{t('data:upload_data.field_is_integer')}</span>
       </label>
       {!isInteger ? (
-        <div className="flex flex-col gap-v2-xs">
+        <div className="flex flex-col gap-xs">
           <label className="text-s text-grey-secondary">{t('data:upload_data.field_decimal_precision')}</label>
           <NumberInput
             min={0}
@@ -511,15 +511,15 @@ function BooleanSettings({
     { label: t('data:upload_data.field_boolean_display_yes_no'), value: 'yes_no' },
   ] as const;
   return (
-    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+    <div className="flex flex-col gap-sm rounded-lg border border-grey-border p-md">
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_boolean_settings')}</span>
-      <div className="flex gap-v2-sm">
+      <div className="flex gap-sm">
         {options.map((opt) => (
           <button
             key={opt.value}
             type="button"
             onClick={() => onChange({ booleanDisplay: opt.value })}
-            className={`flex-1 rounded-lg border px-v2-sm py-v2-xs text-s transition-colors ${
+            className={`flex-1 rounded-lg border px-sm py-xs text-s transition-colors ${
               (booleanDisplay ?? 'checkbox') === opt.value
                 ? 'border-purple-primary bg-purple-10 text-purple-primary'
                 : 'border-grey-border text-grey-secondary hover:bg-grey-border'
@@ -548,7 +548,7 @@ function ForeignKeySettings({
   const { t } = useTranslation(['data']);
 
   return (
-    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+    <div className="flex flex-col gap-sm rounded-lg border border-grey-border p-md">
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_foreign_key_settings')}</span>
       <SelectV2
         value={foreignkeyTable}
@@ -619,16 +619,16 @@ function EnumValuesSettings({
   }
 
   return (
-    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+    <div className="flex flex-col gap-sm rounded-lg border border-grey-border p-md">
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_enum_settings')}</span>
-      <div className="flex flex-col gap-v2-sm">
+      <div className="flex flex-col gap-sm">
         {enumValues.map((enumValue, index) => {
           const candidateKey = toSnakeCase(enumValue.value);
           const isDuplicate =
             enumValue.value !== '' && enumValues.some((v, i) => i !== index && toSnakeCase(v.value) === candidateKey);
           return (
-            <div key={`enum-value-${index}`} className="flex flex-col gap-v2-xs">
-              <div className="flex items-center gap-v2-sm">
+            <div key={`enum-value-${index}`} className="flex flex-col gap-xs">
+              <div className="flex items-center gap-sm">
                 <div className="w-max shrink-0">
                   <SelectV2
                     value={enumValue.color}
@@ -648,7 +648,7 @@ function EnumValuesSettings({
                 <button
                   type="button"
                   onClick={() => removeValue(index)}
-                  className="shrink-0 rounded-lg p-1 text-grey-secondary hover:bg-grey-border hover:text-red-primary"
+                  className="shrink-0 rounded-lg p-xs text-grey-secondary hover:bg-grey-border hover:text-red-primary"
                   disabled={disabled}
                 >
                   <Icon icon="delete" className="size-4" />
@@ -682,9 +682,9 @@ function TimestampSettings({
 }) {
   const { t } = useTranslation(['data']);
   return (
-    <div className="flex flex-col gap-v2-sm rounded-lg border border-grey-border p-v2-md">
+    <div className="flex flex-col gap-sm rounded-lg border border-grey-border p-md">
       <span className="text-s text-grey-secondary">{t('data:upload_data.field_timestamp_settings')}</span>
-      <label className="flex items-center gap-v2-sm cursor-pointer">
+      <label className="flex items-center gap-sm cursor-pointer">
         <Switch
           checked={mainTimestampFieldName === fieldName}
           onCheckedChange={(checked) => setMainTimestampFieldName(checked ? fieldName : 'updated_at')}

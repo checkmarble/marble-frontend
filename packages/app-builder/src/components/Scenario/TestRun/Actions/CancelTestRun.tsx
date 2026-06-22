@@ -38,7 +38,7 @@ export function CancelTestRun({
       <Modal.Content className="overflow-visible">
         <Modal.Title>{t('scenarios:testrun.cancel')}</Modal.Title>
         <Modal.Description asChild>
-          <Callout variant="outlined" className="m-2">
+          <Callout variant="outlined" className="m-sm">
             <p className="whitespace-pre-wrap">{t('scenarios:testrun.cancel.callout')}</p>
           </Callout>
         </Modal.Description>

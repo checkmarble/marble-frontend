@@ -11,7 +11,7 @@ type ActionBarProps = {
 export function ActionBar({ children, more }: ActionBarProps) {
   const childrenArray = Children.toArray(children);
   return (
-    <div className="inline-flex gap-v2-sm bg-purple-background-light border border-purple-border rounded-v2-md dark:bg-grey-background-light dark:border-grey-border p-v2-sm">
+    <div className="inline-flex gap-sm bg-purple-background-light border border-purple-border rounded-md dark:bg-grey-background-light dark:border-grey-border p-sm">
       {childrenArray.map((child, i, arr) => {
         return (
           <Fragment key={i}>

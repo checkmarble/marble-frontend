@@ -44,8 +44,8 @@ export const MatchCard = ({
   return (
     <Collapsible.Container defaultOpen={defaultOpen}>
       <Collapsible.Title size="small">
-        <div className="flex grow items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="flex grow items-center justify-between gap-sm">
+          <div className="flex flex-wrap items-center gap-sm">
             <span className="text-s font-medium">{entity.caption}</span>
             {aiSuggestion && match.status === 'pending' ? (
               <Tag color="grey">
@@ -59,7 +59,7 @@ export const MatchCard = ({
               })}
             </Tag>
           </div>
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-sm" onClick={(e) => e.stopPropagation()}>
             {!hideEnrich && !match.enriched ? <EnrichMatchButton matchId={match.id} /> : null}
             {!hideReview ? (
               <div className="inline-flex h-8 shrink-0 text-nowrap">
@@ -81,20 +81,20 @@ export const MatchCard = ({
         </div>
       </Collapsible.Title>
       {entity.properties['topics']?.length ? (
-        <div className="px-4 pb-3">
-          <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-1" />
+        <div className="px-sm smd">
+          <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-xs" />
         </div>
       ) : null}
       <Collapsible.Content>
-        <div className="bg-grey-background-light border-grey-border flex flex-col gap-2 rounded-lg border p-2">
+        <div className="bg-grey-background-light border-grey-border flex flex-col gap-sm rounded-lg border p-sm">
           {entitySchema === 'person' && entity.datasets?.length ? (
-            <div className="grid grid-cols-[146px_1fr] gap-3">
+            <div className="grid grid-cols-[146px_1fr] gap-md">
               <div className="text-xs opacity-50">{t('screenings:match.datasets.title')}</div>
               <div>
                 <EntityDatasetsList
                   datasets={entity.datasets}
                   useCase="transaction_monitoring"
-                  listClassName="list-disc ps-4"
+                  listClassName="list-disc ps-md"
                   itemClassName="break-all text-xs"
                 />
               </div>

@@ -28,14 +28,14 @@ export const ErrorComponent = ({ error }: { error: unknown }) => {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4">
+    <div className="flex flex-1 flex-col items-center justify-center gap-md">
       <Typo variant="title1" className="text-purple-hover">
         {title}
       </Typo>
-      {subtitle ? <p className="text-grey-primary text-s mb-6">{subtitle}</p> : null}
+      {subtitle ? <p className="text-grey-primary text-s mb-lg">{subtitle}</p> : null}
 
       {canGoBack ? (
-        <div className="mb-1">
+        <div className="mb-xs">
           <Button
             variant="primary"
             onClick={() => {

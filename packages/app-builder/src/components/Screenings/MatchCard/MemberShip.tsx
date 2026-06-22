@@ -6,7 +6,7 @@ export const MemberShip = ({ membershipMember }: { membershipMember: MembershipM
 
   return (
     <>
-      <div className="grid grid-cols-[146px_1fr] gap-2">
+      <div className="grid grid-cols-[146px_1fr] gap-sm">
         {membershipMember?.map((membership, idx) => {
           return (
             <div key={`membership-${membership.id}-${idx}`} className="contents">
@@ -15,9 +15,9 @@ export const MemberShip = ({ membershipMember }: { membershipMember: MembershipM
               ) : (
                 <div className="font-semibold"></div>
               )}
-              <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-surface-card">
-                <div className="flex flex-col gap-2">
-                  <div className="col-span-full flex w-full flex-wrap gap-1">
+              <div className="flex flex-row items-start gap-sm rounded-sm p-sm bg-surface-card">
+                <div className="flex flex-col gap-sm">
+                  <div className="col-span-full flex w-full flex-wrap gap-xs">
                     <span className="font-semibold">
                       {membership.caption || t('screenings:match.membership.no-caption')}
                     </span>

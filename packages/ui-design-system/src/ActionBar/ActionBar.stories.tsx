@@ -13,7 +13,7 @@ const noop = () => {
 };
 
 export const Default: StoryFn<typeof ActionBar> = () => (
-  <div className="p-4">
+  <div className="p-md">
     <ActionBar>
       <ActionButton icon="edit" text="Edit" onClick={noop} />
       <ActionButton icon="copy" text="Duplicate" onClick={noop} />
@@ -23,7 +23,7 @@ export const Default: StoryFn<typeof ActionBar> = () => (
 );
 
 export const WithMore: StoryFn<typeof ActionBar> = () => (
-  <div className="p-4">
+  <div className="p-md">
     <ActionBar more={{ icon: 'more-menu', onClick: noop }}>
       <ActionButton icon="edit" text="Edit" onClick={noop} />
       <ActionButton icon="copy" text="Duplicate" onClick={noop} />
@@ -33,7 +33,7 @@ export const WithMore: StoryFn<typeof ActionBar> = () => (
 );
 
 export const WithDisabledAction: StoryFn<typeof ActionBar> = () => (
-  <div className="p-4">
+  <div className="p-md">
     <ActionBar>
       <ActionButton icon="edit" text="Edit" onClick={noop} />
       <ActionButton icon="copy" text="Duplicate" onClick={noop} />

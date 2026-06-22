@@ -79,19 +79,19 @@ export const CaseDetails = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-auto overflow-x-hidden bg-surface-page pb-v2-lg"
+      className="relative flex w-full min-w-0 flex-col gap-lg overflow-y-auto overflow-x-hidden bg-surface-page pb-lg"
     >
       <div ref={sentinelRef} className="absolute left-0 top-0" />
       <div
-        className={cn('bg-inherit sticky top-0 z-10 flex flex-col gap-4 px-v2-lg pt-v2-lg', {
+        className={cn('bg-inherit sticky top-0 z-10 flex flex-col gap-md px-lg pt-lg', {
           'border-b-grey-border border-b': !intersection?.isIntersecting,
         })}
       >
-        <div className={cn('flex shrink-0 items-center justify-between gap-2', { 'pb-v2-lg': !caseReview })}>
+        <div className={cn('flex shrink-0 items-center justify-between gap-sm', { 'pb-lg': !caseReview })}>
           {caseReview ? (
-            <div className="bg-purple-background-light flex rounded-lg p-1">
+            <div className="bg-purple-background-light flex rounded-lg p-xs">
               <button
-                className={cn('flex items-center gap-2 rounded px-4 py-2 text-s font-medium transition-colors', {
+                className={cn('flex items-center gap-sm rounded px-sm py-xs text-s font-medium transition-colors', {
                   'bg-purple-primary text-white': selectedTab === 'caseDetails',
                   'text-purple-primary': selectedTab !== 'caseDetails',
                 })}
@@ -100,14 +100,14 @@ export const CaseDetails = ({
                 {t('cases:case_detail.tab.principal')}
               </button>
               <button
-                className={cn('flex items-center gap-2 rounded px-4 py-2 text-s font-medium transition-colors', {
+                className={cn('flex items-center gap-sm rounded px-sm py-xs text-s font-medium transition-colors', {
                   'bg-purple-primary text-white': selectedTab === 'review',
                   'text-purple-primary': selectedTab !== 'review',
                 })}
                 onClick={() => setSelectedTab('review')}
               >
                 <div
-                  className={cn('size-5 rounded-md p-0.5', {
+                  className={cn('size-5 rounded-md p-2xs', {
                     'text-white': selectedTab === 'review',
                     'text-purple-primary': selectedTab !== 'review',
                   })}
@@ -121,7 +121,7 @@ export const CaseDetails = ({
           ) : (
             <div />
           )}
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-sm">
             {caseDetail.status !== 'closed' ? (
               <>
                 <EscalateCase id={caseDetail.id} inboxId={caseDetail.inboxId} isAdminUser={isAdmin(currentUser)} />
@@ -133,27 +133,27 @@ export const CaseDetails = ({
         </div>
       </div>
 
-      <div className="px-v2-lg flex flex-col gap-v2-lg">
+      <div className="px-lg flex flex-col gap-lg">
         {selectedTab === 'caseDetails' ? (
           <>
             {/* Case details */}
-            <div className="flex flex-col justify-start gap-1.5">
-              <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:case.information')}</span>
-              <div className="border-grey-border text-small flex flex-col gap-6 border p-v2-md bg-surface-card rounded-v2-lg xl:flex-row">
+            <div className="flex flex-col justify-start gap-xs.5">
+              <span className="text-h2 text-grey-primary px-2xs font-medium">{t('cases:case.information')}</span>
+              <div className="border-grey-border text-small flex flex-col gap-lg border p-md bg-surface-card rounded-lg xl:flex-row">
                 {/* Left column */}
-                <div className="flex flex-1 flex-col gap-3">
-                  <div className="flex gap-2 items-center">
+                <div className="flex flex-1 flex-col gap-md">
+                  <div className="flex gap-sm items-center">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.name_of_case')}
                     </span>
                     <EditCaseName name={caseDetail.name} id={caseDetail.id} />
                   </div>
-                  <div className="flex h-6 items-center gap-2">
+                  <div className="flex h-6 items-center gap-sm">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.id')}
                     </span>
                     <button
-                      className="border-grey-border flex h-6 w-fit shrink-0 cursor-pointer items-center gap-2 overflow-hidden rounded border py-1 pl-2 pr-1"
+                      className="border-grey-border flex h-6 w-fit shrink-0 cursor-pointer items-center gap-sm overflow-hidden rounded border py-2xs ps-sm pe-xs"
                       {...getCopyToClipboardProps(caseDetail.id)}
                     >
                       <code className="font-['Menlo',monospace] text-[10px] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -162,11 +162,11 @@ export const CaseDetails = ({
                       <Icon icon="copy" className="size-4 shrink-0 text-grey-primary" />
                     </button>
                   </div>
-                  <div className="flex h-6 items-center gap-2">
+                  <div className="flex h-6 items-center gap-sm">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.status')}
                     </span>
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-sm">
                       <CaseStatusBadgeV2 status={caseDetail.status} outcome={caseDetail.outcome} variant="semi-full" />
                       {caseDetail.snoozedUntil ? (
                         <span className="font-medium text-grey-primary">
@@ -177,7 +177,7 @@ export const CaseDetails = ({
                       ) : null}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-sm">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:creation_date')}
                     </span>
@@ -187,20 +187,20 @@ export const CaseDetails = ({
                   </div>
                 </div>
                 {/* Right column */}
-                <div className="flex flex-1 flex-col gap-3">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-1 flex-col gap-md">
+                  <div className="flex items-center gap-sm">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.inbox')}
                     </span>
                     <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-sm">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:case.tags')}
                     </span>
                     <EditCaseTags id={caseDetail.id} tagIds={caseDetail.tags.map(({ tagId }) => tagId)} />
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-sm">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:assigned_to')}
                     </span>
@@ -211,7 +211,7 @@ export const CaseDetails = ({
                       id={caseDetail.id}
                     />
                   </div>
-                  <div className="flex h-6 items-center gap-2">
+                  <div className="flex h-6 items-center gap-sm">
                     <span className="text-grey-secondary w-[90px] shrink-0 font-normal leading-[18px]">
                       {t('cases:sar.title')}
                     </span>
@@ -222,18 +222,18 @@ export const CaseDetails = ({
             </div>
 
             {/* Investigation */}
-            <div className="flex flex-col justify-start gap-1.5">
-              <span className="text-h2 text-grey-primary px-1 font-medium">{t('cases:investigation')}</span>
-              <div className="border-grey-border bg-surface-card flex flex-col rounded-v2-lg border">
-                <div className="p-4">
+            <div className="flex flex-col justify-start gap-xs.5">
+              <span className="text-h2 text-grey-primary px-2xs font-medium">{t('cases:investigation')}</span>
+              <div className="border-grey-border bg-surface-card flex flex-col rounded-lg border">
+                <div className="p-md">
                   <CaseEvents events={caseDetail.events} root={containerRef} />
                 </div>
                 <AddComment caseId={caseDetail.id} />
               </div>
             </div>
             {/* Alerts */}
-            <div className="flex flex-col justify-start gap-1.5">
-              <div className="text-h2 text-grey-primary flex items-center justify-between px-1 font-medium">
+            <div className="flex flex-col justify-start gap-xs.5">
+              <div className="text-h2 text-grey-primary flex items-center justify-between px-2xs font-medium">
                 <span>{t('cases:alerts')}</span>
                 {hasRuleHits ? (
                   <Button variant="secondary" onClick={() => setDrawerContentMode('snooze')}>
@@ -246,8 +246,8 @@ export const CaseDetails = ({
             </div>
             {/* Documents */}
             {caseDetail.files.length > 0 ? (
-              <div className="flex flex-col justify-start gap-1.5">
-                <div className="flex items-center justify-between px-1">
+              <div className="flex flex-col justify-start gap-xs.5">
+                <div className="flex items-center justify-between px-2xs">
                   <span className="text-grey-primary text-h2 font-medium">{t('common:documents')}</span>
                   {/* <UploadFile uploadFileEndpoint={getCaseFileUploadEndpoint(detail)}>
               <Button variant="secondary" size="small">
@@ -257,7 +257,7 @@ export const CaseDetails = ({
             </UploadFile> */}
                 </div>
 
-                <div className="border-grey-border bg-surface-card flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
+                <div className="border-grey-border bg-surface-card flex flex-wrap gap-sm rounded-lg border p-md">
                   {caseDetail.files.map((file) => (
                     <CaseFileButton key={file.id} file={file} />
                   ))}
@@ -266,11 +266,11 @@ export const CaseDetails = ({
             ) : null}
           </>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-sm">
             <div className="flex justify-between items-center">
               <Typo variant="title2">{t('cases:case_detail.ai_review.title')}</Typo>
 
-              <div className="flex gap-2 justify-end">
+              <div className="flex gap-sm justify-end">
                 <Button
                   variant={caseReview?.reaction === 'ok' ? 'primary' : 'secondary'}
                   onClick={() => handleReviewReaction('ok')}
@@ -292,14 +292,14 @@ export const CaseDetails = ({
               </div>
             </div>
             {caseReview && !caseReview.review.ok ? (
-              <div className="flex items-center gap-2 rounded-lg border border-red-primary bg-red-primary/10 p-3">
+              <div className="flex items-center gap-sm rounded-lg border border-red-primary bg-red-primary/10 p-md">
                 <Icon icon="warning" className="size-5 shrink-0 text-red-primary" />
                 <span className="text-s font-medium text-red-primary">
                   {t('cases:case_detail.ai_review.consistency_warning')}
                 </span>
               </div>
             ) : null}
-            <div className="border border-grey-border rounded-lg p-4 bg-surface-card">
+            <div className="border border-grey-border rounded-lg p-md bg-surface-card">
               <Markdown>{caseReview?.review.output ?? ''}</Markdown>
             </div>
           </div>
