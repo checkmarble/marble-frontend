@@ -15,7 +15,7 @@ export default function ModalPerson({ personId, personName }: { personId: string
       <Modal.Content size="xlarge">
         <Modal.Title>{personName}</Modal.Title>
         <Modal.Description asChild>
-          <FreeFormMatchCardDataContent entityId={personId} isOpen={true} withTopics={true} />
+          <FreeFormMatchCardDataContent entityId={personId} isOpen={true} withTopics={true} withExploreButton={false} />
         </Modal.Description>
         <Modal.Footer>
           <Modal.FooterButton isCloseButton label={t('common:close')} />

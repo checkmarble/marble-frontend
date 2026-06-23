@@ -38,7 +38,13 @@ function flattenAssociations(associations: AssociationEntity[]): AssociationRow[
   return rows;
 }
 
-export const Associations = ({ associations }: { associations: AssociationEntity[] | undefined }) => {
+export const Associations = ({
+  associations,
+  withExploreButton,
+}: {
+  associations: AssociationEntity[] | undefined;
+  withExploreButton?: boolean;
+}) => {
   const { t } = useTranslation(['screenings', 'common']);
   const [showAll, setShowAll] = useState(false);
 
@@ -102,7 +108,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
             <div className="min-w-0">
               <div className="flex items-center gap-sm">
                 <ExpandableGroupTagLine items={expandableItems} classname="gap-sm" overflowTagWidth={60} />
-                <ModalPerson personId={id} personName={getPersonName(row)} />
+                {withExploreButton ? <ModalPerson personId={id} personName={getPersonName(row)} /> : null}
               </div>
 
               {association.properties.sourceUrl && association.properties.sourceUrl.length > 0 && (

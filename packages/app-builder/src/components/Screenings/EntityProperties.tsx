@@ -30,6 +30,20 @@ type PropertyRow = {
   isAddress?: boolean;
 };
 
+function deduplicationKey(value: string) {
+  return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+}
+
+function deduplicatedStrings(values: string[]) {
+  const seen = new Set<string>();
+  return values.filter((value) => {
+    const normalized = deduplicationKey(value);
+    if (seen.has(normalized)) return false;
+    seen.add(normalized);
+    return true;
+  });
+}
+
 export function EntityProperties<T extends OpenSanctionEntity>({
   entity,
   forcedProperties,
@@ -55,10 +69,20 @@ export function EntityProperties<T extends OpenSanctionEntity>({
     const rows: PropertyRow[] = displayProperties.map((property) => {
       const items = entity.properties?.[property] ?? [];
       const itemsToDisplay = displayAll[property] ? items : items.slice(0, 5);
+      // Non-address string properties are deduplicated when rendered, so the
+      // "show more" count must reflect the unique items revealed on expand
+      // rather than the raw remaining count.
+      const isAddressProperty = property === 'address' || property === 'addressEntity';
+      const restItemsCount = isAddressProperty
+        ? Math.max(0, items.length - itemsToDisplay.length)
+        : Math.max(
+            0,
+            deduplicatedStrings(items as string[]).length - deduplicatedStrings(itemsToDisplay as string[]).length,
+          );
       return {
         property,
         values: itemsToDisplay,
-        restItemsCount: Math.max(0, items.length - itemsToDisplay.length),
+        restItemsCount,
       };
     });
 
@@ -154,7 +178,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                 </PropertyContainer>
               ) : isScriptTaggedProperty(property) ? (
                 <PropertyContainer property={property}>
-                  {(values as string[]).map((value, index) => (
+                  {deduplicatedStrings(values as string[]).map((value, index) => (
                     <ParseAlias key={index} value={value} highlightText={highlightText} />
                   ))}
                   {restItemsCount > 0 ? (
@@ -174,10 +198,10 @@ export function EntityProperties<T extends OpenSanctionEntity>({
                 </PropertyContainer>
               ) : values.length > 0 ? (
                 <PropertyContainer property={property}>
-                  {(values as string[]).map((v, i) => (
+                  {deduplicatedStrings(values as string[]).map((v, i, deduplicatedValues) => (
                     <Fragment key={i}>
                       <TransformProperty property={property} value={v} />
-                      {i === values.length - 1 || isPropertyListed(property) ? null : <IconDot spaced />}
+                      {i === deduplicatedValues.length - 1 || isPropertyListed(property) ? null : <IconDot spaced />}
                     </Fragment>
                   ))}
                   {restItemsCount > 0 ? (

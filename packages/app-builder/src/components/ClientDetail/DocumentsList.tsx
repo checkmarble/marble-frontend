@@ -35,12 +35,12 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
 
   return match(annotationsQuery)
     .with({ isPending: true }, () => (
-      <div className="flex items-center justify-center col-span-full">
+      <div className="flex items-center justify-center">
         <Spinner className="size-6" />
       </div>
     ))
     .with({ isError: true }, () => (
-      <div className="flex items-center justify-center col-span-full">
+      <div className="flex items-center justify-center">
         <span className="text-center">{t('common:generic_fetch_data_error')}</span>
         <Button variant="secondary" onClick={() => annotationsQuery.refetch()}>
           {t('common:retry')}
@@ -51,14 +51,14 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
       const documents = annotations.files;
       if (documents.length === 0) {
         return (
-          <div className="flex col-span-full">
+          <div className="flex items-center justify-center">
             <span>{t('common:no_data_to_display')}</span>
           </div>
         );
       }
 
       return (
-        <>
+        <div className="grid grid-cols-1 @[250px]:grid-cols-2 @[500px]:grid-cols-3 @[750px]:grid-cols-4 gap-md">
           {documents.map((document) => {
             const annotatedBy = users.getOrgUserById(document.annotated_by);
 
@@ -73,7 +73,7 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
               </PanelContainer>
             </PanelRoot>
           ) : null}
-        </>
+        </div>
       );
     })
     .exhaustive();

@@ -259,7 +259,7 @@ export const ClientDetailPage = ({
                   </Popover.Root>
                 </div>
               </div>
-              <Card className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+              <Card className="@container">
                 <DocumentsList objectType={objectType} objectId={objectId} />
               </Card>
             </div>

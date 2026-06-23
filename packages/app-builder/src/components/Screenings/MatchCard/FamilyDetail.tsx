@@ -25,6 +25,7 @@ export type RelationEntity<T extends RelationType> = T extends 'familyPerson'
 export type FamilyDetailProps<T extends RelationType> = {
   relation: T;
   familyMembers: RelationEntity<T>;
+  withExploreButton?: boolean;
 };
 
 export type FamilyMemberRow = {
@@ -86,7 +87,11 @@ function flattenFamilyMembers<T extends RelationType>(
   return rows;
 }
 
-export function FamilyDetail<T extends RelationType>({ familyMembers, relation }: FamilyDetailProps<T>) {
+export function FamilyDetail<T extends RelationType>({
+  familyMembers,
+  relation,
+  withExploreButton,
+}: FamilyDetailProps<T>) {
   const { t } = useTranslation(['screenings', 'common']);
   const [showAll, setShowAll] = useState(false);
 
@@ -134,7 +139,7 @@ export function FamilyDetail<T extends RelationType>({ familyMembers, relation }
             <div className="min-w-0">
               <div className="flex items-center gap-sm">
                 <ExpandableGroupTagLine items={expandableItems} classname="gap-sm" overflowTagWidth={60} />
-                <ModalPerson personId={id} personName={getPersonName(row)} />
+                {withExploreButton ? <ModalPerson personId={id} personName={getPersonName(row)} /> : null}
               </div>
               {member.properties.sourceUrl && member.properties.sourceUrl.length > 0 && (
                 <span className="col-span-full flex w-full flex-col gap-xs">
