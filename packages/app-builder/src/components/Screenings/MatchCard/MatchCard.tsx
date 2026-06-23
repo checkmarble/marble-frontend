@@ -86,9 +86,6 @@ export const MatchCard = ({
         </div>
       ) : null}
       <Collapsible.Content>
-        {match.comments.map((comment) => {
-          return <CommentLine key={comment.id} comment={comment} />;
-        })}
         <div className="bg-grey-background-light border-grey-border flex flex-col gap-sm rounded-lg border p-sm">
           {entitySchema === 'person' && entity.datasets?.length ? (
             <div className="grid grid-cols-[146px_1fr] gap-md">
@@ -104,6 +101,9 @@ export const MatchCard = ({
             </div>
           ) : null}
 
+          {match.comments.map((comment) => {
+            return <CommentLine key={comment.id} comment={comment} />;
+          })}
           <MatchDetails entity={entity} />
         </div>
       </Collapsible.Content>
