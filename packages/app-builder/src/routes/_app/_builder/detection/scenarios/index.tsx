@@ -20,7 +20,7 @@ import clsx from 'clsx';
 import { type TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Table, Tag, useVirtualTable } from 'ui-design-system';
+import { Button, Table, Tag, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const scenariosLoader = createServerFn()
@@ -178,7 +178,7 @@ function DetectionScenariosPage() {
     [t, formatDateTime, hydrated, isEditScenarioAvailable],
   );
 
-  const { table, isEmpty, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: scenarios,
     columns,
     state: {
@@ -192,6 +192,7 @@ function DetectionScenariosPage() {
     getSortedRowModel: getSortedRowModel(),
     rowLink: ({ id }) => <Link to="/detection/scenarios/$scenarioId" params={{ scenarioId: fromUUIDtoSUUID(id) }} />,
   });
+  const isEmpty = rows.length === 0;
 
   return (
     <Page.Main>
