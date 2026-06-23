@@ -134,6 +134,8 @@
   "field_name": "Name",
   "field_required": "Required",
   "field_type": "Type",
+  "fields_show_less": "Show less",
+  "fields_show_more": "Show more (+{{count}})",
   "foreign_key": "Foreign Key",
   "hide_hidden_fields": "Hide the hidden fields",
   "import_org.button": "Import data",
