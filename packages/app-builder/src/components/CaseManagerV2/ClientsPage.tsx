@@ -87,7 +87,11 @@ export function CaseManagerClientsPage({
         </div>
         <Card className="flex flex-col gap-sm text-small">
           <div>
-            <DataFields object={pivotObject.pivotObjectData as DataModelObject} table={pivotObject.pivotObjectName} />
+            <DataFields
+              object={pivotObject.pivotObjectData as DataModelObject}
+              table={pivotObject.pivotObjectName}
+              options={{ layout: '2-columns' }}
+            />
             {currentTable ? (
               <DataModelExplorerProvider>
                 <PivotNavigationOptions
