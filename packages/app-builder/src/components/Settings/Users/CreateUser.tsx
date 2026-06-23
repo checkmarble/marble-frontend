@@ -1,6 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Nudge } from '@app-builder/components/Nudge';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { tKeyForUserRole } from '@app-builder/models';
@@ -19,7 +17,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, SelectV2 } from 'ui-design-system';
+import { Button, Input, Modal, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateUser({
@@ -121,14 +119,18 @@ function CreateUserContent({
               }}
             >
               {(field) => (
-                <div className="group flex w-full flex-col gap-sm">
-                  <FormLabel name={field.name}>{t('settings:users.first_name')}</FormLabel>
-                  <FormInput
+                <div className="flex w-full flex-col gap-xs">
+                  <label htmlFor={field.name} className="text-s text-grey-secondary">
+                    {t('settings:users.first_name')}
+                  </label>
+                  <Input
+                    id={field.name}
                     type="text"
                     name={field.name}
+                    value={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
-                    defaultValue={field.state.value}
-                    valid={field.state.meta.errors.length === 0}
+                    onBlur={field.handleBlur}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                   />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
@@ -136,14 +138,18 @@ function CreateUserContent({
             </form.Field>
             <form.Field name="lastName" validators={{ onChange: createUserPayloadSchema.shape.lastName }}>
               {(field) => (
-                <div className="group flex w-full flex-col gap-sm">
-                  <FormLabel name={field.name}>{t('settings:users.last_name')}</FormLabel>
-                  <FormInput
+                <div className="flex w-full flex-col gap-xs">
+                  <label htmlFor={field.name} className="text-s text-grey-secondary">
+                    {t('settings:users.last_name')}
+                  </label>
+                  <Input
+                    id={field.name}
                     type="text"
                     name={field.name}
+                    value={field.state.value}
                     onChange={(e) => field.handleChange(e.currentTarget.value)}
-                    defaultValue={field.state.value}
-                    valid={field.state.meta.errors.length === 0}
+                    onBlur={field.handleBlur}
+                    borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                   />
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
@@ -152,14 +158,18 @@ function CreateUserContent({
           </div>
           <form.Field name="email" validators={{ onChange: createUserPayloadSchema.shape.email }}>
             {(field) => (
-              <div className="group flex flex-col gap-sm">
-                <FormLabel name={field.name}>{t('settings:users.email')}</FormLabel>
-                <FormInput
+              <div className="flex flex-col gap-xs">
+                <label htmlFor={field.name} className="text-s text-grey-secondary">
+                  {t('settings:users.email')}
+                </label>
+                <Input
+                  id={field.name}
                   type="email"
                   name={field.name}
+                  value={field.state.value}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  defaultValue={field.state.value}
-                  valid={field.state.meta.errors.length === 0}
+                  onBlur={field.handleBlur}
+                  borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
@@ -167,8 +177,8 @@ function CreateUserContent({
           </form.Field>
           <form.Field name="role" validators={{ onChange: createUserPayloadSchema.shape.role }}>
             {(field) => (
-              <div className="group flex flex-col gap-sm">
-                <FormLabel name={field.name} className="flex flex-row gap-sm">
+              <div className="flex flex-col gap-xs">
+                <label htmlFor={field.name} className="text-s text-grey-secondary flex flex-row gap-sm">
                   <span
                     className={clsx({
                       'text-grey-disabled': access === 'restricted',
@@ -179,7 +189,7 @@ function CreateUserContent({
                   {access === 'allowed' ? null : (
                     <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                   )}
-                </FormLabel>
+                </label>
                 <SelectV2
                   value={field.state.value}
                   onChange={(value) => field.handleChange(value as CreateUserPayload['role'])}
