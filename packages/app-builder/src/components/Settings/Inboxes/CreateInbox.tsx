@@ -14,15 +14,19 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, Modal } from 'ui-design-system';
+import { Button, type ButtonV2Props, cn, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInbox({
   redirectRoutePath,
   onInboxCreated,
+  className,
+  size,
 }: {
   redirectRoutePath?: (typeof createInboxRedirectRouteOptions)[number];
   onInboxCreated?: (inboxId: string) => void;
+  className?: string;
+  size?: ButtonV2Props['size'];
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const [open, setOpen] = useState(false);
@@ -30,7 +34,7 @@ export function CreateInbox({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
-        <Button className="whitespace-nowrap" variant="secondary" appearance="stroked">
+        <Button className={cn('whitespace-nowrap', className)} variant="secondary" appearance="stroked" size={size}>
           <Icon icon="new-inbox" className="size-5 shrink-0" />
           {t('settings:inboxes.new_inbox.create')}
         </Button>
