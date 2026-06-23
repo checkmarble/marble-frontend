@@ -43,13 +43,10 @@ describe('ExpandableGroupTagLine', () => {
     }
   });
 
-  it('should show all items when container width is not yet measurable', () => {
+  it('should show conservative overflow before container width is measured', () => {
     render(<ExpandableGroupTagLine items={makeItems()} />);
 
-    expect(screen.queryByText(/^\+\d+$/)).not.toBeInTheDocument();
-    for (const label of labels) {
-      expect(screen.getAllByText(label).length).toBeGreaterThan(0);
-    }
+    expect(screen.getByText('+3')).toBeInTheDocument();
   });
 
   it('should show the default overflow "more" button when items do not fit', () => {

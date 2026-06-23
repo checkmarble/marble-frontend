@@ -49,8 +49,15 @@ export function ExpandableGroupTagLine({
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
-  const [maxVisible, setMaxVisible] = useState(items.length);
-  const [renderedCount, setRenderedCount] = useState(items.length);
+  const [maxVisible, setMaxVisible] = useState(1);
+  const [renderedCount, setRenderedCount] = useState(0);
+  const [isMeasured, setIsMeasured] = useState(false);
+
+  useIsomorphicLayoutEffect(() => {
+    setIsMeasured(false);
+    setMaxVisible(1);
+    setRenderedCount(0);
+  }, [items.length]);
 
   useIsomorphicLayoutEffect(() => {
     if (isExpanded) return;
@@ -80,8 +87,11 @@ export function ExpandableGroupTagLine({
         }
       }
 
-      setRenderedCount(tagEls.length);
-      setMaxVisible(Math.max(count, 1));
+      const nextMaxVisible = Math.max(count, 1);
+      const nextRenderedCount = tagEls.length;
+      setRenderedCount(nextRenderedCount);
+      setMaxVisible(nextMaxVisible);
+      setIsMeasured(true);
     };
 
     const observer = new ResizeObserver(recalculate);
@@ -90,8 +100,10 @@ export function ExpandableGroupTagLine({
     return () => observer.disconnect();
   }, [isExpanded, items.length, overflowTagWidth]);
 
-  const overflow = isExpanded ? 0 : Math.max(0, renderedCount - maxVisible);
-  const visibleItems = overflow > 0 ? items.slice(0, maxVisible) : items;
+  const effectiveMaxVisible = isMeasured ? maxVisible : Math.min(1, items.length);
+  const effectiveRenderedCount = isMeasured ? renderedCount : items.length;
+  const overflow = isExpanded ? 0 : Math.max(0, effectiveRenderedCount - effectiveMaxVisible);
+  const visibleItems = isExpanded ? items : overflow > 0 ? items.slice(0, effectiveMaxVisible) : items;
 
   const handleExpand = (event: MouseEvent) => {
     event.stopPropagation();
