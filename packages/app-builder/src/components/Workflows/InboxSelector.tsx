@@ -38,7 +38,7 @@ export function InboxSelector({
 
   const getCreateInbox = () => {
     if (isCreateInboxAvailable) {
-      return <CreateInbox />;
+      return <CreateInbox onInboxCreated={onSelectedInboxIdChange} />;
     }
     if (inboxes.length === 0) {
       return <p className="p-sm">{t('workflows:detail_panel.inbox.need_inbox_contact_admin')}</p>;

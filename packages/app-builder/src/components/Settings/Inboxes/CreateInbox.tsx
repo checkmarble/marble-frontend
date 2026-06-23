@@ -19,8 +19,10 @@ import { Icon } from 'ui-icons';
 
 export function CreateInbox({
   redirectRoutePath,
+  onInboxCreated,
 }: {
   redirectRoutePath?: (typeof createInboxRedirectRouteOptions)[number];
+  onInboxCreated?: (inboxId: string) => void;
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const [open, setOpen] = useState(false);
@@ -34,7 +36,7 @@ export function CreateInbox({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxContent setOpen={setOpen} redirectRoutePath={redirectRoutePath} />
+        <CreateInboxContent setOpen={setOpen} redirectRoutePath={redirectRoutePath} onInboxCreated={onInboxCreated} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -43,9 +45,11 @@ export function CreateInbox({
 export function CreateInboxContent({
   redirectRoutePath,
   setOpen,
+  onInboxCreated,
 }: {
   redirectRoutePath?: (typeof createInboxRedirectRouteOptions)[number];
   setOpen: (open: boolean) => void;
+  onInboxCreated?: (inboxId: string) => void;
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const createInboxMutation = useCreateInboxMutation();
@@ -61,11 +65,14 @@ export function CreateInboxContent({
       if (formApi.state.isValid) {
         createInboxMutation
           .mutateAsync(value)
-          .then(() => {
+          .then((result) => {
             toast.success(t('common:success.save'));
             setOpen(false);
             queryClient.invalidateQueries({ queryKey: ['inboxes'] });
             revalidate();
+            if (result?.inboxId) {
+              onInboxCreated?.(result.inboxId);
+            }
           })
           .catch(() => {
             toast.error(t('common:errors.unknown'));
