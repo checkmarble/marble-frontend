@@ -38,7 +38,16 @@ export function InboxSelector({
 
   const getCreateInbox = () => {
     if (isCreateInboxAvailable) {
-      return <CreateInbox onInboxCreated={onSelectedInboxIdChange} />;
+      return (
+        <CreateInbox
+          className="w-full justify-center"
+          size="medium"
+          onInboxCreated={(inboxId) => {
+            onSelectedInboxIdChange(inboxId);
+            setOpen(false);
+          }}
+        />
+      );
     }
     if (inboxes.length === 0) {
       return <p className="p-sm">{t('workflows:detail_panel.inbox.need_inbox_contact_admin')}</p>;
