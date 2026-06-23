@@ -203,6 +203,8 @@ export const createInboxFn = createServerFn({ method: 'POST' })
       if (data.redirectRoute) {
         throw redirect({ to: data.redirectRoute, params: { inboxId: fromUUIDtoSUUID(createdInbox.id) } });
       }
+
+      return { inboxId: createdInbox.id };
     } catch (error) {
       if (error instanceof Response || (error as { _isRedirect?: boolean })._isRedirect) throw error;
       throw new Error('Failed to create inbox');
