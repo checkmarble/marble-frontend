@@ -14,13 +14,19 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, Modal } from 'ui-design-system';
+import { Button, type ButtonV2Props, cn, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateInbox({
   redirectRoutePath,
+  onInboxCreated,
+  className,
+  size,
 }: {
   redirectRoutePath?: (typeof createInboxRedirectRouteOptions)[number];
+  onInboxCreated?: (inboxId: string) => void;
+  className?: string;
+  size?: ButtonV2Props['size'];
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const [open, setOpen] = useState(false);
@@ -28,13 +34,13 @@ export function CreateInbox({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger onClick={(e) => e.stopPropagation()} asChild>
-        <Button className="whitespace-nowrap" variant="secondary" appearance="stroked">
+        <Button className={cn('whitespace-nowrap', className)} variant="secondary" appearance="stroked" size={size}>
           <Icon icon="new-inbox" className="size-5 shrink-0" />
           {t('settings:inboxes.new_inbox.create')}
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxContent setOpen={setOpen} redirectRoutePath={redirectRoutePath} />
+        <CreateInboxContent setOpen={setOpen} redirectRoutePath={redirectRoutePath} onInboxCreated={onInboxCreated} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -43,9 +49,11 @@ export function CreateInbox({
 export function CreateInboxContent({
   redirectRoutePath,
   setOpen,
+  onInboxCreated,
 }: {
   redirectRoutePath?: (typeof createInboxRedirectRouteOptions)[number];
   setOpen: (open: boolean) => void;
+  onInboxCreated?: (inboxId: string) => void;
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const createInboxMutation = useCreateInboxMutation();
@@ -61,11 +69,14 @@ export function CreateInboxContent({
       if (formApi.state.isValid) {
         createInboxMutation
           .mutateAsync(value)
-          .then(() => {
+          .then((result) => {
             toast.success(t('common:success.save'));
             setOpen(false);
             queryClient.invalidateQueries({ queryKey: ['inboxes'] });
             revalidate();
+            if (result?.inboxId) {
+              onInboxCreated?.(result.inboxId);
+            }
           })
           .catch(() => {
             toast.error(t('common:errors.unknown'));
