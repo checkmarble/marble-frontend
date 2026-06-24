@@ -81,7 +81,7 @@ export const MatchCard = ({
         </div>
       </Collapsible.Title>
       {entity.properties['topics']?.length ? (
-        <div className="px-sm smd">
+        <div className="p-sm">
           <TopicsDisplay entity={entity} containerClassName="flex flex-wrap gap-xs" />
         </div>
       ) : null}
