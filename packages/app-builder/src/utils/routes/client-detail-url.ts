@@ -19,7 +19,7 @@ function fromBase64Url(encoded: string): string {
 
 /** Encode an ingested object id for the client-detail route param. */
 export function encodeClientDetailObjectIdParam(objectId: string): string {
-  if (!objectId.includes('/')) {
+  if (!objectId.includes('/') && !objectId.startsWith(B64_PREFIX)) {
     return objectId;
   }
   return `${B64_PREFIX}${toBase64Url(objectId)}`;
