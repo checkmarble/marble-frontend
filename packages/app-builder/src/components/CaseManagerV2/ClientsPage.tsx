@@ -2,6 +2,7 @@ import { DataModel, DataModelObject } from '@app-builder/models';
 import { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
+import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import type { Client360Table } from 'marble-api';
@@ -62,7 +63,7 @@ export function CaseManagerClientsPage({
             {metadata && ingestedInfo ? (
               <Link
                 to="/client-detail/$objectType/$objectId"
-                params={ingestedInfo}
+                params={clientDetailLinkParams(ingestedInfo.objectType, ingestedInfo.objectId)}
                 className={CtaV2ClassName({ appearance: 'link', variant: 'primary' })}
               >
                 <Icon icon="eye" className="size-4" />
