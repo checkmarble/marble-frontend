@@ -1,4 +1,4 @@
-import { isOpenSanctionTopic, type ScreeningMatch, type ScreeningMatchPayload } from '@app-builder/models/screening';
+import { isOpenSanctionTopic, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { toOrderedTopic, topicCategoryPriority } from './TopicsDisplay';
 
 function getDisplayedTopics(topics: string[]): string[] {
@@ -34,7 +34,28 @@ export function sortPayloadsByTopics(a: ScreeningMatchPayload, b: ScreeningMatch
   return b.score - a.score;
 }
 
-export function sortScreeningMatchesByTopics(a: ScreeningMatch, b: ScreeningMatch): number {
+type SortableMatch = { status: string; payload: ScreeningMatchPayload };
+
+// Confirmed hits float to the top, pending stay in the middle, dismissed
+// ("no_hit") and skipped matches sink to the bottom.
+const matchStatusPriority: Record<string, number> = {
+  confirmed_hit: 0,
+  pending: 1,
+  no_hit: 2,
+  skipped: 2,
+};
+
+function getMatchStatusPriority(status: string): number {
+  return matchStatusPriority[status] ?? 1;
+}
+
+export function sortScreeningMatchesByTopics(a: SortableMatch, b: SortableMatch): number {
+  const aStatus = getMatchStatusPriority(a.status);
+  const bStatus = getMatchStatusPriority(b.status);
+  if (aStatus !== bStatus) {
+    return aStatus - bStatus;
+  }
+
   const aPriority = getMatchTopicPriority(a.payload);
   const bPriority = getMatchTopicPriority(b.payload);
 

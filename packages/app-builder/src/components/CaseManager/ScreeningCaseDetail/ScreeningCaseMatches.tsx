@@ -1,5 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
 import { MatchDetails } from '@app-builder/components/Screenings/MatchDetails';
+import { sortScreeningMatchesByTopics } from '@app-builder/components/Screenings/match-sorting';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { Case } from '@app-builder/models/cases';
@@ -58,7 +59,7 @@ export const ScreeningCaseMatches = ({
           <div className="p-sm">{t('continuousScreening:review.matches.match_label')}</div>
           <div className="p-sm">{t('continuousScreening:review.matches.status_label')}</div>
         </div>
-        {screening.matches.map((screeningMatch) => {
+        {[...screening.matches].sort(sortScreeningMatchesByTopics).map((screeningMatch) => {
           return (
             <div
               key={screeningMatch.id}
