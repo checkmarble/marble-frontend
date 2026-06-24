@@ -1,4 +1,5 @@
 import { handleSubmit } from '@app-builder/utils/form';
+import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
 import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
@@ -35,7 +36,7 @@ export const SearchForm = ({ table }: SearchFormProps) => {
         if (z.uuid().safeParse(trimmedValue).success) {
           navigate({
             to: '/client-detail/$objectType/$objectId',
-            params: { objectType: table.name, objectId: trimmedValue },
+            params: clientDetailLinkParams(table.name, trimmedValue),
           });
         } else {
           navigate({

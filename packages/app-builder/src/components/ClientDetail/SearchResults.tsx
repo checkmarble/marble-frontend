@@ -2,6 +2,7 @@ import { useSearchClient360Query } from '@app-builder/queries/client360/search';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { Client360SearchPayload } from '@app-builder/schemas/client360';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
+import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
 import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +47,10 @@ export const SearchResults = ({ payload, tables }: { payload: Client360SearchPay
                 <LinkWrapper
                   key={objectId}
                   link={
-                    <Link to="/client-detail/$objectType/$objectId" params={{ objectType: payload.table, objectId }} />
+                    <Link
+                      to="/client-detail/$objectType/$objectId"
+                      params={clientDetailLinkParams(payload.table, objectId)}
+                    />
                   }
                   className="p-md flex items-center border border-grey-border rounded-md bg-surface-card hover:shadow-md dark:hover:border-purple-primary"
                 >

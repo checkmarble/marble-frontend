@@ -5,6 +5,8 @@ import { isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } fr
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
 import { setToast } from '@app-builder/services/toast.server';
+import { loadClientDetailObject } from '@app-builder/utils/routes/client-detail-object';
+import { decodeClientDetailObjectIdParam } from '@app-builder/utils/routes/client-detail-url';
 import { createFileRoute, isRedirect, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
@@ -25,16 +27,18 @@ const getDataFn = createServerFn()
       const t = await i18nextService.getFixedT(request, ['common', 'client360']);
       const { user, dataModelRepository, userScoring, client360, entitlements } = context.authInfo;
 
-      const objectPromise = dataModelRepository.getIngestedObject(objectType, objectId).catch(async (error) => {
-        if (isNotFoundHttpError(error)) {
-          await setToast({
-            type: 'error',
-            message: t('client360:client_detail.no_object_found', { objectType }),
-          });
-          throw redirect({ to: '/client-detail' });
-        }
-        throw error;
-      });
+      const objectPromise = loadClientDetailObject(dataModelRepository, client360, objectType, objectId).catch(
+        async (error) => {
+          if (isNotFoundHttpError(error)) {
+            await setToast({
+              type: 'error',
+              message: t('client360:client_detail.no_object_found', { objectType }),
+            });
+            throw redirect({ to: '/client-detail' });
+          }
+          throw error;
+        },
+      );
 
       const [objectDetails, scoringSettings, tables, dataModel] = await Promise.all([
         objectPromise,
@@ -77,7 +81,8 @@ const getDataFn = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/client-detail/$objectType/$objectId')({
-  loader: ({ params }) => getDataFn({ data: params }),
+  loader: ({ params: { objectType, objectId } }) =>
+    getDataFn({ data: { objectType, objectId: decodeClientDetailObjectIdParam(objectId) } }),
   errorComponent: ({ error }) => <ErrorComponent error={error} />,
   component: ClientDetailPage,
 });
