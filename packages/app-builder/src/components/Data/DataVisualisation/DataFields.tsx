@@ -113,7 +113,7 @@ export function DataFields({ table, object, preset, customFields, className, opt
   return (
     <DataVisualisationProvider value={contextValue}>
       {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
-      <div className="@container">
+      <div className={options?.layout === '2-columns' || options?.layout === '3-columns' ? '@container' : undefined}>
         <div
           className={cn(
             'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-md gap-y-sm break-all',
