@@ -11,18 +11,19 @@ import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import type { Client360Table } from 'marble-api';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, Card, CtaV2ClassName, Tag, TagList } from 'ui-design-system';
+import { Button, Card, CtaV2ClassName, Tag, TagList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PivotNavigationOptions } from '../CaseManager/PivotsPanel/PivotNavigationOptions';
 import { CaseInvestigation } from '../CaseManager/shared/CaseInvestigation/CaseInvestigation';
 import { CaseStatusBadgeV2 } from '../Cases';
+import { EditCaseAssignee } from '../Cases/EditAssignee';
+import { EditCaseInbox } from '../Cases/EditCaseInbox';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
@@ -53,7 +54,6 @@ export function CaseManagerPrincipalPage({
 }: CaseManagerPrincipalPageProps) {
   const { t } = useTranslation(['common', 'cases']);
   const { orgTags } = useOrganizationTags();
-  const { orgUsers } = useOrganizationUsers();
   const { currentUser } = useOrganizationDetails();
   const caseInbox = inboxes.find((inbox) => inbox.id === caseDetail.inboxId) ?? null;
   const mainPivotObject = pivotObjects?.[0] ?? null;
@@ -62,7 +62,6 @@ export function CaseManagerPrincipalPage({
     page.decisions.some((d) => d.rules.some((r) => r.outcome === 'hit')),
   );
 
-  const assignedUser = orgUsers.find((user) => user.userId === caseDetail.assignedTo);
   const rootRef = useRef<HTMLDivElement>(null);
   const editTagsMutation = useEditTagsMutation();
   const caseTagsIds = caseDetail.tags.map((t) => t.tagId);
@@ -113,20 +112,13 @@ export function CaseManagerPrincipalPage({
               <div className="grid grid-cols-2 gap-sm">
                 <div className="flex flex-col gap-sm">
                   <CopyToClipboardButton toCopy={caseDetail.id}>{caseDetail.id}</CopyToClipboardButton>
-                  <div className="flex items-center gap-xs">
-                    {/* Make it a select */}
-                    <Avatar
-                      color="transparent"
-                      firstName={assignedUser?.firstName}
-                      lastName={assignedUser?.lastName}
-                      size="xs"
-                    />
-                    {assignedUser?.firstName + (assignedUser?.lastName ? ' ' + assignedUser.lastName : '')}
-                    {assignedUser?.userId === currentUser.actorIdentity.userId
-                      ? t('cases:manager.principal.you_marker')
-                      : ''}
-                  </div>
-                  <div>{caseInbox?.name}</div>
+                  <EditCaseAssignee
+                    disabled={false}
+                    id={caseDetail.id}
+                    assigneeId={caseDetail.assignedTo}
+                    currentUser={currentUser}
+                  />
+                  <EditCaseInbox id={caseDetail.id} inboxId={caseDetail.inboxId} />
                 </div>
               </div>
             </Card>
