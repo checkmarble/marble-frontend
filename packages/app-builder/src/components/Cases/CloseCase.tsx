@@ -85,7 +85,7 @@ export const CloseCase = ({
                           <RadioGroupItem
                             key={s}
                             value={s}
-                            className="border-grey-border data-[state=checked]:border-purple-hover flex items-center justify-center rounded-[20px] border bg-transparent p-xs.5"
+                            className="border-grey-border data-[state=checked]:border-purple-hover flex items-center justify-center rounded-[20px] border bg-transparent p-xs"
                           >
                             <span
                               className={cn('rounded-full border px-sm py-2xs text-xs', {

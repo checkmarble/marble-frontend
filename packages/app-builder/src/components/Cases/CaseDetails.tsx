@@ -137,7 +137,7 @@ export const CaseDetails = ({
         {selectedTab === 'caseDetails' ? (
           <>
             {/* Case details */}
-            <div className="flex flex-col justify-start gap-xs.5">
+            <div className="flex flex-col justify-start gap-xs">
               <span className="text-h2 text-grey-primary px-2xs font-medium">{t('cases:case.information')}</span>
               <div className="border-grey-border text-small flex flex-col gap-lg border p-md bg-surface-card rounded-lg xl:flex-row">
                 {/* Left column */}
@@ -222,7 +222,7 @@ export const CaseDetails = ({
             </div>
 
             {/* Investigation */}
-            <div className="flex flex-col justify-start gap-xs.5">
+            <div className="flex flex-col justify-start gap-xs">
               <span className="text-h2 text-grey-primary px-2xs font-medium">{t('cases:investigation')}</span>
               <div className="border-grey-border bg-surface-card flex flex-col rounded-lg border">
                 <div className="p-md">
@@ -232,7 +232,7 @@ export const CaseDetails = ({
               </div>
             </div>
             {/* Alerts */}
-            <div className="flex flex-col justify-start gap-xs.5">
+            <div className="flex flex-col justify-start gap-xs">
               <div className="text-h2 text-grey-primary flex items-center justify-between px-2xs font-medium">
                 <span>{t('cases:alerts')}</span>
                 {hasRuleHits ? (
@@ -246,7 +246,7 @@ export const CaseDetails = ({
             </div>
             {/* Documents */}
             {caseDetail.files.length > 0 ? (
-              <div className="flex flex-col justify-start gap-xs.5">
+              <div className="flex flex-col justify-start gap-xs">
                 <div className="flex items-center justify-between px-2xs">
                   <span className="text-grey-primary text-h2 font-medium">{t('common:documents')}</span>
                   {/* <UploadFile uploadFileEndpoint={getCaseFileUploadEndpoint(detail)}>

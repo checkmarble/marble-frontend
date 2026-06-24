@@ -158,7 +158,7 @@ export function CaseManagerPrincipalPage({
           <div className="flex flex-col gap-md">
             <AiReviewCard caseId={caseDetail.id} canManuallyReview={caseInbox?.caseReviewManual ?? false} />
 
-            <div className="flex flex-col justify-start gap-xs.5">
+            <div className="flex flex-col justify-start gap-xs">
               <div className="text-default text-grey-primary flex items-center justify-between px-2xs font-medium">
                 <span>{t('cases:alerts')}</span>
                 {hasRuleHits ? (

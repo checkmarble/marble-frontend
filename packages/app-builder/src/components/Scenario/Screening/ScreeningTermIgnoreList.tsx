@@ -36,7 +36,7 @@ export const ScreeningTermIgnoreList = ({
   };
 
   return (
-    <div className="flex flex-col gap-sm.5">
+    <div className="flex flex-col gap-sm">
       <div className="flex items-center gap-sm">
         <Switch
           checked={value !== null}
