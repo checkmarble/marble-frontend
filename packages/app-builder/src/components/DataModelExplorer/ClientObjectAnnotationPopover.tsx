@@ -2,6 +2,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { type GroupedAnnotations } from 'marble-api';
 import { type ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientCommentForm } from '../Annotations/ClientCommentForm';
@@ -29,6 +30,7 @@ export function ClientObjectAnnotationPopover({
   const [editDocumentsOpen, setEditDocumentsOpen] = useState(false);
   const documents = annotations?.files ?? [];
   const tagsAnnotations = annotations?.tags ?? [];
+  const { t } = useTranslation(['cases']);
 
   const handleAnnotateSuccess = useCallbackRef(() => {
     queryClient.invalidateQueries({ queryKey: ['resources', 'data-list-object', tableName] });
@@ -36,7 +38,7 @@ export function ClientObjectAnnotationPopover({
 
   return (
     <div className="flex flex-col">
-      <AnnotationSection title="Tags">
+      <AnnotationSection title={t('cases:annotations.tags.title')}>
         <div className="flex justify-between">
           <div>
             <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
@@ -63,7 +65,7 @@ export function ClientObjectAnnotationPopover({
         </div>
       </AnnotationSection>
       <div className="bg-grey-border h-px" />
-      <AnnotationSection title="Documents">
+      <AnnotationSection title={t('cases:annotations.documents.title')}>
         <div className="flex justify-between">
           <div>
             <ClientDocumentsList documents={documents} />
