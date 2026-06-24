@@ -73,7 +73,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
           <MenuCommand.Combobox className="m-xs mb-0 h-8 p-0" iconClasses="size-4" />
           <MenuCommand.List className="p-xs">
             <MenuCommand.Item
-              className="flex min-h-0 cursor-pointer items-center justify-start p-xs.5"
+              className="flex min-h-0 cursor-pointer items-center justify-start p-xs"
               onSelect={() => {
                 setFilters({ types: checked === true ? [] : [...CASE_EVENT_CATEGORIES] });
               }}
@@ -85,7 +85,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
             {CASE_EVENT_CATEGORIES.map((type) => (
               <MenuCommand.Item
                 onSelect={() => setFilters((prev) => ({ ...prev, types: toggle(prev.types, type) }))}
-                className="flex min-h-0 cursor-pointer items-center justify-start p-xs.5"
+                className="flex min-h-0 cursor-pointer items-center justify-start p-xs"
                 key={type}
               >
                 <Checkbox size="small" checked={filters?.types.includes(type)} />

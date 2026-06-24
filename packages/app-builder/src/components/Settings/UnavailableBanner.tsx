@@ -39,7 +39,7 @@ export function UnavailableBanner() {
           onClick={() => setIsOpen(false)}
           data-dismiss-target="#bottom-banner"
           type="button"
-          className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-xs.5 dark:hover:bg-gray-600 dark:hover:text-white"
+          className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-xs dark:hover:bg-gray-600 dark:hover:text-white"
         >
           <Icon icon="cross" className="size-6 text-grey-white" />
         </button>

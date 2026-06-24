@@ -63,7 +63,7 @@ export function AddComment({ caseId }: { caseId: string }) {
                 {field.state.value.map((file) => (
                   <div
                     key={file.name}
-                    className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs.5 py-0.5"
+                    className="border-grey-border flex items-center gap-xs rounded-sm border px-2xs py-2xs"
                   >
                     <span className="text-xs font-medium">{file.name}</span>
                     <Icon

@@ -33,7 +33,7 @@ export const DatasetTagSelect = ({ tags, selectedTags, setSelectedTags }: Datase
           {filteredTags.map((tag) => (
             <MenuCommand.Item
               onSelect={() => setSelectedTags((prev) => toggle(prev, tag))}
-              className="flex min-h-0 cursor-pointer items-center justify-start p-xs.5"
+              className="flex min-h-0 cursor-pointer items-center justify-start p-xs"
               key={tag}
               value={tag}
             >

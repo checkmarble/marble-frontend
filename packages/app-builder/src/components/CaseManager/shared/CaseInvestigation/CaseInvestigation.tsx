@@ -14,7 +14,7 @@ export const CaseInvestigation = ({ caseId, events, root }: CaseInvestigationPro
   const { t } = useTranslation(['cases']);
 
   return (
-    <div className="flex flex-col justify-start gap-xs.5">
+    <div className="flex flex-col justify-start gap-xs">
       <span className="text-default text-grey-primary px-2xs font-medium">{t('cases:investigation')}</span>
       <div className="border-grey-border bg-surface-card flex flex-col rounded-lg border overflow-hidden">
         <div className="p-md">

@@ -83,7 +83,7 @@ export const FieldDatasetFilters = ({
             {tags.map((tag) => (
               <MenuCommand.Item
                 onSelect={() => setFilters((prev) => ({ ...prev, tags: toggle(prev.tags, tag) }))}
-                className="flex min-h-0 cursor-pointer items-center justify-start p-xs.5"
+                className="flex min-h-0 cursor-pointer items-center justify-start p-xs"
                 key={tag}
                 value={tag}
               >

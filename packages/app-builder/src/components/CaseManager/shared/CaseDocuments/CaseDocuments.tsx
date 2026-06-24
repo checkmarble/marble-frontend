@@ -9,7 +9,7 @@ export const CaseDocuments = ({ files }: CaseDocumentsProps) => {
   const { t } = useTranslation(['common']);
 
   return (
-    <div className="flex flex-col justify-start gap-xs.5">
+    <div className="flex flex-col justify-start gap-xs">
       <div className="flex items-center justify-between px-2xs">
         <span className="text-grey-00 text-h2 font-medium">{t('common:documents')}</span>
       </div>
