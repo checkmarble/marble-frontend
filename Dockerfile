@@ -19,6 +19,18 @@ COPY packages/tests/package.json ./packages/tests/
 RUN --mount=type=cache,target=/root/.bun \
     bun ci
 
+# Bun hoists fully-satisfied deps to the root node_modules, so some workspaces
+# get no local node_modules dir. Ensure one exists for each so the per-package
+# COPY steps in the build stage always have a source.
+RUN mkdir -p \
+    packages/app-builder/node_modules \
+    packages/marble-api/node_modules \
+    packages/shared/node_modules \
+    packages/tailwind-preset/node_modules \
+    packages/typescript-utils/node_modules \
+    packages/ui-design-system/node_modules \
+    packages/ui-icons/node_modules
+
 # ---- Build stage ---- (uses dev deps from above)
 FROM ${BUN_IMAGE} AS build
 WORKDIR /usr/src/app
