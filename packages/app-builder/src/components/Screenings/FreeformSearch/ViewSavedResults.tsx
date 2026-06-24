@@ -223,9 +223,9 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
           <span>{formatDateTimeWithoutPresets(search.created_at, { language, dateStyle: 'short' })}</span>
           <IconDot spaced />
           {search.is_saved ? (
-            <span>{search.nb_hits}</span>
+            <span>{t('screenings:freeform_search.saved_results.hits', { count: search.nb_hits })}</span>
           ) : (
-            <span>{t('screenings:freeform_search.saved_results.not_saved')}</span>
+            <span>{t('screenings:freeform_search.saved_results.no_hits')}</span>
           )}
         </div>
       </Collapsible.Title>
@@ -239,41 +239,51 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
 }
 
 function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'] }) {
+  const { t } = useTranslation(['screenings']);
+  console.log(filter);
   return (
-    <div className="flex flex-wrap items-center gap-xs">
-      <Tag color="white" appearance="monospace" className="gap-xs">
-        {filter.provider}
-      </Tag>
-
-      {Object.entries(filter.filters)
-        .filter(([, value]) => value.enabled)
-        .map(([key, value], index) => (
-          <Fragment key={`filter-${key}-${index}`}>
-            {value?.datasets?.length && (
-              <Tag color="white" appearance="monospace" className="gap-xs">
-                {key}:{value?.datasets?.length ?? 0}
-              </Tag>
-            )}
-            {value?.topics && <TopicTag topics={value.topics} />}
-          </Fragment>
-        ))}
+    <div className="grid gap-xs">
+      <div className="flex flex-wrap items-center gap-xs">
+        <Tag color="white" appearance="monospace" className="gap-xs">
+          {t('screenings:freeform_search.threshold_label')}: {filter.threshold}
+        </Tag>
+        <Tag color="white" appearance="monospace" className="gap-xs">
+          {t('screenings:freeform_search.limit_label', { limit: filter.limit })}
+        </Tag>
+      </div>
+      <div className="flex flex-wrap items-center gap-xs">
+        {Object.entries(filter.filters)
+          .filter(([, value]) => value.enabled)
+          .map(([key, value], index) => (
+            <Fragment key={`filter-${key}-${index}`}>
+              {value?.datasets?.length && (
+                <Tag color="white" appearance="monospace" className="gap-xs">
+                  <span>{key}:</span>
+                  <span>{value?.datasets?.length ?? 0}</span>
+                </Tag>
+              )}
+              {value?.topics && <TopicTag topics={value.topics} />}
+            </Fragment>
+          ))}
+      </div>
     </div>
   );
 }
 
 function TopicTag({ topics }: { topics: NonNullable<ScreeningConfigBodySectionDto['topics']> }) {
-  const { t } = useTranslation(['screenings']);
-  if (topics['livness'] && topics['livness'].length === 1)
-    return (
-      <Tag color="white" appearance="monospace" className="gap-xs">
-        {t('freeform_search.global.liveness')}
-      </Tag>
-    );
+  const { t } = useTranslation(['screeningTopics']);
+
+  function getKey(v: string) {
+    if (v.startsWith('filter.')) return `lexis.${v.slice(7)}`;
+    return `lexis.${v}`;
+  }
+
   return (
     <>
       {Object.entries(topics).map(([key, value]) => (
-        <Tag color="white" appearance="monospace" className="gap-xs" key={key}>
-          {key}:{value?.length ?? 0}
+        <Tag color="white" appearance="monospace" className="gap-xs h-auto text-wrap items-start break-words" key={key}>
+          <span>{key}:</span>
+          <span>{value.map((v) => t(`screeningTopics:${getKey(v)}`)).join(', ')}</span>
         </Tag>
       ))}
     </>
@@ -298,7 +308,7 @@ function QueryValues({ query, type }: { query: SavedScreeningSearch['search_inpu
       {entityTypeFields.map((field) =>
         query.query[field] ? (
           <Tag color="white" appearance="monospace" className="gap-xs" key={field}>
-            <span>{t(`screenings:entity.property.${field}.short`)}</span>:<span>{query.query[field].join(', ')}</span>
+            <span>{t(`screenings:entity.property.${field}`)}</span>:<span>{query.query[field].join(', ')}</span>
           </Tag>
         ) : null,
       )}
@@ -418,25 +428,22 @@ function OwnerFilter({
 
   const ownerLabel = owner ? getOwnerLabel(owner) : null;
 
-  if (ownerLabel)
-    return (
-      <FilterPill
-        icon="user"
-        label={ownerLabel}
-        onClear={() => onChange(undefined)}
-        clearAriaLabel={t('screenings:freeform_search.clear')}
-      />
-    );
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="medium">
-          <span className="truncate">{t('screenings:freeform_search.saved_results.select_owner')}</span>
-          <Icon
-            icon="smallarrow-up"
-            className={cn('size-4 transition-transform duration-200 rotate-180', open && 'rotate-0')}
-          />
-        </Button>
+        {ownerLabel ? (
+          <button type="button" className="cursor-pointer">
+            <FilterPill icon="user" label={ownerLabel} />
+          </button>
+        ) : (
+          <Button variant="secondary" appearance="stroked" className="w-full justify-between h-10" size="medium">
+            <span className="truncate">{t('screenings:freeform_search.saved_results.select_owner')}</span>
+            <Icon
+              icon="smallarrow-up"
+              className={cn('size-4 transition-transform duration-200 rotate-180', open && 'rotate-0')}
+            />
+          </Button>
+        )}
       </MenuCommand.Trigger>
       <MenuCommand.Content sameWidth className="mt-sm">
         <MenuCommand.Combobox placeholder={t('screenings:freeform_search.saved_results.select_owner')} />
@@ -514,8 +521,8 @@ function FilterPill({
 }: {
   icon: 'calendar-month' | 'user';
   label: string;
-  onClear: () => void;
-  clearAriaLabel: string;
+  onClear?: () => void;
+  clearAriaLabel?: string;
 }) {
   return (
     <Tag color="purple" size="big" className="w-full justify-between bg-purple-primary/20">
@@ -523,15 +530,17 @@ function FilterPill({
         <Icon icon={icon} className="size-4 shrink-0" />
         <span className="truncate font-medium">{label}</span>
       </span>
-      <Button
-        role="button"
-        appearance="link"
-        aria-label={clearAriaLabel}
-        className="hover:text-purple-hover shrink-0 cursor-pointer"
-        onClick={onClear}
-      >
-        <Icon icon="cross" className="size-4" />
-      </Button>
+      {onClear ? (
+        <Button
+          role="button"
+          appearance="link"
+          aria-label={clearAriaLabel}
+          className="hover:text-purple-hover shrink-0 cursor-pointer"
+          onClick={onClear}
+        >
+          <Icon icon="cross" className="size-4" />
+        </Button>
+      ) : null}
     </Tag>
   );
 }
