@@ -113,13 +113,13 @@ export function DataFields({ table, object, preset, customFields, className, opt
   return (
     <DataVisualisationProvider value={contextValue}>
       {options?.showHeader ? <DataFieldsHeader object={object} /> : null}
-      <div className="@container">
+      <div className={options?.layout === '2-columns' || options?.layout === '3-columns' ? '@container' : undefined}>
         <div
           className={cn(
             'grid auto-rows-[minmax(2rem,auto)] items-stretch gap-x-md gap-y-sm break-all',
-            'grid-cols-[minmax(0,20ch)_minmax(0,1fr)]',
-            options?.layout === '2-columns' && '@[700px]:grid-cols-[repeat(2,minmax(0,20ch)_minmax(0,1fr))]',
-            options?.layout === '3-columns' && '@[700px]:grid-cols-[repeat(3,minmax(0,20ch)_minmax(0,1fr))]',
+            'grid-cols-[fit-content(20ch)_minmax(0,1fr)]',
+            options?.layout === '2-columns' && '@[700px]:grid-cols-[repeat(2,fit-content(20ch)_minmax(0,1fr))]',
+            options?.layout === '3-columns' && '@[700px]:grid-cols-[repeat(3,fit-content(20ch)_minmax(0,1fr))]',
             className,
           )}
         >

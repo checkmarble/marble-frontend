@@ -37,6 +37,9 @@ export function getRouter() {
     routeTree,
     context: { ...rqContext, i18n },
     scrollRestoration: true,
+    // Start route loaders on hover/focus so data is usually ready by click time,
+    // hiding loader RPC latency behind the intent-to-click gap.
+    defaultPreload: 'intent',
     ssr: { nonce: getNonce() },
     Wrap: (props: { children: ReactNode }) => {
       return (

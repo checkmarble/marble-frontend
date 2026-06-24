@@ -378,7 +378,7 @@ function StringId() {
   if (!value) return <EmptyValue className={codeClassName()} />;
   return (
     <CopyToClipboardButton toCopy={value}>
-      <span>{value}</span>
+      <span className="truncate">{value}</span>
     </CopyToClipboardButton>
   );
 }

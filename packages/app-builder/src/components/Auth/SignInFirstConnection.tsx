@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName } from 'ui-design-system';
-import { ExternalLink } from '../ExternalLink';
 
 export function SignInFirstConnection({
   isSignInHomepage,
@@ -18,23 +17,25 @@ export function SignInFirstConnection({
         className={CtaV2ClassName({
           variant: 'secondary',
           size: 'large',
-          className: 'w-full justify-center text-center',
+          className: 'w-full justify-center text-center h-auto min-h-10 py-sm',
         })}
         to="/create-password"
       >
         {t(isSignInHomepage ? 'auth:sign_up.set_password_sign_in' : 'auth:sign_up.set_password_sign_in_email')}
       </Link>
       {showAskDemoButton ? (
-        <ExternalLink
+        <a
           className={CtaV2ClassName({
             variant: 'secondary',
             size: 'large',
-            className: 'w-full justify-center text-center',
+            className: 'w-full justify-center text-center h-auto min-h-10 py-sm',
           })}
           href="https://www.checkmarble.com/demo-fraud"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           {t('auth:sign_up.no_account')}
-        </ExternalLink>
+        </a>
       ) : null}
     </>
   );

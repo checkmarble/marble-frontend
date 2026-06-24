@@ -21,7 +21,7 @@ export const tagClassName = cva('inline-flex items-center justify-center border 
     },
     appearance: {
       default: null,
-      monospace: 'font-mono font-normal bg-grey-white rounded-sm',
+      monospace: 'font-mono font-normal bg-surface-card rounded-sm',
     },
   },
   defaultVariants: {
