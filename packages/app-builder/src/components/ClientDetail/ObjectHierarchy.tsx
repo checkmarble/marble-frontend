@@ -1,6 +1,7 @@
 import { DataModel, type TableModel } from '@app-builder/models';
 import { useHierarchyQuery } from '@app-builder/queries/data/get-hierarchy';
 import { type HierarchyLeaf, type HierarchyNode, type HierarchyTreeBase } from '@app-builder/server-fns/data';
+import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
 import { UseQueryResult } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
@@ -264,7 +265,7 @@ const TreeItem = ({
             {!isHierarchyLeaf(item) && metadata ? (
               <Link
                 to="/client-detail/$objectType/$objectId"
-                params={{ objectType: item.objectType, objectId: item.data['object_id'] as string }}
+                params={clientDetailLinkParams(item.objectType, item.data['object_id'] as string)}
               >
                 <Icon icon="arrow-up-right" className="size-5" />
               </Link>
@@ -341,10 +342,7 @@ const TreeItemData = ({
           <Fragment key={itemObject['object_id'] as string}>
             <Link
               to="/client-detail/$objectType/$objectId"
-              params={{
-                objectType: item.objectType,
-                objectId: itemObject['object_id'] as string,
-              }}
+              params={clientDetailLinkParams(item.objectType, itemObject['object_id'] as string)}
               className="text-purple-primary hover:underline"
             >
               {itemObject[metadata.caption_field] as string}
@@ -367,10 +365,7 @@ const TreeItemData = ({
                   <Link
                     key={itemObject['object_id'] as string}
                     to="/client-detail/$objectType/$objectId"
-                    params={{
-                      objectType: item.objectType,
-                      objectId: itemObject['object_id'] as string,
-                    }}
+                    params={clientDetailLinkParams(item.objectType, itemObject['object_id'] as string)}
                     className="flex items-center justify-between h-6 hover:text-purple-primary"
                   >
                     <span>{itemObject[metadata.caption_field] as string}</span>

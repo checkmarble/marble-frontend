@@ -11,6 +11,7 @@ import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
+import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-url';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import type { Client360Table } from 'marble-api';
@@ -215,7 +216,7 @@ function ClientCard({ caseId, pivotObject, dataModel, client360Tables, userScori
           {metadata && pivotObject.isIngested ? (
             <Link
               to="/client-detail/$objectType/$objectId"
-              params={{ objectId: pivotObject.pivotObjectId!, objectType: pivotObject.pivotObjectName }}
+              params={clientDetailLinkParams(pivotObject.pivotObjectName, pivotObject.pivotObjectId!)}
               className={CtaV2ClassName({ appearance: 'link', variant: 'primary' })}
             >
               <Icon icon="eye" className="size-4" />
