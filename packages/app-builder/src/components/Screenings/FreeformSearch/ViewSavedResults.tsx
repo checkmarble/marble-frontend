@@ -3,6 +3,7 @@ import { DateRangeFilter } from '@app-builder/components/Filters';
 import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-builder/components/Panel/Panel';
 import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
+import { User } from '@app-builder/models';
 import { type PaginationParams } from '@app-builder/models/pagination';
 import { type SavedScreeningSearch } from '@app-builder/models/screening';
 import {
@@ -399,6 +400,10 @@ function PeriodFilter({
   );
 }
 
+function getOwnerLabel(owner: User) {
+  return `${owner.firstName} ${owner.lastName}`.trim() || owner.email;
+}
+
 function OwnerFilter({
   value,
   onChange,
@@ -411,7 +416,7 @@ function OwnerFilter({
   const [open, setOpen] = useState(false);
   const owner = value ? getOrgUserById(value) : undefined;
 
-  const ownerLabel = owner ? `${owner.firstName} ${owner.lastName}`.trim() : null;
+  const ownerLabel = owner ? getOwnerLabel(owner) : null;
 
   if (ownerLabel)
     return (
@@ -445,18 +450,18 @@ function OwnerFilter({
           >
             {t('screenings:freeform_search.saved_results.all_owners')}
           </MenuCommand.Item>
-          {orgUsers.map(({ userId, firstName, lastName }) => (
+          {orgUsers.map((user) => (
             <MenuCommand.Item
-              key={userId}
-              value={userId}
+              key={user.userId}
+              value={user.userId}
               onSelect={() => {
-                onChange(userId === value ? undefined : userId);
+                onChange(user.userId === value ? undefined : user.userId);
                 setOpen(false);
               }}
             >
               <span className="inline-flex w-full justify-between">
-                <span>{`${firstName} ${lastName}`.trim()}</span>
-                {userId === value ? <Icon icon="tick" className="text-purple-primary size-5" /> : null}
+                <span>{getOwnerLabel(user)}</span>
+                {user.userId === value ? <Icon icon="tick" className="text-purple-primary size-5" /> : null}
               </span>
             </MenuCommand.Item>
           ))}
