@@ -2,7 +2,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { type GroupedAnnotations } from 'marble-api';
 import { type ReactNode, useState } from 'react';
-import { Button, MenuCommand, Popover } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientCommentForm } from '../Annotations/ClientCommentForm';
 import { ClientDocumentsList } from '../Annotations/ClientDocumentsList';
@@ -26,6 +26,7 @@ export function ClientObjectAnnotationPopover({
 }: ClientObjectAnnotationPopoverProps) {
   const queryClient = useQueryClient();
   const [editTagsOpen, setEditTagsOpen] = useState(false);
+  const [editDocumentsOpen, setEditDocumentsOpen] = useState(false);
   const documents = annotations?.files ?? [];
   const tagsAnnotations = annotations?.tags ?? [];
 
@@ -35,60 +36,59 @@ export function ClientObjectAnnotationPopover({
 
   return (
     <div className="flex flex-col">
-      <MenuCommand.Menu persistOnSelect open={editTagsOpen} onOpenChange={setEditTagsOpen}>
-        <MenuCommand.Anchor>
-          <AnnotationSection title="Tags">
-            <div className="flex justify-between">
-              <div>
-                <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
-              </div>
-              <MenuCommand.Trigger>
-                <Button mode="icon" variant="secondary">
-                  <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
-                </Button>
-              </MenuCommand.Trigger>
-              <MenuCommand.Content side="right" align="start" sideOffset={4} className="w-[340px]">
-                <ClientTagsEditSelect
-                  caseId={caseId}
-                  tableName={tableName}
-                  objectId={objectId}
-                  annotations={tagsAnnotations}
-                  onAnnotateSuccess={() => {
-                    handleAnnotateSuccess();
-                    setEditTagsOpen(false);
-                  }}
-                />
-              </MenuCommand.Content>
-            </div>
-          </AnnotationSection>
-        </MenuCommand.Anchor>
-      </MenuCommand.Menu>
+      <AnnotationSection title="Tags">
+        <div className="flex justify-between">
+          <div>
+            <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
+          </div>
+          <MenuCommand.Menu persistOnSelect open={editTagsOpen} onOpenChange={setEditTagsOpen}>
+            <MenuCommand.Trigger>
+              <Button mode="icon" variant="secondary">
+                <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content side="right" align="start" sideOffset={4} collisionPadding={10} className="w-[340px]">
+              <ClientTagsEditSelect
+                caseId={caseId}
+                tableName={tableName}
+                objectId={objectId}
+                annotations={tagsAnnotations}
+                onAnnotateSuccess={() => {
+                  handleAnnotateSuccess();
+                  setEditTagsOpen(false);
+                }}
+              />
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
+        </div>
+      </AnnotationSection>
       <div className="bg-grey-border h-px" />
-      <Popover.Root>
-        <Popover.Anchor>
-          <AnnotationSection title="Documents">
-            <div className="flex justify-between">
-              <div>
-                <ClientDocumentsList documents={documents} />
-              </div>
-              <Popover.Trigger asChild>
-                <Button mode="icon" variant="secondary">
-                  <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
-                </Button>
-              </Popover.Trigger>
-              <Popover.Content side="right" align="start" sideOffset={4} collisionPadding={10} className="w-[340px]">
-                <ClientDocumentsPopover
-                  caseId={caseId}
-                  tableName={tableName}
-                  objectId={objectId}
-                  documents={documents}
-                  onAnnotateSuccess={handleAnnotateSuccess}
-                />
-              </Popover.Content>
-            </div>
-          </AnnotationSection>
-        </Popover.Anchor>
-      </Popover.Root>
+      <AnnotationSection title="Documents">
+        <div className="flex justify-between">
+          <div>
+            <ClientDocumentsList documents={documents} />
+          </div>
+          <MenuCommand.Menu persistOnSelect open={editDocumentsOpen} onOpenChange={setEditDocumentsOpen}>
+            <MenuCommand.Trigger>
+              <Button mode="icon" variant="secondary">
+                <Icon icon="edit-square" className="text-grey-secondary size-3.5" />
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content side="right" align="start" sideOffset={4} collisionPadding={10} className="w-[340px]">
+              <ClientDocumentsPopover
+                caseId={caseId}
+                tableName={tableName}
+                objectId={objectId}
+                documents={documents}
+                onAnnotateSuccess={() => {
+                  handleAnnotateSuccess();
+                  setEditDocumentsOpen(false);
+                }}
+              />
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
+        </div>
+      </AnnotationSection>
       <div className="bg-grey-border h-px" />
       <AnnotationSection title="Annotations">
         <ClientObjectComments comments={annotations?.comments ?? []} />

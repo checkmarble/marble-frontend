@@ -803,7 +803,7 @@ export interface FileRoutesByFullPath {
   '/sign-in-email': typeof AppAuthSignInEmailRoute
   '/account': typeof AppBuilderAccountRoute
   '/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
-  '/cases': typeof AppBuilderCasesRouteWithChildren
+  '/cases': typeof AppBuilderCasesDetailRouteWithChildren
   '/continuous-screening': typeof AppBuilderContinuousScreeningRouteWithChildren
   '/data': typeof AppBuilderDataRouteWithChildren
   '/design': typeof AppBuilderDesignRoute
@@ -878,7 +878,7 @@ export interface FileRoutesByFullPath {
   '/cases/$caseId/d/$decisionId/screenings': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsRouteWithChildren
   '/cases/s/$caseId': typeof AppBuilderCasesDetailSCaseIdNewRouteWithChildren
   '/cases/s/$caseId/old': typeof AppBuilderCasesDetailSCaseIdOldRoute
-  '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren
+  '/detection/scenarios/$scenarioId/i/$iterationId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteWithChildren
   '/detection/scenarios/$scenarioId/test-run/': typeof AppBuilderDetectionScenariosScenarioIdTestRunIndexRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteWithChildren
   '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdNewClientsRouteWithChildren
