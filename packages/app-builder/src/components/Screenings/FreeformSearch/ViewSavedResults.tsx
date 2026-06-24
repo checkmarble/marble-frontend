@@ -222,11 +222,9 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
           <IconDot spaced />
           <span>{formatDateTimeWithoutPresets(search.created_at, { language, dateStyle: 'short' })}</span>
           <IconDot spaced />
-          {search.is_saved ? (
-            <span>{t('screenings:freeform_search.saved_results.hits', { count: search.nb_hits })}</span>
-          ) : (
-            <span>{t('screenings:freeform_search.saved_results.no_hits')}</span>
-          )}
+          <span>{t('screenings:freeform_search.saved_results.hits', { count: search.nb_hits })}</span>
+          <IconDot spaced />
+          {search.is_saved ? <Icon icon="star" className={'size-5 fill-none text-purple-secondary'} /> : null}
         </div>
       </Collapsible.Title>
       <Collapsible.Content>
@@ -240,7 +238,7 @@ function SavedSearchRow({ search }: { search: SavedScreeningSearch }) {
 
 function FilterValues({ filter }: { filter: SavedScreeningSearch['search_config'] }) {
   const { t } = useTranslation(['screenings']);
-  console.log(filter);
+
   return (
     <div className="grid gap-xs">
       <div className="flex flex-wrap items-center gap-xs">
