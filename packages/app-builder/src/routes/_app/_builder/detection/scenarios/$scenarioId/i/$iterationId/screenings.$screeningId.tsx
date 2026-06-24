@@ -435,7 +435,7 @@ function ScreeningDetail() {
       <Page.Container ref={containerRef}>
         <Page.Content width="form">
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
-            <div className="sticky top-0 z-40 flex flex-col gap-md bg-surface-page py-sm">
+            <div className="sticky top-0 flex flex-col gap-md bg-surface-page py-sm">
               <div
                 className={cn('flex h-fit items-center justify-between gap-md', {
                   'border-b-grey-border border-b': !intersection?.isIntersecting,
