@@ -37,7 +37,14 @@ const plugins = [
           ? sentryVitePlugin({
               telemetry: false,
               release: {
-                setCommits: { auto: true },
+                // Associate commits explicitly via the SHA we already inject as
+                // SENTRY_RELEASE. Avoids `auto: true`, which needs a local .git
+                // (excluded from the Docker build).
+                setCommits: {
+                  auto: false,
+                  repo: 'checkmarble/marble-frontend',
+                  commit: process.env['SENTRY_RELEASE'] ?? '',
+                },
               },
               sourcemaps: {
                 filesToDeleteAfterUpload: ['./build/**/*.map'],
