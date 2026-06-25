@@ -42,6 +42,11 @@ const plugins = [
               sourcemaps: {
                 filesToDeleteAfterUpload: ['./build/**/*.map'],
               },
+              // Source-map upload is non-fatal by default; rethrow so a failed
+              // upload fails the (CI-only) release build instead of passing silently.
+              errorHandler: (err) => {
+                throw err;
+              },
             })
           : []),
       ]),
