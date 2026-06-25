@@ -29,11 +29,10 @@ export function CaseAnalyticsDateRangeMenu({ value, onChange }: CaseAnalyticsDat
       }}
     >
       <MenuCommand.Trigger>
-        <Button variant="secondary" className="flex h-12 min-w-60 items-center gap-sm px-md text-s">
-          <Icon icon="calendar-month" className="size-5" />
+        <MenuCommand.SelectButton>
+          <Icon icon="calendar-month" className="size-5 me-xs" />
           <span className="flex-1 text-left">{label}</span>
-          <Icon icon="caret-down" className="size-5" />
-        </Button>
+        </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4} className="max-h-[600px]">
         <MenuCommand.List>

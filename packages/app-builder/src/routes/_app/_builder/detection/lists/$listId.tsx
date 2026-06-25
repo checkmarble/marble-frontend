@@ -1,4 +1,4 @@
-import { ErrorComponent, Page } from '@app-builder/components';
+import { CalloutV2, ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { AddListValueModal } from '@app-builder/components/Lists/AddListValueModal';
 import { DeleteListModal } from '@app-builder/components/Lists/DeleteListModal';
@@ -23,11 +23,11 @@ import { ClientOnly, createFileRoute, Link } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import * as React from 'react';
+import { forwardRef, useMemo, useReducer, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, CtaV2ClassName, Input, Modal, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaV2ClassName, Modal, SearchInput, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -91,7 +91,9 @@ function Lists() {
   const { customList, listFeatureAccess } = Route.useLoaderData();
   const listValues = customList.values ?? [];
   const { t } = useTranslation(['lists', 'common']);
-  const columns = React.useMemo(
+  const [searchValue, setSearchValue] = useState('');
+
+  const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.value, {
         id: 'value',
@@ -142,22 +144,23 @@ function Lists() {
         ) : null}
       </Page.Header>
       <Page.Container>
-        {customList.description ? <Page.Description headerBanner>{customList.description}</Page.Description> : null}
         <Page.Content width="table">
+          {customList.description ? <CalloutV2>{customList.description}</CalloutV2> : null}
           {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
           <div className="flex flex-col gap-sm overflow-hidden lg:gap-md">
             <div className="flex flex-row gap-sm lg:gap-md">
               <form className="flex grow items-center">
-                <Input
-                  className="w-full"
+                <SearchInput
+                  size="medium"
+                  className="w-100"
                   disabled={listValues.length === 0}
-                  type="search"
                   aria-label={t('common:search')}
                   placeholder={t('common:search')}
-                  startAdornment="search"
-                  onChange={(event) => {
-                    virtualTable.table.setGlobalFilter(event.target.value);
+                  value={searchValue}
+                  onChange={(value) => {
+                    setSearchValue(value);
+                    virtualTable.table.setGlobalFilter(value);
                   }}
                 />
               </form>
@@ -196,7 +199,7 @@ function DownloadAsCSV({ listId }: { listId: string }) {
   );
 }
 
-const UploadAsCsvDropzone = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<'div'>>(
+const UploadAsCsvDropzone = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<'div'>>(
   function UploadAsCsvDropzone({ className, ...props }, ref) {
     return (
       <div
@@ -276,7 +279,7 @@ function modalReducer(state: State, action: Actions): State {
 
 function ClientUploadAsCsv({ listId }: { listId: string }) {
   const { t } = useTranslation(['lists', 'common']);
-  const [modalState, dispatch] = React.useReducer(modalReducer, initialState);
+  const [modalState, dispatch] = useReducer(modalReducer, initialState);
   const uploadListDataFile = useUploadListDataFile(listId);
   const revalidate = useLoaderRevalidator();
 

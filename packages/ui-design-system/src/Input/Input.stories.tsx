@@ -14,6 +14,10 @@ const Story: Meta<typeof Input> = {
       control: { type: 'radio' },
       options: inputBorderColor.slice(),
     },
+    size: {
+      control: { type: 'radio' },
+      options: ['small', 'medium', 'large'],
+    },
     startAdornment: {
       options: iconNames.slice(),
       control: {

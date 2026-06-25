@@ -41,7 +41,7 @@ export const ActivatedFilterItem = ({ filter, onUpdate, onClear }: ActivatedFilt
   });
 
   const button = (
-    <span className="h-10 bg-purple-background-light border border-purple-border rounded-md p-sm text-default flex items-center gap-xs">
+    <span className="h-8 bg-purple-background-light border border-purple-border rounded-md p-sm text-default flex items-center gap-xs">
       <span>
         <DisplayFilterValue filter={filter} />
       </span>
@@ -65,12 +65,12 @@ export const ActivatedFilterItem = ({ filter, onUpdate, onClear }: ActivatedFilt
   }
 
   return (
-    <span className="h-10 bg-purple-background-light border border-purple-border rounded-md p-sm text-default flex items-center gap-xs">
+    <span className="h-8 bg-purple-background-light border border-purple-border rounded-md p-sm text-default flex items-center gap-xs">
       <span>
         <DisplayFilterValue filter={filter} />
       </span>
       <button type="button" onClick={onClear} className="cursor-pointer">
-        <Icon icon="cross" className="size-4" />
+        <Icon icon="x" className="size-4" />
       </button>
     </span>
   );

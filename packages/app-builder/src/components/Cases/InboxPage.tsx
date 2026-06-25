@@ -18,7 +18,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Input } from 'ui-design-system';
+import { Button, cn, SearchInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { CreateCase } from './CreateCase';
@@ -183,17 +183,15 @@ export const InboxPage = ({
                   onToggle={setFavoriteInboxId}
                 />
                 <SelectCaseById onNavigate={handleNavigate} />
-                <Input
-                  endAdornment="search"
-                  adornmentClassName="size-5"
+                <SearchInput
+                  size="medium"
+                  className="w-60"
                   placeholder={t('cases:search.placeholder')}
                   value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      parsedQuery.update({ name: searchValue });
-                      setSearchValue('');
-                    }
+                  onChange={setSearchValue}
+                  onEnterKeyDown={(value) => {
+                    parsedQuery.update({ name: value });
+                    setSearchValue('');
                   }}
                 />
                 <Button

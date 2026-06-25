@@ -20,6 +20,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef, isValidElement, type ReactElement, ReactNode, useRef, useState } from 'react';
+import { isNullish } from 'remeda';
 import { Icon, IconName } from 'ui-icons';
 import { MenuCommand } from '../MenuCommand/MenuCommand';
 import Tag from '../Tag/Tag';
@@ -202,10 +203,12 @@ export type SelectOption<T> = {
 };
 
 type SelectV2BaseProps<T, O extends SelectOption<T>> = {
-  options: O[];
   placeholder: string;
+  options: O[];
+  size?: 'small' | 'medium' | 'large';
   'aria-label'?: string;
   disabled?: boolean;
+  readOnly?: boolean;
   className?: string;
   displayedValue?: (option: O) => string;
   selectedIcon?: IconName;
@@ -249,9 +252,11 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
   const {
+    size,
     options,
     placeholder,
     disabled,
+    readOnly,
     className,
     displayedValue,
     selectedIcon,
@@ -298,6 +303,7 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
       })()
     : null;
 
+  const isPlaceholderShown = props.multiple ? props.value.length === 0 : isNullish(props.value);
   const renderTriggerContent = () => {
     if (props.multiple && selectedOptions && selectedOptions.length > 0) {
       return (
@@ -329,11 +335,14 @@ function SelectV2Inner<T, O extends SelectOption<T> = SelectOption<T>>(
       <MenuCommand.Trigger>
         {variant === 'default' ? (
           <MenuCommand.SelectButton
+            size={size}
             role="combobox"
             aria-label={triggerAccessibleName}
             ref={ref}
             disabled={disabled}
+            readOnly={readOnly}
             className={className}
+            {...(isPlaceholderShown ? { 'data-placeholder-shown': true } : {})}
           >
             {renderTriggerContent()}
           </MenuCommand.SelectButton>
