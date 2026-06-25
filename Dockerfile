@@ -35,6 +35,13 @@ RUN mkdir -p \
 FROM ${BUN_IMAGE} AS build
 WORKDIR /usr/src/app
 
+# The bun base image (debian-slim) ships without a CA bundle. sentry-cli needs
+# it to verify TLS when uploading releases/source maps, otherwise it fails with
+# "unable to get local issuer certificate".
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy full source AFTER deps to leverage layer caching
 COPY . .
 # Reuse cached node_modules from deps stage
