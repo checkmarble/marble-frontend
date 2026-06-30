@@ -32,7 +32,7 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
-      const isDark = context.globals.theme === 'dark';
+      const isDark = context.globals['theme'] === 'dark';
 
       useEffect(() => {
         document.body.classList.toggle('dark', isDark);
