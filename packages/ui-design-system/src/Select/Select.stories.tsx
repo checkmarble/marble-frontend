@@ -4,9 +4,15 @@ import { SelectV2, type SelectV2Props } from './Select';
 
 type StoryProps = Pick<SelectV2Props<string>, 'disabled' | 'placeholder'>;
 
-const Story: Meta<StoryProps> = {
+const Story: Meta<typeof SelectV2> = {
   component: SelectV2,
   title: 'SelectV2',
+  parameters: {
+    // Render the static story source instead of dynamically serializing the rendered
+    // element tree. The dynamic serializer (react-element-to-jsx-string) infinite-loops
+    // when an `options` entry's `label` is a React element (see the Complex story).
+    docs: { source: { type: 'code' } },
+  },
   args: {
     placeholder: 'Select a value...',
     disabled: false,

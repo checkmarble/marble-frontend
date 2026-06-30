@@ -1,6 +1,7 @@
 import { type RuleExecution } from '@app-builder/models/decision';
+import * as Collapsible from '@radix-ui/react-collapsible';
 import type * as React from 'react';
-import { CollapsibleV2, cn } from 'ui-design-system';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { RuleExecutionStatus } from './RuleExecutionStatus';
@@ -11,7 +12,7 @@ export function RulesExecutionsContainer({ className, ...props }: React.Componen
 
 export function RuleExecutionCollapsible({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <CollapsibleV2.Provider>
+    <Collapsible.Root asChild>
       <div
         className={cn(
           'border-grey-border col-span-full grid grid-cols-subgrid gap-sm overflow-hidden rounded-lg border bg-surface-card p-sm',
@@ -19,29 +20,29 @@ export function RuleExecutionCollapsible({ className, ...props }: React.Componen
         )}
         {...props}
       />
-    </CollapsibleV2.Provider>
+    </Collapsible.Root>
   );
 }
 
 export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecution }) {
   return (
-    <CollapsibleV2.Title className="group col-span-full grid grid-cols-subgrid items-center outline-hidden">
+    <Collapsible.Trigger className="group col-span-full grid grid-cols-subgrid items-center outline-hidden">
       <Icon
         icon="smallarrow-up"
         aria-hidden
-        className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-initial:rotate-180 rtl:-rotate-90 group-aria-expanded:rtl:-rotate-180 group-data-initial:rtl:-rotate-180"
+        className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 rtl:-rotate-90 group-aria-expanded:rtl:-rotate-180"
       />
       <span className="text-s line-clamp-1 text-start font-semibold">{ruleExecution.name}</span>
       <RuleExecutionStatus ruleExecution={ruleExecution} />
-    </CollapsibleV2.Title>
+    </Collapsible.Trigger>
   );
 }
 
 export function RuleExecutionContent({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
-    <CollapsibleV2.Content className="col-span-full">
+    <Collapsible.Content className="radix-state-open:animate-slide-down radix-state-closed:animate-slide-up col-span-full overflow-hidden">
       <div className={cn('flex flex-col gap-md p-sm', className)} {...props} />
-    </CollapsibleV2.Content>
+    </Collapsible.Content>
   );
 }
 

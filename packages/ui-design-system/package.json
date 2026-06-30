@@ -16,11 +16,10 @@
   "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",
-    "@storybook/addon-essentials": "^8.6.7",
-    "@storybook/addon-interactions": "^8.6.7",
-    "@storybook/addon-links": "^8.6.7",
-    "@storybook/react": "^10.4.2",
-    "@storybook/react-vite": "^8.6.7",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/addon-links": "^10.4.6",
+    "@storybook/react": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
     "@tailwindcss/postcss": "^4.2.4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -33,11 +32,11 @@
     "i18next": "^26.3.0",
     "postcss": "^8.5.10",
     "react-i18next": "^17.0.8",
-    "storybook": "^8.6.7",
+    "storybook": "^10.4.6",
     "tailwindcss": "4.1.13",
     "vite": "7.3.5",
     "vite-tsconfig-paths": "6.1.1",
-    "vitest": "4.1.7"
+    "vitest": "4.1.8"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.28",
@@ -65,7 +64,7 @@
     "cmdk": "^1.1.1",
     "country-flag-emojis": "^1.0.4",
     "date-fns": "^4.1.0",
-    "markdown-to-jsx": "9.8.1",
+    "markdown-to-jsx": "9.8.2",
     "react-day-picker": "^9.6.2",
     "remeda": "^2.38.0",
     "sharpstate": "^0.0.13",
