@@ -231,7 +231,7 @@ export function buildDatabaseAccessorsFromDataModel(
 
 export const archiveScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(archiveScenarioPayloadSchema)
+  .validator(archiveScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.archiveScenario({ scenarioId: data.scenarioId });
@@ -244,7 +244,7 @@ export const archiveScenarioFn = createServerFn({ method: 'POST' })
 
 export const copyScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(copyScenarioPayloadSchema)
+  .validator(copyScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     return context.authInfo.scenario.copyScenario({
       scenarioId: data.scenarioId,
@@ -254,7 +254,7 @@ export const copyScenarioFn = createServerFn({ method: 'POST' })
 
 export const createScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createScenarioPayloadSchema)
+  .validator(createScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const createdScenario = await context.authInfo.scenario.createScenario(data);
@@ -272,7 +272,7 @@ export const createScenarioFn = createServerFn({ method: 'POST' })
 
 export const unarchiveScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(unarchiveScenarioPayloadSchema)
+  .validator(unarchiveScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.unarchiveScenario({ scenarioId: data.scenarioId });
@@ -283,7 +283,7 @@ export const unarchiveScenarioFn = createServerFn({ method: 'POST' })
 
 export const updateScenarioFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateScenarioPayloadSchema)
+  .validator(updateScenarioPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.updateScenario(data);
@@ -296,7 +296,7 @@ export const updateScenarioFn = createServerFn({ method: 'POST' })
 
 export const getRuleDescriptionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(
+  .validator(
     z.object({
       scenarioId: z.string(),
       astNode: z.unknown(),
@@ -314,7 +314,7 @@ export const getRuleDescriptionFn = createServerFn({ method: 'POST' })
 
 export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string() }))
+  .validator(z.object({ scenarioId: z.string() }))
   .handler(async ({ context, data }): Promise<BuilderOptionsResource> => {
     const { scenario, dataModelRepository, customListsRepository, continuousScreening, entitlements, userScoring } =
       context.authInfo;
@@ -347,7 +347,7 @@ export const getBuilderOptionsFn = createServerFn({ method: 'GET' })
 
 export const validateAstFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(
+  .validator(
     z.object({
       scenarioId: z.string(),
       node: z.unknown(),
@@ -376,7 +376,7 @@ export const validateAstFn = createServerFn({ method: 'POST' })
 
 export const generateAstFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(generateRuleInputSchema)
+  .validator(generateRuleInputSchema)
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.scenarioIterationRuleRepository.generateRuleAst({
@@ -402,7 +402,7 @@ export type SaveTriggerPayload = z.infer<typeof saveTriggerPayloadSchema>;
 
 export const saveTriggerFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(saveTriggerPayloadSchema)
+  .validator(saveTriggerPayloadSchema)
   .handler(async function saveTriggerAction({ context, data: { iterationId, schedule, astNode } }) {
     const { scenario } = context.authInfo;
 
@@ -414,7 +414,7 @@ export const saveTriggerFn = createServerFn({ method: 'POST' })
 
 export const activateIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(activateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
+  .validator(activateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.createScenarioPublication({
@@ -440,7 +440,7 @@ export const activateIterationFn = createServerFn({ method: 'POST' })
 
 export const commitIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(commitIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
+  .validator(commitIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.commitScenarioIteration({ iterationId: data.iterationId });
@@ -460,14 +460,14 @@ export const commitIterationFn = createServerFn({ method: 'POST' })
 
 export const createDraftIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
+  .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
     return context.authInfo.apiClient.createDraftFromScenarioIteration(data.iterationId);
   });
 
 export const deactivateIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deactivateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
+  .validator(deactivateIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.createScenarioPublication({
@@ -489,7 +489,7 @@ export const deactivateIterationFn = createServerFn({ method: 'POST' })
 
 export const prepareIterationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(prepareIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
+  .validator(prepareIterationPayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.scenario.startPublicationPreparation({ iterationId: data.iterationId });
@@ -509,14 +509,14 @@ export const prepareIterationFn = createServerFn({ method: 'POST' })
 
 export const getPublicationPreparationStatusFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
+  .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
     return context.authInfo.scenario.getPublicationPreparationStatus({ iterationId: data.iterationId });
   });
 
 export const getRuleSnoozeFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ iterationId: z.string() }))
+  .validator(z.object({ iterationId: z.string() }))
   .handler(async ({ context, data }): Promise<{ ruleSnoozes: RuleSnoozeInformation[] }> => {
     const { ruleSnoozes } = await context.authInfo.scenario.getScenarioIterationActiveSnoozes(data.iterationId);
     return { ruleSnoozes };
@@ -526,7 +526,7 @@ export const getRuleSnoozeFn = createServerFn({ method: 'GET' })
 
 export const createRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
+  .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
     const rule = await context.authInfo.scenarioIterationRuleRepository.createRule({
       scenarioIterationId: data.iterationId,
@@ -549,7 +549,7 @@ export const createRuleFn = createServerFn({ method: 'POST' })
 
 export const deleteRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteRulePayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
+  .validator(deleteRulePayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     await context.authInfo.scenarioIterationRuleRepository.deleteRule({ ruleId: data.ruleId });
     throw redirect({
@@ -563,7 +563,7 @@ export const deleteRuleFn = createServerFn({ method: 'POST' })
 
 export const duplicateRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(duplicateRulePayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
+  .validator(duplicateRulePayloadSchema.and(z.object({ scenarioId: z.string(), iterationId: z.string() })))
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const t = await context.services.i18nextService.getFixedT(request, ['scenarios']);
@@ -589,7 +589,7 @@ export const duplicateRuleFn = createServerFn({ method: 'POST' })
 
 export const createScreeningRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
+  .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
     const config = await context.authInfo.scenarioIterationScreeningRepository.createScreeningConfig({
       iterationId: data.iterationId,
@@ -612,7 +612,7 @@ export const createScreeningRuleFn = createServerFn({ method: 'POST' })
 
 export const deleteScreeningRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), iterationId: z.string(), screeningId: z.string() }))
+  .validator(z.object({ scenarioId: z.string(), iterationId: z.string(), screeningId: z.string() }))
   .handler(async ({ context, data }) => {
     await context.authInfo.scenarioIterationScreeningRepository.deleteScreeningConfig({
       iterationId: data.iterationId,
@@ -631,7 +631,7 @@ export const deleteScreeningRuleFn = createServerFn({ method: 'POST' })
 
 export const cancelTestRunFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), testRunId: z.string() }))
+  .validator(z.object({ scenarioId: z.string(), testRunId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.testRun.cancelTestRun({ testRunId: data.testRunId });
@@ -647,7 +647,7 @@ export const cancelTestRunFn = createServerFn({ method: 'POST' })
 
 export const createTestRunFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createTestRunPayloadSchema.and(z.object({ scenarioId: z.string() })))
+  .validator(createTestRunPayloadSchema.and(z.object({ scenarioId: z.string() })))
   .handler(async ({ context, data }) => {
     const { scenarioId, ...payload } = data;
     try {
@@ -666,7 +666,7 @@ export const createTestRunFn = createServerFn({ method: 'POST' })
 
 export const getIterationRulesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ iterationId: z.string() }))
+  .validator(z.object({ iterationId: z.string() }))
   .handler(async ({ context, data }): Promise<{ rules: ScenarioIterationRule[]; archived: boolean }> => {
     const [rules, scenarioIteration] = await Promise.all([
       context.authInfo.scenarioIterationRuleRepository.listRules({ scenarioIterationId: data.iterationId }),

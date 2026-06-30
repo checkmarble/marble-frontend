@@ -48,7 +48,7 @@ const paramsSchema = z.object({
 
 const ruleLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(paramsSchema)
+  .validator(paramsSchema)
   .handler(async function ruleLoader({ data, context }) {
     const { scenarioIterationRuleRepository, entitlements } = context.authInfo;
 
@@ -85,7 +85,7 @@ const editRuleConfigurationSchema = z.object({
 
 const editRuleAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editRuleConfigurationSchema)
+  .validator(editRuleConfigurationSchema)
   .handler(async function editRuleAction({ context, data: { params, payload } }) {
     const { scenarioIterationRuleRepository } = context.authInfo;
 

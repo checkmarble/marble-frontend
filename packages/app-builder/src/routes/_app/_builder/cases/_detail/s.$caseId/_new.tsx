@@ -11,7 +11,7 @@ import { z } from 'zod/v4';
 
 const beforeLoadFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string().transform((shortuuid) => fromSUUIDtoUUID(shortuuid)) }))
+  .validator(z.object({ caseId: z.string().transform((shortuuid) => fromSUUIDtoUUID(shortuuid)) }))
   .handler(async ({ context, data }) => {
     const [caseDetail, dataModel, pivotObjects, client360Tables] = await Promise.all([
       await context.authInfo.cases.getCase({ caseId: data.caseId }),

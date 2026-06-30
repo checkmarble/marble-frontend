@@ -58,14 +58,14 @@ export const getDataModelFn = createServerFn({ method: 'GET' })
 
 export const getObjectDetailsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ objectType: z.string(), objectId: z.string() }))
+  .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
     return context.authInfo.dataModelRepository.getIngestedObject(data.objectType, data.objectId);
   });
 
 export const getObjectCasesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ objectType: z.string(), objectId: z.string() }))
+  .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
     const cases = await context.authInfo.dataModelRepository.getCasesForObject(data.objectType, data.objectId);
     return { cases } as { cases: Case[] };
@@ -73,7 +73,7 @@ export const getObjectCasesFn = createServerFn({ method: 'GET' })
 
 export const getAnnotationsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ objectType: z.string(), objectId: z.string(), loadThumbnails: z.boolean().optional() }))
+  .validator(z.object({ objectType: z.string(), objectId: z.string(), loadThumbnails: z.boolean().optional() }))
   .handler(async ({ context, data }) => {
     const annotations = await context.authInfo.dataModelRepository.getAnnotationsByTableNameAndObjectId(
       data.objectType,
@@ -85,7 +85,7 @@ export const getAnnotationsFn = createServerFn({ method: 'GET' })
 
 export const getHierarchyFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ objectType: z.string(), objectId: z.string(), showAll: z.boolean().optional() }))
+  .validator(z.object({ objectType: z.string(), objectId: z.string(), showAll: z.boolean().optional() }))
   .handler(async ({ context, data }) => {
     const { dataModelRepository } = context.authInfo;
     const { objectType, objectId } = data;
@@ -163,7 +163,7 @@ export const getHierarchyFn = createServerFn({ method: 'GET' })
 
 export const listObjectsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(listObjectsInputSchema)
+  .validator(listObjectsInputSchema)
   .handler(async ({ context, data }) => {
     const { tableName, sourceTableName, filterFieldName, filterFieldValue, orderingFieldName, limit, offsetId } = data;
     const clientDataListResponse = await context.authInfo.dataModelRepository.listClientObjects({
@@ -196,7 +196,7 @@ export class TableMutationError extends Error {
 
 export const createTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createTableValueSchema)
+  .validator(createTableValueSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
@@ -214,7 +214,7 @@ export const createTableFn = createServerFn({ method: 'POST' })
 
 export const deleteTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteTablePayloadSchema)
+  .validator(deleteTablePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const t = await context.services.i18nextService.getFixedT(request, ['common']);
@@ -229,7 +229,7 @@ export const deleteTableFn = createServerFn({ method: 'POST' })
 
 export const createNavigationOptionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ tableId: z.string(), ...createNavigationOptionSchema.shape }))
+  .validator(z.object({ tableId: z.string(), ...createNavigationOptionSchema.shape }))
   .handler(async ({ context, data }) => {
     const { tableId, ...options } = data;
     try {
@@ -245,7 +245,7 @@ export const createNavigationOptionFn = createServerFn({ method: 'POST' })
 
 export const applyArchetypeFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(applyArchetypePayloadSchema)
+  .validator(applyArchetypePayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.apiClient.applyArchetype({ name: data.name }, {});
@@ -259,7 +259,7 @@ export const applyArchetypeFn = createServerFn({ method: 'POST' })
 
 export const editSemanticTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editSemanticTablePayloadSchema)
+  .validator(editSemanticTablePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const t = await context.services.i18nextService.getFixedT(request, ['common', 'data']);
@@ -288,7 +288,7 @@ export const editSemanticTableFn = createServerFn({ method: 'POST' })
 
 export const createAnnotationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     if (!(data instanceof FormData)) throw new Error('Expected FormData');
     return data;
   })
@@ -390,7 +390,7 @@ export const createAnnotationFn = createServerFn({ method: 'POST' })
 
 export const deleteAnnotationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ annotationId: z.string() }))
+  .validator(z.object({ annotationId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.dataModelRepository.deleteAnnotation(data.annotationId);
@@ -404,7 +404,7 @@ export const deleteAnnotationFn = createServerFn({ method: 'POST' })
 
 export const uploadIngestionDataFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     if (!(data instanceof FormData)) throw new Error('Expected FormData');
     return data;
   })
@@ -441,7 +441,7 @@ export const uploadIngestionDataFn = createServerFn({ method: 'POST' })
 
 export const getUploadLogsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ objectType: z.string() }))
+  .validator(z.object({ objectType: z.string() }))
   .handler(async ({ context, data: { objectType } }) => {
     return context.authInfo.apiClient.getIngestionUploadLogs(objectType);
   });
@@ -450,7 +450,7 @@ export const getUploadLogsFn = createServerFn({ method: 'GET' })
 
 export const importOrgFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ body: z.unknown() }))
+  .validator(z.object({ body: z.unknown() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.organization.importOrganization(data.body);
@@ -463,7 +463,7 @@ export const importOrgFn = createServerFn({ method: 'POST' })
 
 export const importOrgFileFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     if (!(data instanceof FormData)) throw new Error('Expected FormData');
     return data;
   })

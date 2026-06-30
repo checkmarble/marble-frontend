@@ -89,7 +89,7 @@ function getDecisionFilters(filters: DecisionsListQueryParams): DecisionFilters 
 
 const decisionsLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(decisionsListQueryParamsSchema)
+  .validator(decisionsListQueryParamsSchema)
   .handler(async function decisionsLoader({ context, data }) {
     const { decision, scenario, dataModelRepository, inbox } = context.authInfo;
 

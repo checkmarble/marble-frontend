@@ -31,7 +31,7 @@ import { VersionSelect } from '../$iterationId';
 
 const editViewLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function editViewLoader({ data, context }) {
     const { scenario, user } = context.authInfo;
 

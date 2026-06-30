@@ -127,7 +127,7 @@ export type GetAvailableFiltersInput = z.infer<typeof getAvailableFiltersSchema>
 
 export const getListConfigFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(getAvailableFiltersSchema)
+  .validator(getAvailableFiltersSchema)
   .handler(async ({ context, data }) => {
     const filter = await context.authInfo.screening.getAvailableFilters({ feature: data.feature });
     return filter;
@@ -135,7 +135,7 @@ export const getListConfigFn = createServerFn({ method: 'GET' })
 
 export const getScreeningAiSuggestionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ screeningId: z.string() }))
+  .validator(z.object({ screeningId: z.string() }))
   .handler(async ({ context, data }): Promise<{ suggestions: ScreeningAiSuggestion[] }> => {
     const suggestions = await context.authInfo.screening.getAiSuggestions({ screeningId: data.screeningId });
     return { suggestions };
@@ -143,7 +143,7 @@ export const getScreeningAiSuggestionsFn = createServerFn({ method: 'GET' })
 
 export const getScreeningDetailFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ decisionId: z.string(), screeningId: z.string() }))
+  .validator(z.object({ decisionId: z.string(), screeningId: z.string() }))
   .handler(async ({ context, data }): Promise<{ screening: Screening }> => {
     const screenings = await context.authInfo.screening.listScreenings({ decisionId: data.decisionId });
     const screeningItem = screenings.find((s) => s.id === data.screeningId);
@@ -157,7 +157,7 @@ export const getScreeningDetailFn = createServerFn({ method: 'GET' })
 
 export const enrichMatchFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ matchId: z.string() }))
+  .validator(z.object({ matchId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.screening.enrichMatch({ matchId: data.matchId });
@@ -178,14 +178,14 @@ export const getScreeningDatasetsFn = createServerFn({ method: 'GET' })
 
 export const searchScreeningMatchesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(refineSearchSchema)
+  .validator(refineSearchSchema)
   .handler(async ({ context, data }) => {
     return await context.authInfo.screening.searchScreeningMatches(data);
   });
 
 export const freeformSearchFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(freeformSearchSchema)
+  .validator(freeformSearchSchema)
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.screening.freeformSearch(data);
@@ -198,7 +198,7 @@ export const freeformSearchFn = createServerFn({ method: 'POST' })
 
 export const saveFreeformSearchFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ id: z.uuid() }))
+  .validator(z.object({ id: z.uuid() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.screening.saveFreeformSearch(data);
@@ -209,7 +209,7 @@ export const saveFreeformSearchFn = createServerFn({ method: 'POST' })
 
 export const listSavedFreeformSearchesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(savedSearchFiltersSchema)
+  .validator(savedSearchFiltersSchema)
   .handler(async ({ context, data }) => {
     try {
       const page = await context.authInfo.screening.listSavedScreeningSearches(data);
@@ -221,7 +221,7 @@ export const listSavedFreeformSearchesFn = createServerFn({ method: 'GET' })
 
 export const getFreeformSearchFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ id: z.uuid() }))
+  .validator(z.object({ id: z.uuid() }))
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.screening.getFreeformSearch(data);
@@ -233,7 +233,7 @@ export const getFreeformSearchFn = createServerFn({ method: 'GET' })
 
 export const getEnrichedDataFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(getEnrichedDataInputSchema)
+  .validator(getEnrichedDataInputSchema)
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.screening.enrichedData(data);
@@ -245,14 +245,14 @@ export const getEnrichedDataFn = createServerFn({ method: 'GET' })
 
 export const refineScreeningFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(refineSearchSchema)
+  .validator(refineSearchSchema)
   .handler(async ({ context, data }) => {
     return await context.authInfo.screening.refineScreening(data);
   });
 
 export const uploadScreeningFileFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     if (!(data instanceof FormData)) throw new Error('Expected FormData');
     return data;
   })

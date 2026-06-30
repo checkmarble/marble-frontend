@@ -16,7 +16,7 @@ import { omit } from 'radash';
 
 export const createListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createListPayloadSchema)
+  .validator(createListPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const result = await context.authInfo.customListsRepository.createCustomList(data);
@@ -34,7 +34,7 @@ export const createListFn = createServerFn({ method: 'POST' })
 
 export const deleteListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteListPayloadSchema)
+  .validator(deleteListPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.customListsRepository.deleteCustomList(data.listId);
     throw redirect({ to: '/detection/lists' });
@@ -42,14 +42,14 @@ export const deleteListFn = createServerFn({ method: 'POST' })
 
 export const editListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editListPayloadSchema)
+  .validator(editListPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.customListsRepository.updateCustomList(data.listId, omit(data, ['listId']));
   });
 
 export const addListValueFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(addValuePayloadSchema)
+  .validator(addValuePayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.customListsRepository.createCustomListValue(data.listId, {
       value: data.value,
@@ -58,14 +58,14 @@ export const addListValueFn = createServerFn({ method: 'POST' })
 
 export const deleteListValueFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteValuePayloadSchema)
+  .validator(deleteValuePayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.customListsRepository.deleteCustomListValue(data.listId, data.listValueId);
   });
 
 export const uploadListDataFileFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     if (!(data instanceof FormData)) throw new Error('Expected FormData');
     return data;
   })

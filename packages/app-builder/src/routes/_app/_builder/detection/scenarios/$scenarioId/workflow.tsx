@@ -18,7 +18,7 @@ import { Icon } from 'ui-icons';
 
 const workflowLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function workflowLoader({ data, context }) {
     const { dataModelRepository, entitlements, user } = context.authInfo;
 

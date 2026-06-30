@@ -73,7 +73,7 @@ const screeningLoaderDataSchema = z.object({
 
 const screeningLoader = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(screeningLoaderDataSchema)
+  .validator(screeningLoaderDataSchema)
   .handler(async function screeningLoader({ data, context }) {
     const { entitlements, screening } = context.authInfo;
 
@@ -131,7 +131,7 @@ const editScreeningConfigurationSchema = z.object({
 
 const editScreeningAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editScreeningConfigurationSchema)
+  .validator(editScreeningConfigurationSchema)
   .handler(async function editScreeningAction({ context, data: { params, payload } }) {
     const { scenarioIterationScreeningRepository } = context.authInfo;
 

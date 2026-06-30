@@ -11,7 +11,7 @@ import { authMiddleware } from './auth-middleware';
 
 export const caseDetailMiddleware = createMiddleware({ type: 'function' })
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .server(async ({ next, context, data }) => {
     const request = getRequest();
     const { cases: caseRepository, inbox: inboxRepository } = context.authInfo;

@@ -47,7 +47,7 @@ const searchParamsSchema = z.object({
 
 const analyticsLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator(paramsSchema)
+  .validator(paramsSchema)
   .handler(async function analyticsLoader({ data, context }) {
     const { scenario, user, entitlements } = context.authInfo;
 

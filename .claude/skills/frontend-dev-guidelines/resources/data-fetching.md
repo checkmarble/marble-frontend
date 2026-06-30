@@ -71,7 +71,7 @@ const createListPayloadSchema = z.object({ name: z.string().min(1) });
 
 export const createListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createListPayloadSchema)
+  .validator(createListPayloadSchema)
   .handler(async ({ context, data }) => {
     const result = await context.authInfo.customListsRepository.createCustomList(data);
     throw redirect({
@@ -81,7 +81,7 @@ export const createListFn = createServerFn({ method: 'POST' })
 ```
 
 Key points:
-- `.inputValidator(schema)` validates `data` on the server before the handler runs; the handler receives `{ context, data }` where `data` is the parsed result
+- `.validator(schema)` validates `data` on the server before the handler runs; the handler receives `{ context, data }` where `data` is the parsed result
 - `redirect()` from `@tanstack/react-router` is thrown (not returned) to trigger navigation
 - `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` sets headers like `Set-Cookie` — there is no `data()` helper. Used for things like persisted preferences, **not** for toast flash sessions (those no longer exist)
 - For error feedback, let the server function throw; surface the message client-side via the mutation's `onError` (see [common-patterns#toast-notifications](common-patterns.md#toast-notifications))

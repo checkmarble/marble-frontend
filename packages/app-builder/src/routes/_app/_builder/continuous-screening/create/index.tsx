@@ -13,7 +13,7 @@ const searchSchema = z.object({
 
 const createConfigurationLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator(z.object({ name: z.string(), description: z.string().optional() }))
+  .validator(z.object({ name: z.string(), description: z.string().optional() }))
   .handler(async function continuousScreeningCreateLoader({ data: { name, description } }) {
     return { name, description: description ?? '' };
   });

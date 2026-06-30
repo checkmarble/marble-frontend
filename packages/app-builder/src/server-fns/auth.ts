@@ -14,7 +14,7 @@ const signInPayload = z.object({
 
 export const signInFn = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
-  .inputValidator(signInPayload)
+  .validator(signInPayload)
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const successRedirect = safeRedirect(data.redirectTo ?? null, '/app-router');
@@ -27,7 +27,7 @@ export const signInFn = createServerFn({ method: 'POST' })
 
 export const signInEmailFn = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
-  .inputValidator(signInPayload)
+  .validator(signInPayload)
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const successRedirect = safeRedirect(data.redirectTo ?? null, '/app-router');
@@ -40,7 +40,7 @@ export const signInEmailFn = createServerFn({ method: 'POST' })
 
 export const logoutFn = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
-  .inputValidator(z.object({ redirectTo: z.string().optional() }))
+  .validator(z.object({ redirectTo: z.string().optional() }))
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const redirectTo = data.redirectTo ? `/sign-in?redirectTo=${encodeURIComponent(data.redirectTo)}` : '/sign-in';
@@ -50,7 +50,7 @@ export const logoutFn = createServerFn({ method: 'POST' })
 
 export const refreshTokenFn = createServerFn({ method: 'POST' })
   .middleware([servicesMiddleware])
-  .inputValidator(z.object({ idToken: z.string(), csrf: z.string() }))
+  .validator(z.object({ idToken: z.string(), csrf: z.string() }))
   .handler(async ({ context, data }) => {
     const request = getRequest();
     try {
