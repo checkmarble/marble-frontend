@@ -5,7 +5,6 @@ import { SelectV2, type SelectV2Props } from './Select';
 type StoryProps = Pick<SelectV2Props<string>, 'disabled' | 'placeholder'>;
 
 const Story: Meta<StoryProps> = {
-  component: SelectV2,
   title: 'SelectV2',
   args: {
     placeholder: 'Select a value...',

@@ -1,5 +1,9 @@
 import { Callout } from '@app-builder/components/Callout';
 import {
+  DatatypeIcon,
+  DatatypeToPrimitiveType,
+} from '@app-builder/components/Data/SemanticTables/Shared/DatatypeOption';
+import {
   FTM_ENTITIES,
   FTM_ENTITIES_PROPERTIES,
   FtmEntityPropertyKey,
@@ -257,7 +261,8 @@ const ObjectMappingFtmContent = ({
 
                 return (
                   <div key={field.id} className="grid grid-cols-subgrid col-span-full items-center">
-                    <div className="flex items-center px-sm h-10">
+                    <div className="flex items-center px-sm h-10 gap-sm">
+                      <DatatypeIcon dataType={DatatypeToPrimitiveType(field.dataType)} />
                       {mappingConfig.objectType}.{field.name}
                     </div>
                     <div className={cn('p-sm', { 'opacity-50': hasSavedMapping })}>

@@ -1,11 +1,16 @@
 import { decisionsI18n } from '@app-builder/components';
-import { DataModelField, TableModel } from '@app-builder/models';
-import { DataType, getDataTypeIcon } from '@app-builder/models/data-model';
+import { DataModelField, SemanticTypeField, TableModel } from '@app-builder/models';
+import { DataType } from '@app-builder/models/data-model';
 import { isScreeningError, type Screening } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import {
+  DateBirthdateComponent,
+  DateDatetimeComponent,
+  StringMainComponent,
+} from '../Data/DataVisualisation/DataField';
+import { DatatypeIcon, DatatypeToPrimitiveType } from '../Data/SemanticTables/Shared/DatatypeOption';
 import { MatchCard } from '../Screenings/MatchCard';
 import { ScreeningErrors } from '../Screenings/ScreeningErrors';
 import { ScreeningStatusTag } from '../Screenings/ScreeningStatusTag';
@@ -46,6 +51,20 @@ export function ScreeningDetail({ screening, table }: { screening: Screening; ta
   );
 }
 
+type SearchInputItem = {
+  value: string;
+  type: DataType;
+  semanticType: SemanticTypeField;
+};
+
+function toSearchInputItem(value: string, field?: DataModelField): SearchInputItem {
+  return {
+    value,
+    type: field?.dataType ?? 'String',
+    semanticType: field?.semanticType ?? 'text',
+  };
+}
+
 const SearchInput = ({
   request,
   fields,
@@ -55,7 +74,7 @@ const SearchInput = ({
 }) => {
   const { t } = useTranslation(decisionsI18n);
 
-  const searchInputList = R.pipe(
+  const searchInputList: SearchInputItem[] = R.pipe(
     R.values(request.queries),
     R.flatMap((query) =>
       R.pipe(
@@ -63,30 +82,28 @@ const SearchInput = ({
         R.flatMap(([ftmProperty, values]) => {
           const field = fields?.find((f) => f.ftmProperty === ftmProperty);
 
-          return values.map((value) => ({ value, type: field?.dataType ?? 'String' }));
+          return values.map((value) => toSearchInputItem(value, field));
         }),
       ),
     ),
   );
 
-  const iconForType = (type: DataType) => {
-    switch (type) {
-      case 'Timestamp':
-        return 'calendar-month';
-    }
-
-    return getDataTypeIcon(type);
-  };
-
   return (
     <div className="flex items-center gap-sm">
       <span>{t('screenings:search_input')}</span>
-      {searchInputList.map(({ value, type }, i) => (
+      {searchInputList.map(({ value, type, semanticType }, i) => (
         <div key={i} className="border-grey-border flex items-center gap-sm rounded-sm border p-sm">
-          <span className="bg-grey-background size-6 rounded-xs p-xs">
-            <Icon icon={iconForType(type) ?? 'string'} className="size-4" />
-          </span>
-          {value}
+          <DatatypeIcon dataType={DatatypeToPrimitiveType(type)} />
+
+          {semanticType === 'date_of_birth' ? (
+            <DateBirthdateComponent value={value} compact />
+          ) : semanticType === 'name' ? (
+            <StringMainComponent value={value} />
+          ) : type === 'Timestamp' ? (
+            <DateDatetimeComponent value={value} />
+          ) : (
+            value
+          )}
         </div>
       ))}
     </div>

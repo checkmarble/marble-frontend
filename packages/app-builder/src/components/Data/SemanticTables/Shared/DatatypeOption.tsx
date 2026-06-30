@@ -1,5 +1,6 @@
-import { getDataTypeIcon, PrimitiveTypes } from '@app-builder/models/data-model';
+import { DataType, getDataTypeIcon, PrimitiveTypes } from '@app-builder/models/data-model';
 import { useMemo } from 'react';
+import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 const dataTypeOptions: { value: PrimitiveTypes; labelKey: string }[] = [
@@ -25,7 +26,7 @@ export function DatatypeIcon({ dataType }: { dataType: PrimitiveTypes }) {
   const labelKey = dataTypeOptions.find((opt) => opt.value === dataType)?.labelKey;
   return (
     <span className=" text-grey-secondary bg-grey-background rounded p-sm grid place-items-center" title={labelKey}>
-      <Icon icon={getDataTypeIcon(dataType) ?? 'minus'} className="size-4" />
+      <Icon icon={getDataTypeIcon(dataType) ?? 'string'} className="size-4" />
     </span>
   );
 }
@@ -39,4 +40,17 @@ export function useDatatypeOptions() {
       })),
     [],
   );
+}
+
+export function DatatypeToPrimitiveType(dataType: DataType): PrimitiveTypes {
+  return match(dataType)
+    .with('Timestamp', 'Timestamp[]', () => 'Timestamp')
+    .with('String', 'String[]', () => 'String')
+    .with('Float', 'Float[]', () => 'Float')
+    .with('Bool', 'Bool[]', () => 'Bool')
+    .with('Coords', 'Coords[]', () => 'Coords')
+    .with('IpAddress', 'IpAddress[]', () => 'IpAddress')
+    .with('Int', 'Int[]', () => 'Int')
+    .with('DerivedData', 'unknown', () => 'String')
+    .exhaustive() as PrimitiveTypes;
 }

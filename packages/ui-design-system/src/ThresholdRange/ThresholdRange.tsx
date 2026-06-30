@@ -28,6 +28,8 @@ export type ThresholdRangeProps = {
 const RAIL_HEIGHT = 4;
 const INACTIVE_DOT_SIZE = 8;
 const ACTIVE_DOT_SIZE = 16;
+const LABEL_GAP = 4;
+const LABEL_TOP_OFFSET = RAIL_HEIGHT / 2 + ACTIVE_DOT_SIZE / 2 + LABEL_GAP;
 
 function getSortedSteps(values: ThresholdRangeStep[]) {
   return [...values].sort((a, b) => a.value - b.value);
@@ -239,116 +241,120 @@ export function ThresholdRange({
           onKeyDown={handleKeyDown}
           onBlur={onBlur}
         >
-          <div className="relative px-md pb-sm">
-            <div
-              ref={railRef}
-              data-testid="threshold-range-rail"
-              className="bg-grey-border relative w-full rounded-full before:absolute before:inset-x-0 before:-top-5 before:-bottom-5 before:content-['']"
-              style={{ height: `${RAIL_HEIGHT}px` }}
-              onClick={(event) => {
-                if (hasDraggedRef.current) {
-                  hasDraggedRef.current = false;
-                  return;
-                }
-                selectNearestStep(event.clientX, event.currentTarget);
-              }}
-              onPointerMove={handleRailPointerMove}
-              onPointerUp={endThumbDrag}
-              onPointerCancel={endThumbDrag}
-            >
-              {segments.map((segment) => {
-                const start = (segment.startValue / normalizedMax) * 100;
-                const end = (segment.endValue / normalizedMax) * 100;
-                const width = end - start;
-                const isCompleted = activeIndex >= segment.completedStepIndex;
-                const background = isCompleted
-                  ? `linear-gradient(90deg, ${segment.fromColor} 0%, ${segment.toColor} 100%)`
-                  : undefined;
+          <div className="px-md pb-sm">
+            <div className="relative w-full">
+              <div
+                ref={railRef}
+                data-testid="threshold-range-rail"
+                className="bg-grey-border relative w-full rounded-full before:absolute before:inset-x-0 before:-top-5 before:-bottom-5 before:content-['']"
+                style={{ height: `${RAIL_HEIGHT}px` }}
+                onClick={(event) => {
+                  if (hasDraggedRef.current) {
+                    hasDraggedRef.current = false;
+                    return;
+                  }
+                  selectNearestStep(event.clientX, event.currentTarget);
+                }}
+                onPointerMove={handleRailPointerMove}
+                onPointerUp={endThumbDrag}
+                onPointerCancel={endThumbDrag}
+              >
+                {segments.map((segment) => {
+                  const start = (segment.startValue / normalizedMax) * 100;
+                  const end = (segment.endValue / normalizedMax) * 100;
+                  const width = end - start;
+                  const isCompleted = activeIndex >= segment.completedStepIndex;
+                  const background = isCompleted
+                    ? `linear-gradient(90deg, ${segment.fromColor} 0%, ${segment.toColor} 100%)`
+                    : undefined;
 
-                return (
-                  <div
-                    key={segment.key}
-                    aria-hidden="true"
-                    className={cn('absolute rounded-full', isCompleted ? '' : 'bg-grey-border')}
-                    style={{
-                      left: `${start}%`,
-                      width: `${width}%`,
-                      height: `${RAIL_HEIGHT}px`,
-                      background,
-                    }}
-                  />
-                );
-              })}
+                  return (
+                    <div
+                      key={segment.key}
+                      aria-hidden="true"
+                      className={cn('absolute rounded-full', isCompleted ? '' : 'bg-grey-border')}
+                      style={{
+                        left: `${start}%`,
+                        width: `${width}%`,
+                        height: `${RAIL_HEIGHT}px`,
+                        background,
+                      }}
+                    />
+                  );
+                })}
 
-              {steps.map((step, index) => {
-                const position = (step.value / normalizedMax) * 100;
-                const isActive = index === activeIndex;
-                const isCompleted = activeIndex >= index;
-                const size = isActive ? ACTIVE_DOT_SIZE : INACTIVE_DOT_SIZE;
-                const backgroundColor = isCompleted ? step.color : 'var(--color-grey-border)';
+                {steps.map((step, index) => {
+                  const position = (step.value / normalizedMax) * 100;
+                  const isActive = index === activeIndex;
+                  const isCompleted = activeIndex >= index;
+                  const size = isActive ? ACTIVE_DOT_SIZE : INACTIVE_DOT_SIZE;
+                  const backgroundColor = isCompleted ? step.color : 'var(--color-grey-border)';
 
-                return (
-                  <button
-                    key={step.value}
-                    type="button"
-                    tabIndex={-1}
-                    aria-label={`${title} ${step.value.toString()}`}
-                    disabled={disabled}
-                    data-testid={isActive ? 'threshold-range-thumb-active' : undefined}
-                    className={cn(
-                      'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-0 p-0 touch-none',
-                      disabled
-                        ? 'cursor-not-allowed'
-                        : isActive
-                          ? isDragging
-                            ? 'cursor-grabbing'
-                            : 'cursor-grab'
-                          : 'cursor-pointer',
-                    )}
-                    style={{
-                      left: `${position}%`,
-                      width: `${size}px`,
-                      height: `${size}px`,
-                      backgroundColor,
-                    }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      if (hasDraggedRef.current) {
-                        hasDraggedRef.current = false;
-                        return;
-                      }
-                      selectStepAtIndex(index);
-                    }}
-                    onPointerDown={isActive ? handleActiveThumbPointerDown : undefined}
-                  />
-                );
-              })}
+                  return (
+                    <button
+                      key={step.value}
+                      type="button"
+                      tabIndex={-1}
+                      aria-label={`${title} ${step.value.toString()}`}
+                      disabled={disabled}
+                      data-testid={isActive ? 'threshold-range-thumb-active' : undefined}
+                      className={cn(
+                        'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-0 p-0 touch-none',
+                        disabled
+                          ? 'cursor-not-allowed'
+                          : isActive
+                            ? isDragging
+                              ? 'cursor-grabbing'
+                              : 'cursor-grab'
+                            : 'cursor-pointer',
+                      )}
+                      style={{
+                        left: `${position}%`,
+                        width: `${size}px`,
+                        height: `${size}px`,
+                        backgroundColor,
+                      }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        if (hasDraggedRef.current) {
+                          hasDraggedRef.current = false;
+                          return;
+                        }
+                        selectStepAtIndex(index);
+                      }}
+                      onPointerDown={isActive ? handleActiveThumbPointerDown : undefined}
+                    />
+                  );
+                })}
+              </div>
+
+              {activeStep ? (
+                <div
+                  className="absolute text-s leading-none font-medium"
+                  style={{
+                    top: `${LABEL_TOP_OFFSET}px`,
+                    left: `${(activeStep.value / normalizedMax) * 100}%`,
+                    transform: 'translateX(-50%)',
+                    color: activeStep.color,
+                  }}
+                >
+                  {activeStep.value.toString()}
+                </div>
+              ) : null}
+
+              {activeStep?.value !== lastStep.value ? (
+                <div
+                  className="text-grey-placeholder absolute text-s leading-none font-medium"
+                  style={{
+                    top: `${LABEL_TOP_OFFSET}px`,
+                    left: `${(lastStep.value / normalizedMax) * 100}%`,
+                    transform: 'translateX(-50%)',
+                  }}
+                >
+                  {lastStep.value.toString()}
+                </div>
+              ) : null}
             </div>
-
-            {activeStep ? (
-              <div
-                className="absolute top-full text-s leading-none font-medium"
-                style={{
-                  left: `${(activeStep.value / normalizedMax) * 100}%`,
-                  transform: 'translateX(-50%)',
-                  color: activeStep.color,
-                }}
-              >
-                {activeStep.value.toString()}
-              </div>
-            ) : null}
-
-            {activeStep?.value !== lastStep.value ? (
-              <div
-                className="text-grey-placeholder absolute top-full text-s leading-none font-medium"
-                style={{
-                  left: `${(lastStep.value / normalizedMax) * 100}%`,
-                  transform: 'translateX(-50%)',
-                }}
-              >
-                {lastStep.value.toString()}
-              </div>
-            ) : null}
           </div>
         </div>
 
