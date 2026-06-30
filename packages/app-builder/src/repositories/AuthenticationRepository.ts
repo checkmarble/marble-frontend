@@ -1,6 +1,13 @@
 import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
 import { AppConfig } from '@app-builder/models/app-config';
-import { User } from 'firebase/auth';
+import { adaptMfaFactor, type MfaFactor } from '@app-builder/models/mfa';
+import { type TotpSecret, User } from 'firebase/auth';
+
+export interface TotpEnrollmentParams {
+  secret: TotpSecret;
+  qrCodeUrl: string;
+  secretKey: string;
+}
 
 export interface AuthenticationClientRepository {
   getCurrentUser: () => User | null;
@@ -15,6 +22,10 @@ export interface AuthenticationClientRepository {
   resendEmailVerification: (locale: string, logout: () => void) => Promise<void>;
   sendPasswordResetEmail: (locale: string, email: string) => Promise<void>;
   firebaseIdToken: () => Promise<string>;
+  getEnrolledMfaFactors: () => Promise<MfaFactor[]>;
+  startTotpEnrollment: () => Promise<TotpEnrollmentParams>;
+  finalizeTotpEnrollment: (secret: TotpSecret, verificationCode: string, displayName: string) => Promise<void>;
+  unenrollMfaFactor: (factorUid: string) => Promise<void>;
   isFirebaseEmulator: boolean;
 }
 
@@ -121,6 +132,45 @@ export function getAuthenticationClientRepository(
     return firebaseClient.clientAuth.currentUser;
   };
 
+  // Resolve the signed-in user reliably, waiting for the SDK to finish initialising.
+  // Same rationale as firebaseIdToken: currentUser is not reliable during init.
+  const getReadyUser = () => {
+    return new Promise<User>((resolve, reject) => {
+      const unsubscribe = firebaseClient.clientAuth.onAuthStateChanged((user) => {
+        unsubscribe();
+        if (user) {
+          resolve(user);
+        } else {
+          reject(new Error('No authenticated user'));
+        }
+      });
+    });
+  };
+
+  async function getEnrolledMfaFactors() {
+    const user = await getReadyUser();
+    return firebaseClient.multiFactor(user).enrolledFactors.map(adaptMfaFactor);
+  }
+
+  async function startTotpEnrollment(): Promise<TotpEnrollmentParams> {
+    const user = await getReadyUser();
+    const mfaSession = await firebaseClient.multiFactor(user).getSession();
+    const secret = await firebaseClient.totpGenerator.generateSecret(mfaSession);
+    const qrCodeUrl = secret.generateQrCodeUrl(user.email ?? user.uid, 'Marble');
+    return { secret, qrCodeUrl, secretKey: secret.secretKey };
+  }
+
+  async function finalizeTotpEnrollment(secret: TotpSecret, verificationCode: string, displayName: string) {
+    const user = await getReadyUser();
+    const assertion = firebaseClient.totpGenerator.assertionForEnrollment(secret, verificationCode);
+    await firebaseClient.multiFactor(user).enroll(assertion, displayName);
+  }
+
+  async function unenrollMfaFactor(factorUid: string) {
+    const user = await getReadyUser();
+    await firebaseClient.multiFactor(user).unenroll(factorUid);
+  }
+
   return {
     getCurrentUser,
     googleSignIn,
@@ -130,6 +180,10 @@ export function getAuthenticationClientRepository(
     resendEmailVerification,
     sendPasswordResetEmail,
     firebaseIdToken,
+    getEnrolledMfaFactors,
+    startTotpEnrollment,
+    finalizeTotpEnrollment,
+    unenrollMfaFactor,
     isFirebaseEmulator: firebaseClient.isFirebaseEmulator,
   };
 }

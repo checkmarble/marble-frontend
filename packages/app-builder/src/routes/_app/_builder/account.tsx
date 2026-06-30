@@ -1,6 +1,7 @@
 import { Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
+import { TwoFactorAuthSettings } from '@app-builder/components/Settings/TwoFactorAuth/TwoFactorAuthSettings';
 import { UserAvailabilityStatus } from '@app-builder/components/Settings/UserAvailabilityStatus';
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
@@ -10,7 +11,7 @@ import { logoutFn } from '@app-builder/server-fns/auth';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
-import { createFileRoute } from '@tanstack/react-router';
+import { ClientOnly, createFileRoute } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Radio, Tag } from 'ui-design-system';
@@ -39,7 +40,9 @@ function AccountPage() {
   const logout = useServerFn(logoutFn);
 
   const { theme, setTheme } = useTheme();
-  const { versions } = AppConfigContext.useValue();
+  const appConfig = AppConfigContext.useValue();
+  const { versions } = appConfig;
+  const isFirebaseAuth = appConfig.auth.provider === 'firebase';
   const layoutData = useBuilderLayoutData();
   const isAutoAssignmentAvailable = layoutData?.featuresAccess.isAutoAssignmentAvailable ?? false;
 
@@ -97,6 +100,14 @@ function AccountPage() {
               </div>
               <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
             </div>
+
+            {isFirebaseAuth ? (
+              <div className="w-full max-w-md">
+                <ClientOnly fallback={null}>
+                  <TwoFactorAuthSettings />
+                </ClientOnly>
+              </div>
+            ) : null}
 
             <div className="text-grey-secondary flex items-center gap-md text-xs">
               <span className="flex items-center gap-xs">
