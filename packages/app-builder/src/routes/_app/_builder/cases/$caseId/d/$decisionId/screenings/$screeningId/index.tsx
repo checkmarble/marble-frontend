@@ -5,7 +5,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 const screeningIndexLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function screeningIndexLoader({ data }) {
     const caseId = data?.params?.['caseId'];
     if (!caseId) {

@@ -12,7 +12,7 @@ import { Typo } from 'ui-design-system';
 
 const scheduledExecutionsLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scheduledExecutionsLoader({ data, context }) {
     const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
 

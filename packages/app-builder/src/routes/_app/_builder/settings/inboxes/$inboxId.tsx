@@ -52,7 +52,7 @@ type LoaderData = {
 
 const inboxDetailLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function inboxDetailLoader({ context, data }) {
     const { user, inbox: inboxApi, entitlements } = context.authInfo;
 

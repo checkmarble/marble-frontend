@@ -64,7 +64,7 @@ const handleScreenings = async (screenings: Screening[], screeningRepository: Sc
 
 const decisionLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function decisionLoader({ context, data }) {
     const request = getRequest();
     const {

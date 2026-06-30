@@ -11,7 +11,7 @@ Two patterns coexist for server endpoints called from the client:
 ## Server Functions (preferred for new React Query endpoints)
 
 - Export from `server-fns/{domain}.ts` using `createServerFn({ method: 'POST' })` from `@tanstack/react-start`
-- Chain: `.middleware([authMiddleware]).inputValidator(zodSchema).handler(async ({ context, data }) => { ... })`
+- Chain: `.middleware([authMiddleware]).validator(zodSchema).handler(async ({ context, data }) => { ... })`
 - Call from React Query: `mutationFn: (payload) => myServerFn({ data: payload })`
 - Access auth via `context.authInfo` (repositories, user); services via `context.services`
 - Set response headers via `setResponseHeaders(new Headers({ ... }))` from `@tanstack/react-start/server` — no `data()` helper exists

@@ -7,7 +7,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 const screeningFilesLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function screeningFilesLoader({ context, data }) {
     const { screening: screeningRepository } = context.authInfo;
 

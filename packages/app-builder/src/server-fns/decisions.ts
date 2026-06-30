@@ -4,7 +4,7 @@ import { z } from 'zod/v4';
 
 export const getDecisionFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ decisionId: z.string() }))
+  .validator(z.object({ decisionId: z.string() }))
   .handler(async ({ context, data }) => {
     const decision = await context.authInfo.decision.getDecisionById(data.decisionId);
     return { decision };

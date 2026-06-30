@@ -8,7 +8,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 const screeningCaseDetailLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function screeningCaseDetailLoader({ context }) {
     if (context.case.detail.type !== 'continuous_screening') {
       throw redirect({ to: '/cases/s/$caseId', params: { caseId: fromUUIDtoSUUID(context.case.detail.id) } });

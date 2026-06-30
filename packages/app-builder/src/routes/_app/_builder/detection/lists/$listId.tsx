@@ -33,7 +33,7 @@ import { z } from 'zod/v4';
 
 const listLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function listLoader({ context, data }) {
     const { user, customListsRepository } = context.authInfo;
 

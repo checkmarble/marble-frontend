@@ -26,7 +26,7 @@ import { Icon } from 'ui-icons';
 
 const webhookDetailLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function webhookDetailLoader({ context, data }) {
     const { webhookRepository, user, entitlements } = context.authInfo;
 

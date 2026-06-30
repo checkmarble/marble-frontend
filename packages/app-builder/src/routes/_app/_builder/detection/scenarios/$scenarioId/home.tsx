@@ -36,7 +36,7 @@ import { z } from 'zod/v4';
 
 const homeLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function homeLoader({ data, context }) {
     const { user, entitlements, decision, testRun: testRunRepository, scenario } = context.authInfo;
 
@@ -71,7 +71,7 @@ const scenarioExecutionSchema = z.object({
 
 const triggerManualExecutionAction = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function triggerManualExecutionAction({ data, context }) {
     const { scenario } = context.authInfo;
     await scenario.scheduleScenarioExecution({ iterationId: data?.params?.['iterationId']! });

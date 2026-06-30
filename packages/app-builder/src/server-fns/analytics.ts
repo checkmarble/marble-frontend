@@ -12,7 +12,7 @@ const caseAnalyticsQuerySchema = z.object({
 
 export const getCaseStatusByDateFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(caseAnalyticsQuerySchema)
+  .validator(caseAnalyticsQuerySchema)
   .handler(async ({ context, data }) => {
     const casesStatusByDate = await context.authInfo.analytics.getCaseStatusByDate(data);
     return { casesStatusByDate };
@@ -20,7 +20,7 @@ export const getCaseStatusByDateFn = createServerFn({ method: 'POST' })
 
 export const getCaseStatusByInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(caseAnalyticsQuerySchema)
+  .validator(caseAnalyticsQuerySchema)
   .handler(async ({ context, data }) => {
     const caseStatusByInbox = await context.authInfo.analytics.getCaseStatusByInbox(data);
     return { caseStatusByInbox };
@@ -33,7 +33,7 @@ const availableFiltersInputSchema = z.object({
 
 export const getAvailableFiltersFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(availableFiltersInputSchema)
+  .validator(availableFiltersInputSchema)
   .handler(async ({ context, data }) => {
     return context.authInfo.analytics.getAvailableFilters({
       scenarioId: data.scenarioId,
@@ -43,35 +43,35 @@ export const getAvailableFiltersFn = createServerFn({ method: 'POST' })
 
 export const getDecisionOutcomesPerDayFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(analyticsQuery)
+  .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
     return context.authInfo.analytics.getDecisionOutcomesPerDay(data);
   });
 
 export const getDecisionsScoreDistributionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(analyticsQuery)
+  .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
     return context.authInfo.analytics.getDecisionsScoreDistribution(data);
   });
 
 export const getRuleHitTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(analyticsQuery)
+  .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
     return context.authInfo.analytics.getRuleHitTable(data);
   });
 
 export const getRuleVsDecisionOutcomeFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(analyticsQuery)
+  .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
     return context.authInfo.analytics.getRuleVsDecisionOutcome(data);
   });
 
 export const getScreeningHitsTableFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(analyticsQuery)
+  .validator(analyticsQuery)
   .handler(async ({ context, data }) => {
     return context.authInfo.analytics.getScreeningHitsTable(data);
   });
@@ -86,7 +86,7 @@ const caseAnalyticsInputSchema = z.object({
 
 export const getCaseAnalyticsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(caseAnalyticsInputSchema)
+  .validator(caseAnalyticsInputSchema)
   .handler(async ({ context, data }) => {
     const endDateMidnight = new Date(data.endDate);
     endDateMidnight.setUTCDate(endDateMidnight.getUTCDate() + 1);

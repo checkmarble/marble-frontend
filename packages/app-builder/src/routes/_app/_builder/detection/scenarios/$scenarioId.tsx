@@ -10,7 +10,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 const scenarioLayoutLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scenarioLayoutLoader({ data, context }) {
     const scenarioId = fromParams(data?.params ?? {}, 'scenarioId');
 

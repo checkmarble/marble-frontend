@@ -13,7 +13,7 @@ const queryParams = z.object({
 
 const getClientDetailFn = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator(queryParams)
+  .validator(queryParams)
   .handler(async function clientDetailIndexLoader({ context, data: { table, terms } }) {
     const { client360, user, dataModelRepository, entitlements } = context.authInfo;
 

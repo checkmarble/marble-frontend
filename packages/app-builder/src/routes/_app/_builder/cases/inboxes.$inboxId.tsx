@@ -26,7 +26,7 @@ const casesInboxesLoaderSchema = z.object({
 
 const casesInboxesLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator(casesInboxesLoaderSchema)
+  .validator(casesInboxesLoaderSchema)
   .handler(async function casesInboxesLoader({ context, data: { params, query } }) {
     const request = getRequest();
     const { user, inbox: inboxRepository } = context.authInfo;
