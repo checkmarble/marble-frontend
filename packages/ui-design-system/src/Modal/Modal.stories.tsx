@@ -1,5 +1,4 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { Icon } from 'ui-icons';
 
 import { Button } from '../Button/Button';
 import { Modal } from './Modal';
@@ -17,20 +16,11 @@ const Template: StoryFn<typeof Modal> = (args) => (
     </Modal.Trigger>
     <Modal.Content>
       <Modal.Title>Modal title</Modal.Title>
-      <div className="bg-surface-card flex flex-col gap-lg p-lg">
-        <Modal.Description>This is the the modal description</Modal.Description>
-        <div className="flex flex-1 flex-row gap-sm">
-          <Modal.Close asChild>
-            <Button variant="secondary" className="flex-1">
-              Cancel
-            </Button>
-          </Modal.Close>
-          <Button variant="primary" className="flex-1">
-            <Icon icon="pushtolive" className="size-6" />
-            Publish
-          </Button>
-        </div>
-      </div>
+      <Modal.Description className="p-lg">This is the the modal description</Modal.Description>
+      <Modal.Footer>
+        <Modal.FooterButton isCloseButton label="Cancel" />
+        <Modal.FooterButton label="Publish" />
+      </Modal.Footer>
     </Modal.Content>
   </Modal.Root>
 );

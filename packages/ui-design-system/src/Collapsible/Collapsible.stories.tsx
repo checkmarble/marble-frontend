@@ -1,27 +1,35 @@
 import { type Meta, type StoryFn } from '@storybook/react';
 
-import { Collapsible, CollapsibleV2 } from './Collapsible';
+import { Collapsible } from './Collapsible';
 
-const Story: Meta<typeof Collapsible.Container> = {
-  component: Collapsible.Container,
+type StoryArgs = Pick<React.ComponentProps<typeof Collapsible.Title>, 'iconPosition' | 'size'>;
+
+const Story: Meta<StoryArgs> = {
   title: 'Collapsible',
+  argTypes: {
+    iconPosition: {
+      control: 'inline-radio',
+      options: ['hidden', 'left', 'right'],
+    },
+    size: {
+      control: 'inline-radio',
+      options: ['default', 'small', null],
+    },
+  },
 };
 export default Story;
 
-export const Default: StoryFn<typeof Collapsible> = () => (
+export const Default: StoryFn<StoryArgs> = ({ iconPosition, size }) => (
   <Collapsible.Container>
-    <Collapsible.Title>Hello</Collapsible.Title>
+    <Collapsible.Title iconPosition={iconPosition} size={size}>
+      Hello
+    </Collapsible.Title>
     <Collapsible.Content>
       <div>World</div>
     </Collapsible.Content>
   </Collapsible.Container>
 );
-
-export const DefaultV2: StoryFn<typeof Collapsible> = () => (
-  <CollapsibleV2.Provider>
-    <CollapsibleV2.Title>Hello</CollapsibleV2.Title>
-    <CollapsibleV2.Content>
-      <div>World</div>
-    </CollapsibleV2.Content>
-  </CollapsibleV2.Provider>
-);
+Default.args = {
+  iconPosition: 'right',
+  size: 'default',
+};

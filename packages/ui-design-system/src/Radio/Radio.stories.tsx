@@ -1,10 +1,9 @@
 import { type Meta, type StoryFn } from '@storybook/react';
-import { useState } from 'react';
+import { type ComponentProps, useState } from 'react';
 
 import { Radio } from './Radio';
 
-type Args = {
-  size: 'regular' | 'small';
+type Args = ComponentProps<typeof Radio.Root> & {
   disabledItems: string[];
 };
 
