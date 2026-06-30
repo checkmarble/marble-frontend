@@ -37,7 +37,7 @@
     "tailwindcss": "4.1.13",
     "vite": "7.3.5",
     "vite-tsconfig-paths": "6.1.1",
-    "vitest": "4.1.7"
+    "vitest": "4.1.9"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.28",
@@ -65,7 +65,7 @@
     "cmdk": "^1.1.1",
     "country-flag-emojis": "^1.0.4",
     "date-fns": "^4.1.0",
-    "markdown-to-jsx": "9.8.1",
+    "markdown-to-jsx": "9.8.2",
     "react-day-picker": "^9.6.2",
     "remeda": "^2.38.0",
     "sharpstate": "^0.0.13",
