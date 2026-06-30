@@ -3,6 +3,7 @@ import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
 import { FavoriteInboxButton } from '@app-builder/components/Cases/Inbox/FavoriteInboxButton';
 import { InboxFilterBar } from '@app-builder/components/Cases/Inbox/FilterBar/FilterBar';
 import { MultiSelect } from '@app-builder/components/MultiSelect';
+import { Panel } from '@app-builder/components/Panel';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useBase64Query } from '@app-builder/hooks/useBase64Query';
@@ -19,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '../Panel';
 import { Spinner } from '../Spinner';
 import { CreateCase } from './CreateCase';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
@@ -208,14 +208,9 @@ export const InboxPage = ({
                 >
                   <Icon icon="plus" className="size-4" />
                 </Button>
-                <PanelRoot open={isAddingCase} onOpenChange={setIsAddingCase}>
-                  <PanelContainer size="xl">
-                    <PanelContent>
-                      <PanelHeader>{t('cases:case.new_case')}</PanelHeader>
-                      <CreateCase inboxId={inboxId === MY_INBOX_ID ? null : inboxId} />
-                    </PanelContent>
-                  </PanelContainer>
-                </PanelRoot>
+                <Panel.Root open={isAddingCase} onOpenChange={setIsAddingCase}>
+                  <CreateCase inboxId={inboxId === MY_INBOX_ID ? null : inboxId} />
+                </Panel.Root>
               </div>
             </div>
 

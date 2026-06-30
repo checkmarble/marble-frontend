@@ -6,9 +6,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-import { PanelContainer } from '../Panel';
-import { PanelSharpFactory } from '../Panel/Panel';
+import { Panel } from '../Panel';
 import {
   ContinuousScreeningConfigurationStepper,
   PartialCreateContinuousScreeningConfig,
@@ -52,45 +50,48 @@ export const ConfigurationPanel = ({
   }, [baseStep]);
 
   return (
-    <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col isolate">
+    <Panel.Container size="medium" className="isolate">
       <ContinuousScreeningConfigurationStepper.Provider value={configurationStepper}>
         <ListAndTopicDatasetConfigurationBridge useCase="continuous_monitoring">
-          <ConfigurationPanelHeader />
-          <div className="p-lg grow">
-            {match(configurationStepper.value.__internals.currentStep)
-              .with(0, () => <GeneralInfo stableId={baseConfig.stableId} />)
-              .with(1, () => <ObjectMapping baseConfig={baseConfig} />)
-              .with(2, () => <DatasetSelection useCase="continuous_monitoring" />)
-              .with(3, () => <ScoringConfiguration />)
-              .otherwise(() => null)}
-          </div>
-          <FormPagination finalButtonText={t('continuousScreening:edition.validate_button')} />
+          <Panel.Content>
+            <ConfigurationPanelHeader />
+            <div className="grow">
+              {match(configurationStepper.value.__internals.currentStep)
+                .with(0, () => <GeneralInfo stableId={baseConfig.stableId} />)
+                .with(1, () => <ObjectMapping baseConfig={baseConfig} />)
+                .with(2, () => <DatasetSelection useCase="continuous_monitoring" />)
+                .with(3, () => <ScoringConfiguration />)
+                .otherwise(() => null)}
+            </div>
+            <FormPagination
+              className="bg-surface-card"
+              finalButtonText={t('continuousScreening:edition.validate_button')}
+            />
+          </Panel.Content>
         </ListAndTopicDatasetConfigurationBridge>
       </ContinuousScreeningConfigurationStepper.Provider>
-    </PanelContainer>
+    </Panel.Container>
   );
 };
 
 const ConfigurationPanelHeader = () => {
-  const panelSharp = PanelSharpFactory.useSharp();
   const { t } = useTranslation(['continuousScreening']);
   const configurationStepper = ContinuousScreeningConfigurationStepper.useSharp();
   const mode = ContinuousScreeningConfigurationStepper.select((state) => state.__internals.mode);
 
   return (
-    <div className="flex items-center justify-between gap-md bg-surface-card h-16 px-md border-b border-grey-border shrink-0 sticky top-0 z-10">
-      <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
-        <Icon icon="arrow-left" className="size-4" />
-      </Button>
-      <span className="text-h1 me-auto font-bold">
-        {mode === 'view' ? t('continuousScreening:panel.title.view') : t('continuousScreening:panel.title.edit')}
-      </span>
-      <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:panel.stepper.${stepName}`)} />
-      {mode === 'view' ? (
-        <Button variant="primary" onClick={() => configurationStepper.actions.setMode('edit', 0)}>
-          {t('common:edit')}
-        </Button>
-      ) : null}
-    </div>
+    <Panel.Header>
+      <div className="flex items-center justify-between gap-md shrink-0 sticky top-0 z-10">
+        <span className="me-auto">
+          {mode === 'view' ? t('continuousScreening:panel.title.view') : t('continuousScreening:panel.title.edit')}
+        </span>
+        <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:panel.stepper.${stepName}`)} />
+        {mode === 'view' ? (
+          <Button variant="primary" onClick={() => configurationStepper.actions.setMode('edit', 0)}>
+            {t('common:edit')}
+          </Button>
+        ) : null}
+      </div>
+    </Panel.Header>
   );
 };

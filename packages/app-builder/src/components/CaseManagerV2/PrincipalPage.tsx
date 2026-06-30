@@ -2,6 +2,7 @@ import { ClientObjectTagList } from '@app-builder/components/Annotations/ClientO
 import { AiReviewCard } from '@app-builder/components/CaseManagerV2/AiReview/AiReviewCard';
 import { UserScoreBadge } from '@app-builder/components/CaseManagerV2/UserScore/UserScoreBadge';
 import { CaseAlerts } from '@app-builder/components/Cases/CaseAlerts';
+import { Panel } from '@app-builder/components/Panel';
 import { DataModel, DataModelObject } from '@app-builder/models';
 import { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import { FeatureAccesses } from '@app-builder/models/feature-access';
@@ -28,7 +29,6 @@ import { EditCaseInbox } from '../Cases/EditCaseInbox';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
-import { PanelContainer, PanelContent, PanelRoot } from '../Panel';
 import { DataExplorerPanel } from './DataExplorerPanel';
 import { EscalateCaseButton } from './EscalateCaseButton';
 import { CaseSnoozePanel } from './SnoozePanel/CaseSnoozePanel';
@@ -169,9 +169,9 @@ export function CaseManagerPrincipalPage({
           </div>
         </div>
       </div>
-      <PanelRoot open={snoozePanelOpen} onOpenChange={setSnoozePanelOpen}>
-        <PanelContainer size="max">
-          <PanelContent>
+      <Panel.Root open={snoozePanelOpen} onOpenChange={setSnoozePanelOpen}>
+        <Panel.Container size="medium">
+          <Panel.Content>
             <CaseSnoozePanel
               onClose={() => setSnoozePanelOpen(false)}
               caseDetail={caseDetail}
@@ -179,9 +179,9 @@ export function CaseManagerPrincipalPage({
               pivotObjects={pivotObjects ?? []}
               entitlements={entitlements}
             />
-          </PanelContent>
-        </PanelContainer>
-      </PanelRoot>
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
     </>
   );
 }

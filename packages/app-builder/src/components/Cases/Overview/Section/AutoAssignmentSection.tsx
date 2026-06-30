@@ -1,4 +1,4 @@
-import { PanelRoot } from '@app-builder/components/Panel/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -138,13 +138,13 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
             .exhaustive()}
         </div>
       ) : null}
-      <PanelRoot open={autoAssignPanelOpen} onOpenChange={setAutoAssignPanelOpen}>
+      <Panel.Root open={autoAssignPanelOpen} onOpenChange={setAutoAssignPanelOpen}>
         <AutoAssignmentPanelContent
           currentUserId={currentUserId}
           isGlobalAdmin={isGlobalAdmin}
           hasEntitlement={hasAccess}
         />
-      </PanelRoot>
+      </Panel.Root>
     </div>
   );
 };

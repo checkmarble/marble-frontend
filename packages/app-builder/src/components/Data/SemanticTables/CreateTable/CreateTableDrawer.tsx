@@ -1,10 +1,11 @@
 import { Callout } from '@app-builder/components/Callout';
+import { Panel } from '@app-builder/components/Panel';
 import { useDataModel } from '@app-builder/services/data/data-model';
+import { handleSubmit } from '@app-builder/utils/form';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ScrollAreaV2, Stepper, type StepperStep, Typo } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Stepper, type StepperStep, Typo } from 'ui-design-system';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext';
 import { CreateTableEntityStep } from './CreateTableEntityStep';
@@ -137,90 +138,81 @@ export function CreateTableDrawer({
     }
   }
 
-  if (!open) return null;
+  if (!open) return;
 
   return (
     <CreateTableFormContext.Provider value={form}>
-      {/* Backdrop */}
-      <div
-        className="animate-overlay-show bg-grey-primary/20 fixed inset-0 z-40 backdrop-blur-xs"
-        onClick={handleBackdropClose}
-      />
-      {/* Drawer panel */}
-      <aside className="animate-slideRightAndFadeIn fixed right-0 top-0 z-50 h-full w-[max(1280px,70vw)] border-l border-grey-border shadow-lg">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-          className="bg-surface-card flex h-full flex-col overflow-y-auto"
-        >
-          <header className="flex shrink-0 items-center gap-md p-lg">
-            <button
-              type="button"
-              onClick={handleBackdropClose}
-              className="rounded-lg p-sm hover:bg-grey-border"
-              title={t('common:close')}
-            >
-              <Icon icon="x" className="size-5" />
-            </button>
-            <Typo variant="subtitle1" className="flex-1">
-              {t('data:create_table.title')}
-            </Typo>
-            <Stepper steps={steps} currentStep={currentStep} />
-          </header>
+      <Panel.Root
+        open={open}
+        onOpenChange={(state) => {
+          if (!state) {
+            handleBackdropClose();
+          }
+        }}
+      >
+        <form onSubmit={handleSubmit(form)}>
+          <Panel.Container size="large">
+            <Panel.Content>
+              <Panel.Header>
+                <div className="flex shrink-0 items-center gap-md">
+                  <Typo variant="subtitle1" className="flex-1">
+                    {t('data:create_table.title')}
+                  </Typo>
+                  <Stepper steps={steps} currentStep={currentStep} />
+                </div>
+              </Panel.Header>
 
-          <div className="flex-1 overflow-hidden flex flex-col px-lg">
-            {currentStep === 0 ? (
-              <ScrollAreaV2 className="flex-1">
-                <CreateTableEntityStep errorFields={tableErrorFields} />
-              </ScrollAreaV2>
-            ) : null}
-            {currentStep === 1 ? (
-              <CreateTableFieldsStep errorFieldIds={fieldErrorIds} hasError={validationErrors.length > 0} />
-            ) : null}
-            {currentStep === 2 ? (
-              <ScrollAreaV2 className="flex-1">
-                <CreateTableLinksStep errorLinkIds={linkErrorIds} hasError={validationErrors.length > 0} />
-              </ScrollAreaV2>
-            ) : null}
-          </div>
-
-          <footer className="flex shrink-0 justify-between gap-md border-t border-grey-border p-lg">
-            {validationErrors.length > 0 ? (
-              <Callout color="red" icon="lightbulb" iconColor="red">
-                <ul className="flex flex-col gap-xs ps-md">
-                  {validationErrors.map((error, index) => (
-                    <li key={`${error.kind}-${index}`}>{error.message}</li>
-                  ))}
-                </ul>
-              </Callout>
-            ) : (
-              <div />
-            )}
-            <div className="flex justify-end gap-md">
-              <Button variant="secondary" appearance="stroked" onClick={handleBackdropClose}>
-                {t('common:cancel')}
-              </Button>
-              {currentStep > 0 ? (
-                <Button variant="secondary" appearance="stroked" onClick={handleBack}>
-                  {t('data:create_table.button_back')}
-                </Button>
-              ) : null}
-              {currentStep === 2 ? (
-                <Button variant="primary" type="submit">
-                  {t('data:create_table.button_save_table')}
-                </Button>
-              ) : (
-                <Button variant="primary" onClick={handleNext} type="button">
-                  {t('data:create_table.button_next')}
-                </Button>
-              )}
-            </div>
-          </footer>
+              <div className="flex-1 flex flex-col">
+                {currentStep === 0 ? <CreateTableEntityStep errorFields={tableErrorFields} /> : null}
+                {currentStep === 1 ? (
+                  <CreateTableFieldsStep errorFieldIds={fieldErrorIds} hasError={validationErrors.length > 0} />
+                ) : null}
+                {currentStep === 2 ? (
+                  <CreateTableLinksStep errorLinkIds={linkErrorIds} hasError={validationErrors.length > 0} />
+                ) : null}
+              </div>
+              <Panel.Footer>
+                {validationErrors.length > 0 ? (
+                  <Callout color="red" icon="lightbulb" iconColor="red">
+                    <ul className="flex flex-col gap-xs ps-md">
+                      {validationErrors.map((error, index) => (
+                        <li key={`${error.kind}-${index}`}>{error.message}</li>
+                      ))}
+                    </ul>
+                  </Callout>
+                ) : (
+                  <div />
+                )}
+                <div className="flex justify-end gap-md ms-auto">
+                  <Panel.FooterButton variant="secondary" onClick={handleBackdropClose} label={t('common:cancel')} />
+                  {currentStep > 0 ? (
+                    <Panel.FooterButton
+                      variant="secondary"
+                      onClick={handleBack}
+                      label={t('data:create_table.button_back')}
+                    />
+                  ) : null}
+                  {currentStep === 2 ? (
+                    <Panel.FooterButton
+                      variant="primary"
+                      type="submit"
+                      label={t('data:create_table.button_save_table')}
+                    />
+                  ) : (
+                    <Panel.FooterButton
+                      variant="primary"
+                      onClick={handleNext}
+                      type="button"
+                      label={t('data:create_table.button_next')}
+                    />
+                  )}
+                </div>
+              </Panel.Footer>
+            </Panel.Content>
+          </Panel.Container>
         </form>
-      </aside>
+      </Panel.Root>
+
       <UnsavedChangesDialog
         open={isUnsavedChangesDialogOpen}
         onOpenChange={setIsUnsavedChangesDialogOpen}

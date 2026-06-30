@@ -1,4 +1,4 @@
-import { PanelRoot } from '@app-builder/components/Panel/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetAiSettingsQuery } from '@app-builder/queries/cases/get-ai-settings';
@@ -104,7 +104,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                 upsaleDescription={t('cases:overview.upsale.ai_config.description')}
                 onClick={handleOpenPanel}
               />
-              <PanelRoot open={aiConfigPanelOpen} onOpenChange={setAiConfigPanelOpen}>
+              <Panel.Root open={aiConfigPanelOpen} onOpenChange={setAiConfigPanelOpen}>
                 <AIConfigPanelContent
                   settings={data.settings}
                   readOnly={!canEdit}
@@ -114,7 +114,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                     aiSettingsQuery.refetch();
                   }}
                 />
-              </PanelRoot>
+              </Panel.Root>
             </>
           );
         })

@@ -1,5 +1,4 @@
-import { PanelContainer, PanelContent, PanelFooter, PanelHeader } from '@app-builder/components/Panel';
-import { PanelSharpFactory } from '@app-builder/components/Panel/Panel';
+import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
@@ -9,8 +8,6 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { InboxCard } from './InboxCard';
 
 interface AutoAssignmentChanges {
@@ -107,55 +104,47 @@ export const AutoAssignmentPanelContent = ({
   const hasChanges = Object.keys(changes.inboxes).length > 0 || Object.keys(changes.users).length > 0;
 
   return (
-    <PanelContainer size="xxl">
-      <PanelHeader>
-        <div className="flex items-center gap-sm">
-          <span>{t('cases:overview.panel.auto_assignment.title')}</span>
+    <Panel.Container size="small">
+      <Panel.Content>
+        <Panel.Header>{t('cases:overview.panel.auto_assignment.title')}</Panel.Header>
+        <div className="grow">
+          {match(inboxesQuery)
+            .with({ isPending: true }, () => (
+              <div className="flex items-center justify-center py-xl">
+                <Spinner className="size-8" />
+              </div>
+            ))
+            .with({ isError: true }, () => (
+              <div className="text-s text-grey-secondary py-sm">{t('cases:overview.config.error_loading')}</div>
+            ))
+            .with({ isSuccess: true }, () => (
+              <div className="flex flex-col gap-md">
+                {inboxes.map((inbox) => (
+                  <InboxCard
+                    key={inbox.id}
+                    inbox={inbox}
+                    inboxChecked={changes.inboxes[inbox.id]}
+                    userCheckedMap={changes.users}
+                    onToggleInbox={handleToggleInbox}
+                    onToggleUser={handleToggleUser}
+                    disabled={!canEditInbox(inbox)}
+                  />
+                ))}
+              </div>
+            ))
+            .exhaustive()}
         </div>
-      </PanelHeader>
-      <PanelContent>
-        {match(inboxesQuery)
-          .with({ isPending: true }, () => (
-            <div className="flex items-center justify-center py-xl">
-              <Spinner className="size-8" />
-            </div>
-          ))
-          .with({ isError: true }, () => (
-            <div className="text-s text-grey-secondary py-sm">{t('cases:overview.config.error_loading')}</div>
-          ))
-          .with({ isSuccess: true }, () => (
-            <div className="flex flex-col gap-md">
-              {inboxes.map((inbox) => (
-                <InboxCard
-                  key={inbox.id}
-                  inbox={inbox}
-                  inboxChecked={changes.inboxes[inbox.id]}
-                  userCheckedMap={changes.users}
-                  onToggleInbox={handleToggleInbox}
-                  onToggleUser={handleToggleUser}
-                  disabled={!canEditInbox(inbox)}
-                />
-              ))}
-            </div>
-          ))
-          .exhaustive()}
-      </PanelContent>
-      {canSave ? (
-        <PanelFooter>
-          <Button
-            size="medium"
-            className="w-full justify-center"
-            onClick={handleSave}
-            disabled={updateAutoAssignMutation.isPending || !hasChanges}
-          >
-            {updateAutoAssignMutation.isPending ? (
-              <Icon icon="spinner" className="size-4 animate-spin" />
-            ) : (
-              t('cases:overview.validate')
-            )}
-          </Button>
-        </PanelFooter>
-      ) : null}
-    </PanelContainer>
+        {canSave ? (
+          <Panel.Footer>
+            <Panel.FooterButton
+              onClick={handleSave}
+              disabled={!hasChanges}
+              isLoading={updateAutoAssignMutation.isPending}
+              label={t('cases:overview.validate')}
+            />
+          </Panel.Footer>
+        ) : null}
+      </Panel.Content>
+    </Panel.Container>
   );
 };

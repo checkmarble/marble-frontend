@@ -1,4 +1,5 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
+import { Panel } from '@app-builder/components/Panel';
 import { LoaderRevalidatorContext } from '@app-builder/contexts/LoaderRevalidatorContext';
 import type { Screening, ScreeningMatch } from '@app-builder/models/screening';
 import { type ScreeningMatchPayload, type ScreeningStatus } from '@app-builder/models/screening';
@@ -22,7 +23,6 @@ import { filter } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, Checkbox, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PanelContainer, PanelContent, PanelRoot } from '../../Panel/Panel';
 import { Spinner } from '../../Spinner';
 import { MatchCard } from '../MatchCard';
 import { sortScreeningMatchesByTopics } from '../match-sorting';
@@ -161,51 +161,47 @@ export function ScreeningHitsPanel({
   }, [bulkReviewMutation, selectedMatchIds, revalidateAfterBulk, t]);
 
   return (
-    <PanelRoot open={open} onOpenChange={handleOpenChange}>
-      <PanelContainer size="max" className="!max-w-[80vw]">
-        {/* Header: X | Name + Status Badge | Bulk action buttons */}
-        <div className="flex items-center gap-md pb-lg">
-          <Icon
-            icon="cross"
-            className="size-6 shrink-0 cursor-pointer text-grey-secondary hover:text-grey-primary"
-            onClick={() => handleOpenChange(false)}
-            aria-label="Close panel"
-          />
-          <div className="flex flex-1 items-center gap-sm">
-            <Typo variant="title2">{currentName}</Typo>
-            <ScreeningStatusTag
-              status={currentStatus}
-              pendingHitCount={screeningQuery.data?.matches.filter((m) => m.status === 'pending').length}
-            />
-          </div>
-          <div className="flex items-center gap-sm shrink-0">
-            {showBulkButton ? (
-              <Button
-                variant="primary"
-                size="small"
-                onClick={handleBulkMarkFalsePositive}
-                disabled={bulkReviewMutation.isPending}
-              >
-                {t('screenings:panel.mark_all_false_positive')}
-              </Button>
-            ) : null}
-            {showDismissButton ? (
-              <Button
-                variant="secondary"
-                appearance="stroked"
-                size="small"
-                onClick={handleDismissFalsePositives}
-                disabled={bulkReviewMutation.isPending}
-              >
-                <Icon icon="wand" className="size-4" />
-                {t('screenings:panel.dismiss_false_positives')}
-              </Button>
-            ) : null}
-          </div>
-        </div>
+    <Panel.Root open={open} onOpenChange={handleOpenChange}>
+      <Panel.Container size="large">
+        <Panel.Content>
+          <Panel.Header>
+            {/* Header: X | Name + Status Badge | Bulk action buttons */}
+            <div className="flex items-center gap-md pb-lg">
+              <div className="flex flex-1 items-center gap-sm">
+                <Typo variant="title2">{currentName}</Typo>
+                <ScreeningStatusTag
+                  status={currentStatus}
+                  pendingHitCount={screeningQuery.data?.matches.filter((m) => m.status === 'pending').length}
+                />
+              </div>
+              <div className="flex items-center gap-sm shrink-0">
+                {showBulkButton ? (
+                  <Button
+                    variant="primary"
+                    size="small"
+                    onClick={handleBulkMarkFalsePositive}
+                    disabled={bulkReviewMutation.isPending}
+                  >
+                    {t('screenings:panel.mark_all_false_positive')}
+                  </Button>
+                ) : null}
+                {showDismissButton ? (
+                  <Button
+                    variant="secondary"
+                    appearance="stroked"
+                    size="small"
+                    onClick={handleDismissFalsePositives}
+                    disabled={bulkReviewMutation.isPending}
+                  >
+                    <Icon icon="wand" className="size-4" />
+                    {t('screenings:panel.dismiss_false_positives')}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          </Panel.Header>
 
-        {/* Body */}
-        <PanelContent>
+          {/* Body */}
           {match(screeningQuery)
             .with({ isPending: true }, () => (
               <div className="flex items-center justify-center p-xl">
@@ -249,9 +245,9 @@ export function ScreeningHitsPanel({
                 </LoaderRevalidatorContext.Provider>
               );
             })}
-        </PanelContent>
-      </PanelContainer>
-    </PanelRoot>
+        </Panel.Content>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
 

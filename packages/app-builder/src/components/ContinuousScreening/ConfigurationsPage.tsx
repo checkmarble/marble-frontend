@@ -1,3 +1,4 @@
+import { Panel } from '@app-builder/components/Panel';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   ContinuousScreeningConfig,
@@ -16,7 +17,6 @@ import GridTable from '../GridTable';
 import { makeDatasetsMap } from '../ListAndTopicConfiguration/dataset-selection-provider-utils';
 import { findDatasetOrTopicByKey, useDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
-import { PanelRoot } from '../Panel/Panel';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
@@ -152,7 +152,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
 
         <CreationModal open={creationModalOpen} onOpenChange={setCreationModalOpen} onSubmit={handleCreationSubmit} />
         {editingConfig && draft ? (
-          <PanelRoot open onOpenChange={handlePanelOpenChange}>
+          <Panel.Root open onOpenChange={handlePanelOpenChange}>
             <ConfigurationPanel
               baseConfig={editingConfig}
               newConfig={draft}
@@ -168,7 +168,7 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
                 onCancel={() => setUpdatedConfig(null)}
               />
             ) : null}
-          </PanelRoot>
+          </Panel.Root>
         ) : null}
       </Page.Content>
     </Page.Main>

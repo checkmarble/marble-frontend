@@ -1,3 +1,4 @@
+import { Panel } from '@app-builder/components/Panel';
 import { NewAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewSwitchAstNode } from '@app-builder/models/astNode/control-flow';
@@ -20,7 +21,6 @@ import { match } from 'ts-pattern';
 import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { v7 as uuidv7 } from 'uuid';
-import { PanelRoot } from '../Panel';
 import { Spinner } from '../Spinner';
 import { ScoringRuleEditPanel } from './ScoringRuleEditPanel';
 import { SwitchNode } from './SwitchNode';
@@ -279,7 +279,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
             .exhaustive()
         )}
       </div>
-      <PanelRoot
+      <Panel.Root
         open={panelRule !== null}
         onOpenChange={(isOpen) => {
           if (!isOpen) setPanelRule(null);
@@ -296,7 +296,7 @@ export function RulesTable({ ruleset, maxRiskLevel, customLists, hasValidLicense
             onChange={handleRuleAdd}
           />
         ) : null}
-      </PanelRoot>
+      </Panel.Root>
     </>
   );
 }
@@ -350,7 +350,7 @@ function RuleRow({
         >
           <Icon icon="edit" className="size-4" />
         </button>
-        <PanelRoot open={isEditing} onOpenChange={setIsEditing}>
+        <Panel.Root open={isEditing} onOpenChange={setIsEditing}>
           <ScoringRuleEditPanel
             rule={rule}
             dataModel={dataModel}
@@ -368,7 +368,7 @@ function RuleRow({
                 : undefined
             }
           />
-        </PanelRoot>
+        </Panel.Root>
       </div>
     </div>
   );
