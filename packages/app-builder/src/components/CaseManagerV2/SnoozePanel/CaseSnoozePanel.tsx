@@ -1,6 +1,7 @@
 import { casesI18n } from '@app-builder/components/Cases';
 import { AddRuleSnooze } from '@app-builder/components/Cases/AddRuleSnooze';
 import { Nudge } from '@app-builder/components/Nudge';
+import { Panel } from '@app-builder/components/Panel';
 import { RuleGroup } from '@app-builder/components/Scenario/Rules/RuleGroup';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { DataModel } from '@app-builder/models';
@@ -51,13 +52,9 @@ export function CaseSnoozePanel({ onClose, caseDetail, dataModel, pivotObjects, 
   const rulesByPivot = rulesByPivotQuery.data.rulesByPivot;
 
   return (
-    <div className="flex flex-col gap-lg p-md">
-      <Button variant="secondary" size="small" onClick={onClose}>
-        <Icon icon="cross" className="size-5" />
-      </Button>
-
-      <div className="flex w-full flex-col gap-lg px-xs">
-        <span className="text-l font-semibold">Rules</span>
+    <>
+      <Panel.Header>Rules</Panel.Header>
+      <div className="flex w-full flex-col gap-lg px-sm">
         {pivotKeys.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-md py-xl text-center">
             <Icon icon="inbox" className="size-8 text-grey-secondary" />
@@ -188,6 +185,6 @@ export function CaseSnoozePanel({ onClose, caseDetail, dataModel, pivotObjects, 
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

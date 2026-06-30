@@ -8,8 +8,9 @@ type StickyComponentProps = {
   /**
    * Use an in-flow sentinel for sticky elements inside a scroll container.
    * Absolute sentinels only work when the containing block spans the full scrollable content.
+   * As the sentinel is not absolute let the element be place in the content via value.
    */
-  inFlow?: boolean;
+  inFlow?: 'before' | 'after';
 };
 
 function getScrollParent(element: HTMLElement) {
@@ -28,7 +29,7 @@ function getScrollParent(element: HTMLElement) {
   return null;
 }
 
-export function StickyComponent({ children, sentinelClassName, inFlow = false }: StickyComponentProps) {
+export function StickyComponent({ children, sentinelClassName, inFlow }: StickyComponentProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,12 +58,17 @@ export function StickyComponent({ children, sentinelClassName, inFlow = false }:
 
   return (
     <>
-      <div
-        ref={sentinelRef}
-        data-sentinel
-        className={cn(inFlow ? 'h-px w-full shrink-0' : 'absolute', sentinelClassName)}
-      />
+      {inFlow !== 'after' ? (
+        <div
+          ref={sentinelRef}
+          data-sentinel
+          className={cn(inFlow ? 'relative h-px w-full shrink-0' : 'absolute', sentinelClassName)}
+        />
+      ) : null}
       {children}
+      {inFlow === 'after' ? (
+        <div ref={sentinelRef} data-sentinel className={cn('relative h-px w-full shrink-0', sentinelClassName)} />
+      ) : null}
     </>
   );
 }

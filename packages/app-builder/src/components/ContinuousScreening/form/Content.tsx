@@ -23,8 +23,8 @@ export const CreationContent = () => {
           .with(3, () => <ScoringConfiguration />)
           .otherwise(() => null)}
         <CreationContentRecap />
+        <FormPagination finalButtonText={t('continuousScreening:creation.save_configuration')} />
       </div>
-      <FormPagination finalButtonText={t('continuousScreening:creation.save_configuration')} />
     </div>
   );
 };

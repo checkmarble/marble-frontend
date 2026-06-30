@@ -1,10 +1,9 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
-import { PanelContainer, PanelContent, PanelHeader } from '@app-builder/components/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { JsonDiff } from './JsonDiff';
 import { OperationBadge } from './OperationBadge';
 
@@ -17,9 +16,9 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
   const language = useFormatLanguage();
 
   return (
-    <PanelContainer size="xl">
-      <PanelHeader>{t('settings:audit.detail.title')}</PanelHeader>
-      <PanelContent>
+    <Panel.Container size="medium">
+      <Panel.Content>
+        <Panel.Header>{t('settings:audit.detail.title')}</Panel.Header>
         <div className="flex flex-col gap-lg">
           {/* Event metadata */}
           <div className="grid grid-cols-2 gap-md">
@@ -72,7 +71,7 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
             <JsonDiff oldData={event.oldData} newData={event.newData} />
           </div>
         </div>
-      </PanelContent>
-    </PanelContainer>
+      </Panel.Content>
+    </Panel.Container>
   );
 };

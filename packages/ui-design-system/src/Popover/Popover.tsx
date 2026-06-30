@@ -39,7 +39,7 @@ interface PopoverFooterProps {
 
 function PopoverFooter({ children, className }: PopoverFooterProps) {
   return (
-    <StickyComponent inFlow>
+    <StickyComponent inFlow="after">
       <div
         className={cn(
           'sticky bottom-0 z-10 border-t border-transparent bg-surface-card flex justify-end gap-sm p-md sentinel-intersect:border-t-grey-border sentinel-intersect:shadow-sticky-bottom',

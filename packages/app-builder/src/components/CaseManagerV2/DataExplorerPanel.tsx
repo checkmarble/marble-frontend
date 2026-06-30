@@ -1,9 +1,9 @@
+import { Panel } from '@app-builder/components/Panel';
 import { DataModel } from '@app-builder/models';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DataModelExplorer } from '../DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '../DataModelExplorer/Provider';
-import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '../Panel';
 
 type DataExplorerPanelProps = {
   dataModel: DataModel;
@@ -22,13 +22,15 @@ export function DataExplorerPanel({ dataModel, open, onOpenChange }: DataExplore
   }, [dataModelExplorerContext.explorerState]);
 
   return (
-    <PanelRoot open={open} onOpenChange={onOpenChange}>
-      <PanelContainer size="max" className="max-w-[80vw]!">
-        <PanelHeader>{t('cases:case_detail.pivot_panel.breadcrumb_explore')}</PanelHeader>
-        <PanelContent>
-          <DataModelExplorer dataModel={dataModel} />
-        </PanelContent>
-      </PanelContainer>
-    </PanelRoot>
+    <Panel.Root open={open} onOpenChange={onOpenChange}>
+      <Panel.Container size="large">
+        <Panel.Content>
+          <Panel.Header>{t('cases:case_detail.pivot_panel.breadcrumb_explore')}</Panel.Header>
+          <div>
+            <DataModelExplorer dataModel={dataModel} />
+          </div>
+        </Panel.Content>
+      </Panel.Container>
+    </Panel.Root>
   );
 }

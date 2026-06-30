@@ -1,8 +1,7 @@
 import { Callout, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DataListGrid } from '@app-builder/components/DataModelExplorer/DataListGrid';
-import { PanelContainer, PanelContent } from '@app-builder/components/Panel';
-import { PanelRoot, PanelSharpFactory } from '@app-builder/components/Panel/Panel';
+import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
 import { EntityDatasetsList } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
@@ -164,9 +163,9 @@ const IndirectScreeningRequestDetail = ({ screening }: { screening: ContinuousSc
           </div>
         </DataListGrid>
       </div>
-      <PanelRoot open={open} onOpenChange={setOpen}>
+      <Panel.Root open={open} onOpenChange={setOpen}>
         <ScreeningEntityDetailsPanel entity={screening.opensanctionEntityPayload} />
-      </PanelRoot>
+      </Panel.Root>
     </>
   );
 };
@@ -176,13 +175,15 @@ const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPay
   const { t } = useTranslation(['continuousScreening', 'screenings']);
 
   return (
-    <PanelContainer size="xxxl">
-      <PanelContent>
-        <div className="flex flex-col gap-md">
+    <Panel.Container size="medium">
+      <Panel.Content>
+        <Panel.Header>
           <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
             <Icon icon="left-panel-close" className="size-4" />
           </Button>
           <div className="text-h1">{t('continuousScreening:review.entity_details.title')}</div>
+        </Panel.Header>
+        <div className="flex flex-col gap-md">
           <div className="flex items-center gap-sm">
             <span className="font-medium">{entity.caption}</span>
             <span className="text-small text-grey-placeholder">{entity.schema}</span>
@@ -208,7 +209,7 @@ const ScreeningEntityDetailsPanel = ({ entity }: { entity: OpenSanctionEntityPay
             }
           />
         </div>
-      </PanelContent>
-    </PanelContainer>
+      </Panel.Content>
+    </Panel.Container>
   );
 };

@@ -8,10 +8,8 @@ import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening'
 import { useUpdateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/update-configuration';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { Callout } from '../Callout';
-import { PanelContainer, PanelSharpFactory } from '../Panel/Panel';
+import { Panel, PanelSharpFactory } from '../Panel';
 import { DatasetSelectionSection } from './validation/DatasetSelectionSection';
 import { GeneralInfoSection } from './validation/GeneralInfoSection';
 import { ObjectMappingSection } from './validation/ObjectMappingSection';
@@ -55,30 +53,23 @@ export const EditionValidationPanel = ({
   };
 
   return (
-    <PanelContainer size="max" className="p-0 bg-surface-page overflow-y-auto flex flex-col">
-      <div className="flex items-center justify-between gap-md bg-surface-card h-16 px-md border-b border-grey-border shrink-0 sticky top-0">
-        <Button variant="secondary" mode="icon" onClick={panelSharp.actions.close}>
-          <Icon icon="arrow-left" className="size-4" />
-        </Button>
-        <span className="text-h1 me-auto font-bold">{t('continuousScreening:edition.validation.title')}</span>
-      </div>
-      <div className="p-lg grow flex flex-col gap-md">
-        <Callout bordered className="bg-surface-card mx-md">
-          {t('continuousScreening:edition.validation.validation_callout')}
-        </Callout>
-        <GeneralInfoSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
-        <DatasetSelectionSection updatedConfig={updatedConfig} baseConfig={baseConfig} datasets={datasets} />
-        <ScoringConfigurationSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
-        <ObjectMappingSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
-      </div>
-      <div className="shrink-0 sticky bottom-0 p-lg pt-sm flex justify-end bg-purple-99 gap-md bg-surface-page border-t border-grey-border">
-        <Button variant="secondary" onClick={() => onCancel(updatedConfig)}>
-          {t('common:cancel')}
-        </Button>
-        <Button variant="primary" onClick={handleValidateClick}>
-          {t('common:save')}
-        </Button>
-      </div>
-    </PanelContainer>
+    <Panel.Container size="medium">
+      <Panel.Content>
+        <Panel.Header>{t('continuousScreening:edition.validation.title')}</Panel.Header>
+        <div className="p-lg grow flex flex-col gap-md">
+          <Callout bordered className="bg-surface-card mx-md">
+            {t('continuousScreening:edition.validation.validation_callout')}
+          </Callout>
+          <GeneralInfoSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
+          <DatasetSelectionSection updatedConfig={updatedConfig} baseConfig={baseConfig} datasets={datasets} />
+          <ScoringConfigurationSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
+          <ObjectMappingSection updatedConfig={updatedConfig} baseConfig={baseConfig} />
+        </div>
+        <Panel.Footer>
+          <Panel.FooterButton variant="secondary" onClick={() => onCancel(updatedConfig)} label={t('common:cancel')} />
+          <Panel.FooterButton variant="primary" onClick={handleValidateClick} label={t('common:save')} />
+        </Panel.Footer>
+      </Panel.Content>
+    </Panel.Container>
   );
 };

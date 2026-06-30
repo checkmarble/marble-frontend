@@ -65,7 +65,7 @@ const ModalTitle = forwardRef<HTMLHeadingElement, Dialog.DialogTitleProps>(funct
   ref,
 ) {
   return (
-    <StickyComponent inFlow>
+    <StickyComponent inFlow="before">
       <Dialog.Title
         ref={ref}
         className={typoClassName({
@@ -95,7 +95,7 @@ interface ModalFooterProps {
 
 const ModalFooter = forwardRef<HTMLDivElement, ModalFooterProps>(function ModalFooter({ children, className }, ref) {
   return (
-    <StickyComponent inFlow>
+    <StickyComponent inFlow="after">
       <div
         ref={ref}
         className={cn(

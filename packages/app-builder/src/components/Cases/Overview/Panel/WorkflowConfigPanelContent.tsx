@@ -1,5 +1,4 @@
-import { PanelContainer, PanelContent, PanelFooter, PanelHeader } from '@app-builder/components/Panel';
-import { PanelSharpFactory } from '@app-builder/components/Panel/Panel';
+import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -8,8 +7,6 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { WorkflowInboxCard, type WorkflowSettings } from './WorkflowInboxCard';
 
 type InboxWorkflowState = Map<string, WorkflowSettings>;
@@ -103,13 +100,9 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
   };
 
   return (
-    <PanelContainer size="xxl">
-      <PanelHeader>
-        <div className="flex items-center gap-sm">
-          <span>{t('cases:overview.panel.workflow.title')}</span>
-        </div>
-      </PanelHeader>
-      <PanelContent>
+    <Panel.Container size="small">
+      <Panel.Content>
+        <Panel.Header>{t('cases:overview.panel.workflow.title')}</Panel.Header>
         {match(inboxesQuery)
           .with({ isPending: true }, () => (
             <div className="flex items-center justify-center py-xl">
@@ -139,23 +132,16 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
             </div>
           ))
           .exhaustive()}
-      </PanelContent>
-      {readOnly ? null : (
-        <PanelFooter>
-          <Button
-            size="medium"
-            className="w-full justify-center"
-            onClick={handleSave}
-            disabled={updateWorkflowMutation.isPending}
-          >
-            {updateWorkflowMutation.isPending ? (
-              <Icon icon="spinner" className="size-4 animate-spin" />
-            ) : (
-              t('cases:overview.validate_config')
-            )}
-          </Button>
-        </PanelFooter>
-      )}
-    </PanelContainer>
+        {readOnly ? null : (
+          <Panel.Footer>
+            <Panel.FooterButton
+              onClick={handleSave}
+              isLoading={updateWorkflowMutation.isPending}
+              label={t('cases:overview.validate_config')}
+            />
+          </Panel.Footer>
+        )}
+      </Panel.Content>
+    </Panel.Container>
   );
 };

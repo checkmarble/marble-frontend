@@ -1,6 +1,6 @@
 import { CursorPaginationButtons, usePaginationsButton } from '@app-builder/components/Decisions/PaginationButtons';
 import { DateRangeFilter } from '@app-builder/components/Filters';
-import { PanelContainer, PanelContent, PanelFooter, PanelRoot } from '@app-builder/components/Panel/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
 import { User } from '@app-builder/models';
@@ -18,7 +18,7 @@ import { ScreeningConfigBodySectionDto } from 'marble-api';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag, Typo } from 'ui-design-system';
+import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import FreeformMatchCard from './FreeformMatchCard';
 
@@ -98,53 +98,41 @@ export const ViewSavedResults = () => {
       <Button variant="primary" appearance="stroked" onClick={() => setOpen(true)}>
         {t('screenings:freeform_search.saved_results.button')}
       </Button>
-      <PanelRoot open={open} onOpenChange={setOpen}>
-        <PanelContainer size="5xl">
-          <div className="flex items-center gap-sm pb-md">
-            <button
-              type="button"
-              aria-label={t('common:close')}
-              className="cursor-pointer text-grey-secondary hover:text-grey-primary"
-              onClick={() => setOpen(false)}
-            >
-              <Icon icon="cross" className="size-5" />
-            </button>
-            <Typo variant="title2" className="text-grey-primary">
-              {t('screenings:freeform_search.saved_results.title')}
-            </Typo>
-          </div>
+      <Panel.Root open={open} onOpenChange={setOpen}>
+        <Panel.Container size="medium">
+          <Panel.Content>
+            <Panel.Header>{t('screenings:freeform_search.saved_results.title')}</Panel.Header>
 
-          <div className="grid grid-cols-3 gap-md pb-md">
-            <PeriodFilter
-              value={dateRange}
-              onChange={(v) => {
-                setDateRange(v);
-                resetPagination();
-              }}
-            />
-            <OwnerFilter
-              value={ownerId}
-              onChange={(v) => {
-                setOwnerId(v);
-                resetPagination();
-              }}
-            />
-            <div className="flex h-10 items-center gap-sm">
-              <Switch
-                id="saved-only"
-                checked={isSaved}
-                onCheckedChange={(value) => {
-                  setIsSaved(value);
+            <div className="grid grid-cols-3 gap-md pb-md">
+              <PeriodFilter
+                value={dateRange}
+                onChange={(v) => {
+                  setDateRange(v);
                   resetPagination();
                 }}
               />
-              <label htmlFor="saved-only" className="text-s text-grey-primary">
-                {t('screenings:freeform_search.saved_results.saved_only')}
-              </label>
+              <OwnerFilter
+                value={ownerId}
+                onChange={(v) => {
+                  setOwnerId(v);
+                  resetPagination();
+                }}
+              />
+              <div className="flex h-10 items-center gap-sm">
+                <Switch
+                  id="saved-only"
+                  checked={isSaved}
+                  onCheckedChange={(value) => {
+                    setIsSaved(value);
+                    resetPagination();
+                  }}
+                />
+                <label htmlFor="saved-only" className="text-s text-grey-primary">
+                  {t('screenings:freeform_search.saved_results.saved_only')}
+                </label>
+              </div>
             </div>
-          </div>
 
-          <PanelContent>
             {query.isLoading ? (
               <div className="text-s text-grey-secondary p-md">
                 {t('screenings:freeform_search.saved_results.loading')}
@@ -164,31 +152,30 @@ export const ViewSavedResults = () => {
                 ))}
               </ul>
             )}
-          </PanelContent>
-
-          <PanelFooter>
-            <div className="flex w-full items-center justify-between">
-              <SavedResultsPageSizeSelector
-                limit={limit}
-                onLimitChange={(pageSize) => setPaginationParams({ limit: pageSize })}
-              />
-              <CursorPaginationButtons
-                items={paginationItems}
-                onPaginationChange={(newPaginationParams) =>
-                  setPaginationParams((prev) => ({
-                    limit: prev.limit ?? 25,
-                    ...newPaginationParams,
-                  }))
-                }
-                paginationState={paginationState}
-                boundariesDisplay="dates"
-                hasNextPage={hasNextPage}
-                itemsPerPage={limit}
-              />
-            </div>
-          </PanelFooter>
-        </PanelContainer>
-      </PanelRoot>
+            <Panel.Footer>
+              <div className="flex w-full items-center justify-between">
+                <SavedResultsPageSizeSelector
+                  limit={limit}
+                  onLimitChange={(pageSize) => setPaginationParams({ limit: pageSize })}
+                />
+                <CursorPaginationButtons
+                  items={paginationItems}
+                  onPaginationChange={(newPaginationParams) =>
+                    setPaginationParams((prev) => ({
+                      limit: prev.limit ?? 25,
+                      ...newPaginationParams,
+                    }))
+                  }
+                  paginationState={paginationState}
+                  boundariesDisplay="dates"
+                  hasNextPage={hasNextPage}
+                  itemsPerPage={limit}
+                />
+              </div>
+            </Panel.Footer>
+          </Panel.Content>
+        </Panel.Container>
+      </Panel.Root>
     </>
   );
 };

@@ -1,3 +1,4 @@
+import { Panel } from '@app-builder/components/Panel';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { DataModel, getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
@@ -16,7 +17,6 @@ import { Icon } from 'ui-icons';
 import { DecisionPanel } from '../CaseManager/DecisionPanel/DecisionPanel';
 import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
 import { FormatData } from '../FormatData';
-import { PanelContainer, PanelRoot } from '../Panel';
 import { ScreeningHitsPanel } from '../Screenings/ScreeningPanel/ScreeningHitsPanel';
 import { Spinner } from '../Spinner';
 import { casesI18n } from './cases-i18n';
@@ -218,16 +218,16 @@ export const AlertCard = ({
         </div>
       </div>
       {openDetails ? (
-        <PanelRoot open onOpenChange={(isOpen) => setOpenDetails(isOpen)}>
-          <PanelContainer size="xxl">
+        <Panel.Root open onOpenChange={(isOpen) => setOpenDetails(isOpen)}>
+          <Panel.Container size="medium">
             <DecisionPanel
               dataModel={dataModel}
               decision={decision}
               onClose={() => setOpenDetails(false)}
               onScreeningSelect={setPanelScreeningId}
             />
-          </PanelContainer>
-        </PanelRoot>
+          </Panel.Container>
+        </Panel.Root>
       ) : null}
       {openScreening ? (
         <ScreeningHitsPanel

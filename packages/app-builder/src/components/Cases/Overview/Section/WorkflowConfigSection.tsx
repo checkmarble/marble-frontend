@@ -1,4 +1,4 @@
-import { PanelRoot } from '@app-builder/components/Panel/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -118,12 +118,12 @@ export const WorkflowConfigSection = ({
           );
         })
         .exhaustive()}
-      <PanelRoot open={escalationPanelOpen} onOpenChange={setEscalationPanelOpen}>
+      <Panel.Root open={escalationPanelOpen} onOpenChange={setEscalationPanelOpen}>
         <EscalationConditionsPanelContent readOnly={!isGlobalAdmin} allInboxesMetadata={allInboxesMetadata} />
-      </PanelRoot>
-      <PanelRoot open={workflowPanelOpen} onOpenChange={setWorkflowPanelOpen}>
+      </Panel.Root>
+      <Panel.Root open={workflowPanelOpen} onOpenChange={setWorkflowPanelOpen}>
         <WorkflowConfigPanelContent readOnly={!canEditAiReview} />
-      </PanelRoot>
+      </Panel.Root>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { Panel } from '@app-builder/components/Panel';
 import { User } from '@app-builder/models/user';
 import { useGetCaseNameQuery } from '@app-builder/queries/cases/get-name';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
@@ -14,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, CtaV2ClassName, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { PanelContainer, PanelHeader, PanelRoot } from '../Panel';
 import { Spinner } from '../Spinner';
 
 type DocumentsListProps = {
@@ -67,11 +67,13 @@ export const DocumentsList = ({ objectType, objectId }: DocumentsListProps) => {
             ));
           })}
           {currentFileView ? (
-            <PanelRoot open onOpenChange={() => setCurrentFileView(null)}>
-              <PanelContainer size="xxl">
-                <img src={currentFileView.fileUrl} />
-              </PanelContainer>
-            </PanelRoot>
+            <Panel.Root open onOpenChange={() => setCurrentFileView(null)}>
+              <Panel.Container size="medium">
+                <Panel.Content>
+                  <img src={currentFileView.fileUrl} />
+                </Panel.Content>
+              </Panel.Container>
+            </Panel.Root>
           ) : null}
         </div>
       );
@@ -178,32 +180,34 @@ const FileItem = ({
         </div>
       </button>
       {previewUrl ? (
-        <PanelRoot open onOpenChange={() => setPreviewUrl(null)}>
-          <PanelContainer size="xxl">
-            <PanelHeader>
-              <div className="flex items-baseline gap-md">
-                <div>{file.filename}</div>
-                <span className="text-default text-grey-secondary font-normal flex gap-sm">
-                  <span>
-                    {formatDistanceToNow(new Date(document.created_at), {
-                      locale: getDateFnsLocale(language),
-                      addSuffix: true,
-                    })}
+        <Panel.Root open onOpenChange={() => setPreviewUrl(null)}>
+          <Panel.Container size="medium">
+            <Panel.Content>
+              <Panel.Header>
+                <div className="flex items-baseline gap-md">
+                  <div>{file.filename}</div>
+                  <span className="text-default text-grey-secondary font-normal flex gap-sm">
+                    <span>
+                      {formatDistanceToNow(new Date(document.created_at), {
+                        locale: getDateFnsLocale(language),
+                        addSuffix: true,
+                      })}
+                    </span>
+                    <span>-</span>
+                    <span>
+                      {t('client360:client_detail.documents.annotated_by', {
+                        name: annotatedBy
+                          ? getFullName(annotatedBy)
+                          : t('client360:client_detail.documents.unknown_user'),
+                      })}
+                    </span>
                   </span>
-                  <span>-</span>
-                  <span>
-                    {t('client360:client_detail.documents.annotated_by', {
-                      name: annotatedBy
-                        ? getFullName(annotatedBy)
-                        : t('client360:client_detail.documents.unknown_user'),
-                    })}
-                  </span>
-                </span>
-              </div>
-            </PanelHeader>
-            <img src={previewUrl} />
-          </PanelContainer>
-        </PanelRoot>
+                </div>
+              </Panel.Header>
+              <img src={previewUrl} />
+            </Panel.Content>
+          </Panel.Container>
+        </Panel.Root>
       ) : null}
     </>
   );

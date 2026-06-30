@@ -1,5 +1,5 @@
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
-import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '@app-builder/components/Panel';
+import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
@@ -42,54 +42,55 @@ export function TableRecordPreviewDrawer({ open, onOpenChange, tableName }: Tabl
   };
 
   return (
-    <PanelRoot open={open} onOpenChange={onOpenChange}>
-      <PanelContainer size="4xl" className="z-50 p-0">
-        <PanelHeader className="border-b border-grey-border px-lg py-md">
-          {t('data:viewer.view_ingested_data')}
-        </PanelHeader>
-        <PanelContent className="flex flex-col gap-lg px-lg py-lg">
-          <div className="flex items-center gap-sm">
-            <Tag color="grey">{tableName}</Tag>
-          </div>
+    <Panel.Root open={open} onOpenChange={onOpenChange}>
+      <Panel.Container size="medium" className="z-50 p-0">
+        <Panel.Content>
+          <Panel.Header>{t('data:viewer.view_ingested_data')}</Panel.Header>
 
-          <form className="flex items-end gap-sm" onSubmit={handleSubmit}>
-            <div className="flex flex-1 flex-col gap-xs">
-              <label htmlFor={`objectIdField-${tableName}`} className="text-s">
-                {t('data:viewer.object_id')}
-              </label>
-              <Input
-                ref={inputRef}
-                id={`objectIdField-${tableName}`}
-                name="objectId"
-                type="text"
-                value={objectId}
-                onChange={(event) => setObjectId(event.target.value)}
-              />
+          <div className="flex flex-col gap-lg">
+            <div className="flex items-center gap-sm">
+              <Tag color="grey">{tableName}</Tag>
             </div>
-            <Button type="submit" variant="primary" disabled={!trimmedObjectId || isLoading} className="h-10">
-              {t('common:search')}
-            </Button>
-          </form>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            {isLoading ? (
-              <div className="flex min-h-32 items-center justify-center">
-                <Spinner className="size-5" />
+            <form className="flex items-end gap-sm" onSubmit={handleSubmit}>
+              <div className="flex flex-1 flex-col gap-xs">
+                <label htmlFor={`objectIdField-${tableName}`} className="text-s">
+                  {t('data:viewer.object_id')}
+                </label>
+                <Input
+                  ref={inputRef}
+                  id={`objectIdField-${tableName}`}
+                  name="objectId"
+                  type="text"
+                  value={objectId}
+                  onChange={(event) => setObjectId(event.target.value)}
+                />
               </div>
-            ) : searchedObjectId && query.data !== undefined ? (
-              query.data ? (
-                <div className="rounded-md border border-grey-border bg-grey-background-light p-md">
-                  <DataFields table={tableName} object={query.data} options={{ showHeader: true }} />
+              <Button type="submit" variant="primary" disabled={!trimmedObjectId || isLoading} className="h-10">
+                {t('common:search')}
+              </Button>
+            </form>
+
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {isLoading ? (
+                <div className="flex min-h-32 items-center justify-center">
+                  <Spinner className="size-5" />
                 </div>
-              ) : (
-                <div className="rounded-sm border border-grey-border bg-surface-card p-md text-center">
-                  {t('data:viewer.no_object_found', { tableName, objectId: searchedObjectId })}
-                </div>
-              )
-            ) : null}
+              ) : searchedObjectId && query.data !== undefined ? (
+                query.data ? (
+                  <div className="rounded-md border border-grey-border bg-grey-background-light p-md">
+                    <DataFields table={tableName} object={query.data} options={{ showHeader: true }} />
+                  </div>
+                ) : (
+                  <div className="rounded-sm border border-grey-border bg-surface-card p-md text-center">
+                    {t('data:viewer.no_object_found', { tableName, objectId: searchedObjectId })}
+                  </div>
+                )
+              ) : null}
+            </div>
           </div>
-        </PanelContent>
-      </PanelContainer>
-    </PanelRoot>
+        </Panel.Content>
+      </Panel.Container>
+    </Panel.Root>
   );
 }

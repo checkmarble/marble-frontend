@@ -1,3 +1,4 @@
+import { Panel } from '@app-builder/components/Panel';
 import {
   SCORING_LEVELS_COLORS,
   SCORING_LEVELS_LABEL_KEYS,
@@ -8,8 +9,7 @@ import { useGetScoringRulesetQuery } from '@app-builder/queries/scoring/get-rule
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { type ScoringScore } from 'marble-api';
 import { useTranslation } from 'react-i18next';
-import { Tag } from 'ui-design-system';
-import { PanelContainer, PanelContent, PanelHeader, PanelRoot } from '../Panel';
+import { Tag, Typo } from 'ui-design-system';
 
 interface ScoreDetailPanelProps {
   open: boolean;
@@ -137,18 +137,22 @@ export function ScoreDetailPanel({
   );
 
   return (
-    <PanelRoot open={open} onOpenChange={onOpenChange}>
-      <PanelContainer size="lg" className="flex flex-col">
-        <PanelHeader>{t('client360:client_detail.score_panel.title')}</PanelHeader>
-        <div className="flex flex-wrap gap-xs pb-md">
-          <Tag color="grey">{objectType}</Tag>
-          <Tag color="grey">
-            {t('client360:client_detail.score_panel.last_computed', {
-              date: formatDateTime(activeScore.created_at, { dateStyle: 'medium' }),
-            })}
-          </Tag>
-        </div>
-        <PanelContent className="flex flex-col gap-lg">
+    <Panel.Root open={open} onOpenChange={onOpenChange}>
+      <Panel.Container size="small">
+        <Panel.Content className="flex flex-col gap-lg">
+          <Panel.Header>
+            <div className="flex flex-col">
+              <div className="flex flex-wrap gap-xs">
+                <Typo variant="title2">{t('client360:client_detail.score_panel.title')}</Typo>
+                <Tag color="grey">{objectType}</Tag>
+                <Tag color="grey">
+                  {t('client360:client_detail.score_panel.last_computed', {
+                    date: formatDateTime(activeScore.created_at, { dateStyle: 'medium' }),
+                  })}
+                </Tag>
+              </div>
+            </div>
+          </Panel.Header>
           {/* Risk level card */}
           <div
             className="flex items-center gap-sm rounded-lg border p-md"
@@ -168,8 +172,8 @@ export function ScoreDetailPanel({
             </span>
             <ScoreScale maxRiskLevel={maxRiskLevel} currentLevel={activeScore.risk_level} thresholds={thresholds} />
           </div>
-        </PanelContent>
-      </PanelContainer>
-    </PanelRoot>
+        </Panel.Content>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
