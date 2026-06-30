@@ -18,7 +18,7 @@ const activityFollowUpLoaderSchema = z.object({
 
 const activityFollowUpLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator(activityFollowUpLoaderSchema)
+  .validator(activityFollowUpLoaderSchema)
   .handler(async function activityFollowUpLoader({ context, data: { query } }) {
     const { user, apiKey } = context.authInfo;
 

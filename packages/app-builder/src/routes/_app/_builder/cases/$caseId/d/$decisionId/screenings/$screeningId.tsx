@@ -15,7 +15,7 @@ import { Icon } from 'ui-icons';
 
 const screeningLayoutLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function screeningLayoutLoader({ context, data }) {
     const { user, entitlements, cases, dataModelRepository, inbox, screening: screeningRepository } = context.authInfo;
 

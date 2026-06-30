@@ -19,7 +19,7 @@ const paramsSchema = z.object({
 
 const getDataFn = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator(paramsSchema)
+  .validator(paramsSchema)
   .handler(async ({ context, data: { objectId, objectType } }) => {
     try {
       const request = getRequest();

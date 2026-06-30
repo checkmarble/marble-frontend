@@ -10,7 +10,7 @@ import { z } from 'zod/v4';
 
 export const commitScoringRulesetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ recordType: z.string() }))
+  .validator(z.object({ recordType: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       const { recordType } = data;
@@ -35,7 +35,7 @@ export const commitScoringRulesetFn = createServerFn({ method: 'POST' })
 
 export const listRulesetVersionsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ recordType: z.string() }))
+  .validator(z.object({ recordType: z.string() }))
   .handler(async ({ context, data }) => {
     const versions = await context.authInfo.userScoring.listRulesetVersions(data.recordType);
     return { versions };
@@ -50,7 +50,7 @@ export const listRulesetsFn = createServerFn({ method: 'GET' })
 
 export const prepareScoringRulesetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ recordType: z.string() }))
+  .validator(z.object({ recordType: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.userScoring.prepareScoringRuleset(data.recordType);
@@ -61,7 +61,7 @@ export const prepareScoringRulesetFn = createServerFn({ method: 'POST' })
 
 export const updateScoringRulesetFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateScoringRulesetPayloadSchema)
+  .validator(updateScoringRulesetPayloadSchema)
   .handler(async ({ context, data }) => {
     const { recordType, id: rulesetId, ...rulesetPayload } = data;
     const entityRulesets = await context.authInfo.userScoring.listRulesetVersions(recordType);
@@ -88,7 +88,7 @@ export const updateScoringRulesetFn = createServerFn({ method: 'POST' })
 
 export const updateScoringSettingsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateScoringSettingsPayloadSchema)
+  .validator(updateScoringSettingsPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.userScoring.updateScoringSettings(data);
@@ -99,7 +99,7 @@ export const updateScoringSettingsFn = createServerFn({ method: 'POST' })
 
 export const getScoringRulesetFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ recordType: z.string() }))
+  .validator(z.object({ recordType: z.string() }))
   .handler(async ({ context, data }) => {
     const ruleset = await context.authInfo.userScoring.getRulesetWithRules(data.recordType);
     return { ruleset };
@@ -107,7 +107,7 @@ export const getScoringRulesetFn = createServerFn({ method: 'GET' })
 
 export const getScoreDistributionFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ recordType: z.string() }))
+  .validator(z.object({ recordType: z.string() }))
   .handler(async ({ context, data }) => {
     const distribution = await context.authInfo.userScoring.getScoreDistribution(data.recordType);
     return { distribution };
@@ -122,7 +122,7 @@ export const getScoringSettingsFn = createServerFn({ method: 'GET' })
 
 export const getScoreLatestFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ objectType: z.string(), objectId: z.string() }))
+  .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       const score = await context.authInfo.userScoring.getScoreLatest(data.objectType, data.objectId);

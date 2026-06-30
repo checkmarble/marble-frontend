@@ -56,7 +56,7 @@ import { z } from 'zod/v4';
 
 export const createCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(
+  .validator(
     z.object({
       name: z.string().min(1),
       inboxId: z.uuid(),
@@ -74,7 +74,7 @@ export const createCaseFn = createServerFn({ method: 'POST' })
 
 export const closeCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(closeCasePayloadSchema)
+  .validator(closeCasePayloadSchema)
   .handler(async ({ context, data }) => {
     const { caseId, outcome, comment } = data;
     try {
@@ -92,7 +92,7 @@ export const closeCaseFn = createServerFn({ method: 'POST' })
 
 export const openCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(openCasePayloadSchema)
+  .validator(openCasePayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const promises: Promise<unknown>[] = [];
@@ -108,7 +108,7 @@ export const openCaseFn = createServerFn({ method: 'POST' })
 
 export const escalateCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(escalateCasePayloadSchema)
+  .validator(escalateCasePayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.cases.escalateCase({ caseId: data.caseId });
@@ -121,7 +121,7 @@ export const escalateCaseFn = createServerFn({ method: 'POST' })
 
 export const snoozeCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(snoozeCasePayloadSchema)
+  .validator(snoozeCasePayloadSchema)
   .handler(async ({ context, data }) => {
     await (data.snoozeUntil
       ? context.authInfo.cases.snoozeCase({ caseId: data.caseId, snoozeUntil: data.snoozeUntil })
@@ -132,7 +132,7 @@ export const snoozeCaseFn = createServerFn({ method: 'POST' })
 
 export const editAssigneeFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editAssigneePayloadSchema)
+  .validator(editAssigneePayloadSchema)
   .handler(async ({ context, data }) => {
     if (data.assigneeId) {
       await context.authInfo.cases.assignUser({ caseId: data.caseId, userId: data.assigneeId });
@@ -143,28 +143,28 @@ export const editAssigneeFn = createServerFn({ method: 'POST' })
 
 export const editInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editInboxPayloadSchema)
+  .validator(editInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.cases.updateCase({ caseId: data.caseId, body: { inboxId: data.inboxId } });
   });
 
 export const editNameFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editNamePayloadSchema)
+  .validator(editNamePayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.cases.updateCase({ caseId: data.caseId, body: { name: data.name } });
   });
 
 export const editTagsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editTagsPayloadSchema)
+  .validator(editTagsPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.cases.setTags(data);
   });
 
 export const editSuspicionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     if (!(data instanceof FormData)) throw new Error('Expected FormData');
     return data;
   })
@@ -211,14 +211,14 @@ export const editSuspicionFn = createServerFn({ method: 'POST' })
 
 export const listSuspicionActivityReportsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     return await context.authInfo.cases.listSuspiciousActivityReports({ caseId: data.caseId });
   });
 
 export const massUpdateCasesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(massUpdateCasesPayloadSchema)
+  .validator(massUpdateCasesPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.cases.massUpdateCases({ body: data });
   });
@@ -227,7 +227,7 @@ export const massUpdateCasesFn = createServerFn({ method: 'POST' })
 
 export const addCommentFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => {
+  .validator((data: unknown) => {
     if (!(data instanceof FormData)) throw new Error('Expected FormData');
     return data;
   })
@@ -284,7 +284,7 @@ export const addCommentFn = createServerFn({ method: 'POST' })
 
 export const reviewDecisionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(reviewDecisionPayloadSchema)
+  .validator(reviewDecisionPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.cases.reviewDecision(data);
@@ -296,7 +296,7 @@ export const reviewDecisionFn = createServerFn({ method: 'POST' })
 
 export const addRuleSnoozeFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(addRuleSnoozePayloadSchema)
+  .validator(addRuleSnoozePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
@@ -329,7 +329,7 @@ export const addRuleSnoozeFn = createServerFn({ method: 'POST' })
 
 export const reviewScreeningMatchFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(reviewScreeningMatchPayloadSchema)
+  .validator(reviewScreeningMatchPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.screening.updateMatchStatus(data);
@@ -340,7 +340,7 @@ export const reviewScreeningMatchFn = createServerFn({ method: 'POST' })
 
 export const setAllMatchesToNoHitFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ matchIds: protectArray(z.string().array()) }))
+  .validator(z.object({ matchIds: protectArray(z.string().array()) }))
   .handler(async ({ context, data }) => {
     try {
       await Promise.all(
@@ -353,7 +353,7 @@ export const setAllMatchesToNoHitFn = createServerFn({ method: 'POST' })
 
 export const addToCaseFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(addToCasePayloadSchema)
+  .validator(addToCasePayloadSchema)
   .handler(async ({ context, data }) => {
     const request = getRequest();
     const t = await context.services.i18nextService.getFixedT(request, ['common', 'cases']);
@@ -385,7 +385,7 @@ export const getAiSettingsFn = createServerFn({ method: 'GET' })
 
 export const updateAiSettingsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((data: unknown) => data as AiSettingSchema)
+  .validator((data: unknown) => data as AiSettingSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.aiAssistSettings.updateAiAssistSettings(data);
@@ -406,7 +406,7 @@ export const getInboxesFn = createServerFn({ method: 'GET' })
 
 export const getCaseDetailFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     const caseDetail = await context.authInfo.cases.getCase({ caseId: data.caseId });
     return { caseDetail };
@@ -414,7 +414,7 @@ export const getCaseDetailFn = createServerFn({ method: 'GET' })
 
 export const getCaseNameFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     const c = await context.authInfo.cases.getCase({ caseId: data.caseId });
     return { name: c.name };
@@ -422,7 +422,7 @@ export const getCaseNameFn = createServerFn({ method: 'GET' })
 
 export const getCasesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(listCasesInputSchema)
+  .validator(listCasesInputSchema)
   .handler(async ({ context, data }) => {
     const { inboxId, limit, order, offsetId, ...filters } = data;
     const { user, cases: caseRepository } = context.authInfo;
@@ -444,7 +444,7 @@ export const getCasesFn = createServerFn({ method: 'POST' })
 
 export const getRelatedCasesByObjectFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ objectType: z.string(), objectId: z.string() }))
+  .validator(z.object({ objectType: z.string(), objectId: z.string() }))
   .handler(async ({ context, data }) => {
     const relatedCases = await context.authInfo.cases.getObjectRelatedCases(data);
     return { cases: relatedCases };
@@ -452,7 +452,7 @@ export const getRelatedCasesByObjectFn = createServerFn({ method: 'GET' })
 
 export const getPivotRelatedCasesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ pivotValue: z.string() }))
+  .validator(z.object({ pivotValue: z.string() }))
   .handler(async ({ context, data }) => {
     const cases = await context.authInfo.cases.getPivotRelatedCases({ pivotValue: data.pivotValue });
     return { cases };
@@ -462,7 +462,7 @@ export const getPivotRelatedCasesFn = createServerFn({ method: 'GET' })
 
 export const listCaseDecisionsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(listCaseDecisionsInputSchema)
+  .validator(listCaseDecisionsInputSchema)
   .handler(async ({ context, data }) => {
     return context.authInfo.cases.listCaseDecisions(
       { caseId: data.caseId },
@@ -474,7 +474,7 @@ export const listCaseDecisionsFn = createServerFn({ method: 'POST' })
 
 export const getRulesByPivotFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     const { cases: caseRepository, decision: decisionRepository, scenarioIterationRuleRepository } = context.authInfo;
 
@@ -571,7 +571,7 @@ function getRulesForSnooze(decisions: DecisionForSnooze[], snoozes: RuleSnoozeWi
 
 export const listCaseReviewsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     const reviews = await context.authInfo.cases.listCaseReviews({ caseId: data.caseId });
     return { reviews } as { reviews: AiCaseReviewListItem[] };
@@ -579,7 +579,7 @@ export const listCaseReviewsFn = createServerFn({ method: 'GET' })
 
 export const getCaseReviewFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string(), reviewId: z.string() }))
+  .validator(z.object({ caseId: z.string(), reviewId: z.string() }))
   .handler(async ({ context, data }) => {
     const review = await context.authInfo.cases.getCaseReviewById({ caseId: data.caseId, reviewId: data.reviewId });
     return { review } as { review: CaseReview };
@@ -587,14 +587,14 @@ export const getCaseReviewFn = createServerFn({ method: 'GET' })
 
 export const enqueueReviewFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     await context.authInfo.cases.enqueueReviewForCase({ caseId: data.caseId });
   });
 
 export const addCaseReviewFeedbackFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string(), reviewId: z.string(), reaction: caseReviewReactionSchema }))
+  .validator(z.object({ caseId: z.string(), reviewId: z.string(), reaction: caseReviewReactionSchema }))
   .handler(async ({ context, data }) => {
     await context.authInfo.cases.addCaseReviewFeedback({
       caseId: data.caseId,
@@ -605,7 +605,7 @@ export const addCaseReviewFeedbackFn = createServerFn({ method: 'POST' })
 
 export const addReviewToCaseCommentsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string(), reviewId: z.string() }))
+  .validator(z.object({ caseId: z.string(), reviewId: z.string() }))
   .handler(async ({ context, data }) => {
     const caseReviews = await context.authInfo.cases.getMostRecentCaseReview({ caseId: data.caseId });
     const caseReview = caseReviews.find((review) => review.id === data.reviewId);
@@ -639,7 +639,7 @@ function enrichAnalysisWithLinks(enrichments: KycCaseEnrichment[]): KycCaseEnric
 
 export const enrichKycFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       const kycCaseEnrichments = await context.authInfo.cases.enrichPivotObjectOfCaseWithKyc({ caseId: data.caseId });
@@ -657,7 +657,7 @@ export const enrichKycFn = createServerFn({ method: 'POST' })
 
 export const updateInboxEscalationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateInboxEscalationPayloadSchema)
+  .validator(updateInboxEscalationPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await Promise.all(
@@ -676,7 +676,7 @@ export const updateInboxEscalationFn = createServerFn({ method: 'POST' })
 
 export const updateAutoAssignFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateAutoAssignPayloadSchema)
+  .validator(updateAutoAssignPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const inboxEntries = Object.entries(data.inboxes) as [string, boolean][];
@@ -704,7 +704,7 @@ export const updateAutoAssignFn = createServerFn({ method: 'POST' })
 
 export const updateInboxWorkflowFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateInboxWorkflowPayloadSchema)
+  .validator(updateInboxWorkflowPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await Promise.all(
@@ -725,7 +725,7 @@ export const updateInboxWorkflowFn = createServerFn({ method: 'POST' })
 
 export const getNextUnassignedCaseFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ caseId: z.string() }))
+  .validator(z.object({ caseId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       const nextCaseId = await context.authInfo.cases.getNextUnassignedCaseId({ caseId: data.caseId });

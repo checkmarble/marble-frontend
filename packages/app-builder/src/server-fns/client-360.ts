@@ -4,7 +4,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(addConfigurationPayloadSchema)
+  .validator(addConfigurationPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const { tableId, semanticType, captionField, alias } = data;
@@ -31,7 +31,7 @@ export const addClient360ConfigurationFn = createServerFn({ method: 'POST' })
 
 export const searchClient360Fn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(client360SearchPayloadSchema)
+  .validator(client360SearchPayloadSchema)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   .handler(async ({ context, data }): Promise<any> => {
     return context.authInfo.client360.searchClient360(data);

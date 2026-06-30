@@ -22,7 +22,7 @@ import { Icon } from 'ui-icons';
 
 const testRunLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function testRunLoader({ data, context }) {
     const testRunId = fromParams(data?.params ?? {}, 'testRunId');
     const { testRun } = context.authInfo;

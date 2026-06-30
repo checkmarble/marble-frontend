@@ -28,7 +28,7 @@ import z from 'zod';
 
 const scenarioCaseDetailLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scenarioCaseDetailLoader({ context }) {
     const { cases: caseRepository, dataModelRepository, aiAssistSettings, user, entitlements } = context.authInfo;
     const { detail: caseDetail, inbox: caseInbox } = context.case;

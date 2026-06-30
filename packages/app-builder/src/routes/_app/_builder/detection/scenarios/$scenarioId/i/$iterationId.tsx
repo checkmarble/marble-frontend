@@ -24,7 +24,7 @@ import { Icon } from 'ui-icons';
 
 const iterationLayoutLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function iterationLayoutLoader({ data, context }) {
     const { scenarioIterationRuleRepository, scenario, user } = context.authInfo;
 

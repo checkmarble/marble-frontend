@@ -122,7 +122,7 @@ const saveDecisionInputSchema = z.object({
 
 const saveDecisionAction = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator((input) => saveDecisionInputSchema.parse(input))
+  .validator((input) => saveDecisionInputSchema.parse(input))
   .handler(async function saveDecisionAction({ context, data }): Promise<SaveDecisionResult> {
     const request = getRequest();
     const { i18nextService } = context.services;

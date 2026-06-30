@@ -9,7 +9,7 @@ import { z } from 'zod/v4';
 
 export const getContinuousScreeningConfigurationFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ stableId: z.string() }))
+  .validator(z.object({ stableId: z.string() }))
   .handler(async ({ context, data }) => {
     const config = await context.authInfo.continuousScreening.getConfiguration(data.stableId);
     return { config };
@@ -35,7 +35,7 @@ export const listContinuousScreeningConfigurationsFn = createServerFn({ method: 
 
 export const createContinuousScreeningConfigurationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createContinuousScreeningConfigSchema)
+  .validator(createContinuousScreeningConfigSchema)
   .handler(async ({ context, data }) => {
     try {
       const { inboxName, ...payload } = data;
@@ -66,7 +66,7 @@ export const createContinuousScreeningConfigurationFn = createServerFn({ method:
 
 export const dismissContinuousScreeningFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ screeningId: z.string() }))
+  .validator(z.object({ screeningId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.continuousScreening.dismiss(data.screeningId);
@@ -77,7 +77,7 @@ export const dismissContinuousScreeningFn = createServerFn({ method: 'POST' })
 
 export const loadMoreContinuousScreeningMatchesFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ screeningId: z.string() }))
+  .validator(z.object({ screeningId: z.string() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.continuousScreening.loadMoreMatches(data.screeningId);
@@ -88,7 +88,7 @@ export const loadMoreContinuousScreeningMatchesFn = createServerFn({ method: 'PO
 
 export const reviewContinuousScreeningMatchFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(reviewMatchPayloadSchema)
+  .validator(reviewMatchPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.continuousScreening.updateMatchStatus(data);
@@ -99,7 +99,7 @@ export const reviewContinuousScreeningMatchFn = createServerFn({ method: 'POST' 
 
 export const updateContinuousScreeningConfigurationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createContinuousScreeningConfigSchema.and(z.object({ configStableId: z.string() })))
+  .validator(createContinuousScreeningConfigSchema.and(z.object({ configStableId: z.string() })))
   .handler(async ({ context, data }) => {
     const { inboxName, configStableId, ...payload } = data;
 

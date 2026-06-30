@@ -15,7 +15,7 @@ const beforeLoadFn = createServerFn()
 
 const caseDetailLayoutLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function caseDetailLayoutLoader({ context }) {
     return { caseDetail: context.case.detail, caseInbox: context.case.inbox };
   });

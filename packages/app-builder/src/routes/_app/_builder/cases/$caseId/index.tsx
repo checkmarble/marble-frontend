@@ -7,7 +7,7 @@ import z from 'zod';
 
 const caseDetailLoader = createServerFn()
   .middleware([authMiddleware, caseDetailMiddleware])
-  .inputValidator(
+  .validator(
     z.object({
       params: z.record(z.string(), z.string()).optional(),
       search: z.object({ fromInbox: z.string().optional() }).optional(),

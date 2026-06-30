@@ -9,7 +9,7 @@ import { createServerFn } from '@tanstack/react-start';
 
 const scoringRulesetLoader = createServerFn()
   .middleware([authMiddleware])
-  .inputValidator((input: { params?: Record<string, string> } | undefined) => input)
+  .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scoringRulesetLoader({ data, context }) {
     const { userScoring, customListsRepository, entitlements } = context.authInfo;
 

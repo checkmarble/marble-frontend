@@ -53,7 +53,7 @@ import { z } from 'zod/v4';
 
 export const createApiKeyFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createApiKeyPayloadSchema)
+  .validator(createApiKeyPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const authSession = await useAuthSession();
@@ -67,7 +67,7 @@ export const createApiKeyFn = createServerFn({ method: 'POST' })
 
 export const deleteApiKeyFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteApiKeyPayloadSchema)
+  .validator(deleteApiKeyPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.apiKey.deleteApiKey(data);
@@ -82,7 +82,7 @@ export const deleteApiKeyFn = createServerFn({ method: 'POST' })
 
 export const getAuditEventsFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(auditEventsFiltersSchema.and(auditEventsPaginationSchema))
+  .validator(auditEventsFiltersSchema.and(auditEventsPaginationSchema))
   .handler(async ({ context, data }) => {
     const { user, auditEvents } = context.authInfo;
 
@@ -120,7 +120,7 @@ export const getAuditEventsFn = createServerFn({ method: 'GET' })
 
 export const deleteExportedFieldFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(exportedFieldSchema.and(z.object({ tableId: z.string() })))
+  .validator(exportedFieldSchema.and(z.object({ tableId: z.string() })))
   .handler(async ({ context, data }): Promise<ExportedFields> => {
     try {
       const { tableId, ...field } = data;
@@ -154,7 +154,7 @@ export const deleteExportedFieldFn = createServerFn({ method: 'POST' })
 
 export const updateExportedFieldFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(exportedFieldSchema.and(z.object({ tableId: z.string() })))
+  .validator(exportedFieldSchema.and(z.object({ tableId: z.string() })))
   .handler(async ({ context, data }): Promise<ExportedFields> => {
     try {
       const { tableId, ...field } = data;
@@ -195,7 +195,7 @@ export const updateExportedFieldFn = createServerFn({ method: 'POST' })
 
 export const createInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createInboxPayloadSchema)
+  .validator(createInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const createdInbox = await context.authInfo.inbox.createInbox(data);
@@ -213,7 +213,7 @@ export const createInboxFn = createServerFn({ method: 'POST' })
 
 export const deleteInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteInboxPayloadSchema)
+  .validator(deleteInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.deleteInbox(data.inboxId);
@@ -226,7 +226,7 @@ export const deleteInboxFn = createServerFn({ method: 'POST' })
 
 export const updateInboxFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateInboxPayloadSchema)
+  .validator(updateInboxPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const updatedInbox = await context.authInfo.inbox.updateInbox(
@@ -242,7 +242,7 @@ export const updateInboxFn = createServerFn({ method: 'POST' })
 
 export const createInboxUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createInboxUserPayloadSchema)
+  .validator(createInboxUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.createInboxUser(data.inboxId, R.omit(data, ['inboxId']));
@@ -258,7 +258,7 @@ export const createInboxUserFn = createServerFn({ method: 'POST' })
 
 export const deleteInboxUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteInboxUserPayloadSchema)
+  .validator(deleteInboxUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.deleteInboxUser(data.inboxUserId);
@@ -274,14 +274,14 @@ export const deleteInboxUserFn = createServerFn({ method: 'POST' })
 
 export const editInboxUserAutoAssignFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(editInboxUserAutoAssignPayloadSchema)
+  .validator(editInboxUserAutoAssignPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.inbox.updateInboxUser(data.id, { autoAssignable: data.autoAssignable });
   });
 
 export const updateInboxUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateInboxUserPayloadSchema)
+  .validator(updateInboxUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.inbox.updateInboxUser(data.id, pick(data, ['role', 'autoAssignable']));
@@ -299,7 +299,7 @@ export const updateInboxUserFn = createServerFn({ method: 'POST' })
 
 export const updateAllowedNetworksFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateAllowedNetworksPayloadSchema.and(z.object({ organizationId: z.string() })))
+  .validator(updateAllowedNetworksPayloadSchema.and(z.object({ organizationId: z.string() })))
   .handler(async ({ context, data }) => {
     try {
       const subnets = await context.authInfo.organization.updateAllowedNetworks(
@@ -317,7 +317,7 @@ export const updateAllowedNetworksFn = createServerFn({ method: 'POST' })
 
 export const updateOrganizationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateOrganizationPayloadSchema)
+  .validator(updateOrganizationPayloadSchema)
   .handler(async ({ context, data }) => {
     const { organizationId, autoAssignQueueLimit } = data;
     await context.authInfo.organization.updateOrganization({ organizationId, changes: { autoAssignQueueLimit } });
@@ -325,7 +325,7 @@ export const updateOrganizationFn = createServerFn({ method: 'POST' })
 
 export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateOrganizationScenariosPayloadSchema)
+  .validator(updateOrganizationScenariosPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.organization.updateOrganization({
       organizationId: data.organizationId,
@@ -339,7 +339,7 @@ export const updateOrganizationScenariosFn = createServerFn({ method: 'POST' })
 
 export const updateScreeningProvidersFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateScreeningProvidersPayloadSchema)
+  .validator(updateScreeningProvidersPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.organization.updateOrganization({
@@ -391,7 +391,7 @@ export const getUnavailabilityFn = createServerFn({ method: 'GET' })
 
 export const setUnavailabilityFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ until: z.string().nullable() }))
+  .validator(z.object({ until: z.string().nullable() }))
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.personalSettings.setUnavailability({
@@ -422,14 +422,14 @@ export const cancelUnavailabilityFn = createServerFn({ method: 'POST' })
 
 export const createTagFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createTagPayloadSchema)
+  .validator(createTagPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.apiClient.createTag(data);
   });
 
 export const deleteTagFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteTagPayloadSchema)
+  .validator(deleteTagPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.apiClient.deleteTag(data.tagId);
@@ -440,7 +440,7 @@ export const deleteTagFn = createServerFn({ method: 'POST' })
 
 export const updateTagFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateTagPayloadSchema)
+  .validator(updateTagPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.apiClient.updateTag(data.id, data);
   });
@@ -449,7 +449,7 @@ export const updateTagFn = createServerFn({ method: 'POST' })
 
 export const createUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createUserPayloadSchema)
+  .validator(createUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.apiClient.createUser({
@@ -469,7 +469,7 @@ export const createUserFn = createServerFn({ method: 'POST' })
 
 export const deleteUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteUserPayloadSchema)
+  .validator(deleteUserPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.apiClient.deleteUser(data.userId);
@@ -480,7 +480,7 @@ export const deleteUserFn = createServerFn({ method: 'POST' })
 
 export const updateUserFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateUserPayloadSchema)
+  .validator(updateUserPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.apiClient.updateUser(data.userId, {
       first_name: data.firstName,
@@ -495,7 +495,7 @@ export const updateUserFn = createServerFn({ method: 'POST' })
 
 export const createWebhookFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createWebhookPayloadSchema)
+  .validator(createWebhookPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       const webhook = await context.authInfo.webhookRepository.createWebhook({ webhookCreateBody: data });
@@ -508,7 +508,7 @@ export const createWebhookFn = createServerFn({ method: 'POST' })
 
 export const createWebhookSecretFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(createWebhookSecretPayloadSchema)
+  .validator(createWebhookSecretPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.webhookRepository.createWebhookSecret({
       webhookId: data.webhookId,
@@ -518,7 +518,7 @@ export const createWebhookSecretFn = createServerFn({ method: 'POST' })
 
 export const deleteWebhookFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(deleteWebhookPayloadSchema)
+  .validator(deleteWebhookPayloadSchema)
   .handler(async ({ context, data }) => {
     try {
       await context.authInfo.webhookRepository.deleteWebhook({ webhookId: data.webhookId });
@@ -531,7 +531,7 @@ export const deleteWebhookFn = createServerFn({ method: 'POST' })
 
 export const revokeWebhookSecretFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(revokeWebhookSecretPayloadSchema)
+  .validator(revokeWebhookSecretPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.webhookRepository.revokeWebhookSecret({
       webhookId: data.webhookId,
@@ -541,7 +541,7 @@ export const revokeWebhookSecretFn = createServerFn({ method: 'POST' })
 
 export const updateWebhookFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(updateWebhookPayloadSchema)
+  .validator(updateWebhookPayloadSchema)
   .handler(async ({ context, data }) => {
     await context.authInfo.webhookRepository.updateWebhook({
       webhookId: data.id,

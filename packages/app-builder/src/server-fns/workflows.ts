@@ -12,7 +12,7 @@ export const listWorkflowInboxesFn = createServerFn({ method: 'GET' })
 
 export const listWorkflowRulesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string() }))
+  .validator(z.object({ scenarioId: z.string() }))
   .handler(async ({ context, data }) => {
     const { triggerObjectType } = await context.authInfo.scenario.getScenario({
       scenarioId: data.scenarioId,
@@ -25,7 +25,7 @@ export const listWorkflowRulesFn = createServerFn({ method: 'GET' })
 
 export const getWorkflowLatestReferencesFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string() }))
+  .validator(z.object({ scenarioId: z.string() }))
   .handler(async ({ context, data }) => {
     const references = await context.authInfo.scenario.getLatestRulesReferences(data.scenarioId);
     return references.sort((a, b) => Number(b.latestVersion) - Number(a.latestVersion));
@@ -33,7 +33,7 @@ export const getWorkflowLatestReferencesFn = createServerFn({ method: 'GET' })
 
 export const reorderWorkflowsFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), ruleIds: z.array(z.string()) }))
+  .validator(z.object({ scenarioId: z.string(), ruleIds: z.array(z.string()) }))
   .handler(async ({ context, data }) => {
     await context.authInfo.scenario.reorderWorkflows({
       scenarioId: data.scenarioId,
@@ -43,7 +43,7 @@ export const reorderWorkflowsFn = createServerFn({ method: 'POST' })
 
 export const createWorkflowRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ scenarioId: z.string(), name: z.string().min(1), fallthrough: z.boolean() }))
+  .validator(z.object({ scenarioId: z.string(), name: z.string().min(1), fallthrough: z.boolean() }))
   .handler(async ({ context, data }) => {
     const rule = await context.authInfo.scenario.createWorkflowRule({
       scenarioId: data.scenarioId,
@@ -64,28 +64,28 @@ export const createWorkflowRuleFn = createServerFn({ method: 'POST' })
 
 export const getWorkflowRuleFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ ruleId: z.string() }))
+  .validator(z.object({ ruleId: z.string() }))
   .handler(async ({ context, data }) => {
     return context.authInfo.scenario.getWorkflowRule({ ruleId: data.ruleId });
   });
 
 export const updateWorkflowRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(ruleSchema)
+  .validator(ruleSchema)
   .handler(async ({ context, data }) => {
     await updateWorkflowRule(context.authInfo.scenario, data as Rule);
   });
 
 export const deleteWorkflowRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ ruleId: z.string() }))
+  .validator(z.object({ ruleId: z.string() }))
   .handler(async ({ context, data }) => {
     await context.authInfo.scenario.deleteWorkflowRule({ ruleId: data.ruleId });
   });
 
 export const renameWorkflowRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ ruleId: z.string(), name: z.string(), fallthrough: z.boolean() }))
+  .validator(z.object({ ruleId: z.string(), name: z.string(), fallthrough: z.boolean() }))
   .handler(async ({ context, data }) => {
     await context.authInfo.apiClient.updateWorkflowRule(data.ruleId, {
       name: data.name,
@@ -95,7 +95,7 @@ export const renameWorkflowRuleFn = createServerFn({ method: 'POST' })
 
 export const deleteWorkflowConditionFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
-  .inputValidator(z.object({ ruleId: z.string(), conditionId: z.string() }))
+  .validator(z.object({ ruleId: z.string(), conditionId: z.string() }))
   .handler(async ({ context, data }) => {
     await context.authInfo.scenario.deleteWorkflowCondition({
       ruleId: data.ruleId,
