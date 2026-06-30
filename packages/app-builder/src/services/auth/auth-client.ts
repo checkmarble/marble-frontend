@@ -1,7 +1,7 @@
 import { type AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
 import { FirebaseError } from 'firebase/app';
-import { AuthErrorCodes } from 'firebase/auth';
+import { AuthErrorCodes, type TotpSecret } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 
 export function makeAuthenticationClientService(authenticationClientRepository: AuthenticationClientRepository) {
@@ -22,6 +22,60 @@ export class InvalidLoginCredentials extends Error {}
 export class EmailExistsError extends Error {}
 export class WeakPasswordError extends Error {}
 export class TooManyRequest extends Error {}
+export class InvalidVerificationCode extends Error {}
+export class RequiresRecentLogin extends Error {}
+
+function throwMappedMfaError(error: unknown): never {
+  if (error instanceof FirebaseError) {
+    switch (error.code) {
+      case 'auth/invalid-verification-code':
+      case 'auth/missing-code':
+      case 'auth/code-expired':
+        throw new InvalidVerificationCode();
+      case AuthErrorCodes.CREDENTIAL_TOO_OLD_LOGIN_AGAIN:
+        throw new RequiresRecentLogin();
+      case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+        throw new NetworkRequestFailed();
+      case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+        throw new TooManyRequest();
+    }
+  }
+  throw error;
+}
+
+export function useGetEnrolledMfaFactors({ authenticationClientRepository }: AuthenticationClientService) {
+  return () => authenticationClientRepository.getEnrolledMfaFactors();
+}
+
+export function useStartTotpEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
+  return async () => {
+    try {
+      return await authenticationClientRepository.startTotpEnrollment();
+    } catch (error) {
+      throwMappedMfaError(error);
+    }
+  };
+}
+
+export function useFinalizeTotpEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
+  return async (secret: TotpSecret, verificationCode: string, displayName: string) => {
+    try {
+      await authenticationClientRepository.finalizeTotpEnrollment(secret, verificationCode, displayName);
+    } catch (error) {
+      throwMappedMfaError(error);
+    }
+  };
+}
+
+export function useUnenrollMfaFactor({ authenticationClientRepository }: AuthenticationClientService) {
+  return async (factorUid: string) => {
+    try {
+      await authenticationClientRepository.unenrollMfaFactor(factorUid);
+    } catch (error) {
+      throwMappedMfaError(error);
+    }
+  };
+}
 
 export function useGoogleSignIn({ authenticationClientRepository }: AuthenticationClientService) {
   const {

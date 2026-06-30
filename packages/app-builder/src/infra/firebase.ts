@@ -6,12 +6,14 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   getAuth,
+  multiFactor,
   OAuthProvider,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  TotpMultiFactorGenerator,
 } from 'firebase/auth';
 
 export type FirebaseClientWrapper = {
@@ -26,6 +28,8 @@ export type FirebaseClientWrapper = {
   sendEmailVerification: typeof sendEmailVerification;
   sendPasswordResetEmail: typeof sendPasswordResetEmail;
   logout: typeof signOut;
+  multiFactor: typeof multiFactor;
+  totpGenerator: typeof TotpMultiFactorGenerator;
 };
 
 export function initializeFirebaseClient(config: AppConfig['auth']['firebase']): FirebaseClientWrapper {
@@ -60,5 +64,7 @@ export function initializeFirebaseClient(config: AppConfig['auth']['firebase']):
     sendEmailVerification: sendEmailVerification,
     sendPasswordResetEmail: sendPasswordResetEmail,
     logout: signOut,
+    multiFactor: multiFactor,
+    totpGenerator: TotpMultiFactorGenerator,
   };
 }
