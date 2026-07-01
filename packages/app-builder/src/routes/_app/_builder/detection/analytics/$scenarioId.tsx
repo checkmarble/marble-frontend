@@ -6,6 +6,7 @@ import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVs
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { UpsellCard } from '@app-builder/components/Analytics/UpsellCard';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
+import { Panel } from '@app-builder/components/Panel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import type {
   DateRangeFilter as AnalyticsDateRangeFilter,
@@ -23,8 +24,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiltersBar, FormattingProvider } from 'ui-design-system';
+import { Button, FiltersBar, FormattingProvider, Typo } from 'ui-design-system';
 import type { FilterChange, FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
+import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 interface LoaderData {
@@ -311,6 +313,8 @@ function Analytics() {
     },
   ];
 
+  const hasFilter = true;
+
   return (
     <Page.Main>
       <Page.Content>
@@ -334,9 +338,9 @@ function Analytics() {
             formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
           }}
         >
-          <div className="bg-surface-page min-[2000px]:px-sm0 flex flex-col gap-md">
-            <div className="flex flex-row gap-md mb-lg w-full">
-              <div className="flex flex-row gap-sm items-start min-h-[88px] w-full">
+          <div className="bg-surface-page min-[2000px]:px-sm flex flex-col gap-md">
+            <div className="flex flex-row gap-md mb-lg w-full justify-between">
+              <div className="flex gap-sm items-start">
                 <FiltersBar
                   descriptors={descriptors}
                   dynamicDescriptors={dynamicDescriptors}
@@ -344,7 +348,14 @@ function Analytics() {
                   onUpdate={onFiltersUpdate}
                   onChange={(change, _next) => onInstantUpdate(change)}
                 />
+                <AddFilterButton />
               </div>
+              {hasFilter && (
+                <Button variant="primary" appearance="stroked" size="medium" className="shrink-0">
+                  <Icon icon="settings" className="size-4" />
+                  <span>{t('analytics:filters.custom_filters.label')}</span>
+                </Button>
+              )}
             </div>
             <div className="flex flex-col lg-analytics:flex-row gap-md w-full items-stretch h-auto">
               <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
@@ -392,5 +403,40 @@ function Analytics() {
         </FormattingProvider>
       </Page.Content>
     </Page.Main>
+  );
+}
+
+function AddFilterButton() {
+  const { t } = useTranslation(['analytics']);
+
+  function saveFilter() {
+    console.log('saveFilter');
+  }
+  function onClose(state: boolean) {
+    if (!state) return true;
+  }
+
+  return (
+    <Panel.Root onOpenChange={onClose}>
+      <Panel.Trigger asChild>
+        <Button variant="secondary" appearance="link" className="my-xs shrink-0">
+          <Icon icon="plus" className="size-4" />
+          <span>{t('analytics:filters.custom_filters.add_filter')}</span>
+        </Button>
+      </Panel.Trigger>
+      <Panel.Container size="medium">
+        <Panel.Content>
+          <Panel.Header>{t('analytics:filters.custom_filters.title')}</Panel.Header>
+          content
+          <Panel.Footer className="flex gap-md items-center">
+            <Typo variant="text" className="text-grey-secondary">
+              {t('analytics:filters.custom_filters.description')}
+            </Typo>
+            <Panel.FooterButton label={t('common:cancel')} isCloseButton />
+            <Panel.FooterButton variant="primary" onClick={saveFilter} label={t('common:save')} />
+          </Panel.Footer>
+        </Panel.Content>
+      </Panel.Container>
+    </Panel.Root>
   );
 }
