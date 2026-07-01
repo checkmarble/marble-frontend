@@ -23,6 +23,7 @@
   "filters.custom_filters.select_field": "اختر حقلًا...",
   "filters.custom_filters.select_table": "اختر جدولًا...",
   "filters.custom_filters.title": "تكوين الفلتر",
+  "filters.custom_filters.undelete_filter": "استعادة المرشح",
   "filters.select_comparison_date_range.placeholder": "أضف فترة للمقارنة",
   "legacy-analytics-link": "عرض تحليلات التحقيقات",
   "no_data": "لا توجد بيانات متاحة",

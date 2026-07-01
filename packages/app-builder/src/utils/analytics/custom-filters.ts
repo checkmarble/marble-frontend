@@ -20,6 +20,7 @@ export type CustomFilterDraftRow = {
   id: string;
   persistedKey?: string;
   isNew: boolean;
+  isDeleted?: boolean;
   triggerObjectType: string | null;
   tableId: string | null;
   selection: CustomFilterSelection | null;
@@ -71,11 +72,23 @@ export function isRowComplete(row: CustomFilterDraftRow): boolean {
   return row.triggerObjectType !== null && row.tableId !== null && row.selection !== null;
 }
 
+export function isActiveRow(row: CustomFilterDraftRow): boolean {
+  return !row.isDeleted;
+}
+
+export function hasIncompleteActiveRow(draftRows: CustomFilterDraftRow[]): boolean {
+  return draftRows.some((row) => isActiveRow(row) && !isRowComplete(row));
+}
+
+export function getActiveCompleteRows(draftRows: CustomFilterDraftRow[]): CustomFilterDraftRow[] {
+  return draftRows.filter((row) => isActiveRow(row) && isRowComplete(row));
+}
+
 export function getFieldSelectionLabel(tableName: string, selection: CustomFilterSelection): string {
   if (selection.kind === 'trigger') {
-    return `${tableName}.${selection.fieldName}`;
+    return selection.fieldName;
   }
-  return `${tableName}->${selection.path.join('->')}.${selection.fieldName}`;
+  return `-> ${selection.path.join('->')}.${selection.fieldName}`;
 }
 
 export function buildExistingFilterRows(
@@ -126,6 +139,7 @@ export function buildDraftRowsFromExisting(existingRows: ExistingCustomFilterRow
     id: row.persistedKey,
     persistedKey: row.persistedKey,
     isNew: false,
+    isDeleted: false,
     triggerObjectType: row.triggerObjectType,
     tableId: row.tableId,
     selection: row.selection,
@@ -156,7 +170,7 @@ export function diffFilterChanges(
     }),
   );
 
-  const finalCompleteRows = draftRows.filter(isRowComplete);
+  const finalCompleteRows = getActiveCompleteRows(draftRows);
   const finalByKey = new Map(
     finalCompleteRows.map((row) => {
       const payload = toExportedFieldPayload(row)!;
@@ -222,11 +236,11 @@ export function needsDeleteConfirmation(
 }
 
 export function canAddFilterRow(draftRows: CustomFilterDraftRow[], tableConfigs: CustomFilterTableConfig[]): boolean {
-  if (draftRows.some((row) => !isRowComplete(row))) {
+  if (hasIncompleteActiveRow(draftRows)) {
     return false;
   }
 
-  const completeCountByTableId = draftRows.reduce(
+  const completeCountByTableId = getActiveCompleteRows(draftRows).reduce(
     (acc, row) => {
       if (row.tableId) {
         acc[row.tableId] = (acc[row.tableId] ?? 0) + 1;

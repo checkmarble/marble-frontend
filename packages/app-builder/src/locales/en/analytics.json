@@ -23,6 +23,7 @@
   "filters.custom_filters.select_field": "Select field...",
   "filters.custom_filters.select_table": "Select table...",
   "filters.custom_filters.title": "Filter's configuration",
+  "filters.custom_filters.undelete_filter": "Restore filter",
   "filters.select_comparison_date_range.placeholder": "Add period to compare",
   "legacy-analytics-link": "View investigations analytics",
   "no_data": "No data available",
