@@ -91,7 +91,10 @@ COPY packages/tests/package.json ./packages/tests/
 RUN --mount=type=cache,target=/root/.bun \
     bun install --production --frozen-lockfile
 
-RUN rm -rf /usr/src/app/node_modules/.bun
+RUN \
+  rm -rf /usr/src/app/node_modules/.bun && \
+  rm -rf /usr/src/app/node_modules/.bin && \
+  rm -rf /usr/src/app/node_modules/@esbuild
 
 # ---- Runtime stage ---- (uses prod deps)
 FROM ${RUNTIME_IMAGE} AS app-builder
