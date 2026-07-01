@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { CustomFiltersForm } from '@app-builder/components/Analytics/CustomFiltersForm';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/DecisionsScoreDistribution';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
@@ -6,7 +7,6 @@ import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVs
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { UpsellCard } from '@app-builder/components/Analytics/UpsellCard';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
-import { Panel } from '@app-builder/components/Panel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import type {
   DateRangeFilter as AnalyticsDateRangeFilter,
@@ -24,7 +24,8 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, FiltersBar, FormattingProvider, MenuCommand, Typo } from 'ui-design-system';
+import * as R from 'remeda';
+import { Button, FiltersBar, FormattingProvider, MenuCommand } from 'ui-design-system';
 import type { FilterChange, FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
@@ -106,6 +107,15 @@ function Analytics() {
   const [volatileScenarioId, setVolatileScenarioId] = useState<string | null>(null);
   const [volatileRange, setVolatileRange] = useState<AnalyticsDateRangeFilter | undefined>();
   const [volatileCompareRange, setVolatileCompareRange] = useState<AnalyticsDateRangeFilter | undefined>();
+  const triggerObjects = useMemo(
+    () =>
+      R.pipe(
+        scenarios,
+        R.map((scenario) => scenario.triggerObjectType),
+        R.unique(),
+      ),
+    [scenarios],
+  );
 
   useEffect(() => {
     setVolatileScenarioId(null);
@@ -313,8 +323,6 @@ function Analytics() {
     },
   ];
 
-  const hasFilter = true;
-
   return (
     <Page.Main>
       <Page.Content>
@@ -348,9 +356,15 @@ function Analytics() {
                   onUpdate={onFiltersUpdate}
                   onChange={(change, _next) => onInstantUpdate(change)}
                 />
-                <AddFilterMenu />
+                {availableFilters && availableFilters.length > 0 && (
+                  <AddFilterMenu availableFilters={availableFilters} />
+                )}
               </div>
-              {hasFilter && <CustomFilterButton />}
+              <CustomFiltersForm
+                triggerObjects={triggerObjects}
+                scenarioId={effectiveScenarioId}
+                ranges={effectiveRanges}
+              />
             </div>
             <div className="flex flex-col lg-analytics:flex-row gap-md w-full items-stretch h-auto">
               <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
@@ -401,43 +415,9 @@ function Analytics() {
   );
 }
 
-function CustomFilterButton() {
-  const { t } = useTranslation(['common', 'analytics']);
-
-  function saveFilter() {
-    console.log('saveFilter');
-  }
-  function onClose(state: boolean) {
-    if (!state) return true;
-  }
-
-  return (
-    <Panel.Root onOpenChange={onClose}>
-      <Panel.Trigger asChild>
-        <Button variant="primary" appearance="stroked" size="medium" className="shrink-0">
-          <Icon icon="settings" className="size-4" />
-          <span>{t('analytics:filters.custom_filters.label')}</span>
-        </Button>
-      </Panel.Trigger>
-      <Panel.Container size="medium">
-        <Panel.Content>
-          <Panel.Header>{t('analytics:filters.custom_filters.title')}</Panel.Header>
-          content
-          <Panel.Footer className="flex gap-md items-center">
-            <Typo variant="text" className="text-grey-secondary">
-              {t('analytics:filters.custom_filters.description')}
-            </Typo>
-            <Panel.FooterButton label={t('common:cancel')} isCloseButton />
-            <Panel.FooterButton variant="primary" onClick={saveFilter} label={t('common:save')} />
-          </Panel.Footer>
-        </Panel.Content>
-      </Panel.Container>
-    </Panel.Root>
-  );
-}
-
-function AddFilterMenu() {
+function AddFilterMenu({ availableFilters }: { availableFilters: AvailableFiltersResponse }) {
   const { t } = useTranslation(['analytics']);
+
   return (
     <MenuCommand.Menu>
       <MenuCommand.Trigger>
@@ -448,7 +428,11 @@ function AddFilterMenu() {
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4}>
         <MenuCommand.List>
-          <MenuCommand.Item>menu item 1</MenuCommand.Item>
+          <MenuCommand.Item>
+            {availableFilters.map((filter) => (
+              <span key={filter.name}>{filter.name}</span>
+            ))}
+          </MenuCommand.Item>
         </MenuCommand.List>
       </MenuCommand.Content>
     </MenuCommand.Menu>
