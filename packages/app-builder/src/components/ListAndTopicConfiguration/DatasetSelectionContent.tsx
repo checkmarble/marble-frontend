@@ -417,8 +417,7 @@ const SectionContent = ({ sectionKey, section }: SectionContentProps) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             endAdornment={hasSearch ? 'cross' : undefined}
-            adornmentClassName="size-5"
-            onAdornmentClick={hasSearch ? () => setSearchTerm('') : undefined}
+            onEndAdornmentClick={hasSearch ? () => setSearchTerm('') : undefined}
           />
         </div>
       )}

@@ -4,7 +4,7 @@ import { useForm } from '@tanstack/react-form';
 import { useNavigate } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
 import { useTranslation } from 'react-i18next';
-import { Button, Input } from 'ui-design-system';
+import { Button, SearchInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -64,10 +64,10 @@ export const SearchForm = ({ table }: SearchFormProps) => {
       <div className="flex items-center gap-sm">
         <form.Field name="value">
           {(field) => (
-            <Input
+            <SearchInput
+              size="medium"
               value={field.state.value}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              startAdornment="search"
+              onChange={(value) => field.handleChange(value)}
               placeholder={`${tableName}...`}
               className="grow"
               disabled={!table.ready}

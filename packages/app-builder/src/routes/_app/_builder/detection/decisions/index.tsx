@@ -32,7 +32,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input } from 'ui-design-system';
+import { Button, SearchInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -172,7 +172,7 @@ function DetectionDecisions() {
             >
               <div className="flex justify-between gap-md">
                 <SearchById />
-                <div className="flex gap-md">
+                <div className="flex gap-sm">
                   <DecisionFiltersMenu filterNames={decisionFilterNames}>
                     <FiltersButton />
                   </DecisionFiltersMenu>
@@ -227,7 +227,7 @@ function AddToCase({
 
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
-      <Button disabled={!hasSelection}>
+      <Button size="medium" disabled={!hasSelection}>
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
@@ -270,19 +270,18 @@ function SearchById() {
     <form className="flex gap-xs" onSubmit={handleSubmit(form)}>
       <form.Field name="decisionId">
         {(field) => (
-          <Input
-            type="search"
+          <SearchInput
+            size="medium"
             aria-label={t('decisions:search.placeholder')}
             placeholder={t('decisions:search.placeholder')}
             value={field.state.value}
-            onChange={(e) => field.handleChange(e.target.value)}
-            startAdornment="search"
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       </form.Field>
       <form.Subscribe selector={(store) => [store.canSubmit]}>
         {([canSubmit]) => (
-          <Button type="submit" disabled={!canSubmit}>
+          <Button size="medium" type="submit" disabled={!canSubmit}>
             {t('common:search')}
           </Button>
         )}

@@ -27,6 +27,7 @@ export const SelectCaseById = ({ onNavigate }: { onNavigate: (caseId: string) =>
 
   return open ? (
     <Input
+      size="medium"
       type="text"
       placeholder={buttonText}
       value={value}
@@ -35,8 +36,7 @@ export const SelectCaseById = ({ onNavigate }: { onNavigate: (caseId: string) =>
       autoFocus
       className="w-85"
       endAdornment="arrow-right"
-      adornmentClassName="size-4"
-      onAdornmentClick={handleSubmitValue}
+      onEnterKeyDown={handleSubmitValue}
     />
   ) : (
     <Button variant="secondary" size="medium" onClick={() => setOpen(true)}>

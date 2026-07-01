@@ -39,7 +39,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { CtaV2ClassName, Input, Table, Tag, useVirtualTable } from 'ui-design-system';
+import { CtaV2ClassName, SearchInput, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const rulesLoader = createServerFn()
@@ -69,7 +69,7 @@ const AddRuleOrScreening = ({
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger className={CtaV2ClassName({ variant: 'primary', color: 'primary' })}>
+      <DropdownMenu.Trigger className={CtaV2ClassName({ variant: 'primary', color: 'primary', size: 'medium' })}>
         <Icon icon="plus" className="size-6" />
         {t('common:add')}
       </DropdownMenu.Trigger>
@@ -96,6 +96,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
 function Rules() {
   const { t } = useTranslation(['common', 'scenarios', 'decisions', 'filters']);
   const language = useFormatLanguage();
+  const [searchValue, setSearchValue] = useState('');
 
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
@@ -288,15 +289,16 @@ function Rules() {
       <RulesFiltersProvider filterValues={filterValues} submitRulesFilters={submitRulesFilters} ruleGroups={ruleGroups}>
         <div className="flex flex-row items-center justify-between gap-md">
           <form className="flex grow items-center">
-            <Input
+            <SearchInput
+              size="medium"
               className="w-full max-w-xl"
               disabled={!hasItems}
-              type="search"
               aria-label={t('common:search')}
               placeholder={t('common:search')}
-              startAdornment="search"
-              onChange={(event) => {
-                table.setGlobalFilter(event.target.value);
+              value={searchValue}
+              onChange={(value) => {
+                setSearchValue(value);
+                table.setGlobalFilter(value);
               }}
             />
           </form>

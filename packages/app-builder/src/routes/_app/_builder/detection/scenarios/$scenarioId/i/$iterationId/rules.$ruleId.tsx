@@ -37,7 +37,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Tag } from 'ui-design-system';
+import { Button, cn, Tag, UnstyledInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -287,7 +287,7 @@ function RuleDetail() {
               >
                 {(field) => (
                   <div className="flex w-full flex-col gap-xs">
-                    <input
+                    <UnstyledInput
                       ref={nameInputRef}
                       type="text"
                       name={field.name}

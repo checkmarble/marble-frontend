@@ -23,22 +23,12 @@ interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
     | 'week';
 }
 
+/**
+ * @deprecated use design system Inputs directly
+ */
 export const FormInput = React.forwardRef<React.ElementRef<typeof Input>, FormInputProps>(function FormInput(
-  { valid, enablePasswordManagers, ...props },
+  { valid, ...props },
   ref,
 ) {
-  return (
-    <Input
-      ref={ref}
-      id={props.name}
-      borderColor={valid ? 'greyfigma-90' : 'redfigma-47'}
-      {...(!enablePasswordManagers && {
-        'data-1p-ignore': 'true', // 1password
-        'data-lpignore': 'true', // lastpass
-        'data-bwignore': 'true', // bitwarden
-        'data-form-type': 'other', // used by dashlane, tells it to ignore this field for password saving
-      })}
-      {...props}
-    />
-  );
+  return <Input ref={ref} id={props.name} borderColor={valid ? 'greyfigma-90' : 'redfigma-47'} {...props} />;
 });

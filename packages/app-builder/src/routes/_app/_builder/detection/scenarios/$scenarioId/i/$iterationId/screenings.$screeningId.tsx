@@ -61,7 +61,7 @@ import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn, Switch, Tag } from 'ui-design-system';
+import { Button, cn, Switch, Tag, UnstyledInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -450,7 +450,7 @@ function ScreeningDetail() {
                 >
                   {(field) => (
                     <div className="flex w-full flex-col gap-xs">
-                      <input
+                      <UnstyledInput
                         ref={nameInputRef}
                         type="text"
                         name={field.name}

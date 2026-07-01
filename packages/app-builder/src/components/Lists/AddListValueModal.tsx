@@ -51,7 +51,7 @@ export function AddListValueModal({ listId, kind }: { listId: string; kind: Cust
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>
-        <Button>
+        <Button size="medium">
           <Icon icon="plus" className="size-5" />
           {t('lists:create_value.title')}
         </Button>

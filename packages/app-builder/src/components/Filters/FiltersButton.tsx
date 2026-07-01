@@ -1,4 +1,3 @@
-import { clsx } from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, type ButtonV2Props } from 'ui-design-system';
@@ -14,8 +13,8 @@ export const FiltersButton = forwardRef<HTMLButtonElement, FiltersButtonProps>(f
 ) {
   const { t } = useTranslation(filtersI18n);
   return (
-    <Button className={clsx('flex flex-row gap-sm', className)} variant="secondary" ref={ref} {...props}>
-      <Icon icon="filters" className="size-5" />
+    <Button size="medium" variant="secondary" ref={ref} {...props}>
+      <Icon icon="filters" className="size-4" />
       <span className="text-s font-semibold first-letter:capitalize">{t('filters:filters')}</span>
     </Button>
   );

@@ -2,13 +2,12 @@ import { useCallbackRef } from '@marble/shared';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import * as Popover from '@radix-ui/react-popover';
 import { cva, type VariantProps } from 'class-variance-authority';
-import clsx from 'clsx';
 import { Command } from 'cmdk';
 import * as React from 'react';
 import { createSharpFactory } from 'sharpstate';
 import { Icon } from 'ui-icons';
 
-import { input as inputClassname } from '../Input/Input';
+import { inputClassName, inputIconClassName, inputPaddingsClassName } from '../Input/Input';
 import { cn } from '../utils';
 
 export type MenuCommandFilterMode = 'default' | 'exact';
@@ -228,31 +227,35 @@ type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButton
   hasError?: boolean;
   noArrow?: boolean;
   readOnly?: boolean;
+  size?: 'small' | 'medium' | 'large';
 };
 const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function SelectButton(
-  { children, className, hasError = false, noArrow, readOnly, ...props },
+  { children, className, hasError = false, noArrow, readOnly, size = 'large', ...props },
   ref,
 ) {
   return (
-    <button
-      ref={ref}
-      type="button"
-      className={cn(
-        clsx([
-          'flex h-10 min-w-[40px] items-center justify-between gap-sm rounded-sm border px-xs outline-hidden',
-          'disabled:bg-grey-background disabled:text-grey-disabled data-[read-only]:pointer-events-none data-[read-only]:bg-grey-background-light data-[read-only]:border-transparent',
-          'bg-surface-elevated border-grey-border focus:not-data-[read-only]:border-purple-primary',
-          'dark:disabled:bg-transparent',
-        ]),
-        { 'border-red-primary': hasError },
-        className,
-      )}
-      {...(readOnly ? { 'data-read-only': readOnly } : {})}
-      {...props}
-    >
-      <span>{children}</span>
-      {!noArrow && !readOnly ? <MenuArrow /> : null}
-    </button>
+    <div {...(readOnly ? { inert: readOnly } : {})} className="relative">
+      <button
+        ref={ref}
+        type="button"
+        className={cn(
+          'flex items-center',
+          inputClassName({ size }),
+          inputPaddingsClassName({ size, hasEndIcon: true }),
+          'data-[read-only]:pointer-events-none data-[state=open]:border-purple-primary',
+        )}
+        {...(readOnly ? { 'data-read-only': readOnly } : {})}
+        {...props}
+      >
+        <span>{children}</span>
+      </button>
+      {!noArrow && !readOnly ? (
+        <Icon
+          className={cn('pointer-events-none', inputIconClassName({ inputSize: size, placement: 'end' }))}
+          icon="caret-down"
+        />
+      ) : null}
+    </div>
   );
 });
 
@@ -275,7 +278,7 @@ const contentClassname = cva('flex z-50 text-s group/menu-command-content', {
 const commandClassname = cva(
   [
     'flex flex-col z-50 w-full flex-1 overflow-y-auto',
-    'bg-surface-card border-grey-border rounded-sm border shadow-md outline-hidden',
+    'bg-surface-card border-grey-border rounded-md border shadow-md outline-hidden',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
     'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2',
@@ -364,7 +367,7 @@ function Combobox({ className, onValueChange, iconClasses, filterMode = 'default
     <div className={cn('relative m-sm mb-0 h-10', className)}>
       <Command.Input
         ref={inputRef}
-        className={cn(inputClassname(), 'ps-xl')}
+        className={cn(inputClassName(), 'ps-xl')}
         value={menuState.value.search}
         onValueChange={setSearch}
         {...props}
