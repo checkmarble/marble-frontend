@@ -1,6 +1,7 @@
+import { Slot } from '@radix-ui/react-slot';
 import { VariantProps } from 'class-variance-authority';
 import { IconProps } from 'packages/ui-icons/src/Icon';
-import { forwardRef, type ReactNode, useEffect, useRef } from 'react';
+import { type ComponentPropsWithoutRef, forwardRef, type ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
@@ -16,7 +17,7 @@ const sizeClasses: Record<PanelSize, string> = {
   large: 'max-w-[calc(100vw_*_(2_/_3))]',
 };
 
-type OnOpenChangeFn = (state: boolean) => void;
+type OnOpenChangeFn = (state: boolean) => boolean | void;
 
 interface PanelRootProps {
   children: ReactNode;
@@ -49,16 +50,17 @@ export const PanelSharpFactory = createSharpFactory({
     }
   },
   close(api) {
-    if (api.value.isControlled) {
-      api.value.onOpenChange?.(false);
-    } else {
+    if (api.value.onOpenChange?.(false) === false) {
+      return;
+    }
+
+    if (!api.value.isControlled) {
       api.value.isOpen = false;
     }
   },
 });
 
 function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
   const sharp = PanelSharpFactory.createSharp({
     open,
     onOpenChange,
@@ -73,22 +75,37 @@ function PanelRoot({ children, open, onOpenChange }: PanelRootProps) {
 
   useEffect(() => {
     sharp.value.onOpenChange = onOpenChange;
-  }, [onOpenChange]);
+  }, [onOpenChange, sharp]);
+
+  return <PanelSharpFactory.Provider value={sharp}>{children}</PanelSharpFactory.Provider>;
+}
+
+interface PanelTriggerProps extends ComponentPropsWithoutRef<'button'> {
+  asChild?: boolean;
+}
+
+const PanelTrigger = forwardRef<HTMLButtonElement, PanelTriggerProps>(function PanelTrigger(
+  { asChild, onClick, ...props },
+  ref,
+) {
+  const sharp = PanelSharpFactory.useSharp();
+  const Comp = asChild ? Slot : 'button';
 
   return (
-    <PanelSharpFactory.Provider value={sharp}>
-      {sharp.value.isOpen
-        ? createPortal(
-            <div className="fixed inset-0 z-20" ref={wrapperRef}>
-              <PanelOverlay />
-              {children}
-            </div>,
-            document.body,
-          )
-        : null}
-    </PanelSharpFactory.Provider>
+    <Comp
+      ref={ref}
+      type={asChild ? undefined : 'button'}
+      {...props}
+      onClick={(event) => {
+        onClick?.(event);
+        if (!event.defaultPrevented) {
+          sharp.actions.open();
+        }
+      }}
+    />
   );
-}
+});
+PanelTrigger.displayName = 'PanelTrigger';
 
 interface PanelContainerProps {
   children: ReactNode;
@@ -97,6 +114,20 @@ interface PanelContainerProps {
 }
 
 function PanelContainer({ children, className, size = 'small' }: PanelContainerProps) {
+  const sharp = PanelSharpFactory.useSharp();
+
+  if (!sharp.value.isOpen) {
+    return null;
+  }
+
+  return (
+    <PanelContainerPortal className={className} size={size}>
+      {children}
+    </PanelContainerPortal>
+  );
+}
+
+function PanelContainerPortal({ children, className, size = 'small' }: PanelContainerProps) {
   const sharp = PanelSharpFactory.useSharp();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -147,19 +178,23 @@ function PanelContainer({ children, className, size = 'small' }: PanelContainerP
     return () => panel.removeEventListener('keydown', handleTabKey);
   }, []);
 
-  return (
-    <div
-      ref={panelRef}
-      className={cn(
-        'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border w-full flex flex-col animate-slideRightAndFadeIn overflow-y-auto',
-        sizeClasses[size],
-        className,
-      )}
-      role="dialog"
-      aria-modal="true"
-    >
-      {children}
-    </div>
+  return createPortal(
+    <div className="fixed inset-0 z-20">
+      <PanelOverlay />
+      <div
+        ref={panelRef}
+        className={cn(
+          'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border w-full flex flex-col animate-slideRightAndFadeIn overflow-y-auto',
+          sizeClasses[size],
+          className,
+        )}
+        role="dialog"
+        aria-modal="true"
+      >
+        {children}
+      </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -230,16 +265,31 @@ type PanelButtonAppearance = Extract<VariantProps<typeof CtaV2ClassName>['appear
 type PanelFooterButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Button>, 'variant' | 'appearance' | 'size'> & {
   label: string;
   variant?: PanelButtonVariant;
+  isCloseButton?: boolean;
   isLoading?: boolean;
   leadingIcon?: IconProps['icon'];
   trailingIcon?: IconProps['icon'];
   children?: ReactNode;
 };
 
-const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(function ModalFooterButton(
-  { variant, isLoading, leadingIcon, trailingIcon, disabled, label, children, className, ...props },
+const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(function PanelFooterButton(
+  {
+    variant,
+    isCloseButton,
+    isLoading,
+    leadingIcon,
+    trailingIcon,
+    disabled,
+    label,
+    children,
+    className,
+    onClick,
+    ...props
+  },
   ref,
 ) {
+  const sharp = PanelSharpFactory.useSharp();
+
   const { variant: buttonVariant, appearance } = match(variant)
     .with('secondary', () => ({
       variant: 'secondary' as PanelButtonVariant,
@@ -250,8 +300,8 @@ const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(
       appearance: 'filled' as PanelButtonAppearance,
     }))
     .otherwise(() => ({
-      variant: 'primary' as PanelButtonVariant,
-      appearance: 'filled' as PanelButtonAppearance,
+      variant: (isCloseButton ? (variant ?? 'secondary') : 'primary') as PanelButtonVariant,
+      appearance: (isCloseButton && variant !== 'primary' ? 'stroked' : 'filled') as PanelButtonAppearance,
     }));
 
   return (
@@ -264,6 +314,12 @@ const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(
       aria-disabled={disabled || isLoading || undefined}
       size="large"
       className={cn(isLoading && 'pointer-events-none', className)}
+      onClick={(event) => {
+        onClick?.(event);
+        if (!event.defaultPrevented && isCloseButton) {
+          sharp.actions.close();
+        }
+      }}
       {...props}
     >
       {leadingIcon ? (
@@ -286,9 +342,11 @@ const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(
     </Button>
   );
 });
+PanelFooterButton.displayName = 'PanelFooterButton';
 
 export const Panel = {
   Root: PanelRoot,
+  Trigger: PanelTrigger,
   Container: PanelContainer,
   Content: PanelContent,
   Header: PanelHeader,
