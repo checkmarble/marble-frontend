@@ -51,6 +51,5 @@ export function DatatypeToPrimitiveType(dataType: DataType): PrimitiveTypes {
     .with('Coords', 'Coords[]', () => 'Coords')
     .with('IpAddress', 'IpAddress[]', () => 'IpAddress')
     .with('Int', 'Int[]', () => 'Int')
-    .with('DerivedData', 'unknown', () => 'String')
-    .exhaustive() as PrimitiveTypes;
+    .otherwise(() => 'String') as PrimitiveTypes;
 }

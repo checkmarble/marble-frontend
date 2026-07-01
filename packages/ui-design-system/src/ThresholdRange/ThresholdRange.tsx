@@ -330,7 +330,7 @@ export function ThresholdRange({
 
               {activeStep ? (
                 <div
-                  className="absolute text-s leading-none font-medium"
+                  className="absolute text-s leading-none font-medium pointer-events-none"
                   style={{
                     top: `${LABEL_TOP_OFFSET}px`,
                     left: `${(activeStep.value / normalizedMax) * 100}%`,
@@ -344,7 +344,7 @@ export function ThresholdRange({
 
               {activeStep?.value !== lastStep.value ? (
                 <div
-                  className="text-grey-placeholder absolute text-s leading-none font-medium"
+                  className="text-grey-placeholder absolute text-s leading-none font-medium pointer-events-none"
                   style={{
                     top: `${LABEL_TOP_OFFSET}px`,
                     left: `${(lastStep.value / normalizedMax) * 100}%`,
