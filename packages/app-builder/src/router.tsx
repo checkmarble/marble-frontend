@@ -18,24 +18,30 @@ const getNonce = createIsomorphicFn()
   .server(() => getRequestNonce())
   .client(() => undefined);
 
+// Shared i18next instance for the router, created once at module level.
+// This is only the bootstrap instance — the real locale-specific instance is set up
+// by RootShell (via ssrInstanceCache on the server, or makeI18nInstance on the client),
+// whose I18nextProvider overrides this one during rendering. Creating a new instance
+// per request was leaking memory because i18next maintains internal references that
+// were never cleaned up.
+const routerI18n = i18next.createInstance();
+routerI18n
+  .use(initReactI18next)
+  .use(
+    resourcesToBackend((language: string, namespace: Namespace) => import(`./locales/${language}/${namespace}.json`)),
+  )
+  .init({
+    lng: 'en',
+    fallbackLng: 'en',
+    ns: ALL_NAMESPACES,
+  });
+
 export function getRouter() {
   const rqContext = TanstackQuery.getContext();
-  const i18n = i18next.createInstance();
-
-  i18n
-    .use(initReactI18next)
-    .use(
-      resourcesToBackend((language: string, namespace: Namespace) => import(`./locales/${language}/${namespace}.json`)),
-    )
-    .init({
-      lng: 'en',
-      fallbackLng: 'en',
-      ns: ALL_NAMESPACES,
-    });
 
   const router = createRouter({
     routeTree,
-    context: { ...rqContext, i18n },
+    context: { ...rqContext, i18n: routerI18n },
     scrollRestoration: true,
     // Start route loaders on hover/focus so data is usually ready by click time,
     // hiding loader RPC latency behind the intent-to-click gap.
@@ -43,7 +49,7 @@ export function getRouter() {
     ssr: { nonce: getNonce() },
     Wrap: (props: { children: ReactNode }) => {
       return (
-        <I18nextProvider i18n={i18n}>
+        <I18nextProvider i18n={routerI18n}>
           <TanstackQuery.Provider {...rqContext}>{props.children}</TanstackQuery.Provider>
         </I18nextProvider>
       );
@@ -51,6 +57,14 @@ export function getRouter() {
   });
 
   setupRouterSsrQueryIntegration({ router, queryClient: rqContext.queryClient });
+
+  // On the server, clean up the per-request QueryClient when SSR finishes.
+  // Without this, each request's QueryClient lingers in memory with active GC timers
+  // (default gcTime: 5 minutes) until they fire. Under load, hundreds of orphaned
+  // QueryClient instances accumulate.
+  router.serverSsr?.onCleanup(() => {
+    rqContext.queryClient.clear();
+  });
 
   return router;
 }
