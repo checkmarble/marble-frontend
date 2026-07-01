@@ -271,7 +271,7 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
                 </Button>
                 <Popover.Root open={savePresetPopoverOpen} onOpenChange={handleSavePresetPopoverChange}>
                   <Popover.Trigger asChild>
-                    <Button variant="primary" appearance="stroked" size="default">
+                    <Button variant="primary" appearance="stroked" size="medium">
                       {t('screenings:freeform_search.save_filters')}
                     </Button>
                   </Popover.Trigger>
