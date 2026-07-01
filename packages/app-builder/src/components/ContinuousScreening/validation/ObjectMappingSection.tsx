@@ -1,9 +1,14 @@
+import {
+  DatatypeIcon,
+  DatatypeToPrimitiveType,
+} from '@app-builder/components/Data/SemanticTables/Shared/DatatypeOption';
 import { CreateMappingConfig } from '@app-builder/models/continuous-screening';
 import { TableModel } from '@app-builder/models/data-model';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Collapsible } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { Spinner } from '../../Spinner';
 import { type EditionValidationPanelBaseProps } from '../EditionValidationPanel';
 
@@ -94,8 +99,11 @@ const TableValidation = ({ table, objectMapping }: { table: TableModel; objectMa
       <div className="flex flex-col gap-sm border border-grey-border rounded-md p-md max-h-50 overflow-y-auto">
         {fieldsAdded.map(({ field, ftmProperty }) => {
           return (
-            <span key={field?.id}>
-              {field?.name} &gt; {ftmProperty}
+            <span key={field?.id} className="flex items-center gap-sm">
+              <DatatypeIcon dataType={DatatypeToPrimitiveType(field?.dataType ?? 'String')} />
+              <span>{field?.name}</span>
+              <Icon icon="arrow-forward" className="size-6 text-purple-primary" />
+              <span>{ftmProperty}</span>
             </span>
           );
         })}

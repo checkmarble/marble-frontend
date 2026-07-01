@@ -409,7 +409,7 @@ function DateBirthdate() {
   return <DateBirthdateComponent value={value} />;
 }
 
-export function DateBirthdateComponent({ value }: { value: string }) {
+export function DateBirthdateComponent({ value, compact = false }: { value: string; compact?: boolean }) {
   const formatDateTime = useFormatDateTime();
   const language = useFormatLanguage();
   const date = new Date(value);
@@ -417,7 +417,9 @@ export function DateBirthdateComponent({ value }: { value: string }) {
   return (
     <span className="inline-flex items-center gap-xs">
       <span className="text-grey-secondary text-xs">{age}</span>
-      <span className={codeClassName('text-sm')}>{formatDateTime(date, { dateStyle: 'short' })}</span>
+      <span className={codeClassName(`text-sm ${compact ? 'py-0' : ''}`)}>
+        {formatDateTime(date, { dateStyle: 'short' })}
+      </span>
     </span>
   );
 }

@@ -174,7 +174,8 @@ export const Route = createFileRoute('/_app/_builder/detection/decisions/$decisi
 });
 
 function DecisionPage() {
-  const { decision, pivots, pivotObjects, scenarioRules, screening, isIterationArchived } = Route.useLoaderData();
+  const { decision, pivots, pivotObjects, scenarioRules, screening, isIterationArchived, dataModel } =
+    Route.useLoaderData();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -192,6 +193,7 @@ function DecisionPage() {
     R.filter(R.isNonNullish),
   );
 
+  const table = dataModel.find((table) => table.name == decision.triggerObjectType);
   const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
 
   return (
@@ -214,7 +216,7 @@ function DecisionPage() {
                   isIterationArchived={isIterationArchived}
                 />
                 {screening.map((s) => (
-                  <ScreeningDetail key={s.id} screening={s} />
+                  <ScreeningDetail key={s.id} screening={s} table={table} />
                 ))}
               </div>
               <div className="flex flex-col gap-md lg:gap-xl shrink-0">
