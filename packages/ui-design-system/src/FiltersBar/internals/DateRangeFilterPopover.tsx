@@ -99,7 +99,7 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
             <DateRangeFilter.FromNowPicker
               presetDurations={presetDurations}
               title="Quick ranges"
-              className="border-r-1 border-grey-border pe-md"
+              className="border-e-1 border-grey-border pe-md"
             />
             <DateRangeFilter.Calendar locale={dateFnsLocale} />
           </div>

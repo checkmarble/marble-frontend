@@ -1,5 +1,12 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { analyticsQuery, dateRangeFilterSchema } from '@app-builder/models/analytics';
+import type { ExportedFields } from '@app-builder/models/data-model';
+import {
+  buildExistingFilterRows,
+  type CustomFilterTableConfig,
+  type ExistingCustomFilterRow,
+  getFilterableTableConfig,
+} from '@app-builder/utils/analytics/custom-filters';
 import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
@@ -30,6 +37,40 @@ const availableFiltersInputSchema = z.object({
   scenarioId: z.uuid(),
   ranges: protectArray(z.array(dateRangeFilterSchema).min(1)),
 });
+
+const customFiltersConfigInputSchema = z.object({
+  triggerObjectTypes: protectArray(z.array(z.string())),
+});
+
+export type CustomFiltersConfig = {
+  tableConfigs: CustomFilterTableConfig[];
+  existingFilters: ExistingCustomFilterRow[];
+};
+
+export const getCustomFiltersConfigFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(customFiltersConfigInputSchema)
+  .handler(async ({ context, data }): Promise<CustomFiltersConfig> => {
+    const { dataModelRepository } = context.authInfo;
+    const triggerObjectTypeSet = new Set(data.triggerObjectTypes);
+
+    const dataModel = await dataModelRepository.getDataModel();
+    const triggerTables = dataModel.filter((table) => triggerObjectTypeSet.has(table.name));
+
+    const exportedEntries = await Promise.all(
+      triggerTables.map(async (table) => {
+        const exported = await dataModelRepository.getDataModelTableExportedFields(table.id);
+        return [table.id, exported] as const;
+      }),
+    );
+
+    const exportedByTableId = Object.fromEntries(exportedEntries) as Record<string, ExportedFields>;
+
+    return {
+      tableConfigs: triggerTables.map((table) => getFilterableTableConfig(table, dataModel)),
+      existingFilters: buildExistingFilterRows(data.triggerObjectTypes, triggerTables, exportedByTableId),
+    };
+  });
 
 export const getAvailableFiltersFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])

@@ -1,4 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
+import { CustomFiltersForm } from '@app-builder/components/Analytics/CustomFiltersForm';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/DecisionsScoreDistribution';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
@@ -23,8 +24,10 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiltersBar, FormattingProvider } from 'ui-design-system';
+import * as R from 'remeda';
+import { Button, FiltersBar, FormattingProvider, MenuCommand } from 'ui-design-system';
 import type { FilterChange, FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
+import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 interface LoaderData {
@@ -104,6 +107,15 @@ function Analytics() {
   const [volatileScenarioId, setVolatileScenarioId] = useState<string | null>(null);
   const [volatileRange, setVolatileRange] = useState<AnalyticsDateRangeFilter | undefined>();
   const [volatileCompareRange, setVolatileCompareRange] = useState<AnalyticsDateRangeFilter | undefined>();
+  const triggerObjects = useMemo(
+    () =>
+      R.pipe(
+        scenarios,
+        R.map((scenario) => scenario.triggerObjectType),
+        R.unique(),
+      ),
+    [scenarios],
+  );
 
   useEffect(() => {
     setVolatileScenarioId(null);
@@ -334,9 +346,9 @@ function Analytics() {
             formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
           }}
         >
-          <div className="bg-surface-page min-[2000px]:px-sm0 flex flex-col gap-md">
-            <div className="flex flex-row gap-md mb-lg w-full">
-              <div className="flex flex-row gap-sm items-start min-h-[88px] w-full">
+          <div className="bg-surface-page min-[2000px]:px-sm flex flex-col gap-md">
+            <div className="flex flex-row gap-md mb-lg w-full justify-between">
+              <div className="flex gap-sm items-start">
                 <FiltersBar
                   descriptors={descriptors}
                   dynamicDescriptors={dynamicDescriptors}
@@ -344,7 +356,15 @@ function Analytics() {
                   onUpdate={onFiltersUpdate}
                   onChange={(change, _next) => onInstantUpdate(change)}
                 />
+                {availableFilters && availableFilters.length > 0 && (
+                  <AddFilterMenu availableFilters={availableFilters} />
+                )}
               </div>
+              <CustomFiltersForm
+                triggerObjects={triggerObjects}
+                scenarioId={effectiveScenarioId}
+                ranges={effectiveRanges}
+              />
             </div>
             <div className="flex flex-col lg-analytics:flex-row gap-md w-full items-stretch h-auto">
               <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
@@ -392,5 +412,29 @@ function Analytics() {
         </FormattingProvider>
       </Page.Content>
     </Page.Main>
+  );
+}
+
+function AddFilterMenu({ availableFilters }: { availableFilters: AvailableFiltersResponse }) {
+  const { t } = useTranslation(['analytics']);
+
+  return (
+    <MenuCommand.Menu>
+      <MenuCommand.Trigger>
+        <Button variant="secondary" appearance="link" className="my-xs shrink-0">
+          <Icon icon="plus" className="size-4" />
+          <span>{t('analytics:filters.custom_filters.add_filter')}</span>
+        </Button>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content align="start" sideOffset={4}>
+        <MenuCommand.List>
+          <MenuCommand.Item>
+            {availableFilters.map((filter) => (
+              <span key={filter.name}>{filter.name}</span>
+            ))}
+          </MenuCommand.Item>
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 }
