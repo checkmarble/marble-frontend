@@ -14,6 +14,8 @@ import {
   getFieldSelectionLabel,
   getSelectionKey,
   hasDraftChanges,
+  hasIncompleteActiveRow,
+  isActiveRow,
   isRowComplete,
   needsDeleteConfirmation,
 } from '@app-builder/utils/analytics/custom-filters';
@@ -21,7 +23,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal, Typo } from 'ui-design-system';
+import { Button, cn, MenuCommand, Modal, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface CustomFiltersFormProps {
@@ -55,7 +57,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
   }, [config]);
 
   const isSaving = createFilterMutation.isPending || deleteFilterMutation.isPending;
-  const hasIncompleteRow = draftRows.some((row) => !isRowComplete(row));
+  const hasIncompleteRow = hasIncompleteActiveRow(draftRows);
   const hasChanges = hasDraftChanges(existingFilters, draftRows);
   const canSave = hasChanges && !hasIncompleteRow && !isSaving && !isLoading;
   const canAddRow = canAddFilterRow(draftRows, tableConfigs);
@@ -81,15 +83,25 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
   }
 
   function removeRow(rowId: string) {
-    setDraftRows((rows) => {
-      const nextRows = rows.filter((row) => row.id !== rowId);
-      return nextRows.length > 0 ? nextRows : [createEmptyDraftRow()];
-    });
+    setDraftRows((rows) => rows.filter((row) => row.id !== rowId));
+  }
+
+  function markRowDeleted(rowId: string) {
+    updateRow(rowId, (current) => ({ ...current, isDeleted: true }));
+  }
+
+  function undeleteRow(rowId: string) {
+    updateRow(rowId, (current) => ({ ...current, isDeleted: false }));
   }
 
   function requestRemoveRow(rowId: string) {
     const row = draftRows.find((item) => item.id === rowId);
-    if (!row) return;
+    if (!row || row.isDeleted) return;
+
+    if (row.isNew) {
+      removeRow(rowId);
+      return;
+    }
 
     if (needsDeleteConfirmation(row, existingFilters)) {
       setRowIdPendingDelete(rowId);
@@ -101,7 +113,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
 
   function confirmRemoveRow() {
     if (!rowIdPendingDelete) return;
-    removeRow(rowIdPendingDelete);
+    markRowDeleted(rowIdPendingDelete);
     setRowIdPendingDelete(null);
   }
 
@@ -160,7 +172,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
               {t('analytics:filters.custom_filters.no_filters')}
             </Typo>
           ) : isLoading ? null : (
-            <div className="flex flex-col gap-sm px-lg pb-lg">
+            <div className="flex flex-col gap-md px-lg pb-lg">
               {draftRows.map((row) => (
                 <CustomFilterRow
                   key={row.id}
@@ -186,6 +198,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
                     }));
                   }}
                   onRemove={() => requestRemoveRow(row.id)}
+                  onUndelete={() => undeleteRow(row.id)}
                 />
               ))}
               <Button
@@ -244,7 +257,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
 function getUsedSelectionKeys(rows: CustomFilterDraftRow[], currentRowId: string): Set<string> {
   return new Set(
     rows
-      .filter((row) => row.id !== currentRowId && isRowComplete(row))
+      .filter((row) => row.id !== currentRowId && isActiveRow(row) && isRowComplete(row))
       .map((row) => getSelectionKey(row.tableId!, row.selection!)),
   );
 }
@@ -257,6 +270,7 @@ interface CustomFilterRowProps {
   onTriggerObjectChange: (triggerObjectType: string) => void;
   onSelectionChange: (selection: CustomFilterSelection) => void;
   onRemove: () => void;
+  onUndelete: () => void;
 }
 
 function CustomFilterRow({
@@ -267,23 +281,21 @@ function CustomFilterRow({
   onTriggerObjectChange,
   onSelectionChange,
   onRemove,
+  onUndelete,
 }: CustomFilterRowProps) {
   const { t } = useTranslation(['analytics', 'common']);
+  const isDeleted = Boolean(row.isDeleted);
+  const deletedTextClassName = 'text-grey-secondary line-through';
 
   return (
-    <div className="flex items-center gap-sm">
-      {row.isNew ? (
-        <span className="flex shrink-0 items-center" title={t('analytics:filters.custom_filters.new_filter_indicator')}>
-          <Icon icon="star" className="text-purple-primary size-4" />
-        </span>
-      ) : (
-        <span className="size-4 shrink-0" aria-hidden="true" />
-      )}
+    <div className={cn('flex items-center gap-md', isDeleted && 'opacity-60')}>
       <TriggerObjectSelect
         triggerObjects={triggerObjects}
         value={row.triggerObjectType}
         placeholder={t('analytics:filters.custom_filters.select_table')}
         onChange={onTriggerObjectChange}
+        disabled={isDeleted}
+        textClassName={isDeleted ? deletedTextClassName : undefined}
       />
       <FieldLinkSelect
         tableConfig={tableConfig}
@@ -295,10 +307,30 @@ function CustomFilterRow({
         fieldsGroupLabel={t('analytics:filters.custom_filters.fields_group')}
         linksGroupLabel={t('analytics:filters.custom_filters.links_group')}
         onChange={onSelectionChange}
+        disabled={isDeleted}
+        textClassName={isDeleted ? deletedTextClassName : undefined}
       />
-      <Button variant="secondary" mode="icon" onClick={onRemove} aria-label={t('common:delete')}>
-        <Icon icon="delete" className="size-4" />
-      </Button>
+      {isDeleted ? (
+        <Button
+          variant="secondary"
+          mode="icon"
+          onClick={onUndelete}
+          aria-label={t('analytics:filters.custom_filters.undelete_filter')}
+        >
+          <Icon icon="restart-alt" className="size-4" />
+        </Button>
+      ) : (
+        <Button variant="secondary" mode="icon" onClick={onRemove} aria-label={t('common:delete')}>
+          <Icon icon="delete" className="size-4" />
+        </Button>
+      )}
+      {row.isNew ? (
+        <span className="flex shrink-0 items-center" title={t('analytics:filters.custom_filters.new_filter_indicator')}>
+          <Icon icon="star" className="text-purple-primary size-2" />
+        </span>
+      ) : (
+        <span className="size-2 shrink-0" aria-hidden="true" />
+      )}
     </div>
   );
 }
@@ -308,18 +340,24 @@ function TriggerObjectSelect({
   value,
   placeholder,
   onChange,
+  disabled = false,
+  textClassName,
 }: {
   triggerObjects: string[];
   value: string | null;
   placeholder: string;
   onChange: (triggerObjectType: string) => void;
+  disabled?: boolean;
+  textClassName?: string;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton className="min-w-40">{value ?? placeholder}</MenuCommand.SelectButton>
+        <MenuCommand.SelectButton className="min-w-40" disabled={disabled} readOnly={disabled}>
+          <span className={cn('px-xs', textClassName)}>{value ?? placeholder}</span>
+        </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sameWidth sideOffset={4}>
         <MenuCommand.List>
@@ -333,7 +371,7 @@ function TriggerObjectSelect({
                 setMenuOpen(false);
               }}
             >
-              {triggerObject}
+              <span className="px-xs">{triggerObject}</span>
             </MenuCommand.Item>
           ))}
         </MenuCommand.List>
@@ -352,6 +390,8 @@ function FieldLinkSelect({
   fieldsGroupLabel,
   linksGroupLabel,
   onChange,
+  disabled = false,
+  textClassName,
 }: {
   tableConfig?: CustomFilterTableConfig;
   selection: CustomFilterSelection | null;
@@ -362,9 +402,11 @@ function FieldLinkSelect({
   fieldsGroupLabel: string;
   linksGroupLabel: string;
   onChange: (selection: CustomFilterSelection) => void;
+  disabled?: boolean;
+  textClassName?: string;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const disabled = !tableConfig || !tableId;
+  const isDisabled = disabled || !tableConfig || !tableId;
 
   const label = tableConfig && selection ? getFieldSelectionLabel(tableConfig.tableName, selection) : placeholder;
 
@@ -394,8 +436,8 @@ function FieldLinkSelect({
   return (
     <MenuCommand.Menu open={menuOpen} onOpenChange={setMenuOpen}>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton className="min-w-56 flex-1" disabled={disabled}>
-          {label}
+        <MenuCommand.SelectButton className="min-w-56 flex-1" disabled={isDisabled} readOnly={disabled}>
+          <span className={cn('px-xs', textClassName)}>{label}</span>
         </MenuCommand.SelectButton>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sameWidth sideOffset={4}>
@@ -418,7 +460,7 @@ function FieldLinkSelect({
                       setMenuOpen(false);
                     }}
                   >
-                    {field.name}
+                    <span className="px-xs">{field.name}</span>
                   </MenuCommand.Item>
                 );
               })}
@@ -466,7 +508,7 @@ function FieldLinkSelect({
                                 setMenuOpen(false);
                               }}
                             >
-                              {field.name}
+                              <span className="px-xs">{field.name}</span>
                             </MenuCommand.Item>
                           );
                         })}
