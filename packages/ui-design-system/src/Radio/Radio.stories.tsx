@@ -12,7 +12,6 @@ const OPTIONS = ['option1', 'option2', 'option3'] as const;
 
 const Story: Meta<Args> = {
   title: 'Radio',
-  component: Radio.Root,
   args: {
     size: 'regular',
     disabledItems: [],
