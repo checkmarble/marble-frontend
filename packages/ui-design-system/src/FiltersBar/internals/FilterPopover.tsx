@@ -1,26 +1,22 @@
-import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
 import { type ComponentPropsWithoutRef, forwardRef } from 'react';
 import { Icon } from 'ui-icons';
+import { Popover } from '../../Popover/Popover';
 
 const FilterPopoverContent = forwardRef<HTMLDivElement, React.ComponentProps<typeof Popover.Content>>(
   function FilterPopoverContent({ className, children, ...props }, ref) {
     return (
-      <Popover.Portal>
-        <Popover.Content
-          ref={ref}
-          className={clsx(
-            'animate-slide-up-and-fade bg-surface-card border-grey-border rounded-sm border shadow-md will-change-[transform,opacity]',
-            className,
-          )}
-          side="bottom"
-          align="start"
-          sideOffset={8}
-          {...props}
-        >
-          {children}
-        </Popover.Content>
-      </Popover.Portal>
+      <Popover.Content
+        ref={ref}
+        side="bottom"
+        align="start"
+        sideOffset={8}
+        collisionPadding={10}
+        className={clsx('animate-slideUpAndFade p-0 text-xs shadow-md', className)}
+        {...props}
+      >
+        {children}
+      </Popover.Content>
     );
   },
 );
@@ -28,16 +24,15 @@ const FilterPopoverContent = forwardRef<HTMLDivElement, React.ComponentProps<typ
 export const FilterPopover = {
   Root: Popover.Root,
   Trigger: Popover.Trigger,
-  Anchor: Popover.Anchor,
   Content: FilterPopoverContent,
 };
 
-const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(function FilterItem(
+const FilterItemRoot = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>>(function FilterItem(
   { className, ...props },
   ref,
 ) {
   return (
-    <FilterPopover.Anchor
+    <div
       ref={ref}
       className={clsx('bg-purple-background-light flex h-10 flex-row items-center rounded-sm', className)}
       {...props}
@@ -45,21 +40,20 @@ const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(fu
   );
 });
 
-const FilterItemTrigger = forwardRef<HTMLButtonElement, Popover.PopoverTriggerProps>(function FilterItem(
-  { className, ...props },
-  ref,
-) {
-  return (
-    <FilterPopover.Trigger
-      ref={ref}
-      className={clsx(
-        'text-purple-primary focus:border-purple-primary -me-xs flex h-full flex-row items-center gap-xs rounded-sm border border-solid border-transparent px-xs outline-hidden',
-        className,
-      )}
-      {...props}
-    />
-  );
-});
+const FilterItemTrigger = forwardRef<HTMLButtonElement, React.ComponentProps<typeof Popover.Trigger>>(
+  function FilterItem({ className, ...props }, ref) {
+    return (
+      <FilterPopover.Trigger
+        ref={ref}
+        className={clsx(
+          'text-purple-primary focus:border-purple-primary -me-xs flex h-full flex-row items-center gap-xs rounded-sm border border-solid border-transparent px-xs outline-hidden',
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+);
 
 const FilterItemClear = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<'button'>>(function FilterItem(
   { className, ...props },

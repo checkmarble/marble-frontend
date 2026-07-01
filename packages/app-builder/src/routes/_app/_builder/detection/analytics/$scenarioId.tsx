@@ -24,7 +24,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, FiltersBar, FormattingProvider, Typo } from 'ui-design-system';
+import { Button, FiltersBar, FormattingProvider, MenuCommand, Typo } from 'ui-design-system';
 import type { FilterChange, FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
@@ -348,14 +348,9 @@ function Analytics() {
                   onUpdate={onFiltersUpdate}
                   onChange={(change, _next) => onInstantUpdate(change)}
                 />
-                <AddFilterButton />
+                <AddFilterMenu />
               </div>
-              {hasFilter && (
-                <Button variant="primary" appearance="stroked" size="medium" className="shrink-0">
-                  <Icon icon="settings" className="size-4" />
-                  <span>{t('analytics:filters.custom_filters.label')}</span>
-                </Button>
-              )}
+              {hasFilter && <CustomFilterButton />}
             </div>
             <div className="flex flex-col lg-analytics:flex-row gap-md w-full items-stretch h-auto">
               <div className={hasAnalyticsLicense ? 'lg-analytics:basis-2/3 min-w-0' : 'min-w-0 w-full'}>
@@ -406,8 +401,8 @@ function Analytics() {
   );
 }
 
-function AddFilterButton() {
-  const { t } = useTranslation(['analytics']);
+function CustomFilterButton() {
+  const { t } = useTranslation(['common', 'analytics']);
 
   function saveFilter() {
     console.log('saveFilter');
@@ -419,9 +414,9 @@ function AddFilterButton() {
   return (
     <Panel.Root onOpenChange={onClose}>
       <Panel.Trigger asChild>
-        <Button variant="secondary" appearance="link" className="my-xs shrink-0">
-          <Icon icon="plus" className="size-4" />
-          <span>{t('analytics:filters.custom_filters.add_filter')}</span>
+        <Button variant="primary" appearance="stroked" size="medium" className="shrink-0">
+          <Icon icon="settings" className="size-4" />
+          <span>{t('analytics:filters.custom_filters.label')}</span>
         </Button>
       </Panel.Trigger>
       <Panel.Container size="medium">
@@ -438,5 +433,24 @@ function AddFilterButton() {
         </Panel.Content>
       </Panel.Container>
     </Panel.Root>
+  );
+}
+
+function AddFilterMenu() {
+  const { t } = useTranslation(['analytics']);
+  return (
+    <MenuCommand.Menu>
+      <MenuCommand.Trigger>
+        <Button variant="secondary" appearance="link" className="my-xs shrink-0">
+          <Icon icon="plus" className="size-4" />
+          <span>{t('analytics:filters.custom_filters.add_filter')}</span>
+        </Button>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content align="start" sideOffset={4}>
+        <MenuCommand.List>
+          <MenuCommand.Item>menu item 1</MenuCommand.Item>
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
   );
 }
