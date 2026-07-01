@@ -9,7 +9,11 @@ import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { Spinner } from '@app-builder/components/Spinner';
 import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { type ScreeningMatchPayload, ScreeningProviders } from '@app-builder/models/screening';
-import { useFreeformSearchMutation } from '@app-builder/queries/screening/freeform-search';
+import {
+  useCreateFreeFormSearchPresetMutation,
+  useFreeformSearchMutation,
+  useListFreeFormSearchPresetsQuery,
+} from '@app-builder/queries/screening/freeform-search';
 import { type ListConfigFilters, useListConfigQuery } from '@app-builder/queries/screening/lists-config';
 import { type FreeformSearchInput } from '@app-builder/server-fns/screenings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -18,7 +22,7 @@ import { createContext, type FunctionComponent, useContext, useEffect, useMemo, 
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Input } from 'ui-design-system';
+import { Button, Input, Popover, SelectV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { screeningsI18n } from '../screenings-i18n';
 import { setAdditionalFields } from '../set-additional-fields';
@@ -91,6 +95,13 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
     return getCanonicalSelectedKeys(initial);
   });
   const selectedDatasetsKey = useMemo(() => selectedDatasets.toSorted().join(','), [selectedDatasets]);
+  const listFreeFormSearchPresetsQuery = useListFreeFormSearchPresetsQuery();
+  const [selectedPreset, setSelectedPreset] = useState<string | undefined>(undefined);
+  const [savePresetPopoverOpen, setSavePresetPopoverOpen] = useState(false);
+  const [presetName, setPresetName] = useState('');
+  const [presetNameError, setPresetNameError] = useState<string | undefined>(undefined);
+
+  const createFreeFormSearchPresetMutation = useCreateFreeFormSearchPresetMutation();
 
   const listSharp = ListAndTopicDatasetConfiguration.createSharp({
     datasets: makeDatasetsMap(selectedDatasets),
@@ -140,7 +151,40 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
   const handleClearFilters = () => {
     form.reset();
     setSelectedDatasets([]);
+    //     setSelectedPreset(undefined);
     originalLimit.current = DEFAULT_LIMIT;
+  };
+
+  const handleSaveFilters = async () => {
+    const trimmedName = presetName.trim();
+    if (!trimmedName) {
+      setPresetNameError(t('screenings:freeform_search.preset_name_required'));
+      return;
+    }
+    const result = await createFreeFormSearchPresetMutation.mutateAsync({
+      name: trimmedName,
+      value: {
+        datasets: selectedDatasets,
+        threshold,
+        limit,
+      },
+    });
+    if (result.success) {
+      listFreeFormSearchPresetsQuery.refetch();
+      setSavePresetPopoverOpen(false);
+      setPresetName('');
+      setPresetNameError(undefined);
+    } else {
+      toast.error(t('common:errors.unknown'));
+    }
+  };
+
+  const handleSavePresetPopoverChange = (isOpen: boolean) => {
+    setSavePresetPopoverOpen(isOpen);
+    if (!isOpen) {
+      setPresetName('');
+      setPresetNameError(undefined);
+    }
   };
 
   const hasActiveFilters =
@@ -187,6 +231,15 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
           </div>
           <ListAndTopicDatasetConfiguration.Provider value={listSharp}>
             <div className="bg-surface-card border-grey-border rounded-lg border p-md space-y-md">
+              {listFreeFormSearchPresetsQuery?.data?.length ? (
+                <SelectV2
+                  options={listFreeFormSearchPresetsQuery.data.map((preset) => ({ label: preset, value: preset }))}
+                  placeholder={t('screenings:freeform_search.preset_placeholder')}
+                  value={selectedPreset}
+                  onChange={(value) => setSelectedPreset(value)}
+                  className="w-full"
+                />
+              ) : null}
               <ScreeningThreshold
                 threshold={threshold}
                 onChange={(value) => {
@@ -216,6 +269,36 @@ const FreeformSearchFormInner: FunctionComponent<{ provider: ScreeningProviders 
                 <Button variant="secondary" appearance="stroked" size="medium" onClick={handleClearFilters}>
                   {t('screenings:freeform_search.clear_filters')}
                 </Button>
+                <Popover.Root open={savePresetPopoverOpen} onOpenChange={handleSavePresetPopoverChange}>
+                  <Popover.Trigger asChild>
+                    <Button variant="primary" appearance="stroked" size="medium">
+                      {t('screenings:freeform_search.save_filters')}
+                    </Button>
+                  </Popover.Trigger>
+                  <Popover.Content side="bottom" align="end" sideOffset={4} className="w-[280px] p-4">
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleSaveFilters();
+                      }}
+                      className="flex flex-col gap-2"
+                    >
+                      <Input
+                        autoFocus
+                        value={presetName}
+                        onChange={(e) => {
+                          setPresetName(e.target.value);
+                          if (presetNameError) setPresetNameError(undefined);
+                        }}
+                        placeholder={t('screenings:freeform_search.preset_name_placeholder')}
+                        borderColor={presetNameError ? 'redfigma-47' : 'greyfigma-90'}
+                        disabled={createFreeFormSearchPresetMutation.isPending}
+                      />
+                      {presetNameError ? <span className="text-red-primary text-xs">{presetNameError}</span> : null}
+                    </form>
+                  </Popover.Content>
+                </Popover.Root>
               </div>
             )}
             <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
