@@ -240,7 +240,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
   ref,
 ) {
   return (
-    <div {...(readOnly ? { inert: readOnly } : {})} className="relative">
+    <div {...(readOnly ? { inert: readOnly } : {})} className="relative w-fit">
       <button
         ref={ref}
         type="button"
@@ -249,11 +249,12 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
           inputClassName({ size }),
           inputPaddingsClassName({ size, hasEndIcon: true }),
           'data-[read-only]:pointer-events-none data-[state=open]:border-purple-primary',
+          className,
         )}
         {...(readOnly ? { 'data-read-only': readOnly } : {})}
         {...props}
       >
-        <span>{children}</span>
+        {children}
       </button>
       {!noArrow && !readOnly ? (
         <Icon

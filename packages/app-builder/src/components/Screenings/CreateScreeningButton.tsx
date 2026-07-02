@@ -1,4 +1,3 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateScreeningRuleMutation } from '@app-builder/queries/scenarios/create-screening-rule';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -12,19 +11,20 @@ export function CreateScreeningButton({
   scenarioId,
   iterationId,
   isSanctionAvailable,
+  onSuccess,
 }: {
   scenarioId: string;
   iterationId: string;
   isSanctionAvailable: FeatureAccessLevelDto;
+  onSuccess: (ruleId: string) => void;
 }) {
   const { t } = useTranslation(['scenarios']);
   const createScreeningRuleMutation = useCreateScreeningRuleMutation(scenarioId, iterationId);
   const disabled = useMemo(() => !isAccessible(isSanctionAvailable), [isSanctionAvailable]);
-  const revalidate = useLoaderRevalidator();
 
   const handleCreateScreeningRule = () => {
-    createScreeningRuleMutation.mutateAsync().then(() => {
-      revalidate();
+    createScreeningRuleMutation.mutateAsync().then((screeningConfig) => {
+      onSuccess(screeningConfig.id);
     });
   };
 

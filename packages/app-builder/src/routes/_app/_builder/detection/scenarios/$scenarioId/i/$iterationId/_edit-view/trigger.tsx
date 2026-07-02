@@ -13,7 +13,7 @@ import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/ser
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
-import { createFileRoute, useLoaderData } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -29,9 +29,7 @@ export const Route = createFileRoute(
 
 function Trigger() {
   const { t } = useTranslation([...scenarioI18n, 'common']);
-  const { scenarioIteration, scenarioValidation } = useLoaderData({
-    from: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId',
-  });
+  const { scenarioIteration, scenarioValidation } = Route.useRouteContext();
   const [validationErrors, setValidationErrors] = useState<ScenarioValidationErrorCode[]>(
     scenarioValidation.trigger.errors,
   );

@@ -1,6 +1,6 @@
 // All these hooks are meant to be used inside sub-route components
 
-import { useLoaderData } from '@tanstack/react-router';
+import { useLoaderData, useRouteContext } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import * as R from 'remeda';
 
@@ -11,13 +11,13 @@ export const useBuilderLayoutData = () => {
 };
 
 export const useDetectionScenarioData = () => {
-  return useLoaderData({
+  return useRouteContext({
     from: '/_app/_builder/detection/scenarios/$scenarioId',
   });
 };
 
 export const useDetectionScenarioIterationData = () => {
-  return useLoaderData({
+  return useRouteContext({
     from: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId',
   });
 };

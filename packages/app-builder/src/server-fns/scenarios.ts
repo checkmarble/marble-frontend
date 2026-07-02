@@ -528,7 +528,7 @@ export const createRuleFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(z.object({ scenarioId: z.string(), iterationId: z.string() }))
   .handler(async ({ context, data }) => {
-    const rule = await context.authInfo.scenarioIterationRuleRepository.createRule({
+    return context.authInfo.scenarioIterationRuleRepository.createRule({
       scenarioIterationId: data.iterationId,
       displayOrder: 1,
       formula: null,
@@ -536,14 +536,6 @@ export const createRuleFn = createServerFn({ method: 'POST' })
       description: '',
       ruleGroup: '',
       scoreModifier: 0,
-    });
-    throw redirect({
-      to: '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId',
-      params: {
-        scenarioId: fromUUIDtoSUUID(data.scenarioId),
-        iterationId: fromUUIDtoSUUID(data.iterationId),
-        ruleId: fromUUIDtoSUUID(rule.id),
-      },
     });
   });
 
@@ -572,16 +564,10 @@ export const duplicateRuleFn = createServerFn({ method: 'POST' })
       name,
       ...rest
     } = await context.authInfo.scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId });
-    await context.authInfo.scenarioIterationRuleRepository.createRule({
+
+    return await context.authInfo.scenarioIterationRuleRepository.createRule({
       name: t('scenarios:clone_rule.default_name', { name }),
       ...rest,
-    });
-    throw redirect({
-      to: '/detection/scenarios/$scenarioId/i/$iterationId/rules',
-      params: {
-        scenarioId: fromUUIDtoSUUID(data.scenarioId),
-        iterationId: fromUUIDtoSUUID(data.iterationId),
-      },
     });
   });
 
@@ -599,15 +585,12 @@ export const createScreeningRuleFn = createServerFn({ method: 'POST' })
         forcedOutcome: 'block_and_review',
       },
     });
-    throw redirect({
-      to: '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId',
-      params: {
-        scenarioId: fromUUIDtoSUUID(data.scenarioId),
-        iterationId: fromUUIDtoSUUID(data.iterationId),
-        screeningId: fromUUIDtoSUUID(config.id as string),
-      },
-      search: { isNew: true },
-    });
+
+    if (!config.id) {
+      throw new Error('Screening created without id');
+    }
+
+    return { ...config, id: config.id };
   });
 
 export const deleteScreeningRuleFn = createServerFn({ method: 'POST' })
@@ -673,4 +656,11 @@ export const getIterationRulesFn = createServerFn({ method: 'GET' })
       context.authInfo.scenario.getScenarioIterationWithoutRules({ iterationId: data.iterationId }),
     ]);
     return { rules, archived: scenarioIteration.archived };
+  });
+
+export const getIterationRuleFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(z.object({ ruleId: z.string() }))
+  .handler(async ({ context, data }) => {
+    return { rule: await context.authInfo.scenarioIterationRuleRepository.getRule({ ruleId: data.ruleId }) };
   });

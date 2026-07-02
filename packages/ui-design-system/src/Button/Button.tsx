@@ -187,6 +187,9 @@ export const CtaV2ClassName = cva(
   },
 );
 
+export type ButtonVariant = NonNullable<VariantProps<typeof CtaV2ClassName>['variant']>;
+export type ButtonAppearance = NonNullable<VariantProps<typeof CtaV2ClassName>['appearance']>;
+
 export type ButtonV2Props = VariantProps<typeof CtaV2ClassName> &
   React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 

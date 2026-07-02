@@ -1,46 +1,41 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDuplicateRuleMutation } from '@app-builder/queries/scenarios/duplicate-rule';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Modal, Typo } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Modal } from 'ui-design-system';
 
 export function DuplicateRule({
   ruleId,
   scenarioId,
   iterationId,
   children,
-  open,
-  onOpenChange,
+  onDuplicateSuccess,
 }: {
   ruleId: string;
   scenarioId: string;
   iterationId: string;
   children?: React.ReactElement;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onDuplicateSuccess: (ruleId: string) => void;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const duplicateRuleMutation = useDuplicateRuleMutation(scenarioId, iterationId);
-  const revalidate = useLoaderRevalidator();
+  const [open, setOpen] = useState(false);
 
   const handleDuplicateRule = () => {
-    duplicateRuleMutation.mutateAsync({ ruleId }).then(() => {
-      revalidate();
+    duplicateRuleMutation.mutateAsync({ ruleId }).then((rule) => {
+      setOpen(false);
+      onDuplicateSuccess(rule.id);
+      toast.success(t('scenarios:duplicate_rule.success'));
     });
   };
 
   return (
-    <Modal.Root open={open} onOpenChange={onOpenChange}>
+    <Modal.Root open={open} onOpenChange={setOpen}>
       {children ? <Modal.Trigger asChild>{children}</Modal.Trigger> : null}
       <Modal.Content>
+        <Modal.Title>{t('scenarios:clone_rule.title')}</Modal.Title>
         <div className="flex flex-col gap-lg p-lg">
-          <div className="flex flex-1 flex-col items-center justify-center gap-sm">
-            <div className="bg-purple-background mb-xl box-border rounded-[90px] p-md">
-              <Icon icon="copy" className="text-purple-primary size-16" />
-            </div>
-            <Typo variant="title1">{t('scenarios:clone_rule.title')}</Typo>
-            <p className="text-center">{t('scenarios:clone_rule.content')}</p>
-          </div>
+          <p>{t('scenarios:clone_rule.content')}</p>
         </div>
         <Modal.Footer>
           <Modal.FooterButton isCloseButton label={t('common:cancel')} />

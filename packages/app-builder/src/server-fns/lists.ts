@@ -14,6 +14,12 @@ import { redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { omit } from 'radash';
 
+export const getListsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return context.authInfo.customListsRepository.listCustomLists();
+  });
+
 export const createListFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createListPayloadSchema)

@@ -46,9 +46,10 @@ async function createScenarioAndGoToRules(page: import('@playwright/test').Page)
 }
 
 // Adds a rule to the current rules edit page and saves it, ending on the rule detail page.
-async function addRule(page: import('@playwright/test').Page): Promise<void> {
+async function addRule(page: import('@playwright/test').Page, title: string, close: boolean): Promise<void> {
   await page.getByRole('button', { name: 'Add' }).click();
   await page.getByRole('button', { name: 'Add a Rule' }).click();
+  await page.getByPlaceholder('Rule title...').fill(title);
   await page.getByRole('button', { name: 'Group', exact: true }).click();
   await page.getByRole('button', { name: 'Select an operand...' }).first().click();
   await page.getByRole('option', { name: 'transactions' }).hover();
@@ -58,7 +59,7 @@ async function addRule(page: import('@playwright/test').Page): Promise<void> {
   await page.getByRole('button', { name: 'Select an operand...' }).click();
   await page.getByPlaceholder('Select or create an operand').fill('9000');
   await page.getByPlaceholder('Select or create an operand').press('Enter');
-  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('button', { name: close ? 'Save and Close' : 'Save', exact: true }).click();
   await waitForHydration(page);
 }
 
@@ -109,6 +110,8 @@ test('Create a simple scenario', async ({ page }) => {
   await page.getByRole('link', { name: 'Rules' }).click();
   await page.getByRole('button', { name: 'Add' }).click();
   await page.getByRole('button', { name: 'Add a Rule' }).click();
+
+  await page.getByPlaceholder('Rule title...').fill('New rule');
   await page.getByRole('button', { name: 'Group', exact: true }).click();
   await page.getByRole('button', { name: 'Select an operand...' }).first().click();
   await page.getByRole('option', { name: 'transactions' }).hover();
@@ -118,7 +121,7 @@ test('Create a simple scenario', async ({ page }) => {
   await page.getByRole('button', { name: 'Select an operand...' }).click();
   await page.getByPlaceholder('Select or create an operand').fill('9000');
   await page.getByPlaceholder('Select or create an operand').press('Enter');
-  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('button', { name: 'Save and Close' }).click();
 
   await page.getByRole('link', { name: 'Detection' }).first().click();
 
@@ -133,11 +136,12 @@ test('Create a simple scenario', async ({ page }) => {
 });
 
 test('Delete a rule', async ({ page }) => {
+  const ruleName = `Rule: ${crypto.randomUUID()}`;
   await createScenarioAndGoToRules(page);
-  await addRule(page);
+  await addRule(page, ruleName, false);
 
   // On the rule detail page, click "Delete" and confirm in the modal
-  await page.getByRole('button', { name: 'Delete' }).click();
+  await page.getByLabel('Delete rule').click();
   const modal = page.getByRole('dialog');
   await modal.waitFor();
   await modal.getByRole('button', { name: 'Delete' }).click();
@@ -148,20 +152,22 @@ test('Delete a rule', async ({ page }) => {
 });
 
 test('Duplicate a rule', async ({ page }) => {
+  const ruleName = `Rule: ${crypto.randomUUID()}`;
   await createScenarioAndGoToRules(page);
-  await addRule(page);
+  await addRule(page, ruleName, false);
 
   // On the rule detail page, click "Clone" and confirm
-  await page.getByRole('button', { name: 'Clone' }).click();
+  await page.getByLabel('Clone rule').click();
   const modal = page.getByRole('dialog');
   await modal.waitFor();
   await modal.getByRole('button', { name: 'Create a copy' }).click();
-  await waitForHydration(page);
+
+  await page.getByTestId('rule_edit_panel.name_input').waitFor({});
+  await expect(page.getByTestId('rule_edit_panel.name_input')).toHaveValue(`Copy of: ${ruleName}`);
 
   // Navigate back to the rules list — both the original and the copy should appear
-  await page.getByRole('link', { name: 'Rules' }).click();
-  await waitForHydration(page);
-  await expect(page.locator('table tbody tr')).toHaveCount(2);
+  await page.getByLabel('Close panel').click();
+  await expect(page.locator('[data-row=true]')).toHaveCount(2);
 });
 
 test('Copy a scenario', async ({ page }) => {

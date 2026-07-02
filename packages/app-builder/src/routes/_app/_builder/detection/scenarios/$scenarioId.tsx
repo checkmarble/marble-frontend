@@ -8,7 +8,7 @@ import * as Sentry from '@sentry/react';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
-const scenarioLayoutLoader = createServerFn()
+const scenarioData = createServerFn()
   .middleware([authMiddleware])
   .validator((input: { params?: Record<string, string> } | undefined) => input)
   .handler(async function scenarioLayoutLoader({ data, context }) {
@@ -28,11 +28,11 @@ const scenarioLayoutLoader = createServerFn()
   });
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId')({
-  loader: ({ params }) => scenarioLayoutLoader({ data: { params } }),
+  beforeLoad: ({ params }) => scenarioData({ data: { params } }),
   staticData: {
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {
-        const { currentScenario } = Route.useLoaderData();
+        const { currentScenario } = Route.useRouteContext();
 
         return (
           <div className="flex flex-row items-center gap-md">

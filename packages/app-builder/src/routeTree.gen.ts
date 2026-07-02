@@ -113,8 +113,6 @@ import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRouteImpo
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/index'
 import { Route as AppBuilderCasesDetailSCaseIdNewClientsIndexRouteImport } from './routes/_app/_builder/cases/_detail/s.$caseId/_new/clients/index'
 import { Route as AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport } from './routes/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/index'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings.$screeningId'
-import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules.$ruleId'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules'
 import { Route as AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRouteImport } from './routes/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision'
@@ -715,24 +713,6 @@ const AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute =
     getParentRoute: () =>
       AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute,
   } as any)
-const AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute =
-  AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRouteImport.update(
-    {
-      id: '/screenings/$screeningId',
-      path: '/screenings/$screeningId',
-      getParentRoute: () =>
-        AppBuilderDetectionScenariosScenarioIdIIterationIdRoute,
-    } as any,
-  )
-const AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute =
-  AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRouteImport.update(
-    {
-      id: '/rules/$ruleId',
-      path: '/rules/$ruleId',
-      getParentRoute: () =>
-        AppBuilderDetectionScenariosScenarioIdIIterationIdRoute,
-    } as any,
-  )
 const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRoute =
   AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRouteImport.update(
     {
@@ -884,8 +864,6 @@ export interface FileRoutesByFullPath {
   '/detection/scenarios/$scenarioId/i/$iterationId/decision': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/rules': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/trigger': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRoute
-  '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute
-  '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId/': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute
   '/cases/s/$caseId/clients/': typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
@@ -974,8 +952,6 @@ export interface FileRoutesByTo {
   '/detection/scenarios/$scenarioId/i/$iterationId/decision': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/rules': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRoute
   '/detection/scenarios/$scenarioId/i/$iterationId/trigger': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRoute
-  '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute
-  '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute
   '/cases/$caseId/d/$decisionId/screenings/$screeningId': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute
   '/cases/s/$caseId/clients': typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRoute
 }
@@ -1088,8 +1064,6 @@ export interface FileRoutesById {
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewDecisionRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRulesRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewTriggerRoute
-  '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute
-  '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute
   '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/': typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRoute
   '/_app/_builder/cases/_detail/s/$caseId/_new/clients/': typeof AppBuilderCasesDetailSCaseIdNewClientsIndexRoute
   '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/': typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewIndexRoute
@@ -1199,8 +1173,6 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/i/$iterationId/decision'
     | '/detection/scenarios/$scenarioId/i/$iterationId/rules'
     | '/detection/scenarios/$scenarioId/i/$iterationId/trigger'
-    | '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
-    | '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId/'
     | '/cases/s/$caseId/clients/'
     | '/detection/scenarios/$scenarioId/i/$iterationId/'
@@ -1289,8 +1261,6 @@ export interface FileRouteTypes {
     | '/detection/scenarios/$scenarioId/i/$iterationId/decision'
     | '/detection/scenarios/$scenarioId/i/$iterationId/rules'
     | '/detection/scenarios/$scenarioId/i/$iterationId/trigger'
-    | '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
-    | '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
     | '/cases/$caseId/d/$decisionId/screenings/$screeningId'
     | '/cases/s/$caseId/clients'
   id:
@@ -1402,8 +1372,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/decision'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger'
-    | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
-    | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
     | '/_app/_builder/cases/$caseId/d/$decisionId/screenings/$screeningId/'
     | '/_app/_builder/cases/_detail/s/$caseId/_new/clients/'
     | '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/'
@@ -2159,20 +2127,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdIndexRouteImport
       parentRoute: typeof AppBuilderCasesCaseIdDDecisionIdScreeningsScreeningIdRoute
     }
-    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
-      path: '/screenings/$screeningId'
-      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRoute
-    }
-    '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId': {
-      id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
-      path: '/rules/$ruleId'
-      fullPath: '/detection/scenarios/$scenarioId/i/$iterationId/rules/$ruleId'
-      preLoaderRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRouteImport
-      parentRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRoute
-    }
     '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger': {
       id: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/trigger'
       path: '/trigger'
@@ -2544,18 +2498,12 @@ const AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteWithChildre
 
 interface AppBuilderDetectionScenariosScenarioIdIIterationIdRouteChildren {
   AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteWithChildren
-  AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute
-  AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute: typeof AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute
 }
 
 const AppBuilderDetectionScenariosScenarioIdIIterationIdRouteChildren: AppBuilderDetectionScenariosScenarioIdIIterationIdRouteChildren =
   {
     AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRoute:
       AppBuilderDetectionScenariosScenarioIdIIterationIdEditViewRouteWithChildren,
-    AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute:
-      AppBuilderDetectionScenariosScenarioIdIIterationIdRulesRuleIdRoute,
-    AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute:
-      AppBuilderDetectionScenariosScenarioIdIIterationIdScreeningsScreeningIdRoute,
   }
 
 const AppBuilderDetectionScenariosScenarioIdIIterationIdRouteWithChildren =
