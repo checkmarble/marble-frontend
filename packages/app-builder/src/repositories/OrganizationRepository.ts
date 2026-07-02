@@ -12,7 +12,7 @@ export interface OrganizationRepository {
   exportOrganization(): Promise<unknown>;
   importOrganization(body: unknown): Promise<{ org_id: string }>;
   importOrganizationFromFile(file: Blob): Promise<{ org_id: string }>;
-  listUsers(): Promise<User[]>;
+  listUsers(args?: { withTfa?: boolean }): Promise<User[]>;
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
   updateOrganization(args: { organizationId: string; changes: OrganizationUpdateInput }): Promise<Organization>;
   updateAllowedNetworks(organizationId: string, allowedNetworks: string[]): Promise<string[]>;
@@ -34,8 +34,10 @@ export function makeGetOrganizationRepository() {
     importOrganizationFromFile: async (file) => {
       return marbleCoreApiClient.importOrganizationFromFile({ file });
     },
-    listUsers: async () => {
-      const { users } = await marbleCoreApiClient.listOrganizationUsers(organizationId);
+    listUsers: async (args) => {
+      const { users } = await marbleCoreApiClient.listOrganizationUsers(organizationId, {
+        withTfa: args?.withTfa ?? false,
+      });
       return users.map(adaptUser);
     },
     listTags: async (args) => {

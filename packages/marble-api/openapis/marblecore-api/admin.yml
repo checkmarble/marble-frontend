@@ -459,6 +459,12 @@
         schema:
           type: string
           format: uuid
+      - name: with_tfa
+        description: Enrich each user with their two-factor authentication status (fetched from the identity provider)
+        in: query
+        required: false
+        schema:
+          type: boolean
     responses:
       '200':
         description: The list of users of the organization
@@ -668,6 +674,9 @@ components:
         organization_id:
           type: string
           format: uuid
+        tfa_enabled:
+          type: boolean
+          description: Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`.
     CreateUser:
       type: object
       required:

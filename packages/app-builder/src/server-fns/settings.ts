@@ -38,6 +38,7 @@ import {
   updateWebhookPayloadSchema,
 } from '@app-builder/schemas/settings';
 import { useAuthSession } from '@app-builder/services/auth/auth-session.server';
+import { isReadUserAvailable } from '@app-builder/services/feature-access';
 
 import { FORBIDDEN, UNPROCESSABLE_ENTITY } from '@app-builder/utils/http/http-status-codes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -114,6 +115,23 @@ export const getAuditEventsFn = createServerFn({ method: 'GET' })
       limit: data.limit,
       after: data.after,
     });
+  });
+
+// ---- Users ----
+
+// Fetches org users enriched with their MFA/TFA status. Kept separate from the layout
+// loader because the backend scans all identity-provider users, which is expensive.
+export const getOrganizationUsersWithTfaFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    const { user, organization } = context.authInfo;
+
+    if (!isReadUserAvailable(user)) {
+      throw redirect({ to: '/' });
+    }
+
+    const users = await organization.listUsers({ withTfa: true });
+    return { users };
   });
 
 // ---- Exported Fields (Data Model) ----

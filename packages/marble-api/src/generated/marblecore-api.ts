@@ -1652,6 +1652,8 @@ export type UserDto = {
     last_name: string;
     role: string;
     organization_id: string;
+    /** Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`. */
+    tfa_enabled?: boolean;
 };
 export type UpdateUser = {
     email: string;
@@ -5594,7 +5596,9 @@ export function updateOrganizationSubnets(organizationId: string, organizationSu
 /**
  * List all users of an organization
  */
-export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.RequestOpts) {
+export function listOrganizationUsers(organizationId: string, { withTfa }: {
+    withTfa?: boolean;
+} = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -5609,7 +5613,9 @@ export function listOrganizationUsers(organizationId: string, opts?: Oazapfts.Re
     } | {
         status: 404;
         data: string;
-    }>(`/organizations/${encodeURIComponent(organizationId)}/users`, {
+    }>(`/organizations/${encodeURIComponent(organizationId)}/users${QS.query(QS.explode({
+        with_tfa: withTfa
+    }))}`, {
         ...opts
     }));
 }

@@ -107,6 +107,7 @@
     "nitro": "^3.0.0",
     "object-to-formdata": "^4.5.1",
     "pretty-cache-header": "^1.0.0",
+    "qrcode.react": "^4.2.0",
     "qs": "^6.15.2",
     "radash": "^12.1.0",
     "react": "^18.3.1",

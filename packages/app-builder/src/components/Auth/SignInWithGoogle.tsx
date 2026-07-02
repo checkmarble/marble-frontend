@@ -10,6 +10,7 @@ import { useClientServices } from '@app-builder/services/init-client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { ClientOnly } from '@tanstack/react-router';
+import { type MultiFactorResolver } from 'firebase/auth';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -39,9 +40,11 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
 
 function ClientSignInWithGoogle({
   signIn,
+  onMfaRequired,
   loading,
 }: {
   signIn: (authPayload: AuthPayload) => void;
+  onMfaRequired: (resolver: MultiFactorResolver) => void;
   loading?: boolean;
 }) {
   const { t } = useTranslation(['common', 'auth']);
@@ -53,9 +56,11 @@ function ClientSignInWithGoogle({
     try {
       const result = await googleSignIn();
       if (!result) return;
-      const { idToken, refreshToken, csrf } = result;
-      if (!idToken) return;
-      signIn({ type: 'google', idToken, refreshToken, csrf });
+      if (result.mfaRequired) {
+        onMfaRequired(result.resolver);
+        return;
+      }
+      signIn({ type: 'google', idToken: result.idToken, refreshToken: result.refreshToken, csrf: result.csrf });
     } catch (error) {
       if (error instanceof AccountExistsWithDifferentCredential) {
         toast.error(t('common:errors.account_exists_with_different_credential'));
@@ -87,14 +92,16 @@ function ClientSignInWithGoogle({
 
 export function SignInWithGoogle({
   signIn,
+  onMfaRequired,
   loading,
 }: {
   signIn: (authPayload: AuthPayload) => void;
+  onMfaRequired: (resolver: MultiFactorResolver) => void;
   loading?: boolean;
 }) {
   return (
     <ClientOnly fallback={<SignInWithGoogleButton loading={loading} />}>
-      <ClientSignInWithGoogle signIn={signIn} loading={loading} />
+      <ClientSignInWithGoogle signIn={signIn} onMfaRequired={onMfaRequired} loading={loading} />
     </ClientOnly>
   );
 }
