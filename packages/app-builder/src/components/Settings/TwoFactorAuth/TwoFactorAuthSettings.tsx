@@ -1,19 +1,24 @@
 import { type TotpEnrollmentParams } from '@app-builder/repositories/AuthenticationRepository';
 import {
+  InvalidPhoneNumber,
   InvalidVerificationCode,
   RequiresRecentLogin,
+  useFinalizePhoneEnrollment,
   useFinalizeTotpEnrollment,
   useGetEnrolledMfaFactors,
+  useStartPhoneEnrollment,
   useStartTotpEnrollment,
   useUnenrollMfaFactor,
 } from '@app-builder/services/auth/auth-client';
 import { useClientServices } from '@app-builder/services/init-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
+import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { ReauthPanel } from './ReauthPanel';
 
 const enrolledFactorsQueryKey = ['mfa', 'enrolled-factors'];
 
@@ -83,7 +88,10 @@ export function TwoFactorAuthSettings() {
         <span className="text-xs text-grey-secondary">{t('account:mfa.status.disabled')}</span>
       )}
 
-      <EnrollTotpModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
+      <div className="flex flex-wrap gap-sm">
+        <EnrollTotpModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
+        <EnrollPhoneModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
+      </div>
     </div>
   );
 }
@@ -96,26 +104,32 @@ function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
   const finalizeTotpEnrollment = useFinalizeTotpEnrollment(authenticationClientService);
 
   const [open, setOpen] = useState(false);
+  const [needsReauth, setNeedsReauth] = useState(false);
   const [enrollment, setEnrollment] = useState<TotpEnrollmentParams | null>(null);
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const startMutation = useMutation({
     mutationFn: () => startTotpEnrollment(),
+    onSuccess: (params) => {
+      setNeedsReauth(false);
+      setEnrollment(params ?? null);
+    },
     onError: (err) => {
       if (err instanceof RequiresRecentLogin) {
-        toast.error(t('account:mfa.error.requires_recent_login'));
+        // Prompt the user to re-authenticate in place, then retry enrollment.
+        setNeedsReauth(true);
       } else {
         toast.error(t('account:mfa.error.unknown'));
+        setOpen(false);
       }
-      setOpen(false);
     },
   });
 
   const finalizeMutation = useMutation({
     mutationFn: () => {
       if (!enrollment) throw new Error('No pending enrollment');
-      return finalizeTotpEnrollment(enrollment.secret, code, t('account:mfa.default_factor_name'));
+      return finalizeTotpEnrollment(enrollment.secret, code, t('account:mfa.default_factor_name_totp'));
     },
     onSuccess: () => {
       toast.success(t('account:mfa.enroll.success'));
@@ -134,10 +148,11 @@ function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
     if (next) {
+      setNeedsReauth(false);
       setEnrollment(null);
       setCode('');
       setError(null);
-      startMutation.mutate(undefined, { onSuccess: (params) => setEnrollment(params ?? null) });
+      startMutation.mutate();
     }
   };
 
@@ -150,54 +165,220 @@ function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
         </Button>
       </Modal.Trigger>
       <Modal.Content>
+        {needsReauth ? (
+          <>
+            <Modal.Title>{t('account:mfa.reauth.title')}</Modal.Title>
+            <div className="flex flex-col gap-lg p-lg">
+              <ReauthPanel onReauthenticated={() => startMutation.mutate()} />
+            </div>
+            <Modal.Footer>
+              <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+            </Modal.Footer>
+          </>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setError(null);
+              finalizeMutation.mutate();
+            }}
+          >
+            <Modal.Title>{t('account:mfa.enroll.totp_title')}</Modal.Title>
+            <div className="flex flex-col gap-lg p-lg">
+              {startMutation.isPending || !enrollment ? (
+                <div className="flex justify-center">
+                  <Icon icon="spinner" className="size-6 animate-spin" />
+                </div>
+              ) : (
+                <>
+                  <p className="text-s text-grey-secondary">{t('account:mfa.enroll.totp_instructions')}</p>
+                  <div className="flex justify-center rounded-sm bg-white p-md">
+                    <QRCodeSVG value={enrollment.qrCodeUrl} size={160} />
+                  </div>
+                  <div className="flex flex-col gap-xs">
+                    <span className="text-xs font-medium">{t('account:mfa.enroll.secret_key')}</span>
+                    <code className="bg-grey-background text-grey-primary select-all break-all rounded-sm p-sm text-xs">
+                      {enrollment.secretKey}
+                    </code>
+                  </div>
+                  <div className="flex flex-col gap-xs">
+                    <label htmlFor="totp-enroll-code" className="text-xs font-medium">
+                      {t('account:mfa.enroll.code_label')}
+                    </label>
+                    <Input
+                      id="totp-enroll-code"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      maxLength={6}
+                      value={code}
+                      onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
+                      borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
+                    />
+                    {error ? <span className="text-xs text-red-primary">{error}</span> : null}
+                  </div>
+                </>
+              )}
+            </div>
+            <Modal.Footer>
+              <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+              <Modal.FooterButton
+                type="submit"
+                label={t('account:mfa.enroll.confirm')}
+                disabled={!enrollment || code.length < 6}
+                isLoading={finalizeMutation.isPending}
+              />
+            </Modal.Footer>
+          </form>
+        )}
+      </Modal.Content>
+    </Modal.Root>
+  );
+}
+
+function EnrollPhoneModal({ onEnrolled }: { onEnrolled: () => void }) {
+  const { t } = useTranslation(['account', 'common']);
+  const { authenticationClientService } = useClientServices();
+
+  const startPhoneEnrollment = useStartPhoneEnrollment(authenticationClientService);
+  const finalizePhoneEnrollment = useFinalizePhoneEnrollment(authenticationClientService);
+
+  const recaptchaRef = useRef<HTMLDivElement>(null);
+
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<'phone' | 'code'>('phone');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [verificationId, setVerificationId] = useState<string | null>(null);
+  const [code, setCode] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const startMutation = useMutation({
+    mutationFn: () => {
+      if (!recaptchaRef.current) throw new Error('reCAPTCHA container not ready');
+      return startPhoneEnrollment(phoneNumber, recaptchaRef.current);
+    },
+    onSuccess: (id) => {
+      setVerificationId(id ?? null);
+      setStep('code');
+    },
+    onError: (err) => {
+      if (err instanceof InvalidPhoneNumber) {
+        setError(t('account:mfa.error.invalid_phone'));
+      } else if (err instanceof RequiresRecentLogin) {
+        toast.error(t('account:mfa.error.requires_recent_login'));
+        setOpen(false);
+      } else {
+        toast.error(t('account:mfa.error.unknown'));
+      }
+    },
+  });
+
+  const finalizeMutation = useMutation({
+    mutationFn: () => {
+      if (!verificationId) throw new Error('No pending enrollment');
+      return finalizePhoneEnrollment(verificationId, code, t('account:mfa.default_factor_name'));
+    },
+    onSuccess: () => {
+      toast.success(t('account:mfa.enroll.success'));
+      onEnrolled();
+      setOpen(false);
+    },
+    onError: (err) => {
+      if (err instanceof InvalidVerificationCode) {
+        setError(t('account:mfa.error.invalid_code'));
+      } else {
+        toast.error(t('account:mfa.error.unknown'));
+      }
+    },
+  });
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    if (next) {
+      setStep('phone');
+      setPhoneNumber('');
+      setVerificationId(null);
+      setCode('');
+      setError(null);
+    }
+  };
+
+  return (
+    <Modal.Root open={open} onOpenChange={handleOpenChange}>
+      <Modal.Trigger asChild>
+        <Button variant="primary" className="self-start">
+          <Icon icon="plus" className="size-5" />
+          {t('account:mfa.add_phone')}
+        </Button>
+      </Modal.Trigger>
+      <Modal.Content>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             setError(null);
-            finalizeMutation.mutate();
+            if (step === 'phone') {
+              startMutation.mutate();
+            } else {
+              finalizeMutation.mutate();
+            }
           }}
         >
           <Modal.Title>{t('account:mfa.enroll.title')}</Modal.Title>
           <div className="flex flex-col gap-lg p-lg">
-            {startMutation.isPending || !enrollment ? (
-              <div className="flex justify-center">
-                <Icon icon="spinner" className="size-6 animate-spin" />
+            {step === 'phone' ? (
+              <div className="flex flex-col gap-xs">
+                <label htmlFor="mfa-phone" className="text-xs font-medium">
+                  {t('account:mfa.enroll.phone_label')}
+                </label>
+                <Input
+                  id="mfa-phone"
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder={t('account:mfa.enroll.phone_placeholder')}
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.currentTarget.value)}
+                  borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
+                />
+                <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.phone_instructions')}</span>
+                {error ? <span className="text-xs text-red-primary">{error}</span> : null}
               </div>
             ) : (
-              <>
-                <p className="text-s text-grey-secondary">{t('account:mfa.enroll.instructions')}</p>
-                <div className="flex flex-col gap-xs">
-                  <span className="text-xs font-medium">{t('account:mfa.enroll.secret_key')}</span>
-                  <code className="bg-grey-background text-grey-primary select-all break-all rounded-sm p-sm text-s">
-                    {enrollment.secretKey}
-                  </code>
-                </div>
-                <div className="flex flex-col gap-xs">
-                  <label htmlFor="totp-code" className="text-xs font-medium">
-                    {t('account:mfa.enroll.code_label')}
-                  </label>
-                  <Input
-                    id="totp-code"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    maxLength={6}
-                    value={code}
-                    onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
-                    borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
-                  />
-                  {error ? <span className="text-xs text-red-primary">{error}</span> : null}
-                </div>
-              </>
+              <div className="flex flex-col gap-xs">
+                <label htmlFor="mfa-code" className="text-xs font-medium">
+                  {t('account:mfa.enroll.code_label')}
+                </label>
+                <Input
+                  id="mfa-code"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={code}
+                  onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
+                  borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
+                />
+                <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.code_instructions')}</span>
+                {error ? <span className="text-xs text-red-primary">{error}</span> : null}
+              </div>
             )}
           </div>
+          {/* Invisible reCAPTCHA container required by Firebase phone auth (auto-solved by the emulator). */}
+          <div ref={recaptchaRef} />
           <Modal.Footer>
             <Modal.FooterButton isCloseButton label={t('common:cancel')} />
-            <Modal.FooterButton
-              type="submit"
-              label={t('account:mfa.enroll.confirm')}
-              disabled={!enrollment || code.length < 6}
-              isLoading={finalizeMutation.isPending}
-            />
+            {step === 'phone' ? (
+              <Modal.FooterButton
+                type="submit"
+                label={t('account:mfa.enroll.send_code')}
+                disabled={phoneNumber.length === 0}
+                isLoading={startMutation.isPending}
+              />
+            ) : (
+              <Modal.FooterButton
+                type="submit"
+                label={t('account:mfa.enroll.confirm')}
+                disabled={code.length < 6}
+                isLoading={finalizeMutation.isPending}
+              />
+            )}
           </Modal.Footer>
         </form>
       </Modal.Content>

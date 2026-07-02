@@ -1,7 +1,7 @@
 import { type AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
 import { FirebaseError } from 'firebase/app';
-import { AuthErrorCodes, type TotpSecret } from 'firebase/auth';
+import { AuthErrorCodes, type MultiFactorResolver, type TotpSecret } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 
 export function makeAuthenticationClientService(authenticationClientRepository: AuthenticationClientRepository) {
@@ -24,6 +24,7 @@ export class WeakPasswordError extends Error {}
 export class TooManyRequest extends Error {}
 export class InvalidVerificationCode extends Error {}
 export class RequiresRecentLogin extends Error {}
+export class InvalidPhoneNumber extends Error {}
 
 function throwMappedMfaError(error: unknown): never {
   if (error instanceof FirebaseError) {
@@ -32,6 +33,9 @@ function throwMappedMfaError(error: unknown): never {
       case 'auth/missing-code':
       case 'auth/code-expired':
         throw new InvalidVerificationCode();
+      case AuthErrorCodes.INVALID_PHONE_NUMBER:
+      case AuthErrorCodes.MISSING_PHONE_NUMBER:
+        throw new InvalidPhoneNumber();
       case AuthErrorCodes.CREDENTIAL_TOO_OLD_LOGIN_AGAIN:
         throw new RequiresRecentLogin();
       case AuthErrorCodes.NETWORK_REQUEST_FAILED:
@@ -67,12 +71,82 @@ export function useFinalizeTotpEnrollment({ authenticationClientRepository }: Au
   };
 }
 
+export function useStartPhoneEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
+  return async (phoneNumber: string, recaptchaContainer: HTMLElement) => {
+    try {
+      return await authenticationClientRepository.startPhoneEnrollment(phoneNumber, recaptchaContainer);
+    } catch (error) {
+      throwMappedMfaError(error);
+    }
+  };
+}
+
+export function useFinalizePhoneEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
+  return async (verificationId: string, verificationCode: string, displayName: string) => {
+    try {
+      await authenticationClientRepository.finalizePhoneEnrollment(verificationId, verificationCode, displayName);
+    } catch (error) {
+      throwMappedMfaError(error);
+    }
+  };
+}
+
 export function useUnenrollMfaFactor({ authenticationClientRepository }: AuthenticationClientService) {
   return async (factorUid: string) => {
     try {
       await authenticationClientRepository.unenrollMfaFactor(factorUid);
     } catch (error) {
       throwMappedMfaError(error);
+    }
+  };
+}
+
+export function useGetCurrentUserProviderIds({ authenticationClientRepository }: AuthenticationClientService) {
+  return () => authenticationClientRepository.getCurrentUserProviderIds();
+}
+
+export function useReauthenticateWithPassword({ authenticationClientRepository }: AuthenticationClientService) {
+  return async (password: string) => {
+    try {
+      await authenticationClientRepository.reauthenticateWithPassword(password);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case AuthErrorCodes.USER_DELETED:
+          case AuthErrorCodes.INVALID_PASSWORD:
+          case AuthErrorCodes.INVALID_LOGIN_CREDENTIALS:
+            throw new InvalidLoginCredentials();
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
+          case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+            throw new TooManyRequest();
+        }
+      }
+      throw error;
+    }
+  };
+}
+
+// Returns true when reauthentication completed, false when the user dismissed the popup.
+export function useReauthenticateWithOAuth({ authenticationClientRepository }: AuthenticationClientService) {
+  return async (providerId: 'google.com' | 'microsoft.com') => {
+    try {
+      await authenticationClientRepository.reauthenticateWithOAuth(providerId);
+      return true;
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case AuthErrorCodes.POPUP_CLOSED_BY_USER:
+          case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
+          case AuthErrorCodes.USER_CANCELLED:
+            return false;
+          case AuthErrorCodes.POPUP_BLOCKED:
+            throw new PopupBlockedByClient();
+          case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+            throw new NetworkRequestFailed();
+        }
+      }
+      throw error;
     }
   };
 }
@@ -85,8 +159,11 @@ export function useGoogleSignIn({ authenticationClientRepository }: Authenticati
 
   return async () => {
     try {
-      const { idToken, refreshToken } = await authenticationClientRepository.googleSignIn(language);
-      return { idToken, refreshToken, csrf };
+      const result = await authenticationClientRepository.googleSignIn(language);
+      if ('mfaRequired' in result) {
+        return { mfaRequired: true as const, resolver: result.resolver };
+      }
+      return { mfaRequired: false as const, idToken: result.idToken, refreshToken: result.refreshToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -118,8 +195,11 @@ export function useMicrosoftSignIn({ authenticationClientRepository }: Authentic
 
   return async () => {
     try {
-      const { idToken, refreshToken } = await authenticationClientRepository.microsoftSignIn(language);
-      return { idToken, refreshToken, csrf };
+      const result = await authenticationClientRepository.microsoftSignIn(language);
+      if ('mfaRequired' in result) {
+        return { mfaRequired: true as const, resolver: result.resolver };
+      }
+      return { mfaRequired: false as const, idToken: result.idToken, refreshToken: result.refreshToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -152,10 +232,13 @@ export function useEmailAndPasswordSignIn({ authenticationClientRepository }: Au
   return async (email: string, password: string) => {
     try {
       const result = await authenticationClientRepository.emailAndPasswordSignIn(language, email, password);
+      if ('mfaRequired' in result) {
+        return { mfaRequired: true as const, resolver: result.resolver };
+      }
       if (!result.emailVerified) {
         throw new EmailUnverified();
       }
-      return { idToken: result.idToken, refreshToken: result.refreshToken, csrf };
+      return { mfaRequired: false as const, idToken: result.idToken, refreshToken: result.refreshToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -168,6 +251,50 @@ export function useEmailAndPasswordSignIn({ authenticationClientRepository }: Au
         }
       }
       throw error;
+    }
+  };
+}
+
+export function useSendMfaPhoneChallenge({ authenticationClientRepository }: AuthenticationClientService) {
+  return async (resolver: MultiFactorResolver, recaptchaContainer: HTMLElement) => {
+    try {
+      return await authenticationClientRepository.sendMfaPhoneChallenge(resolver, recaptchaContainer);
+    } catch (error) {
+      throwMappedMfaError(error);
+    }
+  };
+}
+
+export function useResolveMfaPhoneSignIn({ authenticationClientRepository }: AuthenticationClientService) {
+  const csrf = useCsrfToken();
+
+  return async (resolver: MultiFactorResolver, verificationId: string, verificationCode: string) => {
+    try {
+      const { idToken, refreshToken } = await authenticationClientRepository.resolveMfaPhoneSignIn(
+        resolver,
+        verificationId,
+        verificationCode,
+      );
+      return { idToken, refreshToken, csrf };
+    } catch (error) {
+      throwMappedMfaError(error);
+    }
+  };
+}
+
+export function useResolveMfaTotpSignIn({ authenticationClientRepository }: AuthenticationClientService) {
+  const csrf = useCsrfToken();
+
+  return async (resolver: MultiFactorResolver, enrollmentId: string, verificationCode: string) => {
+    try {
+      const { idToken, refreshToken } = await authenticationClientRepository.resolveMfaTotpSignIn(
+        resolver,
+        enrollmentId,
+        verificationCode,
+      );
+      return { idToken, refreshToken, csrf };
+    } catch (error) {
+      throwMappedMfaError(error);
     }
   };
 }

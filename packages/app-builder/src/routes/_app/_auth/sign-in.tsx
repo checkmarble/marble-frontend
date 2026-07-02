@@ -1,5 +1,6 @@
 import { AuthError } from '@app-builder/components/Auth/AuthError';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
+import { MfaChallenge } from '@app-builder/components/Auth/MfaChallenge';
 import { SignInFirstConnection } from '@app-builder/components/Auth/SignInFirstConnection';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
@@ -14,6 +15,8 @@ import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, ErrorComponent, Link, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
+import { type MultiFactorResolver } from 'firebase/auth';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CtaV2ClassName, Typo } from 'ui-design-system';
 
@@ -101,6 +104,25 @@ function Login() {
   const loading = signInMutation.isPending;
   const type = signInMutation.variables?.type;
 
+  const [mfaChallenge, setMfaChallenge] = useState<{
+    resolver: MultiFactorResolver;
+    type: AuthPayload['type'];
+  } | null>(null);
+
+  if (mfaChallenge) {
+    return (
+      <div className="flex flex-col gap-2xl w-full">
+        <MfaChallenge
+          resolver={mfaChallenge.resolver}
+          authType={mfaChallenge.type}
+          signIn={signIn}
+          loading={loading}
+          onCancel={() => setMfaChallenge(null)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2xl w-full">
       <div className="flex flex-col gap-xl">
@@ -127,8 +149,16 @@ function Login() {
             </>
           ) : (
             <>
-              <SignInWithGoogle signIn={signIn} loading={loading && type === 'google'} />
-              <SignInWithMicrosoft signIn={signIn} loading={loading && type === 'microsoft'} />
+              <SignInWithGoogle
+                signIn={signIn}
+                onMfaRequired={(resolver) => setMfaChallenge({ resolver, type: 'google' })}
+                loading={loading && type === 'google'}
+              />
+              <SignInWithMicrosoft
+                signIn={signIn}
+                onMfaRequired={(resolver) => setMfaChallenge({ resolver, type: 'microsoft' })}
+                loading={loading && type === 'microsoft'}
+              />
               <Link
                 className={CtaV2ClassName({
                   variant: 'primary',

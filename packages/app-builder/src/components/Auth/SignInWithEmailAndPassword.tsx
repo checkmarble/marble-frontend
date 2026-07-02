@@ -13,6 +13,8 @@ import { sleep } from '@app-builder/utils/sleep';
 import * as Sentry from '@sentry/tanstackstart-react';
 import { useForm } from '@tanstack/react-form';
 import { Link, useHydrated } from '@tanstack/react-router';
+import { type MultiFactorResolver } from 'firebase/auth';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -21,6 +23,7 @@ import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription'
 import { FormInput } from '../Form/Tanstack/FormInput';
 import { FormLabel } from '../Form/Tanstack/FormLabel';
 import { Spinner } from '../Spinner';
+import { MfaChallenge } from './MfaChallenge';
 
 const emailAndPasswordFormSchema = z.object({
   credentials: z.object({
@@ -47,6 +50,8 @@ export function SignInWithEmailAndPassword({
   const navigate = useAgnosticNavigation();
   const hydrated = useHydrated();
 
+  const [mfaResolver, setMfaResolver] = useState<MultiFactorResolver | null>(null);
+
   const emailAndPasswordSignIn = useEmailAndPasswordSignIn(clientServices.authenticationClientService);
 
   const form = useForm({
@@ -57,10 +62,11 @@ export function SignInWithEmailAndPassword({
     onSubmit: async ({ value: { credentials }, formApi }) => {
       try {
         const result = await emailAndPasswordSignIn(credentials.email, credentials.password);
-        if (!result) return;
-        const { idToken, refreshToken, csrf } = result;
-        if (!idToken) return;
-        signIn({ type: 'email', idToken, refreshToken, csrf });
+        if (result.mfaRequired) {
+          setMfaResolver(result.resolver);
+          return;
+        }
+        signIn({ type: 'email', idToken: result.idToken, refreshToken: result.refreshToken, csrf: result.csrf });
         // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
         await sleep(1000);
       } catch (error) {
@@ -83,6 +89,12 @@ export function SignInWithEmailAndPassword({
       }
     },
   });
+
+  if (mfaResolver) {
+    return (
+      <MfaChallenge resolver={mfaResolver} signIn={signIn} loading={loading} onCancel={() => setMfaResolver(null)} />
+    );
+  }
 
   return (
     <form className="contents" onSubmit={handleSubmit(form)}>

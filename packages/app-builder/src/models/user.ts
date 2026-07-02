@@ -65,6 +65,8 @@ export interface User {
   lastName: string;
   role: string;
   organizationId: string;
+  // Only populated when users are fetched with the `withTfa` option; undefined otherwise.
+  tfaEnabled?: boolean;
 }
 
 export function adaptUser(user: UserDto): User {
@@ -75,6 +77,7 @@ export function adaptUser(user: UserDto): User {
     lastName: user.last_name,
     role: user.role,
     organizationId: user.organization_id,
+    tfaEnabled: user.tfa_enabled,
   };
 }
 

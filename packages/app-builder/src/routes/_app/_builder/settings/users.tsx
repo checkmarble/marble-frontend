@@ -2,9 +2,11 @@ import { CollapsiblePaper, Page } from '@app-builder/components';
 import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
 import { DeleteUser } from '@app-builder/components/Settings/Users/DeleteUser';
 import { UpdateUser } from '@app-builder/components/Settings/Users/UpdateUser';
+import { Spinner } from '@app-builder/components/Spinner';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type User } from '@app-builder/models';
 import { tKeyForUserRole } from '@app-builder/models/user';
+import { useOrganizationUsersTfaQuery } from '@app-builder/queries/settings/users/get-users-tfa';
 import {
   getUserRoles,
   isCreateUserAvailable,
@@ -19,7 +21,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Table, useTable } from 'ui-design-system';
+import { Table, Tag, useTable } from 'ui-design-system';
 
 const usersLoader = createServerFn()
   .middleware([authMiddleware])
@@ -74,6 +76,12 @@ function Users() {
   } = Route.useLoaderData();
   const { orgUsers } = useOrganizationUsers();
 
+  const tfaQuery = useOrganizationUsersTfaQuery();
+  const tfaByUserId = useMemo(
+    () => new Map((tfaQuery.data ?? []).map((u) => [u.userId, u.tfaEnabled])),
+    [tfaQuery.data],
+  );
+
   const columns = useMemo(() => {
     return [
       columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
@@ -92,6 +100,21 @@ function Users() {
         header: t('settings:users.role'),
         size: 150,
         cell: ({ getValue }) => t(tKeyForUserRole(getValue())),
+      }),
+      columnHelper.accessor((row) => row.userId, {
+        id: 'tfa',
+        header: t('settings:users.tfa'),
+        size: 120,
+        cell: ({ getValue }) => {
+          if (tfaQuery.isPending) return <Spinner className="size-4" />;
+          const enabled = tfaByUserId.get(getValue());
+          if (enabled === undefined) return <span className="text-grey-secondary">-</span>;
+          return enabled ? (
+            <Tag color="green">{t('settings:users.tfa.enabled')}</Tag>
+          ) : (
+            <Tag color="grey">{t('settings:users.tfa.disabled')}</Tag>
+          );
+        },
       }),
       columnHelper.accessor((row) => row.userId, {
         id: 'inbox_user_role',
@@ -143,6 +166,8 @@ function Users() {
     user.actorIdentity.userId,
     userRoles,
     entitlements.userRoles,
+    tfaByUserId,
+    tfaQuery.isPending,
   ]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
