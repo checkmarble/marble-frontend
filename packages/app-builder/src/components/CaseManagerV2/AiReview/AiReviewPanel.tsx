@@ -44,44 +44,39 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
   return (
     <Panel.Container size="medium">
       <Panel.Content>
-        <div className="flex items-center gap-sm pb-md border-b border-grey-border">
-          <Icon
-            icon="cross"
-            className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary shrink-0"
-            onClick={() => onOpenChange(false)}
-            aria-label={t('common:close')}
-          />
-          <Icon icon="ai-review" className="size-4 text-purple-primary shrink-0" />
-          <Typo variant="title2" className="text-grey-primary">
-            {t('cases:case_detail.ai_review.panel.title')}
-          </Typo>
-          <ReviewStatusBadge status={selectedListItem.status} />
-          <time className="text-xs text-grey-secondary" dateTime={selectedListItem.createdAt}>
-            {formatDateTime(selectedListItem.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
-          </time>
-          <div className="ms-auto flex items-center gap-xs">
-            <Button
-              variant="secondary"
-              size="small"
-              onClick={() => setSelectedIndex((i) => Math.min(i + 1, reviews.length - 1))}
-              disabled={!hasPreviousReport}
-            >
-              {t('cases:case.ai_reviews.see_previous_report')}
-            </Button>
-            {canManuallyReview ? (
+        <Panel.Header>
+          <div className="flex items-center gap-sm">
+            <Icon icon="ai-review" className="size-4 text-purple-primary shrink-0" />
+            <Typo variant="title2" className="text-grey-primary">
+              {t('cases:case_detail.ai_review.panel.title')}
+            </Typo>
+            <ReviewStatusBadge status={selectedListItem.status} />
+            <time className="text-xs text-grey-secondary" dateTime={selectedListItem.createdAt}>
+              {formatDateTime(selectedListItem.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
+            </time>
+            <div className="ms-auto flex items-center gap-xs">
               <Button
                 variant="secondary"
                 size="small"
-                onClick={() => enqueueReviewMutation.mutate(caseId)}
-                disabled={enqueueReviewMutation.isPending}
+                onClick={() => setSelectedIndex((i) => Math.min(i + 1, reviews.length - 1))}
+                disabled={!hasPreviousReport}
               >
-                <Icon icon="wand" className="size-4 text-purple-primary" />
-                <span className="text-purple-primary">{t('cases:case.ai_reviews.generate')}</span>
+                {t('cases:case.ai_reviews.see_previous_report')}
               </Button>
-            ) : null}
+              {canManuallyReview ? (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => enqueueReviewMutation.mutate(caseId)}
+                  disabled={enqueueReviewMutation.isPending}
+                >
+                  <Icon icon="wand" className="size-4 text-purple-primary" />
+                  <span className="text-purple-primary">{t('cases:case.ai_reviews.generate')}</span>
+                </Button>
+              ) : null}
+            </div>
           </div>
-        </div>
-
+        </Panel.Header>
         <div className="flex gap-md flex-1 overflow-y-auto py-md">
           <div className="flex-1 min-w-0 text-small">
             {reviewQuery.isLoading ? (

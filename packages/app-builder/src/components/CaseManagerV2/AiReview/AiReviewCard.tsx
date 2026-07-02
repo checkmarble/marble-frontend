@@ -1,11 +1,12 @@
 import { type AiCaseReviewListItem } from '@app-builder/models/cases';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
+import { useCaseReviewQuery } from '@app-builder/queries/get-case-review';
 import { useCaseReviewsQuery } from '@app-builder/queries/get-case-reviews';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Card } from 'ui-design-system';
+import { AIText, Button, Card } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AiReviewPanel } from './AiReviewPanel';
 
@@ -20,7 +21,6 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
   const [panelOpen, setPanelOpen] = useState(false);
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();
   const queryClient = useQueryClient();
-
   const reviewsQuery = useCaseReviewsQuery(caseId, {
     refetchInterval: (query) =>
       (query.state.data ?? []).some((r) => r.status === 'pending') ? PENDING_POLL_INTERVAL_MS : false,
@@ -53,7 +53,7 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
             ) : latestReview.status === 'pending' ? (
               <PendingBody />
             ) : (
-              <PopulatedBody review={latestReview} />
+              <PopulatedBody review={reviewsQuery.data?.[0]} />
             ),
           )}
       </Card>
@@ -134,11 +134,24 @@ function ErrorBody() {
   return <span className="text-small text-red-primary">{t('cases:case.ai_reviews.error_loading')}</span>;
 }
 
-function PopulatedBody({ review }: { review: AiCaseReviewListItem }) {
-  const output = review.review?.output?.trim();
-  if (!output) return null;
-  const excerpt = stripMarkdown(output);
-  return <p className="line-clamp-6 text-small text-grey-primary whitespace-pre-line">{excerpt}</p>;
+function PopulatedBody({ review }: { review?: AiCaseReviewListItem }) {
+  const reviewQuery = useCaseReviewQuery(review?.caseId ?? '', review?.id ?? '');
+
+  if (reviewQuery.isLoading) return <LoadingBody />;
+  if (reviewQuery.isError) return <ErrorBody />;
+  let excerpt = '';
+
+  if (reviewQuery.data) {
+    if (reviewQuery.data.review?.summary) excerpt = reviewQuery.data.review.summary;
+    else {
+      const output = reviewQuery.data.review?.output?.trim();
+      if (!output) return null;
+      excerpt = stripMarkdown(output);
+    }
+    if (!excerpt) return null;
+    return <AIText text={excerpt} maxLines={6} />;
+  }
+  return null;
 }
 
 function stripMarkdown(text: string): string {
