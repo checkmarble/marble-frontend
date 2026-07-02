@@ -107,6 +107,7 @@ function Analytics() {
   const [volatileScenarioId, setVolatileScenarioId] = useState<string | null>(null);
   const [volatileRange, setVolatileRange] = useState<AnalyticsDateRangeFilter | undefined>();
   const [volatileCompareRange, setVolatileCompareRange] = useState<AnalyticsDateRangeFilter | undefined>();
+  const [selectedFilterNames, setSelectedFilterNames] = useState<string[]>([]);
   const triggerObjects = useMemo(
     () =>
       R.pipe(
@@ -122,6 +123,11 @@ function Analytics() {
     setVolatileRange(undefined);
     setVolatileCompareRange(undefined);
   }, [queryString]);
+
+  useEffect(() => {
+    const triggerNames = parsedFiltersResult?.trigger?.map((t) => t.name) ?? [];
+    setSelectedFilterNames(triggerNames);
+  }, [scenarioId, queryString, parsedFiltersResult?.trigger]);
 
   const filtersValues = useMemo(() => {
     const { trigger, scenarioVersion: _scenarioVersion, ...rest } = parsedFiltersResult ?? {};
@@ -159,7 +165,7 @@ function Analytics() {
     unavailable?: boolean;
   };
 
-  const dynamicDescriptors: AvailableFiltersDescriptor[] = useMemo(() => {
+  const allDynamicDescriptors: AvailableFiltersDescriptor[] = useMemo(() => {
     const descriptors: Map<string, AvailableFiltersDescriptor> = new Map();
 
     const appendToDescriptors = (filter: AvailableFiltersResponse[number], unavailable: boolean): void => {
@@ -199,6 +205,16 @@ function Analytics() {
 
     return Array.from(descriptors.values());
   }, [availableFilters, seenAvailableFilters]);
+
+  const dynamicDescriptors = useMemo(
+    () => allDynamicDescriptors.filter((d) => selectedFilterNames.includes(d.name)),
+    [allDynamicDescriptors, selectedFilterNames],
+  );
+
+  const addSelectedFilter = (name: string) =>
+    setSelectedFilterNames((prev) => (prev.includes(name) ? prev : [...prev, name]));
+
+  const removeSelectedFilter = (name: string) => setSelectedFilterNames((prev) => prev.filter((n) => n !== name));
 
   const {
     decisionsOutcomesPerDayQuery,
@@ -298,6 +314,13 @@ function Analytics() {
       return setVolatileCompareRange(undefined);
     }
   };
+
+  const onFilterChange = (change: FilterChange): void => {
+    onInstantUpdate(change);
+    if (change.type === 'remove' && selectedFilterNames.includes(change.name)) {
+      removeSelectedFilter(change.name);
+    }
+  };
   const descriptors: FilterDescriptor[] = [
     {
       type: 'select',
@@ -354,10 +377,14 @@ function Analytics() {
                   dynamicDescriptors={dynamicDescriptors}
                   value={filtersValues}
                   onUpdate={onFiltersUpdate}
-                  onChange={(change, _next) => onInstantUpdate(change)}
+                  onChange={(change, _next) => onFilterChange(change)}
                 />
                 {availableFilters && availableFilters.length > 0 && (
-                  <AddFilterMenu availableFilters={availableFilters} />
+                  <AddFilterMenu
+                    availableFilters={availableFilters}
+                    selectedFilterNames={selectedFilterNames}
+                    onAddFilter={addSelectedFilter}
+                  />
                 )}
               </div>
               <CustomFiltersForm
@@ -415,11 +442,26 @@ function Analytics() {
   );
 }
 
-function AddFilterMenu({ availableFilters }: { availableFilters: AvailableFiltersResponse }) {
+function AddFilterMenu({
+  availableFilters,
+  selectedFilterNames,
+  onAddFilter,
+}: {
+  availableFilters: AvailableFiltersResponse;
+  selectedFilterNames: string[];
+  onAddFilter: (name: string) => void;
+}) {
   const { t } = useTranslation(['analytics']);
+  const [open, setOpen] = useState(false);
+
+  const remainingFilters = availableFilters.filter((filter) => !selectedFilterNames.includes(filter.name));
+
+  if (remainingFilters.length === 0) {
+    return null;
+  }
 
   return (
-    <MenuCommand.Menu>
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
         <Button variant="secondary" appearance="link" className="my-xs shrink-0">
           <Icon icon="plus" className="size-4" />
@@ -428,9 +470,16 @@ function AddFilterMenu({ availableFilters }: { availableFilters: AvailableFilter
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4}>
         <MenuCommand.List>
-          {availableFilters.map((filter) => (
-            <MenuCommand.Item>
-              <span key={filter.name}>{filter.name}</span>
+          {remainingFilters.map((filter) => (
+            <MenuCommand.Item
+              key={filter.name}
+              value={filter.name}
+              onSelect={() => {
+                onAddFilter(filter.name);
+                setOpen(false);
+              }}
+            >
+              <span>{filter.name}</span>
             </MenuCommand.Item>
           ))}
         </MenuCommand.List>

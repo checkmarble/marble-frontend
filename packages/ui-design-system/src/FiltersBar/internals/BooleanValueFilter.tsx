@@ -40,7 +40,7 @@ export function BooleanValueFilter({
       <FilterTrigger
         className={buttonState}
         onClear={
-          filter.removable && filter.selectedValue
+          filter.removable
             ? () => {
                 setLocalChecked('indeterminate');
                 emitRemove(filter.name);

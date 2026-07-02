@@ -41,7 +41,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
         id={filter.name}
         className={buttonState}
         onClear={
-          filter.selectedValue
+          filter.removable
             ? () => {
                 emitRemove(filter.name);
                 setOpen(false);

@@ -68,7 +68,7 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
         id={filter.name}
         className={buttonState}
         onClear={
-          filter.selectedValue
+          filter.removable
             ? () => {
                 emitRemove(filter.name);
                 setOpen(false);

@@ -3,6 +3,7 @@ import { Icon } from 'ui-icons';
 import { Button } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Popover } from '../../Popover/Popover';
+import { cn } from '../../utils';
 
 export const filterPopoverContentProps = {
   side: 'bottom',
@@ -29,9 +30,14 @@ export function FilterTrigger({
   const { t } = useI18n();
 
   return (
-    <div className="inline-flex items-center">
+    <div
+      className={cn(
+        'inline-flex items-center rounded-sm',
+        'focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-primary',
+      )}
+    >
       <Popover.Trigger asChild>
-        <Button appearance="filter" size="large" className={className} id={id}>
+        <Button appearance="filter" size="large" className={cn('focus-visible:outline-none', className)} id={id}>
           {children}
         </Button>
       </Popover.Trigger>
@@ -40,7 +46,7 @@ export function FilterTrigger({
           appearance="filter"
           mode="icon"
           size="large"
-          className="-ms-xs"
+          className="-ms-xs focus-visible:outline-none"
           onClick={onClear}
           aria-label={t('filters:ds.clear_button.label')}
         >
