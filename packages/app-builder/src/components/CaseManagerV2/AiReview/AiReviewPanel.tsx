@@ -93,9 +93,8 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
           </div>
           {review && !review.review.ok ? <SanityCheckWarning message={review.review.sanityCheck} /> : null}
         </div>
+        {review ? <PanelFooter caseId={caseId} reviewId={review.id} reaction={review.reaction} /> : null}
       </Panel.Content>
-
-      {review ? <PanelFooter caseId={caseId} reviewId={review.id} reaction={review.reaction} /> : null}
     </Panel.Container>
   );
 }
@@ -131,37 +130,32 @@ function PanelFooter({
   const addCommentMutation = useAddReviewToCaseCommentsMutation(caseId, reviewId);
 
   return (
-    <div className="pt-md border-t border-grey-border mt-auto flex items-center justify-end gap-xs">
-      <Button
+    <Panel.Footer>
+      <Panel.FooterButton
         variant={reaction === 'ok' ? 'primary' : 'secondary'}
-        size="small"
         onClick={() => feedbackMutation.mutate('ok')}
-      >
-        <Icon icon="thumb-up" className="size-4" />
-        {t('cases:case_detail.ai_review.actions.feedback_ok')}
-      </Button>
-      <Button
+        label={t('cases:case_detail.ai_review.actions.feedback_ok')}
+        leadingIcon="thumb-up"
+      />
+
+      <Panel.FooterButton
         variant={reaction === 'ko' ? 'primary' : 'secondary'}
-        size="small"
+        label={t('cases:case_detail.ai_review.actions.feedback_ko')}
+        leadingIcon="thumb-down"
         onClick={() => feedbackMutation.mutate('ko')}
-      >
-        <Icon icon="thumb-down" className="size-4" />
-        {t('cases:case_detail.ai_review.actions.feedback_ko')}
-      </Button>
-      <Button
+      />
+      <Panel.FooterButton
         variant="secondary"
-        size="small"
+        label={t('cases:case_detail.ai_review.actions.add_to_comment')}
+        leadingIcon="comment"
         onClick={() =>
           addCommentMutation.mutate(undefined, {
             onSuccess: () => toast.success(t('cases:case_detail.ai_review.actions.add_to_comment.success')),
             onError: () => toast.error(t('common:errors.unknown')),
           })
         }
-      >
-        <Icon icon="comment" className="size-4" />
-        {t('cases:case_detail.ai_review.actions.add_to_comment')}
-      </Button>
-    </div>
+      />
+    </Panel.Footer>
   );
 }
 
