@@ -42,11 +42,19 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
     return selectedOption ? getOptionLabel(selectedOption) : internalSelectedValue;
   };
 
+  const maxOptionLabelLength = Math.max(...(options?.map((option) => getOptionLabel(option).length) ?? [0]));
+
   return (
     <div className="flex flex-col gap-sm">
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <Button variant="primary" mode="normal" size="medium" className="justify-between w-max">
+          <Button
+            variant="primary"
+            mode="normal"
+            size="medium"
+            className="justify-between w-full"
+            style={{ width: `${maxOptionLabelLength + 3}ch` }}
+          >
             <span className="text-sm truncate flex items-center gap-xs">
               {getSelectedLabel()}
               {(selectedValue as any)?.unavailable ? (
