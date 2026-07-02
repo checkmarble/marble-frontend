@@ -49,14 +49,16 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
             : undefined
         }
       >
-        <span className={buttonState}>{filter.name}</span>
         {filter.selectedValue?.value && filter.selectedValue.value.length > 0 ? (
           <span className={cn('font-medium', buttonState)}>
             {t('filters:ds.text_match_filter.selected_values', {
               values: filter.selectedValue.value.join(', '),
+              label: filter.name,
             })}
           </span>
-        ) : null}
+        ) : (
+          <span className={buttonState}>{filter.name}</span>
+        )}
         {filter.unavailable ? (
           <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
             <Icon icon="error" className="text-red-base size-4" />
