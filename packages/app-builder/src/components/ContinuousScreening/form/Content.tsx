@@ -15,16 +15,16 @@ export const CreationContent = () => {
   const creationStepper = ContinuousScreeningConfigurationStepper.useSharp();
 
   return (
-    <div className="flex flex-col gap-sm h-full relative">
-      <div className="grow p-lg pb-0 flex flex-col gap-md">
+    <div className="flex flex-col flex-1 min-h-0 p-lg relative">
+      <div className="grow min-h-0 overflow-y-auto flex flex-col gap-md max-w-(--breakpoint-lg)">
         {match(creationStepper.computed.currentStep.value)
           .with(1, () => <ObjectMapping />)
           .with(2, () => <DatasetSelection useCase="continuous_monitoring" />)
           .with(3, () => <ScoringConfiguration />)
           .otherwise(() => null)}
         <CreationContentRecap />
-        <FormPagination finalButtonText={t('continuousScreening:creation.save_configuration')} />
       </div>
+      <FormPagination finalButtonText={t('continuousScreening:creation.save_configuration')} />
     </div>
   );
 };

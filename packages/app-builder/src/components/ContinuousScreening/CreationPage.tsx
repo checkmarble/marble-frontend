@@ -44,13 +44,13 @@ export const CreationPage = ({ name, description }: { name: string; description:
   return (
     <ContinuousScreeningConfigurationStepper.Provider value={creationStepper}>
       <ListAndTopicDatasetConfigurationBridge useCase="continuous_monitoring">
-        <Page.Main>
+        <Page.Main className="min-h-0">
           <Page.Header className="justify-between">
             <BreadCrumbs />
             <Stepper fromZero getStepLabel={(stepName) => t(`continuousScreening:creation.stepper.${stepName}`)} />
           </Page.Header>
-          <Page.Container>
-            <Page.Content padding="none">
+          <Page.Container className="min-h-0">
+            <Page.Content padding="none" className="min-h-0">
               <CreationContent />
             </Page.Content>
           </Page.Container>
