@@ -428,11 +428,11 @@ function AddFilterMenu({ availableFilters }: { availableFilters: AvailableFilter
       </MenuCommand.Trigger>
       <MenuCommand.Content align="start" sideOffset={4}>
         <MenuCommand.List>
-          <MenuCommand.Item>
-            {availableFilters.map((filter) => (
+          {availableFilters.map((filter) => (
+            <MenuCommand.Item>
               <span key={filter.name}>{filter.name}</span>
-            ))}
-          </MenuCommand.Item>
+            </MenuCommand.Item>
+          ))}
         </MenuCommand.List>
       </MenuCommand.Content>
     </MenuCommand.Menu>

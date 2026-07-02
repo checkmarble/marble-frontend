@@ -20,6 +20,7 @@ export const CtaV2ClassName = cva(
         filled: '',
         stroked: '',
         link: '',
+        filter: '',
       },
       // Hue for filled buttons. Mainly meaningful with variant="primary"
       // (Figma "Color" axis: Primary / Grey / Red). Defaults to primary.
@@ -118,6 +119,13 @@ export const CtaV2ClassName = cva(
         appearance: 'link',
         class:
           'bg-transparent border-transparent p-0 h-6 rounded-none enabled:hover:underline enabled:hover:bg-transparent text-purple-primary enabled:hover:text-purple-hover disabled:text-grey-disabled disabled:no-underline dark:text-purple-hover dark:enabled:hover:text-purple-hover dark:disabled:text-purple-disabled',
+      },
+      // Primary + Filter (FiltersBar trigger — lighter than filled primary)
+      {
+        variant: 'primary',
+        appearance: 'filter',
+        class:
+          'rounded-sm bg-purple-background-light border-transparent text-purple-primary enabled:hover:bg-purple-background disabled:bg-purple-background-light disabled:text-grey-disabled focus-visible:outline-purple-primary',
       },
       // Secondary + Stroked
       {

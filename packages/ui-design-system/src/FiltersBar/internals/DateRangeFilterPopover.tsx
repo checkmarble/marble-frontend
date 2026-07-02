@@ -4,10 +4,12 @@ import { useMemo, useState } from 'react';
 import { Temporal } from 'temporal-polyfill';
 import { useFormatting } from '../../contexts/FormattingContext';
 import { useI18n } from '../../contexts/I18nContext';
+import { Popover } from '../../Popover/Popover';
+import { cn } from '../../utils';
 import type { DateRangeFilterType, DateRangePopoverFilter } from '../types';
 import { DateRangeFilter } from './DateRangeFilter';
-import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
+import { FilterTrigger, filterPopoverContentProps } from './FilterTrigger';
 
 export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFilter }) {
   const { t } = useI18n();
@@ -69,8 +71,10 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
 
   const [isOpen, setIsOpen] = useState(false);
 
+  const buttonState = cn('font-semibold', drFilter.selectedValue ? 'text-purple-primary' : 'text-grey-secondary');
+
   return (
-    <FilterPopover.Root
+    <Popover.Root
       open={isOpen}
       onOpenChange={(open) => {
         setIsOpen(open);
@@ -79,17 +83,19 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
         }
       }}
     >
-      <FilterItem.Root>
-        <FilterItem.Trigger>{summary}</FilterItem.Trigger>
-        {drFilter.removable ? (
-          <FilterItem.Clear
-            onClick={() => {
-              emitRemove(drFilter.name);
-            }}
-          />
-        ) : null}
-      </FilterItem.Root>
-      <FilterPopover.Content>
+      <FilterTrigger
+        className={buttonState}
+        onClear={
+          drFilter.removable
+            ? () => {
+                emitRemove(drFilter.name);
+              }
+            : undefined
+        }
+      >
+        {summary}
+      </FilterTrigger>
+      <Popover.Content {...filterPopoverContentProps}>
         <DateRangeFilter.Root
           dateRangeFilter={localDateRangeFilter as any}
           setDateRangeFilter={(value) => setLocalDateRangeFilter(value as any)}
@@ -108,7 +114,7 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
             presetDurations={presetDurations}
           />
         </DateRangeFilter.Root>
-      </FilterPopover.Content>
-    </FilterPopover.Root>
+      </Popover.Content>
+    </Popover.Root>
   );
 }

@@ -25,7 +25,6 @@ import { Route as AppBuilderUserScoringRouteImport } from './routes/_app/_builde
 import { Route as AppBuilderSettingsRouteImport } from './routes/_app/_builder/settings'
 import { Route as AppBuilderScreeningSearchRouteImport } from './routes/_app/_builder/screening-search'
 import { Route as AppBuilderDetectionRouteImport } from './routes/_app/_builder/detection'
-import { Route as AppBuilderDesignRouteImport } from './routes/_app/_builder/design'
 import { Route as AppBuilderDataRouteImport } from './routes/_app/_builder/data'
 import { Route as AppBuilderContinuousScreeningRouteImport } from './routes/_app/_builder/continuous-screening'
 import { Route as AppBuilderCasesRouteImport } from './routes/_app/_builder/cases'
@@ -199,11 +198,6 @@ const AppBuilderScreeningSearchRoute =
 const AppBuilderDetectionRoute = AppBuilderDetectionRouteImport.update({
   id: '/detection',
   path: '/detection',
-  getParentRoute: () => AppBuilderRoute,
-} as any)
-const AppBuilderDesignRoute = AppBuilderDesignRouteImport.update({
-  id: '/design',
-  path: '/design',
   getParentRoute: () => AppBuilderRoute,
 } as any)
 const AppBuilderDataRoute = AppBuilderDataRouteImport.update({
@@ -806,7 +800,6 @@ export interface FileRoutesByFullPath {
   '/cases': typeof AppBuilderCasesRouteWithChildren
   '/continuous-screening': typeof AppBuilderContinuousScreeningRouteWithChildren
   '/data': typeof AppBuilderDataRouteWithChildren
-  '/design': typeof AppBuilderDesignRoute
   '/detection': typeof AppBuilderDetectionRouteWithChildren
   '/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/settings': typeof AppBuilderSettingsRouteWithChildren
@@ -913,7 +906,6 @@ export interface FileRoutesByTo {
   '/sign-in-email': typeof AppAuthSignInEmailRoute
   '/account': typeof AppBuilderAccountRoute
   '/analytics-legacy': typeof AppBuilderAnalyticsLegacyRoute
-  '/design': typeof AppBuilderDesignRoute
   '/ressources/data/export-org': typeof RessourcesDataExportOrgRoute
   '/cases': typeof AppBuilderCasesIndexRoute
   '/cases/analytics': typeof AppBuilderCasesAnalyticsRoute
@@ -1010,7 +1002,6 @@ export interface FileRoutesById {
   '/_app/_builder/cases': typeof AppBuilderCasesRouteWithChildren
   '/_app/_builder/continuous-screening': typeof AppBuilderContinuousScreeningRouteWithChildren
   '/_app/_builder/data': typeof AppBuilderDataRouteWithChildren
-  '/_app/_builder/design': typeof AppBuilderDesignRoute
   '/_app/_builder/detection': typeof AppBuilderDetectionRouteWithChildren
   '/_app/_builder/screening-search': typeof AppBuilderScreeningSearchRouteWithChildren
   '/_app/_builder/settings': typeof AppBuilderSettingsRouteWithChildren
@@ -1124,7 +1115,6 @@ export interface FileRouteTypes {
     | '/cases'
     | '/continuous-screening'
     | '/data'
-    | '/design'
     | '/detection'
     | '/screening-search'
     | '/settings'
@@ -1231,7 +1221,6 @@ export interface FileRouteTypes {
     | '/sign-in-email'
     | '/account'
     | '/analytics-legacy'
-    | '/design'
     | '/ressources/data/export-org'
     | '/cases'
     | '/cases/analytics'
@@ -1327,7 +1316,6 @@ export interface FileRouteTypes {
     | '/_app/_builder/cases'
     | '/_app/_builder/continuous-screening'
     | '/_app/_builder/data'
-    | '/_app/_builder/design'
     | '/_app/_builder/detection'
     | '/_app/_builder/screening-search'
     | '/_app/_builder/settings'
@@ -1553,13 +1541,6 @@ declare module '@tanstack/react-router' {
       path: '/detection'
       fullPath: '/detection'
       preLoaderRoute: typeof AppBuilderDetectionRouteImport
-      parentRoute: typeof AppBuilderRoute
-    }
-    '/_app/_builder/design': {
-      id: '/_app/_builder/design'
-      path: '/design'
-      fullPath: '/design'
-      preLoaderRoute: typeof AppBuilderDesignRouteImport
       parentRoute: typeof AppBuilderRoute
     }
     '/_app/_builder/data': {
@@ -2758,7 +2739,6 @@ interface AppBuilderRouteChildren {
   AppBuilderCasesRoute: typeof AppBuilderCasesRouteWithChildren
   AppBuilderContinuousScreeningRoute: typeof AppBuilderContinuousScreeningRouteWithChildren
   AppBuilderDataRoute: typeof AppBuilderDataRouteWithChildren
-  AppBuilderDesignRoute: typeof AppBuilderDesignRoute
   AppBuilderDetectionRoute: typeof AppBuilderDetectionRouteWithChildren
   AppBuilderScreeningSearchRoute: typeof AppBuilderScreeningSearchRouteWithChildren
   AppBuilderSettingsRoute: typeof AppBuilderSettingsRouteWithChildren
@@ -2775,7 +2755,6 @@ const AppBuilderRouteChildren: AppBuilderRouteChildren = {
   AppBuilderContinuousScreeningRoute:
     AppBuilderContinuousScreeningRouteWithChildren,
   AppBuilderDataRoute: AppBuilderDataRouteWithChildren,
-  AppBuilderDesignRoute: AppBuilderDesignRoute,
   AppBuilderDetectionRoute: AppBuilderDetectionRouteWithChildren,
   AppBuilderScreeningSearchRoute: AppBuilderScreeningSearchRouteWithChildren,
   AppBuilderSettingsRoute: AppBuilderSettingsRouteWithChildren,
