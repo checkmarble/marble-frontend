@@ -5,6 +5,12 @@ import {
   type Organization,
   type OrganizationUpdateInput,
 } from '@app-builder/models/organization';
+import {
+  adaptCustomRole,
+  adaptRolesAndPermissions,
+  type CustomRole,
+  type RolesAndPermissions,
+} from '@app-builder/models/roles';
 import { type Tag } from 'marble-api';
 
 export interface OrganizationRepository {
@@ -13,6 +19,10 @@ export interface OrganizationRepository {
   importOrganization(body: unknown): Promise<{ org_id: string }>;
   importOrganizationFromFile(file: Blob): Promise<{ org_id: string }>;
   listUsers(): Promise<User[]>;
+  listRoles(): Promise<{ roles: string[]; permissions: string[] }>;
+  listCustomRoles(): Promise<RolesAndPermissions>;
+  createRole(input: { name: string }): Promise<CustomRole>;
+  updateRolePermissions(roleId: string, permissions: string[]): Promise<CustomRole>;
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
   updateOrganization(args: { organizationId: string; changes: OrganizationUpdateInput }): Promise<Organization>;
   updateAllowedNetworks(organizationId: string, allowedNetworks: string[]): Promise<string[]>;
@@ -37,6 +47,19 @@ export function makeGetOrganizationRepository() {
     listUsers: async () => {
       const { users } = await marbleCoreApiClient.listOrganizationUsers(organizationId);
       return users.map(adaptUser);
+    },
+    listRoles: async () => {
+      const { roles, permissions } = await marbleCoreApiClient.iamListRoles();
+      return { roles: roles.map((role) => role.name), permissions };
+    },
+    listCustomRoles: async () => {
+      return adaptRolesAndPermissions(await marbleCoreApiClient.iamListRoles());
+    },
+    createRole: async ({ name }) => {
+      return adaptCustomRole(await marbleCoreApiClient.iamCreateRole({ name }));
+    },
+    updateRolePermissions: async (roleId, permissions) => {
+      return adaptCustomRole(await marbleCoreApiClient.iamUpdateRolePermissions(roleId, { permissions }));
     },
     listTags: async (args) => {
       const withCaseCount = args?.withCaseCount ?? false;

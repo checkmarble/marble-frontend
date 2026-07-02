@@ -1,6 +1,6 @@
 import { type AppConfig } from '@app-builder/models/app-config';
 import { type Inbox } from '@app-builder/models/inbox';
-import { type CurrentUser, isAdmin } from '@app-builder/models/user';
+import { type CurrentUser } from '@app-builder/models/user';
 import {
   canAccessInboxesSettings,
   isReadApiKeyAvailable,
@@ -22,6 +22,7 @@ export type Section = {
 export type Sections = {
   api: Section;
   users: Section;
+  roles: Section;
   scenarios: Section;
   case_manager: Section;
   audit: Section;
@@ -43,36 +44,50 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
       icon: 'users',
       settings: [...(isReadUserAvailable(user) ? [{ title: 'users', to: '/settings/users' }] : [])],
     },
+    roles: {
+      icon: 'users',
+      settings: [...(user.permissions.canManageRoles ? [{ title: 'roles', to: '/settings/roles' }] : [])],
+    },
     scenarios: {
       icon: 'world',
       settings: [
-        ...(isAdmin(user) ? [{ title: 'scenarios', to: '/settings/scenarios' }] : []),
-        ...(isAdmin(user) ? [{ title: 'filters-settings', to: '/settings/analytics/filters' }] : []),
+        ...(user.permissions.canUpdateOrganization ? [{ title: 'scenarios', to: '/settings/scenarios' }] : []),
+        ...(user.permissions.canUpdateOrganization
+          ? [{ title: 'filters-settings', to: '/settings/analytics/filters' }]
+          : []),
       ],
     },
     case_manager: {
       icon: 'case-manager',
       settings: [
-        ...(canAccessInboxesSettings(user, inboxes) || isReadTagAvailable(user) || isAdmin(user)
+        ...(canAccessInboxesSettings(user, inboxes) || isReadTagAvailable(user)
           ? [{ title: 'case_manager', to: '/settings/inboxes' }]
           : []),
       ],
     },
     audit: {
       icon: 'history',
-      settings: [...(isAdmin(user) ? [{ title: 'audit.audit_logs_section', to: '/settings/audit-logs' }] : [])],
+      settings: [
+        ...(user.permissions.canUpdateOrganization
+          ? [{ title: 'audit.audit_logs_section', to: '/settings/audit-logs' }]
+          : []),
+      ],
     },
     ip_whitelisting: {
       icon: 'world',
       settings: [
-        ...(isAdmin(user) && appConfig.isManagedMarble
+        ...(user.permissions.canUpdateOrganization && appConfig.isManagedMarble
           ? [{ title: 'ip_whitelisting', to: '/settings/ip-whitelisting' }]
           : []),
       ],
     },
     screening_providers: {
       icon: 'search',
-      settings: [...(isAdmin(user) ? [{ title: 'screening_providers', to: '/settings/screening-providers' }] : [])],
+      settings: [
+        ...(user.permissions.canUpdateOrganization
+          ? [{ title: 'screening_providers', to: '/settings/screening-providers' }]
+          : []),
+      ],
     },
   };
 

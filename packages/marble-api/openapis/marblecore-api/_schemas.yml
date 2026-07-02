@@ -436,6 +436,14 @@ CreatedApiKeyDto:
   $ref: admin.yml#/components/schemas/CreatedApiKeyDto
 AuditEventDto:
   $ref: admin.yml#/components/schemas/AuditEventDto
+Role:
+  $ref: admin.yml#/components/schemas/Role
+RoleAndPermissions:
+  $ref: admin.yml#/components/schemas/RoleAndPermissions
+CreateRoleDto:
+  $ref: admin.yml#/components/schemas/CreateRoleDto
+UpdateRolePermissionsDto:
+  $ref: admin.yml#/components/schemas/UpdateRolePermissionsDto
 
 # ORG IMPORT
 

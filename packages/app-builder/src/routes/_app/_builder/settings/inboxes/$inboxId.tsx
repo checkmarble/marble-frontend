@@ -6,7 +6,6 @@ import { DeleteInboxUser } from '@app-builder/components/Settings/Inboxes/Delete
 import { UpdateInbox } from '@app-builder/components/Settings/Inboxes/UpdateInbox';
 import { UpdateInboxUser } from '@app-builder/components/Settings/Inboxes/UpdateInboxUser';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import {
   type InboxMetadata,
@@ -61,7 +60,7 @@ const inboxDetailLoader = createServerFn()
     const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
 
     if (!inbox) throw redirect({ to: '/settings/inboxes' });
-    if (!isAdmin(user) && !isInboxAdmin(user, inbox)) {
+    if (!user.permissions.canEditInboxes && !isInboxAdmin(user, inbox)) {
       throw redirect({ to: '/' });
     }
 

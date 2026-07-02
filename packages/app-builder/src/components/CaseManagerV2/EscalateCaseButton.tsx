@@ -1,6 +1,5 @@
 import { Callout, casesI18n } from '@app-builder/components';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { isAdmin } from '@app-builder/models/user';
 import { escalateCasePayloadSchema, useEscalateCaseMutation } from '@app-builder/queries/cases/escalate-case';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
@@ -25,7 +24,7 @@ export function EscalateCaseButton({ caseId, inboxId, className }: EscalateCaseB
   const revalidate = useLoaderRevalidator();
   const inboxesQuery = useGetInboxesQuery();
   const { currentUser } = useOrganizationDetails();
-  const isAdminUser = isAdmin(currentUser);
+  const isAdminUser = currentUser.permissions.canEditInboxes;
 
   const inboxes = inboxesQuery.data?.inboxes ?? [];
   const inboxDetail = inboxes.find((inbox) => inbox.id === inboxId);

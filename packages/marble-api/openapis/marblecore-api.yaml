@@ -358,6 +358,10 @@ paths:
     $ref: ./marblecore-api/admin.yml#/~1organizations~1{organizationId}~1users
   /admin/audit-events:
     $ref: ./marblecore-api/admin.yml#/~1admin~1audit-events
+  /roles:
+    $ref: ./marblecore-api/admin.yml#/~1roles
+  /roles/{roleId}/permissions:
+    $ref: ./marblecore-api/admin.yml#/~1roles~1{roleId}~1permissions
 
   # INBOXES
 

@@ -1,8 +1,8 @@
 import { Page } from '@app-builder/components';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAnalyst } from '@app-builder/models';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
+import { canAccessDataModel } from '@app-builder/services/feature-access';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -11,7 +11,7 @@ const dataLayoutLoader = createServerFn()
   .handler(async function dataLayout({ context }) {
     const { user, dataModelRepository, entitlements } = context.authInfo;
 
-    if (isAnalyst(user)) {
+    if (!canAccessDataModel(user)) {
       throw redirect({ to: '/cases' });
     }
 

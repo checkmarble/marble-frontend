@@ -1,6 +1,6 @@
 import { CreateNavigationOptionModal } from '@app-builder/components/Data/CreateNavigationOptionModal';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
-import { type CurrentUser, type DataModel, isAdmin, type TableModel } from '@app-builder/models';
+import { type CurrentUser, type DataModel, type TableModel } from '@app-builder/models';
 import { type PivotObject } from '@app-builder/models/cases';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -99,7 +99,7 @@ export function PivotNavigationOptions({
                   </Fragment>
                 ))}
               </Fragment>
-            ) : isAdmin(currentUser) ? (
+            ) : currentUser.permissions.canReadDataModel ? (
               <Fragment key={linkToTable.childTableName}>
                 <div>{linkToTable.childTableName}</div>
                 <CreateNavigationOptionModal

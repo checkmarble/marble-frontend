@@ -30,7 +30,7 @@ export type Token = {
 export type CredentialsDto = {
     credentials: {
         organization_id: string;
-        role: string;
+        roles: string[];
         actor_identity: {
             user_id?: string;
             email?: string;
@@ -1618,7 +1618,7 @@ export type ArchetypeDto = {
 };
 export type CreateUser = {
     email: string;
-    role: string;
+    roles: string[];
     organization_id: string;
     first_name: string;
     last_name: string;
@@ -1636,11 +1636,11 @@ export type ApiKeyDto = {
     organization_id: string;
     /** 3 first characters of the API key */
     prefix: string;
-    role: string;
+    roles: string[];
 };
 export type CreateApiKeyBody = {
     description: string;
-    role: string;
+    roles: string[];
 };
 export type CreatedApiKeyDto = ApiKeyDto & {
     key: string;
@@ -1650,12 +1650,12 @@ export type UserDto = {
     email: string;
     first_name: string;
     last_name: string;
-    role: string;
+    roles: string[];
     organization_id: string;
 };
 export type UpdateUser = {
     email: string;
-    role: string;
+    roles: string[];
     organization_id: string;
     first_name: string;
     last_name: string;
@@ -1718,6 +1718,24 @@ export type AuditEventDto = {
         [key: string]: any;
     };
     created_at?: string;
+};
+export type Role = {
+    id: string;
+    name: string;
+    permissions: {
+        id: string;
+        name: string;
+    }[];
+};
+export type RoleAndPermissions = {
+    roles: Role[];
+    permissions: string[];
+};
+export type CreateRoleDto = {
+    name: string;
+};
+export type UpdateRolePermissionsDto = {
+    permissions: string[];
 };
 export type InboxUserDto = {
     id: string;
@@ -5650,6 +5668,34 @@ export function listAuditEvents({ $from, to, userId, apiKeyId, table, entityId, 
     }))}`, {
         ...opts
     }));
+}
+export function iamListRoles(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: RoleAndPermissions;
+    }>("/roles", {
+        ...opts
+    }));
+}
+export function iamCreateRole(createRoleDto: CreateRoleDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: Role;
+    }>("/roles", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createRoleDto
+    })));
+}
+export function iamUpdateRolePermissions(roleId: string, updateRolePermissionsDto: UpdateRolePermissionsDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Role;
+    }>(`/roles/${encodeURIComponent(roleId)}/permissions`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: updateRolePermissionsDto
+    })));
 }
 /**
  * List all inboxes

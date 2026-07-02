@@ -4,7 +4,7 @@ import * as R from 'remeda';
 
 export interface CurrentUser {
   organizationId: string;
-  role: string;
+  roles: string[];
   actorIdentity: {
     userId?: string;
     email?: string;
@@ -32,6 +32,15 @@ function NewPermissionsList() {
     canCreateApiKey: 'APIKEY_CREATE',
     canReadSnoozes: 'READ_SNOOZES',
     canCreateSnoozes: 'CREATE_SNOOZE',
+    canManageRoles: 'MANAGE_ROLES',
+    canReadUser: 'MARBLE_USER_LIST',
+    canReadTags: 'TAG_READ',
+    canReadDecisions: 'DECISION_READ',
+    canReadScenarios: 'SCENARIO_READ',
+    canReadDataModel: 'DATA_MODEL_READ',
+    canUpdateOrganization: 'ORGANIZATIONS_UPDATE',
+    canManageScoring: 'SCORING_UPDATE_SETTINGS',
+    canReadContinuousScreening: 'CONTINUOUS_SCREENING_CONFIG_READ',
   } as const;
 }
 
@@ -44,7 +53,7 @@ export function NewPermissions(): UserPermissions {
 export function adaptCurrentUser(credentials: CredentialsDto['credentials']): CurrentUser {
   return {
     organizationId: credentials.organization_id,
-    role: credentials.role,
+    roles: credentials.roles,
     actorIdentity: {
       userId: credentials.actor_identity.user_id,
       email: credentials.actor_identity.email,
@@ -63,7 +72,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  roles: string[];
   organizationId: string;
 }
 
@@ -73,19 +82,29 @@ export function adaptUser(user: UserDto): User {
     email: user.email,
     firstName: user.first_name,
     lastName: user.last_name,
-    role: user.role,
+    roles: user.roles,
     organizationId: user.organization_id,
   };
 }
 
-export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
+export const isAdmin = (user: CurrentUser) => user.roles.includes('ADMIN');
 
-export const isMarbleAdmin = (user: CurrentUser) => user.role === 'MARBLE_ADMIN';
+export const isMarbleAdmin = (user: CurrentUser) => user.roles.includes('MARBLE_ADMIN');
 
-export const isAnalyst = (user: CurrentUser) => user.role === 'ANALYST';
+export const isAnalyst = (user: CurrentUser) => user.roles.includes('ANALYST');
 
-export const isMarbleCoreUser = (user: CurrentUser) =>
-  ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST'].includes(user.role);
+// Custom, organization-defined roles are returned by the backend with an `org/` prefix.
+export const CUSTOM_ROLE_PREFIX = 'org/';
+
+export const isCustomUserRole = (role: string) => role.startsWith(CUSTOM_ROLE_PREFIX);
+
+export const getCustomUserRoleName = (role: string) => role.slice(CUSTOM_ROLE_PREFIX.length);
+
+// Standard roles that have a curated translation. Any other role returned by the backend
+// (e.g. new/custom roles) is displayed by its own identifier rather than a generic "unknown" label.
+export const knownUserRoles = ['ADMIN', 'PUBLISHER', 'BUILDER', 'VIEWER', 'ANALYST'] as const;
+
+export const isKnownUserRole = (role: string) => (knownUserRoles as readonly string[]).includes(role);
 
 export function tKeyForUserRole(role: string): ParseKeys<['settings']> {
   switch (role) {

@@ -1,13 +1,13 @@
 import { BackButton } from '@app-builder/components/Breadcrumbs';
 import { Page } from '@app-builder/components/Page';
 import { Panel } from '@app-builder/components/Panel';
-import { DataModelObject, isAnalyst } from '@app-builder/models';
+import { DataModelObject } from '@app-builder/models';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
-import { isAccessible } from '@app-builder/services/feature-access';
+import { canAccessUserScoring, isAccessible } from '@app-builder/services/feature-access';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
@@ -54,7 +54,7 @@ export const ClientDetailPage = ({
 }: ClientDetailPageProps) => {
   const { t } = useTranslation(['common', 'client360', 'user-scoring']);
   const { currentUser } = useOrganizationDetails();
-  const canConfigureUserScoring = isAccessible(userScoringAccess) && !isAnalyst(currentUser);
+  const canConfigureUserScoring = isAccessible(userScoringAccess) && canAccessUserScoring(currentUser);
   const dataModelQuery = useDataModelQuery();
   const annotationsQuery = useGetAnnotationsQuery(objectType, objectId, true);
   const [showExplorer, setShowExplorer] = useState(false);

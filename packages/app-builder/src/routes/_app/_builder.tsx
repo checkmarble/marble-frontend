@@ -6,8 +6,11 @@ import { UserInfo } from '@app-builder/components/UserInfo';
 import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpdate';
 import { useRefreshToken } from '@app-builder/hooks/useRefreshToken';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAnalyst } from '@app-builder/models';
 import {
+  canAccessContinuousScreeningSection,
+  canAccessDataModel,
+  canAccessScenarios,
+  canAccessUserScoring,
   isAnalyticsAvailable,
   isAutoAssignmentAvailable,
   isScreeningSearchAvailable,
@@ -53,13 +56,13 @@ const appBuilderLayoutLoader = createServerFn()
         isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
         analytics: entitlements.analytics,
         settings:
-          !isAnalyst(user) && firstSetting !== undefined
+          firstSetting !== undefined
             ? { isAvailable: true as const, to: firstSetting.to }
             : { isAvailable: false as const },
         isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
         continuousScreening: entitlements.continuousScreening,
         isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
-        userScoring: isAnalyst(user) ? ('restricted' as const) : entitlements.userScoring,
+        userScoring: canAccessUserScoring(user) ? entitlements.userScoring : ('restricted' as const),
       },
       authProvider: context.appConfig.auth.provider,
       sentryReplayEnabled: organizationDetail.sentryReplayEnabled,
@@ -118,7 +121,7 @@ function Builder() {
                     <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
                       <ul className="flex flex-col gap-sm">
                         {/* Detection - flat link (tabs are inside the page) */}
-                        {!isAnalyst(user) && (
+                        {canAccessScenarios(user) && (
                           <li>
                             <SidebarLink
                               labelTKey="navigation:detection"
@@ -128,7 +131,7 @@ function Builder() {
                           </li>
                         )}
                         {/* User Scoring */}
-                        {!isAnalyst(user) && (
+                        {canAccessUserScoring(user) && (
                           <li>
                             {match(featuresAccess.userScoring)
                               .with(P.union('allowed', 'test'), () => {
@@ -154,7 +157,7 @@ function Builder() {
                           </li>
                         )}
                         {/* Monitoring (Continuous Screening) */}
-                        {!isAnalyst(user) && (
+                        {canAccessContinuousScreeningSection(user) && (
                           <li>
                             {match(featuresAccess.continuousScreening)
                               .with(P.union('allowed', 'test'), () => {
@@ -211,7 +214,7 @@ function Builder() {
                     <nav className="p-sm pb-md">
                       <ul className="flex flex-col gap-sm">
                         {/* Your Data */}
-                        {!isAnalyst(user) && (
+                        {canAccessDataModel(user) && (
                           <li>
                             <SidebarLink
                               labelTKey="navigation:data"

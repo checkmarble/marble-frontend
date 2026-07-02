@@ -1,4 +1,4 @@
-import { type CurrentUser, isAdmin } from '@app-builder/models';
+import { type CurrentUser } from '@app-builder/models';
 import { type ValidTimestampExtractParts } from '@app-builder/models/astNode/time';
 import { Link } from '@tanstack/react-router';
 import { type TFunction } from 'i18next';
@@ -6,7 +6,7 @@ import { Trans } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
 
 export function getNoTimezoneSetupWarning(currentUser: CurrentUser, t: TFunction<['scenarios']>): React.ReactNode {
-  return isAdmin(currentUser) ? (
+  return currentUser.permissions.canUpdateOrganization ? (
     <span className="text-red-primary">
       <Trans
         t={t}

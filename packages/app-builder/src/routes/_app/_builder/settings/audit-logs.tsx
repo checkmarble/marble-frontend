@@ -1,6 +1,5 @@
 import { ActivityFollowUpPage } from '@app-builder/components/Settings/AuditEvents/AuditLogsPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod/v4';
@@ -22,7 +21,7 @@ const activityFollowUpLoader = createServerFn()
   .handler(async function activityFollowUpLoader({ context, data: { query } }) {
     const { user, apiKey } = context.authInfo;
 
-    if (!isAdmin(user)) {
+    if (!user.permissions.canUpdateOrganization) {
       throw redirect({ to: '/' });
     }
 

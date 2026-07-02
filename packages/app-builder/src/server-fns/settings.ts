@@ -1,11 +1,5 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import {
-  isAdmin,
-  isHttpError,
-  isMarbleError,
-  isNotFoundHttpError,
-  isStatusConflictHttpError,
-} from '@app-builder/models';
+import { isHttpError, isMarbleError, isNotFoundHttpError, isStatusConflictHttpError } from '@app-builder/models';
 import { type ExportedFields } from '@app-builder/models/data-model';
 import { type PersonalSettings } from '@app-builder/models/personal-settings';
 import {
@@ -86,7 +80,7 @@ export const getAuditEventsFn = createServerFn({ method: 'GET' })
   .handler(async ({ context, data }) => {
     const { user, auditEvents } = context.authInfo;
 
-    if (!isAdmin(user)) {
+    if (!user.permissions.canUpdateOrganization) {
       throw redirect({ to: '/' });
     }
 
@@ -456,7 +450,7 @@ export const createUserFn = createServerFn({ method: 'POST' })
         first_name: data.firstName,
         last_name: data.lastName,
         email: data.email,
-        role: data.role,
+        roles: data.roles,
         organization_id: data.organizationId,
       });
     } catch (error) {
@@ -486,7 +480,7 @@ export const updateUserFn = createServerFn({ method: 'POST' })
       first_name: data.firstName,
       last_name: data.lastName,
       email: data.email,
-      role: data.role,
+      roles: data.roles,
       organization_id: data.organizationId,
     });
   });

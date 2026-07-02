@@ -558,6 +558,63 @@
       '403':
         $ref: 'components.yml#/responses/403'
 
+/roles:
+  get:
+    operationId: iamListRoles
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: List of roles and permissions
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleAndPermissions'
+
+  post:
+    operationId: iamCreateRole
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateRoleDto"
+    responses:
+      "201":
+        description: Role was created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+
+/roles/{roleId}/permissions:
+  put:
+    operationId: iamUpdateRolePermissions
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: roleId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateRolePermissionsDto"
+    responses:
+      "200":
+        description: Role permissions were udpated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+
 components:
   schemas:
     OrganizationDto:
@@ -651,7 +708,7 @@ components:
         - email
         - first_name
         - last_name
-        - role
+        - roles
         - organization_id
       properties:
         user_id:
@@ -663,8 +720,10 @@ components:
           type: string
         last_name:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            type: string
         organization_id:
           type: string
           format: uuid
@@ -672,15 +731,17 @@ components:
       type: object
       required:
         - email
-        - role
+        - roles
         - organization_id
         - first_name
         - last_name
       properties:
         email:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            type: string
         organization_id:
           type: string
           format: uuid
@@ -692,15 +753,17 @@ components:
       type: object
       required:
         - email
-        - role
+        - roles
         - organization_id
         - first_name
         - last_name
       properties:
         email:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            type: string
         organization_id:
           type: string
           format: uuid
@@ -715,7 +778,7 @@ components:
         - description
         - organization_id
         - prefix
-        - role
+        - roles
       properties:
         id:
           type: string
@@ -727,18 +790,22 @@ components:
         prefix:
           type: string
           description: 3 first characters of the API key
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            type: string
     CreateApiKeyBody:
       type: object
       required:
         - description
-        - role
+        - roles
       properties:
         description:
           type: string
-        role:
-          type: string
+        roles:
+          type: array
+          items:
+            type: string
     CreatedApiKeyDto:
       allOf:
         - $ref: '#/components/schemas/ApiKeyDto'
@@ -784,3 +851,53 @@ components:
         created_at:
           type: string
           format: date-time
+
+    Role:
+      type: object
+      required: [id, name, permissions]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: object
+            required: [id, name]
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+
+    RoleAndPermissions:
+      type: object
+      required: [roles, permissions]
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+        permissions:
+          type: array
+          items:
+            type: string
+
+    CreateRoleDto:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    UpdateRolePermissionsDto:
+      type: object
+      required: [permissions]
+      properties:
+        permissions:
+          type: array
+          items:
+            type: string

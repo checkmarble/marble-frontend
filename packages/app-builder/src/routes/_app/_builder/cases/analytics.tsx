@@ -1,6 +1,5 @@
 import { AnalyticsPage } from '@app-builder/components/Cases/Analytics/AnalyticsPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { isAccessible, isInboxAdmin } from '@app-builder/services/feature-access';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -11,7 +10,7 @@ const casesAnalyticsLoader = createServerFn()
     const { user, entitlements, inbox: inboxRepository, organization } = context.authInfo;
     const [inboxes, users] = await Promise.all([inboxRepository.listInboxes(), organization.listUsers()]);
 
-    const canViewAdminSections = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
+    const canViewAdminSections = user.permissions.canEditInboxes || inboxes.some((inbox) => isInboxAdmin(user, inbox));
     if (!canViewAdminSections) {
       throw new Response(null, { status: 403 });
     }

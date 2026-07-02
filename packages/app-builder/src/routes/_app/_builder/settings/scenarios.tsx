@@ -6,7 +6,6 @@ import { ScreeningThreshold } from '@app-builder/components/ScreeningThreshold';
 import { FormSelectTimezone } from '@app-builder/components/Settings/FormSelectTimezone';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import {
   type UpdateOrganizationScenariosPayload,
   updateOrganizationScenariosPayloadSchema,
@@ -27,7 +26,7 @@ const scenariosLoader = createServerFn()
   .handler(async function scenariosLoader({ context }) {
     const { organization: repository, user, entitlements } = context.authInfo;
 
-    if (!isAdmin(user)) {
+    if (!user.permissions.canUpdateOrganization) {
       throw redirect({ to: '/' });
     }
 
@@ -107,7 +106,7 @@ function Scenarios() {
                   <FormLabel name={field.name}>{t('settings:scenario_default_timezone.label')}</FormLabel>
                   <FormSelectTimezone
                     name={field.name}
-                    disabled={!isAdmin(user)}
+                    disabled={!user.permissions.canUpdateOrganization}
                     selectedTimezone={field.state.value}
                     validTimezones={validTimezones}
                     onBlur={field.handleBlur}

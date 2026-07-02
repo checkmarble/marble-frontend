@@ -9,7 +9,7 @@ import { z } from 'zod/v4';
 
 export const createApiKeyPayloadSchema = z.object({
   description: z.string().min(1),
-  role: z.enum(apiKeyRoleOptions),
+  roles: protectArray(z.array(z.enum(apiKeyRoleOptions)).min(1)),
 });
 export type CreateApiKeyPayload = z.infer<typeof createApiKeyPayloadSchema>;
 
@@ -133,7 +133,9 @@ export const createUserPayloadSchema = z.object({
   firstName: z.string().nonempty(),
   lastName: z.string().nonempty(),
   email: z.email().nonempty(),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
+  // Roles are provided dynamically by the backend (GET /roles) and include custom `org/`-prefixed roles,
+  // so we can't enumerate them here — the backend validates the actual role identifiers.
+  roles: protectArray(z.array(z.string().min(1)).min(1)),
   organizationId: z.uuid().nonempty(),
 });
 export type CreateUserPayload = z.infer<typeof createUserPayloadSchema>;
@@ -148,7 +150,9 @@ export const updateUserPayloadSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   email: z.email().min(5),
-  role: z.enum(['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST']),
+  // Roles are provided dynamically by the backend (GET /roles) and include custom `org/`-prefixed roles,
+  // so we can't enumerate them here — the backend validates the actual role identifiers.
+  roles: protectArray(z.array(z.string().min(1)).min(1)),
   organizationId: z.uuid(),
 });
 export type UpdateUserPayload = z.infer<typeof updateUserPayloadSchema>;

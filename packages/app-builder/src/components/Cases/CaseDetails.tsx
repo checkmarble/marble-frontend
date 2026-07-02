@@ -3,7 +3,7 @@ import { CloseCase } from '@app-builder/components/Cases/CloseCase';
 import { OpenCase } from '@app-builder/components/Cases/OpenCase';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser, DataModel, isAdmin } from '@app-builder/models';
+import { type CurrentUser, DataModel } from '@app-builder/models';
 import { CaseDetail, CaseReview, SuspiciousActivityReport } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
@@ -124,7 +124,11 @@ export const CaseDetails = ({
           <div className="flex shrink-0 items-center gap-sm">
             {caseDetail.status !== 'closed' ? (
               <>
-                <EscalateCase id={caseDetail.id} inboxId={caseDetail.inboxId} isAdminUser={isAdmin(currentUser)} />
+                <EscalateCase
+                  id={caseDetail.id}
+                  inboxId={caseDetail.inboxId}
+                  isAdminUser={currentUser.permissions.canEditInboxes}
+                />
                 <SnoozeCase caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
               </>
             ) : null}

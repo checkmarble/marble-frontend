@@ -1,7 +1,7 @@
 import { CaseStatusBadge } from '@app-builder/components/Cases';
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
-import { type CurrentUser, type DataModel, DataModelObject, isAdmin, type TableModel } from '@app-builder/models';
+import { type CurrentUser, type DataModel, DataModelObject, type TableModel } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { useFormatDateTime } from '@app-builder/utils/format';
@@ -61,11 +61,11 @@ export function PivotsPanelContent({
       {isAllMissingPivotObject ? (
         <div className="border-grey-border flex h-40 flex-col items-center justify-center gap-sm rounded-sm border p-xl mt-sm">
           <span className="text-center">
-            {isAdmin(currentUser)
+            {currentUser.permissions.canReadDataModel
               ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
               : t('cases:case_detail.pivot_panel.missing_pivot')}
           </span>
-          {isAdmin(currentUser) ? (
+          {currentUser.permissions.canReadDataModel ? (
             <Link to="/data" className={CtaV2ClassName({ variant: 'secondary', size: 'small' })}>
               {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
             </Link>

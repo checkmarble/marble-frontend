@@ -1,7 +1,7 @@
 import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
-import { isAnalyst } from '@app-builder/models';
 import { logoutFn } from '@app-builder/server-fns/auth';
+import { canAccessScenarios } from '@app-builder/services/feature-access';
 import { segment } from '@app-builder/services/segment';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
 import * as Sentry from '@sentry/tanstackstart-react';
@@ -15,7 +15,7 @@ import { authMiddleware } from '../middlewares/auth-middleware';
 const appRouterLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function appRouterLoader({ context }) {
-    if (isAnalyst(context.authInfo.user)) {
+    if (!canAccessScenarios(context.authInfo.user)) {
       throw redirect({ to: '/cases' });
     }
 

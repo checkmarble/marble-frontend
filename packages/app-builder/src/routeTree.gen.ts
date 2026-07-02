@@ -54,6 +54,7 @@ import { Route as AppBuilderSettingsUsersRouteImport } from './routes/_app/_buil
 import { Route as AppBuilderSettingsTagsRouteImport } from './routes/_app/_builder/settings/tags'
 import { Route as AppBuilderSettingsScreeningProvidersRouteImport } from './routes/_app/_builder/settings/screening-providers'
 import { Route as AppBuilderSettingsScenariosRouteImport } from './routes/_app/_builder/settings/scenarios'
+import { Route as AppBuilderSettingsRolesRouteImport } from './routes/_app/_builder/settings/roles'
 import { Route as AppBuilderSettingsIpWhitelistingRouteImport } from './routes/_app/_builder/settings/ip-whitelisting'
 import { Route as AppBuilderSettingsInboxesRouteImport } from './routes/_app/_builder/settings/inboxes'
 import { Route as AppBuilderSettingsAuditLogsRouteImport } from './routes/_app/_builder/settings/audit-logs'
@@ -362,6 +363,11 @@ const AppBuilderSettingsScenariosRoute =
     path: '/scenarios',
     getParentRoute: () => AppBuilderSettingsRoute,
   } as any)
+const AppBuilderSettingsRolesRoute = AppBuilderSettingsRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AppBuilderSettingsRoute,
+} as any)
 const AppBuilderSettingsIpWhitelistingRoute =
   AppBuilderSettingsIpWhitelistingRouteImport.update({
     id: '/ip-whitelisting',
@@ -820,6 +826,7 @@ export interface FileRoutesByFullPath {
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
   '/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
+  '/settings/roles': typeof AppBuilderSettingsRolesRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
@@ -916,6 +923,7 @@ export interface FileRoutesByTo {
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
   '/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
   '/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
+  '/settings/roles': typeof AppBuilderSettingsRolesRoute
   '/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/settings/tags': typeof AppBuilderSettingsTagsRoute
@@ -1023,6 +1031,7 @@ export interface FileRoutesById {
   '/_app/_builder/settings/audit-logs': typeof AppBuilderSettingsAuditLogsRoute
   '/_app/_builder/settings/inboxes': typeof AppBuilderSettingsInboxesRouteWithChildren
   '/_app/_builder/settings/ip-whitelisting': typeof AppBuilderSettingsIpWhitelistingRoute
+  '/_app/_builder/settings/roles': typeof AppBuilderSettingsRolesRoute
   '/_app/_builder/settings/scenarios': typeof AppBuilderSettingsScenariosRoute
   '/_app/_builder/settings/screening-providers': typeof AppBuilderSettingsScreeningProvidersRoute
   '/_app/_builder/settings/tags': typeof AppBuilderSettingsTagsRoute
@@ -1135,6 +1144,7 @@ export interface FileRouteTypes {
     | '/settings/audit-logs'
     | '/settings/inboxes'
     | '/settings/ip-whitelisting'
+    | '/settings/roles'
     | '/settings/scenarios'
     | '/settings/screening-providers'
     | '/settings/tags'
@@ -1231,6 +1241,7 @@ export interface FileRouteTypes {
     | '/settings/api-keys'
     | '/settings/audit-logs'
     | '/settings/ip-whitelisting'
+    | '/settings/roles'
     | '/settings/scenarios'
     | '/settings/screening-providers'
     | '/settings/tags'
@@ -1337,6 +1348,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/settings/audit-logs'
     | '/_app/_builder/settings/inboxes'
     | '/_app/_builder/settings/ip-whitelisting'
+    | '/_app/_builder/settings/roles'
     | '/_app/_builder/settings/scenarios'
     | '/_app/_builder/settings/screening-providers'
     | '/_app/_builder/settings/tags'
@@ -1744,6 +1756,13 @@ declare module '@tanstack/react-router' {
       path: '/scenarios'
       fullPath: '/settings/scenarios'
       preLoaderRoute: typeof AppBuilderSettingsScenariosRouteImport
+      parentRoute: typeof AppBuilderSettingsRoute
+    }
+    '/_app/_builder/settings/roles': {
+      id: '/_app/_builder/settings/roles'
+      path: '/roles'
+      fullPath: '/settings/roles'
+      preLoaderRoute: typeof AppBuilderSettingsRolesRouteImport
       parentRoute: typeof AppBuilderSettingsRoute
     }
     '/_app/_builder/settings/ip-whitelisting': {
@@ -2685,6 +2704,7 @@ interface AppBuilderSettingsRouteChildren {
   AppBuilderSettingsAuditLogsRoute: typeof AppBuilderSettingsAuditLogsRoute
   AppBuilderSettingsInboxesRoute: typeof AppBuilderSettingsInboxesRouteWithChildren
   AppBuilderSettingsIpWhitelistingRoute: typeof AppBuilderSettingsIpWhitelistingRoute
+  AppBuilderSettingsRolesRoute: typeof AppBuilderSettingsRolesRoute
   AppBuilderSettingsScenariosRoute: typeof AppBuilderSettingsScenariosRoute
   AppBuilderSettingsScreeningProvidersRoute: typeof AppBuilderSettingsScreeningProvidersRoute
   AppBuilderSettingsTagsRoute: typeof AppBuilderSettingsTagsRoute
@@ -2701,6 +2721,7 @@ const AppBuilderSettingsRouteChildren: AppBuilderSettingsRouteChildren = {
   AppBuilderSettingsAuditLogsRoute: AppBuilderSettingsAuditLogsRoute,
   AppBuilderSettingsInboxesRoute: AppBuilderSettingsInboxesRouteWithChildren,
   AppBuilderSettingsIpWhitelistingRoute: AppBuilderSettingsIpWhitelistingRoute,
+  AppBuilderSettingsRolesRoute: AppBuilderSettingsRolesRoute,
   AppBuilderSettingsScenariosRoute: AppBuilderSettingsScenariosRoute,
   AppBuilderSettingsScreeningProvidersRoute:
     AppBuilderSettingsScreeningProvidersRoute,

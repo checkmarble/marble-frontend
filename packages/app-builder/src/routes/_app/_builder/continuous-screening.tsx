@@ -1,6 +1,8 @@
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAnalyst } from '@app-builder/models';
-import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
+import {
+  canAccessContinuousScreeningSection,
+  isContinuousScreeningAvailable,
+} from '@app-builder/services/feature-access';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -9,7 +11,7 @@ const continuousScreeningLayoutLoader = createServerFn()
   .handler(async function continuousScreeningLayout({ context }) {
     const { user, entitlements } = context.authInfo;
 
-    if (isAnalyst(user)) {
+    if (!canAccessContinuousScreeningSection(user)) {
       throw redirect({ to: '/cases' });
     }
 

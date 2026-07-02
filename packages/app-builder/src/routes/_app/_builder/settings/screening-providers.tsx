@@ -1,6 +1,5 @@
 import { ScreeningProvidersSettingsPage } from '@app-builder/components/Settings/ScreeningProviders/ScreeningProvidersSettingsPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { type ScreeningProvider } from '@app-builder/models/organization';
 import { isLexisNexisAvailable } from '@app-builder/services/feature-access';
 import { createFileRoute, redirect } from '@tanstack/react-router';
@@ -12,7 +11,7 @@ const screeningProvidersLoader = createServerFn()
     const { organization: orgRepo, user, entitlements } = context.authInfo;
     const { appConfig } = context;
 
-    if (!isAdmin(user) || appConfig.isManagedMarble) {
+    if (!user.permissions.canUpdateOrganization || appConfig.isManagedMarble) {
       // not in SaaS
       throw redirect({ to: '/settings' });
     }

@@ -27,7 +27,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Table, Typo, useTable } from 'ui-design-system';
+import { Button, Table, Tag, Typo, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const apiKeysLoader = createServerFn()
@@ -111,11 +111,19 @@ function ApiKeys() {
         header: t('settings:api_keys.description'),
         size: 300,
       }),
-      apiKeyColumnHelper.accessor((row) => row.role, {
+      apiKeyColumnHelper.accessor((row) => row.roles, {
         id: 'role',
         header: t('settings:api_keys.role'),
         size: 150,
-        cell: ({ getValue }) => t(tKeyForApiKeyRole(getValue())),
+        cell: ({ getValue }) => (
+          <div className="flex flex-wrap items-center gap-xs">
+            {getValue().map((role) => (
+              <Tag key={role} color="purple" size="small">
+                {t(tKeyForApiKeyRole(role))}
+              </Tag>
+            ))}
+          </div>
+        ),
       }),
       ...(isDeleteApiKeyAvailable
         ? [

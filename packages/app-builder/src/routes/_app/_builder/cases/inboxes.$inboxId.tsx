@@ -1,7 +1,6 @@
 import { InboxPage } from '@app-builder/components/Cases/InboxPage';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
 import { isInboxAdmin } from '@app-builder/services/feature-access';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
@@ -31,7 +30,7 @@ const casesInboxesLoader = createServerFn()
     const request = getRequest();
     const { user, inbox: inboxRepository } = context.authInfo;
     const inboxes = await inboxRepository.listInboxesWithCaseCount();
-    const canViewNavigationTabs = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
+    const canViewNavigationTabs = user.permissions.canEditInboxes || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
     let inboxUsersIds: string[] = [];
     let currentInbox = inboxes.find((inbox) => inbox.id === params.inboxId);

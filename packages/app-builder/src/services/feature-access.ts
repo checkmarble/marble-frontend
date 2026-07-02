@@ -1,4 +1,4 @@
-import { type CurrentUser, isAdmin } from '@app-builder/models';
+import { type CurrentUser } from '@app-builder/models';
 import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type Inbox } from '@app-builder/models/inbox';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -11,17 +11,32 @@ export const isRestricted = (featureAccess: FeatureAccessLevelDto): boolean => f
 export const isAnalyticsAvailable = ({ permissions }: CurrentUser, entitlements: FeatureAccesses) =>
   isAccessible(entitlements.analytics) && permissions.canReadAnalytics;
 
-export const isReadUserAvailable = ({ role }: CurrentUser) => role === 'ADMIN' || role === 'MARBLE_ADMIN';
+// ---- Section access capabilities ----
+// These replace the former `isAnalyst`/`isAdmin` role gates. They encode which permission
+// grants access to a given builder/config area. If a mapping is wrong, fix it here only.
 
-export const isReadAllInboxesAvailable = ({ role }: CurrentUser) => role === 'ADMIN' || role === 'MARBLE_ADMIN';
+export const canAccessScenarios = ({ permissions }: CurrentUser) => permissions.canReadScenarios;
+
+export const canAccessDecisions = ({ permissions }: CurrentUser) => permissions.canReadDecisions;
+
+export const canAccessDataModel = ({ permissions }: CurrentUser) => permissions.canReadDataModel;
+
+export const canAccessUserScoring = ({ permissions }: CurrentUser) => permissions.canManageScoring;
+
+export const canAccessContinuousScreeningSection = ({ permissions }: CurrentUser) =>
+  permissions.canReadContinuousScreening;
+
+export const isReadUserAvailable = ({ permissions }: CurrentUser) => permissions.canReadUser;
+
+export const isReadAllInboxesAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
 export const isInboxAdmin = ({ actorIdentity: { userId } }: CurrentUser, inbox: Inbox) =>
   inbox.users.some((inboxUser) => inboxUser.userId === userId && inboxUser.role === 'admin');
 
 export const canAccessInboxesSettings = (user: CurrentUser, inboxes: Inbox[]) =>
-  isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
+  user.permissions.canEditInboxes || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
-export const isReadTagAvailable = ({ role }: CurrentUser) => role === 'ADMIN' || role === 'MARBLE_ADMIN';
+export const isReadTagAvailable = ({ permissions }: CurrentUser) => permissions.canReadTags;
 
 export const isReadApiKeyAvailable = ({ permissions }: CurrentUser) => permissions.canReadApiKey;
 
@@ -105,11 +120,6 @@ export const isCreateTagAvailable = ({ permissions }: CurrentUser) => permission
 export const isEditTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
 export const isDeleteTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
-
-export const getUserRoles = (entitlements: FeatureAccesses) =>
-  isAccessible(entitlements.userRoles)
-    ? (['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN', 'ANALYST'] as const)
-    : (['ADMIN'] as const);
 
 export const isCreateUserAvailable = ({ permissions }: CurrentUser) => permissions.canCreateUser;
 

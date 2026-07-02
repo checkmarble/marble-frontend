@@ -2,7 +2,6 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { apiKeyRoleOptions } from '@app-builder/models/api-keys';
 
 import {
   CreateApiKeyPayload,
@@ -15,7 +14,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, SelectV2 } from 'ui-design-system';
+import { Button, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateApiKey() {
@@ -56,7 +55,7 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
           });
       }
     },
-    defaultValues: { description: '', role: 'API_CLIENT' } as CreateApiKeyPayload,
+    defaultValues: { description: '', roles: ['API_CLIENT'] } as CreateApiKeyPayload,
     validators: {
       onChange: createApiKeyPayloadSchema,
       onSubmit: createApiKeyPayloadSchema,
@@ -82,20 +81,17 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
             </div>
           )}
         </form.Field>
-        <form.Field name="role">
+        <form.Field name="roles">
           {(field) => (
             <div className="group flex flex-col gap-sm">
               <FormLabel name={field.name}>{t('settings:api_keys.role')}</FormLabel>
-              <SelectV2
-                disabled={apiKeyRoleOptions.length === 1}
-                value={field.state.value}
-                onChange={(role) => field.handleChange(role)}
-                placeholder={t('settings:api_keys.role')}
-                options={apiKeyRoleOptions.map((role) => ({
-                  label: t(tKeyForApiKeyRole(role)),
-                  value: role,
-                }))}
-              />
+              <div className="flex flex-wrap items-center gap-xs">
+                {field.state.value.map((role) => (
+                  <Tag key={role} color="purple" size="small">
+                    {t(tKeyForApiKeyRole(role))}
+                  </Tag>
+                ))}
+              </div>
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}

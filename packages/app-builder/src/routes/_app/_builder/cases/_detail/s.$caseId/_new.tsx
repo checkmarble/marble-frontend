@@ -1,8 +1,8 @@
 import { CommentContext } from '@app-builder/components/CaseManagerV2/hooks/comment-context';
 import { CaseManagerPageLayout } from '@app-builder/components/CaseManagerV2/PageLayout';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAnalyst } from '@app-builder/models';
 import { dataModelFeatureAccessLoader } from '@app-builder/services/data/data-model-feature-access';
+import { canAccessUserScoring } from '@app-builder/services/feature-access';
 import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -21,9 +21,9 @@ const beforeLoadFn = createServerFn({ method: 'GET' })
     ]);
 
     const dataModelFeatureAccess = dataModelFeatureAccessLoader(context.authInfo.user, context.authInfo.entitlements);
-    const userScoringAccess = isAnalyst(context.authInfo.user)
-      ? ('restricted' as const)
-      : context.authInfo.entitlements.userScoring;
+    const userScoringAccess = canAccessUserScoring(context.authInfo.user)
+      ? context.authInfo.entitlements.userScoring
+      : ('restricted' as const);
 
     return {
       caseDetail,

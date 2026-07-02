@@ -2,11 +2,10 @@ import { CollapsiblePaper, Page } from '@app-builder/components';
 import { CreateUser } from '@app-builder/components/Settings/Users/CreateUser';
 import { DeleteUser } from '@app-builder/components/Settings/Users/DeleteUser';
 import { UpdateUser } from '@app-builder/components/Settings/Users/UpdateUser';
+import { useUserRoleLabel } from '@app-builder/hooks/useUserRoleLabel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type User } from '@app-builder/models';
-import { tKeyForUserRole } from '@app-builder/models/user';
 import {
-  getUserRoles,
   isCreateUserAvailable,
   isDeleteUserAvailable,
   isEditUserAvailable,
@@ -19,16 +18,16 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Table, useTable } from 'ui-design-system';
+import { Table, Tag, useTable } from 'ui-design-system';
 
 const usersLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function usersLoader({ context }) {
-    const { user, inbox, entitlements } = context.authInfo;
+    const { user, inbox, entitlements, organization } = context.authInfo;
 
     if (!isReadUserAvailable(user)) throw redirect({ to: '/' });
 
-    const inboxUsers = await inbox.listAllInboxUsers();
+    const [inboxUsers, { roles: userRoles }] = await Promise.all([inbox.listAllInboxUsers(), organization.listRoles()]);
 
     const inboxUsersByUserId = R.pipe(
       inboxUsers,
@@ -47,7 +46,7 @@ const usersLoader = createServerFn()
       inboxUsersByUserId,
       user,
       entitlements,
-      userRoles: getUserRoles(entitlements),
+      userRoles,
       isCreateUserAvailable: isCreateUserAvailable(user),
       isEditUserAvailable: isEditUserAvailable(user),
       isDeleteUserAvailable: isDeleteUserAvailable(user),
@@ -63,6 +62,7 @@ const columnHelper = createColumnHelper<User>();
 
 function Users() {
   const { t } = useTranslation(['settings', 'cases']);
+  const getRoleLabel = useUserRoleLabel();
   const {
     inboxUsersByUserId,
     user,
@@ -87,11 +87,19 @@ function Users() {
         size: 150,
         cell: ({ getValue }) => <div className="overflow-hidden text-ellipsis">{getValue()}</div>,
       }),
-      columnHelper.accessor((row) => row.role, {
+      columnHelper.accessor((row) => row.roles, {
         id: 'role',
         header: t('settings:users.role'),
         size: 150,
-        cell: ({ getValue }) => t(tKeyForUserRole(getValue())),
+        cell: ({ getValue }) => (
+          <div className="flex flex-wrap items-center gap-xs">
+            {getValue().map((role) => (
+              <Tag key={role} color="purple" size="small">
+                {getRoleLabel(role)}
+              </Tag>
+            ))}
+          </div>
+        ),
       }),
       columnHelper.accessor((row) => row.userId, {
         id: 'inbox_user_role',
@@ -140,6 +148,7 @@ function Users() {
     isDeleteUserAvailable,
     isEditUserAvailable,
     t,
+    getRoleLabel,
     user.actorIdentity.userId,
     userRoles,
     entitlements.userRoles,

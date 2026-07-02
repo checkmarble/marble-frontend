@@ -1,6 +1,5 @@
 import { IpWhitelistingSettingsPage } from '@app-builder/components/Settings/IpWhitelisting/IpWhitelistingSettingsPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 
@@ -10,7 +9,7 @@ const ipWhitelistingLoader = createServerFn()
     const { organization: orgRepo, user } = context.authInfo;
     const { appConfig } = context;
 
-    if (!isAdmin(user) || !appConfig.isManagedMarble) {
+    if (!user.permissions.canUpdateOrganization || !appConfig.isManagedMarble) {
       throw redirect({ to: '/' });
     }
 

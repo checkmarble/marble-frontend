@@ -6,7 +6,6 @@ import { DeleteTag } from '@app-builder/components/Settings/Tags/DeleteTag';
 import { UpdateTag } from '@app-builder/components/Settings/Tags/UpdateTag';
 import { ColorPreview } from '@app-builder/components/Tags/ColorPreview';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { type InboxWithCasesCount, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { type TagColor } from '@app-builder/models/tags';
 import {
@@ -38,8 +37,8 @@ const inboxesLoader = createServerFn()
       organization.getCurrentOrganization(),
     ]);
 
-    const inboxes = allInboxes.filter((inbox) => isAdmin(user) || isInboxAdmin(user, inbox));
-    if (inboxes.length === 0 && !isAdmin(user)) {
+    const inboxes = allInboxes.filter((inbox) => user.permissions.canEditInboxes || isInboxAdmin(user, inbox));
+    if (inboxes.length === 0 && !user.permissions.canEditInboxes) {
       throw redirect({ to: '/' });
     }
 

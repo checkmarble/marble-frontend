@@ -1,7 +1,6 @@
 import { ScreeningCaseDetailPage } from '@app-builder/components/CaseManager/ScreeningCaseDetail/ScreeningCaseDetailPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { caseDetailMiddleware } from '@app-builder/middlewares/case-detail-middleware';
-import { isAdmin } from '@app-builder/models';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -19,7 +18,7 @@ const screeningCaseDetailLoader = createServerFn()
       throw redirect({ to: '/cases/inboxes/$inboxId', params: { inboxId: context.case.inbox.id } });
     }
 
-    const isUserAdmin = isAdmin(context.authInfo.user);
+    const isUserAdmin = context.authInfo.user.permissions.canEditInboxes;
 
     return { caseDetail: context.case.detail, caseInbox: context.case.inbox, screening, isUserAdmin };
   });

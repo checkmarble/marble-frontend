@@ -3,7 +3,6 @@ import { type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
 import { SettingsNavigationTabs } from '@app-builder/components/Settings/Navigation/Tabs';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAnalyst } from '@app-builder/models/user';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { createFileRoute, Link, Outlet, redirect, useMatches } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -16,13 +15,14 @@ const settingsLoader = createServerFn()
     const { user, entitlements, inbox } = context.authInfo;
     const appConfig = context.appConfig;
 
-    if (isAnalyst(user)) {
-      throw redirect({ to: '/cases' });
-    }
-
     const inboxes = await inbox.listInboxes();
     const sections = getSettingsAccess(user, appConfig, inboxes);
     if (appConfig.isManagedMarble) sections.screening_providers.settings = []; // not in SaaS
+
+    // No accessible settings section for this user → nothing to show.
+    if (Object.values(sections).every((section) => section.settings.length === 0)) {
+      throw redirect({ to: '/cases' });
+    }
 
     return { sections, entitlements };
   });

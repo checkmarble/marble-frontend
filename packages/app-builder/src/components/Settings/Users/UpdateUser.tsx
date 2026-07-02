@@ -2,8 +2,9 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { Nudge } from '@app-builder/components/Nudge';
+import { RolesSelect } from '@app-builder/components/Settings/Users/RolesSelect';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { tKeyForUserRole, type User } from '@app-builder/models';
+import { type User } from '@app-builder/models';
 import {
   UpdateUserPayload,
   updateUserPayloadSchema,
@@ -18,7 +19,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Modal, SelectV2 } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function UpdateUser({
@@ -27,7 +28,7 @@ export function UpdateUser({
   access,
 }: {
   user: User;
-  userRoles: readonly [string, ...string[]];
+  userRoles: string[];
   access: FeatureAccessLevelDto;
 }) {
   const { t } = useTranslation(['common', 'settings']);
@@ -52,7 +53,7 @@ function UpdateUserContent({
   onSuccess,
 }: {
   user: User;
-  userRoles: readonly [string, ...string[]];
+  userRoles: string[];
   access: FeatureAccessLevelDto;
   onSuccess: () => void;
 }) {
@@ -140,7 +141,7 @@ function UpdateUserContent({
               </div>
             )}
           </form.Field>
-          <form.Field name="role" validators={{ onChange: updateUserPayloadSchema.shape.role }}>
+          <form.Field name="roles" validators={{ onChange: updateUserPayloadSchema.shape.roles }}>
             {(field) => (
               <div className="group flex flex-col gap-sm">
                 <FormLabel name={field.name} className="flex flex-row gap-sm">
@@ -155,15 +156,14 @@ function UpdateUserContent({
                     <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                   )}
                 </FormLabel>
-                <SelectV2
+                <RolesSelect
                   value={field.state.value}
-                  onChange={(value) => field.handleChange(value as UpdateUserPayload['role'])}
+                  onChange={(roles) => field.handleChange(roles)}
+                  onBlur={field.handleBlur}
                   disabled={!isAccessible(access)}
+                  hasError={field.state.meta.errors.length > 0}
                   placeholder={t('settings:users.role')}
-                  options={userRoles.map((role) => ({
-                    label: t(tKeyForUserRole(role)),
-                    value: role as UpdateUserPayload['role'],
-                  }))}
+                  options={userRoles}
                 />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>

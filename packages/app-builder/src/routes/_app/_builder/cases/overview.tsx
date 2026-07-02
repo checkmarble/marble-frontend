@@ -1,6 +1,5 @@
 import { OverviewPage } from '@app-builder/components/Cases/Overview/OverviewPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isAdmin } from '@app-builder/models';
 import { isInboxAdmin } from '@app-builder/services/feature-access';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -14,11 +13,11 @@ const casesOverviewLoader = createServerFn()
       inboxRepository.listInboxes(),
       inboxRepository.listInboxesMetadata(),
     ]);
-    const canViewAdminSections = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
+    const canViewAdminSections = user.permissions.canEditInboxes || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
     return {
       currentUserId: user.actorIdentity.userId,
-      isGlobalAdmin: isAdmin(user),
+      isGlobalAdmin: user.permissions.canEditInboxes,
       canViewAdminSections,
       allInboxesMetadata,
       entitlements: {

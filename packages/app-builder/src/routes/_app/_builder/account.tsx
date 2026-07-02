@@ -5,7 +5,7 @@ import { UserAvailabilityStatus } from '@app-builder/components/Settings/UserAva
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { type Theme, useTheme } from '@app-builder/contexts/ThemeContext';
 import { useBuilderLayoutData } from '@app-builder/hooks/routes-layout-data';
-import { tKeyForUserRole } from '@app-builder/models/user';
+import { useUserRoleLabel } from '@app-builder/hooks/useUserRoleLabel';
 import { logoutFn } from '@app-builder/server-fns/auth';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { segment } from '@app-builder/services/segment';
@@ -36,6 +36,7 @@ export const Route = createFileRoute('/_app/_builder/account')({
 function AccountPage() {
   const { t } = useTranslation(['navigation', 'account', 'common', 'settings']);
   const { currentUser, org } = useOrganizationDetails();
+  const getRoleLabel = useUserRoleLabel();
   const logout = useServerFn(logoutFn);
 
   const { theme, setTheme } = useTheme();
@@ -67,7 +68,11 @@ function AccountPage() {
               <Avatar size="xl" firstName={firstName} lastName={lastName} />
               {fullName ? <p className="text-xl font-semibold tracking-tight">{fullName}</p> : null}
               <div className="flex items-center gap-sm">
-                <Tag color="purple">{t(tKeyForUserRole(currentUser.role))}</Tag>
+                {currentUser.roles.map((role) => (
+                  <Tag key={role} color="purple">
+                    {getRoleLabel(role)}
+                  </Tag>
+                ))}
                 <Tag color="grey">{org.name}</Tag>
               </div>
               {email ? (

@@ -1,7 +1,7 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Nudge } from '@app-builder/components/Nudge';
+import { RolesSelect } from '@app-builder/components/Settings/Users/RolesSelect';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { tKeyForUserRole } from '@app-builder/models';
 import {
   CreateUserPayload,
   createUserPayloadSchema,
@@ -17,7 +17,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal, SelectV2 } from 'ui-design-system';
+import { Button, Input, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function CreateUser({
@@ -27,7 +27,7 @@ export function CreateUser({
 }: {
   orgId: string;
   access: FeatureAccessLevelDto;
-  userRoles: readonly [string, ...string[]];
+  userRoles: string[];
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const isLoading = useRouterState({ select: (s) => s.status === 'pending' });
@@ -61,7 +61,7 @@ function CreateUserContent({
   onSuccess,
 }: {
   orgId: string;
-  userRoles: readonly [string, ...string[]];
+  userRoles: string[];
   access: FeatureAccessLevelDto;
   onSuccess: () => void;
 }) {
@@ -74,7 +74,7 @@ function CreateUserContent({
       firstName: '',
       lastName: '',
       email: '',
-      role: 'ADMIN',
+      roles: ['ADMIN'],
       organizationId: orgId,
     } as CreateUserPayload,
     onSubmit: ({ value, formApi }) => {
@@ -175,7 +175,7 @@ function CreateUserContent({
               </div>
             )}
           </form.Field>
-          <form.Field name="role" validators={{ onChange: createUserPayloadSchema.shape.role }}>
+          <form.Field name="roles" validators={{ onChange: createUserPayloadSchema.shape.roles }}>
             {(field) => (
               <div className="flex flex-col gap-xs">
                 <label htmlFor={field.name} className="text-s text-grey-secondary flex flex-row gap-sm">
@@ -190,15 +190,14 @@ function CreateUserContent({
                     <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                   )}
                 </label>
-                <SelectV2
+                <RolesSelect
                   value={field.state.value}
-                  onChange={(value) => field.handleChange(value as CreateUserPayload['role'])}
+                  onChange={(roles) => field.handleChange(roles)}
+                  onBlur={field.handleBlur}
                   disabled={!isAccessible(access)}
+                  hasError={field.state.meta.errors.length > 0}
                   placeholder={t('settings:users.role')}
-                  options={userRoles.map((role) => ({
-                    label: t(tKeyForUserRole(role)),
-                    value: role as CreateUserPayload['role'],
-                  }))}
+                  options={userRoles}
                 />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
