@@ -88,9 +88,9 @@ export function TwoFactorAuthSettings() {
         <span className="text-xs text-grey-secondary">{t('account:mfa.status.disabled')}</span>
       )}
 
-      <div className="flex flex-wrap gap-sm">
+      <div className="flex flex-col gap-sm">
         <EnrollTotpModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
-        <EnrollPhoneModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
+        <EnrollPhoneInline onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
       </div>
     </div>
   );
@@ -235,7 +235,7 @@ function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
   );
 }
 
-function EnrollPhoneModal({ onEnrolled }: { onEnrolled: () => void }) {
+function EnrollPhoneInline({ onEnrolled }: { onEnrolled: () => void }) {
   const { t } = useTranslation(['account', 'common']);
   const { authenticationClientService } = useClientServices();
 
@@ -291,97 +291,91 @@ function EnrollPhoneModal({ onEnrolled }: { onEnrolled: () => void }) {
     },
   });
 
-  const handleOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (next) {
-      setStep('phone');
-      setPhoneNumber('');
-      setVerificationId(null);
-      setCode('');
-      setError(null);
-    }
+  const openForm = () => {
+    setStep('phone');
+    setPhoneNumber('');
+    setVerificationId(null);
+    setCode('');
+    setError(null);
+    setOpen(true);
   };
 
+  if (!open) {
+    return (
+      <Button variant="primary" className="self-start" onClick={openForm}>
+        <Icon icon="plus" className="size-5" />
+        {t('account:mfa.add_phone')}
+      </Button>
+    );
+  }
+
+  // Rendered inline (not in a Modal) on purpose: Firebase's reCAPTCHA challenge popup
+  // opens in a body-level overlay, and a Dialog focus-trap would make it unclickable.
   return (
-    <Modal.Root open={open} onOpenChange={handleOpenChange}>
-      <Modal.Trigger asChild>
-        <Button variant="primary" className="self-start">
-          <Icon icon="plus" className="size-5" />
-          {t('account:mfa.add_phone')}
+    <form
+      className="border-grey-border flex w-full flex-col gap-lg rounded-lg border p-md"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setError(null);
+        if (step === 'phone') {
+          startMutation.mutate();
+        } else {
+          finalizeMutation.mutate();
+        }
+      }}
+    >
+      <span className="text-s font-semibold">{t('account:mfa.enroll.title')}</span>
+      {step === 'phone' ? (
+        <div className="flex flex-col gap-xs">
+          <label htmlFor="mfa-phone" className="text-xs font-medium">
+            {t('account:mfa.enroll.phone_label')}
+          </label>
+          <Input
+            id="mfa-phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder={t('account:mfa.enroll.phone_placeholder')}
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.currentTarget.value)}
+            borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
+          />
+          <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.phone_instructions')}</span>
+          {error ? <span className="text-xs text-red-primary">{error}</span> : null}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-xs">
+          <label htmlFor="mfa-code" className="text-xs font-medium">
+            {t('account:mfa.enroll.code_label')}
+          </label>
+          <Input
+            id="mfa-code"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            value={code}
+            onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
+            borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
+          />
+          <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.code_instructions')}</span>
+          {error ? <span className="text-xs text-red-primary">{error}</span> : null}
+        </div>
+      )}
+      {/* Invisible reCAPTCHA container. */}
+      <div ref={recaptchaRef} />
+      <div className="flex justify-end gap-sm">
+        <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+          {t('common:cancel')}
         </Button>
-      </Modal.Trigger>
-      <Modal.Content>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setError(null);
-            if (step === 'phone') {
-              startMutation.mutate();
-            } else {
-              finalizeMutation.mutate();
-            }
-          }}
-        >
-          <Modal.Title>{t('account:mfa.enroll.title')}</Modal.Title>
-          <div className="flex flex-col gap-lg p-lg">
-            {step === 'phone' ? (
-              <div className="flex flex-col gap-xs">
-                <label htmlFor="mfa-phone" className="text-xs font-medium">
-                  {t('account:mfa.enroll.phone_label')}
-                </label>
-                <Input
-                  id="mfa-phone"
-                  type="tel"
-                  autoComplete="tel"
-                  placeholder={t('account:mfa.enroll.phone_placeholder')}
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.currentTarget.value)}
-                  borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
-                />
-                <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.phone_instructions')}</span>
-                {error ? <span className="text-xs text-red-primary">{error}</span> : null}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-xs">
-                <label htmlFor="mfa-code" className="text-xs font-medium">
-                  {t('account:mfa.enroll.code_label')}
-                </label>
-                <Input
-                  id="mfa-code"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  maxLength={6}
-                  value={code}
-                  onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
-                  borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
-                />
-                <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.code_instructions')}</span>
-                {error ? <span className="text-xs text-red-primary">{error}</span> : null}
-              </div>
-            )}
-          </div>
-          {/* Invisible reCAPTCHA container required by Firebase phone auth (auto-solved by the emulator). */}
-          <div ref={recaptchaRef} />
-          <Modal.Footer>
-            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
-            {step === 'phone' ? (
-              <Modal.FooterButton
-                type="submit"
-                label={t('account:mfa.enroll.send_code')}
-                disabled={phoneNumber.length === 0}
-                isLoading={startMutation.isPending}
-              />
-            ) : (
-              <Modal.FooterButton
-                type="submit"
-                label={t('account:mfa.enroll.confirm')}
-                disabled={code.length < 6}
-                isLoading={finalizeMutation.isPending}
-              />
-            )}
-          </Modal.Footer>
-        </form>
-      </Modal.Content>
-    </Modal.Root>
+        {step === 'phone' ? (
+          <Button type="submit" disabled={phoneNumber.length === 0 || startMutation.isPending}>
+            {t('account:mfa.enroll.send_code')}
+          </Button>
+        ) : (
+          <Button type="submit" disabled={code.length < 6 || finalizeMutation.isPending}>
+            {t('account:mfa.enroll.confirm')}
+          </Button>
+        )}
+      </div>
+    </form>
   );
 }
