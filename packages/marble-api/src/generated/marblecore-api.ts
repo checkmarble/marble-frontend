@@ -605,6 +605,8 @@ export type CaseReviewContentDto = {
     pivot_enrichments?: {
         results?: KycAnalysisDto[];
     } | null;
+    /** Summary of the case review by ai */
+    summary?: string;
 } & (CaseReviewOkDto | CaseReviewNotOkDto);
 export type CaseReviewDto = {
     id: string;

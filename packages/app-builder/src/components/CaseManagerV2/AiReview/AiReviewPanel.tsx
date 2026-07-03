@@ -38,50 +38,56 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
   const review = reviewQuery.data;
 
   const hasPreviousReport = selectedIndex < reviews.length - 1;
+  const hasNextReport = selectedIndex > 0;
 
   if (!selectedListItem) return null;
 
   return (
     <Panel.Container size="medium">
       <Panel.Content>
-        <div className="flex items-center gap-sm pb-md border-b border-grey-border">
-          <Icon
-            icon="cross"
-            className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary shrink-0"
-            onClick={() => onOpenChange(false)}
-            aria-label={t('common:close')}
-          />
-          <Icon icon="ai-review" className="size-4 text-purple-primary shrink-0" />
-          <Typo variant="title2" className="text-grey-primary">
-            {t('cases:case_detail.ai_review.panel.title')}
-          </Typo>
-          <ReviewStatusBadge status={selectedListItem.status} />
-          <time className="text-xs text-grey-secondary" dateTime={selectedListItem.createdAt}>
-            {formatDateTime(selectedListItem.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
-          </time>
-          <div className="ms-auto flex items-center gap-xs">
-            <Button
-              variant="secondary"
-              size="small"
-              onClick={() => setSelectedIndex((i) => Math.min(i + 1, reviews.length - 1))}
-              disabled={!hasPreviousReport}
-            >
-              {t('cases:case.ai_reviews.see_previous_report')}
-            </Button>
-            {canManuallyReview ? (
+        <Panel.Header>
+          <div className="flex items-center gap-sm">
+            <Icon icon="ai-review" className="size-4 text-purple-primary shrink-0" />
+            <Typo variant="title2" className="text-grey-primary shrink-0">
+              {t('cases:case_detail.ai_review.panel.title')}
+            </Typo>
+            <ReviewStatusBadge status={selectedListItem.status} />
+            <time className="text-xs text-grey-secondary shrink-0" dateTime={selectedListItem.createdAt}>
+              {formatDateTime(selectedListItem.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
+            </time>
+            <div className="ms-auto flex items-center gap-xs flex-wrap justify-end">
               <Button
                 variant="secondary"
                 size="small"
-                onClick={() => enqueueReviewMutation.mutate(caseId)}
-                disabled={enqueueReviewMutation.isPending}
+                onClick={() => setSelectedIndex((i) => Math.min(i + 1, reviews.length - 1))}
+                disabled={!hasPreviousReport}
               >
-                <Icon icon="wand" className="size-4 text-purple-primary" />
-                <span className="text-purple-primary">{t('cases:case.ai_reviews.generate')}</span>
+                {t('cases:case.ai_reviews.see_previous_report')}
               </Button>
-            ) : null}
+              {hasNextReport ? (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => setSelectedIndex((i) => Math.max(i - 1, 0))}
+                  disabled={!hasNextReport}
+                >
+                  {t('cases:case.ai_reviews.see_next_report')}
+                </Button>
+              ) : null}
+              {canManuallyReview ? (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => enqueueReviewMutation.mutate(caseId)}
+                  disabled={enqueueReviewMutation.isPending}
+                >
+                  <Icon icon="wand" className="size-4 text-purple-primary" />
+                  <span className="text-purple-primary">{t('cases:case.ai_reviews.generate')}</span>
+                </Button>
+              ) : null}
+            </div>
           </div>
-        </div>
-
+        </Panel.Header>
         <div className="flex gap-md flex-1 overflow-y-auto py-md">
           <div className="flex-1 min-w-0 text-small">
             {reviewQuery.isLoading ? (
@@ -98,9 +104,8 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
           </div>
           {review && !review.review.ok ? <SanityCheckWarning message={review.review.sanityCheck} /> : null}
         </div>
+        {review ? <PanelFooter caseId={caseId} reviewId={review.id} reaction={review.reaction} /> : null}
       </Panel.Content>
-
-      {review ? <PanelFooter caseId={caseId} reviewId={review.id} reaction={review.reaction} /> : null}
     </Panel.Container>
   );
 }
@@ -136,37 +141,32 @@ function PanelFooter({
   const addCommentMutation = useAddReviewToCaseCommentsMutation(caseId, reviewId);
 
   return (
-    <div className="pt-md border-t border-grey-border mt-auto flex items-center justify-end gap-xs">
-      <Button
+    <Panel.Footer>
+      <Panel.FooterButton
         variant={reaction === 'ok' ? 'primary' : 'secondary'}
-        size="small"
         onClick={() => feedbackMutation.mutate('ok')}
-      >
-        <Icon icon="thumb-up" className="size-4" />
-        {t('cases:case_detail.ai_review.actions.feedback_ok')}
-      </Button>
-      <Button
+        label={t('cases:case_detail.ai_review.actions.feedback_ok')}
+        leadingIcon="thumb-up"
+      />
+
+      <Panel.FooterButton
         variant={reaction === 'ko' ? 'primary' : 'secondary'}
-        size="small"
+        label={t('cases:case_detail.ai_review.actions.feedback_ko')}
+        leadingIcon="thumb-down"
         onClick={() => feedbackMutation.mutate('ko')}
-      >
-        <Icon icon="thumb-down" className="size-4" />
-        {t('cases:case_detail.ai_review.actions.feedback_ko')}
-      </Button>
-      <Button
+      />
+      <Panel.FooterButton
         variant="secondary"
-        size="small"
+        label={t('cases:case_detail.ai_review.actions.add_to_comment')}
+        leadingIcon="comment"
         onClick={() =>
           addCommentMutation.mutate(undefined, {
             onSuccess: () => toast.success(t('cases:case_detail.ai_review.actions.add_to_comment.success')),
             onError: () => toast.error(t('common:errors.unknown')),
           })
         }
-      >
-        <Icon icon="comment" className="size-4" />
-        {t('cases:case_detail.ai_review.actions.add_to_comment')}
-      </Button>
-    </div>
+      />
+    </Panel.Footer>
   );
 }
 

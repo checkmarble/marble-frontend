@@ -56,16 +56,16 @@ export function PivotNavigationOptions({
             className,
           )}
         >
-          {linksToTable.map((linkToTable) => {
+          {linksToTable.map((linkToTable, idx) => {
             const navigationOptions =
               table.navigationOptions?.filter(
                 (navOption) => navOption.targetTableName === linkToTable.childTableName,
               ) ?? [];
 
             return navigationOptions.length > 0 ? (
-              <Fragment key={linkToTable.childTableName}>
-                {navigationOptions.map((navOption) => (
-                  <Fragment key={navOption.id}>
+              <Fragment key={`${linkToTable.childTableName}-${idx}`}>
+                {navigationOptions.map((navOption, idx2) => (
+                  <Fragment key={`${navOption.id}-${idx2}`}>
                     <span className="text-grey-secondary">
                       {navOption.targetTableName}
                       {navigationOptions.length > 1 ? ` (${navOption.orderingFieldName})` : null}
