@@ -34,7 +34,7 @@
     "react-i18next": "^17.0.8",
     "storybook": "^10.4.6",
     "tailwindcss": "4.1.13",
-    "vite": "7.3.5",
+    "vite": "8.0.16",
     "vite-tsconfig-paths": "6.1.1",
     "vitest": "4.1.8"
   },
