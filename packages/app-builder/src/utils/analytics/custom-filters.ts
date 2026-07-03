@@ -45,12 +45,22 @@ export type CustomFilterTableConfig = {
   }>;
 };
 
+function encodeFilterKey(tableId: string, selection: CustomFilterSelection): string {
+  if (selection.kind === 'trigger') {
+    return `${tableId}::trigger::${selection.fieldName}`;
+  }
+  return `${tableId}::ingested::${selection.path.join('->')}.${selection.fieldName}`;
+}
+
 export function buildPersistedKey(tableId: string, payload: ExportedFieldPayload): string {
   if ('triggerObjectField' in payload) {
-    return `${tableId}::trigger::${payload.triggerObjectField}`;
+    return encodeFilterKey(tableId, { kind: 'trigger', fieldName: payload.triggerObjectField });
   }
-  const pathStr = payload.ingestedDataField.path.join('->');
-  return `${tableId}::ingested::${pathStr}.${payload.ingestedDataField.name}`;
+  return encodeFilterKey(tableId, {
+    kind: 'ingested',
+    path: payload.ingestedDataField.path,
+    fieldName: payload.ingestedDataField.name,
+  });
 }
 
 export function toExportedFieldPayload(row: Pick<CustomFilterDraftRow, 'selection'>): ExportedFieldPayload | null {
@@ -215,17 +225,14 @@ export function getFilterableTableConfig(table: TableModel, dataModel: TableMode
 }
 
 export function getSelectionKey(tableId: string, selection: CustomFilterSelection): string {
-  if (selection.kind === 'trigger') {
-    return `${tableId}::trigger::${selection.fieldName}`;
-  }
-  return `${tableId}::ingested::${selection.path.join('->')}.${selection.fieldName}`;
+  return encodeFilterKey(tableId, selection);
 }
 
 export function needsDeleteConfirmation(
   row: CustomFilterDraftRow,
   existingFilters: ExistingCustomFilterRow[],
 ): boolean {
-  if (row.persistedKey) return true;
+  if (row.persistedKey || !row.isNew) return true;
   if (!isRowComplete(row) || !row.tableId) return false;
 
   const payload = toExportedFieldPayload(row);

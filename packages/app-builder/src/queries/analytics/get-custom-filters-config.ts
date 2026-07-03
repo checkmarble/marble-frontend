@@ -2,7 +2,7 @@ import { type CustomFiltersConfig, getCustomFiltersConfigFn } from '@app-builder
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export const useCustomFiltersConfigQuery = (triggerObjectTypes: string[]) => {
+export const useGetCustomFiltersConfigQuery = (triggerObjectTypes: string[]) => {
   const getCustomFiltersConfig = useServerFn(getCustomFiltersConfigFn);
 
   return useQuery({

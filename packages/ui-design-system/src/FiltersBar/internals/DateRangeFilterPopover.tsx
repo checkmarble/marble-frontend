@@ -89,6 +89,7 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
           drFilter.removable
             ? () => {
                 emitRemove(drFilter.name);
+                setIsOpen(false);
               }
             : undefined
         }

@@ -1,6 +1,6 @@
 import { Panel } from '@app-builder/components/Panel';
 import type { DateRangeFilter } from '@app-builder/models/analytics';
-import { useCustomFiltersConfigQuery } from '@app-builder/queries/analytics/get-custom-filters-config';
+import { useGetCustomFiltersConfigQuery } from '@app-builder/queries/analytics/get-custom-filters-config';
 import { useDeleteFilterMutation } from '@app-builder/queries/settings/scenarios/delete-filter';
 import { useCreateFilterMutation } from '@app-builder/queries/settings/scenarios/update-filter';
 import {
@@ -39,7 +39,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
   const [draftRows, setDraftRows] = useState<CustomFilterDraftRow[]>([createEmptyDraftRow()]);
   const [rowIdPendingDelete, setRowIdPendingDelete] = useState<string | null>(null);
 
-  const { data: config, isLoading } = useCustomFiltersConfigQuery(triggerObjects);
+  const { data: config, isLoading } = useGetCustomFiltersConfigQuery(triggerObjects);
   const createFilterMutation = useCreateFilterMutation();
   const deleteFilterMutation = useDeleteFilterMutation();
 
@@ -138,7 +138,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
       await queryClient.invalidateQueries({ queryKey: ['analytics', 'custom-filters-config', triggerObjects] });
       setOpen(false);
 
-      if (toCreate.length > 0) {
+      if (toCreate.length > 0 || toDelete.length > 0) {
         toast.success(
           () => (
             <div className="flex max-w-sm flex-col gap-2xs">
@@ -153,6 +153,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
       }
     } catch {
       toast.error(t('common:errors.unknown'));
+      await queryClient.invalidateQueries({ queryKey: ['analytics', 'custom-filters-config', triggerObjects] });
     }
   }
 
