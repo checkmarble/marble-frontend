@@ -38,6 +38,7 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
   const review = reviewQuery.data;
 
   const hasPreviousReport = selectedIndex < reviews.length - 1;
+  const hasNextReport = selectedIndex > 0;
 
   if (!selectedListItem) return null;
 
@@ -47,14 +48,14 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
         <Panel.Header>
           <div className="flex items-center gap-sm">
             <Icon icon="ai-review" className="size-4 text-purple-primary shrink-0" />
-            <Typo variant="title2" className="text-grey-primary">
+            <Typo variant="title2" className="text-grey-primary shrink-0">
               {t('cases:case_detail.ai_review.panel.title')}
             </Typo>
             <ReviewStatusBadge status={selectedListItem.status} />
-            <time className="text-xs text-grey-secondary" dateTime={selectedListItem.createdAt}>
+            <time className="text-xs text-grey-secondary shrink-0" dateTime={selectedListItem.createdAt}>
               {formatDateTime(selectedListItem.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
             </time>
-            <div className="ms-auto flex items-center gap-xs">
+            <div className="ms-auto flex items-center gap-xs flex-wrap justify-end">
               <Button
                 variant="secondary"
                 size="small"
@@ -63,6 +64,16 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
               >
                 {t('cases:case.ai_reviews.see_previous_report')}
               </Button>
+              {hasNextReport ? (
+                <Button
+                  variant="secondary"
+                  size="small"
+                  onClick={() => setSelectedIndex((i) => Math.max(i - 1, 0))}
+                  disabled={!hasNextReport}
+                >
+                  {t('cases:case.ai_reviews.see_next_report')}
+                </Button>
+              ) : null}
               {canManuallyReview ? (
                 <Button
                   variant="secondary"

@@ -22,7 +22,7 @@ export function AiDescription({ isPending, description, className }: AiDescripti
         <Icon icon="ai-review" className="size-5" />
         <div>{t('scenarios:rules.ai_description.title')}</div>
       </div>
-      {description ? <AIText text={description} pace={5} /> : null}
+      {description ? <AIText text={description} /> : null}
       {isPending && description ? <div>{t('scenarios:rules.ai_description.check_reformulation')}</div> : null}
     </div>
   );

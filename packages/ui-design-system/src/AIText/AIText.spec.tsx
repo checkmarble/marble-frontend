@@ -68,30 +68,30 @@ describe('AIText', () => {
 
   it('should reveal text progressively based on pace', () => {
     const { tick } = setupAnimationFrame();
-    render(<AIText text="Hello" pace={10} />);
+    render(<AIText text="Hello world" pace={10} />);
 
-    act(() => tick(25));
-    expect(getTypingElement()).toHaveTextContent('He');
-
-    act(() => tick(15));
-    expect(getTypingElement()).toHaveTextContent('Hell');
+    act(() => tick(5));
+    expect(getTypingElement()).toHaveTextContent('');
 
     act(() => tick(10));
-    expect(screen.getByText('Hello')).toBeInTheDocument();
+    expect(getTypingElement()).toHaveTextContent('Hello');
+
+    act(() => tick(10));
+    expect(screen.getByText('Hello world')).toBeInTheDocument();
   });
 
   it('should restart from the beginning when text changes', () => {
     const { tick } = setupAnimationFrame();
-    const { rerender } = render(<AIText text="Hello" pace={10} />);
+    const { rerender } = render(<AIText text="Hello there" pace={10} />);
 
-    act(() => tick(30));
-    expect(getTypingElement()).toHaveTextContent('Hel');
+    act(() => tick(15));
+    expect(getTypingElement()).toHaveTextContent('Hello');
 
-    rerender(<AIText text="World" pace={10} />);
+    rerender(<AIText text="World now" pace={10} />);
     expect(getTypingElement()).toHaveTextContent('');
 
-    act(() => tick(20));
-    expect(getTypingElement()).toHaveTextContent('Wo');
+    act(() => tick(15));
+    expect(getTypingElement()).toHaveTextContent('World');
   });
 
   it('should apply line clamp when maxLines is provided', () => {
@@ -108,14 +108,14 @@ describe('AIText', () => {
 
   it('should stop animation when max lines is reached', () => {
     const { tick } = setupAnimationFrame();
-    const longText = 'abcdefghijklmnopqrstuvwxyz';
+    const longText = 'alpha beta gamma delta epsilon zeta';
 
     render(<AIText text={longText} pace={10} maxLines={2} />);
-    mockLineClampOverflow(5);
+    mockLineClampOverflow(11);
 
     act(() => tick(100));
 
-    expect(getTypingElement()).toHaveTextContent('abcde');
+    expect(getTypingElement()).toHaveTextContent('alpha beta');
     expect(screen.queryByText(longText)).not.toBeInTheDocument();
   });
 });

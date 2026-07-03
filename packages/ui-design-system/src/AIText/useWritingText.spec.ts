@@ -45,7 +45,7 @@ describe('useWritingText', () => {
     const { tick } = setupAnimationFrame();
     const { result } = renderHook(() => useWritingText('Hello world', 10));
 
-    act(() => tick(50));
+    act(() => tick(15));
     expect(result.current.text).toBe('Hello');
 
     act(() => {
@@ -58,5 +58,23 @@ describe('useWritingText', () => {
 
     act(() => tick(100));
     expect(result.current.text).toBe('Hel');
+  });
+
+  it('should reveal text word by word', () => {
+    const { tick } = setupAnimationFrame();
+    const { result } = renderHook(() => useWritingText('One two three', 10));
+
+    act(() => tick(5));
+    expect(result.current.text).toBe('');
+
+    act(() => tick(10));
+    expect(result.current.text).toBe('One');
+
+    act(() => tick(10));
+    expect(result.current.text).toBe('One two');
+
+    act(() => tick(10));
+    expect(result.current.text).toBe('One two three');
+    expect(result.current.isDone).toBe(true);
   });
 });

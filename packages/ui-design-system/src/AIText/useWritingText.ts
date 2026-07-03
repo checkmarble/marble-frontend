@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { getDisplayedTextForWords, getWordChunks } from './wordChunks';
 
 export function useWritingText(text: string | undefined, pace: number = 5) {
   const [displayText, setDisplayText] = useState('');
@@ -34,6 +35,7 @@ export function useWritingText(text: string | undefined, pace: number = 5) {
       return;
     }
 
+    const wordChunks = getWordChunks(text);
     const startTime = performance.now();
     lastIndexRef.current = 0;
     stopAtIndexRef.current = undefined;
@@ -41,15 +43,19 @@ export function useWritingText(text: string | undefined, pace: number = 5) {
     setDisplayText('');
 
     const tick = (now: number) => {
-      const cap = stopAtIndexRef.current ?? text.length;
-      const index = Math.min(Math.floor((now - startTime) / pace), cap);
+      const charCap = stopAtIndexRef.current ?? text.length;
+      const wordsToShow = Math.min(Math.floor((now - startTime) / pace), wordChunks.length);
+      const nextDisplayText = getDisplayedTextForWords(text, wordChunks, wordsToShow, charCap);
 
-      if (index !== lastIndexRef.current) {
-        lastIndexRef.current = index;
-        setDisplayText(text.slice(0, index));
+      if (nextDisplayText.length !== lastIndexRef.current) {
+        lastIndexRef.current = nextDisplayText.length;
+        setDisplayText(nextDisplayText);
       }
 
-      if (index < cap) {
+      const hasMoreWords = wordsToShow < wordChunks.length;
+      const belowCharCap = nextDisplayText.length < charCap;
+
+      if (hasMoreWords && belowCharCap) {
         rafIdRef.current = requestAnimationFrame(tick);
       } else {
         rafIdRef.current = undefined;

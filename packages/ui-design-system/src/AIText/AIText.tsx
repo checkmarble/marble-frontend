@@ -22,7 +22,7 @@ interface AITextProps {
   className?: string;
 }
 
-export function AIText({ text, pace = 5, maxLines, className }: AITextProps) {
+export function AIText({ text, pace = 20, maxLines, className }: AITextProps) {
   const { text: displayedText, isDone, isTruncated, stopAt } = useWritingText(text, pace);
   const contentRef = useRef<HTMLDivElement>(null);
   const clampRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,7 @@ export function AIText({ text, pace = 5, maxLines, className }: AITextProps) {
   }, [text]);
 
   useIsomorphicLayoutEffect(() => {
-    if (!maxLines || isTruncated || isDone) return;
+    if (!maxLines || isTruncated) return;
 
     const clampElement = clampRef.current;
     const typingElement = typingRef.current;
@@ -45,7 +45,7 @@ export function AIText({ text, pace = 5, maxLines, className }: AITextProps) {
     const stopIndex = findStopIndexForMaxLines(clampElement, typingElement, text, displayedText.length);
     typingElement.textContent = displayedText;
     stopAt(stopIndex);
-  }, [displayedText, isDone, isTruncated, maxLines, stopAt, text]);
+  }, [displayedText, isTruncated, maxLines, stopAt, text]);
 
   useIsomorphicLayoutEffect(() => {
     if (isDone && contentRef.current) {
@@ -63,14 +63,15 @@ export function AIText({ text, pace = 5, maxLines, className }: AITextProps) {
     }
   }, [displayedText]);
 
-  const content =
-    isDone && !isTruncated ? (
-      <Markdown>{text}</Markdown>
-    ) : (
-      <div ref={typingRef} className="whitespace-pre-wrap">
-        {displayedText}
-      </div>
-    );
+  const showMarkdown = isDone && !isTruncated && !maxLines;
+
+  const content = showMarkdown ? (
+    <Markdown>{text}</Markdown>
+  ) : (
+    <div ref={typingRef} className="whitespace-pre-wrap">
+      {displayedText}
+    </div>
+  );
 
   return (
     <div

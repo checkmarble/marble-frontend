@@ -190,6 +190,7 @@
   "case.ai_reviews.refresh": "Refresh",
   "case.ai_reviews.review_requested": "Review requested — refresh in a few minutes",
   "case.ai_reviews.see_all": "See all",
+  "case.ai_reviews.see_next_report": "Seen next report",
   "case.ai_reviews.see_previous_report": "See previous report",
   "case.ai_reviews.side_panel.back": "Back to list",
   "case.ai_reviews.status.completed": "Completed",
