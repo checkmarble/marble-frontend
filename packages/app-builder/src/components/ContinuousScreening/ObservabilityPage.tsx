@@ -1,16 +1,24 @@
 import { Page } from '@app-builder/components/Page';
 import { ScreeningNavigationTabs } from '@app-builder/components/Screenings/Navigation/Tabs';
+import { type ContinuousScreeningDatasetUpdateSummary } from '@app-builder/models/continuous-screening';
+import { useContinuousScreeningDatasetUpdatesInfiniteQuery } from '@app-builder/queries/continuous-screening/dataset-updates';
 import { formatDateAtTime } from '@app-builder/utils/datetime';
 import { useFormatLanguage, useFormatTimezone } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Card, cn, DefaultTooltip, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../Callout';
 import GridTable from '../GridTable';
 import { pageLayoutGutter } from '../Page/page-layout';
 import { Panel } from '../Panel';
+import { Spinner } from '../Spinner';
 
-export function ObservabilityPage() {
+type ObservabilityPageProps = {
+  datasetUpdates: ContinuousScreeningDatasetUpdateSummary[];
+};
+
+export function ObservabilityPage({ datasetUpdates }: ObservabilityPageProps) {
   return (
     <Page.Main>
       <Page.Content>
@@ -50,13 +58,7 @@ export function ObservabilityPage() {
                 <PanelDatasetUpdate />
               </header>
               <Callout color="purple">Datasets from provider and their status in Marble.</Callout>
-              <DatasetUpdate
-                data={[
-                  { updateDate: '2026-07-03T12:00:00Z', updateVersion: '0230240055', updateStatus: 'pending' },
-                  { updateDate: '2026-07-02T12:00:00Z', updateVersion: '0230240054', updateStatus: 'completed' },
-                  { updateDate: '2026-07-01T12:00:00Z', updateVersion: '0230240053', updateStatus: 'failed' },
-                ]}
-              />
+              <DatasetUpdate data={datasetUpdates} />
             </Card>
             <GridVersions
               data={[
@@ -210,11 +212,7 @@ function ClientDataIndexing({ data }: ClientDataIndexingProps) {
 }
 
 type DatasetUpdateProps = {
-  data: {
-    updateDate: string;
-    updateVersion: string;
-    updateStatus: 'pending' | 'completed' | 'failed';
-  }[];
+  data: ContinuousScreeningDatasetUpdateSummary[];
 };
 
 function DatasetUpdate({ data }: DatasetUpdateProps) {
@@ -225,7 +223,7 @@ function DatasetUpdate({ data }: DatasetUpdateProps) {
   return (
     <div className="grid grid-cols-2 gap-md w-fit">
       {data.map((item) => {
-        const formattedDate = formatDateAtTime(item.updateDate, {
+        const formattedDate = formatDateAtTime(item.createdAt, {
           locale,
           timeZone: timezone,
           todayLabel: t('continuousScreening:observability.today'),
@@ -234,25 +232,13 @@ function DatasetUpdate({ data }: DatasetUpdateProps) {
         });
 
         return (
-          <div key={item.updateDate} className="grid col-span-full grid-cols-subgrid items-center">
-            <time dateTime={item.updateDate} className="text-grey-secondary">
+          <div key={item.id} className="grid col-span-full grid-cols-subgrid items-center">
+            <time dateTime={item.createdAt} className="text-grey-secondary">
               {formattedDate}
             </time>
-            <Tag
-              color={item.updateStatus === 'pending' ? 'yellow' : item.updateStatus === 'completed' ? 'green' : 'red'}
-              className="gap-sm"
-            >
-              <Icon
-                icon={
-                  item.updateStatus === 'pending'
-                    ? 'waiting_for_action'
-                    : item.updateStatus === 'completed'
-                      ? 'checked'
-                      : 'x'
-                }
-                className="size-4"
-              />
-              v.{item.updateVersion}
+            <Tag color="green" className="gap-sm">
+              <Icon icon="checked" className="size-4" />
+              v.{item.version}
             </Tag>
           </div>
         );
@@ -282,16 +268,64 @@ function PanelCientIndexing() {
 }
 
 function PanelDatasetUpdate() {
+  const { t } = useTranslation(['common']);
+  const locale = useFormatLanguage();
+  const timezone = useFormatTimezone();
+  const query = useContinuousScreeningDatasetUpdatesInfiniteQuery();
+
   return (
     <Panel.Root>
       <Panel.Trigger>
         <Icon icon="eye" className="size-4" />
       </Panel.Trigger>
-      <Panel.Container size="small">
+      <Panel.Container size="medium">
         <Panel.Content>
           <Panel.Header>
             <Typo variant="title2">Dataset updates</Typo>
           </Panel.Header>
+          {match(query)
+            .with({ isPending: true }, () => (
+              <div className="flex items-center justify-center p-md">
+                <Spinner />
+              </div>
+            ))
+            .with({ isError: true }, () => (
+              <div className="text-grey-secondary p-md text-center text-xs">{t('common:global_error')}</div>
+            ))
+            .otherwise((query) => {
+              const updates = query.data.pages.flatMap((page) => page);
+
+              return (
+                <div className="flex flex-col gap-md">
+                  <GridTable.Table className="grid-cols-3">
+                    <GridTable.Row className="font-semibold border-b border-grey-border">
+                      <GridTable.Cell>Date</GridTable.Cell>
+                      <GridTable.Cell>Version</GridTable.Cell>
+                      <GridTable.Cell>Number of items</GridTable.Cell>
+                    </GridTable.Row>
+                    {updates.map((item) => (
+                      <GridTable.Row key={item.id}>
+                        <GridTable.Cell>
+                          {formatDateAtTime(item.createdAt, { locale, timeZone: timezone })}
+                        </GridTable.Cell>
+                        <GridTable.Cell>v.{item.version}</GridTable.Cell>
+                        <GridTable.Cell>{item.totalItems}</GridTable.Cell>
+                      </GridTable.Row>
+                    ))}
+                  </GridTable.Table>
+                </div>
+              );
+            })}
+          {query.hasNextPage ? (
+            <Panel.Footer>
+              <Panel.FooterButton label="Close" isCloseButton />
+              <Panel.FooterButton
+                label={t('common:load_more_results')}
+                onClick={() => query.fetchNextPage()}
+                disabled={query.isFetchingNextPage}
+              />
+            </Panel.Footer>
+          ) : null}
         </Panel.Content>
       </Panel.Container>
     </Panel.Root>

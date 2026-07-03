@@ -35,6 +35,21 @@ export const listContinuousScreeningConfigurationsFn = createServerFn({ method: 
     return { configurations: configurationsWithInbox };
   });
 
+export const listContinuousScreeningDatasetUpdatesFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      offsetId: z.string().optional(),
+      limit: z.number().optional(),
+      order: z.enum(['ASC', 'DESC']).optional(),
+      sorting: z.string().optional(),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    const datasetUpdates = await context.authInfo.continuousScreening.listDatasetUpdates(data);
+    return { datasetUpdates };
+  });
+
 async function getActiveConfigurations(
   continuousScreening: ContinuousScreeningRepository,
   objectType: string,
