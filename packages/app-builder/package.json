@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@ariakit/react": "^0.4.28",
-    "@dagrejs/dagre": "^1.1.4",
+    "@dagrejs/dagre": "^3.0.0",
     "@dinero.js/currencies": "2.0.0-alpha.14",
     "@hello-pangea/dnd": "^18.0.1",
     "@lottiefiles/dotlottie-react": "^0.14.2",
