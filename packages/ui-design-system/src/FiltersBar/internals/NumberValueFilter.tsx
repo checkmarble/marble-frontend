@@ -4,11 +4,12 @@ import { Button } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
 import { MenuCommand } from '../../MenuCommand/MenuCommand';
+import { Popover } from '../../Popover/Popover';
 import { Tooltip } from '../../Tooltip/Tooltip';
 import { NUMBER_OPERATORS } from '../FiltersBar';
 import { type NumberComparisonFilter, type NumberFilter, NumberOperator } from '../types';
-import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
+import { FilterTrigger, filterPopoverContentProps } from './FilterTrigger';
 
 export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilter; buttonState: string }) {
   const [isOpen, setOpen] = useState(false);
@@ -62,38 +63,37 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
     setOpen(false);
   };
   return (
-    <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
-      <FilterItem.Root>
-        <FilterItem.Trigger id={filter.name}>
-          <span className={buttonState}>{filter.name}</span> {(() => {
-            if (!filter.selectedValue) return null;
-            const op = (filter.selectedValue?.op ?? localValue.op) as NumberOperator;
-            const raw = (filter.selectedValue as any)?.value ?? localValue.value;
-            const val = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
-            return (
-              <span className={buttonState}>
-                {op} {val}
-              </span>
-            );
-          })()}
-          {filter.unavailable ? (
-            <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
-              <Icon icon="error" className="text-red-base size-4" />
-            </Tooltip.Default>
-          ) : null}
-        </FilterItem.Trigger>
-
-        {filter.selectedValue ? (
-          <FilterItem.Clear
-            onClick={() => {
-              emitRemove(filter.name);
-              // Keep popover state consistent
-              setOpen(false);
-            }}
-          />
+    <Popover.Root open={isOpen} onOpenChange={setOpen}>
+      <FilterTrigger
+        id={filter.name}
+        className={buttonState}
+        onClear={
+          filter.removable
+            ? () => {
+                emitRemove(filter.name);
+                setOpen(false);
+              }
+            : undefined
+        }
+      >
+        <span className={buttonState}>{filter.name}</span> {(() => {
+          if (!filter.selectedValue) return null;
+          const op = (filter.selectedValue?.op ?? localValue.op) as NumberOperator;
+          const raw = (filter.selectedValue as any)?.value ?? localValue.value;
+          const val = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+          return (
+            <span className={buttonState}>
+              {op} {val}
+            </span>
+          );
+        })()}
+        {filter.unavailable ? (
+          <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
+            <Icon icon="error" className="text-red-base size-4" />
+          </Tooltip.Default>
         ) : null}
-      </FilterItem.Root>
-      <FilterPopover.Content>
+      </FilterTrigger>
+      <Popover.Content {...filterPopoverContentProps}>
         <div className="p-md flex flex-col gap-md w-80">
           <div className="flex gap-sm">
             <MenuCommand.Menu open={opSelectIsOpen} onOpenChange={setOpSelectIsOpen}>
@@ -144,7 +144,7 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
             </Button>
           </div>
         </div>
-      </FilterPopover.Content>
-    </FilterPopover.Root>
+      </Popover.Content>
+    </Popover.Root>
   );
 }

@@ -3,11 +3,12 @@ import { Icon } from 'ui-icons';
 import { Button } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
+import { Popover } from '../../Popover/Popover';
 import { Tooltip } from '../../Tooltip/Tooltip';
 import { cn } from '../../utils';
 import { type TextFilter } from '../types';
-import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
+import { FilterTrigger, filterPopoverContentProps } from './FilterTrigger';
 
 export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; buttonState: string }) {
   const [isOpen, setOpen] = useState(false);
@@ -35,34 +36,36 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
   };
 
   return (
-    <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
-      <FilterItem.Root>
-        <FilterItem.Trigger id={filter.name}>
+    <Popover.Root open={isOpen} onOpenChange={setOpen}>
+      <FilterTrigger
+        id={filter.name}
+        className={buttonState}
+        onClear={
+          filter.removable
+            ? () => {
+                emitRemove(filter.name);
+                setOpen(false);
+              }
+            : undefined
+        }
+      >
+        {filter.selectedValue?.value && filter.selectedValue.value.length > 0 ? (
+          <span className={cn('font-medium', buttonState)}>
+            {t('filters:ds.text_match_filter.selected_values', {
+              values: filter.selectedValue.value.join(', '),
+              label: filter.name,
+            })}
+          </span>
+        ) : (
           <span className={buttonState}>{filter.name}</span>
-          {filter.selectedValue?.value && filter.selectedValue.value.length > 0 ? (
-            <span className={cn('font-medium', buttonState)}>
-              {t('filters:ds.text_match_filter.selected_values', {
-                values: filter.selectedValue.value.join(', '),
-              })}
-            </span>
-          ) : null}
-          {filter.unavailable ? (
-            <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
-              <Icon icon="error" className="text-red-base size-4" />
-            </Tooltip.Default>
-          ) : null}
-        </FilterItem.Trigger>
-
-        {filter.selectedValue ? (
-          <FilterItem.Clear
-            onClick={() => {
-              emitRemove(filter.name);
-              setOpen(false);
-            }}
-          />
+        )}
+        {filter.unavailable ? (
+          <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
+            <Icon icon="error" className="text-red-base size-4" />
+          </Tooltip.Default>
         ) : null}
-      </FilterItem.Root>
-      <FilterPopover.Content>
+      </FilterTrigger>
+      <Popover.Content {...filterPopoverContentProps}>
         <div className="p-md flex flex-col gap-sm w-80">
           <aside className="bg-purple-background-light text-s text-purple-primary flex flex-row gap-sm rounded-lg p-md font-normal items-center">
             <Icon icon="tip" className="size-4 shrink-0" />
@@ -95,7 +98,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
             </Button>
           </div>
         </div>
-      </FilterPopover.Content>
-    </FilterPopover.Root>
+      </Popover.Content>
+    </Popover.Root>
   );
 }

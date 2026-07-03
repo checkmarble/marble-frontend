@@ -55,7 +55,7 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
           'transition-colors',
           props.mode === 'single' && 'rounded-md bg-purple-primary text-grey-white ',
         ),
-        [SelectionState.range_start]: 'text-grey-white bg-purple-primary rounded-sm-md',
+        [SelectionState.range_start]: 'text-grey-white bg-purple-primary rounded-s-md',
         [SelectionState.range_end]: 'text-grey-white bg-purple-primary rounded-e-md',
         [SelectionState.range_middle]: 'text-purple-primary bg-purple-background-light',
         [DayFlag.outside]: 'text-grey-disabled',

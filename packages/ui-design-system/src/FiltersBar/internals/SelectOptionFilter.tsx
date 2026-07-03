@@ -53,7 +53,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
             mode="normal"
             size="medium"
             className="justify-between w-full"
-            style={{ width: `${maxOptionLabelLength}ch` }}
+            style={{ width: `${maxOptionLabelLength + 3}ch` }}
           >
             <span className="text-sm truncate flex items-center gap-xs">
               {getSelectedLabel()}

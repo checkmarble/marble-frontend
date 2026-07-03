@@ -197,7 +197,7 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
         return next;
       });
 
-      if (allDescriptors.find((d) => d.name === name)?.instantUpdate && onChange) {
+      if (onChange) {
         const nextValue = { ...draftValue };
         delete nextValue[name];
         onChange({ type: 'remove', name }, { value: nextValue });

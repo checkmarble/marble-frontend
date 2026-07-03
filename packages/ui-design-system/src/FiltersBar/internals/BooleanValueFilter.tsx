@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { Checkbox } from '../../Checkbox/Checkbox';
 import { useI18n } from '../../contexts/I18nContext';
+import { Popover } from '../../Popover/Popover';
 import { Tooltip } from '../../Tooltip/Tooltip';
 import { cn } from '../../utils';
 import { type BooleanFilter, type FilterBarLevel } from '../types';
-import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
+import { FilterTrigger, filterPopoverContentProps } from './FilterTrigger';
 
 export function BooleanValueFilter({
   filter,
@@ -35,27 +36,27 @@ export function BooleanValueFilter({
   }, [isOpen]);
 
   return (
-    <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
-      <FilterItem.Root>
-        <FilterItem.Trigger className={buttonState}>
-          <span className={buttonState}>{label}</span>
-        </FilterItem.Trigger>
+    <Popover.Root open={isOpen} onOpenChange={setOpen}>
+      <FilterTrigger
+        className={buttonState}
+        onClear={
+          filter.removable
+            ? () => {
+                setLocalChecked('indeterminate');
+                emitRemove(filter.name);
+                setOpen(false);
+              }
+            : undefined
+        }
+      >
+        <span className={buttonState}>{label}</span>
         {filter.unavailable ? (
           <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
             <Icon icon="error" className="text-red-base size-4" />
           </Tooltip.Default>
         ) : null}
-        {filter.removable && filter.selectedValue ? (
-          <FilterItem.Clear
-            onClick={() => {
-              setLocalChecked('indeterminate');
-              emitRemove(filter.name);
-              setOpen(false);
-            }}
-          />
-        ) : null}
-      </FilterItem.Root>
-      <FilterPopover.Content>
+      </FilterTrigger>
+      <Popover.Content {...filterPopoverContentProps}>
         <div className="p-md flex flex-col gap-md w-64">
           <div className="flex items-center gap-sm">
             <Checkbox checked={localChecked} onCheckedChange={(checked) => setLocalChecked(checked as any)} />
@@ -77,7 +78,7 @@ export function BooleanValueFilter({
             </button>
           </div>
         </div>
-      </FilterPopover.Content>
-    </FilterPopover.Root>
+      </Popover.Content>
+    </Popover.Root>
   );
 }

@@ -216,9 +216,15 @@ function Trigger({ children }: React.PropsWithChildren) {
     },
   });
 
+  const triggerChild = React.isValidElement<{ className?: string }>(children)
+    ? React.cloneElement(children, {
+        className: cn('group', children.props.className),
+      })
+    : children;
+
   return (
     <InternalMenuSharpFactory.Provider value={triggerOverrideSharp}>
-      <TriggerEl asChild>{children}</TriggerEl>
+      <TriggerEl asChild>{triggerChild}</TriggerEl>
     </InternalMenuSharpFactory.Provider>
   );
 }
@@ -260,7 +266,12 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
 });
 
 function MenuArrow() {
-  return <Icon icon="caret-down" className="size-4 shrink-0" />;
+  return (
+    <Icon
+      icon="caret-down"
+      className="group-radix-state-open:rotate-180 size-4 shrink-0 transition-transform duration-200"
+    />
+  );
 }
 
 const contentClassname = cva('flex z-50 text-s group/menu-command-content', {

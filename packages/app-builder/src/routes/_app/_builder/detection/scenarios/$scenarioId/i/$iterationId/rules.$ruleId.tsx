@@ -268,7 +268,7 @@ function RuleDetail() {
         />
       </Page.Header>
       <Page.Container>
-        <Page.Content width="form">
+        <Page.Content width="table">
           <form className="relative flex flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn(
@@ -384,7 +384,7 @@ function RuleDetail() {
               </div>
               <div className="flex flex-col gap-sm">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
-                <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-lg">
+                <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-sm">
                   <div
                     className={cn(
                       'bg-surface-card border-grey-border rounded-md border p-lg max-w-3xl',
