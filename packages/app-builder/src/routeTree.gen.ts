@@ -64,6 +64,7 @@ import { Route as AppBuilderDetectionListsRouteImport } from './routes/_app/_bui
 import { Route as AppBuilderDetectionDecisionsRouteImport } from './routes/_app/_builder/detection/decisions'
 import { Route as AppBuilderDetectionAnalyticsRouteImport } from './routes/_app/_builder/detection/analytics'
 import { Route as AppBuilderDataListRouteImport } from './routes/_app/_builder/data/list'
+import { Route as AppBuilderContinuousScreeningObservabilityRouteImport } from './routes/_app/_builder/continuous-screening/observability'
 import { Route as AppBuilderContinuousScreeningConfigurationsRouteImport } from './routes/_app/_builder/continuous-screening/configurations'
 import { Route as AppBuilderCasesOverviewRouteImport } from './routes/_app/_builder/cases/overview'
 import { Route as AppBuilderCasesInboxesRouteImport } from './routes/_app/_builder/cases/inboxes'
@@ -419,6 +420,12 @@ const AppBuilderDataListRoute = AppBuilderDataListRouteImport.update({
   path: '/list',
   getParentRoute: () => AppBuilderDataRoute,
 } as any)
+const AppBuilderContinuousScreeningObservabilityRoute =
+  AppBuilderContinuousScreeningObservabilityRouteImport.update({
+    id: '/observability',
+    path: '/observability',
+    getParentRoute: () => AppBuilderContinuousScreeningRoute,
+  } as any)
 const AppBuilderContinuousScreeningConfigurationsRoute =
   AppBuilderContinuousScreeningConfigurationsRouteImport.update({
     id: '/configurations',
@@ -790,6 +797,7 @@ export interface FileRoutesByFullPath {
   '/cases/inboxes': typeof AppBuilderCasesInboxesRouteWithChildren
   '/cases/overview': typeof AppBuilderCasesOverviewRoute
   '/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
+  '/continuous-screening/observability': typeof AppBuilderContinuousScreeningObservabilityRoute
   '/data/list': typeof AppBuilderDataListRoute
   '/detection/analytics': typeof AppBuilderDetectionAnalyticsRouteWithChildren
   '/detection/decisions': typeof AppBuilderDetectionDecisionsRouteWithChildren
@@ -889,6 +897,7 @@ export interface FileRoutesByTo {
   '/cases/analytics': typeof AppBuilderCasesAnalyticsRoute
   '/cases/overview': typeof AppBuilderCasesOverviewRoute
   '/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
+  '/continuous-screening/observability': typeof AppBuilderContinuousScreeningObservabilityRoute
   '/data/list': typeof AppBuilderDataListRoute
   '/settings/analytics': typeof AppBuilderSettingsAnalyticsRouteWithChildren
   '/settings/api-keys': typeof AppBuilderSettingsApiKeysRoute
@@ -989,6 +998,7 @@ export interface FileRoutesById {
   '/_app/_builder/cases/inboxes': typeof AppBuilderCasesInboxesRouteWithChildren
   '/_app/_builder/cases/overview': typeof AppBuilderCasesOverviewRoute
   '/_app/_builder/continuous-screening/configurations': typeof AppBuilderContinuousScreeningConfigurationsRoute
+  '/_app/_builder/continuous-screening/observability': typeof AppBuilderContinuousScreeningObservabilityRoute
   '/_app/_builder/data/list': typeof AppBuilderDataListRoute
   '/_app/_builder/detection/analytics': typeof AppBuilderDetectionAnalyticsRouteWithChildren
   '/_app/_builder/detection/decisions': typeof AppBuilderDetectionDecisionsRouteWithChildren
@@ -1099,6 +1109,7 @@ export interface FileRouteTypes {
     | '/cases/inboxes'
     | '/cases/overview'
     | '/continuous-screening/configurations'
+    | '/continuous-screening/observability'
     | '/data/list'
     | '/detection/analytics'
     | '/detection/decisions'
@@ -1198,6 +1209,7 @@ export interface FileRouteTypes {
     | '/cases/analytics'
     | '/cases/overview'
     | '/continuous-screening/configurations'
+    | '/continuous-screening/observability'
     | '/data/list'
     | '/settings/analytics'
     | '/settings/api-keys'
@@ -1297,6 +1309,7 @@ export interface FileRouteTypes {
     | '/_app/_builder/cases/inboxes'
     | '/_app/_builder/cases/overview'
     | '/_app/_builder/continuous-screening/configurations'
+    | '/_app/_builder/continuous-screening/observability'
     | '/_app/_builder/data/list'
     | '/_app/_builder/detection/analytics'
     | '/_app/_builder/detection/decisions'
@@ -1783,6 +1796,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/data/list'
       preLoaderRoute: typeof AppBuilderDataListRouteImport
       parentRoute: typeof AppBuilderDataRoute
+    }
+    '/_app/_builder/continuous-screening/observability': {
+      id: '/_app/_builder/continuous-screening/observability'
+      path: '/observability'
+      fullPath: '/continuous-screening/observability'
+      preLoaderRoute: typeof AppBuilderContinuousScreeningObservabilityRouteImport
+      parentRoute: typeof AppBuilderContinuousScreeningRoute
     }
     '/_app/_builder/continuous-screening/configurations': {
       id: '/_app/_builder/continuous-screening/configurations'
@@ -2369,6 +2389,7 @@ const AppBuilderCasesRouteWithChildren = AppBuilderCasesRoute._addFileChildren(
 
 interface AppBuilderContinuousScreeningRouteChildren {
   AppBuilderContinuousScreeningConfigurationsRoute: typeof AppBuilderContinuousScreeningConfigurationsRoute
+  AppBuilderContinuousScreeningObservabilityRoute: typeof AppBuilderContinuousScreeningObservabilityRoute
   AppBuilderContinuousScreeningIndexRoute: typeof AppBuilderContinuousScreeningIndexRoute
   AppBuilderContinuousScreeningCreateIndexRoute: typeof AppBuilderContinuousScreeningCreateIndexRoute
 }
@@ -2377,6 +2398,8 @@ const AppBuilderContinuousScreeningRouteChildren: AppBuilderContinuousScreeningR
   {
     AppBuilderContinuousScreeningConfigurationsRoute:
       AppBuilderContinuousScreeningConfigurationsRoute,
+    AppBuilderContinuousScreeningObservabilityRoute:
+      AppBuilderContinuousScreeningObservabilityRoute,
     AppBuilderContinuousScreeningIndexRoute:
       AppBuilderContinuousScreeningIndexRoute,
     AppBuilderContinuousScreeningCreateIndexRoute:

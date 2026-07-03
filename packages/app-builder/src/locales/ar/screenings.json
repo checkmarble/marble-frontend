@@ -211,6 +211,8 @@
   "match.status.pending": "للمراجعة",
   "match.status.skipped": "تم التخطي",
   "match.unique_counterparty_identifier": "مُعرّف فريد للطرف المقابل",
+  "navigation.configurations": "التكوينات",
+  "navigation.observability": "المراقبة",
   "panel.deselect_all": "إلغاء تحديد الكل",
   "panel.dismiss_false_positives": "إزالة الإيجابيات الكاذبة المحتملة",
   "panel.mark_all_false_positive": "تحديد الكل كإيجابي كاذب",
