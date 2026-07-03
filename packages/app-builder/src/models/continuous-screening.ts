@@ -4,6 +4,7 @@ import {
 } from '@app-builder/components/ListAndTopicConfiguration/dataset-selection-provider-utils';
 import {
   ContinuousScreeningConfigDto,
+  ContinuousScreeningDatasetUpdateSummaryDto,
   ContinuousScreeningDto,
   ContinuousScreeningMappingConfigDto,
   ContinuousScreeningMatchBaseDto,
@@ -53,6 +54,33 @@ export function adaptContinuousScreeningConfig(config: ContinuousScreeningConfig
     matchThreshold: config.match_threshold,
     matchLimit: config.match_limit,
     enabled: config.enabled,
+  };
+}
+
+export type ContinuousScreeningDatasetUpdateSummary = {
+  id: string;
+  datasetName: string;
+  version: string;
+  totalItems: number;
+  createdAt: string;
+};
+
+export type ListContinuousScreeningDatasetUpdatesParams = {
+  offsetId?: string;
+  limit?: number;
+  order?: 'ASC' | 'DESC';
+  sorting?: string;
+};
+
+export function adaptContinuousScreeningDatasetUpdateSummary(
+  dto: ContinuousScreeningDatasetUpdateSummaryDto,
+): ContinuousScreeningDatasetUpdateSummary {
+  return {
+    id: dto.id,
+    datasetName: dto.dataset_name,
+    version: dto.version,
+    totalItems: dto.total_items,
+    createdAt: dto.created_at,
   };
 }
 

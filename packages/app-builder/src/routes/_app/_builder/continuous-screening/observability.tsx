@@ -1,5 +1,6 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { ObservabilityPage } from '@app-builder/components/ContinuousScreening/ObservabilityPage';
+import { listContinuousScreeningDatasetUpdatesFn } from '@app-builder/server-fns/continuous-screening';
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -17,9 +18,11 @@ export const Route = createFileRoute('/_app/_builder/continuous-screening/observ
       },
     ],
   },
+  loader: () => listContinuousScreeningDatasetUpdatesFn({ data: { limit: 5, order: 'DESC' } }),
   component: ContinuousScreeningObservability,
 });
 
 function ContinuousScreeningObservability() {
-  return <ObservabilityPage />;
+  const { datasetUpdates } = Route.useLoaderData();
+  return <ObservabilityPage datasetUpdates={datasetUpdates} />;
 }

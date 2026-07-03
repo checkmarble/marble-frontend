@@ -233,6 +233,30 @@
             schema:
               $ref: '#/components/schemas/ContinuousScreeningDto'
 
+/continuous-screenings/dataset-updates:
+  get:
+    summary: List continuous screening dataset update summaries
+    operationId: listContinuousScreeningDatasetUpdates
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of continuous screening dataset update summaries
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContinuousScreeningDatasetUpdateSummaryDto'
+
 /continuous-screenings/{id}/load-more:
   post:
     summary: Load more matches for a continuous screening
@@ -256,6 +280,28 @@
 
 components:
   schemas:
+    ContinuousScreeningDatasetUpdateSummaryDto:
+      type: object
+      required:
+        - id
+        - dataset_name
+        - version
+        - total_items
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        dataset_name:
+          type: string
+        version:
+          type: string
+        total_items:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
     ContinuousScreeningConfigDto:
       type: object
       required:

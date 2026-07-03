@@ -271,6 +271,8 @@ paths:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1configs~1{stable_id}
   /continuous-screenings/objects:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1objects
+  /continuous-screenings/dataset-updates:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1dataset-updates
   /continuous-screenings/matches/{id}:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1matches~1{id}
   /continuous-screenings:

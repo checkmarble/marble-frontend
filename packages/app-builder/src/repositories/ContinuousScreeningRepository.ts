@@ -1,13 +1,19 @@
 import { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptContinuousScreeningConfig,
+  adaptContinuousScreeningDatasetUpdateSummary,
   adaptCreateContinuousScreeningConfigDto,
   ContinuousScreeningConfig,
+  ContinuousScreeningDatasetUpdateSummary,
   CreateContinuousScreeningConfig,
+  ListContinuousScreeningDatasetUpdatesParams,
 } from '@app-builder/models/continuous-screening';
 
 export interface ContinuousScreeningRepository {
   listConfigurations(): Promise<ContinuousScreeningConfig[]>;
+  listDatasetUpdates(
+    params: ListContinuousScreeningDatasetUpdatesParams,
+  ): Promise<ContinuousScreeningDatasetUpdateSummary[]>;
   createConfiguration(configuration: CreateContinuousScreeningConfig): Promise<ContinuousScreeningConfig>;
   updateConfiguration(
     stableId: string,
@@ -24,6 +30,15 @@ export function makeGetContinuousScreeningRepository() {
     listConfigurations: async () => {
       const configurations = await marbleCoreApiClient.listContinuousScreeningConfigs();
       return configurations.map(adaptContinuousScreeningConfig);
+    },
+    listDatasetUpdates: async ({ offsetId, limit, order, sorting }) => {
+      const result = await marbleCoreApiClient.listContinuousScreeningDatasetUpdates({
+        offsetId,
+        limit,
+        order,
+        sorting,
+      });
+      return result.map(adaptContinuousScreeningDatasetUpdateSummary);
     },
     createConfiguration: async (configuration) => {
       const result = await marbleCoreApiClient.createContinuousScreeningConfig(

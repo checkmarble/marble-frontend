@@ -1264,6 +1264,13 @@ export type DeleteContinuousScreeningObjectDto = {
     object_id: string;
     config_stable_id: string;
 };
+export type ContinuousScreeningDatasetUpdateSummaryDto = {
+    id: string;
+    dataset_name: string;
+    version: string;
+    total_items: number;
+    created_at: string;
+};
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
@@ -4544,6 +4551,27 @@ export function deleteContinuousScreeningObject(deleteContinuousScreeningObjectD
         method: "DELETE",
         body: deleteContinuousScreeningObjectDto
     })));
+}
+/**
+ * List continuous screening dataset update summaries
+ */
+export function listContinuousScreeningDatasetUpdates({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningDatasetUpdateSummaryDto[];
+    }>(`/continuous-screenings/dataset-updates${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
 }
 /**
  * Update a continuous screening match status
