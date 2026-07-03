@@ -10,13 +10,14 @@ import QueryString from 'qs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import { Button, ExpandableGroupTagLine, Tag, Typo } from 'ui-design-system';
+import { Button, ExpandableGroupTagLine, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';
 import { makeDatasetsMap } from '../ListAndTopicConfiguration/dataset-selection-provider-utils';
 import { findDatasetOrTopicByKey, useDatasetTitle } from '../ListAndTopicConfiguration/dataset-utils';
 import { Page } from '../Page';
+import { ScreeningNavigationTabs } from '../Screenings/Navigation/Tabs';
 import { ConfigurationPanel } from './ConfigurationPanel';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
@@ -72,83 +73,86 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
   return (
     <Page.Main>
       <Page.Content width="table">
-        <div className="flex items-center justify-between">
-          <Typo variant="title1">{t('navigation:continuous-screening.configurations')}</Typo>
-          {canEdit ? (
-            <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
-              {t('continuousScreening:configurations.add_configuration')}
-            </Button>
-          ) : null}
-        </div>
-        {match(configurations)
-          .with(P.nullish, () => null)
-          .with(P.array(), (configurations) =>
-            configurations.length === 0 ? (
-              <div className="flex flex-col gap-sm items-center justify-center py-2xl border border-grey-border rounded-lg bg-surface-card">
-                <Icon icon="scan-eye" className="size-10 text-purple-primary" />
-                <span>{t('continuousScreening:configurations.list.empty')}</span>
-                {canEdit ? (
-                  <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
-                    <Icon icon="plus" className="size-4" />
-                    {t('continuousScreening:configurations.add_configuration')}
-                  </Button>
-                ) : null}
-              </div>
-            ) : (
-              <GridTable.Table className="grid-cols-[minmax(0,_33.33%)_repeat(3,_1fr)]">
-                <GridTable.Row className="font-semibold border-b border-grey-border">
-                  <GridTable.Cell>{t('continuousScreening:configurations.list.column.name')}</GridTable.Cell>
-                  <GridTable.Cell>{t('continuousScreening:configurations.list.column.datasets')}</GridTable.Cell>
-                  <GridTable.Cell>{t('continuousScreening:configurations.list.column.object_types')}</GridTable.Cell>
-                  <GridTable.Cell>{t('continuousScreening:configurations.list.column.target_inbox')}</GridTable.Cell>
-                </GridTable.Row>
-                {configurations.map((item) => (
-                  <GridTable.Row
-                    key={item.id}
-                    className="hover:bg-grey-background-light"
-                    onClick={() => handleRowClick(item)}
-                  >
-                    <GridTable.Cell className="flex gap-md items-center justify-between">
-                      <span className="truncate">{item.name}</span>
-                      <CopyToClipboardButton toCopy={item.stableId} className="min-w-40" size="chip" rounded>
-                        <span className="text-xs">{item.stableId}</span>
-                      </CopyToClipboardButton>
-                    </GridTable.Cell>
-                    <GridTable.Cell className="min-w-0">
-                      <div className="flex min-w-0 w-full max-w-[20vw] overflow-hidden">
-                        <ExpandableGroupTagLine
-                          items={item.datasets.map((d) => {
-                            const resolvedItem = findDatasetOrTopicByKey(datasets, d);
-                            const itemName = resolvedItem ? formatItemName(resolvedItem) : d;
-                            return (
-                              <Tag key={d} color="grey">
-                                <span className="max-w-[15ch] truncate" title={itemName}>
-                                  {itemName}
-                                </span>
-                              </Tag>
-                            );
-                          })}
-                        />
-                      </div>
-                    </GridTable.Cell>
-                    <GridTable.Cell className="min-w-0">
-                      <div className="flex min-w-0 w-full max-w-[20vw] overflow-hidden">
-                        <ExpandableGroupTagLine
-                          items={item.objectTypes.map((ot) => (
-                            <Tag key={ot} color="grey">
-                              {ot}
-                            </Tag>
-                          ))}
-                        />
-                      </div>
-                    </GridTable.Cell>
-                    <GridTable.Cell>{item.inbox?.name}</GridTable.Cell>
+        <div className="flex flex-col gap-md">
+          <ScreeningNavigationTabs
+            actions={
+              canEdit ? (
+                <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
+                  {t('continuousScreening:configurations.add_configuration')}
+                </Button>
+              ) : undefined
+            }
+          />
+          {match(configurations)
+            .with(P.nullish, () => null)
+            .with(P.array(), (configurations) =>
+              configurations.length === 0 ? (
+                <div className="flex flex-col gap-sm items-center justify-center py-2xl border border-grey-border rounded-lg bg-surface-card">
+                  <Icon icon="scan-eye" className="size-10 text-purple-primary" />
+                  <span>{t('continuousScreening:configurations.list.empty')}</span>
+                  {canEdit ? (
+                    <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
+                      <Icon icon="plus" className="size-4" />
+                      {t('continuousScreening:configurations.add_configuration')}
+                    </Button>
+                  ) : null}
+                </div>
+              ) : (
+                <GridTable.Table className="grid-cols-[minmax(0,_33.33%)_repeat(3,_1fr)]">
+                  <GridTable.Row className="font-semibold border-b border-grey-border">
+                    <GridTable.Cell>{t('continuousScreening:configurations.list.column.name')}</GridTable.Cell>
+                    <GridTable.Cell>{t('continuousScreening:configurations.list.column.datasets')}</GridTable.Cell>
+                    <GridTable.Cell>{t('continuousScreening:configurations.list.column.object_types')}</GridTable.Cell>
+                    <GridTable.Cell>{t('continuousScreening:configurations.list.column.target_inbox')}</GridTable.Cell>
                   </GridTable.Row>
-                ))}
-              </GridTable.Table>
-            ),
-          )
-          .exhaustive()}
+                  {configurations.map((item) => (
+                    <GridTable.Row
+                      key={item.id}
+                      className="hover:bg-grey-background-light"
+                      onClick={() => handleRowClick(item)}
+                    >
+                      <GridTable.Cell className="flex gap-md items-center justify-between">
+                        <span className="truncate">{item.name}</span>
+                        <CopyToClipboardButton toCopy={item.stableId} className="min-w-40" size="chip" rounded>
+                          <span className="text-xs">{item.stableId}</span>
+                        </CopyToClipboardButton>
+                      </GridTable.Cell>
+                      <GridTable.Cell className="min-w-0">
+                        <div className="flex min-w-0 w-full max-w-[20vw] overflow-hidden">
+                          <ExpandableGroupTagLine
+                            items={item.datasets.map((d) => {
+                              const resolvedItem = findDatasetOrTopicByKey(datasets, d);
+                              const itemName = resolvedItem ? formatItemName(resolvedItem) : d;
+                              return (
+                                <Tag key={d} color="grey">
+                                  <span className="max-w-[15ch] truncate" title={itemName}>
+                                    {itemName}
+                                  </span>
+                                </Tag>
+                              );
+                            })}
+                          />
+                        </div>
+                      </GridTable.Cell>
+                      <GridTable.Cell className="min-w-0">
+                        <div className="flex min-w-0 w-full max-w-[20vw] overflow-hidden">
+                          <ExpandableGroupTagLine
+                            items={item.objectTypes.map((ot) => (
+                              <Tag key={ot} color="grey">
+                                {ot}
+                              </Tag>
+                            ))}
+                          />
+                        </div>
+                      </GridTable.Cell>
+                      <GridTable.Cell>{item.inbox?.name}</GridTable.Cell>
+                    </GridTable.Row>
+                  ))}
+                </GridTable.Table>
+              ),
+            )
+            .exhaustive()}
+        </div>
 
         <CreationModal open={creationModalOpen} onOpenChange={setCreationModalOpen} onSubmit={handleCreationSubmit} />
         {editingConfig && draft ? (
