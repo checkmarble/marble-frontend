@@ -1753,6 +1753,9 @@ components:
                   type: array
                   items:
                     $ref: "#/components/schemas/KYCAnalysisDto"
+            summary:
+              type: string
+              description: Summary of the case review by ai
         - anyOf:
             - $ref: "#/components/schemas/CaseReviewOkDto"
             - $ref: "#/components/schemas/CaseReviewNotOkDto"

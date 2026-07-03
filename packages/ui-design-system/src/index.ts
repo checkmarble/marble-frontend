@@ -1,4 +1,6 @@
 export * from './ActionBar/ActionBar';
+export * from './AIText/AIText';
+export * from './AIText/useWritingText';
 export * from './Avatar/Avatar';
 export * from './Button/Button';
 export * from './Calendar/Calendar';

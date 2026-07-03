@@ -599,6 +599,7 @@ export type CaseReviewContent = {
   output: string;
   proofs: CaseReviewProof[];
   thought?: string;
+  summary?: string;
 } & ({ ok: true; sanityCheck?: undefined } | { ok: false; sanityCheck: string });
 
 export type CaseReview = {
@@ -626,6 +627,7 @@ export function adaptCaseReviewContent(dto: Parameters<typeof adaptCaseReview>[0
     output: dto.output,
     thought: dto.thought,
     proofs: dto.proofs.map(adaptCaseReviewProof),
+    summary: dto.summary,
   } as const;
   if (!dto.ok) {
     return { ...base, ok: false, sanityCheck: dto.sanity_check };

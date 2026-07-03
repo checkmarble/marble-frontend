@@ -60,7 +60,7 @@ export function CaseManagerPrincipalPage({
   const mainPivotObject = pivotObjects?.[0] ?? null;
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
   const hasRuleHits = caseDecisionsQuery.data?.pages.some((page) =>
-    page.decisions.some((d) => d.rules.some((r) => r.outcome === 'hit')),
+    page?.decisions?.some((d) => d.rules?.some((r) => r.outcome === 'hit')),
   );
 
   const rootRef = useRef<HTMLDivElement>(null);
