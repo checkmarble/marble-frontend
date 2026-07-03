@@ -47,7 +47,7 @@
     "@dagrejs/dagre": "^1.1.4",
     "@dinero.js/currencies": "2.0.0-alpha.14",
     "@hello-pangea/dnd": "^18.0.1",
-    "@lottiefiles/dotlottie-react": "^0.14.2",
+    "@lottiefiles/dotlottie-react": "^0.19.4",
     "@lottiefiles/react-lottie-player": "^3.6.0",
     "@marble/shared": "workspace:*",
     "@mcansh/http-helmet": "^0.13.0",
