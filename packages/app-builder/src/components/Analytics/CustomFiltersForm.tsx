@@ -173,35 +173,37 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
               {t('analytics:filters.custom_filters.no_filters')}
             </Typo>
           ) : isLoading ? null : (
-            <div className="flex flex-col gap-md px-lg pb-lg">
-              {draftRows.map((row) => (
-                <CustomFilterRow
-                  key={row.id}
-                  row={row}
-                  triggerObjects={triggerObjects}
-                  tableConfig={row.triggerObjectType ? tableConfigByName.get(row.triggerObjectType) : undefined}
-                  usedSelectionKeys={getUsedSelectionKeys(draftRows, row.id)}
-                  onTriggerObjectChange={(triggerObjectType) => {
-                    const tableId = tableConfigByName.get(triggerObjectType)?.tableId ?? null;
-                    updateRow(row.id, (current) => ({
-                      ...current,
-                      triggerObjectType,
-                      tableId,
-                      selection: null,
-                      persistedKey: undefined,
-                    }));
-                  }}
-                  onSelectionChange={(selection) => {
-                    updateRow(row.id, (current) => ({
-                      ...current,
-                      selection,
-                      persistedKey: undefined,
-                    }));
-                  }}
-                  onRemove={() => requestRemoveRow(row.id)}
-                  onUndelete={() => undeleteRow(row.id)}
-                />
-              ))}
+            <>
+              <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-md px-lg pb-lg">
+                {draftRows.map((row) => (
+                  <CustomFilterRow
+                    key={row.id}
+                    row={row}
+                    triggerObjects={triggerObjects}
+                    tableConfig={row.triggerObjectType ? tableConfigByName.get(row.triggerObjectType) : undefined}
+                    usedSelectionKeys={getUsedSelectionKeys(draftRows, row.id)}
+                    onTriggerObjectChange={(triggerObjectType) => {
+                      const tableId = tableConfigByName.get(triggerObjectType)?.tableId ?? null;
+                      updateRow(row.id, (current) => ({
+                        ...current,
+                        triggerObjectType,
+                        tableId,
+                        selection: null,
+                        persistedKey: undefined,
+                      }));
+                    }}
+                    onSelectionChange={(selection) => {
+                      updateRow(row.id, (current) => ({
+                        ...current,
+                        selection,
+                        persistedKey: undefined,
+                      }));
+                    }}
+                    onRemove={() => requestRemoveRow(row.id)}
+                    onUndelete={() => undeleteRow(row.id)}
+                  />
+                ))}
+              </div>
               <Button
                 variant="primary"
                 appearance="stroked"
@@ -212,7 +214,7 @@ export function CustomFiltersForm({ triggerObjects, scenarioId, ranges }: Custom
                 <span>{t('analytics:filters.custom_filters.add_filter')}</span>
                 <Icon icon="plus" className="size-4" />
               </Button>
-            </div>
+            </>
           )}
           <Panel.Footer className="flex gap-md items-center">
             <Typo variant="text" className="text-grey-secondary">
@@ -289,7 +291,7 @@ function CustomFilterRow({
   const deletedTextClassName = 'text-grey-secondary line-through';
 
   return (
-    <div className={cn('flex items-center gap-md', isDeleted && 'opacity-60')}>
+    <div className={cn('col-span-full grid grid-cols-subgrid items-center gap-md', isDeleted && 'opacity-60')}>
       <TriggerObjectSelect
         triggerObjects={triggerObjects}
         value={row.triggerObjectType}
