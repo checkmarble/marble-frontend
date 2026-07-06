@@ -47,6 +47,20 @@ export const listContinuousScreeningDatasetUpdatesFn = createServerFn({ method: 
     return context.authInfo.continuousScreening.listDatasetUpdates(data);
   });
 
+export const listContinuousScreeningUpdateJobsFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      offsetId: z.string().optional(),
+      limit: z.number().optional(),
+      order: z.enum(['ASC', 'DESC']).optional(),
+      sorting: z.string().optional(),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    return context.authInfo.continuousScreening.listUpdateJobs(data);
+  });
+
 export const createContinuousScreeningConfigurationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createContinuousScreeningConfigSchema)

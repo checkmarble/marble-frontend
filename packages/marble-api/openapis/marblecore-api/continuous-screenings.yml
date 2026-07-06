@@ -264,6 +264,37 @@
                       items:
                         $ref: '#/components/schemas/ContinuousScreeningDatasetUpdateSummaryDto'
 
+/continuous-screenings/update-jobs:
+  get:
+    summary: List continuous screening update job summaries
+    operationId: listContinuousScreeningUpdateJobs
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of continuous screening update job summaries
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: 'components.yml#/schemas/Pagination'
+                - type: object
+                  required:
+                    - items
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ContinuousScreeningUpdateJobSummaryDto'
+
 /continuous-screenings/{id}/load-more:
   post:
     summary: Load more matches for a continuous screening
@@ -308,6 +339,75 @@ components:
         created_at:
           type: string
           format: date-time
+
+    ContinuousScreeningJobErrorDto:
+      type: object
+      required:
+        - id
+        - update_job_id
+        - details
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        update_job_id:
+          type: string
+          format: uuid
+        details:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+
+    ContinuousScreeningUpdateJobSummaryDto:
+      type: object
+      required:
+        - id
+        - status
+        - job_start
+        - job_end
+        - config_name
+        - description
+        - total_items
+        - reception_time
+        - version
+        - errors
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - completed
+            - failed
+        job_start:
+          type: string
+          format: date-time
+        job_end:
+          type: string
+          format: date-time
+        config_name:
+          type: string
+        description:
+          type: string
+        total_items:
+          type: integer
+        reception_time:
+          type: string
+          format: date-time
+        version:
+          type: string
+        items_processed:
+          type: integer
+          nullable: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningJobErrorDto'
 
     ContinuousScreeningConfigDto:
       type: object

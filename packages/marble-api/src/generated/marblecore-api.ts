@@ -1271,6 +1271,25 @@ export type ContinuousScreeningDatasetUpdateSummaryDto = {
     total_items: number;
     created_at: string;
 };
+export type ContinuousScreeningJobErrorDto = {
+    id: string;
+    update_job_id: string;
+    details: object;
+    created_at: string;
+};
+export type ContinuousScreeningUpdateJobSummaryDto = {
+    id: string;
+    status: "pending" | "processing" | "completed" | "failed";
+    job_start: string;
+    job_end: string;
+    config_name: string;
+    description: string;
+    total_items: number;
+    reception_time: string;
+    version: string;
+    items_processed?: number | null;
+    errors: ContinuousScreeningJobErrorDto[];
+};
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
@@ -4567,6 +4586,29 @@ export function listContinuousScreeningDatasetUpdates({ offsetId, sorting, order
             items: ContinuousScreeningDatasetUpdateSummaryDto[];
         };
     }>(`/continuous-screenings/dataset-updates${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List continuous screening update job summaries
+ */
+export function listContinuousScreeningUpdateJobs({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Pagination & {
+            items: ContinuousScreeningUpdateJobSummaryDto[];
+        };
+    }>(`/continuous-screenings/update-jobs${QS.query(QS.explode({
         offset_id: offsetId,
         sorting,
         order,

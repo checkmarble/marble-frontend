@@ -6,11 +6,13 @@ import {
   ContinuousScreeningConfigDto,
   ContinuousScreeningDatasetUpdateSummaryDto,
   ContinuousScreeningDto,
+  ContinuousScreeningJobErrorDto,
   ContinuousScreeningMappingConfigDto,
   ContinuousScreeningMatchBaseDto,
   ContinuousScreeningMatchMarbleDto,
   ContinuousScreeningMatchScreeningEntityDto,
   ContinuousScreeningRequestDto,
+  ContinuousScreeningUpdateJobSummaryDto,
   CreateContinuousScreeningConfigDto,
   FtmEntity,
   OpenSanctionsEntityDto,
@@ -81,6 +83,72 @@ export function adaptContinuousScreeningDatasetUpdateSummary(
     version: dto.version,
     totalItems: dto.total_items,
     createdAt: dto.created_at,
+  };
+}
+
+export type ContinuousScreeningUpdateJobStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+export type ContinuousScreeningJobError = {
+  details: { error: string };
+  createdAt: string;
+};
+
+export type ContinuousScreeningUpdateJobSummary = {
+  id: string;
+  status: ContinuousScreeningUpdateJobStatus;
+  jobStart: string;
+  jobEnd: string;
+  configName: string;
+  description: string;
+  totalItems: number;
+  receptionTime: string;
+  version: string;
+  itemsProcessed: number | null;
+  errors: ContinuousScreeningJobError[];
+};
+
+export type ListContinuousScreeningUpdateJobsParams = {
+  offsetId?: string;
+  limit?: number;
+  order?: 'ASC' | 'DESC';
+  sorting?: string;
+};
+
+function adaptJobErrorDetails(details: ContinuousScreeningJobErrorDto['details']): { error: string } {
+  if (typeof details === 'object' && details !== null) {
+    if ('error' in details && typeof details.error === 'string') {
+      return { error: details.error };
+    }
+    if ('message' in details && typeof details.message === 'string') {
+      return { error: details.message };
+    }
+  }
+
+  return { error: JSON.stringify(details) };
+}
+
+export function adaptContinuousScreeningJobError(dto: ContinuousScreeningJobErrorDto): ContinuousScreeningJobError {
+  return {
+    details: adaptJobErrorDetails(dto.details),
+    createdAt: dto.created_at,
+  };
+}
+
+export function adaptContinuousScreeningUpdateJobSummary(
+  dto: ContinuousScreeningUpdateJobSummaryDto,
+): ContinuousScreeningUpdateJobSummary {
+  return {
+    id: dto.id,
+    status: dto.status,
+    jobStart: dto.job_start,
+    jobEnd: dto.job_end,
+    configName: dto.config_name,
+    description: dto.description,
+    totalItems: dto.total_items,
+    receptionTime: dto.reception_time,
+    version: dto.version,
+    itemsProcessed: dto.items_processed ?? null,
+    errors: (dto.errors ?? []).map(adaptContinuousScreeningJobError),
   };
 }
 
