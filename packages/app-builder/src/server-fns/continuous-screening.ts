@@ -46,8 +46,7 @@ export const listContinuousScreeningDatasetUpdatesFn = createServerFn({ method: 
     }),
   )
   .handler(async ({ context, data }) => {
-    const datasetUpdates = await context.authInfo.continuousScreening.listDatasetUpdates(data);
-    return { datasetUpdates };
+    return context.authInfo.continuousScreening.listDatasetUpdates(data);
   });
 
 async function getActiveConfigurations(

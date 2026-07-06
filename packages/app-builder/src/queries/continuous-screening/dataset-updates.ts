@@ -10,7 +10,7 @@ export const useContinuousScreeningDatasetUpdatesQuery = (params: ListContinuous
     queryKey: ['continuous-screening', 'dataset-updates', params],
     queryFn: async () => {
       const result = await listDatasetUpdates({ data: params });
-      return result.datasetUpdates;
+      return result.items;
     },
   });
 };
@@ -22,14 +22,11 @@ export const useContinuousScreeningDatasetUpdatesInfiniteQuery = (limit = DATASE
 
   return useInfiniteQuery({
     queryKey: ['continuous-screening', 'dataset-updates', 'infinite', limit],
-    queryFn: async ({ pageParam }) => {
-      const result = await listDatasetUpdates({
-        data: { limit, order: 'DESC', offsetId: pageParam ?? undefined },
-      });
-      return result.datasetUpdates;
-    },
+    queryFn: async ({ pageParam }) =>
+      listDatasetUpdates({ data: { limit, order: 'DESC', offsetId: pageParam ?? undefined } }),
     initialPageParam: null as string | null,
-    getNextPageParam: (lastPage) => (lastPage.length === limit ? (lastPage[lastPage.length - 1]?.id ?? null) : null),
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNextPage ? (lastPage.items[lastPage.items.length - 1]?.id ?? null) : null,
     placeholderData: keepPreviousData,
   });
 };

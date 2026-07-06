@@ -23,6 +23,6 @@ export const Route = createFileRoute('/_app/_builder/continuous-screening/observ
 });
 
 function ContinuousScreeningObservability() {
-  const { datasetUpdates } = Route.useLoaderData();
-  return <ObservabilityPage datasetUpdates={datasetUpdates} />;
+  const { items } = Route.useLoaderData();
+  return <ObservabilityPage datasetUpdates={items} />;
 }
