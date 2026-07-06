@@ -275,6 +275,8 @@ paths:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1dataset-updates
   /continuous-screenings/update-jobs:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1update-jobs
+  /continuous-screenings/client-data-indexing:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1client-data-indexing
   /continuous-screenings/matches/{id}:
     $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1matches~1{id}
   /continuous-screenings:

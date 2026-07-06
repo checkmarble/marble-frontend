@@ -592,6 +592,8 @@ ContinuousScreeningUpdateJobSummaryDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningUpdateJobSummaryDto
 ContinuousScreeningJobErrorDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningJobErrorDto
+ContinuousScreeningClientDataIndexingDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningClientDataIndexingDto
 ContinuousScreeningConfigDto:
   $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningConfigDto
 CreateContinuousScreeningConfigDto:

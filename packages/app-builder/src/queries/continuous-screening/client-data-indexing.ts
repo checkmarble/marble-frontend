@@ -1,0 +1,43 @@
+import {
+  type ContinuousScreeningClientDataIndexing,
+  type ListContinuousScreeningClientDataIndexingParams,
+} from '@app-builder/models/continuous-screening';
+import { listContinuousScreeningClientDataIndexingFn } from '@app-builder/server-fns/continuous-screening';
+import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
+
+export const useContinuousScreeningClientDataIndexingQuery = (
+  params: ListContinuousScreeningClientDataIndexingParams = {},
+  options: { refetchInterval?: number; initialData?: ContinuousScreeningClientDataIndexing[] } = {},
+) => {
+  const listClientDataIndexing = useServerFn(listContinuousScreeningClientDataIndexingFn);
+
+  return useQuery({
+    queryKey: ['continuous-screening', 'client-data-indexing', params],
+    queryFn: async () => {
+      const result = await listClientDataIndexing({ data: params });
+      return result.items;
+    },
+    refetchInterval: options.refetchInterval,
+    initialData: options.initialData,
+  });
+};
+
+export const CLIENT_DATA_INDEXING_PAGE_SIZE = 20;
+
+const CLIENT_DATA_INDEXING_REFETCH_INTERVAL = 5000;
+
+export const useContinuousScreeningClientDataIndexingInfiniteQuery = (limit = CLIENT_DATA_INDEXING_PAGE_SIZE) => {
+  const listClientDataIndexing = useServerFn(listContinuousScreeningClientDataIndexingFn);
+
+  return useInfiniteQuery({
+    queryKey: ['continuous-screening', 'client-data-indexing', 'infinite', limit],
+    queryFn: async ({ pageParam }) =>
+      listClientDataIndexing({ data: { limit, order: 'DESC', offsetId: pageParam ?? undefined } }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNextPage ? (lastPage.items[lastPage.items.length - 1]?.id ?? null) : null,
+    placeholderData: keepPreviousData,
+    refetchInterval: CLIENT_DATA_INDEXING_REFETCH_INTERVAL,
+  });
+};

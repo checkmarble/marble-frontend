@@ -15,7 +15,7 @@ export const useContinuousScreeningDatasetUpdatesQuery = (params: ListContinuous
   });
 };
 
-const DATASET_UPDATES_PAGE_SIZE = 20;
+export const DATASET_UPDATES_PAGE_SIZE = 5;
 
 export const useContinuousScreeningDatasetUpdatesInfiniteQuery = (limit = DATASET_UPDATES_PAGE_SIZE) => {
   const listDatasetUpdates = useServerFn(listContinuousScreeningDatasetUpdatesFn);

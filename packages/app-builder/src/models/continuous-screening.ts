@@ -3,6 +3,7 @@ import {
   sanitizeTruthyDatasets,
 } from '@app-builder/components/ListAndTopicConfiguration/dataset-selection-provider-utils';
 import {
+  ContinuousScreeningClientDataIndexingDto,
   ContinuousScreeningConfigDto,
   ContinuousScreeningDatasetUpdateSummaryDto,
   ContinuousScreeningDto,
@@ -147,6 +148,35 @@ export function adaptContinuousScreeningUpdateJobSummary(
     totalItems: dto.total_items,
     receptionTime: dto.reception_time,
     version: dto.version,
+    itemsProcessed: dto.items_processed ?? null,
+    errors: (dto.errors ?? []).map(adaptContinuousScreeningJobError),
+  };
+}
+
+export type ContinuousScreeningClientDataIndexing = {
+  id: string;
+  status: ContinuousScreeningUpdateJobStatus;
+  jobStart: string;
+  totalItems: number;
+  itemsProcessed: number | null;
+  errors: ContinuousScreeningJobError[];
+};
+
+export type ListContinuousScreeningClientDataIndexingParams = {
+  offsetId?: string;
+  limit?: number;
+  order?: 'ASC' | 'DESC';
+  sorting?: string;
+};
+
+export function adaptContinuousScreeningClientDataIndexing(
+  dto: ContinuousScreeningClientDataIndexingDto,
+): ContinuousScreeningClientDataIndexing {
+  return {
+    id: dto.id,
+    status: dto.status,
+    jobStart: dto.job_start,
+    totalItems: dto.total_items,
     itemsProcessed: dto.items_processed ?? null,
     errors: (dto.errors ?? []).map(adaptContinuousScreeningJobError),
   };

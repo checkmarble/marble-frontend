@@ -1290,6 +1290,14 @@ export type ContinuousScreeningUpdateJobSummaryDto = {
     items_processed?: number | null;
     errors: ContinuousScreeningJobErrorDto[];
 };
+export type ContinuousScreeningClientDataIndexingDto = {
+    id: string;
+    status: "pending" | "processing" | "completed" | "failed";
+    job_start: string;
+    total_items: number;
+    items_processed?: number | null;
+    errors: ContinuousScreeningJobErrorDto[];
+};
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
@@ -4609,6 +4617,29 @@ export function listContinuousScreeningUpdateJobs({ offsetId, sorting, order, li
             items: ContinuousScreeningUpdateJobSummaryDto[];
         };
     }>(`/continuous-screenings/update-jobs${QS.query(QS.explode({
+        offset_id: offsetId,
+        sorting,
+        order,
+        limit
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List continuous screening client data indexing summaries
+ */
+export function listContinuousScreeningClientDataIndexing({ offsetId, sorting, order, limit }: {
+    offsetId?: string;
+    sorting?: string;
+    order?: "ASC" | "DESC";
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Pagination & {
+            items: ContinuousScreeningClientDataIndexingDto[];
+        };
+    }>(`/continuous-screenings/client-data-indexing${QS.query(QS.explode({
         offset_id: offsetId,
         sorting,
         order,
