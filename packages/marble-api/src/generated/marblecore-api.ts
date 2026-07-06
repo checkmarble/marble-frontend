@@ -4563,7 +4563,9 @@ export function listContinuousScreeningDatasetUpdates({ offsetId, sorting, order
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ContinuousScreeningDatasetUpdateSummaryDto[];
+        data: Pagination & {
+            items: ContinuousScreeningDatasetUpdateSummaryDto[];
+        };
     }>(`/continuous-screenings/dataset-updates${QS.query(QS.explode({
         offset_id: offsetId,
         sorting,

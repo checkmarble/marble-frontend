@@ -3,7 +3,7 @@ import { ScreeningNavigationTabs } from '@app-builder/components/Screenings/Navi
 import { type ContinuousScreeningDatasetUpdateSummary } from '@app-builder/models/continuous-screening';
 import { useContinuousScreeningDatasetUpdatesInfiniteQuery } from '@app-builder/queries/continuous-screening/dataset-updates';
 import { formatDateAtTime } from '@app-builder/utils/datetime';
-import { useFormatLanguage, useFormatTimezone } from '@app-builder/utils/format';
+import { formatNumber, useFormatLanguage, useFormatTimezone } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Card, cn, DefaultTooltip, Tag, Typo } from 'ui-design-system';
@@ -25,7 +25,7 @@ export function ObservabilityPage({ datasetUpdates }: ObservabilityPageProps) {
         <div className={cn('flex flex-col', pageLayoutGutter.gap)}>
           <ScreeningNavigationTabs />
           <div className={cn('grid lg:grid-cols-2', pageLayoutGutter.gap)}>
-            <Card className="p-md grid gap-sm ">
+            <Card className="p-md grid gap-sm items-start mb-auto">
               <header className="flex justify-between items-center">
                 <div className="flex gap-xs">
                   <Typo variant="title2">Client data indexing</Typo>
@@ -47,7 +47,7 @@ export function ObservabilityPage({ datasetUpdates }: ObservabilityPageProps) {
                 ]}
               />
             </Card>
-            <Card className="p-md grid gap-sm ">
+            <Card className="p-md grid gap-sm">
               <header className="flex justify-between items-center">
                 <div className="flex gap-xs">
                   <Typo variant="title2">Dataset updates</Typo>
@@ -171,7 +171,7 @@ function ClientDataIndexing({ data }: ClientDataIndexingProps) {
   const timezone = useFormatTimezone();
 
   return (
-    <div className="grid grid-cols-2 gap-md w-fit">
+    <div className="grid grid-cols-2 gap-md w-fit items">
       {data.map((item) => {
         const formattedDate = formatDateAtTime(item.indexingDate, {
           locale,
@@ -221,7 +221,7 @@ function DatasetUpdate({ data }: DatasetUpdateProps) {
   const timezone = useFormatTimezone();
 
   return (
-    <div className="grid grid-cols-2 gap-md w-fit">
+    <div className="grid grid-cols-3 gap-md w-fit">
       {data.map((item) => {
         const formattedDate = formatDateAtTime(item.createdAt, {
           locale,
@@ -236,10 +236,14 @@ function DatasetUpdate({ data }: DatasetUpdateProps) {
             <time dateTime={item.createdAt} className="text-grey-secondary">
               {formattedDate}
             </time>
-            <Tag color="green" className="gap-sm">
-              <Icon icon="checked" className="size-4" />
+            <Tag color="white" className="gap-sm" size="small">
               v.{item.version}
             </Tag>
+            <span className="text-end tabular-nums">
+              {t('continuousScreening:observability.items', {
+                count: formatNumber(item.totalItems, { language: locale }),
+              })}
+            </span>
           </div>
         );
       })}
@@ -293,7 +297,7 @@ function PanelDatasetUpdate() {
               <div className="text-grey-secondary p-md text-center text-xs">{t('common:global_error')}</div>
             ))
             .otherwise((query) => {
-              const updates = query.data.pages.flatMap((page) => page);
+              const updates = query.data.pages.flatMap((page) => page.items);
 
               return (
                 <div className="flex flex-col gap-md">
@@ -309,7 +313,9 @@ function PanelDatasetUpdate() {
                           {formatDateAtTime(item.createdAt, { locale, timeZone: timezone })}
                         </GridTable.Cell>
                         <GridTable.Cell>v.{item.version}</GridTable.Cell>
-                        <GridTable.Cell>{item.totalItems}</GridTable.Cell>
+                        <GridTable.Cell className="justify-end tabular-nums">
+                          {formatNumber(item.totalItems, { language: locale })}
+                        </GridTable.Cell>
                       </GridTable.Row>
                     ))}
                   </GridTable.Table>

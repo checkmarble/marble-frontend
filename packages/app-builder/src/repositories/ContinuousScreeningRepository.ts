@@ -8,12 +8,13 @@ import {
   CreateContinuousScreeningConfig,
   ListContinuousScreeningDatasetUpdatesParams,
 } from '@app-builder/models/continuous-screening';
+import { adaptPagination, type PaginatedResponse } from '@app-builder/models/pagination';
 
 export interface ContinuousScreeningRepository {
   listConfigurations(): Promise<ContinuousScreeningConfig[]>;
   listDatasetUpdates(
     params: ListContinuousScreeningDatasetUpdatesParams,
-  ): Promise<ContinuousScreeningDatasetUpdateSummary[]>;
+  ): Promise<PaginatedResponse<ContinuousScreeningDatasetUpdateSummary>>;
   createConfiguration(configuration: CreateContinuousScreeningConfig): Promise<ContinuousScreeningConfig>;
   updateConfiguration(
     stableId: string,
@@ -32,13 +33,16 @@ export function makeGetContinuousScreeningRepository() {
       return configurations.map(adaptContinuousScreeningConfig);
     },
     listDatasetUpdates: async ({ offsetId, limit, order, sorting }) => {
-      const result = await marbleCoreApiClient.listContinuousScreeningDatasetUpdates({
+      const { items, ...pagination } = await marbleCoreApiClient.listContinuousScreeningDatasetUpdates({
         offsetId,
         limit,
         order,
         sorting,
       });
-      return result.map(adaptContinuousScreeningDatasetUpdateSummary);
+      return {
+        items: items.map(adaptContinuousScreeningDatasetUpdateSummary),
+        ...adaptPagination(pagination),
+      };
     },
     createConfiguration: async (configuration) => {
       const result = await marbleCoreApiClient.createContinuousScreeningConfig(

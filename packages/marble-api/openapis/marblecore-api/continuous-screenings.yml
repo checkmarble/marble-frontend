@@ -253,9 +253,16 @@
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ContinuousScreeningDatasetUpdateSummaryDto'
+              allOf:
+                - $ref: 'components.yml#/schemas/Pagination'
+                - type: object
+                  required:
+                    - items
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ContinuousScreeningDatasetUpdateSummaryDto'
 
 /continuous-screenings/{id}/load-more:
   post:

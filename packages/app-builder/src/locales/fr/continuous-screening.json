@@ -116,6 +116,7 @@
   "filter.pep.category.traditional_leadership": "Chef traditionnel",
   "filter.pep.category.union_leadership": "Directeur d'un syndicat",
   "observability.date_time_separator": " à ",
+  "observability.items": "",
   "observability.today": "Aujourd'hui",
   "observability.yesterday": "Hier",
   "panel.stepper.datasetSelection": "Listes",

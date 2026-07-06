@@ -116,6 +116,7 @@
   "filter.pep.category.traditional_leadership": "قيادة تقليدية",
   "filter.pep.category.union_leadership": "قيادة الاتحاد",
   "observability.date_time_separator": " في ",
+  "observability.items": "",
   "observability.today": "اليوم",
   "observability.yesterday": "أمس",
   "panel.stepper.datasetSelection": "القوائم",
