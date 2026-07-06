@@ -1,12 +1,19 @@
 import { Page } from '@app-builder/components/Page';
 import { ScreeningNavigationTabs } from '@app-builder/components/Screenings/Navigation/Tabs';
 import {
+  type ContinuousScreeningClientDataIndexing,
   type ContinuousScreeningDatasetUpdateSummary,
   type ContinuousScreeningJobError,
   type ContinuousScreeningUpdateJobSummary,
 } from '@app-builder/models/continuous-screening';
+import {
+  CLIENT_DATA_INDEXING_PAGE_SIZE,
+  useContinuousScreeningClientDataIndexingInfiniteQuery,
+  useContinuousScreeningClientDataIndexingQuery,
+} from '@app-builder/queries/continuous-screening/client-data-indexing';
 import { useContinuousScreeningDatasetUpdatesInfiniteQuery } from '@app-builder/queries/continuous-screening/dataset-updates';
 import {
+  UPDATE_JOBS_PAGE_SIZE,
   useContinuousScreeningUpdateJobsInfiniteQuery,
   useContinuousScreeningUpdateJobsQuery,
 } from '@app-builder/queries/continuous-screening/update-jobs';
@@ -22,20 +29,37 @@ import { pageLayoutGutter } from '../Page/page-layout';
 import { Panel } from '../Panel';
 import { Spinner } from '../Spinner';
 
+const LIMLIT_FOR_PANELS = 20;
+
 type ObservabilityPageProps = {
   datasetUpdates: ContinuousScreeningDatasetUpdateSummary[];
   updateJobs: ContinuousScreeningUpdateJobSummary[];
+  clientDataIndexing: ContinuousScreeningClientDataIndexing[];
 };
 
 const UPDATE_JOBS_REFETCH_INTERVAL = 5000;
 
-export function ObservabilityPage({ datasetUpdates, updateJobs }: ObservabilityPageProps) {
+function isPendingIndexing(item: ContinuousScreeningClientDataIndexing) {
+  return item.status !== 'completed' && item.status !== 'failed';
+}
+
+export function ObservabilityPage({ datasetUpdates, updateJobs, clientDataIndexing }: ObservabilityPageProps) {
   const { t } = useTranslation(['continuousScreening']);
 
   const updateJobsQuery = useContinuousScreeningUpdateJobsQuery(
-    {},
+    { limit: UPDATE_JOBS_PAGE_SIZE },
     { refetchInterval: UPDATE_JOBS_REFETCH_INTERVAL, initialData: updateJobs },
   );
+
+  const clientDataIndexingQuery = useContinuousScreeningClientDataIndexingQuery(
+    { limit: CLIENT_DATA_INDEXING_PAGE_SIZE },
+    { refetchInterval: UPDATE_JOBS_REFETCH_INTERVAL, initialData: clientDataIndexing },
+  );
+
+  const clientDataIndexingData = clientDataIndexingQuery.data ?? clientDataIndexing;
+  const clientDataIndexingPendingCount = clientDataIndexingData
+    .filter(isPendingIndexing)
+    .reduce((acc, item) => acc + (item.totalItems - (item.itemsProcessed ?? 0)), 0);
 
   return (
     <Page.Main>
@@ -52,18 +76,18 @@ export function ObservabilityPage({ datasetUpdates, updateJobs }: ObservabilityP
                   </DefaultTooltip>
                 </div>
                 <div className="flex gap-sm items-center">
-                  <Tag color="yellow">{t('continuousScreening:observability.client_data_indexing_pending')}</Tag>
+                  {clientDataIndexingPendingCount > 0 ? (
+                    <Tag color="yellow">
+                      {t('continuousScreening:observability.client_data_indexing_pending', {
+                        count: clientDataIndexingPendingCount,
+                      })}
+                    </Tag>
+                  ) : null}
                   <PanelCientIndexing />
                 </div>
               </header>
               <Callout color="purple">{t('continuousScreening:observability.client_data_indexing_callout')}</Callout>
-              <ClientDataIndexing
-                data={[
-                  { indexingDate: '2026-07-03T12:00:00Z', indexingValue: 2130, indexingStatus: 'pending' },
-                  { indexingDate: '2026-07-02T12:00:00Z', indexingValue: 1230, indexingStatus: 'completed' },
-                  { indexingDate: '2026-07-01T12:00:00Z', indexingValue: 4322, indexingStatus: 'failed' },
-                ]}
-              />
+              <ClientDataIndexing data={clientDataIndexingData} />
             </Card>
             <Card className="p-md grid gap-sm">
               <header className="flex justify-between items-center">
@@ -114,10 +138,32 @@ function GridVersions({ data }: GridVersionsProps) {
           <GridTable.Row key={item.id}>
             <GridTable.Cell>{item.version}</GridTable.Cell>
             <GridTable.Cell>
-              {formatOptionalDateAtTime(item.receptionTime, { locale, timeZone: timezone })}
+              {formatOptionalDateAtTime(item.receptionTime, {
+                todayLabel: t('continuousScreening:observability.today'),
+                yesterdayLabel: t('continuousScreening:observability.yesterday'),
+                atSeparator: t('continuousScreening:observability.date_time_separator'),
+                locale,
+                timeZone: timezone,
+              })}
             </GridTable.Cell>
-            <GridTable.Cell>{formatOptionalDateAtTime(item.jobStart, { locale, timeZone: timezone })}</GridTable.Cell>
-            <GridTable.Cell>{formatOptionalDateAtTime(item.jobEnd, { locale, timeZone: timezone })}</GridTable.Cell>
+            <GridTable.Cell>
+              {formatOptionalDateAtTime(item.jobStart, {
+                todayLabel: t('continuousScreening:observability.today'),
+                yesterdayLabel: t('continuousScreening:observability.yesterday'),
+                atSeparator: t('continuousScreening:observability.date_time_separator'),
+                locale,
+                timeZone: timezone,
+              })}
+            </GridTable.Cell>
+            <GridTable.Cell>
+              {formatOptionalDateAtTime(item.jobEnd, {
+                todayLabel: t('continuousScreening:observability.today'),
+                yesterdayLabel: t('continuousScreening:observability.yesterday'),
+                atSeparator: t('continuousScreening:observability.date_time_separator'),
+                locale,
+                timeZone: timezone,
+              })}
+            </GridTable.Cell>
             <GridTable.Cell>{item.configName}</GridTable.Cell>
             <GridTable.Cell>
               <GridStatus status={item.status} progressValue={getProgressValue(item)} errors={item.errors} />
@@ -129,7 +175,10 @@ function GridVersions({ data }: GridVersionsProps) {
   );
 }
 
-function getProgressValue({ itemsProcessed, totalItems }: ContinuousScreeningUpdateJobSummary) {
+function getProgressValue({
+  itemsProcessed,
+  totalItems,
+}: Pick<ContinuousScreeningUpdateJobSummary, 'itemsProcessed' | 'totalItems'>) {
   if (itemsProcessed === null || itemsProcessed === undefined || !totalItems || totalItems <= 0) return 0;
   return Math.round((itemsProcessed / totalItems) * 100);
 }
@@ -152,10 +201,16 @@ function GridStatus({
         <span>{t('continuousScreening:observability.grid_versions_status_failed')}</span>
         {(errors ?? []).length > 0 ? (
           <Tooltip.Default
-            content={(errors ?? [])
-              .map((error) => error.details?.error)
-              .filter(Boolean)
-              .join(', ')}
+            content={
+              <ul className="list-disc list-inside max-w-lg">
+                {(errors ?? [])
+                  .map((error) => error.details?.error)
+                  .filter(Boolean)
+                  .map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+              </ul>
+            }
           >
             <Icon icon="tip" className="size-4" />
           </Tooltip.Default>
@@ -173,11 +228,7 @@ function GridStatus({
 }
 
 type ClientDataIndexingProps = {
-  data: {
-    indexingDate: string;
-    indexingValue: number;
-    indexingStatus: 'pending' | 'completed' | 'failed';
-  }[];
+  data: ContinuousScreeningClientDataIndexing[];
 };
 
 function ClientDataIndexing({ data }: ClientDataIndexingProps) {
@@ -185,10 +236,12 @@ function ClientDataIndexing({ data }: ClientDataIndexingProps) {
   const locale = useFormatLanguage();
   const timezone = useFormatTimezone();
 
+  const terminalItems = data.filter((item) => !isPendingIndexing(item)).slice(0, 5);
+
   return (
-    <div className="grid grid-cols-2 gap-md w-fit items">
-      {data.map((item) => {
-        const formattedDate = formatDateAtTime(item.indexingDate, {
+    <div className="grid grid-cols-3 gap-md items-center">
+      {terminalItems.map((item) => {
+        const formattedDate = formatDateAtTime(item.jobStart, {
           locale,
           timeZone: timezone,
           todayLabel: t('continuousScreening:observability.today'),
@@ -197,28 +250,19 @@ function ClientDataIndexing({ data }: ClientDataIndexingProps) {
         });
 
         return (
-          <div key={item.indexingDate} className="grid col-span-full grid-cols-subgrid items-center">
-            <time dateTime={item.indexingDate} className="text-grey-secondary">
+          <div key={item.id} className="grid col-span-full grid-cols-subgrid items-center">
+            <time dateTime={item.jobStart} className="text-grey-secondary">
               {formattedDate}
             </time>
-            <Tag
-              color={
-                item.indexingStatus === 'pending' ? 'yellow' : item.indexingStatus === 'completed' ? 'green' : 'red'
-              }
-              className="gap-sm"
-            >
-              <Icon
-                icon={
-                  item.indexingStatus === 'pending'
-                    ? 'waiting_for_action'
-                    : item.indexingStatus === 'completed'
-                      ? 'checked'
-                      : 'x'
-                }
-                className="size-4"
-              />
-              {item.indexingValue}
+            <Tag color={item.status === 'completed' ? 'green' : 'red'} className="gap-sm w-fit">
+              <Icon icon={item.status === 'completed' ? 'accepted' : 'x'} className="size-4" />
+              {formatNumber(item.totalItems, { language: locale })}
             </Tag>
+            <span>
+              {item.status === 'failed' && item.errors?.length > 0
+                ? item.errors.map((e) => e.details.error).join(', ')
+                : null}
+            </span>
           </div>
         );
       })}
@@ -268,6 +312,9 @@ function DatasetUpdate({ data }: DatasetUpdateProps) {
 
 function PanelCientIndexing() {
   const { t } = useTranslation(['common', 'continuousScreening']);
+  const locale = useFormatLanguage();
+  const timezone = useFormatTimezone();
+  const query = useContinuousScreeningClientDataIndexingInfiniteQuery(LIMLIT_FOR_PANELS);
 
   return (
     <Panel.Root>
@@ -279,9 +326,70 @@ function PanelCientIndexing() {
           <Panel.Header>
             <Typo variant="title2">{t('continuousScreening:observability.client_data_indexing')}</Typo>
           </Panel.Header>
-          <Panel.Footer>
-            <Panel.FooterButton label={t('common:close')} isCloseButton />
-          </Panel.Footer>
+          {match(query)
+            .with({ isPending: true }, () => (
+              <div className="flex items-center justify-center p-md">
+                <Spinner />
+              </div>
+            ))
+            .with({ isError: true }, () => (
+              <div className="text-grey-secondary p-md text-center text-xs">{t('common:global_error')}</div>
+            ))
+            .otherwise((query) => {
+              const items = query.data.pages.flatMap((page) => page.items);
+
+              return (
+                <div className="flex flex-col gap-md text-sm">
+                  <GridTable.Table className="grid-cols-3">
+                    <GridTable.Row className="font-semibold border-b border-grey-border">
+                      <GridTable.Cell>{t('continuousScreening:observability.dataset_updates_date')}</GridTable.Cell>
+                      <GridTable.Cell>
+                        {t('continuousScreening:observability.grid_versions_items_ingested')}
+                      </GridTable.Cell>
+                      <GridTable.Cell>{t('continuousScreening:observability.grid_versions_status')}</GridTable.Cell>
+                    </GridTable.Row>
+                    {items.map((item) => (
+                      <GridTable.Row key={item.id}>
+                        <GridTable.Cell>
+                          {formatOptionalDateAtTime(item.jobStart, {
+                            todayLabel: t('continuousScreening:observability.today'),
+                            yesterdayLabel: t('continuousScreening:observability.yesterday'),
+                            atSeparator: t('continuousScreening:observability.date_time_separator'),
+                            locale,
+                            timeZone: timezone,
+                          })}
+                        </GridTable.Cell>
+                        <GridTable.Cell className="justify-end tabular-nums">
+                          {item.status === 'processing'
+                            ? `${formatNumber(item.itemsProcessed ?? 0, { language: locale })} / ${formatNumber(
+                                item.totalItems,
+                                { language: locale },
+                              )}`
+                            : formatNumber(item.totalItems, { language: locale })}
+                        </GridTable.Cell>
+                        <GridTable.Cell>
+                          <GridStatus
+                            status={item.status}
+                            progressValue={getProgressValue(item)}
+                            errors={item.errors}
+                          />
+                        </GridTable.Cell>
+                      </GridTable.Row>
+                    ))}
+                  </GridTable.Table>
+                </div>
+              );
+            })}
+          {query.hasNextPage ? (
+            <Panel.Footer>
+              <Panel.FooterButton label={t('common:close')} isCloseButton />
+              <Panel.FooterButton
+                label={t('common:load_more_results')}
+                onClick={() => query.fetchNextPage()}
+                disabled={query.isFetchingNextPage}
+              />
+            </Panel.Footer>
+          ) : null}
         </Panel.Content>
       </Panel.Container>
     </Panel.Root>
@@ -316,7 +424,7 @@ function JobDurationCell({
 function PanelDatasetUpdates() {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const locale = useFormatLanguage();
-  const query = useContinuousScreeningUpdateJobsInfiniteQuery(20);
+  const query = useContinuousScreeningUpdateJobsInfiniteQuery(LIMLIT_FOR_PANELS);
 
   return (
     <Panel.Root>
@@ -410,7 +518,7 @@ function PanelDatasetUpdate() {
   const { t } = useTranslation(['common', 'continuousScreening']);
   const locale = useFormatLanguage();
   const timezone = useFormatTimezone();
-  const query = useContinuousScreeningDatasetUpdatesInfiniteQuery();
+  const query = useContinuousScreeningDatasetUpdatesInfiniteQuery(LIMLIT_FOR_PANELS);
 
   return (
     <Panel.Root>
@@ -447,7 +555,13 @@ function PanelDatasetUpdate() {
                     {updates.map((item) => (
                       <GridTable.Row key={item.id}>
                         <GridTable.Cell>
-                          {formatOptionalDateAtTime(item.createdAt, { locale, timeZone: timezone })}
+                          {formatOptionalDateAtTime(item.createdAt, {
+                            todayLabel: t('continuousScreening:observability.today'),
+                            yesterdayLabel: t('continuousScreening:observability.yesterday'),
+                            atSeparator: t('continuousScreening:observability.date_time_separator'),
+                            locale,
+                            timeZone: timezone,
+                          })}
                         </GridTable.Cell>
                         <GridTable.Cell>v.{item.version}</GridTable.Cell>
                         <GridTable.Cell className="justify-end tabular-nums">

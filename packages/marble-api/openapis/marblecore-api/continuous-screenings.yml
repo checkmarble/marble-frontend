@@ -295,6 +295,37 @@
                       items:
                         $ref: '#/components/schemas/ContinuousScreeningUpdateJobSummaryDto'
 
+/continuous-screenings/client-data-indexing:
+  get:
+    summary: List continuous screening client data indexing summaries
+    operationId: listContinuousScreeningClientDataIndexing
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/offset_id'
+      - name: sorting
+        in: query
+        schema:
+          type: string
+      - $ref: '_common.yml#/parameters/order'
+      - $ref: '_common.yml#/parameters/limit'
+    responses:
+      '200':
+        description: List of continuous screening client data indexing summaries
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: 'components.yml#/schemas/Pagination'
+                - type: object
+                  required:
+                    - items
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ContinuousScreeningClientDataIndexingDto'
+
 /continuous-screenings/{id}/load-more:
   post:
     summary: Load more matches for a continuous screening
@@ -401,6 +432,38 @@ components:
           format: date-time
         version:
           type: string
+        items_processed:
+          type: integer
+          nullable: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningJobErrorDto'
+
+    ContinuousScreeningClientDataIndexingDto:
+      type: object
+      required:
+        - id
+        - status
+        - job_start
+        - total_items
+        - errors
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - pending
+            - processing
+            - completed
+            - failed
+        job_start:
+          type: string
+          format: date-time
+        total_items:
+          type: integer
         items_processed:
           type: integer
           nullable: true

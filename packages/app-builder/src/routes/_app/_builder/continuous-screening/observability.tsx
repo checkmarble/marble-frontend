@@ -1,7 +1,10 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { ObservabilityPage } from '@app-builder/components/ContinuousScreening/ObservabilityPage';
+import { CLIENT_DATA_INDEXING_PAGE_SIZE } from '@app-builder/queries/continuous-screening/client-data-indexing';
+import { DATASET_UPDATES_PAGE_SIZE } from '@app-builder/queries/continuous-screening/dataset-updates';
 import { UPDATE_JOBS_PAGE_SIZE } from '@app-builder/queries/continuous-screening/update-jobs';
 import {
+  listContinuousScreeningClientDataIndexingFn,
   listContinuousScreeningDatasetUpdatesFn,
   listContinuousScreeningUpdateJobsFn,
 } from '@app-builder/server-fns/continuous-screening';
@@ -23,16 +26,27 @@ export const Route = createFileRoute('/_app/_builder/continuous-screening/observ
     ],
   },
   loader: async () => {
-    const [datasetUpdates, updateJobs] = await Promise.all([
-      listContinuousScreeningDatasetUpdatesFn({ data: { limit: 5, order: 'DESC' } }),
+    const [datasetUpdates, updateJobs, clientDataIndexing] = await Promise.all([
+      listContinuousScreeningDatasetUpdatesFn({ data: { limit: DATASET_UPDATES_PAGE_SIZE, order: 'DESC' } }),
       listContinuousScreeningUpdateJobsFn({ data: { limit: UPDATE_JOBS_PAGE_SIZE, order: 'DESC' } }),
+      listContinuousScreeningClientDataIndexingFn({ data: { limit: CLIENT_DATA_INDEXING_PAGE_SIZE, order: 'DESC' } }),
     ]);
-    return { datasetUpdates: datasetUpdates.items, updateJobs: updateJobs.items };
+    return {
+      datasetUpdates: datasetUpdates.items,
+      updateJobs: updateJobs.items,
+      clientDataIndexing: clientDataIndexing.items,
+    };
   },
   component: ContinuousScreeningObservability,
 });
 
 function ContinuousScreeningObservability() {
-  const { datasetUpdates, updateJobs } = Route.useLoaderData();
-  return <ObservabilityPage datasetUpdates={datasetUpdates} updateJobs={updateJobs} />;
+  const { datasetUpdates, updateJobs, clientDataIndexing } = Route.useLoaderData();
+  return (
+    <ObservabilityPage
+      datasetUpdates={datasetUpdates}
+      updateJobs={updateJobs}
+      clientDataIndexing={clientDataIndexing}
+    />
+  );
 }
