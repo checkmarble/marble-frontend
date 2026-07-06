@@ -3,10 +3,11 @@ name: Push a tag (Check & Deploy)
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+" # stable
+      - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+" # release candidate (e.g. v1.2.0-rc.1)
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -21,10 +22,10 @@ jobs:
     permissions:
       contents: read
       actions: read
-      id-token: 'write' # needed for using open id token to authenticate with GCP
+      id-token: "write" # needed for using open id token to authenticate with GCP
     uses: ./.github/workflows/build_and_deploy.yaml
     with:
-      environment: 'production'
+      environment: "production"
       version: ${{ github.ref_name }}
       SENTRY_RELEASE: ${{ github.ref_name }}
     secrets:
