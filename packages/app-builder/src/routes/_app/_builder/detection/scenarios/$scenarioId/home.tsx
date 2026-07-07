@@ -9,6 +9,7 @@ import { ScenarioDescriptionEditable, ScenarioHeader } from '@app-builder/compon
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
 import { Spinner } from '@app-builder/components/Spinner';
 import { WorkflowNudge } from '@app-builder/components/Workflows/Nudge';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDetectionScenarioData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type ScheduledExecution } from '@app-builder/models/decision';
@@ -407,10 +408,14 @@ function BatchSection({
 
 function ManualTriggerScenarioExecutionForm({ iterationId, disabled }: { iterationId: string; disabled: boolean }) {
   const { t } = useTranslation(['scenarios']);
+  const revalidate = useLoaderRevalidator();
 
   const mutation = useMutation({
     mutationFn: async (value: { iterationId: string }) => {
       return triggerManualExecutionAction({ data: { params: { iterationId: value.iterationId } } });
+    },
+    onSuccess: () => {
+      revalidate();
     },
   });
 
