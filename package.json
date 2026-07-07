@@ -4,14 +4,15 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
     "@vitejs/plugin-react": "4.3.4",
-    "@vitest/coverage-v8": "4.1.9",
-    "@vitest/ui": "4.1.9",
+    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/ui": "4.1.8",
     "lefthook": "^2.1.9",
     "react-refresh": "^0.18.0",
     "typescript": "5.8.2"
   },
   "license": "MIT",
   "overrides": {
+    "vite": "^7.3.6",
     "@preact/signals-core": "1.14.1",
     "@radix-ui/react-primitive": "2.1.4",
     "@tanstack/react-router": "1.170.16",
