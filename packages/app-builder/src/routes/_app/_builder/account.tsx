@@ -45,6 +45,7 @@ function AccountPage() {
   const isFirebaseAuth = appConfig.auth.provider === 'firebase';
   const layoutData = useBuilderLayoutData();
   const isAutoAssignmentAvailable = layoutData?.featuresAccess.isAutoAssignmentAvailable ?? false;
+  const isTfaEnrollmentAvailable = layoutData?.featuresAccess.isTfaEnrollmentAvailable ?? false;
 
   const { firstName, lastName, email } = currentUser.actorIdentity;
   const fullName = getFullName({ firstName, lastName });
@@ -101,7 +102,7 @@ function AccountPage() {
               <UserAvailabilityStatus isAutoAssignmentAvailable={isAutoAssignmentAvailable} />
             </div>
 
-            {isFirebaseAuth ? (
+            {isFirebaseAuth && isTfaEnrollmentAvailable ? (
               <div className="w-full max-w-md">
                 <ClientOnly fallback={null}>
                   <TwoFactorAuthSettings />
