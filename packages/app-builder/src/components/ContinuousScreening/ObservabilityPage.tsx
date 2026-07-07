@@ -22,7 +22,7 @@ import { formatNumber, useFormatLanguage, useFormatTimezone } from '@app-builder
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Card, cn, DefaultTooltip, Tag, Tooltip, Typo } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Icon, IconName } from 'ui-icons';
 import { Callout } from '../Callout';
 import GridTable from '../GridTable';
 import { pageLayoutGutter } from '../Page/page-layout';
@@ -66,7 +66,7 @@ export function ObservabilityPage({ datasetUpdates, updateJobs, clientDataIndexi
       <Page.Content>
         <div className={cn('flex flex-col', pageLayoutGutter.gap)}>
           <ScreeningNavigationTabs />
-          <div className={cn('grid lg:grid-cols-2', pageLayoutGutter.gap)}>
+          <div className={cn('grid grid-cols-1 lg:grid-cols-2', pageLayoutGutter.gap)}>
             <Card className="p-md grid gap-sm items-start mb-auto">
               <header className="flex justify-between items-center">
                 <div className="flex gap-xs">
@@ -78,6 +78,7 @@ export function ObservabilityPage({ datasetUpdates, updateJobs, clientDataIndexi
                 <div className="flex gap-sm items-center">
                   {clientDataIndexingPendingCount > 0 ? (
                     <Tag color="yellow">
+                      <Icon icon={getIcon('pending')} className="size-4" />
                       {t('continuousScreening:observability.client_data_indexing_pending', {
                         count: clientDataIndexingPendingCount,
                       })}
@@ -120,19 +121,25 @@ function GridVersions({ data }: GridVersionsProps) {
   const { t } = useTranslation(['continuousScreening']);
 
   return (
-    <div className="col-span-2 flex flex-col gap-sm">
+    <div className="col-span-full flex flex-col gap-sm">
       <Callout color="purple" className="bg-surface-card w-fit" bordered>
         <span>{t('continuousScreening:observability.grid_versions_callout')}</span>
-        <PanelDatasetUpdates />
       </Callout>
       <GridTable.Table className="grid-cols-6">
         <GridTable.Row className="font-semibold border-b border-grey-border">
           <GridTable.Cell>{t('continuousScreening:observability.grid_versions_dataset_version')}</GridTable.Cell>
           <GridTable.Cell>{t('continuousScreening:observability.grid_versions_reception_time')}</GridTable.Cell>
-          <GridTable.Cell>{t('continuousScreening:observability.grid_versions_jobs_start')}</GridTable.Cell>
-          <GridTable.Cell>{t('continuousScreening:observability.grid_versions_jobs_end')}</GridTable.Cell>
+          <GridTable.Cell className="hidden lg:block">
+            {t('continuousScreening:observability.grid_versions_jobs_start')}
+          </GridTable.Cell>
+          <GridTable.Cell className="hidden lg:block">
+            {t('continuousScreening:observability.grid_versions_jobs_end')}
+          </GridTable.Cell>
           <GridTable.Cell>{t('continuousScreening:observability.grid_versions_name_of_configuration')}</GridTable.Cell>
-          <GridTable.Cell>{t('continuousScreening:observability.grid_versions_status')}</GridTable.Cell>
+          <GridTable.Cell className="flex items-center justify-between">
+            {t('continuousScreening:observability.grid_versions_status')}
+            <PanelDatasetUpdates />
+          </GridTable.Cell>
         </GridTable.Row>
         {data.map((item) => (
           <GridTable.Row key={item.id}>
@@ -146,7 +153,7 @@ function GridVersions({ data }: GridVersionsProps) {
                 timeZone: timezone,
               })}
             </GridTable.Cell>
-            <GridTable.Cell>
+            <GridTable.Cell className="hidden lg:block">
               {formatOptionalDateAtTime(item.jobStart, {
                 todayLabel: t('continuousScreening:observability.today'),
                 yesterdayLabel: t('continuousScreening:observability.yesterday'),
@@ -155,7 +162,7 @@ function GridVersions({ data }: GridVersionsProps) {
                 timeZone: timezone,
               })}
             </GridTable.Cell>
-            <GridTable.Cell>
+            <GridTable.Cell className="hidden lg:block">
               {formatOptionalDateAtTime(item.jobEnd, {
                 todayLabel: t('continuousScreening:observability.today'),
                 yesterdayLabel: t('continuousScreening:observability.yesterday'),
@@ -194,15 +201,21 @@ function GridStatus({
 }) {
   const { t } = useTranslation(['continuousScreening']);
   if (status === 'completed')
-    return <Tag color="green">{t('continuousScreening:observability.grid_versions_status_completed')}</Tag>;
+    return (
+      <Tag color="green">
+        <Icon icon={getIcon('completed')} className="size-4" />
+        {t('continuousScreening:observability.grid_versions_status_completed')}
+      </Tag>
+    );
   if (status === 'failed') {
     return (
       <Tag color="red" className="gap-xs">
+        <Icon icon={getIcon('failed')} className="size-4" />
         <span>{t('continuousScreening:observability.grid_versions_status_failed')}</span>
         {(errors ?? []).length > 0 ? (
           <Tooltip.Default
             content={
-              <ul className="list-disc list-inside max-w-lg">
+              <ul className="max-w-lg">
                 {(errors ?? [])
                   .map((error) => error.details?.error)
                   .filter(Boolean)
@@ -219,9 +232,15 @@ function GridStatus({
     );
   }
   if (status === 'pending')
-    return <Tag color="yellow">{t('continuousScreening:observability.grid_versions_status_pending')}</Tag>;
+    return (
+      <Tag color="yellow">
+        <Icon icon={getIcon('pending')} className="size-4" />
+        {t('continuousScreening:observability.grid_versions_status_pending')}
+      </Tag>
+    );
   return (
     <Tag color="yellow">
+      <Icon icon={getIcon('processing')} className="size-4" />
       {t('continuousScreening:observability.grid_versions_status_in_progress', { progressValue })}
     </Tag>
   );
@@ -231,6 +250,15 @@ type ClientDataIndexingProps = {
   data: ContinuousScreeningClientDataIndexing[];
 };
 
+function getIcon(status: ContinuousScreeningClientDataIndexing['status']): IconName {
+  return match(status)
+    .with('completed', () => 'tick')
+    .with('failed', () => 'x')
+    .with('processing', () => 'in-progress')
+    .with('pending', () => 'schedule')
+    .exhaustive() as IconName;
+}
+
 function ClientDataIndexing({ data }: ClientDataIndexingProps) {
   const { t } = useTranslation(['continuousScreening']);
   const locale = useFormatLanguage();
@@ -239,7 +267,7 @@ function ClientDataIndexing({ data }: ClientDataIndexingProps) {
   const terminalItems = data.filter((item) => !isPendingIndexing(item)).slice(0, 5);
 
   return (
-    <div className="grid grid-cols-3 gap-md items-center">
+    <div className="grid grid-cols-[30%_auto_1fr] gap-md items-center">
       {terminalItems.map((item) => {
         const formattedDate = formatDateAtTime(item.jobStart, {
           locale,
@@ -255,14 +283,27 @@ function ClientDataIndexing({ data }: ClientDataIndexingProps) {
               {formattedDate}
             </time>
             <Tag color={item.status === 'completed' ? 'green' : 'red'} className="gap-sm w-fit">
-              <Icon icon={item.status === 'completed' ? 'accepted' : 'x'} className="size-4" />
+              <Icon icon={getIcon(item.status)} className="size-4" />
               {formatNumber(item.totalItems, { language: locale })}
             </Tag>
-            <span>
-              {item.status === 'failed' && item.errors?.length > 0
-                ? item.errors.map((e) => e.details.error).join(', ')
-                : null}
-            </span>
+            <Tooltip.Default
+              content={
+                <ul className="max-w-lg">
+                  {(item.errors ?? [])
+                    .map((error) => error.details?.error)
+                    .filter(Boolean)
+                    .map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                </ul>
+              }
+            >
+              <span className="line-clamp-1 cursor-pointer">
+                {item.status === 'failed' && item.errors?.length > 0
+                  ? item.errors.map((e) => e.details.error).join(', ')
+                  : null}
+              </span>
+            </Tooltip.Default>
           </div>
         );
       })}
