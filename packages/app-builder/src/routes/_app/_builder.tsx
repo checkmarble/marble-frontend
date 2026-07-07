@@ -19,6 +19,7 @@ import { OrganizationUsersContextProvider } from '@app-builder/services/organiza
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { useSentryIdentification, useSentryReplay } from '@app-builder/services/sentry';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
+import { getServerEnv } from '@app-builder/utils/environment';
 import { ClientOnly, createFileRoute, Outlet } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { type Namespace } from 'i18next';
@@ -43,6 +44,9 @@ const appBuilderLayoutLoader = createServerFn()
     const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
     const firstSetting = Object.values(settingsSections).find((s) => s.settings.length > 0)?.settings[0];
 
+    const enableTfa = getServerEnv('ENABLE_TFA') ?? '';
+    const isTfaEnrollmentAvailable = enableTfa === 'all' || enableTfa.split(',').includes(user.organizationId);
+
     return {
       user,
       orgUsers,
@@ -60,6 +64,7 @@ const appBuilderLayoutLoader = createServerFn()
         continuousScreening: entitlements.continuousScreening,
         isScreeningSearchAvailable: isScreeningSearchAvailable(entitlements),
         userScoring: isAnalyst(user) ? ('restricted' as const) : entitlements.userScoring,
+        isTfaEnrollmentAvailable,
       },
       authProvider: context.appConfig.auth.provider,
       sentryReplayEnabled: organizationDetail.sentryReplayEnabled,
@@ -91,6 +96,7 @@ function SidebarNudge(props: Omit<ComponentProps<typeof Nudge>, 'className' | 'i
 }
 
 function Builder() {
+  console.log('[hydration-probe] Builder render', { isServer: typeof window === 'undefined' });
   const { user, orgUsers, organization, orgTags, orgObjectTags, featuresAccess, authProvider, sentryReplayEnabled } =
     Route.useLoaderData();
   useSegmentIdentification(user);

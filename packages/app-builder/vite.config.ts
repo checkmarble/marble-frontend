@@ -68,6 +68,13 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  // `qrcode.react` is only reached through a code-split route chunk (TwoFactorAuthSettings),
+  // so Vite's startup scan misses it and discovers it at runtime — the resulting re-optimize
+  // invalidates the already-served client entry chunk ("Outdated Optimize Dep") and breaks
+  // hydration app-wide. Pin it so it is pre-bundled on startup.
+  optimizeDeps: {
+    include: ['qrcode.react'],
+  },
   ssr: {
     // country-flag-emojis ships CJS; force Vite to bundle it for SSR
     noExternal: ['country-flag-emojis'],

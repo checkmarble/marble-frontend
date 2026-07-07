@@ -2,7 +2,13 @@ import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
 import { AppConfig } from '@app-builder/models/app-config';
 import { adaptMfaFactor, type MfaFactor } from '@app-builder/models/mfa';
 import { FirebaseError } from 'firebase/app';
-import { AuthErrorCodes, type MultiFactorError, type MultiFactorResolver, type TotpSecret, User } from 'firebase/auth';
+import {
+  AuthErrorCodes,
+  type MultiFactorError,
+  type MultiFactorResolver,
+  type TotpSecret,
+  type User,
+} from 'firebase/auth';
 
 export interface TotpEnrollmentParams {
   secret: TotpSecret;

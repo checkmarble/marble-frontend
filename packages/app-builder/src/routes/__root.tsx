@@ -96,6 +96,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
+    console.log('[hydration-probe] root useEffect fired -> client React is running');
     setHydrated(true);
   }, []);
 
