@@ -34,9 +34,9 @@
     "react-i18next": "^17.0.8",
     "storybook": "^10.4.6",
     "tailwindcss": "4.1.13",
-    "vite": "7.3.5",
+    "vite": "8.0.16",
     "vite-tsconfig-paths": "6.1.1",
-    "vitest": "4.1.8"
+    "vitest": "4.1.9"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.28",
@@ -70,7 +70,7 @@
     "sharpstate": "^0.0.13",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-radix": "^4.0.2",
-    "temporal-polyfill": "^0.3.2",
+    "temporal-polyfill": "^1.0.1",
     "ts-pattern": "^5.8.0",
     "ui-icons": "workspace:*"
   },
