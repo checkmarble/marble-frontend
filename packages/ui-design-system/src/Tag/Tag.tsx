@@ -2,7 +2,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 import { ComponentProps, forwardRef } from 'react';
 import { cn } from '../utils';
 
-export const tagClassName = cva('inline-flex items-center justify-center border text-nowrap', {
+export const tagClassName = cva('inline-flex items-center justify-center border text-nowrap gap-xs', {
   variants: {
     size: {
       small: 'h-6 px-sm rounded-full text-small',
