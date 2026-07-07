@@ -44,6 +44,11 @@ export const useContinuousScreeningClientDataIndexingInfiniteQuery = (limit = CL
     getNextPageParam: (lastPage) =>
       lastPage.hasNextPage ? (lastPage.items[lastPage.items.length - 1]?.id ?? null) : null,
     placeholderData: keepPreviousData,
-    refetchInterval: CLIENT_DATA_INDEXING_REFETCH_INTERVAL,
+    // Poll only while a single page is loaded. An infinite query refetches every
+    // loaded page on each tick, so once the user paginates we stop polling to avoid
+    // refetching all pages every interval. (Polling also pauses when the tab is
+    // unfocused and the query unmounts entirely when the panel is closed.)
+    refetchInterval: (query) =>
+      (query.state.data?.pages.length ?? 0) > 1 ? false : CLIENT_DATA_INDEXING_REFETCH_INTERVAL,
   });
 };
