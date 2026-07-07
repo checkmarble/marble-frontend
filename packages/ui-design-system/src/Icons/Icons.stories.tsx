@@ -54,7 +54,10 @@ function IconGallery<T extends string>({
 }
 
 export const AllIcons: StoryFn = () => (
-  <IconGallery<IconName> names={iconNames} renderItem={(name) => <Icon icon={name} className="size-6" />} />
+  <IconGallery<IconName>
+    names={iconNames}
+    renderItem={(name) => <Icon icon={name} className="size-6 text-grey-primary" />}
+  />
 );
 
 export const AllLogos: StoryFn = () => (

@@ -20,6 +20,12 @@ export const useContinuousScreeningClientDataIndexingQuery = (
     },
     refetchInterval: options.refetchInterval,
     initialData: options.initialData,
+    ...(options.initialData
+      ? {
+          staleTime: Number.POSITIVE_INFINITY,
+          refetchOnMount: false,
+        }
+      : {}),
   });
 };
 
