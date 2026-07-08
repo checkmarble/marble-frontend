@@ -19,8 +19,8 @@ import { match } from 'ts-pattern';
 import { Button, cn, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientDocumentsPopover } from '../Annotations/ClientDocumentsPopover';
+import { DataExplorerPanel } from '../CaseManagerV2/DataExplorerPanel';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
-import { DataModelExplorer } from '../DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { Spinner } from '../Spinner';
 import { AlertHitsList } from './AlertHitsList';
@@ -309,16 +309,11 @@ export const ClientDetailPage = ({
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
-      <Panel.Root open={showExplorer} onOpenChange={setShowExplorer}>
-        <Panel.Container className="max-w-[90vw]">
-          <Panel.Content>
-            <Panel.Header>{t('client360:client_detail.data_exploration.panel_title')}</Panel.Header>
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-              <DataModelExplorer dataModel={dataModelQuery.data?.dataModel ?? []} />
-            </div>
-          </Panel.Content>
-        </Panel.Container>
-      </Panel.Root>
+      <DataExplorerPanel
+        open={showExplorer}
+        onOpenChange={setShowExplorer}
+        dataModel={dataModelQuery.data?.dataModel ?? []}
+      />
       {scoringSettings && activeScore && isAccessible(userScoringAccess) ? (
         <ScoreDetailPanel
           open={showScorePanel}

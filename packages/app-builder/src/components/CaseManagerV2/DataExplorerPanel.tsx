@@ -26,7 +26,7 @@ export function DataExplorerPanel({ dataModel, open, onOpenChange }: DataExplore
       <Panel.Container size="large">
         <Panel.Content>
           <Panel.Header>{t('cases:case_detail.pivot_panel.breadcrumb_explore')}</Panel.Header>
-          <div>
+          <div className="z-0">
             <DataModelExplorer dataModel={dataModel} />
           </div>
         </Panel.Content>
