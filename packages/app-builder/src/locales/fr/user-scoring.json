@@ -91,7 +91,7 @@
   "switch.floor_label": "seuil =",
   "switch.no_condition": "Aucune condition définie",
   "switch.number.and": "et",
-  "switch.number.default": "si non, > à",
+  "switch.number.default": "si non, ≥ à",
 
   "switch.number.first": "si la valeur est ≤ à",
   "switch.number.middle": "si la valeur est entre",

@@ -91,7 +91,7 @@
   "switch.floor_label": "الحد الأدنى =",
   "switch.no_condition": "لا توجد شروط محددة",
   "switch.number.and": "و",
-  "switch.number.default": "وإلا، >",
+  "switch.number.default": "وإلا، ≥",
 
   "switch.number.first": "إذا كانت القيمة ≤",
   "switch.number.middle": "إذا كانت القيمة بين",
