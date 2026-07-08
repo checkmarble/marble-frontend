@@ -147,7 +147,9 @@ export type FilterDescriptor =
   | DateRangePopoverFilterDescriptor
   | RadioFilterDescriptor;
 
-export type FilterChange = { type: 'set'; name: string; value: FilterValue } | { type: 'remove'; name: string };
+export type FilterChange =
+  | { type: 'set'; name: string; value: FilterValue; reconcileDynamicFilters?: boolean }
+  | { type: 'remove'; name: string };
 
 export interface FiltersBarProps {
   descriptors: FilterDescriptor[];

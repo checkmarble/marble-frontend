@@ -18,6 +18,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
 
   useEffect(() => {
     setLocalText(filter.selectedValue?.value?.join(',') ?? '');
+    if (!filter.selectedValue?.value?.length) setOpen(true);
   }, [filter.selectedValue]);
 
   const validate = () => {
@@ -36,7 +37,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
   };
 
   return (
-    <Popover.Root open={isOpen} onOpenChange={setOpen}>
+    <Popover.Root open={isOpen} onOpenChange={validate} modal>
       <FilterTrigger
         id={filter.name}
         className={buttonState}
