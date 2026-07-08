@@ -2,7 +2,6 @@ import { Page, scenarioI18n } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { Callout } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { DeleteRule } from '@app-builder/components/Scenario/Rules/Actions/DeleteRule';
 import { DuplicateRule } from '@app-builder/components/Scenario/Rules/Actions/DuplicateRule';
 import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescription';
@@ -37,7 +36,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Tag, UnstyledInput } from 'ui-design-system';
+import { Button, cn, NumberInput, Tag, UnstyledInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -206,6 +205,7 @@ function RuleDetail() {
       mutation.mutate(value);
     },
     validators: {
+      onChange: editRuleFormSchema,
       onSubmit: editRuleFormSchema,
     },
     defaultValues: rule as EditRuleForm,
@@ -382,7 +382,7 @@ function RuleDetail() {
                   )}
                 </form.Field>
               </div>
-              <div className="flex flex-col gap-sm">
+              <div className="flex flex-col">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-sm">
                   <div
@@ -450,14 +450,14 @@ function RuleDetail() {
                     >
                       {(field) => (
                         <div className="flex flex-col gap-xs">
-                          <FormInput
+                          <NumberInput
                             type="number"
                             name={field.name}
-                            defaultValue={field.state.value}
+                            value={field.state.value}
                             onBlur={field.handleBlur}
                             disabled={editor === 'view'}
-                            onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                            valid={field.state.meta.errors?.length === 0}
+                            onChange={field.handleChange}
+                            borderColor={field.state.meta.errors?.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                           />
                           <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                         </div>
