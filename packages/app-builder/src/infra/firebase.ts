@@ -10,9 +10,6 @@ import {
   getMultiFactorResolver,
   multiFactor,
   OAuthProvider,
-  PhoneAuthProvider,
-  PhoneMultiFactorGenerator,
-  RecaptchaVerifier,
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   sendEmailVerification,
@@ -37,9 +34,6 @@ export type FirebaseClientWrapper = {
   logout: typeof signOut;
   multiFactor: typeof multiFactor;
   totpGenerator: typeof TotpMultiFactorGenerator;
-  PhoneAuthProvider: typeof PhoneAuthProvider;
-  phoneMultiFactorGenerator: typeof PhoneMultiFactorGenerator;
-  RecaptchaVerifier: typeof RecaptchaVerifier;
   getMultiFactorResolver: typeof getMultiFactorResolver;
   EmailAuthProvider: typeof EmailAuthProvider;
   reauthenticateWithCredential: typeof reauthenticateWithCredential;
@@ -59,9 +53,6 @@ export function initializeFirebaseClient(config: AppConfig['auth']['firebase']):
     connectAuthEmulator(clientAuth, config.emulatorUrl, {
       disableWarnings: process.env.NODE_ENV !== 'production',
     });
-    // The Auth emulator does not implement getRecaptchaConfig; disabling app
-    // verification skips reCAPTCHA so phone-based MFA can be tested locally.
-    clientAuth.settings.appVerificationDisabledForTesting = true;
   }
 
   const googleAuthProvider = new GoogleAuthProvider();
@@ -83,9 +74,6 @@ export function initializeFirebaseClient(config: AppConfig['auth']['firebase']):
     logout: signOut,
     multiFactor: multiFactor,
     totpGenerator: TotpMultiFactorGenerator,
-    PhoneAuthProvider: PhoneAuthProvider,
-    phoneMultiFactorGenerator: PhoneMultiFactorGenerator,
-    RecaptchaVerifier: RecaptchaVerifier,
     getMultiFactorResolver: getMultiFactorResolver,
     EmailAuthProvider: EmailAuthProvider,
     reauthenticateWithCredential: reauthenticateWithCredential,

@@ -7,7 +7,6 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input } from 'ui-design-system';
 import { Spinner } from '../Spinner';
-import { MfaPhoneChallenge } from './MfaPhoneChallenge';
 
 type MfaChallengeProps = {
   resolver: MultiFactorResolver;
@@ -17,16 +16,23 @@ type MfaChallengeProps = {
   onCancel: () => void;
 };
 
-// Picks the challenge flow based on the enrolled second factor. TOTP needs no SMS
-// round-trip (the user reads the code from their authenticator), so it's a distinct flow.
+// TOTP is the only supported second factor: the user reads the code from their authenticator.
 export function MfaChallenge(props: MfaChallengeProps) {
+  const { t } = useTranslation(['common']);
   const totpHint = props.resolver.hints.find((hint) => hint.factorId === 'totp');
 
-  if (totpHint) {
-    return <MfaTotpChallenge {...props} enrollmentId={totpHint.uid} />;
+  if (!totpHint) {
+    return (
+      <div className="flex w-full flex-col gap-lg">
+        <span className="text-s text-red-primary">{t('common:errors.unknown')}</span>
+        <Button variant="secondary" size="large" className="w-full justify-center" onClick={props.onCancel}>
+          {t('common:cancel')}
+        </Button>
+      </div>
+    );
   }
 
-  return <MfaPhoneChallenge {...props} />;
+  return <MfaTotpChallenge {...props} enrollmentId={totpHint.uid} />;
 }
 
 function MfaTotpChallenge({

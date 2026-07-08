@@ -1,19 +1,16 @@
 import { type TotpEnrollmentParams } from '@app-builder/repositories/AuthenticationRepository';
 import {
-  InvalidPhoneNumber,
   InvalidVerificationCode,
   RequiresRecentLogin,
-  useFinalizePhoneEnrollment,
   useFinalizeTotpEnrollment,
   useGetEnrolledMfaFactors,
-  useStartPhoneEnrollment,
   useStartTotpEnrollment,
   useUnenrollMfaFactor,
 } from '@app-builder/services/auth/auth-client';
 import { useClientServices } from '@app-builder/services/init-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Modal } from 'ui-design-system';
@@ -65,7 +62,7 @@ export function TwoFactorAuthSettings() {
               <span className="flex items-center gap-sm text-s">
                 <Icon icon="lock" className="size-5 text-green-primary" />
                 <span className="flex flex-col">
-                  <span>{factor.displayName ?? t('account:mfa.default_factor_name')}</span>
+                  <span>{factor.displayName ?? t('account:mfa.default_factor_name_totp')}</span>
                   <span className="text-xs text-grey-secondary">
                     {t('account:mfa.enrolled_on', {
                       date: new Date(factor.enrollmentTime).toLocaleDateString(i18n.language),
@@ -90,7 +87,6 @@ export function TwoFactorAuthSettings() {
 
       <div className="flex flex-col gap-sm">
         <EnrollTotpModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
-        <EnrollPhoneInline onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
       </div>
     </div>
   );
@@ -232,150 +228,5 @@ function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
         )}
       </Modal.Content>
     </Modal.Root>
-  );
-}
-
-function EnrollPhoneInline({ onEnrolled }: { onEnrolled: () => void }) {
-  const { t } = useTranslation(['account', 'common']);
-  const { authenticationClientService } = useClientServices();
-
-  const startPhoneEnrollment = useStartPhoneEnrollment(authenticationClientService);
-  const finalizePhoneEnrollment = useFinalizePhoneEnrollment(authenticationClientService);
-
-  const recaptchaRef = useRef<HTMLDivElement>(null);
-
-  const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<'phone' | 'code'>('phone');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [verificationId, setVerificationId] = useState<string | null>(null);
-  const [code, setCode] = useState('');
-  const [error, setError] = useState<string | null>(null);
-
-  const startMutation = useMutation({
-    mutationFn: () => {
-      if (!recaptchaRef.current) throw new Error('reCAPTCHA container not ready');
-      return startPhoneEnrollment(phoneNumber, recaptchaRef.current);
-    },
-    onSuccess: (id) => {
-      setVerificationId(id ?? null);
-      setStep('code');
-    },
-    onError: (err) => {
-      if (err instanceof InvalidPhoneNumber) {
-        setError(t('account:mfa.error.invalid_phone'));
-      } else if (err instanceof RequiresRecentLogin) {
-        toast.error(t('account:mfa.error.requires_recent_login'));
-        setOpen(false);
-      } else {
-        toast.error(t('account:mfa.error.unknown'));
-      }
-    },
-  });
-
-  const finalizeMutation = useMutation({
-    mutationFn: () => {
-      if (!verificationId) throw new Error('No pending enrollment');
-      return finalizePhoneEnrollment(verificationId, code, t('account:mfa.default_factor_name'));
-    },
-    onSuccess: () => {
-      toast.success(t('account:mfa.enroll.success'));
-      onEnrolled();
-      setOpen(false);
-    },
-    onError: (err) => {
-      if (err instanceof InvalidVerificationCode) {
-        setError(t('account:mfa.error.invalid_code'));
-      } else {
-        toast.error(t('account:mfa.error.unknown'));
-      }
-    },
-  });
-
-  const openForm = () => {
-    setStep('phone');
-    setPhoneNumber('');
-    setVerificationId(null);
-    setCode('');
-    setError(null);
-    setOpen(true);
-  };
-
-  if (!open) {
-    return (
-      <Button variant="primary" className="self-start" onClick={openForm}>
-        <Icon icon="plus" className="size-5" />
-        {t('account:mfa.add_phone')}
-      </Button>
-    );
-  }
-
-  // Rendered inline (not in a Modal) on purpose: Firebase's reCAPTCHA challenge popup
-  // opens in a body-level overlay, and a Dialog focus-trap would make it unclickable.
-  return (
-    <form
-      className="border-grey-border flex w-full flex-col gap-lg rounded-lg border p-md"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setError(null);
-        if (step === 'phone') {
-          startMutation.mutate();
-        } else {
-          finalizeMutation.mutate();
-        }
-      }}
-    >
-      <span className="text-s font-semibold">{t('account:mfa.enroll.title')}</span>
-      {step === 'phone' ? (
-        <div className="flex flex-col gap-xs">
-          <label htmlFor="mfa-phone" className="text-xs font-medium">
-            {t('account:mfa.enroll.phone_label')}
-          </label>
-          <Input
-            id="mfa-phone"
-            type="tel"
-            autoComplete="tel"
-            placeholder={t('account:mfa.enroll.phone_placeholder')}
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.currentTarget.value)}
-            borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
-          />
-          <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.phone_instructions')}</span>
-          {error ? <span className="text-xs text-red-primary">{error}</span> : null}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-xs">
-          <label htmlFor="mfa-code" className="text-xs font-medium">
-            {t('account:mfa.enroll.code_label')}
-          </label>
-          <Input
-            id="mfa-code"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            maxLength={6}
-            value={code}
-            onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
-            borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
-          />
-          <span className="text-xs text-grey-secondary">{t('account:mfa.enroll.code_instructions')}</span>
-          {error ? <span className="text-xs text-red-primary">{error}</span> : null}
-        </div>
-      )}
-      {/* Invisible reCAPTCHA container. */}
-      <div ref={recaptchaRef} />
-      <div className="flex justify-end gap-sm">
-        <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
-          {t('common:cancel')}
-        </Button>
-        {step === 'phone' ? (
-          <Button type="submit" disabled={phoneNumber.length === 0 || startMutation.isPending}>
-            {t('account:mfa.enroll.send_code')}
-          </Button>
-        ) : (
-          <Button type="submit" disabled={code.length < 6 || finalizeMutation.isPending}>
-            {t('account:mfa.enroll.confirm')}
-          </Button>
-        )}
-      </div>
-    </form>
   );
 }
