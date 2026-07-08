@@ -124,17 +124,13 @@ export const getAuditEventsFn = createServerFn({ method: 'GET' })
 export const getOrganizationUsersWithTfaFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {
-    console.log('[tfa-serverfn] handler entered');
     const { user, organization } = context.authInfo;
 
     if (!isReadUserAvailable(user)) {
-      console.log('[tfa-serverfn] not read-user available -> redirect');
       throw redirect({ to: '/' });
     }
 
-    console.log('[tfa-serverfn] about to call listUsers({ withTfa: true })');
     const users = await organization.listUsers({ withTfa: true });
-    console.log('[tfa-serverfn] listUsers returned', users.length);
     return { users };
   });
 

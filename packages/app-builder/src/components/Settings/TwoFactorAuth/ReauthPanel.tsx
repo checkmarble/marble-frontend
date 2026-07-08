@@ -26,10 +26,12 @@ export function ReauthPanel({ onReauthenticated }: { onReauthenticated: () => vo
     queryKey: ['mfa', 'reauth', 'provider-ids'],
     queryFn: getCurrentUserProviderIds,
   });
-  const providerIds = providersQuery.data ?? [];
-  const hasPassword = providerIds.includes('password');
-  const hasGoogle = providerIds.includes('google.com');
-  const hasMicrosoft = providerIds.includes('microsoft.com');
+  // Exact membership over Firebase's fixed provider-id constants (not URLs). A Set keeps
+  // this unambiguous and sidesteps CodeQL's URL-substring heuristic on `.includes('…com')`.
+  const providerIds = new Set(providersQuery.data ?? []);
+  const hasPassword = providerIds.has('password');
+  const hasGoogle = providerIds.has('google.com');
+  const hasMicrosoft = providerIds.has('microsoft.com');
 
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
