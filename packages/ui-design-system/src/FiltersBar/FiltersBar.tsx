@@ -1,5 +1,5 @@
 import { cva } from 'class-variance-authority';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { isDeepEqual } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button } from '../Button/Button';
@@ -165,6 +165,25 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
     [dynamicDescriptors, draftValue],
   );
 
+  const previousDynamicFilterNamesRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const currentDynamicFilterNames = new Set(dynamicDescriptors.map((d) => d.name));
+    const removedFilterNames = [...previousDynamicFilterNamesRef.current].filter(
+      (name) => !currentDynamicFilterNames.has(name),
+    );
+
+    if (removedFilterNames.length > 0) {
+      setDraftValue((prev) => {
+        const next = { ...prev };
+        for (const name of removedFilterNames) delete next[name];
+        return next;
+      });
+    }
+
+    previousDynamicFilterNamesRef.current = currentDynamicFilterNames;
+  }, [dynamicDescriptors]);
+
   type FilterWithPriority = Filter & {
     priority: 'main' | 'additional';
   };
@@ -182,12 +201,15 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
   const allDescriptors = useMemo(() => [...descriptors, ...dynamicDescriptors], [descriptors, dynamicDescriptors]);
 
   const contextValue = useMemo<FiltersBarContextValue>(() => {
-    const emitSet = (name: string, newValue: FilterValue) => {
+    const emitSet = (name: string, newValue: FilterValue, options?: { reconcileDynamicFilters?: boolean }) => {
       setDraftValue((prev) => ({ ...prev, [name]: newValue }));
 
       if (allDescriptors.find((d) => d.name === name)?.instantUpdate && onChange) {
         const nextValue = { ...draftValue, [name]: newValue };
-        onChange({ type: 'set', name, value: newValue }, { value: nextValue });
+        onChange(
+          { type: 'set', name, value: newValue, reconcileDynamicFilters: options?.reconcileDynamicFilters },
+          { value: nextValue },
+        );
       }
     };
     const emitRemove = (name: string) => {
