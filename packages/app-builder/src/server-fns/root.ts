@@ -53,14 +53,6 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
     if (metabaseUrl) frames.push(metabaseUrl);
     if (fbAuthDomain) frames.push(fbAuthDomain);
 
-    // Firebase phone-auth MFA renders an invisible reCAPTCHA hosted by Google (iframe +
-    // XHR). The emulator disables app verification, so this is only needed against real
-    // Firebase.
-    const recaptchaDomains = !appConfig.auth.firebase.isEmulator
-      ? ['https://www.google.com', 'https://recaptcha.google.com']
-      : [];
-    frames.push(...recaptchaDomains);
-
     const imgSrc: string[] = ["'self'", 'data:'];
     if (ENV.CUSTOM_LOGO_URL) {
       try {
@@ -80,7 +72,7 @@ export const getRootLoaderDataFn = createServerFn({ method: 'GET' })
       objectSrc: ["'none'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: [`'nonce-${nonce}'`, "'unsafe-eval'", "'strict-dynamic'"],
-      connectSrc: ["'self'", ...firebaseUrl, ...recaptchaDomains, ...externalDomains.map((d) => `https://${d}`)],
+      connectSrc: ["'self'", ...firebaseUrl, ...externalDomains.map((d) => `https://${d}`)],
       imgSrc,
       frameSrc: frames.length > 0 ? frames : ["'none'"],
     });

@@ -24,7 +24,6 @@ export class WeakPasswordError extends Error {}
 export class TooManyRequest extends Error {}
 export class InvalidVerificationCode extends Error {}
 export class RequiresRecentLogin extends Error {}
-export class InvalidPhoneNumber extends Error {}
 
 function throwMappedMfaError(error: unknown): never {
   if (error instanceof FirebaseError) {
@@ -33,9 +32,6 @@ function throwMappedMfaError(error: unknown): never {
       case 'auth/missing-code':
       case 'auth/code-expired':
         throw new InvalidVerificationCode();
-      case AuthErrorCodes.INVALID_PHONE_NUMBER:
-      case AuthErrorCodes.MISSING_PHONE_NUMBER:
-        throw new InvalidPhoneNumber();
       case AuthErrorCodes.CREDENTIAL_TOO_OLD_LOGIN_AGAIN:
         throw new RequiresRecentLogin();
       case AuthErrorCodes.NETWORK_REQUEST_FAILED:
@@ -65,26 +61,6 @@ export function useFinalizeTotpEnrollment({ authenticationClientRepository }: Au
   return async (secret: TotpSecret, verificationCode: string, displayName: string) => {
     try {
       await authenticationClientRepository.finalizeTotpEnrollment(secret, verificationCode, displayName);
-    } catch (error) {
-      throwMappedMfaError(error);
-    }
-  };
-}
-
-export function useStartPhoneEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
-  return async (phoneNumber: string, recaptchaContainer: HTMLElement) => {
-    try {
-      return await authenticationClientRepository.startPhoneEnrollment(phoneNumber, recaptchaContainer);
-    } catch (error) {
-      throwMappedMfaError(error);
-    }
-  };
-}
-
-export function useFinalizePhoneEnrollment({ authenticationClientRepository }: AuthenticationClientService) {
-  return async (verificationId: string, verificationCode: string, displayName: string) => {
-    try {
-      await authenticationClientRepository.finalizePhoneEnrollment(verificationId, verificationCode, displayName);
     } catch (error) {
       throwMappedMfaError(error);
     }
@@ -251,33 +227,6 @@ export function useEmailAndPasswordSignIn({ authenticationClientRepository }: Au
         }
       }
       throw error;
-    }
-  };
-}
-
-export function useSendMfaPhoneChallenge({ authenticationClientRepository }: AuthenticationClientService) {
-  return async (resolver: MultiFactorResolver, recaptchaContainer: HTMLElement) => {
-    try {
-      return await authenticationClientRepository.sendMfaPhoneChallenge(resolver, recaptchaContainer);
-    } catch (error) {
-      throwMappedMfaError(error);
-    }
-  };
-}
-
-export function useResolveMfaPhoneSignIn({ authenticationClientRepository }: AuthenticationClientService) {
-  const csrf = useCsrfToken();
-
-  return async (resolver: MultiFactorResolver, verificationId: string, verificationCode: string) => {
-    try {
-      const { idToken, refreshToken } = await authenticationClientRepository.resolveMfaPhoneSignIn(
-        resolver,
-        verificationId,
-        verificationCode,
-      );
-      return { idToken, refreshToken, csrf };
-    } catch (error) {
-      throwMappedMfaError(error);
     }
   };
 }

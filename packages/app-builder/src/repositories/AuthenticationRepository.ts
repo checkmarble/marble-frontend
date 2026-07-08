@@ -37,14 +37,6 @@ export interface AuthenticationClientRepository {
   getEnrolledMfaFactors: () => Promise<MfaFactor[]>;
   startTotpEnrollment: () => Promise<TotpEnrollmentParams>;
   finalizeTotpEnrollment: (secret: TotpSecret, verificationCode: string, displayName: string) => Promise<void>;
-  startPhoneEnrollment: (phoneNumber: string, recaptchaContainer: HTMLElement) => Promise<string>;
-  finalizePhoneEnrollment: (verificationId: string, verificationCode: string, displayName: string) => Promise<void>;
-  sendMfaPhoneChallenge: (resolver: MultiFactorResolver, recaptchaContainer: HTMLElement) => Promise<string>;
-  resolveMfaPhoneSignIn: (
-    resolver: MultiFactorResolver,
-    verificationId: string,
-    verificationCode: string,
-  ) => Promise<{ idToken: string; refreshToken: string }>;
   resolveMfaTotpSignIn: (
     resolver: MultiFactorResolver,
     enrollmentId: string,
@@ -215,57 +207,6 @@ export function getAuthenticationClientRepository(
     await firebaseClient.multiFactor(user).enroll(assertion, displayName);
   }
 
-  async function startPhoneEnrollment(phoneNumber: string, recaptchaContainer: HTMLElement) {
-    const user = await getReadyUser();
-    const mfaSession = await firebaseClient.multiFactor(user).getSession();
-    // Invisible reCAPTCHA is required by Firebase phone auth; the emulator auto-solves it.
-    const verifier = new firebaseClient.RecaptchaVerifier(firebaseClient.clientAuth, recaptchaContainer, {
-      size: 'invisible',
-    });
-    try {
-      const phoneAuthProvider = new firebaseClient.PhoneAuthProvider(firebaseClient.clientAuth);
-      return await phoneAuthProvider.verifyPhoneNumber({ phoneNumber, session: mfaSession }, verifier);
-    } finally {
-      verifier.clear();
-    }
-  }
-
-  async function finalizePhoneEnrollment(verificationId: string, verificationCode: string, displayName: string) {
-    const user = await getReadyUser();
-    const credential = firebaseClient.PhoneAuthProvider.credential(verificationId, verificationCode);
-    const assertion = firebaseClient.phoneMultiFactorGenerator.assertion(credential);
-    await firebaseClient.multiFactor(user).enroll(assertion, displayName);
-  }
-
-  async function sendMfaPhoneChallenge(resolver: MultiFactorResolver, recaptchaContainer: HTMLElement) {
-    const phoneFactorId = firebaseClient.phoneMultiFactorGenerator.FACTOR_ID;
-    const hint = resolver.hints.find((h) => h.factorId === phoneFactorId) ?? resolver.hints[0];
-    // Invisible reCAPTCHA is required by Firebase phone auth; the emulator auto-solves it.
-    const verifier = new firebaseClient.RecaptchaVerifier(firebaseClient.clientAuth, recaptchaContainer, {
-      size: 'invisible',
-    });
-    try {
-      const phoneAuthProvider = new firebaseClient.PhoneAuthProvider(firebaseClient.clientAuth);
-      return await phoneAuthProvider.verifyPhoneNumber({ multiFactorHint: hint, session: resolver.session }, verifier);
-    } finally {
-      verifier.clear();
-    }
-  }
-
-  async function resolveMfaPhoneSignIn(
-    resolver: MultiFactorResolver,
-    verificationId: string,
-    verificationCode: string,
-  ) {
-    const credential = firebaseClient.PhoneAuthProvider.credential(verificationId, verificationCode);
-    const assertion = firebaseClient.phoneMultiFactorGenerator.assertion(credential);
-    const userCredential = await resolver.resolveSignIn(assertion);
-    return {
-      idToken: await userCredential.user.getIdToken(),
-      refreshToken: userCredential.user.refreshToken,
-    };
-  }
-
   async function resolveMfaTotpSignIn(resolver: MultiFactorResolver, enrollmentId: string, verificationCode: string) {
     const assertion = firebaseClient.totpGenerator.assertionForSignIn(enrollmentId, verificationCode);
     const userCredential = await resolver.resolveSignIn(assertion);
@@ -311,10 +252,6 @@ export function getAuthenticationClientRepository(
     getEnrolledMfaFactors,
     startTotpEnrollment,
     finalizeTotpEnrollment,
-    startPhoneEnrollment,
-    finalizePhoneEnrollment,
-    sendMfaPhoneChallenge,
-    resolveMfaPhoneSignIn,
     resolveMfaTotpSignIn,
     unenrollMfaFactor,
     getCurrentUserProviderIds,
