@@ -7,16 +7,19 @@ export const MatchOperand = memo(function MatchOperand({
   node,
   onSave,
   placeholder,
+  withDate,
 }: {
   node?: KnownOperandAstNode;
   onSave?: (astNode: AstNode) => void;
   placeholder?: string;
+  withDate?: boolean;
 }) {
   return (
     <AstBuilder.Operand
       placeholder={placeholder}
       node={node ?? NewUndefinedAstNode()}
-      optionsDataType={['String']}
+      optionsDataType={withDate ? ['String', 'Timestamp'] : ['String']}
+      excludeFields={withDate ? ['updated_at'] : undefined}
       validationStatus="valid"
       onChange={onSave}
     />

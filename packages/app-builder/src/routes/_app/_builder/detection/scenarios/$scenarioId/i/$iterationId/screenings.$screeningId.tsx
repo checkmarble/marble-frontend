@@ -800,6 +800,7 @@ function ScreeningDetail() {
                                         onBlur={field.handleBlur}
                                         placeholder={t('scenarios:edit_sanction.birthdate_placeholder')}
                                         limit={5}
+                                        withDate
                                       />
                                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>

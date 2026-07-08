@@ -14,6 +14,7 @@ export function EditionAstBuilderAnyRoot(props: AstBuilderRootProps) {
         path="root"
         coerceDataType={props.coerceDataType}
         optionsDataType={props.optionsDataType}
+        excludeFields={props.excludeFields}
       />
       <EditionEvaluationErrors id={nodeStore.value.node.id} />
     </AstBuilderNodeSharpFactory.Provider>

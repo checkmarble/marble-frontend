@@ -7,15 +7,19 @@ import { AstBuilderDataSharpFactory } from './Provider';
 import { type AstBuilderBaseProps } from './types';
 import { ViewingAstBuilderOperand } from './viewing/ViewingOperand';
 
+export type AstBuilderValidationStatus = 'valid' | 'error' | 'light-error';
+
 export type AstBuilderOperandProps = AstBuilderBaseProps<KnownOperandAstNode> & {
   enumValues?: EnumValue[];
   showErrors?: boolean;
   placeholder?: string;
   onChange?: (node: AstNode) => void;
   optionsDataType?: DataType[] | ((o: EnrichedMenuOption) => boolean);
+  excludeFields?: string[];
   coerceDataType?: DataType[];
   returnValue?: string;
-} & { validationStatus?: 'valid' | 'error' | 'light-error' };
+  validationStatus?: AstBuilderValidationStatus;
+};
 
 export function AstBuilderOperand(props: AstBuilderOperandProps) {
   const builderMode = AstBuilderDataSharpFactory.select((s) => s.mode);

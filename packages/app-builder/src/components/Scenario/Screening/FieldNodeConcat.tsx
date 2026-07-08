@@ -23,6 +23,7 @@ export function FieldNodeConcat({
   onChange,
   viewOnly,
   placeholder,
+  withDate,
 }: {
   value?: StringConcatAstNode;
   limit?: number;
@@ -30,6 +31,7 @@ export function FieldNodeConcat({
   onChange?: (node: AstNode | null) => void;
   onBlur?: () => void;
   viewOnly?: boolean;
+  withDate?: boolean;
 }) {
   const [nodes, setNodes] = useState<KnownOperandAstNode[]>(() =>
     value?.children?.length ? value.children : [NewUndefinedAstNode()],
@@ -138,6 +140,7 @@ export function FieldNodeConcat({
                             applyNodes(replace(nodes, { ...savedNode, id: node.id }, (_, i) => i === index));
                           }
                         }}
+                        withDate={withDate}
                       />
                     </div>
                   )}
