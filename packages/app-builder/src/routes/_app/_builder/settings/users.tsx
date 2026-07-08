@@ -77,12 +77,6 @@ function Users() {
   const { orgUsers } = useOrganizationUsers();
 
   const tfaQuery = useOrganizationUsersTfaQuery();
-  console.log('[tfa-users] render', {
-    isServer: typeof window === 'undefined',
-    status: tfaQuery.status,
-    fetchStatus: tfaQuery.fetchStatus,
-    dataLen: tfaQuery.data?.length,
-  });
   const tfaByUserId = useMemo(
     () => new Map((tfaQuery.data ?? []).map((u) => [u.userId, u.tfaEnabled])),
     [tfaQuery.data],

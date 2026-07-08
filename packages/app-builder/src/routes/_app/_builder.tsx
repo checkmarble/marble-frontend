@@ -96,7 +96,6 @@ function SidebarNudge(props: Omit<ComponentProps<typeof Nudge>, 'className' | 'i
 }
 
 function Builder() {
-  console.log('[hydration-probe] Builder render', { isServer: typeof window === 'undefined' });
   const { user, orgUsers, organization, orgTags, orgObjectTags, featuresAccess, authProvider, sentryReplayEnabled } =
     Route.useLoaderData();
   useSegmentIdentification(user);

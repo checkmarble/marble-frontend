@@ -1,6 +1,7 @@
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { InvalidVerificationCode, useResolveMfaTotpSignIn } from '@app-builder/services/auth/auth-client';
 import { useClientServices } from '@app-builder/services/init-client';
+import * as Sentry from '@sentry/tanstackstart-react';
 import { type MultiFactorResolver } from 'firebase/auth';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -65,6 +66,7 @@ function MfaTotpChallenge({
       if (verifyError instanceof InvalidVerificationCode) {
         setError(t('auth:mfa.error.invalid_code'));
       } else {
+        Sentry.captureException(verifyError);
         toast.error(t('common:errors.unknown'));
       }
     } finally {
