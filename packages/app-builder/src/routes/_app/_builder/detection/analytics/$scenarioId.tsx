@@ -108,6 +108,9 @@ function Analytics() {
   const [volatileRange, setVolatileRange] = useState<AnalyticsDateRangeFilter | undefined>();
   const [volatileCompareRange, setVolatileCompareRange] = useState<AnalyticsDateRangeFilter | undefined>();
   const [selectedFilterNames, setSelectedFilterNames] = useState<string[]>([]);
+  const [pendingDynamicFiltersReconciliationFor, setPendingDynamicFiltersReconciliationFor] = useState<string | null>(
+    null,
+  );
   const triggerObjects = useMemo(
     () =>
       R.pipe(
@@ -122,6 +125,7 @@ function Analytics() {
     setVolatileScenarioId(null);
     setVolatileRange(undefined);
     setVolatileCompareRange(undefined);
+    setPendingDynamicFiltersReconciliationFor(null);
   }, [queryString]);
 
   useEffect(() => {
@@ -147,10 +151,11 @@ function Analytics() {
     return [primary, secondary].filter(Boolean) as AnalyticsDateRangeFilter[];
   }, [volatileRange, volatileCompareRange, parsedFiltersResult]);
 
-  const { data: availableFilters } = useGetAvailableFilters({
+  const availableFiltersQuery = useGetAvailableFilters({
     ranges: effectiveRanges,
     scenarioId: effectiveScenarioId,
   });
+  const { data: availableFilters } = availableFiltersQuery;
 
   const seenAvailableFilters = useRef<Map<string, AvailableFiltersResponse[number]>>(new Map());
 
@@ -159,6 +164,25 @@ function Analytics() {
       seenAvailableFilters.current.set(filter.name, filter);
     });
   }, [availableFilters]);
+
+  useEffect(() => {
+    if (
+      pendingDynamicFiltersReconciliationFor !== effectiveScenarioId ||
+      availableFiltersQuery.isPlaceholderData ||
+      !availableFilters
+    ) {
+      return;
+    }
+
+    const availableFilterNames = new Set(availableFilters.map((filter) => filter.name));
+    setSelectedFilterNames((prev) => prev.filter((name) => availableFilterNames.has(name)));
+    setPendingDynamicFiltersReconciliationFor(null);
+  }, [
+    availableFilters,
+    availableFiltersQuery.isPlaceholderData,
+    effectiveScenarioId,
+    pendingDynamicFiltersReconciliationFor,
+  ]);
 
   type AvailableFiltersDescriptor = FilterDescriptor & {
     source?: FilterSource;
@@ -317,6 +341,9 @@ function Analytics() {
 
   const onFilterChange = (change: FilterChange): void => {
     onInstantUpdate(change);
+    if (change.type === 'set' && change.reconcileDynamicFilters) {
+      setPendingDynamicFiltersReconciliationFor(change.value as string);
+    }
     if (change.type === 'remove' && selectedFilterNames.includes(change.name)) {
       removeSelectedFilter(change.name);
     }

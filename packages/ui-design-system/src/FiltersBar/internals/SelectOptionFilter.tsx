@@ -21,8 +21,13 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
   const hasOptions = options?.length ?? false;
 
   const handleSelect = (value: string) => {
+    if (value === internalSelectedValue) {
+      setOpen(false);
+      return;
+    }
+
     setInternalSelectedValue(value);
-    emitSet(name, value);
+    emitSet(name, value, { reconcileDynamicFilters: true });
     setOpen(false);
   };
 
