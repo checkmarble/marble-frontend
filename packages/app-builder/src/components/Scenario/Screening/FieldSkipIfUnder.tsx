@@ -40,7 +40,7 @@ export const FieldSkipIfUnder = ({ value, onBlur, onChange, editor, name }: Fiel
               <Input
                 type="number"
                 name={name}
-                className="z-0 h-6 w-14 py-0"
+                className="z-0 w-14 py-0"
                 value={inputValue}
                 min={0}
                 onChange={handleInputChange}

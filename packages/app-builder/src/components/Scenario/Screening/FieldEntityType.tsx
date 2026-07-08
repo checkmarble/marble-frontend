@@ -20,7 +20,7 @@ export const FieldEntityType = ({
     <div className="flex flex-col gap-md">
       <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <Button variant="secondary" className="w-52 justify-between" disabled={editor === 'view'}>
+          <Button variant="secondary" className="w-52 justify-between" size="large" disabled={editor === 'view'}>
             <span className="text-grey-primary text-s font-medium">{getEntityName(entityType)}</span>
             <Icon icon="caret-down" className="text-grey-secondary size-4" />
           </Button>
