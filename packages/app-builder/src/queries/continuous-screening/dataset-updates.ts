@@ -1,9 +1,15 @@
-import { type ListContinuousScreeningDatasetUpdatesParams } from '@app-builder/models/continuous-screening';
+import {
+  type ContinuousScreeningDatasetUpdateSummary,
+  type ListContinuousScreeningDatasetUpdatesParams,
+} from '@app-builder/models/continuous-screening';
 import { listContinuousScreeningDatasetUpdatesFn } from '@app-builder/server-fns/continuous-screening';
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 
-export const useContinuousScreeningDatasetUpdatesQuery = (params: ListContinuousScreeningDatasetUpdatesParams = {}) => {
+export const useContinuousScreeningDatasetUpdatesQuery = (
+  params: ListContinuousScreeningDatasetUpdatesParams = {},
+  options: { refetchInterval?: number; initialData?: ContinuousScreeningDatasetUpdateSummary[] } = {},
+) => {
   const listDatasetUpdates = useServerFn(listContinuousScreeningDatasetUpdatesFn);
 
   return useQuery({
@@ -12,6 +18,14 @@ export const useContinuousScreeningDatasetUpdatesQuery = (params: ListContinuous
       const result = await listDatasetUpdates({ data: params });
       return result.items;
     },
+    refetchInterval: options.refetchInterval,
+    initialData: options.initialData,
+    ...(options.initialData
+      ? {
+          staleTime: Number.POSITIVE_INFINITY,
+          refetchOnMount: false,
+        }
+      : {}),
   });
 };
 
