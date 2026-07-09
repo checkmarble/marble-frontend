@@ -127,10 +127,16 @@ export function CaseManagerPageLayout({
         <Page.Content className="relative">
           <div className="flex justify-between mb-lg">
             <Tabs>
-              <Link className={tabClassName} from="/cases/s/$caseId" to="./principal">
+              <Link className={tabClassName} from="/cases/s/$caseId" to="./principal" preload="render">
                 {t('cases:case_detail.tab.principal')}
               </Link>
-              <Link disabled={!pivotObjects.length} className={tabClassName} from="/cases/s/$caseId" to="./clients">
+              <Link
+                disabled={!pivotObjects.length}
+                className={tabClassName}
+                from="/cases/s/$caseId"
+                to="./clients"
+                preload={pivotObjects.length ? 'render' : false}
+              >
                 {t('cases:manager.tab.clients_concerned')}
               </Link>
             </Tabs>
