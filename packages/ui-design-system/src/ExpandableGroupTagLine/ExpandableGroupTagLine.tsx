@@ -1,6 +1,7 @@
 import { useIsomorphicLayoutEffect } from '@app-builder/utils/hooks/use-isomorphic-layout-effect';
-import { type MouseEvent, type ReactNode, useRef, useState } from 'react';
+import { forwardRef, type MouseEvent, type ReactNode, useRef, useState } from 'react';
 import { Icon } from 'ui-icons';
+import { Popover } from '../Popover/Popover';
 import { Tag } from '../Tag/Tag';
 import { cn } from '../utils';
 
@@ -20,15 +21,18 @@ export interface ExpandableGroupTagLineProps {
   classname?: string;
   trailing?: ReactNode;
   overflowTagWidth?: number;
+  overflowBehavior?: 'expand' | 'popover';
 }
 
-function DefaultMoreButton({ overflow, onExpand }: { overflow: number; onExpand: (event: MouseEvent) => void }) {
-  return (
-    <Tag color="purple" size="small" className={overflowButtonClassName} onClick={onExpand}>
-      +{overflow}
-    </Tag>
-  );
-}
+const DefaultMoreButton = forwardRef<HTMLSpanElement, { overflow: number; onExpand: (event: MouseEvent) => void }>(
+  function DefaultMoreButton({ overflow, onExpand }, ref) {
+    return (
+      <Tag ref={ref} color="purple" size="small" className={overflowButtonClassName} onClick={onExpand}>
+        +{overflow}
+      </Tag>
+    );
+  },
+);
 
 function DefaultLessButton({ onCollapse }: { onCollapse: (event: MouseEvent) => void }) {
   return (
@@ -45,8 +49,10 @@ export function ExpandableGroupTagLine({
   classname,
   trailing,
   overflowTagWidth = OVERFLOW_TAG_WIDTH_PX,
+  overflowBehavior = 'expand',
 }: ExpandableGroupTagLineProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const ghostRef = useRef<HTMLDivElement>(null);
   const [maxVisible, setMaxVisible] = useState(1);
@@ -102,8 +108,11 @@ export function ExpandableGroupTagLine({
 
   const effectiveMaxVisible = isMeasured ? maxVisible : Math.min(1, items.length);
   const effectiveRenderedCount = isMeasured ? renderedCount : items.length;
-  const overflow = isExpanded ? 0 : Math.max(0, effectiveRenderedCount - effectiveMaxVisible);
-  const visibleItems = isExpanded ? items : overflow > 0 ? items.slice(0, effectiveMaxVisible) : items;
+  const canExpandInline = overflowBehavior === 'expand';
+  const overflow = canExpandInline && isExpanded ? 0 : Math.max(0, effectiveRenderedCount - effectiveMaxVisible);
+  const visibleItems =
+    canExpandInline && isExpanded ? items : overflow > 0 ? items.slice(0, effectiveMaxVisible) : items;
+  const overflowItems = overflow > 0 ? items.slice(effectiveMaxVisible) : [];
 
   const handleExpand = (event: MouseEvent) => {
     event.stopPropagation();
@@ -113,6 +122,22 @@ export function ExpandableGroupTagLine({
     event.stopPropagation();
     setIsExpanded(false);
   };
+  const handleShowOverflow = (event: MouseEvent) => {
+    event.stopPropagation();
+    setIsPopoverOpen(true);
+  };
+
+  const moreButtonNode =
+    overflow > 0 ? (
+      moreButton ? (
+        moreButton(overflow, overflowBehavior === 'popover' ? handleShowOverflow : handleExpand)
+      ) : (
+        <DefaultMoreButton
+          overflow={overflow}
+          onExpand={overflowBehavior === 'popover' ? handleShowOverflow : handleExpand}
+        />
+      )
+    ) : null;
 
   return (
     <div ref={containerRef} className="relative min-w-0 w-full flex-1">
@@ -134,13 +159,21 @@ export function ExpandableGroupTagLine({
         )}
       >
         {visibleItems}
-        {overflow > 0 &&
-          (moreButton ? (
-            moreButton(overflow, handleExpand)
-          ) : (
-            <DefaultMoreButton overflow={overflow} onExpand={handleExpand} />
-          ))}
-        {isExpanded && (lessButton ? lessButton(handleCollapse) : <DefaultLessButton onCollapse={handleCollapse} />)}
+        {overflowBehavior === 'popover' && overflow > 0 ? (
+          <Popover.Root open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+            <Popover.Trigger asChild>{moreButtonNode}</Popover.Trigger>
+            <Popover.Content sideOffset={4} align="end">
+              <div className={cn('flex max-h-[400px] flex-col gap-sm overflow-auto p-md', classname)}>
+                {overflowItems}
+              </div>
+            </Popover.Content>
+          </Popover.Root>
+        ) : (
+          moreButtonNode
+        )}
+        {canExpandInline &&
+          isExpanded &&
+          (lessButton ? lessButton(handleCollapse) : <DefaultLessButton onCollapse={handleCollapse} />)}
         {trailing}
       </div>
     </div>
