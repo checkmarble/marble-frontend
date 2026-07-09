@@ -165,8 +165,8 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
   }));
 
   return (
-    <form className="contents" onSubmit={handleSubmit(form)}>
-      <Panel.Container size="small">
+    <Panel.Container size="small">
+      <form className="contents" onSubmit={handleSubmit(form)}>
         <Panel.Content>
           <Panel.Header>{t('user-scoring:section.create_panel.title')}</Panel.Header>
           <div className="flex flex-col gap-md">
@@ -187,7 +187,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
               {t('user-scoring:section.create_panel.general_settings')}
               <div className="border border-grey-border rounded-md p-md grid grid-cols-[1fr_repeat(3,_auto)] gap-x-sm gap-y-md">
                 <div className="grid grid-cols-subgrid col-span-full items-center">
-                  <span className="text-small">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
+                  <span className="text-s">{t('user-scoring:section.create_panel.lower_score_duration')}</span>
                   <form.Field name="cooldownSeconds">
                     {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
                   </form.Field>
@@ -196,7 +196,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
                   </Tooltip.Default>
                 </div>
                 <div className="grid grid-cols-subgrid col-span-full items-center">
-                  <span className="text-small">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
+                  <span className="text-s">{t('user-scoring:section.create_panel.recalculation_duration')}</span>
                   <form.Field name="scoringIntervalSeconds">
                     {(field) => <DurationDaysField value={field.state.value} onChange={field.handleChange} />}
                   </form.Field>
@@ -236,7 +236,7 @@ function ScoringRulesetCreationPanel({ maxRiskLevel }: { maxRiskLevel: number })
             </form.Subscribe>
           </Panel.Footer>
         </Panel.Content>
-      </Panel.Container>
-    </form>
+      </form>
+    </Panel.Container>
   );
 }
