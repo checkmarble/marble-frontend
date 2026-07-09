@@ -32,13 +32,25 @@ export function TwoFactorAuthSettings() {
     queryFn: getEnrolledMfaFactors,
   });
 
+  // Factor pending removal, held while the user re-authenticates. Firebase requires a
+  // recent login to unenroll, same as for enrollment.
+  const [reauthForRemoval, setReauthForRemoval] = useState<string | null>(null);
+
   const unenrollMutation = useMutation({
     mutationFn: (factorUid: string) => unenrollMfaFactor(factorUid),
     onSuccess: async () => {
       toast.success(t('account:mfa.remove.success'));
+      setReauthForRemoval(null);
       await queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey });
     },
-    onError: () => toast.error(t('account:mfa.error.unknown')),
+    onError: (err, factorUid) => {
+      if (err instanceof RequiresRecentLogin) {
+        // Prompt the user to re-authenticate in place, then retry the removal.
+        setReauthForRemoval(factorUid);
+      } else {
+        toast.error(t('account:mfa.error.unknown'));
+      }
+    },
   });
 
   const factors = factorsQuery.data ?? [];
@@ -88,6 +100,27 @@ export function TwoFactorAuthSettings() {
       <div className="flex flex-col gap-sm">
         <EnrollTotpModal onEnrolled={() => queryClient.invalidateQueries({ queryKey: enrolledFactorsQueryKey })} />
       </div>
+
+      <Modal.Root
+        open={reauthForRemoval !== null}
+        onOpenChange={(open) => {
+          if (!open) setReauthForRemoval(null);
+        }}
+      >
+        <Modal.Content>
+          <Modal.Title>{t('account:mfa.reauth.title')}</Modal.Title>
+          <div className="flex flex-col gap-lg p-lg">
+            <ReauthPanel
+              onReauthenticated={() => {
+                if (reauthForRemoval) unenrollMutation.mutate(reauthForRemoval);
+              }}
+            />
+          </div>
+          <Modal.Footer>
+            <Modal.FooterButton isCloseButton label={t('common:cancel')} />
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal.Root>
     </div>
   );
 }

@@ -1,4 +1,7 @@
-import { type AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
+import {
+  type AuthenticationClientRepository,
+  type ReauthResult,
+} from '@app-builder/repositories/AuthenticationRepository';
 import { useCsrfToken } from '@app-builder/utils/csrf-client';
 import { FirebaseError } from 'firebase/app';
 import { AuthErrorCodes, type MultiFactorResolver, type TotpSecret } from 'firebase/auth';
@@ -26,6 +29,7 @@ export class InvalidVerificationCode extends Error {}
 export class RequiresRecentLogin extends Error {}
 
 function throwMappedMfaError(error: unknown): never {
+  console.error('[auth] MFA operation failed', error);
   if (error instanceof FirebaseError) {
     switch (error.code) {
       case 'auth/invalid-verification-code':
@@ -82,10 +86,11 @@ export function useGetCurrentUserProviderIds({ authenticationClientRepository }:
 }
 
 export function useReauthenticateWithPassword({ authenticationClientRepository }: AuthenticationClientService) {
-  return async (password: string) => {
+  return async (password: string): Promise<ReauthResult> => {
     try {
-      await authenticationClientRepository.reauthenticateWithPassword(password);
+      return await authenticationClientRepository.reauthenticateWithPassword(password);
     } catch (error) {
+      console.error('[auth] password reauthentication failed', error);
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case AuthErrorCodes.USER_DELETED:
@@ -103,19 +108,20 @@ export function useReauthenticateWithPassword({ authenticationClientRepository }
   };
 }
 
-// Returns true when reauthentication completed, false when the user dismissed the popup.
+// Resolves to the reauth result (possibly requiring an MFA challenge), or `{ cancelled: true }`
+// when the user dismissed the popup.
 export function useReauthenticateWithOAuth({ authenticationClientRepository }: AuthenticationClientService) {
-  return async (providerId: 'google.com' | 'microsoft.com') => {
+  return async (providerId: 'google.com' | 'microsoft.com'): Promise<ReauthResult | { cancelled: true }> => {
     try {
-      await authenticationClientRepository.reauthenticateWithOAuth(providerId);
-      return true;
+      return await authenticationClientRepository.reauthenticateWithOAuth(providerId);
     } catch (error) {
+      console.error('[auth] OAuth reauthentication failed', error);
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case AuthErrorCodes.POPUP_CLOSED_BY_USER:
           case AuthErrorCodes.EXPIRED_POPUP_REQUEST:
           case AuthErrorCodes.USER_CANCELLED:
-            return false;
+            return { cancelled: true };
           case AuthErrorCodes.POPUP_BLOCKED:
             throw new PopupBlockedByClient();
           case AuthErrorCodes.NETWORK_REQUEST_FAILED:
