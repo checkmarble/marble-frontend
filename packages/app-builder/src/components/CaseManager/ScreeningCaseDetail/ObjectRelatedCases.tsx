@@ -1,4 +1,4 @@
-import { CaseStatusBadge } from '@app-builder/components/Cases';
+import { CaseStatusBadgeV2 } from '@app-builder/components/Cases';
 import { Spinner } from '@app-builder/components/Spinner';
 import { Case } from '@app-builder/models/cases';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
@@ -91,12 +91,7 @@ export function ObjectRelatedCases({
                       </Link>
                     </div>
                     <div className={cellVariants({ isLast, className: 'flex items-center border-l' })}>
-                      <CaseStatusBadge
-                        status={caseObj.status}
-                        showText={false}
-                        showBackground={false}
-                        outcome={caseObj.outcome}
-                      />
+                      <CaseStatusBadgeV2 status={caseObj.status} variant="icon-only" outcome={caseObj.outcome} />
                     </div>
                   </Fragment>
                 );

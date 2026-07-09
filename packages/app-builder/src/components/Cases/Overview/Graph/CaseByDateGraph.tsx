@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { BAR_BORDER_RADIUS, BAR_BORDER_WIDTH, buildBarGradient, nivoTheme } from '../../Analytics/chart-theme';
-import { CaseStatusBadge } from '../../CaseStatus';
+import { CaseStatusBadgeV2 } from '../../CaseStatus';
 import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../constants';
 
 export const CaseByDateGraph = () => {
@@ -135,7 +135,7 @@ export const CaseByDateGraph = () => {
                           {graphCaseStatuses.map((caseStatus) => (
                             <Fragment key={caseStatus}>
                               <div>{data[caseStatus]}</div>
-                              <CaseStatusBadge status={caseStatus} />
+                              <CaseStatusBadgeV2 status={caseStatus} variant="semi-full" />
                             </Fragment>
                           ))}
                         </div>
