@@ -1268,7 +1268,12 @@ export type ContinuousScreeningDatasetUpdateSummaryDto = {
     id: string;
     dataset_name: string;
     version: string;
+    live_version: string;
+    title: string;
+    is_current: boolean;
     total_items: number;
+    status: "pending" | "processing" | "completed" | "failed";
+    progress?: number;
     created_at: string;
 };
 export type ContinuousScreeningJobErrorDto = {

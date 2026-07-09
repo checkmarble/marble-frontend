@@ -64,7 +64,12 @@ export type ContinuousScreeningDatasetUpdateSummary = {
   id: string;
   datasetName: string;
   version: string;
+  liveVersion: string;
+  title: string;
+  isCurrent: boolean;
   totalItems: number;
+  status: ContinuousScreeningUpdateJobStatus;
+  progress: number | null;
   createdAt: string;
 };
 
@@ -82,7 +87,12 @@ export function adaptContinuousScreeningDatasetUpdateSummary(
     id: dto.id,
     datasetName: dto.dataset_name,
     version: dto.version,
+    liveVersion: dto.live_version,
+    title: dto.title,
+    isCurrent: dto.is_current,
     totalItems: dto.total_items,
+    status: dto.status,
+    progress: dto.progress ?? null,
     createdAt: dto.created_at,
   };
 }
