@@ -40,7 +40,7 @@ export function SidebarLink({ Icon, labelTKey, to, children, className }: Sideba
       to={to}
     >
       <Icon className="size-6 shrink-0" />
-      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
+      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
         {t(labelTKey)}
       </span>
       {children}
@@ -62,7 +62,7 @@ export const SidebarButton = React.forwardRef<HTMLButtonElement, SidebarButtonPr
   return (
     <button ref={ref} className={sidebarLink({ className })} {...props}>
       <Icon className="size-6 shrink-0" />
-      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
+      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
         {t(labelTKey)}
       </span>
     </button>
