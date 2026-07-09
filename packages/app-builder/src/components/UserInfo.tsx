@@ -1,5 +1,3 @@
-import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
-
 import { CustomLogo } from './CustomLogo';
 
 interface UserInfoProps {
@@ -7,8 +5,6 @@ interface UserInfoProps {
 }
 
 export function UserInfo({ isAutoAssignmentAvailable = false }: UserInfoProps) {
-  const { query: unavailabilityQuery } = useUnavailabilitySettings();
-
   return (
     <div className="relative">
       <div className="group flex w-full flex-row items-center justify-between gap-sm overflow-hidden rounded-md p-sm">
@@ -16,19 +12,13 @@ export function UserInfo({ isAutoAssignmentAvailable = false }: UserInfoProps) {
           <CustomLogo
             logo="logo"
             alt="Logo"
-            className="size-6 shrink-0 transition-all group-hover/sidebar:size-12 delay-300 group-hover/sidebar:delay-0 text-grey-primary"
-            customLogoClassName="size-6 shrink-0 object-contain transition-all group-hover/sidebar:h-12 delay-300 group-hover/sidebar:delay-0 group-hover/sidebar:w-auto"
+            className="size-6 shrink-0 transition-all group-hover/sidebar:size-12 delay-400 group-hover/sidebar:delay-200 text-grey-primary"
+            customLogoClassName="size-6 shrink-0 object-contain transition-all group-hover/sidebar:h-12 delay-400 group-hover/sidebar:delay-200 group-hover/sidebar:w-auto"
           />
-          {isAutoAssignmentAvailable && unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
-            <div className="absolute top-1 left-1 flex h-3 w-3">
-              <span className="animate-[ping_1s_ease-in-out_4s] absolute inline-flex h-full w-full rounded-full bg-red-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-primary"></span>
-            </div>
-          ) : null}
           <CustomLogo
             logo="marble"
             alt="Logo"
-            className="h-6 w-full opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0 dark:invert"
+            className="h-6 w-full opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200 dark:invert"
             hideWhenCustom
           />
         </div>
