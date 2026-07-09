@@ -1,8 +1,8 @@
 import { navigationI18n, SidebarLink } from '@app-builder/components';
+import { HeaderLogo } from '@app-builder/components/HeaderLogo';
 import { LeftSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
-import { UserInfo } from '@app-builder/components/UserInfo';
 import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpdate';
 import { useRefreshToken } from '@app-builder/hooks/useRefreshToken';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -113,7 +113,7 @@ function Builder() {
                 <div className="relative flex min-h-0 flex-1">
                   <LeftSidebar>
                     <div className="h-24 px-xs pt-md">
-                      <UserInfo isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable} />
+                      <HeaderLogo />
                     </div>
                     <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-sm">
                       <ul className="flex flex-col gap-sm">

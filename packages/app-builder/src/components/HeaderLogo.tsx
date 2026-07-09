@@ -1,10 +1,6 @@
 import { CustomLogo } from './CustomLogo';
 
-interface UserInfoProps {
-  isAutoAssignmentAvailable: boolean;
-}
-
-export function UserInfo({ isAutoAssignmentAvailable = false }: UserInfoProps) {
+export function HeaderLogo() {
   return (
     <div className="relative">
       <div className="group flex w-full flex-row items-center justify-between gap-sm overflow-hidden rounded-md p-sm">
@@ -13,7 +9,7 @@ export function UserInfo({ isAutoAssignmentAvailable = false }: UserInfoProps) {
             logo="logo"
             alt="Logo"
             className="size-6 shrink-0 transition-all group-hover/sidebar:size-12 delay-400 group-hover/sidebar:delay-200 text-grey-primary"
-            customLogoClassName="size-6 shrink-0 object-contain transition-all group-hover/sidebar:h-12 delay-400 group-hover/sidebar:delay-200 group-hover/sidebar:w-auto"
+            customLogoClassName="size-8 shrink-0 object-contain transition-all group-hover/sidebar:size-14 delay-400 group-hover/sidebar:delay-200"
           />
           <CustomLogo
             logo="marble"
