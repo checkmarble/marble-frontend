@@ -50,7 +50,7 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
 
               {isFirst ? (
                 <>
-                  <span className="text-s font-medium w-[30px] shrink-0 text-right">≤</span>
+                  <span className="text-s font-medium w-[30px] shrink-0 text-right">{'≤'}</span>
                   <NumberInput
                     className="flex-1"
                     value={upperThreshold ?? 0}
@@ -60,7 +60,7 @@ export function ScoringLevelThresholds({ maxRiskLevel, thresholds, onThresholdsC
               ) : null}
               {isLast ? (
                 <>
-                  <span className="text-s font-medium w-[30px] shrink-0 text-right">{'>'}</span>
+                  <span className="text-s font-medium w-[30px] shrink-0 text-right">{'≥'}</span>
                   <Input className="flex-1" value={lowerBound ?? ''} readOnly />
                 </>
               ) : null}
