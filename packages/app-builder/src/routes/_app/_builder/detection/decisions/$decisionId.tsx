@@ -7,14 +7,13 @@ import {
   OutcomePanel,
   Page,
   RulesDetail,
-  useDecisionRightPanelContext,
 } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
-import { AddToCaseForm } from '@app-builder/components/Decisions/AddToCaseForm';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
+import { Panel } from '@app-builder/components/Panel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModel, isNotFoundHttpError } from '@app-builder/models';
 import { Screening } from '@app-builder/models/screening';
@@ -197,11 +196,11 @@ function DecisionPage() {
   const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
 
   return (
-    <DecisionRightPanel.Root content={<AddToCaseForm />}>
+    <Panel.Root>
       <Page.Main>
         <Page.Header className="justify-between">
           <BreadCrumbs />
-          {!decision.case ? <AddToCase decisionIds={[decision.id]} /> : null}
+          {!decision.case ? <AddToCase /> : null}
         </Page.Header>
         <Page.Container>
           <Page.Content>
@@ -233,24 +232,19 @@ function DecisionPage() {
           </Page.Content>
         </Page.Container>
       </Page.Main>
-    </DecisionRightPanel.Root>
+      <DecisionRightPanel decisionIds={[decision.id]} />
+    </Panel.Root>
   );
 }
 
-function AddToCase({ decisionIds }: { decisionIds: string[] }) {
+function AddToCase() {
   const { t } = useTranslation(decisionsI18n);
-  const { onTriggerClick } = useDecisionRightPanelContext();
   return (
-    <DecisionRightPanel.Trigger
-      asChild
-      onClick={() => {
-        onTriggerClick({ decisionIds });
-      }}
-    >
+    <Panel.Trigger asChild>
       <Button variant="primary">
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
-    </DecisionRightPanel.Trigger>
+    </Panel.Trigger>
   );
 }

@@ -1,7 +1,7 @@
-import { useDecisionRightPanelContext } from '@app-builder/components';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+import { PanelSharpFactory } from '@app-builder/components/Panel';
 import { CaseDetail } from '@app-builder/models/cases';
 import { existingCaseSchema, newCaseSchema, useAddToCaseMutation } from '@app-builder/queries/cases/add-to-case';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -11,21 +11,21 @@ import { useForm } from '@tanstack/react-form';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, SelectV2, Switch } from 'ui-design-system';
+import { Button, Input, SelectV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type OnSuccessAddFn = (type: 'new_case' | 'existing_case', caseDetail: CaseDetail) => void;
 
-export function AddToCaseForm() {
+export function AddToCaseForm({ decisionIds }: { decisionIds: string[] }) {
   const { t } = useTranslation(['decisions']);
   const inboxesQuery = useGetInboxesQuery();
   const [isNewCase, setIsNewCase] = useState(false);
-  const { closePanel } = useDecisionRightPanelContext();
+  const panelSharp = PanelSharpFactory.useSharp();
   const router = useRouter();
   const navigate = useNavigate();
 
   const handleSuccess: OnSuccessAddFn = async (type, caseDetail) => {
-    closePanel();
+    panelSharp.actions.close();
     await router.invalidate();
 
     if (type === 'new_case') {
@@ -55,9 +55,9 @@ export function AddToCaseForm() {
         <Switch id="newCase" checked={isNewCase} onCheckedChange={(checked) => setIsNewCase(checked)} />
       </div>
       {isNewCase ? (
-        <NewCaseForm inboxes={inboxes} onSuccess={handleSuccess} />
+        <NewCaseForm inboxes={inboxes} decisionIds={decisionIds} onSuccess={handleSuccess} />
       ) : (
-        <ExistingCaseForm onSuccess={handleSuccess} />
+        <ExistingCaseForm decisionIds={decisionIds} onSuccess={handleSuccess} />
       )}
     </div>
   );
@@ -68,10 +68,17 @@ interface Inbox {
   name: string;
 }
 
-function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSuccessAddFn }) {
+function NewCaseForm({
+  inboxes,
+  decisionIds,
+  onSuccess,
+}: {
+  inboxes: Inbox[];
+  decisionIds: string[];
+  onSuccess: OnSuccessAddFn;
+}) {
   const { t } = useTranslation(['decisions']);
   const addToCaseMutation = useAddToCaseMutation();
-  const { data } = useDecisionRightPanelContext();
 
   const form = useForm({
     defaultValues: {
@@ -86,7 +93,7 @@ function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSu
 
       const caseDetail = await addToCaseMutation.mutateAsync({
         newCase: true,
-        decisionIds: data?.decisionIds ?? [],
+        decisionIds,
         ...value,
       });
 
@@ -162,10 +169,9 @@ function NewCaseForm({ inboxes, onSuccess }: { inboxes: Inbox[]; onSuccess: OnSu
   );
 }
 
-function ExistingCaseForm({ onSuccess }: { onSuccess: OnSuccessAddFn }) {
+function ExistingCaseForm({ decisionIds, onSuccess }: { decisionIds: string[]; onSuccess: OnSuccessAddFn }) {
   const { t } = useTranslation(['decisions']);
   const addToCaseMutation = useAddToCaseMutation();
-  const { data } = useDecisionRightPanelContext();
 
   const form = useForm({
     defaultValues: {
@@ -179,7 +185,7 @@ function ExistingCaseForm({ onSuccess }: { onSuccess: OnSuccessAddFn }) {
 
       const caseDetail = await addToCaseMutation.mutateAsync({
         newCase: false,
-        decisionIds: data?.decisionIds ?? [],
+        decisionIds,
         ...value,
       });
 
@@ -202,16 +208,17 @@ function ExistingCaseForm({ onSuccess }: { onSuccess: OnSuccessAddFn }) {
         >
           {(field) => (
             <div className="flex flex-col gap-sm">
-              <FormLabel name={field.name} className="text-xs first-letter:capitalize">
+              <label htmlFor={field.name} className="text-xs first-letter:capitalize">
                 {t('decisions:add_to_case.new_case.case_id.label')}
-              </FormLabel>
-              <FormInput
+              </label>
+              <Input
                 type="text"
+                id={field.name}
                 name={field.name}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                valid={field.state.meta.errors.length === 0}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
               />
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
