@@ -100,7 +100,7 @@ function RootShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <html lang={locale} dir={i18n.dir()} className={clsx('overscroll-none', theme === 'dark' && 'dark')}>
+    <html lang={locale} dir={i18n.dir()} className={clsx('overscroll-y-none', theme === 'dark' && 'dark')}>
       <head>
         <HeadContent />
         {segmentScript ? <SegmentScript nonce={nonce} script={segmentScript} /> : null}

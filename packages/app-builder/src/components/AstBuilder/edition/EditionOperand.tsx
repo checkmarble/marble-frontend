@@ -22,7 +22,7 @@ import { MenuCommand } from 'ui-design-system';
 
 import { OperandEditModal } from './EditModal/EditModal';
 import { EditionEvaluationErrors } from './EvaluationErrors';
-import { type EnrichedMenuOption, getOperandMenuOptions } from './helpers';
+import { type EnrichedMenuOption, getFieldName, getOperandMenuOptions } from './helpers';
 import { AstBuilderNodeSharpFactory } from './node-store';
 import { AstBuilderOperandMenu, type BottomAction } from './OperandMenu';
 
@@ -52,6 +52,7 @@ type EditionOperandStore = {
   options: EnrichedMenuOption[];
   optionsDataType: DataType[] | ((o: EnrichedMenuOption) => boolean) | undefined;
   coerceDataType: DataType[] | undefined;
+  excludeFields?: string[];
 };
 
 export const EditionOperandSharpFactory = createSharpFactory({
@@ -61,19 +62,35 @@ export const EditionOperandSharpFactory = createSharpFactory({
   }),
 })
   .withActions({
-    setEnumsAndOptions(api, enums: EnumValue[] | undefined, options: EnrichedMenuOption[]) {
+    setEnumsAndOptions(
+      api,
+      enums: EnumValue[] | undefined,
+      options: EnrichedMenuOption[],
+      excludeFields: string[] | undefined,
+    ) {
       api.batch(() => {
         api.value.enumValues = enums;
         api.value.options = options;
+        api.value.excludeFields = excludeFields;
       });
     },
   })
   .withComputed({
     filteredOptions(state) {
       const dataTypes = state.optionsDataType;
-      return dataTypes
-        ? state.options.filter((o) => (typeof dataTypes === 'function' ? dataTypes(o) : dataTypes.includes(o.dataType)))
-        : state.options;
+      const excludeFields = state.excludeFields;
+
+      return state.options.filter((option) => {
+        const matchesDataType = dataTypes
+          ? typeof dataTypes === 'function'
+            ? dataTypes(option)
+            : dataTypes.includes(option.dataType)
+          : true;
+        const fieldName = getFieldName(option.astNode);
+        const isExcludedField = fieldName !== 'unknown' ? excludeFields?.includes(fieldName) : false;
+
+        return matchesDataType && !isExcludedField;
+      });
     },
   });
 
@@ -97,9 +114,11 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
       node,
       language,
       t,
+      excludeFields: props.excludeFields,
     }),
     optionsDataType: props.optionsDataType,
     coerceDataType: props.coerceDataType,
+    excludeFields: props.excludeFields,
   });
   const onSelect = useCallbackRef(onChange);
   const onCreateSelect = useCallbackRef((node: AstNode) => {
@@ -124,9 +143,11 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
         node,
         language,
         t,
+        excludeFields: props.excludeFields,
       }),
+      props.excludeFields,
     );
-  }, [operandSharp, props.enumValues, data.value, triggerObjectTable.value, node, t, language]);
+  }, [operandSharp, props.enumValues, props.excludeFields, data.value, triggerObjectTable.value, node, t, language]);
 
   const bottomActions: BottomAction[] = [
     ...(!isUndefinedAstNode(node)

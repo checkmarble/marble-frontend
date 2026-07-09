@@ -8,9 +8,7 @@ import {
   decisionsI18n,
   ErrorComponent,
   Page,
-  useDecisionRightPanelContext,
 } from '@app-builder/components';
-import { AddToCaseForm } from '@app-builder/components/Decisions/AddToCaseForm';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import {
   CursorPaginationButtons,
@@ -19,6 +17,7 @@ import {
 } from '@app-builder/components/Decisions/PaginationButtons';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { Panel } from '@app-builder/components/Panel';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type PaginationParams } from '@app-builder/models/pagination';
@@ -29,7 +28,7 @@ import * as Sentry from '@sentry/react';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import { useCallback } from 'react';
+import { type MouseEvent, useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, SearchInput } from 'ui-design-system';
@@ -156,9 +155,10 @@ function DetectionDecisions() {
 
   const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
     useTanstackTableListSelection<DecisionViewModel>(decisions, (row) => row.id);
+  const [decisionIdsToAdd, setDecisionIdsToAdd] = useState<string[]>([]);
 
   return (
-    <DecisionRightPanel.Root content={<AddToCaseForm />}>
+    <Panel.Root>
       <Page.Main>
         <Page.Content width="table">
           <DetectionNavigationTabs />
@@ -176,7 +176,11 @@ function DetectionDecisions() {
                   <DecisionFiltersMenu filterNames={decisionFilterNames}>
                     <FiltersButton />
                   </DecisionFiltersMenu>
-                  <AddToCase hasSelection={hasSelectedRows} getSelectedDecisions={getSelectedRows} />
+                  <AddToCase
+                    hasSelection={hasSelectedRows}
+                    getSelectedDecisions={getSelectedRows}
+                    onDecisionIdsChange={setDecisionIdsToAdd}
+                  />
                 </div>
               </div>
               <DecisionFiltersBar />
@@ -203,35 +207,38 @@ function DetectionDecisions() {
           </div>
         </Page.Content>
       </Page.Main>
-    </DecisionRightPanel.Root>
+      <DecisionRightPanel decisionIds={decisionIdsToAdd} />
+    </Panel.Root>
   );
 }
 
 function AddToCase({
   hasSelection,
   getSelectedDecisions,
+  onDecisionIdsChange,
 }: {
   hasSelection: boolean;
   getSelectedDecisions: () => { id: string; case?: object }[];
+  onDecisionIdsChange: (decisionIds: string[]) => void;
 }) {
   const { t } = useTranslation(['common', 'navigation', ...decisionsI18n]);
-  const { onTriggerClick } = useDecisionRightPanelContext();
-  const getDecisionIds = () => {
+  const getDecisionIds = (event: MouseEvent<HTMLButtonElement>) => {
     const selectedDecisions = getSelectedDecisions();
     if (selectedDecisions.some((decision) => decision.case)) {
+      event.preventDefault();
       toast.error(t('decisions:errors.decision_already_in_case'));
     } else {
-      onTriggerClick({ decisionIds: selectedDecisions.map(({ id }) => id) });
+      onDecisionIdsChange(selectedDecisions.map(({ id }) => id));
     }
   };
 
   return (
-    <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
+    <Panel.Trigger asChild onClick={getDecisionIds}>
       <Button size="medium" disabled={!hasSelection}>
         <Icon icon="plus" className="size-5" />
         {t('decisions:add_to_case')}
       </Button>
-    </DecisionRightPanel.Trigger>
+    </Panel.Trigger>
   );
 }
 

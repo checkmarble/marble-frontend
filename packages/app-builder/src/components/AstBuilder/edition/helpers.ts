@@ -37,7 +37,7 @@ export type EnrichedMenuOption = Omit<OperandMenuOption, 'operandType' | 'displa
   dataType: NonNullable<OperandMenuOption['dataType']>;
 };
 
-function getFieldName(astNode: IdLessAstNode) {
+export function getFieldName(astNode: IdLessAstNode) {
   return match(astNode)
     .when(isDatabaseAccess, (n) => n.namedChildren.fieldName.constant)
     .when(isPayload, (n) => n.children[0].constant)
@@ -64,6 +64,7 @@ export function getOperandMenuOptions(params: {
   triggerObjectTable: TableModel;
   language: string;
   t: TFunction<['common', 'scenarios'], undefined>;
+  excludeFields?: string[];
 }) {
   const mapOption = createMapOption({
     enumValues: params.enums,
@@ -76,11 +77,17 @@ export function getOperandMenuOptions(params: {
 
   return [
     ...AST_BUILDER_STATIC_OPTIONS,
-    ...params.data.databaseAccessors.map((a) => ({
-      astNode: a,
-      displayName: a.namedChildren.fieldName.constant,
-    })),
-    ...params.data.payloadAccessors.map((a) => ({ astNode: a })),
+    ...params.data.databaseAccessors
+      .filter((a) => !params.excludeFields?.includes(getFieldName(a)))
+      .map((a) => ({
+        astNode: a,
+        displayName: a.namedChildren.fieldName.constant,
+      })),
+    ...params.data.payloadAccessors
+      .filter((a) => !params.excludeFields?.includes(getFieldName(a)))
+      .map((a) => ({
+        astNode: a,
+      })),
     ...params.data.customLists.map((l) => ({
       astNode: NewCustomListAstNode(l.id),
     })),

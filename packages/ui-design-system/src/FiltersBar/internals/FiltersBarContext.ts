@@ -2,7 +2,7 @@ import { createSimpleContext } from '@marble/shared';
 import { type FilterValue } from '../types';
 
 export interface FiltersBarContextValue {
-  emitSet: (name: string, value: FilterValue) => void;
+  emitSet: (name: string, value: FilterValue, options?: { reconcileDynamicFilters?: boolean }) => void;
   emitRemove: (name: string) => void;
   emitUpdate: () => void;
   getValue: (name: string) => FilterValue;

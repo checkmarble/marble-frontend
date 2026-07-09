@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/tanstackstart-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, Markdown, Typo } from 'ui-design-system';
+import { Markdown, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../../Callout';
 import { Spinner } from '../../Spinner';
@@ -64,20 +64,15 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
   return (
     <Panel.Root open={open} onOpenChange={onOpenChange}>
       <Panel.Container size="medium">
-        <div className="flex items-center gap-sm pb-md border-b border-grey-border">
-          <Icon icon="ai-review" className="size-5 text-purple-primary shrink-0" />
-          <Typo variant="title2" className="flex-1 text-grey-primary">
-            {t('cases:kyc_enrichment.title')}
-          </Typo>
-          <Icon
-            icon="cross"
-            className="size-5 cursor-pointer text-grey-secondary hover:text-grey-primary shrink-0"
-            onClick={() => onOpenChange(false)}
-            aria-label={t('common:close')}
-          />
-        </div>
-
-        <div className="flex flex-col gap-md flex-1 overflow-y-auto py-md">
+        <Panel.Content>
+          <Panel.Header>
+            <div className="flex items-center gap-sm">
+              <Icon icon="ai-review" className="size-5 text-purple-primary shrink-0" />
+              <Typo variant="title2" className="flex-1 text-grey-primary">
+                {t('cases:kyc_enrichment.title')}
+              </Typo>
+            </div>
+          </Panel.Header>
           {isPending ? (
             <div className="flex flex-col gap-md">
               <div className="flex justify-center gap-sm">
@@ -89,42 +84,43 @@ export function KycEnrichmentPanel({ caseId, open, onOpenChange }: KycEnrichment
           ) : null}
           {error ? <Callout variant="outlined">{error.message}</Callout> : null}
           {isSuccess && data.success && kycCaseEnrichment ? (
-            <>
+            <div className="flex flex-col gap-md">
               <Callout variant="outlined">
                 {t('cases:kyc_enrichment.for')} <strong>{kycCaseEnrichment.entityName}</strong>
               </Callout>
-              <div>
-                <Markdown>{kycCaseEnrichment.analysis}</Markdown>
-                <div className="mt-md">
-                  {kycCaseEnrichment.citations.map((citation, index) => (
-                    <div key={`citation.${index}`} className="mb-sm">
-                      <span>[{index + 1}]</span>{' '}
-                      <a
-                        className="text-purple-primary hover:bg-purple-background hover:text-grey-secondary"
-                        href={citation.url}
-                      >
-                        {citation.title}
-                      </a>
-                    </div>
-                  ))}
-                </div>
+              <Markdown>{kycCaseEnrichment.analysis}</Markdown>
+              <div className="mt-md">
+                {kycCaseEnrichment.citations.map((citation, index) => (
+                  <div key={`citation.${index}`} className="mb-sm flex gap-sm">
+                    <span>[{index + 1}]</span>
+                    <a
+                      className="text-purple-primary hover:bg-purple-background hover:text-grey-secondary"
+                      href={citation.url}
+                    >
+                      {citation.title}
+                    </a>
+                  </div>
+                ))}
               </div>
-            </>
+            </div>
           ) : null}
-        </div>
 
-        <div className="pt-md border-t border-grey-border mt-auto flex items-center justify-end gap-xs">
-          <Button
-            disabled={addCommentMutation.isPending || !isSuccess || isCommentAdded}
-            variant="primary"
-            onClick={() => handleAddComment()}
-          >
-            {t('cases:kyc_enrichment.attach_to_case')}
-          </Button>
-          <Button disabled={addCommentMutation.isPending} variant="secondary" onClick={() => onOpenChange(false)}>
-            {t('common:close')}
-          </Button>
-        </div>
+          <Panel.Footer>
+            <Panel.FooterButton
+              isCloseButton
+              disabled={addCommentMutation.isPending}
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
+              label={t('common:close')}
+            />
+            <Panel.FooterButton
+              disabled={addCommentMutation.isPending || !isSuccess || isCommentAdded}
+              variant="primary"
+              onClick={() => handleAddComment()}
+              label={t('cases:kyc_enrichment.attach_to_case')}
+            />
+          </Panel.Footer>
+        </Panel.Content>
       </Panel.Container>
     </Panel.Root>
   );

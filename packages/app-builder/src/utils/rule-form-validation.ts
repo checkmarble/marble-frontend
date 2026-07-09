@@ -1,6 +1,14 @@
 import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
-import { isAndAstNode, isMainAstBinaryNode, isOrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { isBinaryMainAstOperatorFunction } from '@app-builder/models/astNode/builder-ast-node-node-operator';
+import {
+  isAndAstNode,
+  isMainAstBinaryNode,
+  isMainAstUnaryNode,
+  isOrWithAndAstNode,
+} from '@app-builder/models/astNode/builder-ast-node';
+import {
+  isBinaryMainAstOperatorFunction,
+  isUnaryMainAstOperatorFunction,
+} from '@app-builder/models/astNode/builder-ast-node-node-operator';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 
 function isFilledOperand(node: AstNode): boolean {
@@ -14,12 +22,14 @@ function isFilledOperand(node: AstNode): boolean {
 }
 
 function isFilledRuleCondition(node: AstNode): boolean {
-  if (!isMainAstBinaryNode(node)) {
+  if (isMainAstUnaryNode(node)) {
+    return isUnaryMainAstOperatorFunction(node.name) && node.children.length === 1 && isFilledOperand(node.children[0]);
+  }
+
+  if (!isMainAstBinaryNode(node) || !isBinaryMainAstOperatorFunction(node.name)) {
     return false;
   }
-  if (!isBinaryMainAstOperatorFunction(node.name)) {
-    return false;
-  }
+
   return node.children.length === 2 && node.children.every((child) => isFilledOperand(child));
 }
 

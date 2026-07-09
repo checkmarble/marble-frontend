@@ -150,8 +150,8 @@ export function CreateTableDrawer({
           }
         }}
       >
-        <form onSubmit={handleSubmit(form)}>
-          <Panel.Container size="large">
+        <Panel.Container size="large">
+          <form onSubmit={handleSubmit(form)}>
             <Panel.Content>
               <Panel.Header>
                 <div className="flex shrink-0 items-center gap-md">
@@ -209,8 +209,8 @@ export function CreateTableDrawer({
                 </div>
               </Panel.Footer>
             </Panel.Content>
-          </Panel.Container>
-        </form>
+          </form>
+        </Panel.Container>
       </Panel.Root>
 
       <UnsavedChangesDialog
