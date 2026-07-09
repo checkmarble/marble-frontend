@@ -12,6 +12,7 @@
   },
   "license": "MIT",
   "overrides": {
+    "vite": "^7.3.6",
     "@preact/signals-core": "1.14.1",
     "@radix-ui/react-primitive": "2.1.4",
     "@tanstack/react-router": "1.170.16",
