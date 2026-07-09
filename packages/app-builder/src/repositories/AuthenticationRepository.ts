@@ -16,6 +16,10 @@ export interface TotpEnrollmentParams {
   secretKey: string;
 }
 
+// Reauthentication of an MFA-enrolled user triggers a second-factor challenge: Firebase
+// throws `multi-factor-auth-required`, and the caller must resolve it with the resolver.
+export type ReauthResult = { mfaRequired: false } | { mfaRequired: true; resolver: MultiFactorResolver };
+
 export type EmailAndPasswordSignInResult =
   | { idToken: string; refreshToken: string; emailVerified: true }
   | { emailVerified: false }
@@ -44,8 +48,8 @@ export interface AuthenticationClientRepository {
   ) => Promise<{ idToken: string; refreshToken: string }>;
   unenrollMfaFactor: (factorUid: string) => Promise<void>;
   getCurrentUserProviderIds: () => Promise<string[]>;
-  reauthenticateWithPassword: (password: string) => Promise<void>;
-  reauthenticateWithOAuth: (providerId: 'google.com' | 'microsoft.com') => Promise<void>;
+  reauthenticateWithPassword: (password: string) => Promise<ReauthResult>;
+  reauthenticateWithOAuth: (providerId: 'google.com' | 'microsoft.com') => Promise<ReauthResult>;
   isFirebaseEmulator: boolean;
 }
 
@@ -226,18 +230,38 @@ export function getAuthenticationClientRepository(
     return user.providerData.map((provider) => provider.providerId);
   }
 
-  async function reauthenticateWithPassword(password: string) {
+  // Firebase throws `multi-factor-auth-required` when reauthenticating an MFA-enrolled user;
+  // surface the resolver so the caller can run the second-factor (TOTP) challenge.
+  function toReauthResult(error: unknown): ReauthResult {
+    if (error instanceof FirebaseError && error.code === AuthErrorCodes.MFA_REQUIRED) {
+      const resolver = firebaseClient.getMultiFactorResolver(firebaseClient.clientAuth, error as MultiFactorError);
+      return { mfaRequired: true as const, resolver };
+    }
+    throw error;
+  }
+
+  async function reauthenticateWithPassword(password: string): Promise<ReauthResult> {
     const user = await getReadyUser();
     if (!user.email) throw new Error('Current user has no email to reauthenticate with password');
     const credential = firebaseClient.EmailAuthProvider.credential(user.email, password);
-    await firebaseClient.reauthenticateWithCredential(user, credential);
+    try {
+      await firebaseClient.reauthenticateWithCredential(user, credential);
+      return { mfaRequired: false };
+    } catch (error) {
+      return toReauthResult(error);
+    }
   }
 
-  async function reauthenticateWithOAuth(providerId: 'google.com' | 'microsoft.com') {
+  async function reauthenticateWithOAuth(providerId: 'google.com' | 'microsoft.com'): Promise<ReauthResult> {
     const user = await getReadyUser();
     const provider =
       providerId === 'google.com' ? firebaseClient.googleAuthProvider : firebaseClient.microsoftAuthProvider;
-    await firebaseClient.reauthenticateWithPopup(user, provider);
+    try {
+      await firebaseClient.reauthenticateWithPopup(user, provider);
+      return { mfaRequired: false };
+    } catch (error) {
+      return toReauthResult(error);
+    }
   }
 
   return {
