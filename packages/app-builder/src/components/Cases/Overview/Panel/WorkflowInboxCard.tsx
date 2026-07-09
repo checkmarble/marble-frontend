@@ -46,27 +46,27 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, default
 
         <Collapsible.Content>
           <div className="flex flex-col gap-sm px-md pb-md">
-            <label htmlFor={`${inbox.name}-caseReviewOnCaseCreated`} className="flex items-center gap-sm">
+            <label htmlFor={`${inbox.id}-caseReviewOnCaseCreated`} className="flex items-center gap-sm">
               <Switch
-                id={`${inbox.name}-caseReviewOnCaseCreated`}
+                id={`${inbox.id}-caseReviewOnCaseCreated`}
                 checked={settings.caseReviewOnCaseCreated}
                 onCheckedChange={(checked) => onToggle('caseReviewOnCaseCreated', checked)}
                 disabled={disabled}
               />
               <span className="text-s">{t('cases:overview.workflow.case_created')}</span>
             </label>
-            <label htmlFor={`${inbox.name}-caseReviewOnEscalate`} className="flex items-center gap-sm">
+            <label htmlFor={`${inbox.id}-caseReviewOnEscalate`} className="flex items-center gap-sm">
               <Switch
-                id={`${inbox.name}-caseReviewOnEscalate`}
+                id={`${inbox.id}-caseReviewOnEscalate`}
                 checked={settings.caseReviewOnEscalate}
                 onCheckedChange={(checked) => onToggle('caseReviewOnEscalate', checked)}
                 disabled={disabled}
               />
               <span className="text-s">{t('cases:overview.workflow.case_escalated')}</span>
             </label>
-            <label htmlFor={`${inbox.name}-caseReviewManual`} className="flex items-center gap-sm">
+            <label htmlFor={`${inbox.id}-caseReviewManual`} className="flex items-center gap-sm">
               <Switch
-                id={`${inbox.name}-caseReviewManual`}
+                id={`${inbox.id}-caseReviewManual`}
                 checked={settings.caseReviewManual}
                 onCheckedChange={(checked) => onToggle('caseReviewManual', checked)}
                 disabled={disabled}

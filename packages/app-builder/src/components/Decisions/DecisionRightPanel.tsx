@@ -26,14 +26,6 @@ export function DecisionRightPanel({ decisionIds }: DecisionRightPanelProps) {
           <span className="first-letter:capitalize">{t('decisions:add_to_case')}</span>
         </Panel.Header>
         <AddToCaseForm decisionIds={decisionIds} />
-        <Panel.Footer>
-          <Panel.FooterButton
-            type="submit"
-            form="add-to-case-form"
-            leadingIcon="plus"
-            label={t('decisions:add_to_case')}
-          />
-        </Panel.Footer>
       </Panel.Content>
     </Panel.Container>
   );
@@ -42,7 +34,7 @@ export function DecisionRightPanel({ decisionIds }: DecisionRightPanelProps) {
 type OnSuccessAddFn = (type: 'new_case' | 'existing_case', caseDetail: CaseDetail) => void;
 
 export function AddToCaseForm({ decisionIds }: { decisionIds: string[] }) {
-  const { t } = useTranslation(['decisions']);
+  const { t } = useTranslation(['decisions', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const [isNewCase, setIsNewCase] = useState(false);
   const panelSharp = PanelSharpFactory.useSharp();
@@ -59,11 +51,11 @@ export function AddToCaseForm({ decisionIds }: { decisionIds: string[] }) {
   };
 
   if (inboxesQuery.isPending) {
-    return <p>Loading...</p>;
+    return <p>{t('common:loading')}</p>;
   }
 
   if (inboxesQuery.isError) {
-    return <p>Error</p>;
+    return <p>{t('common:errors.backend_global_error.unknown')}</p>;
   }
 
   const inboxes = inboxesQuery.data?.inboxes ?? [];
@@ -72,19 +64,29 @@ export function AddToCaseForm({ decisionIds }: { decisionIds: string[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-md">
-      <div className="flex items-center gap-sm">
-        <label htmlFor="newCase" className="text-xs first-letter:capitalize">
-          {t('decisions:add_to_case.create_new_case')}
-        </label>
-        <Switch id="newCase" checked={isNewCase} onCheckedChange={(checked) => setIsNewCase(checked)} />
+    <>
+      <div className="flex flex-col gap-md">
+        <div className="flex items-center gap-sm">
+          <label htmlFor="newCase" className="text-xs first-letter:capitalize">
+            {t('decisions:add_to_case.create_new_case')}
+          </label>
+          <Switch id="newCase" checked={isNewCase} onCheckedChange={(checked) => setIsNewCase(checked)} />
+        </div>
+        {isNewCase ? (
+          <NewCaseForm inboxes={inboxes} decisionIds={decisionIds} onSuccess={handleSuccess} />
+        ) : (
+          <ExistingCaseForm decisionIds={decisionIds} onSuccess={handleSuccess} />
+        )}
       </div>
-      {isNewCase ? (
-        <NewCaseForm inboxes={inboxes} decisionIds={decisionIds} onSuccess={handleSuccess} />
-      ) : (
-        <ExistingCaseForm decisionIds={decisionIds} onSuccess={handleSuccess} />
-      )}
-    </div>
+      <Panel.Footer>
+        <Panel.FooterButton
+          type="submit"
+          form="add-to-case-form"
+          leadingIcon="plus"
+          label={t('decisions:add_to_case')}
+        />
+      </Panel.Footer>
+    </>
   );
 }
 
