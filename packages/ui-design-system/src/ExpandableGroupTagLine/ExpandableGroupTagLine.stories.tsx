@@ -32,6 +32,7 @@ const Story: Meta<StoryProps> = {
     moreButton: { control: false },
     lessButton: { control: false },
     trailing: { control: false },
+    overflowBehavior: { control: 'radio', options: ['expand', 'popover'] },
   },
   decorators: [
     (StoryComponent, context) => (
@@ -56,6 +57,12 @@ NoOverflow.args = {
 
 export const Narrow = Template.bind({});
 Narrow.args = {
+  width: 160,
+};
+
+export const PopoverOverflow = Template.bind({});
+PopoverOverflow.args = {
+  overflowBehavior: 'popover',
   width: 160,
 };
 

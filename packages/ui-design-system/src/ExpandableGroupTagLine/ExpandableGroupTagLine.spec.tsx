@@ -73,6 +73,20 @@ describe('ExpandableGroupTagLine', () => {
     expect(screen.queryByText('+3')).not.toBeInTheDocument();
   });
 
+  it('should show overflowing items in a popover when configured', async () => {
+    mockLayoutWidths({ containerWidth: 100, childWidth: 50 });
+    const user = userEvent.setup();
+    render(<ExpandableGroupTagLine items={makeItems()} overflowBehavior="popover" />);
+
+    expect(screen.getByText('+3')).toBeInTheDocument();
+    expect(screen.getAllByText('Chargeback')).toHaveLength(1);
+
+    await user.click(screen.getByText('+3'));
+
+    expect(screen.getByText('+3')).toBeInTheDocument();
+    expect(screen.getAllByText('Chargeback')).toHaveLength(2);
+  });
+
   it('should collapse back when the "less" button is clicked', async () => {
     mockLayoutWidths({ containerWidth: 100, childWidth: 50 });
     const user = userEvent.setup();

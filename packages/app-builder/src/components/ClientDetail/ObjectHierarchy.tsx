@@ -5,10 +5,10 @@ import { clientDetailLinkParams } from '@app-builder/utils/routes/client-detail-
 import { UseQueryResult } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { Client360Table } from 'marble-api';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn, Modal, Popover } from 'ui-design-system';
+import { cn, ExpandableGroupTagLine, Modal, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataFields } from '../Data/DataVisualisation/DataFields';
 import { DataModelExplorerContext } from '../DataModelExplorer/Provider';
@@ -318,7 +318,12 @@ const TreeItemData = ({
   metadata: Client360Table | null;
   handleExplore?: () => void;
 }) => {
-  const splicedItems = item.data.slice(0, 3);
+  const itemsWithLabels = item.data
+    .map((itemObject) => ({
+      itemObject,
+      label: String(itemObject[metadata?.caption_field ?? ''] ?? '').trim(),
+    }))
+    .filter(({ label }) => label.length > 0);
 
   if (!metadata) {
     return (
@@ -335,48 +340,36 @@ const TreeItemData = ({
     );
   }
 
+  const tagItems = itemsWithLabels.map(({ itemObject, label }) => {
+    return (
+      <Tag key={itemObject['object_id'] as string} color="white" className="min-w-0 max-w-40 shrink overflow-hidden">
+        <Link
+          to="/client-detail/$objectType/$objectId"
+          params={clientDetailLinkParams(item.objectType, itemObject['object_id'] as string)}
+          className="min-w-0 hover:underline"
+        >
+          <span className="block truncate">{label}</span>
+        </Link>
+      </Tag>
+    );
+  });
+
   return (
-    <div className="flex items-center gap-sm truncate">
-      <div className="truncate">
-        {splicedItems.map((itemObject, idx) => (
-          <Fragment key={itemObject['object_id'] as string}>
-            <Link
-              to="/client-detail/$objectType/$objectId"
-              params={clientDetailLinkParams(item.objectType, itemObject['object_id'] as string)}
-              className="text-purple-primary hover:underline"
-            >
-              {itemObject[metadata.caption_field] as string}
-            </Link>
-            {idx < item.data.length - 1 ? <span>, </span> : ''}
-          </Fragment>
-        ))}
-      </div>
-      {item.data.length > 1 ? (
-        <Popover.Root>
-          <Popover.Trigger asChild>
-            <button type="button" className="cursor-pointer shrink-0">
-              <Icon icon="plus" className="size-5" />
-            </button>
-          </Popover.Trigger>
-          <Popover.Content side="top" align="end">
-            <div className="flex flex-col gap-sm min-w-[300px] max-h-[400px] p-md">
-              {item.data.map((itemObject) => {
-                return (
-                  <Link
-                    key={itemObject['object_id'] as string}
-                    to="/client-detail/$objectType/$objectId"
-                    params={clientDetailLinkParams(item.objectType, itemObject['object_id'] as string)}
-                    className="flex items-center justify-between h-6 hover:text-purple-primary"
-                  >
-                    <span>{itemObject[metadata.caption_field] as string}</span>
-                    <Icon icon="arrow-up-right" className="size-4" />
-                  </Link>
-                );
-              })}
-            </div>
-          </Popover.Content>
-        </Popover.Root>
-      ) : null}
+    <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+      <ExpandableGroupTagLine
+        items={tagItems}
+        classname="gap-xs"
+        overflowBehavior="popover"
+        moreButton={(overflow, onExpand) => (
+          <Tag
+            color="white"
+            className="cursor-pointer shrink-0 hover:bg-purple-primary/20 transition-colors min-w-min"
+            onClick={onExpand}
+          >
+            +{overflow}
+          </Tag>
+        )}
+      />
     </div>
   );
 };
