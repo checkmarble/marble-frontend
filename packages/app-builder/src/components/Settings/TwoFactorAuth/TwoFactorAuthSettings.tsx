@@ -208,6 +208,9 @@ function EnrollTotpModal({ onEnrolled }: { onEnrolled: () => void }) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              // Guard against keyboard resubmit: the footer button stays clickable (only
+              // pointer-events are disabled) while finalizing.
+              if (finalizeMutation.isPending) return;
               setError(null);
               finalizeMutation.mutate();
             }}
