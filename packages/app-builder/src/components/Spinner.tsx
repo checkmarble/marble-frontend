@@ -1,6 +1,6 @@
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useSpinDelay } from 'spin-delay';
+import { cn } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 interface SpinnerProps {
@@ -13,7 +13,7 @@ export function Spinner({ className }: SpinnerProps) {
     <span role="status" className="inline-flex items-center justify-center">
       <span
         aria-hidden
-        className={clsx(
+        className={cn(
           'border-purple-background border-r-purple-primary box-border shrink-0 animate-spin rounded-full border-2 border-solid inline-block',
           className,
         )}
