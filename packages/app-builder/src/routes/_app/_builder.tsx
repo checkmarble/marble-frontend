@@ -82,7 +82,7 @@ const SIDEBAR_NUDGE_CLASS = cn(
   'absolute top-sm right-sm translate-x-[50%] -translate-y-[50%] rounded-full size-2.5',
   'group-hover/sidebar:static group-hover/sidebar:translate-x-0 group-hover/sidebar:translate-y-0',
   'group-hover/sidebar:rounded-sm group-hover/sidebar:size-6',
-  'transition-all delay-300 group-hover/sidebar:delay-0 motion-reduce:delay-0 motion-reduce:duration-0',
+  'transition-all delay-400 group-hover/sidebar:delay-200 motion-reduce:delay-0 motion-reduce:duration-0',
 );
 const SIDEBAR_NUDGE_ICON_CLASS = 'size-2.5 group-hover/sidebar:size-3';
 
@@ -144,7 +144,7 @@ function Builder() {
                                 return (
                                   <div className="text-grey-disabled relative flex gap-sm p-sm">
                                     <Icon icon="123" className="size-6 shrink-0" />
-                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
+                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
                                       {t('navigation:user_scoring')}
                                     </span>
                                     <SidebarNudge kind={value} content={t('navigation:user_scoring.nudge')} />
@@ -170,7 +170,7 @@ function Builder() {
                                 return (
                                   <div className="text-grey-disabled relative flex gap-sm p-sm">
                                     <Icon icon="scan-eye" className="size-6 shrink-0" />
-                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-300 group-hover/sidebar:delay-0">
+                                    <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-hover/sidebar:opacity-100 delay-400 group-hover/sidebar:delay-200">
                                       {t('navigation:continuous_screening')}
                                     </span>
                                     <SidebarNudge kind={value} content={t('navigation:continuous_screening.nudge')} />
