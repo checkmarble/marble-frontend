@@ -1,5 +1,5 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { ObservabilityPage } from '@app-builder/components/ContinuousScreening/ObservabilityPage';
+import { ObservabilityPage } from '@app-builder/components/ContinuousScreening/observability/ObservabilityPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { createFileRoute } from '@tanstack/react-router';
