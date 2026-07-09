@@ -76,6 +76,7 @@ export const EditCaseAssignee = ({
               <Button
                 variant="secondary"
                 onClick={() => {
+                  if (editAssigneeMutation.isPending) return;
                   field.handleChange(currentUser.actorIdentity.userId as string);
                   form.handleSubmit();
                 }}
@@ -97,7 +98,7 @@ export const EditCaseAssignee = ({
                 <MenuCommand.Content sameWidth className="mt-sm">
                   <MenuCommand.Combobox placeholder="Search..." />
                   <MenuCommand.List>
-                    {orgUsers.map(({ userId, firstName, lastName }) => (
+                    {orgUsers.map(({ userId, firstName, lastName, email }) => (
                       <MenuCommand.Item
                         key={userId}
                         className="cursor-pointer"
@@ -108,7 +109,7 @@ export const EditCaseAssignee = ({
                         }}
                       >
                         <span className="inline-flex w-full justify-between">
-                          <span>{`${capitalize(firstName)} ${capitalize(lastName)}`}</span>
+                          <span>{`${capitalize(firstName)} ${capitalize(lastName)}`.trim() || email}</span>
                           {userId === selectedUserId ? (
                             <Icon icon="tick" className="text-purple-primary size-6" />
                           ) : null}
