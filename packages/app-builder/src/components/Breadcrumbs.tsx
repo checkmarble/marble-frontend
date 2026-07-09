@@ -28,7 +28,7 @@ const BreadCrumbLinkInner = React.forwardRef<HTMLAnchorElement, BreadCrumbLinkIn
       ref={ref}
       {...props}
       className={cn(
-        'text-h2 flex items-center font-semibold transition-colors',
+        'text-h2 flex items-center font-semibold transition-colors shrink-0',
         { 'text-grey-placeholder hover:text-grey-primary': !isLast },
         className,
       )}
