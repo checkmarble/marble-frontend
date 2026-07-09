@@ -32,9 +32,9 @@ function throwMappedMfaError(error: unknown): never {
   console.error('[auth] MFA operation failed', error);
   if (error instanceof FirebaseError) {
     switch (error.code) {
-      case 'auth/invalid-verification-code':
-      case 'auth/missing-code':
-      case 'auth/code-expired':
+      case AuthErrorCodes.INVALID_CODE:
+      case AuthErrorCodes.MISSING_CODE:
+      case AuthErrorCodes.CODE_EXPIRED:
         throw new InvalidVerificationCode();
       case AuthErrorCodes.CREDENTIAL_TOO_OLD_LOGIN_AGAIN:
         throw new RequiresRecentLogin();

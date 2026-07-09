@@ -101,7 +101,11 @@ function MfaTotpChallenge({
           onChange={(e) => setCode(e.currentTarget.value.replace(/\D/g, ''))}
           borderColor={error ? 'redfigma-47' : 'greyfigma-90'}
         />
-        {error ? <span className="text-xs text-red-primary">{error}</span> : null}
+        {error ? (
+          <span role="alert" className="text-xs text-red-primary">
+            {error}
+          </span>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-sm">

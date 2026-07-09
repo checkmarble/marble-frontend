@@ -23,7 +23,7 @@
   "mfa.reauth.with_microsoft": "Continuer avec Microsoft",
   "mfa.reauth.wrong_password": "Mot de passe incorrect. Veuillez réessayer.",
   "mfa.remove": "Supprimer",
-  "mfa.remove.success": "Authentification à deux facteurs supprimée",
+  "mfa.remove.success": "Double authentification supprimée",
   "mfa.status.disabled": "Non activée",
   "mfa.title": "Double authentification",
   "organization": "Organisation",
