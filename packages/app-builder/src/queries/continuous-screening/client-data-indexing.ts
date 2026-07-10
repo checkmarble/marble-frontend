@@ -1,5 +1,5 @@
 import {
-  type ContinuousScreeningClientDataIndexing,
+  type ContinuousScreeningClientDataIndexingResponse,
   type ListContinuousScreeningClientDataIndexingParams,
 } from '@app-builder/models/continuous-screening';
 import { listContinuousScreeningClientDataIndexingFn } from '@app-builder/server-fns/continuous-screening';
@@ -8,7 +8,7 @@ import { useServerFn } from '@tanstack/react-start';
 
 export const useContinuousScreeningClientDataIndexingQuery = (
   params: ListContinuousScreeningClientDataIndexingParams = {},
-  options: { refetchInterval?: number; initialData?: ContinuousScreeningClientDataIndexing[] } = {},
+  options: { refetchInterval?: number; initialData?: ContinuousScreeningClientDataIndexingResponse } = {},
 ) => {
   const listClientDataIndexing = useServerFn(listContinuousScreeningClientDataIndexingFn);
 
@@ -16,7 +16,7 @@ export const useContinuousScreeningClientDataIndexingQuery = (
     queryKey: ['continuous-screening', 'client-data-indexing', params],
     queryFn: async () => {
       const result = await listClientDataIndexing({ data: params });
-      return result.items;
+      return result;
     },
     refetchInterval: options.refetchInterval,
     initialData: options.initialData,

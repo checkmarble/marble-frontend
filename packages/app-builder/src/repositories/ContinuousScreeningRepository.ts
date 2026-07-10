@@ -1,12 +1,12 @@
 import { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
-  adaptContinuousScreeningClientDataIndexing,
+  adaptContinuousScreeningClientDataIndexingResponse,
   adaptContinuousScreeningConfig,
   adaptContinuousScreeningDatasetUpdateSummary,
   adaptContinuousScreeningUpdateJobSummary,
   adaptContinuousScreeningObject,
   adaptCreateContinuousScreeningConfigDto,
-  ContinuousScreeningClientDataIndexing,
+  ContinuousScreeningClientDataIndexingResponse,
   ContinuousScreeningConfig,
   ContinuousScreeningDatasetUpdateSummary,
   ContinuousScreeningUpdateJobSummary,
@@ -28,7 +28,7 @@ export interface ContinuousScreeningRepository {
   ): Promise<PaginatedResponse<ContinuousScreeningUpdateJobSummary>>;
   listClientDataIndexing(
     params: ListContinuousScreeningClientDataIndexingParams,
-  ): Promise<PaginatedResponse<ContinuousScreeningClientDataIndexing>>;
+  ): Promise<ContinuousScreeningClientDataIndexingResponse>;
   createConfiguration(configuration: CreateContinuousScreeningConfig): Promise<ContinuousScreeningConfig>;
   updateConfiguration(
     stableId: string,
@@ -74,16 +74,13 @@ export function makeGetContinuousScreeningRepository() {
       };
     },
     listClientDataIndexing: async ({ offsetId, limit, order, sorting }) => {
-      const { items, ...pagination } = await marbleCoreApiClient.listContinuousScreeningClientDataIndexing({
+      const result = await marbleCoreApiClient.listContinuousScreeningClientDataIndexing({
         offsetId,
         limit,
         order,
         sorting,
       });
-      return {
-        items: items.map(adaptContinuousScreeningClientDataIndexing),
-        ...adaptPagination(pagination),
-      };
+      return adaptContinuousScreeningClientDataIndexingResponse(result);
     },
     createConfiguration: async (configuration) => {
       const result = await marbleCoreApiClient.createContinuousScreeningConfig(

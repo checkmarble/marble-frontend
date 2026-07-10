@@ -1,7 +1,7 @@
 import { Page } from '@app-builder/components/Page';
 import { ScreeningNavigationTabs } from '@app-builder/components/Screenings/Navigation/Tabs';
 import {
-  type ContinuousScreeningClientDataIndexing,
+  type ContinuousScreeningClientDataIndexingResponse,
   type ContinuousScreeningDatasetUpdateSummary,
   type ContinuousScreeningUpdateJobSummary,
 } from '@app-builder/models/continuous-screening';
@@ -26,10 +26,10 @@ import { UpdateJobs } from './UpdateJobs';
 type ObservabilityPageProps = {
   datasetUpdates: ContinuousScreeningDatasetUpdateSummary[];
   updateJobs: ContinuousScreeningUpdateJobSummary[];
-  clientDataIndexing: ContinuousScreeningClientDataIndexing[];
+  clientDataIndexing: ContinuousScreeningClientDataIndexingResponse;
 };
 
-const UPDATE_JOBS_REFETCH_INTERVAL = 5000;
+const UPDATE_JOBS_REFETCH_INTERVAL = 1000;
 const DATASET_UPDATES_REFETCH_INTERVAL = 1000;
 
 export function ObservabilityPage({ datasetUpdates, updateJobs, clientDataIndexing }: ObservabilityPageProps) {
