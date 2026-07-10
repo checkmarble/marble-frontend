@@ -2,7 +2,10 @@ import { Callout } from '@app-builder/components/Callout';
 import GridTable from '@app-builder/components/GridTable';
 import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
-import { ContinuousScreeningDatasetUpdateSummary } from '@app-builder/models/continuous-screening';
+import type {
+  ContinuousScreeningDatasetUpdateCompletion,
+  ContinuousScreeningDatasetUpdateSummary,
+} from '@app-builder/models/continuous-screening';
 import { useContinuousScreeningDatasetUpdatesInfiniteQuery } from '@app-builder/queries/continuous-screening/dataset-updates';
 import { formatNumber } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
@@ -68,7 +71,7 @@ function PanelDatasetUpdateContent() {
 
           return (
             <div className="flex flex-col gap-md text-sm">
-              <GridTable.Table className="grid-cols-[repeat(4,auto)]">
+              <GridTable.Table className="grid-cols-[repeat(5,auto)]">
                 <GridTable.Row className="font-semibold border-b border-grey-border">
                   <GridTable.Cell>{t('continuousScreening:observability.dataset_updates_date')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:observability.dataset_updates_title')}</GridTable.Cell>
@@ -76,6 +79,7 @@ function PanelDatasetUpdateContent() {
                   <GridTable.Cell>
                     {t('continuousScreening:observability.dataset_updates_number_of_items')}
                   </GridTable.Cell>
+                  <GridTable.Cell>{t('continuousScreening:observability.dataset_updates_status')}</GridTable.Cell>
                 </GridTable.Row>
                 {updates.map((item) => (
                   <GridTable.Row key={item.id}>
@@ -84,6 +88,9 @@ function PanelDatasetUpdateContent() {
                     <GridTable.Cell className="gap-sm">v.{item.version}</GridTable.Cell>
                     <GridTable.Cell className="justify-end tabular-nums">
                       {formatNumber(item.totalItems, { language: locale })}
+                    </GridTable.Cell>
+                    <GridTable.Cell>
+                      <DatasetUpdateStatus item={item} />
                     </GridTable.Cell>
                   </GridTable.Row>
                 ))}
@@ -105,6 +112,53 @@ function PanelDatasetUpdateContent() {
   );
 }
 
+function DatasetUpdateStatus({ item }: { item: ContinuousScreeningDatasetUpdateSummary }) {
+  const { t } = useTranslation(['continuousScreening']);
+
+  return (
+    <div className="flex flex-col items-start gap-2xs">
+      <TagStatus status={item.status}>
+        {t(`continuousScreening:observability.grid_versions_status_${item.status}`)}
+      </TagStatus>
+      {item.status !== 'completed' ? <DatasetUpdateCompletionDetails completion={item.completion} /> : null}
+    </div>
+  );
+}
+
+function DatasetUpdateCompletionDetails({ completion }: { completion: ContinuousScreeningDatasetUpdateCompletion }) {
+  const { t } = useTranslation(['continuousScreening']);
+  const locale = useFormatLanguage();
+  const details = getDatasetUpdateCompletionDetails(completion);
+  if (details.length === 0) return null;
+
+  return (
+    <div className="text-grey-secondary flex flex-wrap gap-x-xs gap-y-2xs text-xs">
+      {details.map(({ status, value }) => (
+        <span key={status}>
+          {t(`continuousScreening:observability.dataset_updates_completion_${status}`, {
+            percentage: formatNumber(value, { language: locale }),
+          })}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function getDatasetUpdateCompletionDetails(completion: ContinuousScreeningDatasetUpdateCompletion) {
+  return (['completed', 'processing', 'pending', 'failed'] as const)
+    .map((status) => ({
+      status,
+      value: getDatasetUpdateCompletionPercentage(completion[status], completion.total),
+      count: completion[status],
+    }))
+    .filter(({ count }) => count > 0);
+}
+
+function getDatasetUpdateCompletionPercentage(count: number, total: number) {
+  if (total <= 0) return 0;
+  return Math.round((count / total) * 100);
+}
+
 type DatasetUpdateContentProps = {
   data: ContinuousScreeningDatasetUpdateSummary[];
 };
@@ -113,7 +167,7 @@ function DatasetUpdatContent({ data }: DatasetUpdateContentProps) {
   const { dateFormatter } = useDateAtFormat();
 
   return (
-    <div className="grid grid-cols-[auto_1fr_auto] gap-x-md gap-y-sm items-center">
+    <div className="grid grid-cols-[auto_1fr_auto_auto] gap-x-md gap-y-sm items-center">
       {data.map((item) => {
         const formattedDate = dateFormatter(item.createdAt);
 
@@ -125,8 +179,8 @@ function DatasetUpdatContent({ data }: DatasetUpdateContentProps) {
             <div className="flex min-w-0 items-center gap-sm">
               <span className="truncate">{item.title || item.datasetName}</span>
               <TagStatus status={item.status ?? 'completed'}>v.{item.version}</TagStatus>
+              <DatasetUpdateCompletionDetails completion={item.completion} />
             </div>
-            {item.progress ? <TagStatus status="processing">${item.progress}%</TagStatus> : null}
           </div>
         );
       })}

@@ -360,6 +360,7 @@ components:
         - is_current
         - total_items
         - status
+        - completion
         - created_at
       properties:
         id:
@@ -384,11 +385,31 @@ components:
             - processing
             - completed
             - failed
-        progress:
-          type: integer
+        completion:
+          $ref: '#/components/schemas/ContinuousScreeningDatasetUpdateCompletionDto'
         created_at:
           type: string
           format: date-time
+
+    ContinuousScreeningDatasetUpdateCompletionDto:
+      type: object
+      required:
+        - completed
+        - processing
+        - pending
+        - failed
+        - total
+      properties:
+        completed:
+          type: integer
+        processing:
+          type: integer
+        pending:
+          type: integer
+        failed:
+          type: integer
+        total:
+          type: integer
 
     ContinuousScreeningJobErrorDto:
       type: object

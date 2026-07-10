@@ -70,8 +70,16 @@ export type ContinuousScreeningDatasetUpdateSummary = {
   isCurrent: boolean;
   totalItems: number;
   status: ContinuousScreeningUpdateJobStatus;
-  progress: number | null;
+  completion: ContinuousScreeningDatasetUpdateCompletion;
   createdAt: string;
+};
+
+export type ContinuousScreeningDatasetUpdateCompletion = {
+  completed: number;
+  processing: number;
+  pending: number;
+  failed: number;
+  total: number;
 };
 
 export type ListContinuousScreeningDatasetUpdatesParams = {
@@ -93,7 +101,7 @@ export function adaptContinuousScreeningDatasetUpdateSummary(
     isCurrent: dto.is_current,
     totalItems: dto.total_items,
     status: dto.status,
-    progress: dto.progress ?? null,
+    completion: dto.completion,
     createdAt: dto.created_at,
   };
 }
