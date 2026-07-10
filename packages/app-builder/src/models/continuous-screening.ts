@@ -4,6 +4,7 @@ import {
 } from '@app-builder/components/ListAndTopicConfiguration/dataset-selection-provider-utils';
 import {
   ContinuousScreeningClientDataIndexingDto,
+  ContinuousScreeningClientDataIndexingResponseDto,
   ContinuousScreeningConfigDto,
   ContinuousScreeningDatasetUpdateSummaryDto,
   ContinuousScreeningDto,
@@ -173,11 +174,16 @@ export function adaptContinuousScreeningUpdateJobSummary(
 
 export type ContinuousScreeningClientDataIndexing = {
   id: string;
-  status: ContinuousScreeningUpdateJobStatus;
-  jobStart: string;
+  jobDate: string;
   totalItems: number;
-  itemsProcessed: number | null;
-  errors: ContinuousScreeningJobError[];
+  version: string;
+  objectType: string;
+};
+
+export type ContinuousScreeningClientDataIndexingResponse = {
+  pendingItems: number;
+  items: ContinuousScreeningClientDataIndexing[];
+  hasNextPage: boolean;
 };
 
 export type ListContinuousScreeningClientDataIndexingParams = {
@@ -192,11 +198,20 @@ export function adaptContinuousScreeningClientDataIndexing(
 ): ContinuousScreeningClientDataIndexing {
   return {
     id: dto.id,
-    status: dto.status,
-    jobStart: dto.job_start,
+    jobDate: dto.job_date,
     totalItems: dto.total_items,
-    itemsProcessed: dto.items_processed ?? null,
-    errors: (dto.errors ?? []).map(adaptContinuousScreeningJobError),
+    version: dto.version,
+    objectType: dto.object_type,
+  };
+}
+
+export function adaptContinuousScreeningClientDataIndexingResponse(
+  dto: ContinuousScreeningClientDataIndexingResponseDto,
+): ContinuousScreeningClientDataIndexingResponse {
+  return {
+    pendingItems: dto.pending_items,
+    items: dto.items.map(adaptContinuousScreeningClientDataIndexing),
+    hasNextPage: dto.has_next_page,
   };
 }
 

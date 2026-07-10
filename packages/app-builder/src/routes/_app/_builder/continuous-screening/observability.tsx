@@ -1,6 +1,7 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { ObservabilityPage } from '@app-builder/components/ContinuousScreening/observability/ObservabilityPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { type ContinuousScreeningClientDataIndexingResponse } from '@app-builder/models/continuous-screening';
 import { tryCatch } from '@app-builder/utils/tryCatch';
 import { createFileRoute } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
@@ -15,6 +16,11 @@ async function getObservabilityItems<T>(request: Promise<{ items: T[] }>) {
   return result.ok ? result.value.items : [];
 }
 
+async function getObservabilityClientDataIndexing(request: Promise<ContinuousScreeningClientDataIndexingResponse>) {
+  const result = await tryCatch(request);
+  return result.ok ? result.value : { pendingItems: 0, items: [], hasNextPage: false };
+}
+
 const observabilityLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function continuousScreeningObservabilityLoader({ context }) {
@@ -24,7 +30,7 @@ const observabilityLoader = createServerFn()
         continuousScreening.listDatasetUpdates({ limit: DATASET_UPDATES_PAGE_SIZE, order: 'DESC' }),
       ),
       getObservabilityItems(continuousScreening.listUpdateJobs({ limit: UPDATE_JOBS_PAGE_SIZE, order: 'DESC' })),
-      getObservabilityItems(
+      getObservabilityClientDataIndexing(
         continuousScreening.listClientDataIndexing({ limit: CLIENT_DATA_INDEXING_PAGE_SIZE, order: 'DESC' }),
       ),
     ]);

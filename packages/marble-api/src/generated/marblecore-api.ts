@@ -1303,11 +1303,15 @@ export type ContinuousScreeningUpdateJobSummaryDto = {
 };
 export type ContinuousScreeningClientDataIndexingDto = {
     id: string;
-    status: "pending" | "processing" | "completed" | "failed";
-    job_start: string;
+    job_date: string;
     total_items: number;
-    items_processed?: number | null;
-    errors: ContinuousScreeningJobErrorDto[];
+    version: string;
+    object_type: string;
+};
+export type ContinuousScreeningClientDataIndexingResponseDto = {
+    pending_items: number;
+    items: ContinuousScreeningClientDataIndexingDto[];
+    has_next_page: boolean;
 };
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
@@ -4647,9 +4651,7 @@ export function listContinuousScreeningClientDataIndexing({ offsetId, sorting, o
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: Pagination & {
-            items: ContinuousScreeningClientDataIndexingDto[];
-        };
+        data: ContinuousScreeningClientDataIndexingResponseDto;
     }>(`/continuous-screenings/client-data-indexing${QS.query(QS.explode({
         offset_id: offsetId,
         sorting,

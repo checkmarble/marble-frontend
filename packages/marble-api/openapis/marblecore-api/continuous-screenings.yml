@@ -315,16 +315,7 @@
         content:
           application/json:
             schema:
-              allOf:
-                - $ref: 'components.yml#/schemas/Pagination'
-                - type: object
-                  required:
-                    - items
-                  properties:
-                    items:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/ContinuousScreeningClientDataIndexingDto'
+              $ref: '#/components/schemas/ContinuousScreeningClientDataIndexingResponseDto'
 
 /continuous-screenings/{id}/load-more:
   post:
@@ -484,33 +475,39 @@ components:
       type: object
       required:
         - id
-        - status
-        - job_start
+        - job_date
         - total_items
-        - errors
+        - version
+        - object_type
       properties:
         id:
           type: string
           format: uuid
-        status:
-          type: string
-          enum:
-            - pending
-            - processing
-            - completed
-            - failed
-        job_start:
+        job_date:
           type: string
           format: date-time
         total_items:
           type: integer
-        items_processed:
+        version:
+          type: string
+        object_type:
+          type: string
+
+    ContinuousScreeningClientDataIndexingResponseDto:
+      type: object
+      required:
+        - pending_items
+        - items
+        - has_next_page
+      properties:
+        pending_items:
           type: integer
-          nullable: true
-        errors:
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/ContinuousScreeningJobErrorDto'
+            $ref: '#/components/schemas/ContinuousScreeningClientDataIndexingDto'
+        has_next_page:
+          type: boolean
 
     ContinuousScreeningConfigDto:
       type: object
