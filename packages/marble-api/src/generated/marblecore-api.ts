@@ -1273,7 +1273,13 @@ export type ContinuousScreeningDatasetUpdateSummaryDto = {
     is_current: boolean;
     total_items: number;
     status: "pending" | "processing" | "completed" | "failed";
-    progress?: number;
+    completion: {
+        completed: number;
+        processing: number;
+        pending: number;
+        failed: number;
+        total: number;
+    };
     created_at: string;
 };
 export type ContinuousScreeningJobErrorDto = {
