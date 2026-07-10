@@ -1,4 +1,4 @@
-import { GenericContainer, Network, Wait } from 'testcontainers';
+import { GenericContainer, Network, PullPolicy, Wait } from 'testcontainers';
 
 import { setupFixtures } from './fixtures';
 
@@ -25,6 +25,9 @@ async function globalSetup() {
   const firebase = await new GenericContainer(
     'europe-west1-docker.pkg.dev/marble-infra/marble/firebase-emulator:latest',
   )
+    // :latest images go stale locally otherwise — testcontainers never re-pulls
+    // an image it already has, unlike CI which pulls fresh on every run.
+    .withPullPolicy(PullPolicy.alwaysPull())
     .withNetwork(net)
     .withNetworkAliases('firebase')
     .withExposedPorts(9099)
@@ -33,6 +36,7 @@ async function globalSetup() {
     .start();
 
   await new GenericContainer('europe-west1-docker.pkg.dev/marble-infra/marble/marble-backend')
+    .withPullPolicy(PullPolicy.alwaysPull())
     .withPlatform('linux/x86_64')
     .withNetwork(net)
     .withEnvironment({
