@@ -96,8 +96,8 @@ export function formatOptionalDateAtTime(
 
 /**
  * Formats the elapsed duration between two timestamps (end - start) in a
- * locale-aware, human readable way (e.g. "5 minutes"). Returns the fallback
- * when either timestamp is missing or unset.
+ * locale-aware, human readable way (e.g. "250 milliseconds" or "5 minutes").
+ * Returns the fallback when either timestamp is missing or unset.
  */
 export function formatOptionalDuration(
   start: string | null | undefined,
@@ -110,6 +110,16 @@ export function formatOptionalDuration(
   try {
     const startInstant = toInstant(start as string);
     const endInstant = toInstant(end as string);
+    const durationMilliseconds = Math.abs(endInstant.epochMilliseconds - startInstant.epochMilliseconds);
+
+    if (durationMilliseconds < 1_000) {
+      return new Intl.NumberFormat(options.locale, {
+        style: 'unit',
+        unit: 'millisecond',
+        unitDisplay: 'long',
+      }).format(durationMilliseconds);
+    }
+
     return formatDistanceStrict(new Date(endInstant.epochMilliseconds), new Date(startInstant.epochMilliseconds), {
       locale: getDateFnsLocale(options.locale),
     });

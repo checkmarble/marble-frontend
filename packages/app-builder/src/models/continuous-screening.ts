@@ -191,6 +191,9 @@ export type ContinuousScreeningClientDataIndexing = {
 };
 
 export type ContinuousScreeningClientDataIndexingResponse = {
+  version: string;
+  indexVersion: string | null;
+  indexCurrent: boolean;
   pendingItems: number;
   items: ContinuousScreeningClientDataIndexing[];
   hasNextPage: boolean;
@@ -219,6 +222,9 @@ export function adaptContinuousScreeningClientDataIndexingResponse(
   dto: ContinuousScreeningClientDataIndexingResponseDto,
 ): ContinuousScreeningClientDataIndexingResponse {
   return {
+    version: dto.version,
+    indexVersion: dto.index_version,
+    indexCurrent: dto.index_current,
     pendingItems: dto.pending_items,
     items: dto.items.map(adaptContinuousScreeningClientDataIndexing),
     hasNextPage: dto.has_next_page,

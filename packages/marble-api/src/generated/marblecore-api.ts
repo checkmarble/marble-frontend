@@ -1305,13 +1305,22 @@ export type ContinuousScreeningUpdateJobSummaryDto = {
 };
 export type ContinuousScreeningClientDataIndexingDto = {
     id: string;
+    /** Full-dataset generation time. */
     job_date: string;
     total_items: number;
     version: string;
     object_type: string;
 };
 export type ContinuousScreeningClientDataIndexingResponseDto = {
+    /** Full-dataset version. Empty when no dataset has been generated. */
+    version: string;
+    /** Version processed by Motiva. Null when Motiva has not indexed a dataset. */
+    index_version: string | null;
+    /** Whether Motiva has indexed the current full-dataset version. */
+    index_current: boolean;
+    /** Number of rows not yet indexed by Motiva. */
     pending_items: number;
+    /** Dataset versions processed by Motiva. */
     items: ContinuousScreeningClientDataIndexingDto[];
     has_next_page: boolean;
 };

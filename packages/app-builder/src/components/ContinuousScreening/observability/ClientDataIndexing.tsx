@@ -2,7 +2,7 @@ import { Callout } from '@app-builder/components/Callout';
 import GridTable from '@app-builder/components/GridTable';
 import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
-import { ContinuousScreeningClientDataIndexingResponse } from '@app-builder/models/continuous-screening';
+import type { ContinuousScreeningClientDataIndexingResponse } from '@app-builder/models/continuous-screening';
 import { useContinuousScreeningClientDataIndexingInfiniteQuery } from '@app-builder/queries/continuous-screening/client-data-indexing';
 import { formatNumber } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +11,16 @@ import { Card, DefaultTooltip, Typo, useFormatLanguage } from 'ui-design-system'
 import { Icon } from 'ui-icons';
 import { LIMLIT_FOR_PANELS, TagStatus, useDateAtFormat } from './utils';
 
-export function ClientDataIndexing({ data }: { data: ContinuousScreeningClientDataIndexingResponse }) {
-  const { t } = useTranslation(['continuousScreening']);
+export function ClientDataIndexing({ data }: { data: ContinuousScreeningClientDataIndexingResponse | null }) {
+  const { t } = useTranslation(['common', 'continuousScreening']);
+
+  if (data === null) {
+    return (
+      <Card className="p-md grid place-items-center mb-auto">
+        <div className="text-grey-secondary p-md text-center text-xs">{t('common:global_error')}</div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-md grid gap-sm items-start mb-auto">
@@ -24,10 +32,12 @@ export function ClientDataIndexing({ data }: { data: ContinuousScreeningClientDa
           </DefaultTooltip>
         </div>
         <div className="flex gap-sm items-center">
+          <ClientDataIndexingFreshness data={data} />
+
           {data.pendingItems > 0 ? (
             <TagStatus status="pending">
               {t('continuousScreening:observability.client_data_indexing_pending', {
-                count: data.pendingItems,
+                count: data.pendingItems > 1000 ? '1000+' : data.pendingItems,
               })}
             </TagStatus>
           ) : null}
@@ -37,6 +47,42 @@ export function ClientDataIndexing({ data }: { data: ContinuousScreeningClientDa
       <Callout color="purple">{t('continuousScreening:observability.client_data_indexing_callout')}</Callout>
       <ClientDataIndexingContent data={data} />
     </Card>
+  );
+}
+
+function ClientDataIndexingFreshness({ data }: { data: ContinuousScreeningClientDataIndexingResponse }) {
+  const { t } = useTranslation(['continuousScreening']);
+
+  if (data.version === '') {
+    return (
+      <TagStatus status="pending" className="w-fit">
+        {t('continuousScreening:observability.client_data_indexing_dataset_missing')}
+      </TagStatus>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-sm text-sm">
+      <span>
+        {t('continuousScreening:observability.client_data_indexing_dataset_version', {
+          version: data.version,
+        })}
+      </span>
+      <span className="text-grey-secondary">
+        {data.indexVersion === null
+          ? t('continuousScreening:observability.client_data_indexing_index_missing')
+          : t('continuousScreening:observability.client_data_indexing_index_version', {
+              version: data.indexVersion,
+            })}
+      </span>
+      <TagStatus status={data.indexCurrent ? 'completed' : 'pending'} className="w-fit">
+        {data.indexCurrent
+          ? t('continuousScreening:observability.client_data_indexing_index_current')
+          : data.indexVersion === null
+            ? t('continuousScreening:observability.client_data_indexing_index_pending')
+            : t('continuousScreening:observability.client_data_indexing_index_outdated')}
+      </TagStatus>
+    </div>
   );
 }
 

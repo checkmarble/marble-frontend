@@ -19,7 +19,7 @@ async function getObservabilityItems<T>(request: Promise<{ items: T[] }>) {
 
 async function getObservabilityClientDataIndexing(request: Promise<ContinuousScreeningClientDataIndexingResponse>) {
   const result = await tryCatch(request);
-  return result.ok ? result.value : { pendingItems: 0, items: [], hasNextPage: false };
+  return result.ok ? result.value : null;
 }
 
 const observabilityLoader = createServerFn()

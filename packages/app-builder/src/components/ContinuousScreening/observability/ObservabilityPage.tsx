@@ -26,7 +26,7 @@ import { UpdateJobs } from './UpdateJobs';
 type ObservabilityPageProps = {
   datasetUpdates: ContinuousScreeningDatasetUpdateSummary[];
   updateJobs: ContinuousScreeningUpdateJobSummary[];
-  clientDataIndexing: ContinuousScreeningClientDataIndexingResponse;
+  clientDataIndexing: ContinuousScreeningClientDataIndexingResponse | null;
 };
 
 const UPDATE_JOBS_REFETCH_INTERVAL = 1000;
@@ -40,7 +40,10 @@ export function ObservabilityPage({ datasetUpdates, updateJobs, clientDataIndexi
 
   const clientDataIndexingQuery = useContinuousScreeningClientDataIndexingQuery(
     { limit: CLIENT_DATA_INDEXING_PAGE_SIZE },
-    { refetchInterval: UPDATE_JOBS_REFETCH_INTERVAL, initialData: clientDataIndexing },
+    {
+      refetchInterval: UPDATE_JOBS_REFETCH_INTERVAL,
+      ...(clientDataIndexing === null ? {} : { initialData: clientDataIndexing }),
+    },
   );
 
   const datasetUpdatesQuery = useContinuousScreeningDatasetUpdatesQuery(
