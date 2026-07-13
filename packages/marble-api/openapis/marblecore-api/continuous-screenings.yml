@@ -492,6 +492,7 @@ components:
         job_date:
           type: string
           format: date-time
+          description: Full-dataset generation time.
         total_items:
           type: integer
         version:
@@ -502,14 +503,29 @@ components:
     ContinuousScreeningClientDataIndexingResponseDto:
       type: object
       required:
+        - version
+        - index_version
+        - index_current
         - pending_items
         - items
         - has_next_page
       properties:
+        version:
+          type: string
+          description: Full-dataset version. Empty when no dataset has been generated.
+        index_version:
+          type: string
+          nullable: true
+          description: Version processed by Motiva. Null when Motiva has not indexed a dataset.
+        index_current:
+          type: boolean
+          description: Whether Motiva has indexed the current full-dataset version.
         pending_items:
           type: integer
+          description: Number of rows not yet indexed by Motiva.
         items:
           type: array
+          description: Dataset versions processed by Motiva.
           items:
             $ref: '#/components/schemas/ContinuousScreeningClientDataIndexingDto'
         has_next_page:

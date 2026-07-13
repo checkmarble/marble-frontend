@@ -8,7 +8,7 @@ import { formatOptionalDuration } from '@app-builder/utils/datetime';
 import { formatNumber } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Typo, useFormatLanguage } from 'ui-design-system';
+import { Tooltip, Typo, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { GridStatus, getProgressValue, LIMLIT_FOR_PANELS, useDateAtFormat } from './utils';
 
@@ -22,6 +22,7 @@ type UpdateJobsContentProps = {
 
 function UpdateJobsContent({ data }: UpdateJobsContentProps) {
   const { t } = useTranslation(['continuousScreening']);
+  const locale = useFormatLanguage();
   const { dateFormatter } = useDateAtFormat();
   return (
     <div className="col-span-full flex flex-col gap-sm">
@@ -36,7 +37,7 @@ function UpdateJobsContent({ data }: UpdateJobsContentProps) {
             {t('continuousScreening:observability.grid_versions_jobs_start')}
           </GridTable.Cell>
           <GridTable.Cell className="hidden lg:block">
-            {t('continuousScreening:observability.grid_versions_jobs_end')}
+            {t('continuousScreening:observability.grid_versions_job_duration')}
           </GridTable.Cell>
           <GridTable.Cell>{t('continuousScreening:observability.grid_versions_name_of_configuration')}</GridTable.Cell>
           <GridTable.Cell className="flex items-center justify-between">
@@ -49,7 +50,19 @@ function UpdateJobsContent({ data }: UpdateJobsContentProps) {
             <GridTable.Cell>{item.version}</GridTable.Cell>
             <GridTable.Cell>{dateFormatter(item.receptionTime)}</GridTable.Cell>
             <GridTable.Cell className="hidden lg:block">{dateFormatter(item.jobStart)}</GridTable.Cell>
-            <GridTable.Cell className="hidden lg:block">{dateFormatter(item.jobEnd)}</GridTable.Cell>
+            <GridTable.Cell className="hidden lg:block">
+              <Tooltip.Default
+                content={
+                  <span className="flex gap-xs">
+                    <span>{t('continuousScreening:observability.grid_versions_jobs_end')}</span>
+                    <span>:</span>
+                    <span>{dateFormatter(item.jobEnd)}</span>
+                  </span>
+                }
+              >
+                <span>{formatOptionalDuration(item.jobStart, item.jobEnd, { locale })}</span>
+              </Tooltip.Default>
+            </GridTable.Cell>
             <GridTable.Cell>{item.configName}</GridTable.Cell>
             <GridTable.Cell>
               <GridStatus status={item.status} progressValue={getProgressValue(item)} errors={item.errors} />
