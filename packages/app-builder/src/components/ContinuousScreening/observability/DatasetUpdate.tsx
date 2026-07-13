@@ -87,7 +87,12 @@ function PanelDatasetUpdateContent() {
                     <GridTable.Cell className="truncate">{item.title || item.datasetName}</GridTable.Cell>
                     <GridTable.Cell className="gap-sm">v.{item.version}</GridTable.Cell>
                     <GridTable.Cell className="justify-end tabular-nums">
-                      {formatNumber(item.totalItems, { language: locale })}
+                      {item.status === 'processing'
+                        ? `${formatNumber(item.completion.itemsProcessed, { language: locale })} / ${formatNumber(
+                            item.completion.itemsTotal,
+                            { language: locale },
+                          )}`
+                        : formatNumber(item.totalItems, { language: locale })}
                     </GridTable.Cell>
                     <GridTable.Cell>
                       <DatasetUpdateStatus item={item} />
@@ -120,12 +125,20 @@ function DatasetUpdateStatus({ item }: { item: ContinuousScreeningDatasetUpdateS
       <TagStatus status={item.status}>
         {t(`continuousScreening:observability.grid_versions_status_${item.status}`)}
       </TagStatus>
-      {item.status !== 'completed' ? <DatasetUpdateCompletionDetails completion={item.completion} /> : null}
+      {item.status !== 'completed' ? (
+        <DatasetUpdateCompletionDetails completion={item.completion} status={item.status} />
+      ) : null}
     </div>
   );
 }
 
-function DatasetUpdateCompletionDetails({ completion }: { completion: ContinuousScreeningDatasetUpdateCompletion }) {
+function DatasetUpdateCompletionDetails({
+  completion,
+  status,
+}: {
+  completion: ContinuousScreeningDatasetUpdateCompletion;
+  status: ContinuousScreeningDatasetUpdateSummary['status'];
+}) {
   const { t } = useTranslation(['continuousScreening']);
   const locale = useFormatLanguage();
   const details = getDatasetUpdateCompletionDetails(completion);
@@ -140,6 +153,12 @@ function DatasetUpdateCompletionDetails({ completion }: { completion: Continuous
           })}
         </span>
       ))}
+      {status === 'processing' ? (
+        <span>
+          {formatNumber(completion.itemsProcessed, { language: locale })} /{' '}
+          {formatNumber(completion.itemsTotal, { language: locale })}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -179,7 +198,7 @@ function DatasetUpdatContent({ data }: DatasetUpdateContentProps) {
             <div className="flex min-w-0 items-center gap-sm">
               <span className="truncate">{item.title || item.datasetName}</span>
               <TagStatus status={item.status ?? 'completed'}>v.{item.version}</TagStatus>
-              <DatasetUpdateCompletionDetails completion={item.completion} />
+              <DatasetUpdateCompletionDetails completion={item.completion} status={item.status} />
             </div>
           </div>
         );

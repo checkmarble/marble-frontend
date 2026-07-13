@@ -1,6 +1,7 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { ConfigurationsPage } from '@app-builder/components/ContinuousScreening/ConfigurationsPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAdmin } from '@app-builder/models';
 import { listContinuousScreeningConfigurationsFn } from '@app-builder/server-fns/continuous-screening';
 import { getListConfigFn } from '@app-builder/server-fns/screenings';
 import { createFileRoute } from '@tanstack/react-router';
@@ -18,6 +19,7 @@ const configurationsLoader = createServerFn()
 
     return {
       canEdit: ['ADMIN', 'PUBLISHER'].includes(user.role),
+      isAdmin: isAdmin(user),
       configurations: listContinuousScreeningConfigurations.configurations,
       datasets,
     };
@@ -42,7 +44,7 @@ export const Route = createFileRoute('/_app/_builder/continuous-screening/config
 });
 
 function ContinuousScreeningConfigurations() {
-  const { canEdit, configurations, datasets } = Route.useLoaderData();
+  const { canEdit, configurations, datasets, isAdmin } = Route.useLoaderData();
 
-  return <ConfigurationsPage canEdit={canEdit} configurations={configurations} datasets={datasets} />;
+  return <ConfigurationsPage canEdit={canEdit} configurations={configurations} datasets={datasets} isAdmin={isAdmin} />;
 }

@@ -80,6 +80,8 @@ export type ContinuousScreeningDatasetUpdateCompletion = {
   pending: number;
   failed: number;
   total: number;
+  itemsProcessed: number;
+  itemsTotal: number;
 };
 
 export type ListContinuousScreeningDatasetUpdatesParams = {
@@ -101,7 +103,15 @@ export function adaptContinuousScreeningDatasetUpdateSummary(
     isCurrent: dto.is_current,
     totalItems: dto.total_items,
     status: dto.status,
-    completion: dto.completion,
+    completion: {
+      completed: dto.completion.completed,
+      processing: dto.completion.processing,
+      pending: dto.completion.pending,
+      failed: dto.completion.failed,
+      total: dto.completion.total,
+      itemsProcessed: dto.completion.items_processed,
+      itemsTotal: dto.completion.items_total,
+    },
     createdAt: dto.created_at,
   };
 }

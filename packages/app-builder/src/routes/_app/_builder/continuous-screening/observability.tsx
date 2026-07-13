@@ -1,9 +1,10 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { ObservabilityPage } from '@app-builder/components/ContinuousScreening/observability/ObservabilityPage';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAdmin } from '@app-builder/models';
 import { type ContinuousScreeningClientDataIndexingResponse } from '@app-builder/models/continuous-screening';
 import { tryCatch } from '@app-builder/utils/tryCatch';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +25,12 @@ async function getObservabilityClientDataIndexing(request: Promise<ContinuousScr
 const observabilityLoader = createServerFn()
   .middleware([authMiddleware])
   .handler(async function continuousScreeningObservabilityLoader({ context }) {
-    const { continuousScreening } = context.authInfo;
+    const { continuousScreening, user } = context.authInfo;
+
+    if (!isAdmin(user)) {
+      throw redirect({ to: '/' });
+    }
+
     const [datasetUpdates, updateJobs, clientDataIndexing] = await Promise.all([
       getObservabilityItems(
         continuousScreening.listDatasetUpdates({ limit: DATASET_UPDATES_PAGE_SIZE, order: 'DESC' }),

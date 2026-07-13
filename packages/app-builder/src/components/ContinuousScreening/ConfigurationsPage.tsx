@@ -27,9 +27,10 @@ type ConfigurationsPageProps = {
   canEdit: boolean;
   configurations: ContinuousScreeningConfiguration[];
   datasets: ScreeningAvailableFiltersAdapted;
+  isAdmin: boolean;
 };
 
-export const ConfigurationsPage = ({ canEdit, configurations, datasets }: ConfigurationsPageProps) => {
+export const ConfigurationsPage = ({ canEdit, configurations, datasets, isAdmin }: ConfigurationsPageProps) => {
   const { t } = useTranslation(['common', 'continuousScreening', 'navigation']);
   const { formatItemName } = useDatasetTitle();
   const [creationModalOpen, setCreationModalOpen] = useState(false);
@@ -74,15 +75,17 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
     <Page.Main>
       <Page.Content width="table">
         <div className="flex flex-col gap-md">
-          <ScreeningNavigationTabs
-            actions={
-              canEdit ? (
-                <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
-                  {t('continuousScreening:configurations.add_configuration')}
-                </Button>
-              ) : undefined
-            }
-          />
+          {isAdmin ? (
+            <ScreeningNavigationTabs
+              actions={
+                canEdit ? (
+                  <Button variant="primary" onClick={() => setCreationModalOpen(true)}>
+                    {t('continuousScreening:configurations.add_configuration')}
+                  </Button>
+                ) : undefined
+              }
+            />
+          ) : null}
           {match(configurations)
             .with(P.nullish, () => null)
             .with(P.array(), (configurations) =>

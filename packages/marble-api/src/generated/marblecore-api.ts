@@ -1279,6 +1279,8 @@ export type ContinuousScreeningDatasetUpdateSummaryDto = {
         pending: number;
         failed: number;
         total: number;
+        items_processed: number;
+        items_total: number;
     };
     created_at: string;
 };
