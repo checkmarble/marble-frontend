@@ -38,6 +38,7 @@ export const FieldSkipIfUnder = ({ value, onBlur, onChange, editor, name }: Fiel
           components={{
             NbNumbers: (
               <Input
+                size="small"
                 type="number"
                 name={name}
                 className="z-0 w-14 py-0"

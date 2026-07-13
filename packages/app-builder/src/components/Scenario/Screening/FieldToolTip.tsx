@@ -13,7 +13,7 @@ export const FieldToolTip = ({ children }: { children: React.ReactNode }) => {
       <Hovercard
         portal
         gutter={16}
-        className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm shadow-md"
+        className="bg-surface-card border-grey-border flex w-fit max-w-80 rounded-sm border p-sm shadow-md z-100 text-s"
       >
         {children}
       </Hovercard>

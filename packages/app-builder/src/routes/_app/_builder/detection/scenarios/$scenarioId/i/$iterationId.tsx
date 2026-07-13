@@ -13,7 +13,7 @@ import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { findRuleValidation } from '@app-builder/services/validation';
 import { formatDateRelative, useFormatLanguage } from '@app-builder/utils/format';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
-import { createFileRoute, Outlet, useLoaderData, useLocation } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,11 +41,18 @@ const iterationLayoutLoader = createServerFn()
         ? 'edit'
         : 'view';
 
+    const rulesList = [
+      ...rulesMetadata.map((r) => ({ ...r, type: 'rule' as const })),
+      ...scenarioIteration.screeningConfigs.map((r) => ({ ...r, type: 'sanction' as const })),
+    ];
+
     return {
       editorMode,
       scenarioIteration,
       scenarioValidation,
       rulesMetadata,
+      rulesList,
+      screeningsConfigs: scenarioIteration.screeningConfigs,
     };
   });
 
@@ -56,14 +63,12 @@ export const useCurrentRuleValidationRule = () => {
 };
 
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId')({
-  loader: ({ params }) => iterationLayoutLoader({ data: { params } }),
+  beforeLoad: ({ params }) => iterationLayoutLoader({ data: { params } }),
   staticData: {
     BreadCrumbs: [
       ({ isLast }: BreadCrumbProps) => {
         const { t } = useTranslation(['scenarios']);
-        const { scenarioIterations } = useLoaderData({
-          from: '/_app/_builder/detection/scenarios/$scenarioId',
-        });
+        const { scenarioIterations } = Route.useRouteContext();
         const iterationId = useParam('iterationId');
 
         const currentIteration = React.useMemo(() => {
@@ -107,7 +112,7 @@ export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenar
 });
 
 function CurrentScenarioIterationProvider() {
-  const { editorMode, scenarioIteration } = Route.useLoaderData();
+  const { editorMode, scenarioIteration } = Route.useRouteContext();
 
   return (
     <EditorModeContextProvider value={editorMode}>

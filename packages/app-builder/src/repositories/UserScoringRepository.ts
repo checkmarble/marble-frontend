@@ -41,8 +41,15 @@ export function makeGetUserScoringRepository() {
       }
     },
     async listRulesets() {
-      const rulesets = await marbleCoreApiClient.listScoringRulesets();
-      return rulesets.map(adaptScoringRuleset);
+      try {
+        const rulesets = await marbleCoreApiClient.listScoringRulesets();
+        return rulesets.map(adaptScoringRuleset);
+      } catch (err) {
+        if (isNotFoundHttpError(err)) {
+          return [];
+        }
+        throw err;
+      }
     },
     async listRulesetVersions(recordType) {
       const versions = await marbleCoreApiClient.listScoringRulesetVersions(recordType);

@@ -1,7 +1,7 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
 import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
-import { type BuilderOptionsResource, type FlatAstValidation } from '@app-builder/server-fns/scenarios';
+import { BuilderOptionsResource, type FlatAstValidation } from '@app-builder/server-fns/scenarios';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { useRef, useState } from 'react';
@@ -42,6 +42,7 @@ export const FieldAstFormula = ({
   type,
   astNode,
   scenarioId,
+  triggerObjectType,
   options,
   onChange,
   onBlur,
@@ -52,7 +53,8 @@ export const FieldAstFormula = ({
   onChange?: (node?: AstNode) => void;
   onBlur?: () => void;
   scenarioId: string;
-  options: BuilderOptionsResource;
+  triggerObjectType: string;
+  options?: BuilderOptionsResource;
   defaultValue: AstNode;
 }) => {
   const { t } = useTranslation(['scenarios']);
@@ -80,7 +82,7 @@ export const FieldAstFormula = ({
             <Trans
               t={t}
               i18nKey="scenarios:trigger.trigger_object.no_trigger"
-              values={{ objectType: options.triggerObjectType }}
+              values={{ objectType: triggerObjectType }}
             />
           </span>
         </div>

@@ -1,46 +1,10 @@
-import { OutcomeBadge } from '@app-builder/components';
-import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
-import { Highlight } from '@app-builder/components/Highlight';
-import { Ping } from '@app-builder/components/Ping';
-import { CreateRule } from '@app-builder/components/Scenario/Rules/Actions/CreateRule';
-import { rulesFilterNames } from '@app-builder/components/Scenario/Rules/Filters/filters';
-import { RulesFiltersBar } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersBar';
-import {
-  type RulesFilters,
-  RulesFiltersProvider,
-} from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersContext';
-import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
-import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { CreateScreeningButton } from '@app-builder/components/Screenings/CreateScreeningButton';
+import { RulesPage } from '@app-builder/components/Scenario/Rules/RulesPage';
+import { useDerivedIterationRuleGroupsData } from '@app-builder/hooks/routes-layout-data';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { type ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
-import { type ScreeningConfig } from '@app-builder/models/screening-config';
-import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import {
-  findRuleValidation,
-  findScreeningValidation,
-  hasRuleErrors,
-  hasScreeningErrors,
-  useGetScenarioErrorMessage,
-} from '@app-builder/services/validation';
-import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import { fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { createFileRoute, Link, useLoaderData } from '@tanstack/react-router';
+import { isAccessible, isAiRuleBuildingAvailable } from '@app-builder/services/feature-access';
+import { useParam } from '@app-builder/utils/short-uuid';
+import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
-import {
-  type ColumnFiltersState,
-  createColumnHelper,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
-import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
-import { useCallback, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
-import { CtaV2ClassName, SearchInput, Table, Tag, useVirtualTable } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
 const rulesLoader = createServerFn()
   .middleware([authMiddleware])
@@ -49,290 +13,40 @@ const rulesLoader = createServerFn()
 
     return {
       isSanctionAvailable: entitlements.sanctions,
+      isAiRuleDescriptionEnabled: isAiRuleBuildingAvailable(entitlements),
+      isNameRecognitionAvailable: isAccessible(entitlements.nameRecognition),
     };
   });
 
-const columnHelper = createColumnHelper<
-  (ScenarioIterationRuleMetadata & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' })
->();
-
-const AddRuleOrScreening = ({
-  scenarioId,
-  iterationId,
-  isSanctionAvailable,
-}: {
-  scenarioId: string;
-  iterationId: string;
-  isSanctionAvailable: FeatureAccessLevelDto;
-}) => {
-  const { t } = useTranslation(['common', 'scenarios', 'decisions', 'filters']);
-
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger className={CtaV2ClassName({ variant: 'primary', color: 'primary', size: 'medium' })}>
-        <Icon icon="plus" className="size-6" />
-        {t('common:add')}
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content
-        align="end"
-        className="bg-surface-card border-grey-border z-10 mt-sm flex flex-col gap-sm rounded-sm border p-sm"
-      >
-        <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
-        <CreateScreeningButton
-          scenarioId={scenarioId}
-          iterationId={iterationId}
-          isSanctionAvailable={isSanctionAvailable}
-        />
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
-  );
-};
-
 export const Route = createFileRoute('/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId/_edit-view/rules')({
   loader: () => rulesLoader(),
-  component: Rules,
+  component: PageComponent,
 });
 
-function Rules() {
-  const { t } = useTranslation(['common', 'scenarios', 'decisions', 'filters']);
-  const language = useFormatLanguage();
-  const [searchValue, setSearchValue] = useState('');
-
+function PageComponent() {
+  const router = useRouter();
   const iterationId = useParam('iterationId');
-  const scenarioId = useParam('scenarioId');
-  const editorMode = useEditorMode();
+  const { editorMode, rulesList, screeningsConfigs, currentScenario, scenarioValidation } = Route.useRouteContext();
+  const { isAiRuleDescriptionEnabled, isSanctionAvailable, isNameRecognitionAvailable } = Route.useLoaderData();
+  const ruleGroups = useDerivedIterationRuleGroupsData();
 
-  const { isSanctionAvailable } = Route.useLoaderData();
-  const {
-    rulesMetadata,
-    scenarioValidation,
-    scenarioIteration: { screeningConfigs },
-  } = useLoaderData({
-    from: '/_app/_builder/detection/scenarios/$scenarioId/i/$iterationId',
-  });
-  const getScenarioErrorMessage = useGetScenarioErrorMessage();
-
-  const items: Array<(ScenarioIterationRuleMetadata & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' })> =
-    useMemo(
-      () => [
-        ...rulesMetadata.map((r) => ({ ...r, type: 'rule' as const })),
-        ...screeningConfigs.map((s) => ({ ...s, type: 'sanction' as const })),
-      ],
-      [rulesMetadata, screeningConfigs],
-    );
-
-  const ruleGroups = useMemo(
-    () =>
-      R.pipe(
-        items,
-        R.map((i) => i.ruleGroup),
-        R.filter((val): val is string => !R.isEmpty(val)),
-        R.unique(),
-      ),
-    [items],
-  );
-
-  const screeningIdToValidationIndex = useMemo(() => {
-    const map = new Map<string, string>();
-    screeningConfigs.forEach((config, index) => {
-      if (config.id) {
-        map.set(config.id, index.toString());
-      }
-    });
-    return map;
-  }, [screeningConfigs]);
-
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor((row) => row.name, {
-        id: 'name',
-        header: () => <span className="ms-md">{t('scenarios:rules.name')}</span>,
-        size: 200,
-        cell: ({ getValue, row, table }) => {
-          const tableState = table.getState();
-          const query = typeof tableState.globalFilter === 'string' ? tableState.globalFilter : '';
-          const hasErrors =
-            row.original.type === 'rule'
-              ? hasRuleErrors(findRuleValidation(scenarioValidation, row.original.id))
-              : row.original.id
-                ? (() => {
-                    const validationIndex = screeningIdToValidationIndex.get(row.original.id);
-                    return validationIndex !== undefined
-                      ? hasScreeningErrors(findScreeningValidation(scenarioValidation, validationIndex))
-                      : false;
-                  })()
-                : false;
-
-          return (
-            <span className="flex items-center gap-sm">
-              <span className="flex w-2 items-center justify-center">
-                {hasErrors ? (
-                  <Ping className="text-red-primary relative box-content size-[6px] border border-transparent" />
-                ) : null}
-              </span>
-              <Highlight text={getValue() ?? ''} query={query} className="hyphens-auto" />
-            </span>
-          );
-        },
-      }),
-      columnHelper.accessor((row) => row.description, {
-        id: 'description',
-        header: t('scenarios:rules.description'),
-        size: 360,
-        cell: ({ getValue, table }) => {
-          const tableState = table.getState();
-          const query = typeof tableState.globalFilter === 'string' ? tableState.globalFilter : '';
-
-          return <Highlight text={getValue() ?? ''} query={query} />;
-        },
-      }),
-      columnHelper.accessor((row) => row.ruleGroup, {
-        id: 'ruleGroup',
-        header: t('scenarios:rules.rule_group'),
-        size: 120,
-        filterFn: 'arrIncludesSome',
-        cell: ({ getValue }) => {
-          const value = getValue();
-          if (!value) return '';
-          return <Tag>{value}</Tag>;
-        },
-      }),
-      columnHelper.display({
-        id: 'score_or_outcome',
-        header: t('scenarios:rules.score_or_outcome'),
-        size: 150,
-        cell: ({ row }) => {
-          if (row.original.type === 'rule') {
-            const scoreModifier = row.original.scoreModifier;
-            if (!scoreModifier) return '';
-            return (
-              <span className={scoreModifier < 0 ? 'text-green-primary' : 'text-red-primary'}>
-                {formatNumber(scoreModifier, {
-                  language,
-                  signDisplay: 'exceptZero',
-                })}
-              </span>
-            );
-          }
-          const outcome = row.original.forcedOutcome;
-          if (!outcome) return '';
-          return <OutcomeBadge outcome={outcome} size="md" />;
-        },
-      }),
-    ],
-    [language, scenarioValidation, screeningIdToValidationIndex, t],
-  );
-
-  const hasItems = items.length > 0;
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const filterValues = R.pullObject(columnFilters, R.prop('id'), R.prop('value'));
-
-  const submitRulesFilters = useCallback((filters: RulesFilters) => {
-    const nextColumnFilters = R.pipe(
-      filters,
-      R.entries(),
-      R.filter(([_, value]) => value !== undefined),
-      R.map(([id, value]) => ({
-        id,
-        value,
-      })),
-    );
-
-    setColumnFilters(nextColumnFilters);
-  }, []);
-
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
-    data: items,
-    columns,
-    columnResizeMode: 'onChange',
-    enableSorting: hasItems,
-    initialState: {
-      sorting: [
-        {
-          id: 'name',
-          desc: false,
-        },
-      ],
-    },
-    state: { columnFilters },
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    rowLink: (row) =>
-      row.type === 'rule' ? (
-        <Link
-          from="/detection/scenarios/$scenarioId/i/$iterationId/rules"
-          to="$ruleId"
-          params={{ ruleId: fromUUIDtoSUUID(row.id) }}
-        />
-      ) : (
-        <Link
-          to="/detection/scenarios/$scenarioId/i/$iterationId/screenings/$screeningId"
-          params={{
-            scenarioId: fromUUIDtoSUUID(scenarioId),
-            iterationId: fromUUIDtoSUUID(iterationId),
-            screeningId: fromUUIDtoSUUID(row.id as string),
-          }}
-        />
-      ),
-  });
-
-  const columnLength = table.getHeaderGroups()[0]?.headers.length ?? 1;
+  const handleRuleEditSuccess = async () => {
+    await router.invalidate();
+  };
 
   return (
-    <div className="flex flex-col gap-md">
-      <EvaluationErrors errors={scenarioValidation.rules.errors.map(getScenarioErrorMessage)} />
-
-      <RulesFiltersProvider filterValues={filterValues} submitRulesFilters={submitRulesFilters} ruleGroups={ruleGroups}>
-        <div className="flex flex-row items-center justify-between gap-md">
-          <form className="flex grow items-center">
-            <SearchInput
-              size="medium"
-              className="w-full max-w-xl"
-              disabled={!hasItems}
-              aria-label={t('common:search')}
-              placeholder={t('common:search')}
-              value={searchValue}
-              onChange={(value) => {
-                setSearchValue(value);
-                table.setGlobalFilter(value);
-              }}
-            />
-          </form>
-
-          <div className="flex flex-row gap-md">
-            <RulesFiltersMenu filterNames={rulesFilterNames}>
-              <FiltersButton />
-            </RulesFiltersMenu>
-            {editorMode === 'edit' ? (
-              <AddRuleOrScreening
-                scenarioId={scenarioId}
-                iterationId={iterationId}
-                isSanctionAvailable={isSanctionAvailable}
-              />
-            ) : null}
-          </div>
-        </div>
-        <RulesFiltersBar />
-      </RulesFiltersProvider>
-
-      <Table.Container {...getContainerProps()} className="bg-surface-card">
-        <Table.Header headerGroups={table.getHeaderGroups()} />
-        <Table.Body {...getBodyProps()}>
-          {hasItems ? (
-            rows.map((row) => <Table.Row key={row.id} row={row} />)
-          ) : (
-            <tr className="h-28">
-              <td colSpan={columnLength}>
-                <p className="text-center">{t('scenarios:rules.empty')}</p>
-              </td>
-            </tr>
-          )}
-        </Table.Body>
-      </Table.Container>
-    </div>
+    <RulesPage
+      scenario={currentScenario}
+      iterationId={iterationId}
+      screeningConfigs={screeningsConfigs}
+      scenarioValidation={scenarioValidation}
+      editorMode={editorMode}
+      list={rulesList}
+      ruleGroups={ruleGroups}
+      isSanctionAvailable={isSanctionAvailable}
+      isAiRuleDescriptionEnabled={isAiRuleDescriptionEnabled}
+      isNameRecognitionAvailable={isNameRecognitionAvailable}
+      onRuleEditSuccess={handleRuleEditSuccess}
+    />
   );
 }

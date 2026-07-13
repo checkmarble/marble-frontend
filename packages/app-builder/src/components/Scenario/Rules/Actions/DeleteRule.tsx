@@ -1,47 +1,40 @@
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useDeleteRuleMutation } from '@app-builder/queries/scenarios/delete-rule';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Modal, Typo } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Modal } from 'ui-design-system';
 
 export function DeleteRule({
   ruleId,
   scenarioId,
   iterationId,
   children,
-  open,
-  onOpenChange,
+  onDeleteSuccess,
 }: {
   ruleId: string;
   scenarioId: string;
   iterationId: string;
   children?: React.ReactElement;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onDeleteSuccess: () => void;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const deleteRuleMutation = useDeleteRuleMutation(scenarioId, iterationId);
-  const revalidate = useLoaderRevalidator();
+  const [open, setOpen] = useState(false);
 
   const handleDeleteRule = () => {
     deleteRuleMutation.mutateAsync({ ruleId }).then(() => {
-      revalidate();
+      setOpen(false);
+      onDeleteSuccess();
+      toast.success(t('scenarios:delete_rule.success'));
     });
   };
 
   return (
-    <Modal.Root open={open} onOpenChange={onOpenChange}>
+    <Modal.Root open={open} onOpenChange={setOpen}>
       {children ? <Modal.Trigger asChild>{children}</Modal.Trigger> : null}
       <Modal.Content>
-        <div className="flex flex-col gap-lg p-lg">
-          <div className="flex flex-1 flex-col items-center justify-center gap-sm">
-            <div className="bg-red-background mb-lg box-border rounded-[90px] p-md">
-              <Icon icon="delete" className="text-red-primary size-16" />
-            </div>
-            <Typo variant="title1">{t('scenarios:delete_rule.title')}</Typo>
-            <p className="text-center">{t('scenarios:delete_rule.content')}</p>
-          </div>
-        </div>
+        <Modal.Title>{t('scenarios:delete_rule.title')}</Modal.Title>
+        <p className="text-center">{t('scenarios:delete_rule.content')}</p>
         <Modal.Footer>
           <Modal.FooterButton isCloseButton label={t('common:cancel')} />
           <Modal.FooterButton

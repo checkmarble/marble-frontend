@@ -6,7 +6,12 @@ import {
 } from '@app-builder/models/astNode/aggregation';
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
-import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
+import {
+  DataAccessorAstNode,
+  isDataAccessorAstNode,
+  isDatabaseAccess,
+  isPayload,
+} from '@app-builder/models/astNode/data-accessor';
 import { type IpHasFlagAstNode, isIpHasFlag } from '@app-builder/models/astNode/ip';
 import {
   isMonitoringListCheckAstNode,
@@ -35,6 +40,7 @@ import { formatNumber } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
+import invariant from 'tiny-invariant';
 import { formatConstant } from './formatConstant';
 import { getCustomListAccessCustomList } from './getCustomListAccessCustomList';
 
@@ -56,13 +62,8 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
     return customList?.name ?? context.t('scenarios:custom_list.unknown');
   }
 
-  if (isDatabaseAccess(astNode)) {
-    const { path, fieldName } = astNode.namedChildren;
-    return [...path.constant, fieldName.constant].join('.');
-  }
-
-  if (isPayload(astNode)) {
-    return astNode.children[0].constant;
+  if (isDataAccessorAstNode(astNode)) {
+    return getDataAccessorDisplayName(astNode);
   }
 
   if (isAggregation(astNode)) {
@@ -136,6 +137,19 @@ export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeSt
   );
 
   return `${astNode.name}(${args})`;
+}
+
+export function getDataAccessorDisplayName(astNode: IdLessAstNode<DataAccessorAstNode>): string {
+  if (isDatabaseAccess(astNode)) {
+    const { path, fieldName } = astNode.namedChildren;
+    return [...path.constant, fieldName.constant].join('.');
+  }
+
+  if (isPayload(astNode)) {
+    return astNode.children[0].constant;
+  }
+
+  throw invariant('never encountered');
 }
 
 function getTimeAddDisplayName(astNode: IdLessAstNode<TimeAddAstNode>, context: AstNodeStringifierContext): string {

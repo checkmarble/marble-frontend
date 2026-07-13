@@ -23,6 +23,9 @@ export function createConfig(mode: Mode): PlaywrightTestConfig {
       trace: 'retain-on-failure',
       screenshot: 'only-on-failure',
       ...(isDev ? { launchOptions: { slowMo: 250 } } : {}),
+      contextOptions: {
+        reducedMotion: 'reduce',
+      },
     },
     projects: [
       {

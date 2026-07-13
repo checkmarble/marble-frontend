@@ -1,11 +1,10 @@
 import { Slot } from '@radix-ui/react-slot';
-import { VariantProps } from 'class-variance-authority';
 import { IconProps } from 'packages/ui-icons/src/Icon';
 import { type ComponentPropsWithoutRef, forwardRef, type ReactNode, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
-import { Button, CtaV2ClassName, cn, StickyComponent, Typo } from 'ui-design-system';
+import { Button, ButtonAppearance, ButtonVariant, cn, StickyComponent, Typo, UnstyledInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PanelOverlay } from './PanelOverlay';
 
@@ -184,7 +183,7 @@ function PanelContainerPortal({ children, className, size = 'small' }: PanelCont
       <div
         ref={panelRef}
         className={cn(
-          'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border w-full flex flex-col animate-slideRightAndFadeIn overflow-y-auto',
+          'fixed inset-y-0 z-20 right-0 bg-surface-card border-l border-grey-border w-full flex flex-col not-motion-reduce:animate-slide-right-fade-in overflow-y-auto',
           sizeClasses[size],
           className,
         )}
@@ -227,6 +226,22 @@ function PanelHeader({ children, className }: PanelHeaderProps) {
   );
 }
 
+type PanelHeaderInputProps = React.ComponentPropsWithoutRef<'input'>;
+
+const PanelHeaderInput = forwardRef<HTMLInputElement, PanelHeaderInputProps>(function PanelHeaderInput(
+  { className, ...props },
+  ref,
+) {
+  return (
+    <UnstyledInput
+      ref={ref}
+      autoFocus
+      className="field-sizing-content min-w-25 max-w-100 text-h2 font-semibold h-6 border-b border-transparent focus:border-grey-primary outline-none"
+      {...props}
+    />
+  );
+});
+
 interface PanelContentProps {
   children: ReactNode;
   className?: string;
@@ -246,7 +261,7 @@ function PanelFooter({ children, className }: PanelFooterProps) {
     <StickyComponent inFlow="after" sentinelClassName="top-lg -translate-y-2xs">
       <div
         className={cn(
-          'sticky flex justify-end gap-md bottom-0 bg-surface-card -m-lg mt-auto p-lg border-t border-transparent sentinel-intersect:border-grey-border sentinel-intersect:shadow-sticky-bottom',
+          'sticky flex justify-end gap-sm bottom-0 bg-surface-card -m-lg mt-auto p-lg border-t border-transparent sentinel-intersect:border-grey-border sentinel-intersect:shadow-sticky-bottom',
           className,
         )}
       >
@@ -256,11 +271,7 @@ function PanelFooter({ children, className }: PanelFooterProps) {
   );
 }
 
-type PanelButtonVariant = Extract<
-  VariantProps<typeof CtaV2ClassName>['variant'],
-  'primary' | 'destructive' | 'secondary'
->;
-type PanelButtonAppearance = Extract<VariantProps<typeof CtaV2ClassName>['appearance'], 'stroked' | 'filled'>;
+type PanelButtonVariant = Extract<ButtonVariant, 'primary' | 'destructive' | 'secondary'> | 'primary-outline';
 
 type PanelFooterButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Button>, 'variant' | 'appearance' | 'size'> & {
   label: string;
@@ -292,16 +303,20 @@ const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(
 
   const { variant: buttonVariant, appearance } = match(variant)
     .with('secondary', () => ({
-      variant: 'secondary' as PanelButtonVariant,
-      appearance: 'stroked' as PanelButtonAppearance,
+      variant: 'secondary' as ButtonVariant,
+      appearance: 'stroked' as ButtonAppearance,
     }))
     .with('destructive', () => ({
-      variant: 'destructive' as PanelButtonVariant,
-      appearance: 'filled' as PanelButtonAppearance,
+      variant: 'destructive' as ButtonVariant,
+      appearance: 'filled' as ButtonAppearance,
+    }))
+    .with('primary-outline', () => ({
+      variant: 'primary' as ButtonVariant,
+      appearance: 'stroked' as ButtonAppearance,
     }))
     .otherwise(() => ({
-      variant: (isCloseButton ? (variant ?? 'secondary') : 'primary') as PanelButtonVariant,
-      appearance: (isCloseButton && variant !== 'primary' ? 'stroked' : 'filled') as PanelButtonAppearance,
+      variant: (isCloseButton ? (variant ?? 'secondary') : 'primary') as ButtonVariant,
+      appearance: (isCloseButton && variant !== 'primary' ? 'stroked' : 'filled') as ButtonAppearance,
     }));
 
   return (
@@ -312,7 +327,7 @@ const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(
       disabled={disabled || isLoading}
       aria-busy={isLoading || undefined}
       aria-disabled={disabled || isLoading || undefined}
-      size="large"
+      size="medium"
       className={cn(isLoading && 'pointer-events-none', className)}
       onClick={(event) => {
         onClick?.(event);
@@ -324,21 +339,21 @@ const PanelFooterButton = forwardRef<HTMLButtonElement, PanelFooterButtonProps>(
     >
       {leadingIcon ? (
         isLoading ? (
-          <Icon icon="spinner" className="size-5 animate-spin" />
+          <Icon icon="spinner" className="size-4 animate-spin" />
         ) : (
-          <Icon icon={leadingIcon} className="size-5" />
+          <Icon icon={leadingIcon} className="size-4" />
         )
       ) : null}
       {label}
       {children}
       {trailingIcon ? (
         isLoading && !leadingIcon ? (
-          <Icon icon="spinner" className="size-5 animate-spin" />
+          <Icon icon="spinner" className="size-4 animate-spin" />
         ) : (
-          <Icon icon={trailingIcon} className="size-5" />
+          <Icon icon={trailingIcon} className="size-4" />
         )
       ) : null}
-      {isLoading && !leadingIcon && !trailingIcon ? <Icon icon="spinner" className="size-5 animate-spin" /> : null}
+      {isLoading && !leadingIcon && !trailingIcon ? <Icon icon="spinner" className="size-4 animate-spin" /> : null}
     </Button>
   );
 });
@@ -350,6 +365,7 @@ export const Panel = {
   Container: PanelContainer,
   Content: PanelContent,
   Header: PanelHeader,
+  HeaderInput: PanelHeaderInput,
   Footer: PanelFooter,
   FooterButton: PanelFooterButton,
 };
