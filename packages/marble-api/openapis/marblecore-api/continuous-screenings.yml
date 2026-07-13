@@ -390,6 +390,8 @@ components:
         - pending
         - failed
         - total
+        - items_processed
+        - items_total
       properties:
         completed:
           type: integer
@@ -400,6 +402,10 @@ components:
         failed:
           type: integer
         total:
+          type: integer
+        items_processed:
+          type: integer
+        items_total:
           type: integer
 
     ContinuousScreeningJobErrorDto:
