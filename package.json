@@ -4,8 +4,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.16",
     "@vitejs/plugin-react": "4.3.4",
-    "@vitest/coverage-v8": "4.1.8",
-    "@vitest/ui": "4.1.8",
+    "@vitest/coverage-v8": "4.1.9",
+    "@vitest/ui": "4.1.9",
     "lefthook": "^2.1.9",
     "react-refresh": "^0.18.0",
     "typescript": "5.8.2"
