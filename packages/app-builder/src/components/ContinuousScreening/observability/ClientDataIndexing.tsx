@@ -32,8 +32,6 @@ export function ClientDataIndexing({ data }: { data: ContinuousScreeningClientDa
           </DefaultTooltip>
         </div>
         <div className="flex gap-sm items-center">
-          <ClientDataIndexingFreshness data={data} />
-
           {data.pendingItems > 0 ? (
             <TagStatus status="pending">
               {t('continuousScreening:observability.client_data_indexing_pending', {
@@ -44,6 +42,7 @@ export function ClientDataIndexing({ data }: { data: ContinuousScreeningClientDa
           <PanelCientIndexing />
         </div>
       </header>
+      <ClientDataIndexingFreshness data={data} />
       <Callout color="purple">{t('continuousScreening:observability.client_data_indexing_callout')}</Callout>
       <ClientDataIndexingContent data={data} />
     </Card>
@@ -63,18 +62,18 @@ function ClientDataIndexingFreshness({ data }: { data: ContinuousScreeningClient
 
   return (
     <div className="flex flex-wrap items-center gap-sm text-sm">
-      <span>
+      <TagStatus status="completed" className="w-fit">
         {t('continuousScreening:observability.client_data_indexing_dataset_version', {
           version: data.version,
         })}
-      </span>
-      <span className="text-grey-secondary">
+      </TagStatus>
+      <TagStatus status={data.indexVersion == null ? 'failed' : 'completed'}>
         {data.indexVersion === null
           ? t('continuousScreening:observability.client_data_indexing_index_missing')
           : t('continuousScreening:observability.client_data_indexing_index_version', {
               version: data.indexVersion,
             })}
-      </span>
+      </TagStatus>
       <TagStatus status={data.indexCurrent ? 'completed' : 'pending'} className="w-fit">
         {data.indexCurrent
           ? t('continuousScreening:observability.client_data_indexing_index_current')
