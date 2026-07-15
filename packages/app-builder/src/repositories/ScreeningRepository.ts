@@ -64,28 +64,33 @@ export interface ScreeningRepository {
 export function makeGetScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ScreeningRepository => ({
     getAvailableFilters: async ({ feature }) => {
-      const listFeature: ScreeningAvailableFiltersAdapted =
-        await marbleCoreApiClient.listScreeningAvailableFilters(feature);
+      try {
+        const listFeature: ScreeningAvailableFiltersAdapted =
+          await marbleCoreApiClient.listScreeningAvailableFilters(feature);
 
-      // listFeature.conditional_filters = [
-      //   {
-      //     key: 'kind_of_peps',
-      //     name: 'kind_of_peps_options',
-      //     topics: [
-      //       { name: 'primary.option1', title: 'Primary PEP option 1' },
-      //       { name: 'primary.option2', title: 'Primary PEP option 2' },
-      //       { name: 'primary.option3', title: 'Primary PEP option 3' },
-      //       { name: 'primary.option4', title: 'Primary PEP option 4' },
-      //       { name: 'option5', title: 'Any PEP option 5' },
-      //       { name: 'option6', title: 'Any PEP option 6' },
-      //       { name: 'option7', title: 'Any PEP option 7' },
-      //       { name: 'option8', title: 'Any PEP option 8' },
-      //       { name: 'option9', title: 'Any PEP option 9' },
-      //       { name: 'option10', title: 'Any PEP option 10' },
-      //     ],
-      //   },
-      // ];
-      return listFeature;
+        // listFeature.conditional_filters = [
+        //   {
+        //     key: 'kind_of_peps',
+        //     name: 'kind_of_peps_options',
+        //     topics: [
+        //       { name: 'primary.option1', title: 'Primary PEP option 1' },
+        //       { name: 'primary.option2', title: 'Primary PEP option 2' },
+        //       { name: 'primary.option3', title: 'Primary PEP option 3' },
+        //       { name: 'primary.option4', title: 'Primary PEP option 4' },
+        //       { name: 'option5', title: 'Any PEP option 5' },
+        //       { name: 'option6', title: 'Any PEP option 6' },
+        //       { name: 'option7', title: 'Any PEP option 7' },
+        //       { name: 'option8', title: 'Any PEP option 8' },
+        //       { name: 'option9', title: 'Any PEP option 9' },
+        //       { name: 'option10', title: 'Any PEP option 10' },
+        //     ],
+        //   },
+        // ];
+        return listFeature;
+      } catch {
+        // Return empty filters if screening service fails (404, 500, etc.)
+        return { provider: 'opensanctions', sections: {} };
+      }
     },
     listDatasets: async () => {
       try {
