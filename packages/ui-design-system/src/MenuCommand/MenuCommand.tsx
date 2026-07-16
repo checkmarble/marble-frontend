@@ -240,7 +240,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
   ref,
 ) {
   return (
-    <div {...(readOnly ? { inert: readOnly } : {})} className="relative w-fit">
+    <div {...(readOnly ? { inert: readOnly ? 'true' : 'false' } : {})} className="relative">
       <button
         ref={ref}
         type="button"

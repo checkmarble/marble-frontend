@@ -25,7 +25,7 @@ import {
 import { adaptCase, Case } from '@app-builder/models/cases';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { CreateTableValue } from '@app-builder/schemas/data';
-import { GroupedAnnotations, type OpenApiSpec, UpdateTableBodyDto } from 'marble-api';
+import { GroupedAnnotations, type OpenApiSpec, UpdateTableBodyDto, type UploadLog } from 'marble-api';
 
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
@@ -42,6 +42,7 @@ export interface DataModelRepository {
   updateDataModelTableExportedFields(tableId: string, body: ExportedFields): Promise<ExportedFields>;
   getDataModelTableExportedFields(tableId: string): Promise<ExportedFields>;
   deleteTable(tableId: string, options: { perform: boolean }): Promise<DestroyDataModelReport>;
+  getIngestionUploadLogs(objectType: string): Promise<UploadLog[]>;
   getAnnotationsByTableNameAndObjectId(
     tableName: string,
     objectId: string,
@@ -111,6 +112,9 @@ export function makeGetDataModelRepository() {
         }
         throw error;
       }
+    },
+    getIngestionUploadLogs: async (objectType) => {
+      return marbleCoreApiClient.getIngestionUploadLogs(objectType);
     },
     getAnnotationsByTableNameAndObjectId: async (tableName, objectId, loadThumbnails = false) => {
       return marbleCoreApiClient.getAnnotationsByTableNameAndObjectId(tableName, objectId, { loadThumbnails });
