@@ -89,6 +89,8 @@ export const ClientDetailPage = ({
 
   const handleScoreClick = () => setShowScorePanel(true);
 
+  const hasActiveMonitoring = activeConfigurations.length > 0;
+
   return (
     <DataModelExplorerProvider>
       <Page.Main>
@@ -200,37 +202,44 @@ export const ClientDetailPage = ({
                       </Button>
                     ) : null}
                   </div>
-                  {activeConfigurations.length > 0 ? (
-                    <div className="flex items-center gap-sm bg-grey-background-light border border-grey-border py-sm px-md rounded-md mb-sm">
-                      <div className="flex items-center gap-xs text-green-primary shrink-0">
-                        <span className="size-2 rounded-full bg-green-primary" />
-                        <span className="text-s font-medium">
-                          {t('client360:client_detail.monitoring_hits.active_monitoring')}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-xs grow items-center">
-                        {activeConfigurations.map((config) => (
-                          <Tag key={config.stableId} color="purple" size="small">
-                            {config.name}
-                          </Tag>
-                        ))}
-                        {isAdmin ? (
-                          <ConfigureMonitoringForObjectId
-                            objectType={objectType}
-                            objectId={objectId}
-                            activeConfigurations={activeConfigurations}
-                          />
-                        ) : null}
-                      </div>
+                  <div className="flex items-center gap-sm bg-grey-background-light border border-grey-border py-sm px-md rounded-md mb-sm">
+                    <div
+                      className={cn(
+                        'flex items-center gap-xs  shrink-0',
+                        hasActiveMonitoring ? 'text-green-primary' : 'text-grey-secondary',
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'size-2 rounded-full',
+                          hasActiveMonitoring ? 'bg-green-primary' : 'bg-grey-secondary',
+                        )}
+                      />
+                      <span className="text-s font-medium">
+                        {hasActiveMonitoring
+                          ? t('client360:client_detail.monitoring_hits.active_monitoring')
+                          : t('client360:client_detail.monitoring_hits.no_active_monitoring')}
+                      </span>
                     </div>
-                  ) : isAdmin ? (
-                    <ConfigureMonitoringForObjectId
-                      objectType={objectType}
-                      objectId={objectId}
-                      activeConfigurations={activeConfigurations}
-                      label={t('client360:client_detail.monitoring_hits.configure')}
-                    />
-                  ) : null}
+                    <div className="flex flex-wrap gap-xs grow items-center">
+                      {activeConfigurations.map((config) => (
+                        <Tag key={config.stableId} color="purple" size="small">
+                          {config.name}
+                        </Tag>
+                      ))}
+                      {isAdmin ? (
+                        <ConfigureMonitoringForObjectId
+                          objectType={objectType}
+                          objectId={objectId}
+                          activeConfigurations={activeConfigurations}
+                          label={
+                            hasActiveMonitoring ? undefined : t('client360:client_detail.monitoring_hits.configure')
+                          }
+                        />
+                      ) : null}
+                    </div>
+                  </div>
+
                   <MonitoringHitsList monitoringHitsQuery={monitoringHitsQuery} />
                 </Card>
                 <Card className="flex flex-col gap-sm">

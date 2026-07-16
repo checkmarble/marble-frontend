@@ -64,8 +64,9 @@ export const ConfigureMonitoringForObjectId = ({
   return (
     <Modal.Root open={open} onOpenChange={handleOpenChange}>
       <Modal.Trigger asChild>
-        <Button mode={label ? 'normal' : 'icon'} appearance="stroked" variant="secondary">
-          {label ?? <Icon icon="edit-square" className="size-4" />}
+        <Button mode={label ? 'normal' : 'icon'} appearance={label ? 'link' : 'stroked'} variant="secondary">
+          {label ?? ''}
+          <Icon icon={label ? 'plus' : 'edit-square'} className="size-4" />
         </Button>
       </Modal.Trigger>
       <Modal.Content size="small">
