@@ -41,8 +41,12 @@ export interface ContinuousScreeningRepository {
 export function makeGetContinuousScreeningRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): ContinuousScreeningRepository => ({
     listConfigurations: async () => {
-      const configurations = await marbleCoreApiClient.listContinuousScreeningConfigs();
-      return configurations.map(adaptContinuousScreeningConfig);
+      try {
+        const configurations = await marbleCoreApiClient.listContinuousScreeningConfigs();
+        return configurations.map(adaptContinuousScreeningConfig);
+      } catch {
+        return [];
+      }
     },
     listDatasetUpdates: async ({ offsetId, limit, order, sorting }) => {
       const { items, ...pagination } = await marbleCoreApiClient.listContinuousScreeningDatasetUpdates({
