@@ -32,6 +32,8 @@ export type DataFieldsProps = (
     withId?: boolean;
     layout?: '1-column' | '2-columns' | '3-columns';
     withOptionalHidden?: boolean;
+    maxVisibleFields?: number;
+    displayExpandButton?: boolean;
   };
 };
 
@@ -45,6 +47,8 @@ export function DataFields({ table, object, preset, customFields, className, opt
   const { t } = useTranslation(['data']);
 
   const links = options?.hideLinks ? undefined : getLinksFromDatamodel(dataModel, table);
+  const maxVisibleFields = options?.maxVisibleFields ?? MAX_VISIBLE_FIELDS;
+  const displayExpandButton = options?.displayExpandButton ?? true;
 
   const fields = useMemo(() => {
     if (preset === 'custom') {
@@ -107,8 +111,8 @@ export function DataFields({ table, object, preset, customFields, className, opt
     return fields.filter((field): field is DataModelField => Boolean(field && (!field.hidden || showHidden)));
   }, [fields, showHidden]);
 
-  const hasMoreFields = visibleFields.length > MAX_VISIBLE_FIELDS;
-  const displayedFields = showAllFields || !hasMoreFields ? visibleFields : visibleFields.slice(0, MAX_VISIBLE_FIELDS);
+  const hasMoreFields = visibleFields.length > maxVisibleFields;
+  const displayedFields = showAllFields || !hasMoreFields ? visibleFields : visibleFields.slice(0, maxVisibleFields);
 
   return (
     <DataVisualisationProvider value={contextValue}>
@@ -139,12 +143,12 @@ export function DataFields({ table, object, preset, customFields, className, opt
               />
             );
           })}
-          {hasMoreFields ? (
+          {hasMoreFields && displayExpandButton ? (
             <div className="col-span-full flex justify-start">
               <Button variant="secondary" size="small" onClick={() => setShowAllFields(!showAllFields)}>
                 {showAllFields
                   ? t('data:fields_show_less')
-                  : t('data:fields_show_more', { count: visibleFields.length - MAX_VISIBLE_FIELDS })}
+                  : t('data:fields_show_more', { count: visibleFields.length - maxVisibleFields })}
               </Button>
             </div>
           ) : null}

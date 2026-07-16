@@ -20,12 +20,14 @@ export function ReviewDecisionModal({
   decisionId,
   screening,
   children,
+  defaultOpened,
 }: {
   children: React.ReactElement;
   decisionId: string;
   screening: { status: ScreeningStatus } | undefined;
+  defaultOpened: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpened);
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>

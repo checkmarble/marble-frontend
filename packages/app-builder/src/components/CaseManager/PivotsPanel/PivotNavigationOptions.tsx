@@ -102,11 +102,12 @@ export function PivotNavigationOptions({
             ) : isAdmin(currentUser) ? (
               <Fragment key={linkToTable.childTableName}>
                 <div>{linkToTable.childTableName}</div>
-                <CreateNavigationOptionModal
-                  label={t('cases:case_detail.pivot_panel.create_navigation_option')}
-                  dataModel={dataModel}
-                  link={linkToTable}
-                />
+                <CreateNavigationOptionModal dataModel={dataModel} link={linkToTable}>
+                  <Button size="small" variant="secondary">
+                    {t('cases:case_detail.pivot_panel.create_navigation_option')}
+                    <Icon icon="plus" className="size-4" />
+                  </Button>
+                </CreateNavigationOptionModal>
               </Fragment>
             ) : null;
           })}

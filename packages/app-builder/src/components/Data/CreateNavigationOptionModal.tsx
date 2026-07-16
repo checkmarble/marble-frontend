@@ -8,19 +8,19 @@ import {
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal } from 'ui-design-system';
+import { MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type CreateNavigationOptionModalProps = {
-  label: string;
   dataModel: DataModel;
   link: LinkToSingle;
+  children: ReactNode;
 };
 
-export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNavigationOptionModalProps) {
+export function CreateNavigationOptionModal({ dataModel, link, children }: CreateNavigationOptionModalProps) {
   const { t } = useTranslation(['common', 'data']);
   const targetTable = dataModel.find((table) => {
     return table.name === link.childTableName;
@@ -71,12 +71,7 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
 
   return (
     <Modal.Root onOpenChange={handleOpenChange}>
-      <Modal.Trigger asChild>
-        <Button size="small" variant="secondary">
-          {label}
-          <Icon icon="plus" className="size-4" />
-        </Button>
-      </Modal.Trigger>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content size="medium">
         <Modal.Title>{t('data:create_navigation_option.title')}</Modal.Title>
         <form
