@@ -194,36 +194,6 @@
       '404':
         $ref: 'components.yml#/responses/404'
 
-/scenario-iteration-rules/{ruleId}/ai-description:
-  get:
-    tags:
-      - Scenario Iteration Rules
-    summary: Get AI description for a scenario iteration rule
-    operationId: getScenarioIterationRuleAiDescription
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: ruleId
-        description: ID of the rule that needs to be fetched
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    responses:
-      '200':
-        description: The AI description for the scenario iteration rule corresponding to the provided `ruleId`
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ScenarioIterationRuleAiDescriptionDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
-
 components:
   schemas:
     GenerateRuleResponseDto:
@@ -338,11 +308,3 @@ components:
             - $ref: 'ast.yml#/components/schemas/NodeDto'
         score_modifier:
           type: integer
-    ScenarioIterationRuleAiDescriptionDto:
-      type: object
-      properties:
-        description:
-          description: The AI description for the scenario iteration rule
-          type: string
-      required:
-        - description
