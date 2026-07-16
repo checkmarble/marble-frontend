@@ -2,6 +2,7 @@ import { createContinuousScreeningConfigSchema } from '@app-builder/components/C
 import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
+import { type ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { redirect } from '@tanstack/react-router';
@@ -34,6 +35,20 @@ export const listContinuousScreeningConfigurationsFn = createServerFn({ method: 
     return { configurations: configurationsWithInbox };
   });
 
+async function getActiveConfigurations(
+  continuousScreening: ContinuousScreeningRepository,
+  objectType: string,
+  objectId: string,
+) {
+  const [objects, configurations] = await Promise.all([
+    continuousScreening.listObjects({ objectType, objectId }),
+    continuousScreening.listConfigurations(),
+  ]);
+
+  const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
+  return configurations.filter((config) => enrolledStableIds.has(config.stableId));
+}
+
 export const listActiveConfigsForObjectFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
@@ -44,13 +59,7 @@ export const listActiveConfigsForObjectFn = createServerFn({ method: 'GET' })
       return { configurations: [] };
     }
 
-    const [objects, configurations] = await Promise.all([
-      continuousScreening.listObjects({ objectType: data.objectType, objectId: data.objectId }),
-      continuousScreening.listConfigurations(),
-    ]);
-
-    const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
-    const activeConfigurations = configurations.filter((config) => enrolledStableIds.has(config.stableId));
+    const activeConfigurations = await getActiveConfigurations(continuousScreening, data.objectType, data.objectId);
 
     return { configurations: activeConfigurations };
   });
@@ -107,12 +116,7 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
       throw new Error('Failed to update object monitoring');
     }
 
-    const [objects, configurations] = await Promise.all([
-      continuousScreening.listObjects({ objectType: data.objectType, objectId: data.objectId }),
-      continuousScreening.listConfigurations(),
-    ]);
-    const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
-    const activeConfigurations = configurations.filter((config) => enrolledStableIds.has(config.stableId));
+    const activeConfigurations = await getActiveConfigurations(continuousScreening, data.objectType, data.objectId);
 
     return { configurations: activeConfigurations };
   });
