@@ -33,6 +33,80 @@ export const listContinuousScreeningConfigurationsFn = createServerFn({ method: 
     return { configurations: configurationsWithInbox };
   });
 
+export const listActiveConfigsForObjectFn = createServerFn({ method: 'GET' })
+  .middleware([authMiddleware])
+  .validator(z.object({ objectType: z.string(), objectId: z.string() }))
+  .handler(async ({ context, data }) => {
+    const { continuousScreening, entitlements } = context.authInfo;
+
+    if (!isContinuousScreeningAvailable(entitlements)) {
+      return { configurations: [] };
+    }
+
+    const [objects, configurations] = await Promise.all([
+      continuousScreening.listObjects({ objectType: data.objectType, objectId: data.objectId }),
+      continuousScreening.listConfigurations(),
+    ]);
+
+    const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
+    const activeConfigurations = configurations.filter((config) => enrolledStableIds.has(config.stableId));
+
+    return { configurations: activeConfigurations };
+  });
+
+export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
+  .middleware([authMiddleware])
+  .validator(
+    z.object({
+      objectType: z.string(),
+      objectId: z.string(),
+      configStableIds: z.array(z.string()),
+    }),
+  )
+  .handler(async ({ context, data }) => {
+    const { continuousScreening, entitlements } = context.authInfo;
+
+    if (!isContinuousScreeningAvailable(entitlements)) {
+      return { configurations: [] };
+    }
+
+    const currentObjects = await continuousScreening.listObjects({
+      objectType: data.objectType,
+      objectId: data.objectId,
+    });
+    const currentStableIds = new Set(currentObjects.map((object) => object.configStableId));
+    const nextStableIds = new Set(data.configStableIds);
+
+    const toDelete = [...currentStableIds].filter((stableId) => !nextStableIds.has(stableId));
+    const toCreate = [...nextStableIds].filter((stableId) => !currentStableIds.has(stableId));
+
+    await Promise.all([
+      ...toDelete.map((configStableId) =>
+        continuousScreening.deleteObject({
+          objectType: data.objectType,
+          objectId: data.objectId,
+          configStableId,
+        }),
+      ),
+      ...toCreate.map((configStableId) =>
+        continuousScreening.createObject({
+          objectType: data.objectType,
+          objectId: data.objectId,
+          configStableId,
+        }),
+      ),
+    ]);
+
+    const [objects, configurations] = await Promise.all([
+      continuousScreening.listObjects({ objectType: data.objectType, objectId: data.objectId }),
+      continuousScreening.listConfigurations(),
+    ]);
+    const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
+    const activeConfigurations = configurations.filter((config) => enrolledStableIds.has(config.stableId));
+
+    return { configurations: activeConfigurations };
+  });
+
 export const createContinuousScreeningConfigurationFn = createServerFn({ method: 'POST' })
   .middleware([authMiddleware])
   .validator(createContinuousScreeningConfigSchema)

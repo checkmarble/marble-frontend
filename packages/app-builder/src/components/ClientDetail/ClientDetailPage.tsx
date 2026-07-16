@@ -4,6 +4,7 @@ import { Panel } from '@app-builder/components/Panel';
 import { DataModelObject, isAnalyst } from '@app-builder/models';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
 import { useRelatedCasesByObjectQuery } from '@app-builder/queries/cases/related-cases-by-object';
+import { useActiveConfigsForObjectQuery } from '@app-builder/queries/continuous-screening/active-configs-for-object';
 import { useGetAnnotationsQuery } from '@app-builder/queries/data/get-annotations';
 import { useDataModelQuery } from '@app-builder/queries/data/get-data-model';
 import { useGetObjectCasesQuery } from '@app-builder/queries/data/get-object-cases';
@@ -16,7 +17,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Popover } from 'ui-design-system';
+import { Button, cn, Popover, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ClientDocumentsPopover } from '../Annotations/ClientDocumentsPopover';
 import { DataExplorerPanel } from '../CaseManagerV2/DataExplorerPanel';
@@ -25,6 +26,7 @@ import { DataModelExplorerProvider } from '../DataModelExplorer/Provider';
 import { Spinner } from '../Spinner';
 import { AlertHitsList } from './AlertHitsList';
 import { ClientComments } from './ClientComments';
+import { ConfigureMonitoringForObjectId } from './ConfigureMonitoringForObjectId';
 import { DocumentsList } from './DocumentsList';
 import { MonitoringHitsList } from './MonitoringHitsList';
 import { ObjectHierarchy } from './ObjectHierarchy';
@@ -40,6 +42,7 @@ type ClientDetailPageProps = {
   scoringSettings: ScoringSettings | null;
   activeScore: ScoringScore | null;
   userScoringAccess: FeatureAccessLevelDto;
+  isAdmin: boolean;
 };
 
 export const ClientDetailPage = ({
@@ -51,6 +54,7 @@ export const ClientDetailPage = ({
   scoringSettings,
   activeScore,
   userScoringAccess,
+  isAdmin,
 }: ClientDetailPageProps) => {
   const { t } = useTranslation(['common', 'client360', 'user-scoring']);
   const { currentUser } = useOrganizationDetails();
@@ -65,6 +69,8 @@ export const ClientDetailPage = ({
   const [showMonitoringHitsPanel, setShowMonitoringHitsPanel] = useState(false);
   const monitoringHitsQuery = useRelatedCasesByObjectQuery(objectType, objectId);
   const monitoringHitsCount = monitoringHitsQuery.data?.cases.length ?? 0;
+  const activeConfigsQuery = useActiveConfigsForObjectQuery(objectType, objectId);
+  const activeConfigurations = activeConfigsQuery.data ?? [];
   const [showAlertHitsPanel, setShowAlertHitsPanel] = useState(false);
   const alertHitsQuery = useGetObjectCasesQuery(objectType, objectId);
   const alertHitsCount = alertHitsQuery.data?.cases.length ?? 0;
@@ -194,6 +200,37 @@ export const ClientDetailPage = ({
                       </Button>
                     ) : null}
                   </div>
+                  {activeConfigurations.length > 0 ? (
+                    <div className="flex items-center gap-sm bg-grey-background-light border border-grey-border py-sm px-md rounded-md mb-sm">
+                      <div className="flex items-center gap-xs text-green-primary shrink-0">
+                        <span className="size-2 rounded-full bg-green-primary" />
+                        <span className="text-s font-medium">
+                          {t('client360:client_detail.monitoring_hits.active_monitoring')}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-xs grow items-center">
+                        {activeConfigurations.map((config) => (
+                          <Tag key={config.stableId} color="purple" size="small">
+                            {config.name}
+                          </Tag>
+                        ))}
+                        {isAdmin ? (
+                          <ConfigureMonitoringForObjectId
+                            objectType={objectType}
+                            objectId={objectId}
+                            activeConfigurations={activeConfigurations}
+                          />
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : isAdmin ? (
+                    <ConfigureMonitoringForObjectId
+                      objectType={objectType}
+                      objectId={objectId}
+                      activeConfigurations={activeConfigurations}
+                      label={t('client360:client_detail.monitoring_hits.configure')}
+                    />
+                  ) : null}
                   <MonitoringHitsList monitoringHitsQuery={monitoringHitsQuery} />
                 </Card>
                 <Card className="flex flex-col gap-sm">
