@@ -1706,7 +1706,6 @@ components:
         - updated_at
         - reaction
         - version
-        - review
       properties:
         id:
           type: string
@@ -1725,6 +1724,7 @@ components:
         version:
           type: string
         review:
+          nullable: true
           $ref: "#/components/schemas/CaseReviewContentDto"
     CaseReviewContentDto:
       allOf:

@@ -56,6 +56,31 @@ function ReviewStatusBadge({ status }: { status: AiCaseReviewStatus }) {
   }
 }
 
+function NoContentBody({ status }: { status: AiCaseReviewStatus }) {
+  const { t } = useTranslation(['cases']);
+  if (status === 'pending') {
+    return (
+      <div className="flex h-full items-center justify-center gap-xs text-s text-grey-secondary">
+        <Icon icon="spinner" className="size-4 animate-spin" />
+        <span>{t('cases:case.ai_reviews.generating')}</span>
+      </div>
+    );
+  }
+  if (status === 'failed' || status === 'insufficient_funds') {
+    return (
+      <div className="flex h-full items-center justify-center gap-xs text-s text-red-primary">
+        <Icon icon="warning" className="size-4 shrink-0" />
+        <span>
+          {status === 'insufficient_funds'
+            ? t('cases:case.ai_reviews.insufficient_funds')
+            : t('cases:case.ai_reviews.failed')}
+        </span>
+      </div>
+    );
+  }
+  return null;
+}
+
 function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: string; onBack: () => void }) {
   const { t } = useTranslation(['cases', 'common']);
   const formatDateTime = useFormatDateTime();
@@ -91,7 +116,7 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
           <div className="flex h-full items-center justify-center text-s text-red-primary">
             {t('cases:case.ai_reviews.error_loading')}
           </div>
-        ) : review ? (
+        ) : review?.review ? (
           <>
             {!review.review.ok ? (
               <div className="mb-md flex items-center gap-sm rounded-lg border border-red-primary bg-red-primary/10 p-md">
@@ -105,11 +130,13 @@ function ReviewDetail({ caseId, reviewId, onBack }: { caseId: string; reviewId: 
               <Markdown>{review.review.output}</Markdown>
             </div>
           </>
+        ) : review ? (
+          <NoContentBody status={review.status} />
         ) : null}
       </div>
 
       <Modal.Footer>
-        {review ? (
+        {review?.review ? (
           <>
             <Modal.FooterButton
               variant={review.reaction === 'ok' ? 'primary' : 'secondary'}

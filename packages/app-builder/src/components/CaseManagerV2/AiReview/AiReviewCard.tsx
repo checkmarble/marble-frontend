@@ -18,6 +18,7 @@ type AiReviewCardProps = {
 };
 
 export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
+  canManuallyReview = true;
   const [panelOpen, setPanelOpen] = useState(false);
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();
   const queryClient = useQueryClient();
@@ -32,10 +33,7 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
   return (
     <>
       <Card color="purple" className="flex flex-col gap-sm">
-        <Header
-          showSeeAll={!!latestReview && latestReview.status === 'completed'}
-          onSeeAll={() => setPanelOpen(true)}
-        />
+        <Header showSeeAll={!!latestReview} onSeeAll={() => setPanelOpen(true)} />
         {match(reviewsQuery)
           .with({ isLoading: true }, () => <LoadingBody />)
           .with({ isError: true }, () => <ErrorBody />)
@@ -50,10 +48,12 @@ export function AiReviewCard({ caseId, canManuallyReview }: AiReviewCardProps) {
                 }
                 isGenerating={enqueueReviewMutation.isPending}
               />
-            ) : latestReview.status === 'pending' ? (
-              <PendingBody />
             ) : (
-              <PopulatedBody review={reviewsQuery.data?.[0]} />
+              match(latestReview.status)
+                .with('pending', () => <PendingBody />)
+                .with('failed', () => <FailedBody status="failed" />)
+                .with('insufficient_funds', () => <FailedBody status="insufficient_funds" />)
+                .otherwise(() => <PopulatedBody review={reviewsQuery.data?.[0]} />)
             ),
           )}
       </Card>
@@ -132,6 +132,18 @@ function LoadingBody() {
 function ErrorBody() {
   const { t } = useTranslation(['cases']);
   return <span className="text-small text-red-primary">{t('cases:case.ai_reviews.error_loading')}</span>;
+}
+
+function FailedBody({ status }: { status: 'failed' | 'insufficient_funds' }) {
+  const { t } = useTranslation(['cases']);
+  const message =
+    status === 'insufficient_funds' ? t('cases:case.ai_reviews.insufficient_funds') : t('cases:case.ai_reviews.failed');
+  return (
+    <div className="flex items-center gap-xs text-small text-red-primary">
+      <Icon icon="warning" className="size-4 shrink-0" />
+      <span>{message}</span>
+    </div>
+  );
 }
 
 function PopulatedBody({ review }: { review?: AiCaseReviewListItem }) {

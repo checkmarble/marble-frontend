@@ -611,6 +611,7 @@ export const addReviewToCaseCommentsFn = createServerFn({ method: 'POST' })
     const caseReview = caseReviews.find((review) => review.id === data.reviewId);
 
     if (!caseReview) throw new Error('Review not found');
+    if (!caseReview.review) throw new Error('Review has no content');
 
     try {
       await context.authInfo.cases.addComment({ caseId: data.caseId, body: { comment: caseReview.review.output } });
