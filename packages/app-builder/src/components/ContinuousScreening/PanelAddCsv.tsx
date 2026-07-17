@@ -12,7 +12,13 @@ import { Icon } from 'ui-icons';
 import { UploadForm } from '../Data/SemanticTables/UploadData/UploadIngestionComponents';
 import { Panel } from '../Panel';
 
-export function PanelAddCsv({ configuration }: { configuration: ContinuousScreeningConfiguration }) {
+export function PanelAddCsv({
+  configuration,
+  configsPerObjectType,
+}: {
+  configuration: ContinuousScreeningConfiguration;
+  configsPerObjectType: Map<string, ContinuousScreeningConfiguration[]>;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [selectedObjectType, setSelectedObjectType] = useState<string | null>(null);
@@ -59,18 +65,20 @@ export function PanelAddCsv({ configuration }: { configuration: ContinuousScreen
           </MenuCommand.Trigger>
           <MenuCommand.Content align="end" sideOffset={4}>
             <MenuCommand.List>
-              {objectTypes.map((objectType) => (
-                <MenuCommand.Item
-                  key={objectType}
-                  value={objectType}
-                  onSelect={() => {
-                    setMenuOpen(false);
-                    openPanelForObjectType(objectType);
-                  }}
-                >
-                  {objectType}
-                </MenuCommand.Item>
-              ))}
+              <MenuCommand.Group heading={t('upload:select_one_table')}>
+                {objectTypes.map((objectType) => (
+                  <MenuCommand.Item
+                    key={objectType}
+                    value={objectType}
+                    onSelect={() => {
+                      setMenuOpen(false);
+                      openPanelForObjectType(objectType);
+                    }}
+                  >
+                    {objectType}
+                  </MenuCommand.Item>
+                ))}
+              </MenuCommand.Group>
             </MenuCommand.List>
           </MenuCommand.Content>
         </MenuCommand.Menu>
@@ -107,7 +115,9 @@ export function PanelAddCsv({ configuration }: { configuration: ContinuousScreen
                 <UploadForm objectType={selectedObjectType} onSuccess={handleUploadSuccess} />
               ) : null}
             </div>
-            {selectedObjectType ? <PastUploads objectType={selectedObjectType} /> : null}
+            {selectedObjectType ? (
+              <PastUploads objectType={selectedObjectType} configsPerObjectType={configsPerObjectType} />
+            ) : null}
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
@@ -115,7 +125,13 @@ export function PanelAddCsv({ configuration }: { configuration: ContinuousScreen
   );
 }
 
-function PastUploads({ objectType }: { objectType: string }) {
+function PastUploads({
+  objectType,
+  configsPerObjectType,
+}: {
+  objectType: string;
+  configsPerObjectType: Map<string, ContinuousScreeningConfiguration[]>;
+}) {
   const { t } = useTranslation('upload');
   const formatDateTime = useFormatDateTime();
 
@@ -149,6 +165,16 @@ function PastUploads({ objectType }: { objectType: string }) {
               </div>
               <TagStatus status={uploadLog.status} />
             </div>
+            {configsPerObjectType.has(objectType) && (
+              <div className="flex gap-sm flex-wrap items-center">
+                <p className="text-sm text-grey-secondary">{t('upload:active_screenings')}</p>
+                {Array.from(configsPerObjectType.get(objectType)!).map((config) => (
+                  <Tag key={config.id} color="white" size="medium">
+                    {config.name}
+                  </Tag>
+                ))}
+              </div>
+            )}
           </Card>
         ))}
     </div>

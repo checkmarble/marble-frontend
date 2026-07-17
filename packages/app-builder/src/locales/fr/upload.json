@@ -1,4 +1,5 @@
 {
+  "active_screenings": "Dépistage activé:",
   "download_template_cta": "Télécharger le modèle CSV",
   "drop_file_cta": "Déposer votre fichier CSV ici",
   "errors.request_timeout": "La requête a expiré. Veuillez réessayer ou diviser votre fichier en parties plus petites.",
@@ -12,6 +13,7 @@
   "record_vs_ingested": "Enregistrements reçus vs enregistrements importés: {{linesProcessed}}/{{total}}",
   "refresh": "Rafraîchir",
   "results": "Résultats",
+  "select_one_table": "Sélectionnez une table à télécharger au format .csv :",
   "started_at": "Commencé le",
   "started_at_date": "Commencé le {{date}}",
   "status_failure": "Échec",

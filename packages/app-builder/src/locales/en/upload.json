@@ -1,4 +1,5 @@
 {
+  "active_screenings": "Activate screening:",
   "download_template_cta": "Download template .csv",
   "drop_file_cta": "Drop your filled .csv here",
   "errors.request_timeout": "The request timed out. Please try again, or try to cut your file into smaller parts.",
@@ -12,6 +13,7 @@
   "record_vs_ingested": "Records vs ingested: {{linesProcessed}}/{{total}}",
   "refresh": "Refresh",
   "results": "Results",
+  "select_one_table": "Select one table to upload .csv:",
   "started_at": "Started at",
   "started_at_date": "Started at {{date}}",
   "status_failure": "Failed",
