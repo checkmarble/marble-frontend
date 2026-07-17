@@ -25,7 +25,7 @@
   "dependencies": {
     "@preact/signals-react": "^3.10.1",
     "deepsignal": "^1.6.0",
-    "vitest": "4.1.8",
+    "vitest": "4.1.9",
     "zustand": "^5.0.14"
   },
   "peerDependencies": {
