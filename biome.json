@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -15,12 +15,12 @@
       "**/*.jsx",
       "**/*.json",
       "**/*.md",
-      "!**/node_modules/**",
-      "!**/build/**",
-      "!**/dist/**",
-      "!**/coverage/**",
-      "!**/public/**",
-      "!packages/marble-api/src/generated/**",
+      "!**/node_modules",
+      "!**/build",
+      "!**/dist",
+      "!**/coverage",
+      "!**/public",
+      "!packages/marble-api/src/generated",
       "!packages/app-builder/src/routeTree.gen.ts",
       "!packages-licenses.json"
     ]
@@ -37,7 +37,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": false,
+      "preset": "none",
       "complexity": {
         "noAdjacentSpacesInRegex": "error",
         "noExtraBooleanCast": "error",
@@ -120,6 +120,14 @@
   },
   "assist": {
     "enabled": true,
-    "actions": { "source": { "organizeImports": "on" } }
-  }
+    "actions": { "source": { "organizeImports": "on", "useSortedKeys": "off" } }
+  },
+  "overrides": [
+    {
+      "includes": ["packages/app-builder/src/locales/**"],
+      "assist": {
+        "actions": { "source": { "useSortedKeys": "on" } }
+      }
+    }
+  ]
 }

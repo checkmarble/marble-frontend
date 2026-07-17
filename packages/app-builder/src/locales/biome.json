@@ -1,8 +1,0 @@
-{
-  "assist": {
-    "actions": { "source": { "organizeImports": "on", "useSortedKeys": "on" } },
-    "enabled": true
-  },
-  "extends": "//",
-  "root": false
-}
