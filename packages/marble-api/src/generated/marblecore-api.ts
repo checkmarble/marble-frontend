@@ -615,7 +615,7 @@ export type CaseReviewDto = {
     updated_at: string;
     reaction: CaseReviewFeedbackDto;
     version: string;
-    review: CaseReviewContentDto;
+    review?: CaseReviewContentDto;
 };
 export type AiCaseReviewListItemDto = {
     id: string;

@@ -48,7 +48,7 @@ const scenarioCaseDetailLoader = createServerFn()
       const mostRecentReview = mostRecentReviews[0];
 
       const fetchedProofs = R.pipe(
-        mostRecentReview.review.proofs,
+        mostRecentReview.review?.proofs ?? [],
         R.filter((proof) => proof.origin === 'data_model'),
         R.map((proof) =>
           dataModelRepository

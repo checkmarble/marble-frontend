@@ -7,6 +7,7 @@ import {
   type CaseDto,
   type CaseEventDto,
   type CaseFileDto,
+  type CaseReviewContentDto,
   type CaseReviewDto,
   type CaseReviewProofDto,
   type CaseStatusDto,
@@ -609,7 +610,7 @@ export type CaseReview = {
   updatedAt: string;
   reaction: 'ok' | 'ko' | null;
   version: string;
-  review: CaseReviewContent;
+  review: CaseReviewContent | null;
 };
 
 export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
@@ -621,7 +622,7 @@ export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
   };
 }
 
-export function adaptCaseReviewContent(dto: Parameters<typeof adaptCaseReview>[0]['review']): CaseReviewContent {
+export function adaptCaseReviewContent(dto: CaseReviewContentDto): CaseReviewContent {
   const base = {
     version: dto.version,
     output: dto.output,
@@ -643,7 +644,7 @@ export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
     updatedAt: dto.updated_at,
     reaction: dto.reaction,
     version: dto.version,
-    review: adaptCaseReviewContent(dto.review),
+    review: dto.review ? adaptCaseReviewContent(dto.review) : null,
   };
 }
 

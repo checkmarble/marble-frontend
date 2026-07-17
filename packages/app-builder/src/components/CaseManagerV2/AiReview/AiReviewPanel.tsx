@@ -98,16 +98,43 @@ function AiReviewPanelContent({ caseId, canManuallyReview, onOpenChange, reviews
               <div className="flex h-full items-center justify-center text-s text-red-primary">
                 {t('cases:case.ai_reviews.error_loading')}
               </div>
-            ) : review ? (
+            ) : review?.review ? (
               <Markdown>{review.review.output}</Markdown>
+            ) : review ? (
+              <NoContentBody status={selectedListItem.status} />
             ) : null}
           </div>
-          {review && !review.review.ok ? <SanityCheckWarning message={review.review.sanityCheck} /> : null}
+          {review?.review && !review.review.ok ? <SanityCheckWarning message={review.review.sanityCheck} /> : null}
         </div>
-        {review ? <PanelFooter caseId={caseId} reviewId={review.id} reaction={review.reaction} /> : null}
+        {review?.review ? <PanelFooter caseId={caseId} reviewId={review.id} reaction={review.reaction} /> : null}
       </Panel.Content>
     </Panel.Container>
   );
+}
+
+function NoContentBody({ status }: { status: AiCaseReviewStatus }) {
+  const { t } = useTranslation(['cases']);
+  if (status === 'pending') {
+    return (
+      <div className="flex h-full items-center justify-center gap-xs text-small text-grey-secondary">
+        <Icon icon="spinner" className="size-4 animate-spin" />
+        <span>{t('cases:case.ai_reviews.generating')}</span>
+      </div>
+    );
+  }
+  if (status === 'failed' || status === 'insufficient_funds') {
+    return (
+      <div className="flex h-full items-center justify-center gap-xs text-small text-red-primary">
+        <Icon icon="warning" className="size-4 shrink-0" />
+        <span>
+          {status === 'insufficient_funds'
+            ? t('cases:case.ai_reviews.insufficient_funds')
+            : t('cases:case.ai_reviews.failed')}
+        </span>
+      </div>
+    );
+  }
+  return null;
 }
 
 function SanityCheckWarning({ message }: { message: string }) {
