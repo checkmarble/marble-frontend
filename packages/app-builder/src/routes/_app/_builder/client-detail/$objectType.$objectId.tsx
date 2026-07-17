@@ -49,7 +49,7 @@ const getDataFn = createServerFn()
 
       let activeScore = null;
       try {
-        activeScore = (await userScoring.getScoreLatest(objectType, objectId)) ?? null;
+        activeScore = (await userScoring.getScoreLatestWithEvaluation(objectType, objectId)) ?? null;
       } catch (error) {
         if (!isNotFoundHttpError(error) && !isUnauthorizedHttpError(error) && !isForbiddenHttpError(error)) throw error;
       }
@@ -103,6 +103,8 @@ function ClientDetailPage() {
     userScoringAccess,
     isAdmin,
   } = loaderData;
+
+  console.log('activeScore', activeScore);
 
   // Guard against the concurrent-render window where the router transitions
   // to this route before the loader result is committed to the router state.
