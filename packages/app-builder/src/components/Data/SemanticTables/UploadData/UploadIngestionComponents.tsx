@@ -6,7 +6,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
 import { type UploadLog } from 'marble-api';
-import { useCallback, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -113,21 +113,41 @@ export const ResultModal = ({
   );
 };
 
+export type UploadFormIntermediateStepProps = {
+  file: File;
+  onNext: () => void;
+  onBack: () => void;
+};
+
+export type UploadFormIntermediateStep = (props: UploadFormIntermediateStepProps) => ReactNode;
+
 export const UploadForm = ({
   objectType,
   onSuccess,
+  intermediateSteps = [],
 }: {
   objectType: string;
   onSuccess: (uploadLog: UploadLog) => void;
+  intermediateSteps?: UploadFormIntermediateStep[];
 }) => {
   const { t } = useTranslation(['upload', 'common']);
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [stepIndex, setStepIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<ModalContent>({
     message: '',
     success: true,
   });
   const uploadIngestionData = useUploadIngestionData(objectType);
+
+  const hasIntermediateSteps = intermediateSteps.length > 0;
+  const showIntermediateStep = hasIntermediateSteps && selectedFile !== null && !loading;
+
+  const resetFileSelection = useCallback(() => {
+    setSelectedFile(null);
+    setStepIndex(0);
+  }, []);
 
   const computeModalMessage = useCallback(
     ({
@@ -157,53 +177,83 @@ export const UploadForm = ({
     [objectType, t],
   );
 
-  const onDrop = async (acceptedFiles: File[]) => {
+  const ingestFile = useCallback(
+    async (file: File) => {
+      try {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await uploadIngestionData.mutateAsync(formData);
+        if (!response.ok) {
+          setIsModalOpen(true);
+          let errorMessage: string | undefined;
+          if (response.status === REQUEST_TIMEOUT) {
+            errorMessage = t('upload:errors.request_timeout');
+          } else {
+            errorMessage = (await response.text()).trim();
+          }
+          computeModalMessage({
+            success: false,
+            errorMessage: errorMessage ?? t('common:global_error'),
+          });
+          return;
+        }
+
+        const uploadLog = (await response.json()) as UploadLog;
+        setIsModalOpen(true);
+        computeModalMessage({
+          success: true,
+          linesProcessed: uploadLog.lines_processed,
+        });
+        onSuccess(uploadLog);
+      } catch (error) {
+        setIsModalOpen(true);
+        computeModalMessage({
+          success: false,
+          errorMessage: error instanceof Error ? error.message : t('common:global_error'),
+        });
+      } finally {
+        setLoading(false);
+        resetFileSelection();
+      }
+    },
+    [computeModalMessage, onSuccess, resetFileSelection, t, uploadIngestionData],
+  );
+
+  const onDrop = (acceptedFiles: File[]) => {
     if (!R.hasAtLeast(acceptedFiles, 1)) {
       return;
     }
     const file = acceptedFiles[0];
-    try {
-      setLoading(true);
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await uploadIngestionData.mutateAsync(formData);
-      if (!response.ok) {
-        setIsModalOpen(true);
-        let errorMessage: string | undefined;
-        if (response.status === REQUEST_TIMEOUT) {
-          errorMessage = t('upload:errors.request_timeout');
-        } else {
-          errorMessage = (await response.text()).trim();
-        }
-        computeModalMessage({
-          success: false,
-          errorMessage: errorMessage ?? t('common:global_error'),
-        });
-        return;
-      }
-
-      const uploadLog = (await response.json()) as UploadLog;
-      setIsModalOpen(true);
-      computeModalMessage({
-        success: true,
-        linesProcessed: uploadLog.lines_processed,
-      });
-      onSuccess(uploadLog);
-    } catch (error) {
-      setIsModalOpen(true);
-      computeModalMessage({
-        success: false,
-        errorMessage: error instanceof Error ? error.message : t('common:global_error'),
-      });
-    } finally {
-      setLoading(false);
+    if (hasIntermediateSteps) {
+      setSelectedFile(file);
+      setStepIndex(0);
+      return;
     }
+    void ingestFile(file);
+  };
+
+  const handleStepNext = () => {
+    if (!selectedFile) return;
+    if (stepIndex < intermediateSteps.length - 1) {
+      setStepIndex((index) => index + 1);
+      return;
+    }
+    void ingestFile(selectedFile);
+  };
+
+  const handleStepBack = () => {
+    if (stepIndex > 0) {
+      setStepIndex((index) => index - 1);
+      return;
+    }
+    resetFileSelection();
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
-      void onDrop(acceptedFiles);
+      onDrop(acceptedFiles);
     },
     accept: { 'text/*': ['.csv'] },
     multiple: false,
@@ -212,26 +262,31 @@ export const UploadForm = ({
 
   return (
     <>
-      <div
-        {...getRootProps()}
-        className={clsx(
-          'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
-          isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
-        )}
-      >
-        <input {...getInputProps()} />
-        {loading ? <UploadFormLoading className="border-none" /> : null}
-        {!loading ? (
-          <>
-            <p>{t('upload:drop_file_cta')}</p>
-            <p className="text-grey-secondary uppercase">{t('common:or')}</p>
-            <Button variant="primary">
-              <Icon icon="plus" className="size-5" />
-              {t('upload:pick_file_cta')}
-            </Button>
-          </>
-        ) : null}
-      </div>
+      {loading ? <UploadFormLoading /> : null}
+      {showIntermediateStep && selectedFile
+        ? intermediateSteps[stepIndex]!({
+            file: selectedFile,
+            onNext: handleStepNext,
+            onBack: handleStepBack,
+          })
+        : null}
+      {!loading && !showIntermediateStep ? (
+        <div
+          {...getRootProps()}
+          className={clsx(
+            'text-s flex h-60 flex-col items-center justify-center gap-md rounded-sm border-2 border-dashed',
+            isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
+          )}
+        >
+          <input {...getInputProps()} />
+          <p>{t('upload:drop_file_cta')}</p>
+          <p className="text-grey-secondary uppercase">{t('common:or')}</p>
+          <Button variant="primary">
+            <Icon icon="plus" className="size-5" />
+            {t('upload:pick_file_cta')}
+          </Button>
+        </div>
+      ) : null}
       <ResultModal
         isOpen={isModalOpen}
         modalContent={modalContent}

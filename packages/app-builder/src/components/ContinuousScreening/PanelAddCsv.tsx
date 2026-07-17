@@ -4,12 +4,15 @@ import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { UploadLog } from 'marble-api';
-import { type MouseEvent, type SyntheticEvent, useState } from 'react';
+import { type MouseEvent, type SyntheticEvent, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Card, MenuCommand, Tag, TagProps, Typo } from 'ui-design-system';
+import { Button, Card, cn, MenuCommand, Switch, Tag, TagProps, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { UploadForm } from '../Data/SemanticTables/UploadData/UploadIngestionComponents';
+import {
+  UploadForm,
+  type UploadFormIntermediateStepProps,
+} from '../Data/SemanticTables/UploadData/UploadIngestionComponents';
 import { Panel } from '../Panel';
 
 export function PanelAddCsv({
@@ -112,7 +115,20 @@ export function PanelAddCsv({
               </p>
 
               {selectedObjectType ? (
-                <UploadForm objectType={selectedObjectType} onSuccess={handleUploadSuccess} />
+                <UploadForm
+                  objectType={selectedObjectType}
+                  onSuccess={handleUploadSuccess}
+                  intermediateSteps={[
+                    ({ file, onNext, onBack }) => (
+                      <CsvUploadConfirmStep
+                        file={file}
+                        configs={configsPerObjectType.get(selectedObjectType) ?? []}
+                        onNext={onNext}
+                        onBack={onBack}
+                      />
+                    ),
+                  ]}
+                />
               ) : null}
             </div>
             {selectedObjectType ? (
@@ -121,6 +137,148 @@ export function PanelAddCsv({
           </Panel.Content>
         </Panel.Container>
       </Panel.Root>
+    </div>
+  );
+}
+
+function CsvUploadConfirmStep({
+  file,
+  configs,
+  onNext,
+  onBack,
+}: UploadFormIntermediateStepProps & {
+  configs: ContinuousScreeningConfiguration[];
+}) {
+  const { t } = useTranslation(['continuousScreening', 'common']);
+  const [placeUnderMonitoring, setPlaceUnderMonitoring] = useState(true);
+  const [selectedConfigStableId, setSelectedConfigStableId] = useState<string | null>(null);
+  const [skipInitialScreening, setSkipInitialScreening] = useState(true);
+
+  const selectedConfig = useMemo(
+    () => configs.find((config) => config.stableId === selectedConfigStableId) ?? null,
+    [configs, selectedConfigStableId],
+  );
+
+  const canValidate = !placeUnderMonitoring || selectedConfigStableId !== null;
+
+  return (
+    <div className="border-grey-placeholder flex flex-col gap-lg rounded-sm border-2 border-dashed p-lg">
+      <div className="flex flex-wrap items-center gap-sm">
+        <span className="text-s text-grey-primary">
+          {t('continuousScreening:configurations.csv.confirm.going_to_upload')}
+        </span>
+        <Tag
+          color="grey"
+          size="small"
+          className="cursor-pointer"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onBack();
+          }}
+        >
+          <span className="flex items-center gap-xs">
+            <span className="max-w-[24ch] truncate">{file.name}</span>
+            <Icon icon="cross" className="size-3 shrink-0" />
+          </span>
+        </Tag>
+      </div>
+
+      <div className="flex flex-col gap-md">
+        <div className="flex flex-col gap-sm">
+          <div className="flex items-center gap-sm">
+            <Switch
+              id="place-under-monitoring"
+              checked={placeUnderMonitoring}
+              onCheckedChange={(checked) => {
+                setPlaceUnderMonitoring(checked);
+                if (!checked) {
+                  setSelectedConfigStableId(null);
+                }
+              }}
+            />
+            <label htmlFor="place-under-monitoring" className="text-s text-grey-primary">
+              {t('continuousScreening:configurations.csv.confirm.place_under_monitoring')}
+            </label>
+          </div>
+
+          {placeUnderMonitoring ? (
+            <div className="ps-2xl">
+              <MenuCommand.Menu>
+                <MenuCommand.Trigger>
+                  <button
+                    type="button"
+                    className={cn(
+                      'border-grey-border bg-surface-card flex min-h-10 w-full items-center gap-sm rounded-md border px-sm py-xs text-start',
+                      'hover:border-grey-secondary focus-visible:ring-purple-primary focus-visible:ring-2 focus-visible:outline-hidden',
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'flex-1 truncate text-s',
+                        selectedConfig ? 'text-grey-primary' : 'text-grey-secondary',
+                      )}
+                    >
+                      {selectedConfig?.name ??
+                        t('continuousScreening:configurations.csv.confirm.configuration_placeholder')}
+                    </span>
+                    <Icon
+                      icon="caret-down"
+                      className="text-grey-secondary size-4 shrink-0 group-radix-state-open:rotate-180 transition-transform duration-200"
+                    />
+                  </button>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content
+                  className="w-[var(--radix-popover-trigger-width)]"
+                  side="bottom"
+                  align="start"
+                  sideOffset={8}
+                >
+                  <MenuCommand.List>
+                    {configs.map((config) => {
+                      const isSelected = config.stableId === selectedConfigStableId;
+                      return (
+                        <MenuCommand.Item
+                          key={config.stableId}
+                          value={config.name}
+                          className="cursor-pointer"
+                          onSelect={() => setSelectedConfigStableId(config.stableId)}
+                        >
+                          <span className="grow truncate">{config.name}</span>
+                          {isSelected ? <Icon icon="tick" className="text-purple-primary size-5 shrink-0" /> : null}
+                        </MenuCommand.Item>
+                      );
+                    })}
+                    <MenuCommand.Empty>
+                      <div className="text-grey-secondary px-md py-xs text-xs">{t('common:no_data_to_display')}</div>
+                    </MenuCommand.Empty>
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="flex items-center gap-sm">
+          <Switch
+            id="skip-initial-screening"
+            checked={skipInitialScreening}
+            onCheckedChange={setSkipInitialScreening}
+          />
+          <label htmlFor="skip-initial-screening" className="text-s text-grey-primary">
+            {t('continuousScreening:configurations.csv.confirm.skip_initial_screening')}
+          </label>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end gap-sm">
+        <Button variant="secondary" onClick={onBack}>
+          {t('common:cancel')}
+        </Button>
+        <Button variant="primary" onClick={onNext} disabled={!canValidate}>
+          {t('continuousScreening:configurations.csv.confirm.validate_upload')}
+        </Button>
+      </div>
     </div>
   );
 }
