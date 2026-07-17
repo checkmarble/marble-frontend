@@ -1,5 +1,7 @@
 {
   "configurations.add_configuration": "Add a configuration",
+  "configurations.csv.button.addCsv": "Add table",
+  "configurations.csv.button.title": "Upload .csv to {{objectType}}",
   "configurations.list.column.datasets": "Datasets and topics",
   "configurations.list.column.name": "Name of configuration",
   "configurations.list.column.object_types": "Object types",

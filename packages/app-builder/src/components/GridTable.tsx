@@ -5,15 +5,26 @@ type TableProps = {
   children: React.ReactNode;
 };
 
+const classNameHeader = 'font-semibold border-b border-grey-border';
+
 const Table = ({ className, children }: TableProps) => {
   return <div className={cn('grid border border-grey-border rounded-lg bg-surface-card', className)}>{children}</div>;
 };
 
-type TableRowProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+type TableRowProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
+  isHeader?: boolean;
+};
 
-const TableRow = ({ className, children, ...props }: TableRowProps) => {
+const TableRow = ({ className, children, isHeader, ...props }: TableRowProps) => {
   return (
-    <div className={cn('group/row grid grid-cols-subgrid col-span-full items-center', className)} {...props}>
+    <div
+      className={cn(
+        'group/row grid grid-cols-subgrid col-span-full items-center',
+        isHeader && classNameHeader,
+        className,
+      )}
+      {...props}
+    >
       {children}
     </div>
   );
