@@ -1,5 +1,7 @@
 {
   "configurations.add_configuration": "Créer un monitoring permanent",
+  "configurations.csv.button.addCsv": "Ajouter une table",
+  "configurations.csv.button.title": "Importer un .csv pour {{objectType}}",
   "configurations.list.column.datasets": "Listes et sujets",
   "configurations.list.column.name": "Nom de la configuration",
   "configurations.list.column.object_types": "Types d’entités",

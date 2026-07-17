@@ -1,6 +1,8 @@
 import { createContinuousScreeningConfigSchema } from '@app-builder/components/ContinuousScreening/context/CreationStepper';
 import { sanitizeTruthyDatasets } from '@app-builder/components/ListAndTopicConfiguration';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAdmin } from '@app-builder/models';
+import { type ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
 import { reviewMatchPayloadSchema } from '@app-builder/schemas/continuous-screenings';
 import { isContinuousScreeningAvailable } from '@app-builder/services/feature-access';
 import { redirect } from '@tanstack/react-router';
@@ -33,6 +35,20 @@ export const listContinuousScreeningConfigurationsFn = createServerFn({ method: 
     return { configurations: configurationsWithInbox };
   });
 
+async function getActiveConfigurations(
+  continuousScreening: ContinuousScreeningRepository,
+  objectType: string,
+  objectId: string,
+) {
+  const [objects, configurations] = await Promise.all([
+    continuousScreening.listObjects({ objectType, objectId }),
+    continuousScreening.listConfigurations(),
+  ]);
+
+  const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
+  return configurations.filter((config) => enrolledStableIds.has(config.stableId));
+}
+
 export const listActiveConfigsForObjectFn = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .validator(z.object({ objectType: z.string(), objectId: z.string() }))
@@ -43,13 +59,7 @@ export const listActiveConfigsForObjectFn = createServerFn({ method: 'GET' })
       return { configurations: [] };
     }
 
-    const [objects, configurations] = await Promise.all([
-      continuousScreening.listObjects({ objectType: data.objectType, objectId: data.objectId }),
-      continuousScreening.listConfigurations(),
-    ]);
-
-    const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
-    const activeConfigurations = configurations.filter((config) => enrolledStableIds.has(config.stableId));
+    const activeConfigurations = await getActiveConfigurations(continuousScreening, data.objectType, data.objectId);
 
     return { configurations: activeConfigurations };
   });
@@ -64,9 +74,9 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ context, data }) => {
-    const { continuousScreening, entitlements } = context.authInfo;
+    const { continuousScreening, entitlements, user } = context.authInfo;
 
-    if (!isContinuousScreeningAvailable(entitlements)) {
+    if (!isContinuousScreeningAvailable(entitlements) || !isAdmin(user)) {
       return { configurations: [] };
     }
 
@@ -80,7 +90,12 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
     const toDelete = [...currentStableIds].filter((stableId) => !nextStableIds.has(stableId));
     const toCreate = [...nextStableIds].filter((stableId) => !currentStableIds.has(stableId));
 
-    await Promise.all([
+    // toDelete and toCreate are disjoint sets of configStableId, so these mutations
+    // can safely run concurrently. We use allSettled (rather than all) so that every
+    // change is attempted even if some fail, and report any partial failure explicitly.
+    // No rollback is performed: the diff is recomputed from live state on each call, so
+    // a retry naturally re-applies only the operations that did not succeed.
+    const results = await Promise.allSettled([
       ...toDelete.map((configStableId) =>
         continuousScreening.deleteObject({
           objectType: data.objectType,
@@ -97,12 +112,11 @@ export const updateObjectMonitoringFn = createServerFn({ method: 'POST' })
       ),
     ]);
 
-    const [objects, configurations] = await Promise.all([
-      continuousScreening.listObjects({ objectType: data.objectType, objectId: data.objectId }),
-      continuousScreening.listConfigurations(),
-    ]);
-    const enrolledStableIds = new Set(objects.map((object) => object.configStableId));
-    const activeConfigurations = configurations.filter((config) => enrolledStableIds.has(config.stableId));
+    if (results.some((result) => result.status === 'rejected')) {
+      throw new Error('Failed to update object monitoring');
+    }
+
+    const activeConfigurations = await getActiveConfigurations(continuousScreening, data.objectType, data.objectId);
 
     return { configurations: activeConfigurations };
   });

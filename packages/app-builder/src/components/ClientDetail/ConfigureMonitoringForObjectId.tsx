@@ -3,6 +3,7 @@ import { useContinuousScreeningConfigurationsQuery } from '@app-builder/queries/
 import { useUpdateObjectMonitoringMutation } from '@app-builder/queries/continuous-screening/update-object-monitoring';
 import { toggle } from 'radash';
 import { useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, MenuCommand, Modal, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -53,11 +54,17 @@ export const ConfigureMonitoringForObjectId = ({
   };
 
   const handleValidate = async () => {
-    await updateMutation.mutateAsync({
-      objectType,
-      objectId,
-      configStableIds: selectedStableIds,
-    });
+    await updateMutation.mutateAsync(
+      {
+        objectType,
+        objectId,
+        configStableIds: selectedStableIds,
+      },
+      {
+        onSuccess: () => toast.success(t('common:success.save')),
+        onError: () => toast.error(t('common:errors.unknown')),
+      },
+    );
     setOpen(false);
   };
 

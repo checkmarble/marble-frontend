@@ -21,6 +21,7 @@ import { ConfigurationPanel } from './ConfigurationPanel';
 import { CreationModal } from './CreationModal';
 import { PartialCreateContinuousScreeningConfig } from './context/CreationStepper';
 import { EditionValidationPanel } from './EditionValidationPanel';
+import { PanelAddCsv } from './PanelAddCsv';
 
 type ConfigurationsPageProps = {
   canEdit: boolean;
@@ -95,12 +96,13 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
                 ) : null}
               </div>
             ) : (
-              <GridTable.Table className="grid-cols-[minmax(0,_33.33%)_repeat(3,_1fr)]">
-                <GridTable.Row className="font-semibold border-b border-grey-border">
+              <GridTable.Table className="grid-cols-[minmax(0,_33.33%)_repeat(4,_1fr)]">
+                <GridTable.Row isHeader>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.name')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.datasets')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.object_types')}</GridTable.Cell>
                   <GridTable.Cell>{t('continuousScreening:configurations.list.column.target_inbox')}</GridTable.Cell>
+                  <GridTable.Cell>{''}</GridTable.Cell>
                 </GridTable.Row>
                 {configurations.map((item) => (
                   <GridTable.Row
@@ -143,6 +145,9 @@ export const ConfigurationsPage = ({ canEdit, configurations, datasets }: Config
                       </div>
                     </GridTable.Cell>
                     <GridTable.Cell>{item.inbox?.name}</GridTable.Cell>
+                    <GridTable.Cell>
+                      <PanelAddCsv configuration={item} />
+                    </GridTable.Cell>
                   </GridTable.Row>
                 ))}
               </GridTable.Table>

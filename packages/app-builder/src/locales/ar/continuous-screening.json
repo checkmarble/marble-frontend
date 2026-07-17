@@ -1,5 +1,7 @@
 {
   "configurations.add_configuration": "إنشاء فحص مستمر",
+  "configurations.csv.button.addCsv": "إضافة جدول",
+  "configurations.csv.button.title": "رفع .csv إلى {{objectType}}",
   "configurations.list.column.datasets": "القوائم والمواضيع",
   "configurations.list.column.name": "اسم الإعداد",
   "configurations.list.column.object_types": "أنواع الكيانات",
